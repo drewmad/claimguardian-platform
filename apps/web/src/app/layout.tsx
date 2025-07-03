@@ -1,0 +1,24 @@
+import type { Metadata } from 'next'
+import { Inter } from 'next/font/google'
+import './globals.css'
+
+const inter = Inter({ subsets: ['latin'] })
+
+export const metadata: Metadata = {
+  title: 'ClaimGuardian - AI-Powered Insurance Claim Advocate for Florida',
+  description: 'Stop wasting hours deciphering complex policies and chasing adjusters. ClaimGuardian\'s AI-powered platform automates the most tedious parts of the claims process.',
+}
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return (
+    <html lang="en">
+      <body className={`${inter.className} antialiased bg-slate-950 text-slate-100`}>
+        {children}
+      </body>
+    </html>
+  )
+}
