@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a modal component built on Radix UI Dialog, with various sub-components for header, footer, title, and description, and a simplified `SimpleModal` for common use cases.
+ * @owner frontend-team
+ * @dependencies ["react", "@radix-ui/react-dialog", "lucide-react", "./utils"]
+ * @exports ["Modal", "ModalPortal", "ModalOverlay", "ModalClose", "ModalTrigger", "ModalContent", "ModalHeader", "ModalFooter", "ModalTitle", "ModalDescription", "SimpleModal"]
+ * @complexity medium
+ * @tags ["component", "ui", "modal", "dialog"]
+ * @status active
+ */
 'use client'
 
 import * as React from 'react'

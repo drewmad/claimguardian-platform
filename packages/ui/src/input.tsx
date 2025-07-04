@@ -1,3 +1,35 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a customizable input component with error display.
+ * @owner frontend-team
+ * @dependencies ["react", "./utils"]
+ * @exports ["Input"]
+ * @complexity medium
+ * @tags ["component", "ui", "form", "input"]
+ * @status active
+ */
+'use client'
+
+/**
+ * @fileMetadata
+ * @purpose Provides a customizable input component with error display.
+ * @owner frontend-team
+ * @dependencies ["react", "./utils"]
+ * @exports ["Input"]
+ * @complexity medium
+ * @tags ["component", "ui", "form", "input"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides a customizable input component with error display.
+ * @owner frontend-team
+ * @dependencies ["react", "./utils"]
+ * @exports ["Input"]
+ * @complexity medium
+ * @tags ["component", "ui", "form", "input"]
+ * @status active
+ */
 'use client'
 
 import * as React from 'react'

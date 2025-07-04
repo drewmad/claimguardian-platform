@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a customizable label component.
+ * @owner frontend-team
+ * @dependencies ["react", "./utils"]
+ * @exports ["Label"]
+ * @complexity low
+ * @tags ["component", "ui", "form", "label"]
+ * @status active
+ */
 'use client'
 
 import * as React from 'react'

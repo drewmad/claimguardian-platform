@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a customizable button component with various styles and sizes, built using `class-variance-authority`.
+ * @owner frontend-team
+ * @dependencies ["react", "class-variance-authority", "./utils"]
+ * @exports ["Button", "buttonVariants"]
+ * @complexity medium
+ * @tags ["component", "ui", "button"]
+ * @status active
+ */
 'use client'
 
 import * as React from 'react'
@@ -32,7 +42,7 @@ export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement>,
     VariantProps<typeof buttonVariants> {}
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>( 
   ({ className, variant, size, ...props }, ref) => {
     return (
       <button

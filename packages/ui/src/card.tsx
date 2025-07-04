@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a flexible card component with header, title, description, content, and footer sub-components.
+ * @owner frontend-team
+ * @dependencies ["react", "./utils"]
+ * @exports ["Card", "CardHeader", "CardFooter", "CardTitle", "CardDescription", "CardContent"]
+ * @complexity medium
+ * @tags ["component", "ui", "card", "layout"]
+ * @status active
+ */
 'use client'
 
 import * as React from 'react'
