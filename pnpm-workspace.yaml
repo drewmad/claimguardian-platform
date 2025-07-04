@@ -1,3 +1,13 @@
+#
+# @fileMetadata
+# @purpose Defines the workspaces for the pnpm monorepo.
+# @owner dev-ops
+# @lastModifiedBy Drew Madison
+# @lastModifiedDate 2025-07-03T20:09:45-04:00
+# @status active
+# @notes Specifies which directories are part of the monorepo's workspaces.
+#
 packages:
   - 'apps/*'
-  - 'packages/*' 
+  - 'packages/*'
+  - 'tools/*'

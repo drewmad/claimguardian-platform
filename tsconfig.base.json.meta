@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Base TypeScript configuration for the entire monorepo.",
+    "owner": "core-dev-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T19:43:12-04:00",
+    "status": "active",
+    "notes": "Defines common TypeScript compiler options and path aliases for all projects."
+  }
+}

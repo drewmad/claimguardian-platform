@@ -1,3 +1,12 @@
+#
+# @fileMetadata
+# @purpose Specifies intentionally untracked files that Git should ignore.
+# @owner dev-ops
+# @lastModifiedBy Drew Madison
+# @lastModifiedDate 2025-07-03T19:43:12-04:00
+# @status active
+# @notes Defines patterns for files and directories to be excluded from version control.
+#
 # dependencies
 node_modules/
 .pnpm-store/

@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Root package configuration for the monorepo, defining workspaces, scripts, and core dependencies.",
+    "owner": "core-dev-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T20:57:42-04:00",
+    "status": "active",
+    "notes": "Defines the overall structure and top-level dependencies for the Turborepo project."
+  }
+}

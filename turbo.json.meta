@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Turborepo configuration for defining tasks, caching, and environment variables.",
+    "owner": "dev-ops",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T22:09:45-04:00",
+    "status": "active",
+    "notes": "Optimizes build and development workflows across the monorepo."
+  }
+}

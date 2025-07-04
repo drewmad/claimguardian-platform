@@ -1,3 +1,12 @@
+<!--
+@fileMetadata
+@purpose Documents the repository tracking and metadata system for the Gemini CLI.
+@owner dev-ops
+@lastModifiedBy Drew Madison
+@lastModifiedDate 2025-07-03T20:39:13-04:00
+@status active
+@notes Details automated documentation, file metadata, generator scripts, knowledge base, validation, IDE integration, and monitoring.
+-->
 # Repository Tracking & Metadata System
 
 ## 1. Automated Documentation Tracking

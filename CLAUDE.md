@@ -1,3 +1,12 @@
+<!--
+@fileMetadata
+@purpose Provides guidance to AI models (specifically Claude) on working with this repository.
+@owner dev-ops
+@lastModifiedBy Drew Madison
+@lastModifiedDate 2025-07-03T19:43:12-04:00
+@status active
+@notes Contains project overview, development commands, architecture details, and important patterns for AI agents.
+-->
 # CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
