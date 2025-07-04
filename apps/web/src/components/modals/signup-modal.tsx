@@ -71,8 +71,28 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
       return errors
     },
     onSubmit: async (values) => {
-      console.log('Signup form submitted:', values)
-      setIsSubmitted(true)
+      try {
+        const response = await fetch('/api/auth/signup', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(values),
+        })
+
+        const data = await response.json()
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to sign up')
+        }
+
+        setIsSubmitted(true)
+      } catch (error: any) {
+        console.error('Signup error:', error.message)
+        // You might want to set a general error state here to display to the user
+        // For now, we'll just log it.
+        alert(error.message) // Simple alert for demonstration
+      }
     }
   })
 
