@@ -2,8 +2,7 @@
 
 import { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { Card } from '@claimguardian/ui/card'
-import { Button } from '@claimguardian/ui/button'
+import { Card, Button } from '@claimguardian/ui'
 
 interface FaqItem {
   question: string

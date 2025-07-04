@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { LoginModal } from '@/components/modals/login-modal'
-import { Button } from '@claimguardian/ui/button'
+import { Button } from '@claimguardian/ui'
 
 export function Header() {
   const [showLoginModal, setShowLoginModal] = useState(false)

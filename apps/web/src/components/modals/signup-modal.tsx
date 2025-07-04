@@ -1,11 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Modal } from '@claimguardian/ui/modal'
-import { Button } from '@claimguardian/ui/button'
-import { Input } from '@claimguardian/ui/input'
-import { Label } from '@claimguardian/ui/label'
-import { Checkbox } from '@claimguardian/ui/checkbox'
+import { Modal, Button, Input, Label, Checkbox } from '@claimguardian/ui'
 import { useForm } from '@/hooks/use-form'
 import { validateEmail, validatePhone, validateRequired } from '@/utils/validation'
 

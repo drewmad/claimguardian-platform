@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Button } from '@claimguardian/ui/button'
+import { Button } from '@claimguardian/ui'
 import { SignupModal } from '@/components/modals/signup-modal'
 import { VideoBackground } from '@/components/ui/video-background'
 

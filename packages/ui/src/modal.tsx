@@ -146,5 +146,5 @@ export {
   ModalFooter,
   ModalTitle,
   ModalDescription,
-  SimpleModal as Modal
+  SimpleModal
 }

@@ -1,4 +1,4 @@
-import { Card } from '@claimguardian/ui/card'
+import { Card } from '@claimguardian/ui'
 import { Home, Building, Users } from 'lucide-react'
 
 const serviceCards = [

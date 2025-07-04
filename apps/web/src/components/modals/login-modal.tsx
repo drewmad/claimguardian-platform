@@ -1,9 +1,6 @@
 'use client'
 
-import { Modal } from '@claimguardian/ui/modal'
-import { Button } from '@claimguardian/ui/button'
-import { Input } from '@claimguardian/ui/input'
-import { Label } from '@claimguardian/ui/label'
+import { Modal, Button, Input, Label } from '@claimguardian/ui'
 
 interface LoginModalProps {
   isOpen: boolean
