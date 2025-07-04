@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides utility functions for formatting data such as phone numbers, currency, and dates.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["formatPhoneNumber", "formatCurrency", "formatDate"]
+ * @complexity low
+ * @tags ["utility", "formatting"]
+ * @status active
+ */
 export const formatPhoneNumber = (value: string): string => {
   const digits = value.replace(/\D/g, '').substring(0, 10)
   if (digits.length >= 6) {
