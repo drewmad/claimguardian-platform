@@ -25,7 +25,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: error.message }, { status: 400 })
     }
 
-    return NextResponse.json({ message: 'User signed up successfully', user: data.user })
+    return NextResponse.redirect(new URL('/dashboard', request.url))
   } catch (e) {
     console.error('Unexpected signup error:', e)
     return NextResponse.json({ error: 'An unexpected error occurred' }, { status: 500 })
