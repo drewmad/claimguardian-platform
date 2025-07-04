@@ -1,31 +1,18 @@
-'use client'
+import { Bell } from 'lucide-react';
+import { MOCK_DATA } from '@/lib/mock-data';
 
-import { useState } from 'react'
-import { LoginModal } from '@/components/modals/login-modal'
-import { Button } from '@claimguardian/ui'
+const Header = ({ onMenuClick, onProfileClick, isMobile }) => (
+  <header className="flex-shrink-0 bg-bgSecondary h-16 flex items-center justify-between px-4 md:px-6 border-b border-border">
+    <div className="flex items-center">
+      <h1 className="font-slab text-xl md:text-2xl font-bold">Claim<span className="neon-lime-text">Guardian</span></h1>
+    </div>
+    <div className="flex items-center gap-4">
+        <button className="p-2 rounded-full hover:bg-bgTertiary"><Bell size={20} /></button>
+        <button onClick={onProfileClick} className="rounded-full">
+          <img src={MOCK_DATA.user.avatar} alt="User Avatar" className="w-8 h-8 rounded-full" />
+        </button>
+    </div>
+  </header>
+);
 
-export function Header() {
-  const [showLoginModal, setShowLoginModal] = useState(false)
-
-  return (
-    <>
-      <header className="fixed top-0 left-0 right-0 z-40 bg-slate-900/60 backdrop-blur-lg border-b border-slate-800">
-        <div className="container mx-auto px-6 py-4 flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-white">ClaimGuardian</h1>
-          <Button
-            variant="secondary"
-            onClick={() => setShowLoginModal(true)}
-            className="bg-slate-700 hover:bg-slate-600"
-          >
-            Log In
-          </Button>
-        </div>
-      </header>
-
-      <LoginModal
-        isOpen={showLoginModal}
-        onClose={() => setShowLoginModal(false)}
-      />
-    </>
-  )
-}
+export default Header;

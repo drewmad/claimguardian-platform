@@ -35,3 +35,28 @@
     @apply relative pb-2 after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-16 after:h-1 after:bg-blue-600 after:rounded-full;
   }
 }
+
+/* --- Custom Color Utilities --- */
+.bg-bgPrimary { background-color: #121212; }
+.bg-bgSecondary { background-color: #1E1E1E; }
+.bg-bgTertiary { background-color: #2A2A2A; }
+
+.text-textPrimary { color: #FFFFFF; }
+.text-textSecondary { color: #E0E0E0; }
+
+.border-border { border-color: #424242; }
+
+.neon-lime-text { color: #39FF14; }
+.neon-lime-bg { background-color: #39FF14; }
+.accent-blue-text { color: #0095FF; }
+.accent-blue-bg { background-color: #0095FF; }
+.danger-red-text { color: #D50000; }
+.danger-red-bg { background-color: #D50000; }
+
+/* --- Other Styles --- */
+.shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+.shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.15); }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #1E1E1E; }
+::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #555; }
