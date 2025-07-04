@@ -1,4 +1,45 @@
 import { Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+/**
+ * @fileMetadata
+ * @purpose Provides mock data for initial asset display, user information, and application alerts/activity.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "./constants"]
+ * @exports ["INITIAL_ASSETS", "MOCK_DATA"]
+ * @complexity medium
+ * @tags ["mock", "data", "testing"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides mock data for initial asset display, user information, and application alerts/activity.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "./constants"]
+ * @exports ["INITIAL_ASSETS", "MOCK_DATA"]
+ * @complexity medium
+ * @tags ["mock", "data", "testing"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides mock data for initial asset display, user information, and application alerts/activity.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "./constants"]
+ * @exports ["INITIAL_ASSETS", "MOCK_DATA"]
+ * @complexity medium
+ * @tags ["mock", "data", "testing"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides mock data for initial asset display, user information, and application alerts/activity.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "./constants"]
+ * @exports ["INITIAL_ASSETS", "MOCK_DATA"]
+ * @complexity medium
+ * @tags ["mock", "data", "testing"]
+ * @status active
+ */
+import { Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
 import { COLORS } from './constants';
 
 export const INITIAL_ASSETS = [

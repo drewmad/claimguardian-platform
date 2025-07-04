@@ -1,3 +1,23 @@
+/**
+ * @fileMetadata
+ * @purpose Displays user profile information and allows management of settings and preferences.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/mock-data"]
+ * @exports ["ProfileModal"]
+ * @complexity medium
+ * @tags ["modal", "profile", "settings", "user"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Displays user profile information and allows management of settings and preferences.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/mock-data"]
+ * @exports ["ProfileModal"]
+ * @complexity medium
+ * @tags ["modal", "profile", "settings", "user"]
+ * @status active
+ */
 import { useState } from 'react';
 import { X, Mail, Phone, MapPin, ToggleLeft, ToggleRight } from 'lucide-react';
 import { MOCK_DATA } from '@/lib/mock-data';

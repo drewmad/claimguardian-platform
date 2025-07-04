@@ -1,3 +1,33 @@
+/**
+ * @fileMetadata
+ * @purpose Provides an AI-powered tool for assessing damage based on uploaded photos and linked assets/policies.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api"]
+ * @exports ["DamageAssessmentScreen"]
+ * @complexity high
+ * @tags ["screen", "ai", "assessment", "damage"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides an AI-powered tool for assessing damage based on uploaded photos and linked assets/policies.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api"]
+ * @exports ["DamageAssessmentScreen"]
+ * @complexity high
+ * @tags ["screen", "ai", "assessment", "damage"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Provides an AI-powered tool for assessing damage based on uploaded photos and linked assets/policies.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api"]
+ * @exports ["DamageAssessmentScreen"]
+ * @complexity high
+ * @tags ["screen", "ai", "assessment", "damage"]
+ * @status active
+ */
 import React, { useState, useRef } from 'react';
 import { Camera, Bot, Sparkles } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';

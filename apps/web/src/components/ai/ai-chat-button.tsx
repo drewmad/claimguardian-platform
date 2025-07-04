@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Floating action button to open the AI chat panel.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "@/lib/constants"]
+ * @exports ["AiChatButton"]
+ * @complexity low
+ * @tags ["component", "ai", "chat", "ui"]
+ * @status active
+ */
 import { Bot } from 'lucide-react';
 import { Sparkles } from 'lucide-react';
 import { COLORS } from '@/lib/constants';

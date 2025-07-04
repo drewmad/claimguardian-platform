@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Displays a vault of user assets with grid and list view options.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react"]
+ * @exports ["AssetVaultScreen"]
+ * @complexity medium
+ * @tags ["screen", "assets", "vault"]
+ * @status active
+ */
 import { useState } from 'react';
 import { List, Grid, Plus, ChevronRight } from 'lucide-react';
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a helper function to interact with the Gemini API for AI-powered features.
+ * @owner frontend-team
+ * @dependencies ["react"] // Assuming fetch is globally available or polyfilled
+ * @exports ["callGeminiAPI"]
+ * @complexity medium
+ * @tags ["api", "ai", "gemini", "utility"]
+ * @status active
+ */
 const callGeminiAPI = async (prompt, chatHistory = [], jsonSchema = null, attachedImage = null) => {
     const apiKey = ""; // Leave empty for demo mode
     

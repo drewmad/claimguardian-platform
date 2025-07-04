@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose AI chat panel for interacting with Guardian AI, supporting text and image input.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api", "@/lib/constants"]
+ * @exports ["AiChatPanel"]
+ * @complexity high
+ * @tags ["component", "ai", "chat", "modal"]
+ * @status active
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';

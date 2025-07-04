@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Displays a history of insurance claims with their status and details.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "@/lib/mock-data", "@/lib/constants"]
+ * @exports ["ClaimsScreen"]
+ * @complexity medium
+ * @tags ["screen", "claims", "history"]
+ * @status active
+ */
 import { Plus } from 'lucide-react';
 import { MOCK_DATA } from '@/lib/mock-data';
 import { COLORS } from '@/lib/constants';

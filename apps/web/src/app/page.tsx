@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Main application entry point, orchestrates different screens and modals.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/mock-data", "@/lib/gemini-api", "@/lib/constants", "@/components/layout/header", "@/components/layout/sidebar", "@/components/layout/bottom-nav", "@/components/screens/home-screen", "@/components/screens/asset-vault-screen", "@/components/screens/asset-detail-screen", "@/components/screens/damage-assessment-screen", "@/components/screens/claims-screen", "@/components/modals/claim-wizard", "@/components/modals/profile-modal", "@/components/modals/add-asset-wizard", "@/components/modals/add-inventory-item-modal", "@/components/ai/ai-chat-button", "@/components/ai/ai-chat-panel"]
+ * @exports ["App"]
+ * @complexity high
+ * @tags ["app", "main", "layout", "routing"]
+ * @status active
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Sparkles, X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Guides the user through adding a new asset with multiple steps for details, photos, and policies.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/constants"]
+ * @exports ["AddAssetWizard"]
+ * @complexity high
+ * @tags ["modal", "wizard", "asset", "onboarding"]
+ * @status active
+ */
 import React, { useState, useRef } from 'react';
 import { X, Camera, Paperclip, Plus, Building, Car, Tv, Shield, Grid, Sparkles, Video } from 'lucide-react';
 import { COLORS } from '@/lib/constants';

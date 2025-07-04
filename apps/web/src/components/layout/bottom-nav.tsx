@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a bottom navigation bar for mobile devices.
+ * @owner frontend-team
+ * @dependencies ["lucide-react"]
+ * @exports ["BottomNav"]
+ * @complexity low
+ * @tags ["component", "layout", "navigation", "mobile"]
+ * @status active
+ */
 import { Home, Shield, FileText, Camera } from 'lucide-react';
 
 const BottomNav = ({ activeScreen, setActiveScreen }) => {

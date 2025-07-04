@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Defines the color palette for the ClaimGuardian application.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["COLORS"]
+ * @complexity low
+ * @tags ["constants", "styling", "colors"]
+ * @status active
+ */
 export const COLORS = {
   primary: '#39FF14', // Neon Lime
   accent: '#0095FF',  // Hurricane Shield Blue

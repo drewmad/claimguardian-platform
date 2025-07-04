@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Sidebar navigation component for the application.
+ * @owner frontend-team
+ * @dependencies ["lucide-react"]
+ * @exports ["Sidebar"]
+ * @complexity low
+ * @tags ["component", "layout", "navigation"]
+ * @status active
+ */
 import { Home, Shield, FileText, Camera, X } from 'lucide-react';
 
 const Sidebar = ({ activeScreen, setActiveScreen, isCollapsed, onToggle }) => {

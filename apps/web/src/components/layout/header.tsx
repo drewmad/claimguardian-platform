@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Application header component, displaying logo, notifications, and user profile.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "@/lib/mock-data"]
+ * @exports ["Header"]
+ * @complexity low
+ * @tags ["component", "layout", "header", "ui"]
+ * @status active
+ */
 import { Bell } from 'lucide-react';
 import { MOCK_DATA } from '@/lib/mock-data';
 

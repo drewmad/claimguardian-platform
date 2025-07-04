@@ -1,4 +1,14 @@
-import { Home, Shield, FileText, Camera, User, Plus, List, Grid, X, ChevronRight, Wind, AlertTriangle, ShieldAlert, CheckCircle, Clock, Paperclip, Bot, ArrowRight, Bell, Sparkles, XCircle, ArrowLeft, Tag, DollarSign, Building, Hash, ShieldCheck, Mail, Phone, MapPin, ToggleLeft, ToggleRight, KeyRound, Zap, Video, Car, Gem, Tv, Paintbrush } from 'lucide-react';
+/**
+ * @fileMetadata
+ * @purpose Displays the main dashboard with overall risk, live alerts, and recent activity.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "@/lib/constants", "@/lib/mock-data"]
+ * @exports ["HomeScreen"]
+ * @complexity medium
+ * @tags ["screen", "dashboard", "home"]
+ * @status active
+ */
+import { Plus, FileText, User, Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
 import { COLORS } from '@/lib/constants';
 import { MOCK_DATA } from '@/lib/mock-data';
 

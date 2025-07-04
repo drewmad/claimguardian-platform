@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Guides the user through the process of filing a new insurance claim.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api", "@/lib/constants"]
+ * @exports ["ClaimWizard"]
+ * @complexity high
+ * @tags ["modal", "wizard", "claims", "ai"]
+ * @status active
+ */
 import React, { useState, useEffect } from 'react';
 import { X, Camera, Bot, Sparkles, CheckCircle } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';

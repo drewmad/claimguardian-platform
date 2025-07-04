@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Displays detailed information for a single asset, including inventory and policies.
+ * @owner frontend-team
+ * @dependencies ["lucide-react", "@/lib/constants"]
+ * @exports ["AssetDetailScreen"]
+ * @complexity medium
+ * @tags ["screen", "asset", "detail"]
+ * @status active
+ */
 import { ArrowLeft, FileText } from 'lucide-react';
 import { COLORS } from '@/lib/constants';
 

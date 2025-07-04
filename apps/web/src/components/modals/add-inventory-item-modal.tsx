@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Modal for adding new inventory items to an asset, supporting manual entry and AI-powered image scanning.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@/lib/gemini-api"]
+ * @exports ["AddInventoryItemModal"]
+ * @complexity high
+ * @tags ["modal", "inventory", "ai", "asset"]
+ * @status active
+ */
 import React, { useState, useRef } from 'react';
 import { X, Camera, Paperclip, Plus, Sparkles, Video } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';
