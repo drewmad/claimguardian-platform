@@ -20,7 +20,7 @@ import { COLORS } from '@/lib/constants';
 
 import Header from '@/components/layout/header';
 import Sidebar from '@/components/layout/sidebar';
-import BottomNav from '@/components/layout/bottom';
+import BottomNav from '@/components/layout/bottom-nav';
 
 import HomeScreen from '@/components/screens/home-screen';
 import AssetVaultScreen from '@/components/screens/asset-vault-screen';
@@ -109,7 +109,7 @@ export default function App() {
       case 'Claims':
         return <ClaimsScreen onStartClaim={() => setIsClaimWizardOpen(true)} />;
       default:
-        return <HomeScreen onStartClaim={() => setIsClaimWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
+        return <HomeScreen onStartClaim={() => setIsAddAssetWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
     }
   };
 
@@ -182,4 +182,5 @@ export default function App() {
     </div>
   );
 }
+
 
