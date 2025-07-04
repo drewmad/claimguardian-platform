@@ -21,7 +21,7 @@ export function HeroSection() {
             Stop Settling for Less Than You Deserve.
           </h2>
           <p className="mt-6 max-w-3xl mx-auto text-lg md:text-xl text-slate-300">
-            Stop wasting hours deciphering complex policies and chasing adjusters. ClaimGuardian's AI-powered platform automates the most tedious parts of the claims process, building a powerful, evidence-backed case in a fraction of the time—so you get the settlement you deserve, faster.
+            Stop wasting hours deciphering complex policies and chasing adjusters. ClaimGuardian&apos;s AI-powered platform automates the most tedious parts of the claims process, building a powerful, evidence-backed case in a fraction of the time—so you get the settlement you deserve, faster.
           </p>
           <div className="mt-10 flex justify-center items-center gap-4">
             <Button

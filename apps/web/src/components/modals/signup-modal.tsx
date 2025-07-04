@@ -18,6 +18,7 @@ interface SignupFormData {
   confirmPassword: string
   phone: string
   agree: boolean
+  [key: string]: unknown
 }
 
 export function SignupModal({ isOpen, onClose }: SignupModalProps) {
@@ -253,7 +254,7 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
             onCheckedChange={(checked) => 
               handleChange({ 
                 target: { name: 'agree', value: checked } 
-              } as any)
+                              } as React.ChangeEvent<HTMLInputElement>)
             }
           />
           <Label htmlFor="agree" className="text-sm">

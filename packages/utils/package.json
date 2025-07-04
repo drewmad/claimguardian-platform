@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "type": "module",
   "license": "MIT",
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
@@ -12,6 +13,9 @@
   },
   "devDependencies": {
     "@claimguardian/config": "workspace:*",
+    "@eslint/js": "^9.30.1",
+    "@typescript-eslint/eslint-plugin": "^8.35.1",
+    "@typescript-eslint/parser": "^8.35.1",
     "tsup": "^8.5.0",
     "typescript": "^5.8.3"
   }

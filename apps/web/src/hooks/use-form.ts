@@ -8,7 +8,7 @@ interface UseFormOptions<T> {
   onSubmit?: (values: T) => void | Promise<void>
 }
 
-export function useForm<T extends Record<string, any>>({
+export function useForm<T extends Record<string, unknown>>({
   initialValues,
   validate,
   onSubmit
@@ -17,7 +17,7 @@ export function useForm<T extends Record<string, any>>({
   const [errors, setErrors] = useState<Partial<Record<keyof T, string>>>({})
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value: any } }) => {
+  const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | { target: { name: string; value: unknown } }) => {
     const { name, value } = e.target
     setValues(prev => ({ ...prev, [name]: value }))
     
