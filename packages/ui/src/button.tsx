@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "class-variance-authority", "./utils"]
  * @exports ["Button", "buttonVariants"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity medium
  * @tags ["component", "ui", "button"]
  * @status active
+ * @notes Uses `cva` for flexible variant styling.
  */
 'use client'
 

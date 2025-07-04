@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Package configuration for the UI component library.",
+    "owner": "frontend-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T21:08:02-04:00",
+    "status": "active",
+    "notes": "Defines scripts, dependencies, and peer dependencies for the shared UI components."
+  }
+}

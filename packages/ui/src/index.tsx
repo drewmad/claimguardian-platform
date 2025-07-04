@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["./button", "./input", "./modal", "./card", "./label", "./checkbox", "./utils"]
  * @exports ["Button", "Input", "Modal", "Card", "Label", "Checkbox", "cn"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity low
  * @tags ["component", "ui", "exports"]
  * @status active
+ * @notes Centralized export for easy import of UI components.
  */
 export { Button } from './button'
 export { Input } from './input'

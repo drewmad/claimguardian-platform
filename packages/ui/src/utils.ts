@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["clsx", "tailwind-merge"]
  * @exports ["cn"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity low
  * @tags ["utility", "css", "tailwind"]
  * @status active
+ * @notes Simplifies dynamic class name generation in React components.
  */
 import { type ClassValue, clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'

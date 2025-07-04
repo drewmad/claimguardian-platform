@@ -4,31 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "./utils"]
  * @exports ["Input"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity medium
  * @tags ["component", "ui", "form", "input"]
  * @status active
- */
-'use client'
-
-/**
- * @fileMetadata
- * @purpose Provides a customizable input component with error display.
- * @owner frontend-team
- * @dependencies ["react", "./utils"]
- * @exports ["Input"]
- * @complexity medium
- * @tags ["component", "ui", "form", "input"]
- * @status active
- */
-/**
- * @fileMetadata
- * @purpose Provides a customizable input component with error display.
- * @owner frontend-team
- * @dependencies ["react", "./utils"]
- * @exports ["Input"]
- * @complexity medium
- * @tags ["component", "ui", "form", "input"]
- * @status active
+ * @notes Used for text, email, password, and number inputs.
  */
 'use client'
 

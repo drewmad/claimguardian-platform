@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "./utils"]
  * @exports ["Label"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity low
  * @tags ["component", "ui", "form", "label"]
  * @status active
+ * @notes Used to associate text labels with form controls.
  */
 'use client'
 

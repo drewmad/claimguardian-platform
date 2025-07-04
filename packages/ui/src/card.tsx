@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "./utils"]
  * @exports ["Card", "CardHeader", "CardFooter", "CardTitle", "CardDescription", "CardContent"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity medium
  * @tags ["component", "ui", "card", "layout"]
  * @status active
+ * @notes Used for grouping related content and actions.
  */
 'use client'
 

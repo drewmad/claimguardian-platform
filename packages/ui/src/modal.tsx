@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "@radix-ui/react-dialog", "lucide-react", "./utils"]
  * @exports ["Modal", "ModalPortal", "ModalOverlay", "ModalClose", "ModalTrigger", "ModalContent", "ModalHeader", "ModalFooter", "ModalTitle", "ModalDescription", "SimpleModal"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity medium
  * @tags ["component", "ui", "modal", "dialog"]
  * @status active
+ * @notes Used for displaying overlay content like forms or alerts.
  */
 'use client'
 
