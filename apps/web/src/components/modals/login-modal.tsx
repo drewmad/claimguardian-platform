@@ -15,12 +15,20 @@ import { Modal, Button, Input, Label } from '@claimguardian/ui'
 interface LoginModalProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
 }
 
-export function LoginModal({ isOpen, onClose }: LoginModalProps) {
+export function LoginModal({ isOpen, onClose, onSuccess }: LoginModalProps) {
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
+    // Simulate successful login
+    if (onSuccess) {
+      onSuccess()
+    }
+  }
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Log In">
-      <form className="space-y-4">
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <Label htmlFor="email">Email</Label>
           <Input id="email" type="email" placeholder="your@email.com" />

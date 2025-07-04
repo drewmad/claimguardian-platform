@@ -1,9 +1,18 @@
 'use client'
 
+import { useEffect } from 'react'
 import { Card } from '@claimguardian/ui'
 import { Home, FileText, Shield, Users } from 'lucide-react'
 
 export default function DashboardPage() {
+  // Simple authentication check - in a real app, this would check actual auth state
+  useEffect(() => {
+    // For demo purposes, we'll assume users are authenticated if they reach this page
+    // In a real app, you'd check authentication state here and redirect if needed
+    // if (!isAuthenticated) {
+    //   window.location.href = '/'
+    // }
+  }, [])
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <style jsx>{`

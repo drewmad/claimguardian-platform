@@ -18,6 +18,7 @@ import { validateEmail, validatePhone, validateRequired } from '@/utils/validati
 interface SignupModalProps {
   isOpen: boolean
   onClose: () => void
+  onSuccess?: () => void
 }
 
 interface SignupFormData {
@@ -31,7 +32,7 @@ interface SignupFormData {
   [key: string]: unknown
 }
 
-export function SignupModal({ isOpen, onClose }: SignupModalProps) {
+export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState(0)
@@ -97,6 +98,10 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
         }
 
         setIsSubmitted(true)
+        // Call onSuccess if provided
+        if (onSuccess) {
+          setTimeout(() => onSuccess(), 2000) // Give user time to see success message
+        }
       } catch (error: any) {
         console.error('Signup error:', error.message)
         // You might want to set a general error state here to display to the user
