@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Package configuration for the shared utility package.",
+    "owner": "frontend-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T21:08:02-04:00",
+    "status": "active",
+    "notes": "Defines scripts, dependencies, and development dependencies for the shared utility functions."
+  }
+}

@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies []
  * @exports ["formatPhoneNumber", "formatCurrency", "formatDate"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T23:09:02-04:00
  * @complexity low
  * @tags ["utility", "formatting"]
  * @status active
+ * @notes Includes functions for consistent data presentation.
  */
 export const formatPhoneNumber = (value: string): string => {
   const digits = value.replace(/\D/g, '').substring(0, 10)

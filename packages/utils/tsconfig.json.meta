@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "TypeScript configuration for the utility package.",
+    "owner": "frontend-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T19:43:12-04:00",
+    "status": "active",
+    "notes": "Extends the base TypeScript configuration and defines paths specific to the utility package."
+  }
+}

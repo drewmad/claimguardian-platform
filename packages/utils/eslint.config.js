@@ -1,3 +1,12 @@
+/*
+ * @fileMetadata
+ * @purpose ESLint configuration for the utility package.
+ * @owner frontend-team
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T21:08:02-04:00
+ * @status active
+ * @notes Defines linting rules specific to utility functions, allowing any types for flexibility.
+ */
 import js from '@eslint/js'
 import typescript from '@typescript-eslint/eslint-plugin'
 import typescriptParser from '@typescript-eslint/parser'
@@ -33,4 +42,4 @@ export default [
       sourceType: 'module'
     }
   }
-] 
+]
