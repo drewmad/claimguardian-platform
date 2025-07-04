@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Custom React hook for managing form state, validation, and submission.
+ * @owner frontend-team
+ * @dependencies ["react"]
+ * @exports ["useForm"]
+ * @complexity medium
+ * @tags ["hook", "form-management", "validation"]
+ * @status active
+ */
 'use client'
 
 import { useState, useCallback } from 'react'

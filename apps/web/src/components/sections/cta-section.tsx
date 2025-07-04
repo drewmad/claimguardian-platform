@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Call to action section.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["CtaSection"]
+ * @complexity low
+ * @tags ["component", "section", "landing-page", "cta"]
+ * @status active
+ */
 export function CtaSection() {
   return (
     <section className="py-20">

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a modal for user registration, including form validation and Supabase integration.
+ * @owner frontend-team
+ * @dependencies ["react", "@claimguardian/ui", "@/hooks/use-form", "@/utils/validation"]
+ * @exports ["SignupModal"]
+ * @complexity medium
+ * @tags ["modal", "authentication", "signup", "form"]
+ * @status active
+ */
 'use client'
 
 import { useState } from 'react'

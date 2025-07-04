@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Testimonials section component.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["TestimonialsSection"]
+ * @complexity low
+ * @tags ["component", "section", "landing-page", "testimonials"]
+ * @status active
+ */
 export function TestimonialsSection() {
   return (
     <section className="py-20 bg-slate-900">

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Hero section component for the landing page, featuring a video background and call to action.
+ * @owner frontend-team
+ * @dependencies ["react", "@claimguardian/ui", "@/components/modals/signup-modal", "@/components/ui/video-background"]
+ * @exports ["HeroSection"]
+ * @complexity medium
+ * @tags ["component", "section", "landing-page", "hero"]
+ * @status active
+ */
 'use client'
 
 import { useState } from 'react'

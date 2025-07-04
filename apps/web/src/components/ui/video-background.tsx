@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides a full-screen video background component with autoplay, loop, and mute functionalities.
+ * @owner frontend-team
+ * @dependencies ["react"]
+ * @exports ["VideoBackground"]
+ * @complexity medium
+ * @tags ["component", "ui", "video", "background"]
+ * @status active
+ */
 'use client'
 
 import { useEffect, useRef } from 'react'

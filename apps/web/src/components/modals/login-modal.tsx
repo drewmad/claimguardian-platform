@@ -1,5 +1,15 @@
 'use client'
 
+/**
+ * @fileMetadata
+ * @purpose Provides a modal for user login.
+ * @owner frontend-team
+ * @dependencies ["@claimguardian/ui"]
+ * @exports ["LoginModal"]
+ * @complexity low
+ * @tags ["modal", "authentication", "login", "form"]
+ * @status active
+ */
 import { Modal, Button, Input, Label } from '@claimguardian/ui'
 
 interface LoginModalProps {

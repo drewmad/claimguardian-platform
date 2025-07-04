@@ -1,3 +1,23 @@
+/**
+ * @fileMetadata
+ * @purpose Displays a list of frequently asked questions with expandable answers.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@claimguardian/ui"]
+ * @exports ["FaqSection"]
+ * @complexity medium
+ * @tags ["component", "section", "landing-page", "faq"]
+ * @status active
+ */
+/**
+ * @fileMetadata
+ * @purpose Displays a list of frequently asked questions with expandable answers.
+ * @owner frontend-team
+ * @dependencies ["react", "lucide-react", "@claimguardian/ui"]
+ * @exports ["FaqSection"]
+ * @complexity medium
+ * @tags ["component", "section", "landing-page", "faq"]
+ * @status active
+ */
 'use client'
 
 import { useState } from 'react'

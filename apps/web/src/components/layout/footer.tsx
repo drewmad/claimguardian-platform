@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Application footer component.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["Footer"]
+ * @complexity low
+ * @tags ["component", "layout", "footer"]
+ * @status active
+ */
 export function Footer() {
   return (
     <footer className="py-12 bg-slate-900 border-t border-slate-800">
@@ -5,7 +15,7 @@ export function Footer() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-white mb-4">ClaimGuardian</h2>
           <p className="text-slate-400">&copy; 2024 ClaimGuardian. All rights reserved.</p>
-        </div>
+        }
       </div>
     </footer>
   )

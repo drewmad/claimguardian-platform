@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Features section component.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["FeaturesSection"]
+ * @complexity low
+ * @tags ["component", "section", "landing-page", "features"]
+ * @status active
+ */
 export function FeaturesSection() {
   return (
     <section className="py-20">

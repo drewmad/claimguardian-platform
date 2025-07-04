@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Provides utility functions for common form validation patterns.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["validateRequired", "validateEmail", "validatePhone", "validatePassword"]
+ * @complexity low
+ * @tags ["utility", "validation", "form"]
+ * @status active
+ */
 export const validateRequired = (value: unknown): boolean => {
   if (typeof value === 'string') {
     return value.trim().length > 0

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose Displays a section highlighting who the ClaimGuardian service is designed for.
+ * @owner frontend-team
+ * @dependencies ["@claimguardian/ui", "lucide-react"]
+ * @exports ["WhoWeServeSection"]
+ * @complexity medium
+ * @tags ["component", "section", "landing-page"]
+ * @status active
+ */
 import { Card } from '@claimguardian/ui'
 import { Home, Building, Users } from 'lucide-react'
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @purpose How It Works section component.
+ * @owner frontend-team
+ * @dependencies []
+ * @exports ["HowItWorksSection"]
+ * @complexity low
+ * @tags ["component", "section", "landing-page", "how-it-works"]
+ * @status active
+ */
 export function HowItWorksSection() {
   return (
     <section className="py-20 bg-slate-900">
