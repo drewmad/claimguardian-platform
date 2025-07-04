@@ -1,5 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  output: 'standalone',
   transpilePackages: ['@claimguardian/ui'],
   experimental: {
     optimizePackageImports: ['lucide-react']
