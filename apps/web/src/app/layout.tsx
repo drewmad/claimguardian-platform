@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["next", "react"]
  * @exports ["metadata", "RootLayout"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T22:58:17-04:00
  * @complexity low
  * @tags ["layout", "root", "nextjs"]
  * @status active
+ * @notes Defines the basic HTML structure and imports global CSS.
  */
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'

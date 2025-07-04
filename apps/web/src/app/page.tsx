@@ -4,9 +4,12 @@
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/mock-data", "@/lib/gemini-api", "@/lib/constants", "@/components/layout/header", "@/components/layout/sidebar", "@/components/layout/bottom-nav", "@/components/screens/home-screen", "@/components/screens/asset-vault-screen", "@/components/screens/asset-detail-screen", "@/components/screens/damage-assessment-screen", "@/components/screens/claims-screen", "@/components/modals/claim-wizard", "@/components/modals/profile-modal", "@/components/modals/add-asset-wizard", "@/components/modals/add-inventory-item-modal", "@/components/ai/ai-chat-button", "@/components/ai/ai-chat-panel"]
  * @exports ["App"]
+ * @lastModifiedBy Drew Madison
+ * @lastModifiedDate 2025-07-03T22:53:03-04:00
  * @complexity high
  * @tags ["app", "main", "layout", "routing"]
  * @status active
+ * @notes This is the root component that manages the overall application state and navigation.
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { Bell, Sparkles, X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
@@ -17,7 +20,7 @@ import { COLORS } from '@/lib/constants';
 
 import Header from '@/components/layout/header';
 import Sidebar from '@/components/layout/sidebar';
-import BottomNav from '@/components/layout/bottom-nav';
+import BottomNav from '@/components/layout/bottom';
 
 import HomeScreen from '@/components/screens/home-screen';
 import AssetVaultScreen from '@/components/screens/asset-vault-screen';
@@ -179,3 +182,4 @@ export default function App() {
     </div>
   );
 }
+

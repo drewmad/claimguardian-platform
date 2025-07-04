@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Tailwind CSS configuration for the web application.",
+    "owner": "frontend-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T19:43:12-04:00",
+    "status": "active",
+    "notes": "Defines Tailwind CSS content paths, theme extensions, and plugins."
+  }
+}
