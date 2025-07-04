@@ -1,0 +1,10 @@
+{
+  "fileMetadata": {
+    "purpose": "Package configuration for the web application.",
+    "owner": "frontend-team",
+    "lastModifiedBy": "Drew Madison",
+    "lastModifiedDate": "2025-07-03T22:34:18-04:00",
+    "status": "active",
+    "notes": "Defines scripts, dependencies, and development dependencies specific to the Next.js app."
+  }
+}

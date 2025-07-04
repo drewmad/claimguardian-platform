@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * @fileMetadata
  * @purpose Main application entry point, orchestrates different screens and modals.
@@ -11,11 +13,10 @@
  * @status active
  * @notes This is the root component that manages the overall application state and navigation.
  */
-import React, { useState, useEffect, useRef } from 'react';
-import { Bell, Sparkles, X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Sparkles, X } from 'lucide-react';
 
-import { INITIAL_ASSETS, MOCK_DATA } from '@/lib/mock-data';
-import callGeminiAPI from '@/lib/gemini-api';
+import { INITIAL_ASSETS } from '@/lib/mock-data';
 import { COLORS } from '@/lib/constants';
 
 import Header from '@/components/layout/header';
@@ -176,8 +177,7 @@ export default function App() {
         {isAddAssetWizardOpen && <AddAssetWizard onClose={() => setIsAddAssetWizardOpen(false)} onAddAsset={handleAddAsset} onFinish={(id) => { setIsAddAssetWizardOpen(false); handleNavigate('Assets', id); }} />}
         {isInventoryModalOpen && <AddInventoryItemModal assetId={view.assetId} onClose={() => setIsInventoryModalOpen(false)} onAddItem={handleAddItemToInventory} />}
         
-        <AiChatButton onClick={() => setIsAiChatOpen(true)} />
-        {isAiChatOpen && <AiChatPanel onClose={() => setIsAiChatOpen(false)} isMobile={isMobile} context={activeClaimContext} />}
+        {/* AI Chat components will be added later */}
       </div>
     </div>
   );

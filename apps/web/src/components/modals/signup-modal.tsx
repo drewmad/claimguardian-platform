@@ -281,10 +281,10 @@ export function SignupModal({ isOpen, onClose }: SignupModalProps) {
           <Checkbox
             id="agree"
             checked={values.agree}
-            onCheckedChange={(checked) => 
-              handleChange({ 
-                target: { name: 'agree', value: checked } 
-                              } as React.ChangeEvent<HTMLInputElement>)
+                          onCheckedChange={(checked: boolean) => 
+                handleChange({ 
+                  target: { name: 'agree', value: checked } 
+                } as React.ChangeEvent<HTMLInputElement>)
             }
           />
           <Label htmlFor="agree" className="text-sm">
