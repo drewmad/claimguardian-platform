@@ -26,6 +26,14 @@
     },
     "clean": {
       "cache": false
+    },
+    "docs:build": {
+      "outputs": ["docs/.next/**"],
+      "inputs": ["docs/**/*.md", "docs/**/*.mdx"]
+    },
+    "docs:validate": {
+      "dependsOn": ["^build"],
+      "outputs": []
     }
   },
   "globalDependencies": ["**/.env.*local", "**/.env"],
