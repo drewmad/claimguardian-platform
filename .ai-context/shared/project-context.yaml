@@ -1,0 +1,32 @@
+project:
+  name: ClaimGuardian
+  description: AI-powered insurance-claim advocacy platform
+  stage: development
+  version: 1.0.0
+
+key_principles:
+  - "User-first design for Florida property owners"
+  - "AI augmentation, not replacement"
+  - "Transparency in claim processing"
+  - "Mobile-first responsive design"
+
+technical_constraints:
+  - "Next.js 14 App Router only"
+  - "TypeScript strict mode"
+  - "Tailwind CSS for styling"
+  - "Supabase for backend"
+  - "Turborepo for monorepo management"
+  - "Node.js 22.x runtime"
+  - "pnpm 10.12.4 package manager"
+
+business_context:
+  target: "Florida property owners"
+  problem: "Complex insurance-claim process"
+  solution: "AI-powered assistance and automation"
+
+coding_standards:
+  imports: "Use @claimguardian/* for internal packages"
+  components: "Functional components with TypeScript"
+  styling: "Tailwind utility classes only"
+  testing: "Jest + React Testing Library"
+  documentation: "JSDoc with @fileMetadata headers"

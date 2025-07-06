@@ -1,0 +1,14 @@
+{
+  "claude": {
+    "strengths": ["complex reasoning", "code architecture", "documentation"],
+    "preferred_tasks": ["system design", "refactoring", "code review"]
+  },
+  "gemini": {
+    "strengths": ["pattern recognition", "bulk analysis", "automation"],
+    "preferred_tasks": ["codebase analysis", "dependency updates", "test generation"]
+  },
+  "chatgpt": {
+    "strengths": ["user experience", "api design", "integration"],
+    "preferred_tasks": ["feature implementation", "api development", "debugging"]
+  }
+}

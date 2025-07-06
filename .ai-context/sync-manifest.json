@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "lastSync": null,
+  "agents": ["claude", "gemini", "chatgpt"],
+  "modifications": {
+    "claude": [],
+    "gemini": [],
+    "chatgpt": []
+  },
+  "conflicts": [],
+  "resolutions": []
+}
