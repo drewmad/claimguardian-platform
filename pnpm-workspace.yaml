@@ -10,4 +10,5 @@
 packages:
   - 'apps/*'
   - 'packages/*'
+  - 'packages/ai-config'
   - 'tools/*'
