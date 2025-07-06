@@ -13,7 +13,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   
-  transpilePackages: ['@claimguardian/ui', '@supabase/auth-helpers-nextjs'],
+  transpilePackages: ['@claimguardian/ui'],
   eslint: {
     ignoreDuringBuilds: true,
   },

@@ -7,6 +7,10 @@ settings:
 importers:
 
   .:
+    dependencies:
+      '@supabase/ssr':
+        specifier: ^0.1.0
+        version: 0.1.0(@supabase/supabase-js@2.50.3)
     devDependencies:
       '@turbo/gen':
         specifier: ^2.5.4
