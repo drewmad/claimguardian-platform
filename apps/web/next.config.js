@@ -12,7 +12,7 @@
  */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
+  
   transpilePackages: ['@claimguardian/ui', '@supabase/auth-helpers-nextjs'],
   eslint: {
     ignoreDuringBuilds: true,
