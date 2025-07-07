@@ -14,7 +14,7 @@
   "dependencies": {
     "@claimguardian/ui": "workspace:*",
     "@claimguardian/utils": "workspace:*",
-    "clsx": "^2.1.1",
+    "clsx": "^2.1.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",
     "next": "15.3.5",
