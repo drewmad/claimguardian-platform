@@ -1,6 +1,6 @@
 {
   "buildCommand": "turbo build",
-  "installCommand": "pnpm install --frozen-lockfile",
+  "installCommand": "rm -rf node_modules pnpm-lock.yaml && pnpm install",
   "framework": "nextjs",
   "outputDirectory": ".next"
 }

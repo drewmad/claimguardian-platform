@@ -1,4 +1,15 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-pnpm deps:check
+# Run lockfile validation
+pnpm deps:check || exit 1
+
+# Run linting
+pnpm lint || exit 1
+
+# Run type-check
+pnpm type-check || exit 1
+
+# Run prettier check (optional, can be combined with lint)
+# pnpm prettier --check . || exit 1
+
