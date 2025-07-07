@@ -46,6 +46,9 @@ next-env.d.ts
 # turbo
 .turbo
 
+# AI context logs
+.ai-context/retrospectives/*.jsonl
+
 # ide
 .idea/
 # .vscode/
