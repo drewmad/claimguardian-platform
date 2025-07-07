@@ -1,33 +1,27 @@
-import js from '@eslint/js'
-import typescript from '@typescript-eslint/eslint-plugin'
-import typescriptParser from '@typescript-eslint/parser'
+import globals from "globals";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
 
 export default [
   js.configs.recommended,
+  ...tseslint.configs.recommended,
   {
-    files: ['**/*.{js,ts}'],
     languageOptions: {
-      parser: typescriptParser,
+      globals: globals.node,
       parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-        project: './tsconfig.json'
-      }
-    },
-    plugins: {
-      '@typescript-eslint': typescript
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname,
+      },
     },
     rules: {
-      ...typescript.configs.recommended.rules,
+      // Allow unused vars that start with underscore
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // Allow any types for now since this is a UI library
       '@typescript-eslint/no-explicit-any': 'warn',
-      'no-undef': 'off'
-    }
-  },
-  {
-    files: ['**/*.js'],
-    languageOptions: {
-      sourceType: 'module'
+      // Allow empty interfaces for component props that extend HTML props
+      '@typescript-eslint/no-empty-object-type': 'off',
+      // Disable some strict rules for component library
+      'no-undef': 'off' // TypeScript handles this
     }
   }
-]
+];

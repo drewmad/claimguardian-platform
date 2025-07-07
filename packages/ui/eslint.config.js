@@ -1,15 +1,27 @@
-/*
- * @fileMetadata
- * @purpose PostCSS configuration for the UI package.
- * @owner frontend-team
- * @lastModifiedBy Drew Madison
- * @lastModifiedDate 2025-07-03T19:43:12-04:00
- * @status active
- * @notes Configures Tailwind CSS and Autoprefixer for CSS processing within the UI package.
- */
-module.exports = {
-  plugins: {
-    tailwindcss: {},
-    autoprefixer: {},
-  },
-}
+import globals from "globals";
+import js from "@eslint/js";
+import tseslint from "typescript-eslint";
+
+export default [
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    languageOptions: {
+      globals: globals.browser,
+      parserOptions: {
+        project: ['./tsconfig.json'],
+        tsconfigRootDir: __dirname,
+      },
+    },
+    rules: {
+      // Allow unused vars that start with underscore
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      // Allow any types for now since this is a UI library
+      '@typescript-eslint/no-explicit-any': 'warn',
+      // Allow empty interfaces for component props that extend HTML props
+      '@typescript-eslint/no-empty-object-type': 'off',
+      // Disable some strict rules for component library
+      'no-undef': 'off' // TypeScript handles this
+    }
+  }
+];
