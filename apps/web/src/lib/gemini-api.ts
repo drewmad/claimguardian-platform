@@ -69,6 +69,7 @@ const callGeminiAPI = async (prompt, chatHistory = [], jsonSchema = null, attach
         }
     } catch (error) {
         console.error("Error calling Gemini API:", error);
+        Sentry.captureException(error); // Capture exception with Sentry
         return jsonSchema ? {} : "I'm currently in demo mode. AI features are limited but you can still explore the interface!";
     }
 };
