@@ -60,43 +60,43 @@ const AddInventoryItemModal = ({ assetId, onClose, onAddItem }) => {
     const handleAnalyze = async () => {
         if (!aiImageInfo) return;
         setIsAnalyzing(true);
-        const prompt = "Analyze the attached image. Identify ALL personal property items visible in the image. For each item, provide its name, a suggested category (e.g., Electronics, Furniture, Appliance), an estimated replacement value as a number, and a brief description. Return multiple items if multiple are visible.";
-        const schema = { 
-            type: "OBJECT", 
-            properties: { 
-                items: {
-                    type: "ARRAY",
-                    items: {
-                        type: "OBJECT",
-                        properties: {
-                            name: { type: "STRING" },
-                            category: { type: "STRING" },
-                            value: { type: "NUMBER" },
-                            description: { type: "STRING" }
-                        },
-                        required: ["name", "category", "value", "description"]
-                    }
-                }
-            },
-            required: ["items"]
-        };
-        const result = await callGeminiAPI(prompt, [], schema, aiImageInfo);
-        if (result && result.items && result.items.length > 0) {
-            setIdentifiedItems(result.items);
-            setSelectedItems(result.items.map((_, index) => index)); // Select all by default
-        } else if (typeof result === 'object' && Object.keys(result).length === 0) {
-            // Empty response, likely due to no API key
-            alert("Demo mode: Showing sample inventory items. Add a Gemini API key for real AI analysis.");
-            // Show demo items
-            setIdentifiedItems([
-                { name: "Samsung 55\" TV", category: "Electronics", value: 800, description: "Wall-mounted flat screen TV" },
-                { name: "Leather Sofa", category: "Furniture", value: 2200, description: "3-seat leather sofa" }
-            ]);
-            setSelectedItems([0, 1]);
-        } else {
-            alert("Could not identify items. Please try a different image or enter manually.");
+
+        const formData = new FormData();
+        formData.append('property_id', assetId); // Assuming assetId is the property_id
+        // Convert base64 to Blob for FormData
+        const byteCharacters = atob(aiImageInfo.data);
+        const byteNumbers = new Array(byteCharacters.length);
+        for (let i = 0; i < byteCharacters.length; i++) {
+            byteNumbers[i] = byteCharacters.charCodeAt(i);
         }
-        setIsAnalyzing(false);
+        const byteArray = new Uint8Array(byteNumbers);
+        const blob = new Blob([byteArray], { type: aiImageInfo.mimeType });
+        formData.append('image', blob, aiImageInfo.name);
+
+        try {
+            const response = await fetch('/api/v1/inventory/recognize', {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to recognize items');
+            }
+
+            const result = await response.json();
+            if (result && result.detected_items && result.detected_items.length > 0) {
+                setIdentifiedItems(result.detected_items);
+                setSelectedItems(result.detected_items.map((_, index) => index)); // Select all by default
+            } else {
+                alert("Could not identify items. Please try a different image or enter manually.");
+            }
+        } catch (error) {
+            console.error('AI recognition error:', error);
+            alert(`AI recognition failed: ${error.message}`);
+        } finally {
+            setIsAnalyzing(false);
+        }
     };
 
     const handleItemSelection = (index) => {

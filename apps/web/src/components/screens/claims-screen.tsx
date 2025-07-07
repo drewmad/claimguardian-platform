@@ -11,8 +11,32 @@
 import { Plus } from 'lucide-react';
 import { MOCK_DATA } from '@/lib/mock-data';
 import { COLORS } from '@/lib/constants';
+import React, { useState, useEffect } from 'react';
 
 const ClaimsScreen = ({ onStartClaim }) => {
+    const [claims, setClaims] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchClaims = async () => {
+            try {
+                const response = await fetch('/api/v1/claims');
+                if (!response.ok) {
+                    throw new Error(`Error: ${response.statusText}`);
+                }
+                const data = await response.json();
+                setClaims(data.claims);
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchClaims();
+    }, []);
+
     const getStatusChip = (status) => {
         switch (status) {
             case 'Approved': return <span className="px-2 py-1 text-xs font-medium rounded-full" style={{backgroundColor: COLORS.success, color: '#000'}}>{status}</span>;
@@ -22,6 +46,9 @@ const ClaimsScreen = ({ onStartClaim }) => {
             default: return <span className="px-2 py-1 text-xs font-medium bg-bgTertiary text-textSecondary rounded-full">{status}</span>;
         }
     };
+
+    if (loading) return <div className="text-center">Loading claims...</div>;
+    if (error) return <div className="text-center text-danger-red-text">Error: {error}</div>;
 
     return (
         <div className="space-y-6 pb-20 md:pb-0">
@@ -45,16 +72,22 @@ const ClaimsScreen = ({ onStartClaim }) => {
                             </tr>
                         </thead>
                         <tbody>
-                            {MOCK_DATA.claims.map(claim => (
-                                <tr key={claim.id} className="border-t border-border hover:bg-bgTertiary cursor-pointer">
-                                    <td className="p-4 font-mono text-sm">{claim.id}</td>
-                                    <td className="p-4">{claim.asset}</td>
-                                    <td className="p-4">{claim.incident}</td>
-                                    <td className="p-4">{claim.date}</td>
-                                    <td className="p-4">{getStatusChip(claim.status)}</td>
-                                    <td className="p-4 text-right font-semibold">${claim.amount.toLocaleString()}</td>
+                            {claims.length === 0 ? (
+                                <tr>
+                                    <td colSpan="6" className="p-4 text-center text-textSecondary">No claims found.</td>
                                 </tr>
-                            ))}
+                            ) : (
+                                claims.map(claim => (
+                                    <tr key={claim.id} className="border-t border-border hover:bg-bgTertiary cursor-pointer">
+                                        <td className="p-4 font-mono text-sm">{claim.id}</td>
+                                        <td className="p-4">{claim.property_id}</td> {/* Display property_id for now */}
+                                        <td className="p-4">{claim.claim_details?.incident_type}</td>
+                                        <td className="p-4">{new Date(claim.claim_details?.incident_date).toLocaleDateString()}</td>
+                                        <td className="p-4">{getStatusChip(claim.status?.current)}</td>
+                                        <td className="p-4 text-right font-semibold">${claim.financial?.total?.toLocaleString() || 'N/A'}</td>
+                                    </tr>
+                                ))
+                            )}
                         </tbody>
                     </table>
                 </div>

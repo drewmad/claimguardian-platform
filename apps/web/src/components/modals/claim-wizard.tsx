@@ -64,6 +64,40 @@ const ClaimWizard = ({ onClose, onContextSet }) => {
         </div>
     );
 
+    const handleSubmitClaim = async () => {
+        try {
+            // Placeholder for actual claim data from wizard steps
+            const claimPayload = {
+                policy_id: "", // This needs to be dynamically obtained
+                property_id: "", // This needs to be dynamically obtained
+                claim_details: { incident_type: claimData.incidentType, incident_date: claimData.incidentDate, description: `Incident at ${claimData.location}` },
+                damages: [], // Populate from evidence capture
+                timeline: { filed: new Date().toISOString() },
+                status: { current: "filed" }
+            };
+
+            const response = await fetch('/api/v1/claims', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(claimPayload),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to submit claim');
+            }
+
+            const result = await response.json();
+            console.log('Claim submitted successfully:', result.claim);
+            setStep(s => s + 1); // Move to success step
+        } catch (error) {
+            console.error('Error submitting claim:', error);
+            alert(`Error submitting claim: ${error.message}`);
+        }
+    };
+
     const renderStepContent = () => {
         switch (step) {
             case 1: return (
@@ -142,7 +176,7 @@ const ClaimWizard = ({ onClose, onContextSet }) => {
                 <footer className="p-4 border-t border-border flex justify-end gap-3">
                     {step > 1 && step < 5 && <button onClick={() => setStep(s => s - 1)} className="bg-bgTertiary hover:bg-border text-white font-bold py-2 px-4 rounded-lg">Back</button>}
                     {step < 4 && <button onClick={() => setStep(s => s + 1)} className="accent-blue-bg hover:opacity-90 text-white font-bold py-2 px-4 rounded-lg">Next</button>}
-                    {step === 4 && <button onClick={() => setStep(s => s + 1)} className="neon-lime-bg hover:opacity-90 text-black font-bold py-2 px-4 rounded-lg">Submit Claim</button>}
+                    {step === 4 && <button onClick={handleSubmitClaim} className="neon-lime-bg hover:opacity-90 text-black font-bold py-2 px-4 rounded-lg">Submit Claim</button>}
                     {step === 5 && <button onClick={onClose} className="accent-blue-bg hover:opacity-90 text-white font-bold py-2 px-4 rounded-lg">Done</button>}
                 </footer>
             </div>
