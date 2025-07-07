@@ -7,7 +7,9 @@
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "test": "jest",
+    "test:watch": "jest --watch"
   },
   "dependencies": {
     "@claimguardian/ui": "workspace:*",
@@ -22,6 +24,9 @@
     "@supabase/ssr": "^0.5.2"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
     "@tailwindcss/typography": "^0.5.10",
     "@claimguardian/config": "workspace:*",
     "@types/node": "^24.0.10",
