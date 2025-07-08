@@ -1,395 +1,253 @@
 <!--
 @fileMetadata
-@purpose Documents the repository tracking and metadata system for the Gemini CLI.
+@purpose Provides guidance to AI models (specifically Gemini) on working with this repository.
 @owner dev-ops
-@lastModifiedBy Drew Madison
-@lastModifiedDate 2025-07-03T20:39:13-04:00
 @status active
-@notes Details automated documentation, file metadata, generator scripts, knowledge base, validation, IDE integration, and monitoring.
+@notes Contains project overview, development commands, architecture details, and important patterns for AI agents.
 -->
-# Repository Tracking & Metadata System
+# GEMINI.md
 
-## 1. Automated Documentation Tracking
+This file provides guidance to Gemini when working with code in this repository.
 
-### Git Hooks Implementation
-**Pre-commit Hook** (`/.git/hooks/pre-commit`):
+## Shared Guidelines
+
+For general project overview, development commands, architecture, and common patterns, please refer to the [Shared AI Guidelines](./.ai-context/shared/SHARED_AI_GUIDELINES.md).
+
+## AI Assistant Instructions (Gemini Specific)
+
+When implementing features:
+1.  Always check existing patterns in the codebase first
+2.  Follow the established file organization structure
+3.  Use Server Actions for data mutations
+4.  Implement proper error handling with try-catch blocks
+5.  Add loading states for better UX
+6.  Use TypeScript strictly - no any types
+7.  Follow the component composition patterns from existing code
+8.  Test your changes with `pnpm test` and `pnpm typecheck`
+9.  Use the established import patterns - never import from subpaths
+10. Check for existing utilities before creating new ones
+
+## CRITICAL: Development Verification Rules (Gemini Specific)
+
+### 1. Function Signatures
+**NEVER** change a function call without first:
+-   Reading the actual function definition
+-   Checking all parameters and their types
+-   Verifying the return type
+
+Example workflow:
 ```bash
-#!/bin/bash
-# Auto-update documentation on changes
-node scripts/update-docs.js
-git add docs/structure.md docs/metadata.json
+# Before changing getTasks(undefined, workspaceId)
+# First check: grep -n "function getTasks" or read the file
+# Verify the actual signature before making changes
 ```
 
-**Post-merge Hook** (`/.git/hooks/post-merge`):
+### 2. Type Definitions
+
+**NEVER** assume types without checking:
+-   Always read the actual type definitions from `@mad/db`
+-   Check Supabase query return types before assertions
+-   Use proper type imports rather than inline definitions
+
+Example workflow:
 ```bash
-#!/bin/bash
-# Update after merges
-npm run docs:update
+# Before assuming a type
+# Check: find . -name "*.ts" -type f | xargs grep -l "type TaskRow"
+# Or read the database types directly
 ```
 
-### GitHub Actions Workflow
-**`.github/workflows/docs-update.yml`**:
-```yaml
-name: Update Documentation
-on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main]
+### 3. Component Interfaces
 
-jobs:
-  update-docs:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout @v3
-      - name: Setup Node.js
-        uses: actions/setup-node @v3
-        with:
-          node-version: '18'
-      - name: Install dependencies
-        run: npm ci
-      - name: Update documentation
-        run: npm run docs:generate
-      - name: Commit changes
-        uses: stefanzweifel/git-auto-commit-action @v4
-        with:
-          commit_message: 'docs: auto-update repository structure'
-          file_pattern: 'docs/*.md docs/*.json'
-```
+**NEVER** change component props without verifying:
+-   Check the component's actual prop types
+-   Verify available variants/options
+-   Look for existing usage patterns
 
-## 2. File Metadata System
-
-### Metadata Schema
-**`docs/metadata-schema.json`**:
-```json
-{
-  "fileMetadata": {
-    "type": "object",
-    "properties": {
-      "purpose": {"type": "string"},
-      "owner": {"type": "string"},
-      "dependencies": {"type": "array"},
-      "exports": {"type": "array"},
-      "lastModified": {"type": "string"},
-      "complexity": {"type": "string", "enum": ["low", "medium", "high"]},
-      "tags": {"type": "array"},
-      "status": {"type": "string", "enum": ["active", "deprecated", "experimental"]}
-    }
-  }
-}
-```
-
-### Metadata Injection Methods
-
-#### Option 1: Comment-Based Metadata
-```javascript
-/**
- * @fileMetadata
- * @purpose Authentication service for user management
- * @owner backend-team
- * @dependencies ["crypto", "jwt", "../models/User"]
- * @exports ["authenticate", "generateToken", "validateToken"]
- * @complexity high
- * @tags ["auth", "security", "core"]
- * @status active
- */
-```
-
-#### Option 2: Sidecar Files
-**`src/auth/service.js.meta`**:
-```json
-{
-  "purpose": "Authentication service for user management",
-  "owner": "backend-team",
-  "dependencies": ["crypto", "jwt", "../models/User"],
-  "exports": ["authenticate", "generateToken", "validateToken"],
-  "complexity": "high",
-  "tags": ["auth", "security", "core"],
-  "status": "active"
-}
-```
-
-#### Option 3: Centralized Metadata
-**`docs/file-registry.json`**:
-```json
-{
-  "files": {
-    "src/auth/service.js": {
-      "purpose": "Authentication service for user management",
-      "owner": "backend-team",
-      "dependencies": ["crypto", "jwt", "../models/User"],
-      "exports": ["authenticate", "generateToken", "validateToken"],
-      "complexity": "high",
-      "tags": ["auth", "security", "core"],
-      "status": "active",
-      "lastAnalyzed": "2025-07-03T10:00:00Z"
-    }
-  }
-}
-```
-
-## 3. Documentation Generator Scripts
-
-### Main Documentation Script
-**`scripts/update-docs.js`**:
-```javascript
-const fs = require('fs');
-const path = require('path');
-const glob = require('glob');
-
-class RepoDocGenerator {
-  constructor() {
-    this.metadata = {};
-    this.structure = {};
-  }
-
-  async generateAll() {
-    await this.scanRepository();
-    await this.extractMetadata();
-    await this.generateStructureDoc();
-    await this.generateMetadataDoc();
-    await this.updateKnowledgeBase();
-  }
-
-  async scanRepository() {
-    const files = glob.sync('**/*', { 
-      ignore: ['node_modules/**', '.git/**', 'dist/**'] 
-    });
-    
-    this.structure = this.buildFileTree(files);
-  }
-
-  async extractMetadata() {
-    // Extract from comments, sidecar files, or centralized registry
-    // Implementation depends on chosen approach
-  }
-
-  async generateStructureDoc() {
-    const content = this.buildStructureMarkdown();
-    fs.writeFileSync('docs/structure.md', content);
-  }
-
-  buildStructureMarkdown() {
-    return `# Repository Structure
-
-## Overview
-- **Last Updated**: ${new Date().toISOString()}
-- **Total Files**: ${this.getTotalFiles()}
-- **Languages**: ${this.getLanguageBreakdown()}
-
-## Directory Structure
-${this.renderFileTree()}
-
-## File Inventory
-${this.renderFileInventory()}
-
-## Architecture Analysis
-${this.renderArchitectureAnalysis()}
-`;
-  }
-}
-
-module.exports = RepoDocGenerator;
-```
-
-### Package.json Scripts
-```json
-{
-  "scripts": {
-    "docs:generate": "node scripts/update-docs.js",
-    "docs:validate": "node scripts/validate-metadata.js",
-    "docs:watch": "nodemon --watch src --exec 'npm run docs:generate'"
-  }
-}
-```
-
-## 4. Living Knowledge Base
-
-### Knowledge Base Structure
-**`docs/knowledge-base.md`**:
-```markdown
-# Repository Knowledge Base
-
-## Coding Standards
-- File naming conventions
-- Directory structure rules
-- Import/export patterns
-- Documentation requirements
-
-## Architecture Principles
-- Module boundaries
-- Dependency management
-- Data flow patterns
-- Error handling approaches
-
-## File Organization Rules
-- Where to place new files
-- How to structure modules
-- When to create new directories
-- Refactoring guidelines
-
-## Metadata Requirements
-- Required fields for all files
-- Tagging conventions
-- Owner assignment rules
-- Status lifecycle management
-```
-
-### Template Generator
-**`scripts/generate-template.js`**:
-```javascript
-const templates = {
-  component: `/**
- * @fileMetadata
- * @purpose [PLACEHOLDER: Component purpose]
- * @owner [PLACEHOLDER: Team name]
- * @dependencies []
- * @exports ["default"]
- * @complexity low
- * @tags ["component", "ui"]
- * @status active
- */`,
-  service: `/**
- * @fileMetadata
- * @purpose [PLACEHOLDER: Service purpose]
- * @owner [PLACEHOLDER: Team name]
- * @dependencies []
- * @exports []
- * @complexity medium
- * @tags ["service", "business-logic"]
- * @status active
- */`,
-  utility: `/**
- * @fileMetadata
- * @purpose [PLACEHOLDER: Utility purpose]
- * @owner [PLACEHOLDER: Team name]
- * @dependencies []
- * @exports []
- * @complexity low
- * @tags ["utility", "helper"]
- * @status active
- */`
-};
-```
-
-## 5. Validation & Enforcement
-
-### Metadata Validation
-**`scripts/validate-metadata.js`**:
-```javascript
-const Ajv = require('ajv');
-const schema = require('../docs/metadata-schema.json');
-
-class MetadataValidator {
-  validate(filePath, metadata) {
-    const ajv = new Ajv();
-    const validate = ajv.compile(schema.fileMetadata);
-    
-    if (!validate(metadata)) {
-      throw new Error(`Invalid metadata for ${filePath}: ${validate.errors}`);
-    }
-  }
-
-  checkRequiredFields(metadata) {
-    const required = ['purpose', 'owner', 'status'];
-    const missing = required.filter(field => !metadata[field]);
-    
-    if (missing.length > 0) {
-      throw new Error(`Missing required fields: ${missing.join(', ')}`);
-    }
-  }
-}
-```
-
-### Pre-commit Validation
+Example workflow:
 ```bash
-#!/bin/bash
-# Validate metadata before commit
-node scripts/validate-metadata.js
-if [ $? -ne 0 ]; then
-  echo "Metadata validation failed. Please fix errors before committing."
-  exit 1
-fi
+# Before using variant="outline"
+# Check: grep -r "variant=" --include="*.tsx" | grep Button
+# See what variants are actually used
 ```
 
-## 6. IDE Integration
+### 4. Import Patterns
 
-### VSCode Extension Configuration
-**`.vscode/settings.json`**:
-```json
-{
-  "files.associations": {
-    "*.meta": "json"
-  },
-  "editor.snippets": {
-    "javascript": {
-      "File Metadata": {
-        "prefix": "fmeta",
-        "body": [
-          "/**",
-          " * @fileMetadata",
-          " * @purpose ${1:Description}",
-          " * @owner ${2:team-name}",
-          " * @dependencies [${3:dependencies}]",
-          " * @exports [${4:exports}]",
-          " * @complexity ${5|low,medium,high|}",
-          " * @tags [${6:tags}]",
-          " * @status ${7|active,deprecated,experimental|}",
-          " */"
-        ]
-      }
-    }
-  }
+**ALWAYS** check existing import patterns:
+-   Look at neighboring files for import style
+-   Check if imports are from package root or subpaths
+-   Verify the package exports
+
+### 5. Before Making Changes
+
+#### A. Search First
+
+```bash
+# Search for existing patterns
+grep -r "pattern" --include="*.ts" --include="*.tsx"
+
+# Find type definitions
+find . -name "*.d.ts" -o -name "types.ts" | xargs grep "TypeName"
+
+# Check function signatures
+grep -A5 -B5 "function functionName"
+```
+
+#### B. Read Dependencies
+
+-   Always check `package.json` for available dependencies
+-   Don't assume a package exists
+-   Check the actual version and its API
+
+#### C. Test Assumptions
+
+```bash
+# Run type checking on specific files before committing
+pnpm tsc --noEmit path/to/file.ts
+
+# Run linting on specific files
+pnpm eslint path/to/file.ts
+```
+
+### 6. Git Operations
+
+**ALWAYS** check git status after operations:
+-   Verify no duplicate files are created
+-   Check for unintended changes
+-   Review the full diff before committing
+
+### 7. Type Safety Rules
+
+#### Never Use `any`
+
+Instead of:
+```typescript
+const data = result as any;
+```
+
+Do:
+```typescript
+// First, check the actual type
+const data = result as unknown;
+// Then assert to the verified type
+const typedData = data as VerifiedType;
+```
+
+#### Always Handle Union Types
+
+Instead of:
+```typescript
+data.property.value // Assuming it exists
+```
+
+Do:
+```typescript
+// Check if it's an array or object first
+if (Array.isArray(data.property)) {
+  data.property[0]?.value
+} else {
+  data.property?.value
 }
 ```
 
-## 7. Monitoring & Reporting
+### 8. Development Workflow
 
-### Documentation Health Check
-**`scripts/health-check.js`**:
-```javascript
-class DocumentationHealthChecker {
-  async checkHealth() {
-    const issues = [];
-    
-    // Check for files without metadata
-    const filesWithoutMeta = await this.findFilesWithoutMetadata();
-    if (filesWithoutMeta.length > 0) {
-      issues.push(`Files missing metadata: ${filesWithoutMeta.length}`);
-    }
-    
-    // Check for outdated documentation
-    const lastUpdate = await this.getLastDocumentationUpdate();
-    if (this.isOutdated(lastUpdate)) {
-      issues.push('Documentation is outdated');
-    }
-    
-    return issues;
-  }
-}
+1.  **Understand Before Changing**
+    -   Read the existing code thoroughly
+    -   Check related files for patterns
+    -   Verify all assumptions
+2.  **Make Incremental Changes**
+    -   Change one thing at a time
+    -   Run type checking after each change
+    -   Commit working states frequently
+3.  **Verify Changes**
+    -   Run `pnpm typecheck` after changes
+    -   Run `pnpm lint` to catch issues
+    -   Check `git diff` carefully
+4.  **Document Assumptions**
+    -   Comment why you're making specific type assertions
+    -   Note any discovered patterns for future reference
+
+## Common Patterns in This Codebase
+
+### Server Actions
+
+-   All use object parameters, not positional
+-   Return `{ data/result, error }` pattern
+-   Require proper error handling
+
+### Supabase Queries
+
+-   Joins can return arrays OR single objects
+-   Always handle both cases
+-   Check RLS policies affect on returns
+
+### Component Libraries
+
+-   `@apps/web/src/types/ui.d.ts` components have specific, limited variants
+-   Always import from package root, not subpaths
+-   Check existing usage for patterns
+
+## Verification Commands
+
+```bash
+# Check function signature
+ast-grep --pattern 'function $FUNC($_) { $$$ }'
+
+# Find all usages of a function
+grep -r "functionName(" --include="*.ts" --include="*.tsx"
+
+# Check type definitions
+find . -name "*.d.ts" -exec grep -l "TypeName" {} \;
+
+# Verify imports
+grep -r "from ' @ui" --include="*.tsx" | sort | uniq
 ```
 
-## Implementation Recommendations
+## Remember
 
-### Best Practices
-1. **Start with comment-based metadata** - easiest to implement and maintain
-2. **Use GitHub Actions** for automated updates on main branch
-3. **Implement pre-commit hooks** for validation
-4. **Create templates** for common file types
-5. **Establish clear ownership** for documentation maintenance
+-   Never assume - always verify
+-   Read first - change second
+-   Test incrementally - catch errors early
+-   Check patterns - follow existing conventions
 
-### Rollout Strategy
-1. **Phase 1**: Set up basic structure documentation
-2. **Phase 2**: Add metadata schema and validation
-3. **Phase 3**: Implement automation hooks
-4. **Phase 4**: Create living knowledge base
-5. **Phase 5**: Add monitoring and reporting
+## Git and File Management
 
-### Required Tools
-- **Node.js scripts** for documentation generation
-- **GitHub Actions** for CI/CD integration
-- **JSON Schema** for metadata validation
-- **Git hooks** for automatic updates
-- **VSCode snippets** for developer experience
+### Duplicate File Prevention
 
-This system provides comprehensive tracking with minimal developer overhead while maintaining up-to-date documentation automatically.
+```bash
+# Check for duplicates before committing
+find . -name "*[0-9].tsx" -o -name "*[0-9].ts" | grep -E "[0-9]\.(ts|tsx)$"
+
+# Clean up duplicates
+git clean -fd  # Remove untracked files
+```
+
+### Git Operations
+
+-   Always check `git status` after file moves
+-   Use `HUSKY=0` sparingly and only after understanding what's being skipped
+-   Make atomic commits - don't mix cleanup with features
+
+## Next.js Specific Rules
+
+### Server Actions (`'use server'`)
+
+-   ALL exports must be async functions
+-   No helper functions, constants, or synchronous exports
+-   Helper functions go in `lib/_utils/` instead
+
+### File Organization
+
+-   `actions/`          # Server actions only (all async)
+-   `lib/`
+    -   `_utils/`        # Pure utility functions
+    -   `*.ts`           # Client utilities
+-   `components/`      # React components
+
+## Error Resolution Pattern
+
+1.  Read the FULL error message including stack traces
+2.  Check import traces in build errors
+3.  Verify actual code - don't assume
+4.  Make minimal targeted fixes
+5.  Test with `pnpm typecheck` before committing

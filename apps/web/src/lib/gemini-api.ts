@@ -9,12 +9,19 @@
  * @status active
  */
 import * as Sentry from '@sentry/nextjs';
-const callGeminiAPI = async (prompt, chatHistory = [], jsonSchema = null, attachedImage = null) => {
+
+type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
+const callGeminiAPI = async (
+  prompt: string,
+  chatHistory: { role: string; parts: Part[] }[] = [],
+  jsonSchema: object | null = null,
+  attachedImage: { mimeType: string; data: string } | null = null
+) => {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
 
-    const userParts = [{ text: prompt }];
+    const userParts: Part[] = [{ text: prompt }];
     if (attachedImage) {
         userParts.push({
             inlineData: {

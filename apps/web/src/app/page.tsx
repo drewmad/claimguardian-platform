@@ -31,6 +31,7 @@ import ClaimWizard from '@/components/modals/claim-wizard';
 import ProfileModal from '@/components/modals/profile-modal';
 import AddAssetWizard from '@/components/modals/add-asset-wizard';
 import AddInventoryItemModal from '@/components/modals/add-inventory-item-modal';
+import TestCard from '@/components/TestCard';
 
 export default function AppDashboard() {
   const [view, setView] = useState<{ screen: string; assetId: string | number | null }>({ screen: 'Home', assetId: null });
@@ -105,6 +106,8 @@ export default function AppDashboard() {
         return <DamageAssessmentScreen assets={assets} />;
       case 'Claims':
         return <ClaimsScreen onStartClaim={() => setIsClaimWizardOpen(true)} />;
+      case 'TestCard':
+        return <TestCard />;
       default:
         return <HomeScreen onStartClaim={() => setIsAddAssetWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
     }
@@ -168,9 +171,9 @@ export default function AppDashboard() {
 
         {isMobile && <BottomNav activeScreen={view.screen} setActiveScreen={(s) => handleNavigate(s)} />}
 
-        {isClaimWizardOpen && <ClaimWizard onClose={() => setIsClaimWizardOpen(false)} onContextSet={setActiveClaimContext} />}
+        {isClaimWizardOpen && <ClaimWizard onClose={() => setIsClaimWizardOpen(false)} onContextSet={(context: any) => { /* handle context set */ }} />}
         {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
-        {isAddAssetWizardOpen && <AddAssetWizard onClose={() => setIsAddAssetWizardOpen(false)} onAddAsset={handleAddAsset} onFinish={(id) => { setIsAddAssetWizardOpen(false); handleNavigate('Assets', id); }} />}
+        {isAddAssetWizardOpen && <AddAssetWizard onClose={() => setIsAddAssetWizardOpen(false)} onAddAsset={handleAddAsset} onFinish={(id: number) => { setIsAddAssetWizardOpen(false); handleNavigate('Assets', id); }} />}
         {isInventoryModalOpen && <AddInventoryItemModal assetId={view.assetId} onClose={() => setIsInventoryModalOpen(false)} onAddItem={handleAddItemToInventory} />}
         
         {/* AI Chat components will be added later */}
