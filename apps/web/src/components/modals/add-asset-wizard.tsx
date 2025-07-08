@@ -13,7 +13,33 @@ import Image from 'next/image';
 import { X, Camera, Paperclip, Building, Car, Tv, Shield, Grid, FileText, ToggleRight, ToggleLeft, Sparkles } from 'lucide-react';
 
 
-const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
+interface AddAssetWizardProps {
+  onClose: () => void;
+  onAddAsset: (newAsset: AssetData) => number;
+  onFinish: (id: number) => void;
+}
+
+interface AssetData {
+  type: string;
+  name: string;
+  category: string;
+  value: string;
+  purchaseDate: string;
+  unknownValue: boolean;
+  specificDetails: Record<string, any>;
+  images: { file: File; preview: string }[];
+  documents: { file: File; name: string }[];
+  policyLinkType: string;
+  selectedPolicy: string;
+  newPolicyNumber: string;
+  newPolicyProvider: string;
+  maintenanceEnabled: boolean;
+  selectedMaintenanceTasks: string[];
+  weatherAlerts: boolean;
+  confirmed: boolean;
+}
+
+const AddAssetWizard = ({ onClose, onAddAsset, onFinish }: AddAssetWizardProps) => {
     const [step, setStep] = useState(1);
     const [assetData, setAssetData] = useState({
         type: '',
@@ -58,7 +84,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         Other: ['Appraisal Update', 'Storage Check', 'Insurance Review']
     };
 
-    const handleDataChange = (e) => {
+    const handleDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
         const { name, value, type, checked } = e.target;
         if (type === 'checkbox') {
             setAssetData({ ...assetData, [name]: checked });
@@ -67,14 +93,14 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         }
     };
 
-    const handleSpecificDetailChange = (field, value) => {
+    const handleSpecificDetailChange = (field: string, value: string) => {
         setAssetData({
             ...assetData,
             specificDetails: { ...assetData.specificDetails, [field]: value }
         });
     };
 
-    const handleImageChange = (e) => {
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files);
         files.forEach(file => {
             if (file.type.startsWith('image/')) {
@@ -82,7 +108,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
                 reader.onloadstart = () => {
                     setUploadProgress(prev => ({ ...prev, [file.name]: 0 }));
                 };
-                reader.onprogress = (e) => {
+                reader.onprogress = (e: ProgressEvent<FileReader>) => {
                     if (e.lengthComputable) {
                         const progress = (e.loaded / e.total) * 100;
                         setUploadProgress(prev => ({ ...prev, [file.name]: progress }));
@@ -108,7 +134,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         });
     };
 
-    const handleDocChange = (e) => {
+    const handleDocChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = Array.from(e.target.files);
         setAssetData(prev => ({
             ...prev,
@@ -116,7 +142,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         }));
     };
 
-    const removeImage = (index) => {
+    const removeImage = (index: number) => {
         setImagePreview(prev => prev.filter((_, i) => i !== index));
         setAssetData(prev => ({
             ...prev,
@@ -124,7 +150,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         }));
     };
 
-    const handleMaintenanceTaskToggle = (task) => {
+    const handleMaintenanceTaskToggle = (task: string) => {
         setAssetData(prev => ({
             ...prev,
             selectedMaintenanceTasks: prev.selectedMaintenanceTasks.includes(task)
@@ -133,7 +159,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
         }));
     };
 
-    const formatCurrency = (value) => {
+    const formatCurrency = (value: string) => {
         return value.replace(/\D/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, ',');
     };
 

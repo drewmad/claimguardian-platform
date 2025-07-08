@@ -8,6 +8,7 @@
  * @tags ["api", "ai", "gemini", "utility"]
  * @status active
  */
+import * as Sentry from '@sentry/nextjs';
 const callGeminiAPI = async (prompt, chatHistory = [], jsonSchema = null, attachedImage = null) => {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
     

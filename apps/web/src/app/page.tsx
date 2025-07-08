@@ -57,11 +57,11 @@ export default function AppDashboard() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleNavigate = (screen, assetId = null) => {
+  const handleNavigate = (screen: string, assetId: string | number | null = null) => {
     setView({ screen, assetId });
   };
   
-  const handleAddAsset = (newAsset) => {
+  const handleAddAsset = (newAsset: any) => {
     const assetToAdd = {
         ...newAsset,
         id: Date.now(),
@@ -75,7 +75,7 @@ export default function AppDashboard() {
     return assetToAdd.id;
   };
 
-  const handleAddItemToInventory = (newItem, assetId, closeModal = true) => {
+  const handleAddItemToInventory = (newItem: any, assetId: string | number, closeModal = true) => {
     setAssets(currentAssets => 
         currentAssets.map(asset => {
             if (asset.id === assetId) {

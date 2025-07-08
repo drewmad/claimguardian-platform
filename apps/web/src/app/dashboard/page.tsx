@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { Card } from '@claimguardian/ui'
 import { Home, FileText, Shield, Users } from 'lucide-react'
 
