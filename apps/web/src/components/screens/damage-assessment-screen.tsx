@@ -46,12 +46,15 @@ const DamageAssessmentScreen = ({ assets }) => {
         if (file && file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                const base64String = reader.result.split(',')[1];
-                setImageInfo({
-                    data: base64String,
-                    mimeType: file.type,
-                    previewUrl: URL.createObjectURL(file)
-                });
+                const result = reader.result;
+                if (typeof result === 'string') {
+                    const base64String = result.split(',')[1];
+                    setImageInfo({
+                        data: base64String,
+                        mimeType: file.type,
+                        previewUrl: URL.createObjectURL(file)
+                    });
+                }
             };
             reader.readAsDataURL(file);
         }

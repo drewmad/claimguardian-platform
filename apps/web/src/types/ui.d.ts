@@ -1,8 +1,10 @@
 declare module "@claimguardian/ui" {
   import * as React from 'react';
-  import { VariantProps } from 'class-variance-authority';
 
-  interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement>, VariantProps<any> {}
+  interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+    variant?: 'default' | 'secondary' | 'ghost' | 'link';
+    size?: 'default' | 'sm' | 'lg' | 'icon';
+  }
   export const Button: React.ForwardRefExoticComponent<ButtonProps & React.RefAttributes<HTMLButtonElement>>;
 
   interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
@@ -19,15 +21,15 @@ declare module "@claimguardian/ui" {
   }
   export const Modal: React.FC<SimpleModalProps>;
 
-  interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
-  export const Card: React.ForwardRefExoticComponent<CardProps & React.RefAttributes<HTMLDivElement>>;
+  export const Card: React.ForwardRefExoticComponent<React.HTMLAttributes<HTMLDivElement> & React.RefAttributes<HTMLDivElement>>;
 
-  interface LabelProps extends React.LabelHTMLAttributes<HTMLLabelElement> {}
-  export const Label: React.ForwardRefExoticComponent<LabelProps & React.RefAttributes<HTMLLabelElement>>;
+  export const Label: React.ForwardRefExoticComponent<React.LabelHTMLAttributes<HTMLLabelElement> & React.RefAttributes<HTMLLabelElement>>;
 
-  interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {}
+  interface CheckboxProps extends React.InputHTMLAttributes<HTMLInputElement> {
+    onCheckedChange?: (checked: boolean) => void;
+  }
   export const Checkbox: React.ForwardRefExoticComponent<CheckboxProps & React.RefAttributes<HTMLButtonElement>>;
 
-  function cn(...inputs: any[]): string;
+  function cn(...inputs: (string | undefined | null | boolean)[]): string;
   export { cn };
 }

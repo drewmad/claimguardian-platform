@@ -33,9 +33,71 @@ import AddAssetWizard from '@/components/modals/add-asset-wizard';
 import AddInventoryItemModal from '@/components/modals/add-inventory-item-modal';
 import TestCard from '@/components/TestCard';
 
+// Type definitions
+interface AssetData {
+  type: string;
+  name: string;
+  category: string;
+  value: string;
+  purchaseDate: string;
+  unknownValue: boolean;
+  specificDetails: Record<string, unknown>;
+  images: { file: File; preview: string }[];
+  documents: { file: File; name: string }[];
+  policyLinkType: string;
+  selectedPolicy: string;
+  newPolicyNumber: string;
+  newPolicyProvider: string;
+  maintenanceEnabled: boolean;
+  selectedMaintenanceTasks: string[];
+  weatherAlerts: boolean;
+  confirmed: boolean;
+}
+
+interface Asset {
+  id: number;
+  name: string;
+  type: string;
+  value: number;
+  coverage: number;
+  image: string;
+  docs: { name: string }[];
+  maintenance: { name: string; due: string }[];
+  policies: { id: string; provider: string; type: string }[];
+  details: Record<string, unknown>;
+  inventory: InventoryItemStored[];
+}
+
+interface InventoryItem {
+  name: string;
+  category: string;
+  value: string;
+  description: string;
+  serial: string;
+  purchaseDate: string;
+  location: string;
+  condition: string;
+  imagePreviews: string[];
+  attachments: File[];
+}
+
+interface InventoryItemStored {
+  id: number;
+  name: string;
+  category: string;
+  value: number;
+  description: string;
+  serial: string;
+  purchaseDate: string;
+  location: string;
+  condition: string;
+  imagePreviews: string[];
+  attachments: unknown[];
+}
+
 export default function AppDashboard() {
   const [view, setView] = useState<{ screen: string; assetId: string | number | null }>({ screen: 'Home', assetId: null });
-  const [assets, setAssets] = useState(INITIAL_ASSETS);
+  const [assets, setAssets] = useState<Asset[]>(INITIAL_ASSETS);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isClaimWizardOpen, setIsClaimWizardOpen] = useState(false);
@@ -62,13 +124,18 @@ export default function AppDashboard() {
     setView({ screen, assetId });
   };
   
-  const handleAddAsset = (newAsset: any) => {
+  const handleAddAsset = (newAsset: AssetData) => {
     const assetToAdd = {
-        ...newAsset,
         id: Date.now(),
-        docs: [],
+        name: newAsset.name,
+        type: newAsset.type,
+        value: parseFloat(newAsset.value) || 0,
+        coverage: 0,
+        image: newAsset.images.length > 0 ? newAsset.images[0].preview : '',
+        docs: newAsset.documents.map(doc => ({ name: doc.name })),
         maintenance: [],
-        policies: newAsset.policyNumber ? [{ id: newAsset.policyNumber, provider: 'Guardian Assurance', type: 'General' }] : [],
+        policies: newAsset.newPolicyNumber ? [{ id: newAsset.newPolicyNumber, provider: newAsset.newPolicyProvider || 'Guardian Assurance', type: 'General' }] : [],
+        details: newAsset.specificDetails,
         inventory: []
     };
     const newAssets = [assetToAdd, ...assets];
@@ -76,11 +143,17 @@ export default function AppDashboard() {
     return assetToAdd.id;
   };
 
-  const handleAddItemToInventory = (newItem: any, assetId: string | number, closeModal = true) => {
+  const handleAddItemToInventory = (newItem: InventoryItem, assetId: string | number, closeModal = true) => {
     setAssets(currentAssets => 
         currentAssets.map(asset => {
             if (asset.id === assetId) {
-                const updatedInventory = [...(asset.inventory || []), { ...newItem, id: Date.now() + Math.random() }];
+                const storedItem: InventoryItemStored = {
+                    ...newItem,
+                    id: Date.now() + Math.random(),
+                    value: parseFloat(newItem.value) || 0,
+                    attachments: []
+                };
+                const updatedInventory = [...(asset.inventory || []), storedItem];
                 return { ...asset, inventory: updatedInventory };
             }
             return asset;
@@ -171,7 +244,7 @@ export default function AppDashboard() {
 
         {isMobile && <BottomNav activeScreen={view.screen} setActiveScreen={(s) => handleNavigate(s)} />}
 
-        {isClaimWizardOpen && <ClaimWizard onClose={() => setIsClaimWizardOpen(false)} onContextSet={(context: any) => { /* handle context set */ }} />}
+        {isClaimWizardOpen && <ClaimWizard onClose={() => setIsClaimWizardOpen(false)} onContextSet={() => { /* handle context set */ }} />}
         {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
         {isAddAssetWizardOpen && <AddAssetWizard onClose={() => setIsAddAssetWizardOpen(false)} onAddAsset={handleAddAsset} onFinish={(id: number) => { setIsAddAssetWizardOpen(false); handleNavigate('Assets', id); }} />}
         {isInventoryModalOpen && <AddInventoryItemModal assetId={view.assetId} onClose={() => setIsInventoryModalOpen(false)} onAddItem={handleAddItemToInventory} />}

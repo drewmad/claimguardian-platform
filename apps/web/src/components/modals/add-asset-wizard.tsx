@@ -26,7 +26,7 @@ interface AssetData {
   value: string;
   purchaseDate: string;
   unknownValue: boolean;
-  specificDetails: Record<string, any>;
+  specificDetails: Record<string, unknown>;
   images: { file: File; preview: string }[];
   documents: { file: File; name: string }[];
   policyLinkType: string;
@@ -85,8 +85,9 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }: AddAssetWizardProps) 
     };
 
     const handleDataChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-        const { name, value, type, checked } = e.target;
+        const { name, value, type } = e.target;
         if (type === 'checkbox') {
+            const checked = (e.target as HTMLInputElement).checked;
             setAssetData({ ...assetData, [name]: checked });
         } else {
             setAssetData({ ...assetData, [name]: value });
@@ -165,12 +166,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }: AddAssetWizardProps) 
 
     const handleSubmit = () => {
         setShowSuccess(true);
-        const newAssetId = onAddAsset({
-            ...assetData,
-            value: parseFloat(assetData.value.replace(/,/g, '')),
-            coverage: 85,
-            image: imagePreview[0]?.url || 'https://placehold.co/400x400/1E1E1E/FFFFFF?text=No+Image'
-        });
+        const newAssetId = onAddAsset(assetData);
         
         setTimeout(() => {
             onFinish(newAssetId);
@@ -405,20 +401,23 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }: AddAssetWizardProps) 
                                     className="hidden"
                                 />
                                 
-                                {Object.entries(uploadProgress).map(([filename, progress]) => (
-                                    <div key={filename} className="mt-4">
-                                        <div className="flex justify-between text-sm mb-1">
-                                            <span>{filename}</span>
-                                            <span>{Math.round(progress)}%</span>
+                                {Object.entries(uploadProgress).map(([filename, progress]) => {
+                                    const progressNum = typeof progress === 'number' ? progress : 0;
+                                    return (
+                                        <div key={filename} className="mt-4">
+                                            <div className="flex justify-between text-sm mb-1">
+                                                <span>{filename}</span>
+                                                <span>{Math.round(progressNum)}%</span>
+                                            </div>
+                                            <div className="w-full bg-bgTertiary rounded-full h-2">
+                                                <div 
+                                                    className="accent-blue-bg h-2 rounded-full transition-all"
+                                                    style={{ width: `${progressNum}%` }}
+                                                />
+                                            </div>
                                         </div>
-                                        <div className="w-full bg-bgTertiary rounded-full h-2">
-                                            <div 
-                                                className="accent-blue-bg h-2 rounded-full transition-all"
-                                                style={{ width: `${progress}%` }}
-                                            />
-                                        </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
 
                                 {imagePreview.length > 0 && (
                                     <div className="grid grid-cols-3 gap-3 mt-4">

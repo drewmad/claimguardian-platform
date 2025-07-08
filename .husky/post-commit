@@ -1,0 +1,14 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Claude Learning Reminder
+if [ -n "$CLAUDE_SESSION" ]; then
+    echo "🤖 Claude Session Detected!"
+    echo "Did you discover any new patterns? (y/n)"
+    read -r response
+    
+    if [ "$response" = "y" ]; then
+        echo "Please run: claude_log 'your discovery here'"
+        echo "Or check .ai-context/LEARNING_LOG.md"
+    fi
+fi

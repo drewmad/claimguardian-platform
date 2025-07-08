@@ -26,7 +26,11 @@ const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
             </button>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <Image src={asset.image} alt={asset.name} width={800} height={400} className="w-full h-80 object-cover rounded-lg shadow-lg" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/800x400/1E1E1E/FFFFFF?text=Image+Not+Available`; }}/>
+                    <Image src={asset.image} alt={asset.name} width={800} height={400} className="w-full h-80 object-cover rounded-lg shadow-lg" onError={(e) => { 
+                        const target = e.target as HTMLImageElement;
+                        target.onerror = null; 
+                        target.src=`https://placehold.co/800x400/1E1E1E/FFFFFF?text=Image+Not+Available`; 
+                    }}/>
                     <div className="bg-bgSecondary p-6 rounded-lg shadow-md">
                         <h2 className="font-slab text-3xl font-bold">{asset.name}</h2>
                         <p className="text-lg text-textSecondary">{asset.type}</p>
@@ -40,7 +44,11 @@ const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
                             <div className="space-y-3">
                                 {asset.inventory.map(item => (
                                     <div key={item.id} className="flex items-center gap-4 bg-bgTertiary p-2 rounded-lg">
-                                        <Image src={item.imagePreviews[0]} alt={item.name} width={64} height={64} className="w-12 h-12 object-cover rounded-md" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; }}/>
+                                        <Image src={item.imagePreviews[0]} alt={item.name} width={64} height={64} className="w-12 h-12 object-cover rounded-md" onError={(e) => { 
+                                            const target = e.target as HTMLImageElement;
+                                            target.onerror = null; 
+                                            target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; 
+                                        }}/>
                                         <div className="flex-grow">
                                             <p className="font-semibold">{item.name}</p>
                                             <p className="text-xs text-textSecondary">{item.category}</p>

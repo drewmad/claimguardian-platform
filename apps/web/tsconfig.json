@@ -24,8 +24,8 @@
         "name": "next"
       }
     ],
-    "typeRoots": ["../../node_modules/@types"],
-    "types": ["react", "react-dom", "node"],
+    "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
+    "types": ["react", "react-dom", "node", "jest"],
     "paths": {
       "@/*": [
         "./src/*"

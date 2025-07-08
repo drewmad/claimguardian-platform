@@ -24,18 +24,21 @@ const AddInventoryItemModal = ({ assetId, onClose, onAddItem }) => {
 
     const handleDataChange = (e) => setItemData({ ...itemData, [e.target.name]: e.target.value });
 
-    const handlePhotoChange = (e) => {
-        const files = Array.from(e.target.files);
+    const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const files = Array.from(e.target.files || []);
         if (files.length > 0) {
-            const previews = files.map(file => URL.createObjectURL(file));
+            const previews = files.map((file: File) => URL.createObjectURL(file));
             if (mode === 'manual') {
                 setItemData({ ...itemData, imagePreviews: [...itemData.imagePreviews, ...previews] });
             } else {
                 const file = files[0];
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                    const base64String = reader.result.split(',')[1];
-                    setAiImageInfo({ data: base64String, mimeType: file.type, previewUrl: previews[0] });
+                    const result = reader.result;
+                    if (typeof result === 'string') {
+                        const base64String = result.split(',')[1];
+                        setAiImageInfo({ data: base64String, mimeType: file.type, previewUrl: previews[0] });
+                    }
                 };
                 reader.readAsDataURL(file);
             }

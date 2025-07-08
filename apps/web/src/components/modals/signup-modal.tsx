@@ -106,7 +106,7 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
         console.error('Signup error:', (error as Error).message)
         // You might want to set a general error state here to display to the user
         // For now, we'll just log it.
-        alert(error.message) // Simple alert for demonstration
+        alert((error as Error).message) // Simple alert for demonstration
       }
     }
   })
@@ -287,9 +287,7 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
             id="agree"
             checked={values.agree}
                           onCheckedChange={(checked: boolean) => 
-                handleChange({ 
-                  target: { name: 'agree', value: checked } 
-                } as React.ChangeEvent<HTMLInputElement>)
+                handleChange({ target: { name: 'agree', value: checked } })
             }
           />
           <Label htmlFor="agree" className="text-sm">

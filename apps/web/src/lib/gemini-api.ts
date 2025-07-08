@@ -33,7 +33,13 @@ const callGeminiAPI = async (
 
     const contents = [...chatHistory, { role: "user", parts: userParts }];
     
-    const payload = { contents };
+    const payload: {
+        contents: unknown[];
+        generationConfig?: {
+            responseMimeType: string;
+            responseSchema: unknown;
+        };
+    } = { contents };
 
     if (jsonSchema) {
         payload.generationConfig = {

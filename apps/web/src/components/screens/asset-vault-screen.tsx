@@ -38,7 +38,11 @@ const AssetVaultScreen = ({ assets, onViewAsset, onAddAsset }) => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {assets.map(asset => (
                         <div key={asset.id} onClick={() => onViewAsset(asset.id)} className="bg-bgSecondary rounded-lg shadow-md overflow-hidden cursor-pointer group">
-                            <Image src={asset.image} alt={asset.name} width={400} height={160} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/400x400/1E1E1E/FFFFFF?text=No+Image`; }}/>
+                            <Image src={asset.image} alt={asset.name} width={400} height={160} className="w-full h-40 object-cover group-hover:scale-105 transition-transform duration-300" onError={(e) => { 
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null; 
+                                target.src=`https://placehold.co/400x400/1E1E1E/FFFFFF?text=No+Image`; 
+                            }}/>
                             <div className="p-4">
                                 <h4 className="font-bold truncate">{asset.name}</h4>
                                 <p className="text-sm text-textSecondary">{asset.type}</p>
@@ -50,7 +54,11 @@ const AssetVaultScreen = ({ assets, onViewAsset, onAddAsset }) => {
                 <div className="space-y-4">
                     {assets.map(asset => (
                         <div key={asset.id} onClick={() => onViewAsset(asset.id)} className="bg-bgSecondary rounded-lg shadow-md p-4 flex items-center gap-4 cursor-pointer hover:bg-bgTertiary">
-                            <Image src={asset.image} alt={asset.name} width={64} height={64} className="w-16 h-16 object-cover rounded-md" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; }}/>
+                            <Image src={asset.image} alt={asset.name} width={64} height={64} className="w-16 h-16 object-cover rounded-md" onError={(e) => { 
+                                const target = e.target as HTMLImageElement;
+                                target.onerror = null; 
+                                target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; 
+                            }}/>
                             <div className="flex-grow">
                                 <h4 className="font-bold">{asset.name}</h4>
                                 <p className="text-sm text-textSecondary">{asset.type}</p>

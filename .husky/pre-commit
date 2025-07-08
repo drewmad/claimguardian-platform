@@ -9,7 +9,7 @@ pnpm lint || exit 1
 # Run type-check
 # Run type-check
 # # Run type-check
-# pnpm type-check || exit 1
+pnpm type-check || exit 1
 
 # Run prettier check (optional, can be combined with lint)
 # pnpm prettier --check . || exit 1

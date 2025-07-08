@@ -73,7 +73,7 @@ const ClaimsScreen = ({ onStartClaim }) => {
                         <tbody>
                             {claims.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="p-4 text-center text-textSecondary">No claims found.</td>
+                                    <td colSpan={6} className="p-4 text-center text-textSecondary">No claims found.</td>
                                 </tr>
                             ) : (
                                 claims.map(claim => (

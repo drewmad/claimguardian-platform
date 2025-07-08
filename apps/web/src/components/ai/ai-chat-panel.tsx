@@ -13,8 +13,14 @@ import { X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
 import Image from 'next/image';
 import callGeminiAPI from '@/lib/gemini-api';
 
+interface Message {
+  from: 'user' | 'ai';
+  text: string;
+  imagePreviewUrl?: string;
+}
+
 const AiChatPanel = ({ onClose, isMobile, context }) => {
-    const [messages, setMessages] = useState([
+    const [messages, setMessages] = useState<Message[]>([
         { from: 'ai', text: "Hello! I'm Guardian AI. I'm currently in demo mode, providing sample responses. To enable real AI analysis, add your Gemini API key. How can I help you today?" }
     ]);
     const [input, setInput] = useState('');
@@ -34,13 +40,16 @@ const AiChatPanel = ({ onClose, isMobile, context }) => {
         if (file && file.type.startsWith('image/')) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                const base64String = reader.result.split(',')[1];
-                setAttachedImage({
-                    data: base64String,
-                    mimeType: file.type,
-                    name: file.name,
-                    previewUrl: URL.createObjectURL(file)
-                });
+                const result = reader.result;
+                if (typeof result === 'string') {
+                    const base64String = result.split(',')[1];
+                    setAttachedImage({
+                        data: base64String,
+                        mimeType: file.type,
+                        name: file.name,
+                        previewUrl: URL.createObjectURL(file)
+                    });
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -50,7 +59,7 @@ const AiChatPanel = ({ onClose, isMobile, context }) => {
         if ((!input.trim() && !attachedImage) || isLoading) return;
 
         const userMessageText = input || (attachedImage ? `Analyze this image: ${attachedImage.name}` : '');
-        const userMessage = { 
+        const userMessage: Message = { 
             from: 'user', 
             text: userMessageText,
             imagePreviewUrl: attachedImage?.previewUrl
