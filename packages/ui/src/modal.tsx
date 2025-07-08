@@ -15,11 +15,8 @@
 
 import * as React from 'react'
 import * as DialogPrimitive from '@radix-ui/react-dialog'
-import { X } from 'lucide-react'
+import { XIcon } from './icons'
 import { cn } from './utils'
-
-// Type assertion to ensure React 18 compatibility
-const XIcon = X as React.FC<React.SVGProps<SVGSVGElement>>
 
 const Modal = DialogPrimitive.Root
 
