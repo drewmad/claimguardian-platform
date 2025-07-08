@@ -85,7 +85,7 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
       try {
         const { signUp } = await import('@/lib/supabase')
         
-        const { data, error } = await signUp(values.email, values.password, {
+        const { error } = await signUp(values.email, values.password, {
           data: {
             firstName: values.firstName,
             lastName: values.lastName,

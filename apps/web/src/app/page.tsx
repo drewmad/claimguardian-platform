@@ -87,7 +87,7 @@ export default function LandingPage() {
             </h1>
             <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto">
               Stop wasting hours deciphering complex policies and chasing adjusters. 
-              ClaimGuardian's AI-powered platform automates the most tedious parts of the claims process.
+              ClaimGuardian&apos;s AI-powered platform automates the most tedious parts of the claims process.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Button
@@ -142,7 +142,7 @@ export default function LandingPage() {
             Ready to Take Control of Your Claims?
           </h2>
           <p className="text-xl text-blue-100 mb-8">
-            Join thousands of homeowners who've maximized their insurance settlements with ClaimGuardian.
+            Join thousands of homeowners who&apos;ve maximized their insurance settlements with ClaimGuardian.
           </p>
           <Button
             size="lg"
