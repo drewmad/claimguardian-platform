@@ -14,29 +14,30 @@
   "dependencies": {
     "@claimguardian/ui": "workspace:*",
     "@claimguardian/utils": "workspace:*",
+    "@eslint/eslintrc": "^3.3.1",
+    "@supabase/ssr": "^0.5.2",
     "clsx": "^2.1.0",
     "framer-motion": "^12.23.0",
     "lucide-react": "^0.525.0",
     "next": "15.3.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "tailwind-merge": "^3.3.1",
-    "@supabase/ssr": "^0.5.2"
+    "tailwind-merge": "^3.3.1"
   },
   "devDependencies": {
-    "jest": "^29.7.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@tailwindcss/typography": "^0.5.10",
     "@claimguardian/config": "workspace:*",
+    "@sentry/nextjs": "^7.x.x",
+    "@tailwindcss/typography": "^0.5.10",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
     "@types/node": "^24.0.10",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "autoprefixer": "^10.4.21",
     "eslint-config-next": "15.3.5",
+    "jest": "^29.7.0",
     "postcss": "^8.5.6",
     "tailwindcss": "^3.4.1",
-    "typescript": "^5.8.3",
-    "@sentry/nextjs": "^7.x.x"
+    "typescript": "^5.8.3"
   }
 }
