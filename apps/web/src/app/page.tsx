@@ -28,10 +28,10 @@ import { ContentModal } from '@/components/modals/content-modal'
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen w-full bg-[#0D1117] text-[#E6EDF3] antialiased">
+    <div className="min-h-screen w-full">
       <Header />
       
-      <main>
+      <main className="relative">
         <Hero />
         <WhoWeServe />
         <WhoWeFightFor />
