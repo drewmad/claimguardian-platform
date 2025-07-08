@@ -15,6 +15,7 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import * as Sentry from '@sentry/nextjs'
+import { AuthProvider } from '@/components/auth/auth-provider'
 
 Sentry.init({
   dsn: process.env.SENTRY_DSN || "YOUR_SENTRY_DSN",
@@ -39,7 +40,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-slate-950 text-slate-100`}>
-        {children}
+        <AuthProvider>
+          {children}
+        </AuthProvider>
       </body>
     </html>
   )

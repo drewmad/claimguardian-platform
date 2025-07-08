@@ -83,18 +83,18 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
     },
     onSubmit: async (values) => {
       try {
-        const response = await fetch('/api/auth/signup', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(values),
+        const { signUp } = await import('@/lib/supabase')
+        
+        const { data, error } = await signUp(values.email, values.password, {
+          data: {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            phone: values.phone,
+          }
         })
 
-        const data = await response.json()
-
-        if (!response.ok) {
-          throw new Error(data.error || 'Failed to sign up')
+        if (error) {
+          throw new Error(error.message)
         }
 
         setIsSubmitted(true)

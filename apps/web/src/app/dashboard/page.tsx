@@ -1,18 +1,18 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import { Card } from '@claimguardian/ui'
-import { Home, FileText, Shield, Users } from 'lucide-react'
+import { Home, FileText, Shield, Users, LogOut } from 'lucide-react'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { useAuth } from '@/components/auth/auth-provider'
 
-export default function DashboardPage() {
-  // Simple authentication check - in a real app, this would check actual auth state
-  useEffect(() => {
-    // For demo purposes, we'll assume users are authenticated if they reach this page
-    // In a real app, you'd check authentication state here and redirect if needed
-    // if (!isAuthenticated) {
-    //   window.location.href = '/'
-    // }
-  }, [])
+function DashboardContent() {
+  const { user, signOut } = useAuth()
+
+  const handleSignOut = async () => {
+    await signOut()
+    window.location.href = '/'
+  }
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100">
       <style jsx>{`
@@ -25,7 +25,19 @@ export default function DashboardPage() {
       
       {/* Header */}
       <header className="bg-slate-900/60 backdrop-blur-lg border-b border-slate-800 px-6 py-4">
-        <h1 className="text-2xl font-bold text-white">ClaimGuardian Dashboard</h1>
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold text-white">ClaimGuardian Dashboard</h1>
+          <div className="flex items-center space-x-4">
+            <span className="text-slate-300">Welcome, {user?.email}</span>
+            <button
+              onClick={handleSignOut}
+              className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors"
+            >
+              <LogOut className="h-4 w-4" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
       </header>
 
       {/* Main Content */}
@@ -125,4 +137,12 @@ export default function DashboardPage() {
       </main>
     </div>
   )
-} 
+}
+
+export default function DashboardPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardContent />
+    </ProtectedRoute>
+  )
+}

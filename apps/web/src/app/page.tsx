@@ -1,256 +1,189 @@
-'use client'
-
 /**
  * @fileMetadata
- * @purpose Authenticated application dashboard with full navigation and features.
+ * @purpose Public landing page for ClaimGuardian with hero section and authentication options.
  * @owner frontend-team
- * @dependencies ["react", "lucide-react", "@/lib/mock-data", "@/lib/constants", "@/components/layout/*", "@/components/screens/*", "@/components/modals/*"]
- * @exports ["AppDashboard"]
- * @complexity high
- * @tags ["app", "dashboard", "authenticated", "navigation"]
+ * @dependencies ["react", "lucide-react", "@claimguardian/ui"]
+ * @exports ["LandingPage"]
+ * @complexity medium
+ * @tags ["landing", "public", "authentication", "hero"]
  * @status active
- * @notes This is the main dashboard for authenticated users with full app functionality.
+ * @notes This is the public landing page that users see before authentication.
  */
-import React, { useState, useEffect } from 'react';
-import { Sparkles, X } from 'lucide-react';
+'use client'
 
-import { INITIAL_ASSETS } from '@/lib/mock-data';
-import { COLORS } from '@/lib/constants';
+import React, { useState } from 'react';
+import { Shield, CheckCircle, Users, FileText, ArrowRight } from 'lucide-react';
+import { Button } from '@claimguardian/ui';
+import { SignupModal } from '@/components/modals/signup-modal';
 
-import Header from '@/components/layout/header';
-import Sidebar from '@/components/layout/sidebar';
-import BottomNav from '@/components/layout/bottom-nav';
+export default function LandingPage() {
+  const [showSignupModal, setShowSignupModal] = useState(false);
 
-import HomeScreen from '@/components/screens/home-screen';
-import AssetVaultScreen from '@/components/screens/asset-vault-screen';
-import AssetDetailScreen from '@/components/screens/asset-detail-screen';
-import DamageAssessmentScreen from '@/components/screens/damage-assessment-screen';
-import ClaimsScreen from '@/components/screens/claims-screen';
-
-import ClaimWizard from '@/components/modals/claim-wizard';
-import ProfileModal from '@/components/modals/profile-modal';
-import AddAssetWizard from '@/components/modals/add-asset-wizard';
-import AddInventoryItemModal from '@/components/modals/add-inventory-item-modal';
-import TestCard from '@/components/TestCard';
-
-// Type definitions
-interface AssetData {
-  type: string;
-  name: string;
-  category: string;
-  value: string;
-  purchaseDate: string;
-  unknownValue: boolean;
-  specificDetails: Record<string, unknown>;
-  images: { file: File; preview: string }[];
-  documents: { file: File; name: string }[];
-  policyLinkType: string;
-  selectedPolicy: string;
-  newPolicyNumber: string;
-  newPolicyProvider: string;
-  maintenanceEnabled: boolean;
-  selectedMaintenanceTasks: string[];
-  weatherAlerts: boolean;
-  confirmed: boolean;
-}
-
-interface Asset {
-  id: number;
-  name: string;
-  type: string;
-  value: number;
-  coverage: number;
-  image: string;
-  docs: { name: string }[];
-  maintenance: { name: string; due: string }[];
-  policies: { id: string; provider: string; type: string }[];
-  details: Record<string, unknown>;
-  inventory: InventoryItemStored[];
-}
-
-interface InventoryItem {
-  name: string;
-  category: string;
-  value: string;
-  description: string;
-  serial: string;
-  purchaseDate: string;
-  location: string;
-  condition: string;
-  imagePreviews: string[];
-  attachments: File[];
-}
-
-interface InventoryItemStored {
-  id: number;
-  name: string;
-  category: string;
-  value: number;
-  description: string;
-  serial: string;
-  purchaseDate: string;
-  location: string;
-  condition: string;
-  imagePreviews: string[];
-  attachments: unknown[];
-}
-
-export default function AppDashboard() {
-  const [view, setView] = useState<{ screen: string; assetId: string | number | null }>({ screen: 'Home', assetId: null });
-  const [assets, setAssets] = useState<Asset[]>(INITIAL_ASSETS);
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [isClaimWizardOpen, setIsClaimWizardOpen] = useState(false);
-  const [isProfileOpen, setIsProfileOpen] = useState(false);
-  const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
-  const [isAddAssetWizardOpen, setIsAddAssetWizardOpen] = useState(false);
-  const [showDemoNotice, setShowDemoNotice] = useState(true);
-
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-      if (window.innerWidth >= 768) {
-        setIsSidebarCollapsed(false);
-      } else {
-        setIsSidebarCollapsed(true);
-      }
-    };
-    window.addEventListener('resize', handleResize);
-    handleResize();
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const handleNavigate = (screen: string, assetId: string | number | null = null) => {
-    setView({ screen, assetId });
-  };
-  
-  const handleAddAsset = (newAsset: AssetData) => {
-    const assetToAdd = {
-        id: Date.now(),
-        name: newAsset.name,
-        type: newAsset.type,
-        value: parseFloat(newAsset.value) || 0,
-        coverage: 0,
-        image: newAsset.images.length > 0 ? newAsset.images[0].preview : '',
-        docs: newAsset.documents.map(doc => ({ name: doc.name })),
-        maintenance: [],
-        policies: newAsset.newPolicyNumber ? [{ id: newAsset.newPolicyNumber, provider: newAsset.newPolicyProvider || 'Guardian Assurance', type: 'General' }] : [],
-        details: newAsset.specificDetails,
-        inventory: []
-    };
-    const newAssets = [assetToAdd, ...assets];
-    setAssets(newAssets);
-    return assetToAdd.id;
-  };
-
-  const handleAddItemToInventory = (newItem: InventoryItem, assetId: string | number, closeModal = true) => {
-    setAssets(currentAssets => 
-        currentAssets.map(asset => {
-            if (asset.id === assetId) {
-                const storedItem: InventoryItemStored = {
-                    ...newItem,
-                    id: Date.now() + Math.random(),
-                    value: parseFloat(newItem.value) || 0,
-                    attachments: []
-                };
-                const updatedInventory = [...(asset.inventory || []), storedItem];
-                return { ...asset, inventory: updatedInventory };
-            }
-            return asset;
-        })
-    );
-    if (closeModal) {
-        setIsInventoryModalOpen(false);
+  const features = [
+    {
+      icon: Shield,
+      title: "AI-Powered Protection",
+      description: "Advanced AI analyzes your policies and identifies coverage gaps before disasters strike."
+    },
+    {
+      icon: FileText,
+      title: "Smart Document Management",
+      description: "Automatically organize and digitize all your important documents in one secure location."
+    },
+    {
+      icon: Users,
+      title: "Expert Advocacy",
+      description: "Professional claim advocates fight for maximum settlements on your behalf."
+    },
+    {
+      icon: CheckCircle,
+      title: "Streamlined Claims",
+      description: "Submit claims 10x faster with pre-populated forms and automated documentation."
     }
-  };
+  ];
 
-  const renderScreen = () => {
-    if (view.screen === 'Assets' && view.assetId) {
-        const asset = assets.find(a => a.id === view.assetId);
-        return <AssetDetailScreen asset={asset} onBack={() => handleNavigate('Assets')} onAddInventory={() => setIsInventoryModalOpen(true)} />;
-    }
-    
-    switch (view.screen) {
-      case 'Home':
-        return <HomeScreen onStartClaim={() => setIsClaimWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
-      case 'Assets':
-        return <AssetVaultScreen assets={assets} onViewAsset={(id: string | number) => handleNavigate('Assets', id)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
-      case 'Assess':
-        return <DamageAssessmentScreen assets={assets} />;
-      case 'Claims':
-        return <ClaimsScreen onStartClaim={() => setIsClaimWizardOpen(true)} />;
-      case 'TestCard':
-        return <TestCard />;
-      default:
-        return <HomeScreen onStartClaim={() => setIsAddAssetWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
-    }
+  const handleSignIn = () => {
+    // Navigate to sign-in page (we'll create this next)
+    window.location.href = '/auth/signin';
   };
 
   return (
-    <div className="flex h-screen w-full font-sans">
-      <style>
-        {`
-          @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Roboto+Slab:wght@700&display=swap');
-          .font-sans { font-family: 'Inter', sans-serif; }
-          .font-slab { font-family: 'Roboto Slab', serif; }
-          
-          /* --- Custom Color Utilities --- */
-          .bg-bgPrimary { background-color: ${COLORS.bgPrimary}; }
-          .bg-bgSecondary { background-color: ${COLORS.bgSecondary}; }
-          .bg-bgTertiary { background-color: ${COLORS.bgTertiary}; }
-          
-          .text-textPrimary { color: ${COLORS.textPrimary}; }
-          .text-textSecondary { color: ${COLORS.textSecondary}; }
-          
-          .border-border { border-color: ${COLORS.border}; }
-
-          .neon-lime-text { color: ${COLORS.primary}; }
-          .neon-lime-bg { background-color: ${COLORS.primary}; }
-          .accent-blue-text { color: ${COLORS.accent}; }
-          .accent-blue-bg { background-color: ${COLORS.accent}; }
-          .danger-red-text { color: ${COLORS.danger}; }
-          .danger-red-bg { background-color: ${COLORS.danger}; }
-
-          /* --- Other Styles --- */
-          .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-          .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.15); }
-          ::-webkit-scrollbar { width: 8px; }
-          ::-webkit-scrollbar-track { background: ${COLORS.bgSecondary}; }
-          ::-webkit-scrollbar-thumb { background: ${COLORS.border}; border-radius: 4px; }
-          ::-webkit-scrollbar-thumb:hover { background: #555; }
-        `}
-      </style>
-      
-      <div className="bg-bgPrimary text-textPrimary w-full h-full flex overflow-hidden">
-        {!isMobile && <Sidebar activeScreen={view.screen} setActiveScreen={(s) => handleNavigate(s)} isCollapsed={isSidebarCollapsed} onToggle={() => setIsSidebarCollapsed(!isSidebarCollapsed)} />}
-        
-        <main className="flex-1 flex flex-col overflow-hidden">
-          <Header onMenuClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)} onProfileClick={() => setIsProfileOpen(true)} isMobile={isMobile} />
-          {showDemoNotice && (
-              <div className="bg-amber-900/20 border-b border-amber-600/40 px-4 py-2 flex items-center justify-between">
-                  <div className="flex items-center gap-2 text-sm">
-                      <Sparkles size={16} className="text-amber-500" />
-                      <span>Demo Mode: AI features are using sample data. Add your Gemini API key for real analysis.</span>
-                  </div>
-                  <button onClick={() => setShowDemoNotice(false)} className="text-textSecondary hover:text-white">
-                      <X size={16} />
-                  </button>
-              </div>
-          )}
-          <div className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
-            {renderScreen()}
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800">
+      {/* Navigation */}
+      <nav className="relative z-50 bg-slate-900/50 backdrop-blur-sm border-b border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between h-16">
+            <div className="flex items-center space-x-2">
+              <Shield className="h-8 w-8 text-blue-400" />
+              <span className="text-xl font-bold text-white">ClaimGuardian</span>
+            </div>
+            <div className="flex items-center space-x-4">
+              <Button
+                variant="ghost"
+                onClick={handleSignIn}
+                className="text-slate-300 hover:text-white"
+              >
+                Sign In
+              </Button>
+              <Button
+                onClick={() => setShowSignupModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                Get Started
+              </Button>
+            </div>
           </div>
-        </main>
+        </div>
+      </nav>
 
-        {isMobile && <BottomNav activeScreen={view.screen} setActiveScreen={(s) => handleNavigate(s)} />}
+      {/* Hero Section */}
+      <section className="relative pt-20 pb-32 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 backdrop-blur-3xl" />
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center">
+            <h1 className="text-4xl md:text-6xl font-bold text-white mb-6 leading-tight">
+              Stop Fighting Insurance Companies
+              <span className="block text-blue-400">Start Winning Claims</span>
+            </h1>
+            <p className="text-xl md:text-2xl text-slate-300 mb-8 max-w-4xl mx-auto">
+              Stop wasting hours deciphering complex policies and chasing adjusters. 
+              ClaimGuardian's AI-powered platform automates the most tedious parts of the claims process.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Button
+                size="lg"
+                onClick={() => setShowSignupModal(true)}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 text-lg"
+              >
+                Start Your Free Trial
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Button>
+              <Button
+                size="lg"
+                variant="ghost"
+                onClick={handleSignIn}
+                className="border-slate-600 text-slate-300 hover:bg-slate-800 px-8 py-4 text-lg"
+              >
+                Sign In to Dashboard
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
 
-        {isClaimWizardOpen && <ClaimWizard onClose={() => setIsClaimWizardOpen(false)} onContextSet={() => { /* handle context set */ }} />}
-        {isProfileOpen && <ProfileModal onClose={() => setIsProfileOpen(false)} />}
-        {isAddAssetWizardOpen && <AddAssetWizard onClose={() => setIsAddAssetWizardOpen(false)} onAddAsset={handleAddAsset} onFinish={(id: number) => { setIsAddAssetWizardOpen(false); handleNavigate('Assets', id); }} />}
-        {isInventoryModalOpen && <AddInventoryItemModal assetId={view.assetId} onClose={() => setIsInventoryModalOpen(false)} onAddItem={handleAddItemToInventory} />}
-        
-        {/* AI Chat components will be added later */}
-      </div>
+      {/* Features Section */}
+      <section className="py-20 bg-slate-900/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              Why Choose ClaimGuardian?
+            </h2>
+            <p className="text-xl text-slate-300 max-w-2xl mx-auto">
+              Our AI-powered platform gives you the tools and expertise to maximize your insurance claims.
+            </p>
+          </div>
+          
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {features.map((feature, index) => (
+              <div key={index} className="bg-slate-800/50 backdrop-blur-sm rounded-lg p-6 border border-slate-700">
+                <feature.icon className="h-12 w-12 text-blue-400 mb-4" />
+                <h3 className="text-lg font-semibold text-white mb-3">{feature.title}</h3>
+                <p className="text-slate-300">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
+            Ready to Take Control of Your Claims?
+          </h2>
+          <p className="text-xl text-blue-100 mb-8">
+            Join thousands of homeowners who've maximized their insurance settlements with ClaimGuardian.
+          </p>
+          <Button
+            size="lg"
+            onClick={() => setShowSignupModal(true)}
+            className="bg-white text-blue-600 hover:bg-slate-100 px-8 py-4 text-lg font-semibold"
+          >
+            Get Started Today
+          </Button>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="bg-slate-950 py-12 border-t border-slate-800">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex flex-col md:flex-row justify-between items-center">
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <Shield className="h-6 w-6 text-blue-400" />
+              <span className="text-lg font-semibold text-white">ClaimGuardian</span>
+            </div>
+            <div className="flex space-x-8 text-slate-400">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+              <a href="#" className="hover:text-white transition-colors">Support</a>
+            </div>
+          </div>
+          <div className="border-t border-slate-800 mt-8 pt-8 text-center text-slate-400">
+            <p>&copy; 2024 ClaimGuardian. All rights reserved.</p>
+          </div>
+        </div>
+      </footer>
+
+      {/* Signup Modal */}
+      <SignupModal
+        isOpen={showSignupModal}
+        onClose={() => setShowSignupModal(false)}
+        onSuccess={() => {
+          setShowSignupModal(false);
+          // Navigate to dashboard after successful signup
+          window.location.href = '/dashboard';
+        }}
+      />
     </div>
   );
-} 
+}
