@@ -12,14 +12,15 @@
  */
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  distDir: '.next',
   
-  transpilePackages: ['@claimguardian/ui'],
   eslint: {
     ignoreDuringBuilds: true,
   },
   typescript: {
     ignoreBuildErrors: true,
   },
+  output: 'standalone',
   experimental: {
     optimizePackageImports: ['lucide-react']
   },

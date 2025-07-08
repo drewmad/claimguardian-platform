@@ -10,8 +10,8 @@
  */
 import React, { useState, useEffect, useRef } from 'react';
 import { X, Bot, ArrowRight, Paperclip, XCircle } from 'lucide-react';
+import Image from 'next/image';
 import callGeminiAPI from '@/lib/gemini-api';
-import { COLORS } from '@/lib/constants';
 
 const AiChatPanel = ({ onClose, isMobile, context }) => {
     const [messages, setMessages] = useState([
@@ -94,7 +94,7 @@ const AiChatPanel = ({ onClose, isMobile, context }) => {
                     <div key={i} className={`flex items-end gap-2 ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
                         {msg.from === 'ai' && <div className="w-8 h-8 rounded-full accent-blue-bg flex items-center justify-center flex-shrink-0"><Bot size={20} className="text-white"/></div>}
                         <div className={`max-w-xs md:max-w-sm p-3 rounded-lg ${msg.from === 'user' ? 'accent-blue-bg text-white' : 'bg-bgTertiary'}`}>
-                            {msg.imagePreviewUrl && <img src={msg.imagePreviewUrl} alt="User upload" className="rounded-md mb-2 max-h-40"/>}
+                            {msg.imagePreviewUrl && <Image src={msg.imagePreviewUrl} alt="User upload" width={160} height={90} className="rounded-md mb-2"/>}
                             {msg.text}
                         </div>
                     </div>
@@ -117,7 +117,7 @@ const AiChatPanel = ({ onClose, isMobile, context }) => {
                 {attachedImage && (
                     <div className="p-2 bg-bgTertiary rounded-lg mb-2 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-hidden">
-                            <img src={attachedImage.previewUrl} alt="preview" className="w-10 h-10 rounded object-cover" />
+                            <Image src={attachedImage.previewUrl} alt="preview" width={40} height={40} className="rounded object-cover" />
                             <span className="text-sm text-textSecondary truncate">{attachedImage.name}</span>
                         </div>
                         <button onClick={() => setAttachedImage(null)} className="p-1 text-textSecondary hover:text-white"><XCircle size={18}/></button>

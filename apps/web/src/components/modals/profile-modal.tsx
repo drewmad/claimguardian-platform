@@ -19,6 +19,7 @@
  * @status active
  */
 import { useState } from 'react';
+import Image from 'next/image';
 import { X, Mail, Phone, MapPin, ToggleLeft, ToggleRight } from 'lucide-react';
 import { MOCK_DATA } from '@/lib/mock-data';
 
@@ -35,7 +36,7 @@ const ProfileModal = ({ onClose }) => {
                 </header>
                 <div className="p-6 space-y-6 overflow-y-auto">
                     <div className="flex items-center gap-6">
-                        <img src={MOCK_DATA.user.avatar} alt="User Avatar" className="w-20 h-20 rounded-full"/>
+                        <Image src={MOCK_DATA.user.avatar} alt="User Avatar" width={80} height={80} className="rounded-full"/>
                         <div>
                             <h3 className="text-2xl font-bold">{MOCK_DATA.user.name}</h3>
                             <p className="text-textSecondary">Member Since {MOCK_DATA.user.memberSince}</p>

@@ -9,8 +9,9 @@
  * @status active
  */
 import React, { useState, useRef } from 'react';
-import { X, Camera, Paperclip, Plus, Building, Car, Tv, Shield, Grid, Sparkles, Video } from 'lucide-react';
-import { COLORS } from '@/lib/constants';
+import Image from 'next/image';
+import { X, Camera, Paperclip, Building, Car, Tv, Shield, Grid, FileText, ToggleRight, ToggleLeft, Sparkles } from 'lucide-react';
+
 
 const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
     const [step, setStep] = useState(1);
@@ -221,7 +222,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
                                     onClick={() => setShowAssetSearch(true)}
                                     className="mt-4 text-sm accent-blue-text hover:underline"
                                 >
-                                    Can't find your asset type?
+                                    Can&apos;t find your asset type?
                                 </button>
                             </>
                         ) : (
@@ -292,11 +293,11 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
                                         onChange={handleDataChange}
                                         className="rounded"
                                     />
-                                    <span className="text-sm">I don't know the value</span>
+                                    <p className="text-sm">I don&apos;t know the value</p>
                                 </label>
                                 {assetData.unknownValue && (
                                     <p className="text-xs text-textSecondary mt-2 p-3 bg-bgTertiary rounded-lg">
-                                         Knowing your asset's value helps ensure proper coverage. You can update this later or get a professional appraisal.
+                                         Knowing your asset&apos;s value helps ensure proper coverage. You can update this later or get a professional appraisal.
                                     </p>
                                 )}
                             </div>
@@ -397,9 +398,10 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
                                     <div className="grid grid-cols-3 gap-3 mt-4">
                                         {imagePreview.map((img, index) => (
                                             <div key={index} className="relative group">
-                                                <img 
+                                                <Image 
                                                     src={img.url} 
                                                     alt={img.name}
+                                                    width={96} height={96} // Example dimensions, adjust as needed
                                                     className="w-full h-24 object-cover rounded-lg"
                                                 />
                                                 <button
@@ -638,7 +640,7 @@ const AddAssetWizard = ({ onClose, onAddAsset, onFinish }) => {
                                 onChange={handleDataChange}
                                 className="rounded"
                             />
-                            <span>I confirm the information is accurate</span>
+                            <p className="font-semibold">I confirm the information is accurate</p>
                         </label>
                     </div>
                 );

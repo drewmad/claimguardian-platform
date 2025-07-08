@@ -8,7 +8,8 @@
  * @tags ["screen", "asset", "detail"]
  * @status active
  */
-import { ArrowLeft, FileText } from 'lucide-react';
+import Image from 'next/image';
+import { ArrowLeft, FileText, Plus } from 'lucide-react';
 import { COLORS } from '@/lib/constants';
 
 const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
@@ -16,12 +17,7 @@ const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
 
     const coverageColor = asset.coverage > 90 ? COLORS.success : asset.coverage > 60 ? COLORS.warning : COLORS.danger;
     
-    const PropertyDetailItem = ({ label, value }) => (
-        <div className="flex justify-between items-start py-2 border-b border-border last:border-b-0">
-            <span className="text-sm text-textSecondary flex-shrink-0 mr-4">{label}</span>
-            <span className="text-sm font-semibold text-right">{value}</span>
-        </div>
-    );
+    
 
     return (
         <div className="pb-20 md:pb-0">
@@ -30,7 +26,7 @@ const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
             </button>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                 <div className="lg:col-span-2 space-y-6">
-                    <img src={asset.image} alt={asset.name} className="w-full h-80 object-cover rounded-lg shadow-lg" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/800x400/1E1E1E/FFFFFF?text=Image+Not+Available`; }}/>
+                    <Image src={asset.image} alt={asset.name} width={800} height={400} className="w-full h-80 object-cover rounded-lg shadow-lg" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/800x400/1E1E1E/FFFFFF?text=Image+Not+Available`; }}/>
                     <div className="bg-bgSecondary p-6 rounded-lg shadow-md">
                         <h2 className="font-slab text-3xl font-bold">{asset.name}</h2>
                         <p className="text-lg text-textSecondary">{asset.type}</p>
@@ -44,7 +40,7 @@ const AssetDetailScreen = ({ asset, onBack, onAddInventory }) => {
                             <div className="space-y-3">
                                 {asset.inventory.map(item => (
                                     <div key={item.id} className="flex items-center gap-4 bg-bgTertiary p-2 rounded-lg">
-                                        <img src={item.imagePreviews[0]} alt={item.name} className="w-12 h-12 object-cover rounded-md" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; }}/>
+                                        <Image src={item.imagePreviews[0]} alt={item.name} width={64} height={64} className="w-12 h-12 object-cover rounded-md" onError={(e) => { e.target.onerror = null; e.target.src=`https://placehold.co/100x100/1E1E1E/FFFFFF?text=No+Image`; }}/>
                                         <div className="flex-grow">
                                             <p className="font-semibold">{item.name}</p>
                                             <p className="text-xs text-textSecondary">{item.category}</p>

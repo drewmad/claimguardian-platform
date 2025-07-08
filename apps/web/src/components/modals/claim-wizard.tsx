@@ -9,9 +9,9 @@
  * @status active
  */
 import React, { useState, useEffect } from 'react';
-import { X, Camera, Bot, Sparkles, CheckCircle } from 'lucide-react';
+import { X, Camera, Bot, CheckCircle } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';
-import { COLORS } from '@/lib/constants';
+
 
 const ClaimWizard = ({ onClose, onContextSet }) => {
     const [step, setStep] = useState(1);

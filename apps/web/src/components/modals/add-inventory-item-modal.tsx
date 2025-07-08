@@ -10,7 +10,7 @@
  */
 import React, { useState, useRef } from 'react';
 import { X, Camera, Paperclip, Plus, Sparkles, Video } from 'lucide-react';
-import callGeminiAPI from '@/lib/gemini-api';
+import Image from 'next/image';
 
 const AddInventoryItemModal = ({ assetId, onClose, onAddItem }) => {
     const [mode, setMode] = useState('manual'); // 'manual' or 'ai'
@@ -147,7 +147,7 @@ const AddInventoryItemModal = ({ assetId, onClose, onAddItem }) => {
                     <div className="space-y-4">
                         <div className="grid grid-cols-3 gap-2">
                             {itemData.imagePreviews.map((preview, index) => (
-                                <img key={index} src={preview} alt={`preview ${index}`} className="h-24 w-full object-cover rounded-md"/>
+                                <Image key={index} src={preview} alt={`preview ${index}`} width={96} height={96} className="h-24 w-full object-cover rounded-md"/>
                             ))}
                              <div onClick={() => photoInputRef.current.click()} className="cursor-pointer bg-bgTertiary h-24 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-center text-textSecondary hover:border-accent hover:text-white">
                                 <div><Plus size={20} className="mx-auto"/><p className="text-xs">Add Photo</p></div>
@@ -193,10 +193,10 @@ const AddInventoryItemModal = ({ assetId, onClose, onAddItem }) => {
                     <div className="space-y-4">
                         <div className="text-center p-2 bg-bgTertiary rounded-lg">
                             <h4 className="font-bold">Batch & Video Scan</h4>
-                            <p className="text-sm text-textSecondary">Upload multiple room photos or a video walk-through, and we'll automatically create your inventory list for you to confirm.</p>
+                            <p className="text-sm text-textSecondary">Upload multiple room photos or a video walk-through, and we&apos;ll automatically create your inventory list for you to confirm.</p>
                         </div>
                         <div onClick={() => photoInputRef.current.click()} className="cursor-pointer bg-bgTertiary h-64 rounded-lg border-2 border-dashed border-border flex items-center justify-center text-center text-textSecondary hover:border-accent hover:text-white">
-                            {aiImageInfo ? <img src={aiImageInfo.previewUrl} alt="AI scan preview" className="h-full w-full object-contain rounded-lg p-1"/> : <div><Camera size={30} className="mx-auto mb-2"/><p>Upload a single item photo or multiple room photos</p></div>}
+                            {aiImageInfo ? <Image src={aiImageInfo.previewUrl} alt="AI scan preview" width={256} height={256} className="h-full w-full object-contain rounded-lg p-1"/> : <div><Camera size={30} className="mx-auto mb-2"/><p>Upload a single item photo or multiple room photos</p></div>}
                         </div>
                         <input type="file" ref={photoInputRef} onChange={handlePhotoChange} accept="image/*" multiple className="hidden"/>
                         

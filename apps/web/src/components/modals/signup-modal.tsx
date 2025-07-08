@@ -102,8 +102,8 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
         if (onSuccess) {
           setTimeout(() => onSuccess(), 2000) // Give user time to see success message
         }
-      } catch (error: any) {
-        console.error('Signup error:', error.message)
+      } catch (error: unknown) {
+        console.error('Signup error:', (error as Error).message)
         // You might want to set a general error state here to display to the user
         // For now, we'll just log it.
         alert(error.message) // Simple alert for demonstration

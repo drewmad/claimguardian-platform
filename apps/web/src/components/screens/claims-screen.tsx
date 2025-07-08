@@ -9,7 +9,6 @@
  * @status active
  */
 import { Plus } from 'lucide-react';
-import { MOCK_DATA } from '@/lib/mock-data';
 import { COLORS } from '@/lib/constants';
 import React, { useState, useEffect } from 'react';
 

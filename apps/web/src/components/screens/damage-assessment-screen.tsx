@@ -29,6 +29,7 @@
  * @status active
  */
 import React, { useState, useRef } from 'react';
+import Image from 'next/image';
 import { Camera, Bot, Sparkles } from 'lucide-react';
 import callGeminiAPI from '@/lib/gemini-api';
 
@@ -110,7 +111,7 @@ const DamageAssessmentScreen = ({ assets }) => {
                         <h3 className="font-slab text-lg font-bold mb-4">2. Upload Damage Photo</h3>
                         <div onClick={() => fileInputRef.current.click()} className="cursor-pointer bg-bgTertiary min-h-[12rem] rounded-lg border-2 border-dashed border-border flex items-center justify-center text-center text-textSecondary hover:border-accent hover:text-white">
                             {imageInfo ? (
-                                <img src={imageInfo.previewUrl} alt="Damage preview" className="h-full max-h-64 w-full object-contain rounded-lg"/>
+                                <Image src={imageInfo.previewUrl} alt="Damage preview" width={400} height={240} className="h-full max-h-64 w-full object-contain rounded-lg"/>
                             ) : (
                                 <div><Camera size={40} className="mx-auto mb-2"/><p>Click to upload photo</p></div>
                             )}

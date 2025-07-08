@@ -1,6 +1,13 @@
 import globals from "globals";
 import tseslint from "typescript-eslint";
-import js from "@eslint/js";
+import { createRequire } from 'module';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const require = createRequire(import.meta.url);
+const js = require("@eslint/js");
+
+
 
 export default [
   js.configs.recommended,
@@ -10,7 +17,7 @@ export default [
       globals: globals.browser,
       parserOptions: {
         project: ['./tsconfig.json'],
-        tsconfigRootDir: __dirname,
+        tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
       },
     },
     rules: {

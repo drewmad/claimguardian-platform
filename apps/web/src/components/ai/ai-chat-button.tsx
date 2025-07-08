@@ -9,8 +9,6 @@
  * @status active
  */
 import { Bot } from 'lucide-react';
-import { Sparkles } from 'lucide-react';
-import { COLORS } from '@/lib/constants';
 
 const AiChatButton = ({ onClick }) => (
     <button onClick={onClick} className="fixed bottom-20 right-4 md:bottom-6 md:right-6 z-40 accent-blue-bg w-16 h-16 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">

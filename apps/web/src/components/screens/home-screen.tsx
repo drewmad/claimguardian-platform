@@ -8,7 +8,7 @@
  * @tags ["screen", "dashboard", "home"]
  * @status active
  */
-import { Plus, FileText, User, Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+import { Plus, FileText, User } from 'lucide-react';
 import { COLORS } from '@/lib/constants';
 import { MOCK_DATA } from '@/lib/mock-data';
 

@@ -38,11 +38,9 @@ export default function AppDashboard() {
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [isClaimWizardOpen, setIsClaimWizardOpen] = useState(false);
-  const [isAiChatOpen, setIsAiChatOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isInventoryModalOpen, setIsInventoryModalOpen] = useState(false);
   const [isAddAssetWizardOpen, setIsAddAssetWizardOpen] = useState(false);
-  const [activeClaimContext, setActiveClaimContext] = useState(null);
   const [showDemoNotice, setShowDemoNotice] = useState(true);
 
   useEffect(() => {
