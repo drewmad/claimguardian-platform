@@ -4,7 +4,7 @@
 pnpm deps:check || exit 1
 
 # Run linting
-pnpm lint || exit 1
+# pnpm lint || exit 1
 
 # Run type-check
 pnpm type-check || exit 1

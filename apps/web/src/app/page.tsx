@@ -33,7 +33,7 @@ import AddAssetWizard from '@/components/modals/add-asset-wizard';
 import AddInventoryItemModal from '@/components/modals/add-inventory-item-modal';
 
 export default function AppDashboard() {
-  const [view, setView] = useState({ screen: 'Home', assetId: null });
+  const [view, setView] = useState<{ screen: string; assetId: string | number | null }>({ screen: 'Home', assetId: null });
   const [assets, setAssets] = useState(INITIAL_ASSETS);
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -100,7 +100,7 @@ export default function AppDashboard() {
       case 'Home':
         return <HomeScreen onStartClaim={() => setIsClaimWizardOpen(true)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
       case 'Assets':
-        return <AssetVaultScreen assets={assets} onViewAsset={(id) => handleNavigate('Assets', id)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
+        return <AssetVaultScreen assets={assets} onViewAsset={(id: string | number) => handleNavigate('Assets', id)} onAddAsset={() => setIsAddAssetWizardOpen(true)} />;
       case 'Assess':
         return <DamageAssessmentScreen assets={assets} />;
       case 'Claims':
