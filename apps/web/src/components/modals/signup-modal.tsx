@@ -1,120 +1,114 @@
 /**
  * @fileMetadata
- * @purpose Provides a modal for user registration, including form validation and Supabase integration.
+ * @purpose Signup modal component
  * @owner frontend-team
- * @dependencies ["react", "@claimguardian/ui", "@/hooks/use-form", "@/utils/validation"]
+ * @dependencies ["react", "lucide-react", "@/stores/modal-store", "@/lib/supabase"]
  * @exports ["SignupModal"]
- * @complexity medium
- * @tags ["modal", "authentication", "signup", "form"]
+ * @complexity high
+ * @tags ["modal", "auth", "signup"]
  * @status active
  */
 'use client'
 
 import { useState } from 'react'
-import { Modal, Button, Input, Label, Checkbox } from '@claimguardian/ui'
-import { useForm } from '@/hooks/use-form'
-import { validateEmail, validatePhone, validateRequired } from '@/utils/validation'
+import { X, Eye, EyeOff } from 'lucide-react'
+import { useModalStore } from '@/stores/modal-store'
+import { supabase } from '@/lib/supabase'
+import { useRouter } from 'next/navigation'
 
-interface SignupModalProps {
-  isOpen: boolean
-  onClose: () => void
-  onSuccess?: () => void
-}
-
-interface SignupFormData {
-  firstName: string
-  lastName: string
-  email: string
-  password: string
-  confirmPassword: string
-  phone: string
-  agree: boolean
-  [key: string]: unknown
-}
-
-export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
+export function SignupModal() {
+  const router = useRouter()
+  const { activeModal, closeModal, openModal } = useModalStore()
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: '',
+    phone: '',
+    agree: false
+  })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState(0)
+  const [error, setError] = useState('')
+  const [loading, setLoading] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  const {
-    values,
-    errors,
-    handleChange,
-    handleSubmit,
-    reset
-  } = useForm<SignupFormData>({
-    initialValues: {
-      firstName: '',
-      lastName: '',
-      email: '',
-      password: '',
-      confirmPassword: '',
-      phone: '',
-      agree: false
-    },
-    validate: (values) => {
-      const errors: Partial<Record<keyof SignupFormData, string>> = {}
-      
-      if (!validateRequired(values.firstName)) {
-        errors.firstName = 'First name is required'
-      }
-      if (!validateRequired(values.lastName)) {
-        errors.lastName = 'Last name is required'
-      }
-      if (!validateEmail(values.email)) {
-        errors.email = 'Please enter a valid email address'
-      }
-      if (!validatePhone(values.phone)) {
-        errors.phone = 'Please enter a valid phone number'
-      }
-      if (!validateRequired(values.password)) {
-        errors.password = 'Password is required'
-      }
-      if (values.password !== values.confirmPassword) {
-        errors.confirmPassword = 'Passwords do not match'
-      }
-      if (!values.agree) {
-        errors.agree = 'You must agree to the terms'
-      }
-      
-      return errors
-    },
-    onSubmit: async (values) => {
-      try {
-        const { signUp } = await import('@/lib/supabase')
-        
-        const { error } = await signUp(values.email, values.password, {
-          data: {
-            firstName: values.firstName,
-            lastName: values.lastName,
-            phone: values.phone,
-          }
-        })
+  if (activeModal !== 'signup') return null
 
-        if (error) {
-          throw new Error(error.message)
-        }
-
-        setIsSubmitted(true)
-        // Call onSuccess if provided
-        if (onSuccess) {
-          setTimeout(() => onSuccess(), 2000) // Give user time to see success message
-        }
-      } catch (error: unknown) {
-        console.error('Signup error:', (error as Error).message)
-        // You might want to set a general error state here to display to the user
-        // For now, we'll just log it.
-        alert((error as Error).message) // Simple alert for demonstration
-      }
+  const validateForm = () => {
+    if (!formData.firstName || !formData.lastName) {
+      setError('Please enter your full name')
+      return false
     }
-  })
+    if (!formData.email || !formData.email.includes('@')) {
+      setError('Please enter a valid email address')
+      return false
+    }
+    if (!formData.password || formData.password.length < 8) {
+      setError('Password must be at least 8 characters')
+      return false
+    }
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match')
+      return false
+    }
+    if (!formData.phone || formData.phone.replace(/\D/g, '').length < 10) {
+      setError('Please enter a valid phone number')
+      return false
+    }
+    if (!formData.agree) {
+      setError('You must agree to the terms')
+      return false
+    }
+    return true
+  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setError('')
+    
+    if (!validateForm()) return
+    
+    setLoading(true)
 
-  const handleClose = () => {
-    reset()
-    setIsSubmitted(false)
-    onClose()
+    try {
+      const { error } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            phone: formData.phone,
+          }
+        }
+      })
+
+      if (error) throw error
+
+      setIsSubmitted(true)
+      setTimeout(() => {
+        closeModal()
+        router.push('/dashboard')
+      }, 2000)
+    } catch (error) {
+      setError((error as Error).message || 'Failed to sign up')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target
+    setFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? checked : value
+    }))
+    
+    if (name === 'password') {
+      setPasswordStrength(calculatePasswordStrength(value))
+    }
   }
 
   const calculatePasswordStrength = (password: string) => {
@@ -140,176 +134,200 @@ export function SignupModal({ isOpen, onClose, onSuccess }: SignupModalProps) {
 
   if (isSubmitted) {
     return (
-      <Modal isOpen={isOpen} onClose={handleClose} title="Success!">
-        <div className="text-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div className="absolute inset-0 bg-black/50" />
+        <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-6 shadow-xl text-center">
+          <h2 className="text-2xl font-bold mb-4">Success!</h2>
           <p className="text-slate-300 text-lg">Thank you for signing up!</p>
-          <p className="text-slate-400 mt-2">You can now log in with your new account.</p>
-          <Button 
-            className="mt-6 w-full" 
-            onClick={handleClose}
-          >
-            Close
-          </Button>
+          <p className="text-slate-400 mt-2">Redirecting to your dashboard...</p>
         </div>
-      </Modal>
+      </div>
     )
   }
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} title="Sign Up">
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="flex flex-col md:flex-row gap-4">
-          <div className="w-full">
-            <Label htmlFor="firstName">First Name *</Label>
-            <Input
-              id="firstName"
-              name="firstName"
-              type="text"
-              value={values.firstName}
-              onChange={handleChange}
-              error={errors.firstName}
-              autoComplete="given-name"
-            />
-          </div>
-          <div className="w-full">
-            <Label htmlFor="lastName">Last Name *</Label>
-            <Input
-              id="lastName"
-              name="lastName"
-              type="text"
-              value={values.lastName}
-              onChange={handleChange}
-              error={errors.lastName}
-              autoComplete="family-name"
-            />
-          </div>
-        </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
+      
+      <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-6 shadow-xl max-h-[90vh] overflow-y-auto">
+        <button
+          onClick={closeModal}
+          className="absolute top-4 right-4 text-slate-400 hover:text-white"
+        >
+          <X className="w-5 h-5" />
+        </button>
 
-        <div>
-          <Label htmlFor="email">Email Address *</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            value={values.email}
-            onChange={handleChange}
-            error={errors.email}
-            autoComplete="email"
-          />
-        </div>
+        <h2 className="text-2xl font-bold mb-6">Create Your Account</h2>
 
-        <div>
-          <Label htmlFor="password">Password *</Label>
-          <div className="relative">
-            <Input
-              id="password"
-              name="password"
-              type={showPassword ? 'text' : 'password'}
-              value={values.password}
-              onChange={(e) => {
-                handleChange(e)
-                setPasswordStrength(calculatePasswordStrength(e.target.value))
-              }}
-              error={errors.password}
-              autoComplete="new-password"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute inset-y-0 right-0 px-4 text-blue-400 hover:text-blue-300"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {showPassword ? 'Hide' : 'Show'}
-            </Button>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-2">First Name</label>
+              <input
+                type="text"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-2">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                required
+              />
+            </div>
           </div>
-          {values.password && (
-            <div className="mt-2">
-              <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
-                <div 
-                  className={`h-full transition-all duration-300 ${
-                    passwordStrength >= 4 ? 'bg-green-500' : 
-                    passwordStrength >= 2 ? 'bg-yellow-500' : 'bg-red-500'
-                  }`}
-                  style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                />
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              required
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Password</label>
+            <div className="relative">
+              <input
+                type={showPassword ? 'text' : 'password'}
+                name="password"
+                value={formData.password}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+              >
+                {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+            {formData.password && (
+              <div className="mt-2">
+                <div className="h-1 bg-slate-700 rounded-full overflow-hidden">
+                  <div 
+                    className={`h-full transition-all duration-300 ${
+                      passwordStrength >= 4 ? 'bg-green-500' : 
+                      passwordStrength >= 2 ? 'bg-yellow-500' : 'bg-red-500'
+                    }`}
+                    style={{ width: `${(passwordStrength / 5) * 100}%` }}
+                  />
+                </div>
+                <p className="text-xs text-slate-400 mt-1">
+                  Strength: {passwordStrength >= 4 ? 'Strong' : passwordStrength >= 2 ? 'Medium' : 'Weak'}
+                </p>
               </div>
-              <p className="text-xs text-slate-400 mt-1">
-                Strength: {passwordStrength >= 4 ? 'Strong' : passwordStrength >= 2 ? 'Medium' : 'Weak'}
-              </p>
+            )}
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Confirm Password</label>
+            <div className="relative">
+              <input
+                type={showConfirmPassword ? 'text' : 'password'}
+                name="confirmPassword"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+              >
+                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+              </button>
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-2">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={formatPhoneNumber(formData.phone)}
+              onChange={(e) => {
+                const digits = e.target.value.replace(/\D/g, '')
+                handleChange({ ...e, target: { ...e.target, name: 'phone', value: digits } })
+              }}
+              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              placeholder="(555) 123-4567"
+              required
+            />
+          </div>
+
+          <div className="flex items-start gap-2">
+            <input
+              type="checkbox"
+              name="agree"
+              id="agree"
+              checked={formData.agree}
+              onChange={handleChange}
+              className="mt-1"
+            />
+            <label htmlFor="agree" className="text-sm text-slate-400">
+              I agree to the{' '}
+              <button
+                type="button"
+                onClick={() => openModal('content', { title: 'Terms of Service' })}
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                Terms of Service
+              </button>
+              {' '}and{' '}
+              <button
+                type="button"
+                onClick={() => openModal('content', { title: 'Privacy Policy' })}
+                className="text-blue-400 hover:text-blue-300 underline"
+              >
+                Privacy Policy
+              </button>
+            </label>
+          </div>
+
+          {error && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
+              {error}
             </div>
           )}
-        </div>
 
-        <div>
-          <Label htmlFor="confirmPassword">Confirm Password *</Label>
-          <div className="relative">
-            <Input
-              id="confirmPassword"
-              name="confirmPassword"
-              type={showConfirmPassword ? 'text' : 'password'}
-              value={values.confirmPassword}
-              onChange={handleChange}
-              error={errors.confirmPassword}
-              autoComplete="new-password"
-            />
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              className="absolute inset-y-0 right-0 px-4 text-blue-400 hover:text-blue-300"
-              onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-            >
-              {showConfirmPassword ? 'Hide' : 'Show'}
-            </Button>
-          </div>
-        </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full btn-primary py-3 font-semibold disabled:opacity-50"
+          >
+            {loading ? 'Creating Account...' : 'Sign Up'}
+          </button>
+        </form>
 
-        <div>
-          <Label htmlFor="phone">Phone Number *</Label>
-          <Input
-            id="phone"
-            name="phone"
-            type="tel"
-            value={formatPhoneNumber(values.phone)}
-            onChange={(e) => {
-              const formatted = formatPhoneNumber(e.target.value)
-              handleChange({ ...e, target: { ...e.target, value: formatted } })
+        <p className="mt-6 text-center text-slate-400 text-sm">
+          Already have an account?{' '}
+          <button
+            onClick={() => {
+              closeModal()
+              openModal('login')
             }}
-            error={errors.phone}
-            autoComplete="tel"
-            placeholder="(555) 123-4567"
-          />
-        </div>
-
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="agree"
-            checked={values.agree}
-                          onCheckedChange={(checked: boolean) => 
-                handleChange({ target: { name: 'agree', value: checked } })
-            }
-          />
-          <Label htmlFor="agree" className="text-sm">
-            I agree to the{' '}
-            <Button variant="link" className="text-blue-400 hover:text-blue-300 p-0 h-auto">
-              Terms of Service
-            </Button>
-            {' '}and{' '}
-            <Button variant="link" className="text-blue-400 hover:text-blue-300 p-0 h-auto">
-              Privacy Policy
-            </Button>
-            {' '}*
-          </Label>
-        </div>
-        {errors.agree && (
-          <p className="error-message">{errors.agree}</p>
-        )}
-
-        <Button type="submit" className="w-full mt-6">
-          Sign Up
-        </Button>
-      </form>
-    </Modal>
+            className="text-blue-400 hover:text-blue-300"
+          >
+            Log In
+          </button>
+        </p>
+      </div>
+    </div>
   )
 }
