@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { X } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 export function ForgotPasswordModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -30,6 +30,7 @@ export function ForgotPasswordModal() {
     setLoading(true)
 
     try {
+      const supabase = createClient()
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })

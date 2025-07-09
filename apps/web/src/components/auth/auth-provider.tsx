@@ -12,9 +12,10 @@
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
+import { enhancedLogger } from '@/lib/logger/enhanced-logger'
 import { useRouter } from 'next/navigation'
 import { sessionManager } from '@/lib/auth/session-manager'
 
@@ -48,6 +49,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<AuthError | null>(null)
   const [sessionWarning, setSessionWarning] = useState(false)
   const router = useRouter()
+  const supabase = createClient()
+  
+  // Debug logging
+  if (typeof window !== 'undefined') {
+    console.log('[AuthProvider] Rendered with user:', user?.id, 'loading:', loading)
+  }
 
   // Initialize auth state
   useEffect(() => {
@@ -56,6 +63,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         logger.info('Initializing authentication')
+        enhancedLogger.info('Authentication provider initializing')
         
         // Get initial session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -74,9 +82,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               email: session.user.email
             })
             logger.info('User session restored', { userId: session.user.id })
+            enhancedLogger.sessionEvent('start', { userId: session.user.id })
             
             // Start session monitoring
             sessionManager.startMonitoring()
+          } else {
+            logger.info('No active session found during initialization')
+            enhancedLogger.info('No active session found during initialization')
           }
         }
       } catch (err) {
@@ -127,8 +139,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.info('Auth state changed', { event, userId: session?.user?.id })
         
         if (mounted) {
+          // Always update user state on auth changes
           setUser(session?.user ?? null)
-          setLoading(false)
           
           // Update logger context
           if (session?.user) {
@@ -145,11 +157,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
               sessionManager.startMonitoring()
+              // Don't set loading to false immediately to prevent flashing
+              setTimeout(() => setLoading(false), 100)
               break
             case 'SIGNED_OUT':
               logger.track('user_signed_out')
               sessionManager.stopMonitoring()
-              router.push('/')
+              setLoading(false)
+              // Let ProtectedRoute handle the redirect
               break
             case 'TOKEN_REFRESHED':
               logger.info('Token refreshed successfully')
@@ -157,6 +172,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             case 'PASSWORD_RECOVERY':
               logger.track('password_recovery_initiated')
               break
+            case 'USER_UPDATED':
+              logger.info('User data updated')
+              break
+            default:
+              setLoading(false)
           }
         }
       }
@@ -167,6 +187,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       subscription.unsubscribe()
       sessionManager.stopMonitoring()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [router])
 
   // Sign in handler

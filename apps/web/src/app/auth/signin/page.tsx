@@ -14,7 +14,7 @@
 import React, { useState } from 'react';
 import { Button, Input, Label, Card } from '@claimguardian/ui';
 import { Shield, Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { signIn } from '@/lib/supabase';
+import { authService } from '@/lib/auth/auth-service';
 import { useRouter } from 'next/navigation';
 
 export default function SignInPage() {
@@ -31,14 +31,14 @@ export default function SignInPage() {
     setError('');
 
     try {
-      const { data, error } = await signIn(email, password);
+      const { data, error } = await authService.signIn({ email, password });
       
       if (error) {
         setError(error.message);
         return;
       }
 
-      if (data.user) {
+      if (data) {
         router.push('/dashboard');
       }
     } catch {

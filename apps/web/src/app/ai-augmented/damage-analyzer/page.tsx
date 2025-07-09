@@ -14,7 +14,6 @@ import {
   AlertTriangle,
   CheckCircle,
   FileText,
-  Download,
   Sparkles,
   Home,
   Droplets,
@@ -29,6 +28,8 @@ import {
 import { AIClient } from '@/lib/ai/client'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
+import { useAuth } from '@/components/auth/auth-provider'
+import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { toast } from 'sonner'
 
 interface DamageItem {
@@ -59,19 +60,16 @@ const DAMAGE_ICONS = {
   other: AlertCircle,
 }
 
-const SEVERITY_COLORS = {
-  minor: 'green',
-  moderate: 'yellow',
-  severe: 'orange',
-  total_loss: 'red',
-}
 
-export default function DamageAnalyzerPage() {
+function DamageAnalyzerContent() {
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
-  const [isGeneratingReport, setIsGeneratingReport] = useState(false)
-  const { supabase, user } = useSupabase()
+  const { supabase } = useSupabase()
+  const { user } = useAuth()
   const aiClient = new AIClient()
+  
+  // Debug logging
+  useAuthDebug('DamageAnalyzerContent')
 
   const analyzeImages = async (files: File[]) => {
     try {
@@ -187,19 +185,6 @@ Analyze this image and provide a detailed damage assessment in the following JSO
     }
   }
 
-  const generateReport = async () => {
-    if (!analysisResult) return
-
-    setIsGeneratingReport(true)
-    try {
-      // TODO: Generate PDF report
-      toast.success('Report generated successfully!')
-    } catch {
-      toast.error('Failed to generate report')
-    } finally {
-      setIsGeneratingReport(false)
-    }
-  }
 
   const fileToBase64 = (file: File): Promise<string> => {
     return new Promise((resolve, reject) => {
@@ -571,6 +556,16 @@ Analyze this image and provide a detailed damage assessment in the following JSO
           )}
         </div>
       </div>
+    </ProtectedRoute>
+  )
+}
+
+export default function DamageAnalyzerPage() {
+  useAuthDebug('DamageAnalyzerPage')
+  
+  return (
+    <ProtectedRoute>
+      <DamageAnalyzerContent />
     </ProtectedRoute>
   )
 }

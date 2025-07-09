@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { authService } from './auth-service'
 
@@ -38,19 +38,20 @@ export interface EmailChangeRequest {
 }
 
 class ProfileService {
+  private supabase = createClient()
   /**
    * Get user profile
    */
   async getProfile(userId: string): Promise<UserProfile | null> {
     try {
-      const { data: user, error: userError } = await supabase.auth.getUser()
+      const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
         logger.error('Failed to get auth user', userError)
         return null
       }
 
-      const { data: profile, error: profileError } = await supabase
+      const { data: profile, error: profileError } = await this.supabase
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -92,7 +93,7 @@ class ProfileService {
       if (data.phone !== undefined) updateData.phone = data.phone
       if (data.avatarUrl !== undefined) updateData.avatar_url = data.avatarUrl
 
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('profiles')
         .update(updateData)
         .eq('id', userId)
@@ -119,14 +120,14 @@ class ProfileService {
   }> {
     try {
       // First, verify the user's password
-      const { data: user, error: userError } = await supabase.auth.getUser()
+      const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
 
       // Re-authenticate with password to ensure it's correct
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await this.supabase.auth.signInWithPassword({
         email: user.user.email!,
         password: data.password
       })
@@ -136,7 +137,7 @@ class ProfileService {
       }
 
       // Update email
-      const { error: updateError } = await supabase.auth.updateUser({
+      const { error: updateError } = await this.supabase.auth.updateUser({
         email: data.newEmail
       })
 
@@ -167,14 +168,14 @@ class ProfileService {
   }> {
     try {
       // First, verify current password
-      const { data: user, error: userError } = await supabase.auth.getUser()
+      const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
 
       // Re-authenticate with current password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await this.supabase.auth.signInWithPassword({
         email: user.user.email!,
         password: currentPassword
       })
@@ -211,7 +212,7 @@ class ProfileService {
       const filePath = `avatars/${fileName}`
 
       // Upload to Supabase Storage
-      const { error: uploadError } = await supabase.storage
+      const { error: uploadError } = await this.supabase.storage
         .from('avatars')
         .upload(filePath, file, {
           cacheControl: '3600',
@@ -224,7 +225,7 @@ class ProfileService {
       }
 
       // Get public URL
-      const { data: { publicUrl } } = supabase.storage
+      const { data: { publicUrl } } = this.supabase.storage
         .from('avatars')
         .getPublicUrl(filePath)
 
@@ -248,14 +249,14 @@ class ProfileService {
   }> {
     try {
       // Verify password first
-      const { data: user, error: userError } = await supabase.auth.getUser()
+      const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
 
       // Re-authenticate with password
-      const { error: signInError } = await supabase.auth.signInWithPassword({
+      const { error: signInError } = await this.supabase.auth.signInWithPassword({
         email: user.user.email!,
         password: password
       })

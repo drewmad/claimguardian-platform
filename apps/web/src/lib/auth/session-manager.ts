@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 
 interface SessionManagerConfig {
@@ -23,6 +23,7 @@ interface SessionManagerConfig {
 class SessionManager {
   private refreshTimer?: NodeJS.Timeout
   private warningTimer?: NodeJS.Timeout
+  private supabase = createClient()
   public config: SessionManagerConfig
 
   constructor(config: SessionManagerConfig = {}) {
@@ -53,7 +54,7 @@ class SessionManager {
     this.stopMonitoring()
     
     // Check current session
-    const { data: { session }, error } = await supabase.auth.getSession()
+    const { data: { session }, error } = await this.supabase.auth.getSession()
     
     if (error || !session) {
       logger.error('Failed to get session for monitoring', error)
@@ -128,7 +129,7 @@ class SessionManager {
     try {
       logger.info('Attempting to refresh session')
       
-      const { data: { session }, error } = await supabase.auth.refreshSession()
+      const { data: { session }, error } = await this.supabase.auth.refreshSession()
       
       if (error) {
         logger.error('Failed to refresh session', error)
@@ -165,7 +166,7 @@ class SessionManager {
    * Get time until session expiry in seconds
    */
   async getTimeUntilExpiry(): Promise<number | null> {
-    const { data: { session }, error } = await supabase.auth.getSession()
+    const { data: { session }, error } = await this.supabase.auth.getSession()
     
     if (error || !session) {
       return null

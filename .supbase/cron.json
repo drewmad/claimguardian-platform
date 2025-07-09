@@ -1,0 +1,8 @@
+[
+  { "name": "iso_policy_forms_ingest",   "schedule": "0 3 * * 0" },
+  { "name": "carrier_policy_jackets_ingest", "schedule": "30 3 * * *" },
+  { "name": "serff_rate_ingest",         "schedule": "0 */6 * * *" },
+  { "name": "naic_complaints_ingest",    "schedule": "15 4 * * 1" },
+  { "name": "fl_dockets_ingest",         "schedule": "0 2 * * *" },
+  { "name": "embed",                     "schedule": "*/15 * * * *" }
+]

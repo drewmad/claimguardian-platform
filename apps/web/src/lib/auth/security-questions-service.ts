@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import * as bcrypt from 'bcryptjs'
 
@@ -31,12 +31,13 @@ interface SecurityAnswerInput {
 }
 
 class SecurityQuestionsService {
+  private supabase = createClient()
   /**
    * Get all available security questions
    */
   async getQuestions(): Promise<SecurityQuestion[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('security_questions')
         .select('*')
         .order('question')
@@ -58,7 +59,7 @@ class SecurityQuestionsService {
    */
   async getUserQuestions(userId: string): Promise<UserSecurityAnswer[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('user_security_answers')
         .select(`
           id,
@@ -103,7 +104,7 @@ class SecurityQuestionsService {
       )
 
       // Delete existing answers
-      const { error: deleteError } = await supabase
+      const { error: deleteError } = await this.supabase
         .from('user_security_answers')
         .delete()
         .eq('user_id', userId)
@@ -114,7 +115,7 @@ class SecurityQuestionsService {
       }
 
       // Insert new answers
-      const { error: insertError } = await supabase
+      const { error: insertError } = await this.supabase
         .from('user_security_answers')
         .insert(hashedAnswers)
 
@@ -135,7 +136,7 @@ class SecurityQuestionsService {
    */
   async verifyAnswer(userId: string, questionId: string, answer: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('user_security_answers')
         .select('answer_hash')
         .eq('user_id', userId)
@@ -211,7 +212,7 @@ class SecurityQuestionsService {
    */
   async hasSecurityQuestions(userId: string): Promise<boolean> {
     try {
-      const { count, error } = await supabase
+      const { count, error } = await this.supabase
         .from('user_security_answers')
         .select('*', { count: 'exact', head: true })
         .eq('user_id', userId)

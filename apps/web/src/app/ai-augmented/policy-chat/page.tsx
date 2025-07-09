@@ -22,6 +22,7 @@ import {
 import { AIClient } from '@/lib/ai/client'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
+import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
 
 const QUICK_QUESTIONS = [
@@ -72,7 +73,8 @@ export default function PolicyChatPage() {
   const [compareMode, setCompareMode] = useState(false)
   const [selectedDocs, setSelectedDocs] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const { supabase, user } = useSupabase()
+  const { supabase } = useSupabase()
+  const { user } = useAuth()
   const aiClient = new AIClient()
 
   const processDocument = async (file: File) => {

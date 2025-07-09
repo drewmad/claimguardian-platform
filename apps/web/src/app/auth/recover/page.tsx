@@ -16,7 +16,7 @@ import Link from 'next/link'
 import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 
 type RecoveryStep = 'email' | 'questions' | 'reset' | 'success'
 
@@ -38,6 +38,7 @@ export default function RecoverAccountPage() {
 
     try {
       // Look up user by email
+      const supabase = createClient()
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('id')

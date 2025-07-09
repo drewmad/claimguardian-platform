@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/library'
 import { Button } from './button'
 import { Card } from './card'
-import { Camera, X, Scan } from 'lucide-react'
+import { X, Scan } from 'lucide-react'
 import { toast } from 'sonner'
 
 interface BarcodeScannerProps {
@@ -23,6 +23,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
     return () => {
       reader.reset()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reader])
 
   const startScanning = async () => {
@@ -36,10 +37,10 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
       if (videoRef.current && stream) {
         videoRef.current.srcObject = stream
         
-        const result = await reader.decodeFromVideoDevice(
+        await reader.decodeFromVideoDevice(
           undefined,
           videoRef.current,
-          (result, err) => {
+          (result) => {
             if (result) {
               const code = result.getText()
               const format = result.getBarcodeFormat()

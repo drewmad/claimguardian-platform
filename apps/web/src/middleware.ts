@@ -6,6 +6,13 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const supabase = createClient(request, response)
 
+  // Refresh session if it exists
+  const { data: { session }, error } = await supabase.auth.getSession()
+  
+  if (error) {
+    console.error('Middleware session error:', error)
+  }
+  
   // Get client IP
   const ip = request.ip || 
     request.headers.get('x-forwarded-for')?.split(',')[0] || 
@@ -45,6 +52,17 @@ export async function middleware(request: NextRequest) {
       metadata,
       created_at: new Date().toISOString(),
     })
+  }
+
+  // Check protected routes
+  const isProtectedRoute = request.nextUrl.pathname.startsWith('/ai-augmented') || 
+                          request.nextUrl.pathname.startsWith('/dashboard') ||
+                          request.nextUrl.pathname.startsWith('/account')
+  
+  if (isProtectedRoute && !session) {
+    console.log('Warning: Unauthenticated access to protected route:', request.nextUrl.pathname)
+    // Let client-side handle the redirect for now to debug the issue
+    // return NextResponse.redirect(new URL('/', request.url))
   }
 
   // Add security headers

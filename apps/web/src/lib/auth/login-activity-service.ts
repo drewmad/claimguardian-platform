@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import * as UAParser from 'ua-parser-js'
 
@@ -38,6 +38,8 @@ export interface LoginActivityStats {
 }
 
 class LoginActivityService {
+  private supabase = createClient()
+
   /**
    * Log a login attempt
    */
@@ -49,7 +51,7 @@ class LoginActivityService {
     try {
       // Get user agent info
       const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : ''
-      const parser = new (UAParser as unknown as typeof UAParser)(userAgent)
+      const parser = new UAParser.UAParser(userAgent)
       const device = parser.getDevice()
       const browser = parser.getBrowser()
       const os = parser.getOS()
@@ -57,7 +59,7 @@ class LoginActivityService {
       // Get IP address (in production, this would come from the server)
       const ipAddress = await this.getClientIP()
 
-      const { error } = await supabase.rpc('log_login_activity', {
+      const { error } = await this.supabase.rpc('log_login_activity', {
         p_user_id: userId,
         p_ip_address: ipAddress,
         p_user_agent: userAgent,
@@ -97,7 +99,7 @@ class LoginActivityService {
     limit: number = 20
   ): Promise<LoginActivity[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('login_activity')
         .select('*')
         .eq('user_id', userId)
@@ -121,7 +123,7 @@ class LoginActivityService {
    */
   async getLoginStats(userId: string): Promise<LoginActivityStats> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('recent_login_activity')
         .select('*')
         .eq('user_id', userId)

@@ -25,12 +25,12 @@ import {
   Camera,
   Save,
   FileSpreadsheet,
-  Scan,
-  Search
+  Scan
 } from 'lucide-react'
 import { AIClient } from '@/lib/ai/client'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
+import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
 
 interface InventoryItem {
@@ -84,7 +84,8 @@ export default function InventoryScannerPage() {
   const [isSaving, setIsSaving] = useState(false)
   const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
   const [selectedItemForBarcode, setSelectedItemForBarcode] = useState<string | null>(null)
-  const { supabase, user } = useSupabase()
+  const { supabase } = useSupabase()
+  const { user } = useAuth()
   const aiClient = new AIClient()
 
   const scanImages = async (files: File[]) => {

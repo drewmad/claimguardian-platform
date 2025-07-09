@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
@@ -42,6 +42,8 @@ interface SignInData {
 }
 
 class AuthService {
+  private supabase = createClient()
+
   /**
    * Sign up a new user
    */
@@ -49,7 +51,7 @@ class AuthService {
     try {
       logger.info('Attempting user signup', { email: data.email })
       
-      const { data: authData, error } = await supabase.auth.signUp({
+      const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
@@ -99,7 +101,7 @@ class AuthService {
     try {
       logger.info('Attempting user signin', { email: data.email, rememberMe: data.rememberMe })
       
-      const { data: authData, error } = await supabase.auth.signInWithPassword({
+      const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
@@ -164,7 +166,7 @@ class AuthService {
     try {
       logger.info('Attempting user signout')
       
-      const { error } = await supabase.auth.signOut()
+      const { error } = await this.supabase.auth.signOut()
 
       if (error) {
         throw this.handleAuthError(error)
@@ -196,7 +198,7 @@ class AuthService {
     try {
       logger.info('Attempting password reset', { email })
       
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })
 
@@ -230,7 +232,7 @@ class AuthService {
     try {
       logger.info('Attempting password update')
       
-      const { data, error } = await supabase.auth.updateUser({
+      const { data, error } = await this.supabase.auth.updateUser({
         password: newPassword
       })
 
@@ -271,7 +273,7 @@ class AuthService {
     try {
       logger.info('Attempting to resend confirmation email', { email })
       
-      const { error } = await supabase.auth.resend({
+      const { error } = await this.supabase.auth.resend({
         type: 'signup',
         email: email,
         options: {
@@ -307,7 +309,7 @@ class AuthService {
    */
   async getCurrentUser(): Promise<AuthResponse<User | null>> {
     try {
-      const { data: { user }, error } = await supabase.auth.getUser()
+      const { data: { user }, error } = await this.supabase.auth.getUser()
 
       if (error) {
         throw this.handleAuthError(error)
@@ -336,7 +338,7 @@ class AuthService {
    */
   async refreshSession(): Promise<AuthResponse<User>> {
     try {
-      const { data: { session }, error } = await supabase.auth.refreshSession()
+      const { data: { session }, error } = await this.supabase.auth.refreshSession()
 
       if (error) {
         throw this.handleAuthError(error)

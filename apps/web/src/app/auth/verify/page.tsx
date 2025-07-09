@@ -12,7 +12,7 @@
 
 import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 import { CheckCircle, XCircle, Loader2, Home, LogIn } from 'lucide-react'
 import Link from 'next/link'
@@ -43,6 +43,7 @@ function VerifyEmailContent() {
         logger.info('Attempting email verification', { type })
 
         // Exchange the token for a session
+        const supabase = createClient()
         const { data, error } = await supabase.auth.verifyOtp({
           token_hash: token,
           type: type as 'signup' | 'recovery' | 'invite'

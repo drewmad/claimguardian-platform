@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
 
@@ -28,6 +28,7 @@ export async function POST(request: NextRequest) {
     const token = authHeader.substring(7)
     
     // Verify the user with the token
+    const supabase = createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
     if (authError || !user) {

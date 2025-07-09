@@ -9,7 +9,7 @@
  * @status active
  */
 
-import { supabase } from '@/lib/supabase'
+import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 
 export interface LegalDocument {
@@ -43,12 +43,13 @@ export interface AcceptanceRequest {
 }
 
 class LegalService {
+  private supabase = createClient()
   /**
    * Get all active legal documents
    */
   async getActiveLegalDocuments(): Promise<LegalDocument[]> {
     try {
-      const { data, error } = await supabase.rpc('get_active_legal_documents')
+      const { data, error } = await this.supabase.rpc('get_active_legal_documents')
 
       if (error) {
         logger.error('Failed to fetch active legal documents', error)
@@ -67,7 +68,7 @@ class LegalService {
    */
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
-      const { data, error } = await supabase.rpc('needs_reaccept', { uid: userId })
+      const { data, error } = await this.supabase.rpc('needs_reaccept', { uid: userId })
 
       if (error) {
         logger.error('Failed to fetch documents needing acceptance', error)
@@ -90,7 +91,7 @@ class LegalService {
   ): Promise<void> {
     try {
       const acceptancePromises = acceptances.map(acceptance =>
-        supabase.rpc('record_legal_acceptance', {
+        this.supabase.rpc('record_legal_acceptance', {
           p_user_id: userId,
           p_legal_id: acceptance.legal_id,
           p_ip_address: acceptance.ip_address,
@@ -124,7 +125,7 @@ class LegalService {
    */
   async getUserAcceptanceHistory(userId: string): Promise<UserLegalAcceptance[]> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('user_legal_acceptance')
         .select(`
           *,
@@ -155,7 +156,7 @@ class LegalService {
    */
   async revokeConsent(userId: string, legalId: string): Promise<void> {
     try {
-      const { error } = await supabase
+      const { error } = await this.supabase
         .from('user_legal_acceptance')
         .update({ revoked_at: new Date().toISOString() })
         .eq('user_id', userId)
@@ -191,7 +192,7 @@ class LegalService {
    */
   async getLegalDocumentBySlug(slug: string): Promise<LegalDocument | null> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('legal_documents')
         .select('*')
         .eq('slug', slug)
@@ -246,7 +247,7 @@ class LegalService {
    */
   async validateDocumentHash(documentId: string, expectedHash: string): Promise<boolean> {
     try {
-      const { data, error } = await supabase
+      const { data, error } = await this.supabase
         .from('legal_documents')
         .select('sha256_hash')
         .eq('id', documentId)
