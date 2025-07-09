@@ -11,7 +11,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, AlertCircle, Mail } from 'lucide-react'
+import { X, AlertCircle, Mail, Shield, Lock } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
@@ -89,35 +89,51 @@ export function LoginModal() {
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
       
-      <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-6 shadow-xl">
-        <button
-          onClick={closeModal}
-          className="absolute top-4 right-4 text-slate-400 hover:text-white"
-        >
-          <X className="w-5 h-5" />
-        </button>
+      <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
+        <div className="relative p-6">
+          <button
+            onClick={closeModal}
+            className="absolute top-4 right-4 text-slate-400 hover:text-white hover:bg-slate-700 p-2 rounded-lg transition-all duration-200"
+          >
+            <X className="w-5 h-5" />
+          </button>
 
-        <h2 className="text-2xl font-bold mb-6">Welcome Back</h2>
+          <div className="text-center mb-6">
+            <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <Shield className="w-8 h-8 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Welcome Back</h2>
+            <p className="text-sm text-gray-400 mt-2">Sign in to access your ClaimGuardian account</p>
+          </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Email</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="group">
+            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors flex items-center gap-2">
+              <Mail className="w-4 h-4" />
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
+              placeholder="john@example.com"
               required
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Password</label>
+          <div className="group">
+            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors flex items-center gap-2">
+              <Lock className="w-4 h-4" />
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -190,26 +206,42 @@ export function LoginModal() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full btn-primary py-3 font-semibold disabled:opacity-50"
+            className="w-full relative py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl"
           >
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? (
+              <span className="flex items-center justify-center gap-2">
+                <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing In...
+              </span>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-slate-400 text-sm">
-            Don&apos;t have an account?{' '}
-            <button
-              onClick={() => {
-                closeModal()
-                openModal('signup')
-              }}
-              className="text-blue-400 hover:text-blue-300"
-            >
-              Sign Up
-            </button>
-          </p>
+        <div className="mt-6 space-y-4">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-slate-700"></div>
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-gradient-to-b from-slate-800 to-slate-900 px-2 text-slate-400">New to ClaimGuardian?</span>
+            </div>
+          </div>
+          <button
+            onClick={() => {
+              closeModal()
+              openModal('signup')
+            }}
+            className="w-full py-3 px-4 bg-slate-700/50 hover:bg-slate-700 text-white font-medium rounded-lg transition-all duration-200 hover:shadow-lg"
+          >
+            Create an Account
+          </button>
         </div>
+      </div>
       </div>
     </div>
   )

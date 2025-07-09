@@ -1,188 +1,200 @@
 'use client'
 
 import React from 'react'
-import { Card } from '@claimguardian/ui'
-import { Home, FileText, Shield, Users, LogOut, Brain, Camera, Package, Sparkles } from 'lucide-react'
+import { 
+  Shield, Building, TrendingUp, Wrench, CheckCircle, 
+  AlertCircle, CloudRain, Wind, Droplets, Activity,
+  FileCheck, Camera, FileText, UserPlus, ChevronRight
+} from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { useAuth } from '@/components/auth/auth-provider'
-import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 
 function DashboardContent() {
-  const { user, signOut } = useAuth()
+  const { user } = useAuth()
+  const router = useRouter()
 
-  const handleSignOut = async () => {
-    await signOut()
-    window.location.href = '/'
-  }
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100">
-      <style jsx>{`
-        .card-bg {
-          background: linear-gradient(135deg, rgba(51, 65, 85, 0.6) 0%, rgba(30, 41, 59, 0.8) 100%);
-          border: 1px solid rgba(148, 163, 184, 0.2);
-          backdrop-filter: blur(10px);
-        }
-      `}</style>
-      
-      {/* Header */}
-      <header className="bg-slate-900/60 backdrop-blur-lg border-b border-slate-800 px-6 py-4">
-        <div className="flex items-center justify-between">
-          <h1 className="text-2xl font-bold text-white">ClaimGuardian Dashboard</h1>
-          <div className="flex items-center space-x-4">
-            <span className="text-slate-300">Welcome, {user?.email}</span>
-            <button
-              onClick={handleSignOut}
-              className="flex items-center space-x-2 text-slate-300 hover:text-white transition-colors"
-            >
-              <LogOut className="h-4 w-4" />
-              <span>Sign Out</span>
-            </button>
+    <DashboardLayout>
+      <div className="p-6">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {user?.user_metadata?.firstName || 'Property Owner'}</h1>
+            <p className="text-gray-400">Your complete property protection platform</p>
           </div>
-        </div>
-      </header>
 
-      {/* Main Content */}
-      <main className="container mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h2 className="text-3xl font-bold text-white mb-4">Welcome to ClaimGuardian</h2>
-          <p className="text-slate-300 text-lg">
-            Your AI-powered insurance claim advocate platform. Manage your properties, claims, and documentation all in one place.
-          </p>
-        </div>
-
-        {/* Dashboard Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-blue-600 p-3 rounded-full">
-                <Home className="w-6 h-6 text-white" />
+          {/* Quick Stats */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <Shield className="w-8 h-8 text-cyan-400" />
+                <span className="text-xs text-green-400">Active</span>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Properties</h3>
-                <p className="text-slate-400">Manage your assets</p>
-              </div>
+              <p className="text-2xl font-bold text-white">92%</p>
+              <p className="text-sm text-gray-400">Insurance Score</p>
             </div>
-          </Card>
-
-          <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-green-600 p-3 rounded-full">
-                <FileText className="w-6 h-6 text-white" />
+            
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <Building className="w-8 h-8 text-blue-400" />
+                <TrendingUp className="w-4 h-4 text-green-400" />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Claims</h3>
-                <p className="text-slate-400">Track your claims</p>
-              </div>
+              <p className="text-2xl font-bold text-white">$450k</p>
+              <p className="text-sm text-gray-400">Property Value</p>
             </div>
-          </Card>
-
-          <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-purple-600 p-3 rounded-full">
-                <Shield className="w-6 h-6 text-white" />
+            
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <Wrench className="w-8 h-8 text-green-400" />
+                <CheckCircle className="w-4 h-4 text-green-400" />
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Policies</h3>
-                <p className="text-slate-400">Insurance coverage</p>
-              </div>
+              <p className="text-2xl font-bold text-white">14</p>
+              <p className="text-sm text-gray-400">Systems Tracked</p>
             </div>
-          </Card>
-
-          <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300">
-            <div className="flex items-center space-x-4">
-              <div className="bg-orange-600 p-3 rounded-full">
-                <Users className="w-6 h-6 text-white" />
+            
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <div className="flex items-center justify-between mb-4">
+                <AlertCircle className="w-8 h-8 text-orange-400" />
+                <span className="text-xs text-orange-400 animate-pulse">2 New</span>
               </div>
-              <div>
-                <h3 className="text-xl font-semibold text-white">Support</h3>
-                <p className="text-slate-400">Get assistance</p>
-              </div>
+              <p className="text-2xl font-bold text-white">3</p>
+              <p className="text-sm text-gray-400">Action Items</p>
             </div>
-          </Card>
-        </div>
-
-        {/* AI Augmented Features */}
-        <div className="mb-8">
-          <div className="flex items-center gap-2 mb-4">
-            <Sparkles className="h-6 w-6 text-yellow-500" />
-            <h3 className="text-2xl font-semibold text-white">AI-Powered Tools</h3>
-            <span className="bg-yellow-600/20 text-yellow-400 px-2 py-1 text-xs rounded-full font-medium">NEW</span>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Link href="/ai-augmented/policy-chat">
-              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <div className="flex flex-col items-center space-y-3 text-center">
-                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-4 rounded-full">
-                    <Brain className="w-8 h-8 text-white" />
-                  </div>
-                  <h4 className="text-lg font-semibold text-white">Policy Chat</h4>
-                  <p className="text-slate-400 text-sm">Get instant answers about your insurance coverage and policies</p>
-                </div>
-              </Card>
-            </Link>
 
-            <Link href="/ai-augmented/damage-analyzer">
-              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <div className="flex flex-col items-center space-y-3 text-center">
-                  <div className="bg-gradient-to-br from-orange-500 to-orange-700 p-4 rounded-full">
-                    <Camera className="w-8 h-8 text-white" />
+          {/* Weather & Alerts */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <CloudRain className="w-5 h-5 text-cyan-400" />
+                Weather & Risk Alerts
+              </h3>
+              <div className="space-y-3">
+                <div className="p-4 bg-orange-900/20 border border-orange-500/30 rounded-lg flex items-center gap-3">
+                  <Wind className="w-5 h-5 text-orange-400" />
+                  <div className="flex-1">
+                    <p className="text-orange-300 font-medium">Hurricane Watch</p>
+                    <p className="text-xs text-gray-400">Tropical system developing - 5 days out</p>
                   </div>
-                  <h4 className="text-lg font-semibold text-white">Damage Analyzer</h4>
-                  <p className="text-slate-400 text-sm">Upload photos for AI-powered damage assessment and documentation</p>
+                  <ChevronRight className="w-4 h-4 text-orange-400" />
                 </div>
-              </Card>
-            </Link>
+                <div className="p-4 bg-cyan-900/20 border border-cyan-500/30 rounded-lg flex items-center gap-3">
+                  <Droplets className="w-5 h-5 text-cyan-400" />
+                  <div className="flex-1">
+                    <p className="text-cyan-300 font-medium">Heavy Rain Expected</p>
+                    <p className="text-xs text-gray-400">Tomorrow - Check gutters and drainage</p>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-cyan-400" />
+                </div>
+              </div>
+            </div>
 
-            <Link href="/ai-augmented/inventory-scanner">
-              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
-                <div className="flex flex-col items-center space-y-3 text-center">
-                  <div className="bg-gradient-to-br from-purple-500 to-purple-700 p-4 rounded-full">
-                    <Package className="w-8 h-8 text-white" />
+            <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Activity className="w-5 h-5 text-blue-400" />
+                Recent Activity
+              </h3>
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <CheckCircle className="w-5 h-5 text-green-400" />
                   </div>
-                  <h4 className="text-lg font-semibold text-white">Inventory Scanner</h4>
-                  <p className="text-slate-400 text-sm">Automatically catalog belongings for insurance documentation</p>
+                  <div className="flex-1">
+                    <p className="text-sm text-white">HVAC System Serviced</p>
+                    <p className="text-xs text-gray-400">2 hours ago</p>
+                  </div>
                 </div>
-              </Card>
-            </Link>
+                <div className="flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer">
+                  <div className="w-10 h-10 bg-cyan-500/20 rounded-full flex items-center justify-center">
+                    <FileCheck className="w-5 h-5 text-cyan-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-white">Insurance Policy Renewed</p>
+                    <p className="text-xs text-gray-400">Yesterday</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3 p-3 hover:bg-gray-700 rounded-lg transition-colors cursor-pointer">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-full flex items-center justify-center">
+                    <Camera className="w-5 h-5 text-blue-400" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-sm text-white">5 Items Added to Inventory</p>
+                    <p className="text-xs text-gray-400">3 days ago</p>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <Card className="card-bg rounded-xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Quick Actions</h3>
-            <div className="space-y-3">
-              <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-                Start New Claim
+          {/* Quick Actions */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <h3 className="text-lg font-semibold text-white mb-4">Quick Actions</h3>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button 
+                onClick={() => router.push('/dashboard/personal-property')}
+                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+              >
+                <Camera className="w-6 h-6 text-cyan-400 group-hover:scale-110 transition-transform" />
+                <span className="text-sm">Document Item</span>
               </button>
-              <button className="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-                Add Property
+              <button 
+                onClick={() => router.push('/dashboard/claims')}
+                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+              >
+                <FileText className="w-6 h-6 text-blue-400 group-hover:scale-110 transition-transform" />
+                <span className="text-sm">File Claim</span>
               </button>
-              <button className="w-full bg-slate-700 hover:bg-slate-600 text-white font-medium py-3 px-4 rounded-lg transition-colors">
-                Upload Documents
+              <button 
+                onClick={() => router.push('/dashboard/maintenance')}
+                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+              >
+                <Wrench className="w-6 h-6 text-green-400 group-hover:scale-110 transition-transform" />
+                <span className="text-sm">Schedule Service</span>
+              </button>
+              <button 
+                onClick={() => router.push('/dashboard/contractors')}
+                className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+              >
+                <UserPlus className="w-6 h-6 text-orange-400 group-hover:scale-110 transition-transform" />
+                <span className="text-sm">Find Contractor</span>
               </button>
             </div>
-          </Card>
+          </div>
 
-          <Card className="card-bg rounded-xl p-6">
-            <h3 className="text-xl font-semibold text-white mb-4">Recent Activity</h3>
-            <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-slate-300">Account created successfully</span>
+          {/* Property Overview */}
+          <div className="bg-gray-800 rounded-lg p-6 border border-gray-700">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-white">Property Overview</h3>
+              <button 
+                onClick={() => router.push('/dashboard/property')}
+                className="text-sm text-cyan-400 hover:text-cyan-300 flex items-center gap-1"
+              >
+                View Details
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <p className="text-xs text-gray-400 mb-1">Main Residence</p>
+                <p className="text-lg font-semibold text-white">1234 Main Street</p>
+                <p className="text-sm text-gray-400">Austin, TX 78701</p>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-slate-300">Welcome to ClaimGuardian</span>
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <p className="text-xs text-gray-400 mb-1">Coverage Status</p>
+                <p className="text-lg font-semibold text-green-400">Fully Protected</p>
+                <p className="text-sm text-gray-400">Policy #: HO-2024-1234</p>
               </div>
-              <div className="text-slate-400 text-sm mt-4">
-                Get started by adding your first property or exploring our features.
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <p className="text-xs text-gray-400 mb-1">Next Renewal</p>
+                <p className="text-lg font-semibold text-white">March 15, 2025</p>
+                <p className="text-sm text-gray-400">90 days remaining</p>
               </div>
             </div>
-          </Card>
+          </div>
         </div>
-      </main>
-    </div>
+      </div>
+    </DashboardLayout>
   )
 }
 
