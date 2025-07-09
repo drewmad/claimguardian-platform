@@ -14,7 +14,7 @@
 export { Button } from './button'
 export { Input } from './input'
 export { SimpleModal as Modal } from './modal'
-export { Card } from './card'
+export { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from './card'
 export { Label } from './label'
 export { Checkbox } from './checkbox'
 export { cn } from './utils'

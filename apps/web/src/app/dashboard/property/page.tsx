@@ -13,15 +13,13 @@
 import { useState } from 'react'
 import { 
   Info, Building, Wrench, TreePine, Zap, FileText, Clock,
-  MapPin, Shield, CheckCircle, Wind, Award, Plus, DollarSign,
-  Calendar, Droplets, ThermometerSun, Home, AlertCircle,
+  MapPin, Shield, CheckCircle, Wind, Award, Plus,
+  AlertCircle,
   Camera, ChevronRight, Edit
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 
 type SubTab = 'overview' | 'structures' | 'systems' | 'land' | 'utilities' | 'documents' | 'history'
 

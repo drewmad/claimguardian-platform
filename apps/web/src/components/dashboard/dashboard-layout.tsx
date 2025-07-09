@@ -16,7 +16,7 @@ import Link from 'next/link'
 import { 
   Home, Building, Package, Shield, FileText, Wrench, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
-  Bell, Search, Menu, X, LogOut, ChevronRight,
+  Bell, Search, Menu, LogOut,
   Bot, Camera, FileSearch
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
