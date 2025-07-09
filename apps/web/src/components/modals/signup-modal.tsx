@@ -463,6 +463,7 @@ export function SignupModal() {
             Sign In Instead
           </button>
         </div>
+        </div>
       </div>
     </div>
   )

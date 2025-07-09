@@ -10,7 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { legalService } from '@/lib/legal/legal-service'
+import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
 
 export async function GET(request: NextRequest) {
@@ -23,10 +23,10 @@ export async function GET(request: NextRequest) {
     
     if (mode === 'needed' && userId) {
       // Get documents that need user acceptance
-      documents = await legalService.getDocumentsNeedingAcceptance(userId)
+      documents = await legalServiceServer.getDocumentsNeedingAcceptance(userId)
     } else {
       // Get all active documents (default)
-      documents = await legalService.getActiveLegalDocuments()
+      documents = await legalServiceServer.getActiveLegalDocuments()
     }
 
     // Add cache headers for better performance

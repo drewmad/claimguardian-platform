@@ -10,8 +10,8 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
-import { legalService } from '@/lib/legal/legal-service'
+import { createClient } from '@/lib/supabase/server'
+import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
@@ -28,7 +28,7 @@ export async function POST(request: NextRequest) {
     const token = authHeader.substring(7)
     
     // Verify the user with the token
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
     
     if (authError || !user) {
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get client metadata for audit trail
-    const clientMetadata = legalService.getClientMetadata(request)
+    const clientMetadata = legalServiceServer.getClientMetadata(request)
     
     // Prepare acceptance requests with metadata
     const acceptanceRequests = await Promise.all(
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
     )
 
     // Record acceptances
-    await legalService.recordAcceptances(user.id, acceptanceRequests)
+    await legalServiceServer.recordAcceptances(user.id, acceptanceRequests)
 
     // Log successful acceptance
     logger.info('Legal acceptances recorded', {

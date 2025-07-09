@@ -241,7 +241,7 @@ export function LoginModal() {
             Create an Account
           </button>
         </div>
-      </div>
+        </div>
       </div>
     </div>
   )
