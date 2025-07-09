@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import dynamic from 'next/dynamic'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
 import { Button } from '@/components/ui/button'
@@ -8,6 +9,11 @@ import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+
+const BarcodeScanner = dynamic(
+  () => import('@/components/ui/barcode-scanner').then(mod => mod.BarcodeScanner),
+  { ssr: false }
+)
 import { 
   Package,
   DollarSign,
@@ -18,7 +24,9 @@ import {
   ArrowUpDown,
   Camera,
   Save,
-  FileSpreadsheet
+  FileSpreadsheet,
+  Scan,
+  Search
 } from 'lucide-react'
 import { AIClient } from '@/lib/ai/client'
 import { AI_PROMPTS } from '@/lib/ai/config'
@@ -74,6 +82,8 @@ export default function InventoryScannerPage() {
   const [filterCategory, setFilterCategory] = useState<string>('')
   const [sortBy, setSortBy] = useState<'value' | 'name' | 'room'>('value')
   const [isSaving, setIsSaving] = useState(false)
+  const [showBarcodeScanner, setShowBarcodeScanner] = useState(false)
+  const [selectedItemForBarcode, setSelectedItemForBarcode] = useState<string | null>(null)
   const { supabase, user } = useSupabase()
   const aiClient = new AIClient()
 
@@ -238,6 +248,30 @@ Analyze this image and identify all items visible. For each item, provide detail
       ...prev,
       [id]: { ...(prev[id] || scanResult?.items.find(i => i.id === id) || {} as InventoryItem), ...updates }
     }))
+  }
+
+  const handleBarcodeScanned = async (code: string, format: string) => {
+    toast.info(`Looking up product: ${code}`)
+    
+    // In a real app, you'd look up the product in a database
+    // For now, we'll use the barcode as a serial number
+    if (selectedItemForBarcode) {
+      updateItem(selectedItemForBarcode, { 
+        serial_number: code,
+        notes: `Barcode (${format}): ${code}`
+      })
+      toast.success('Barcode added to item')
+    }
+    
+    // You could also make an API call to get product details
+    // For demo purposes, we'll just add the barcode
+    setShowBarcodeScanner(false)
+    setSelectedItemForBarcode(null)
+  }
+
+  const startBarcodeScanner = (itemId: string) => {
+    setSelectedItemForBarcode(itemId)
+    setShowBarcodeScanner(true)
   }
 
   const fileToBase64 = (file: File): Promise<string> => {
@@ -505,12 +539,23 @@ Analyze this image and identify all items visible. For each item, provide detail
                         </p>
                       </div>
                       <div>
-                        <label className="text-xs text-gray-500">Notes</label>
-                        <Input
-                          value={item.notes || ''}
-                          onChange={(e) => updateItem(item.id, { notes: e.target.value })}
-                          placeholder="Serial #, notes..."
-                        />
+                        <label className="text-xs text-gray-500">Notes / Serial #</label>
+                        <div className="flex gap-1">
+                          <Input
+                            value={item.notes || ''}
+                            onChange={(e) => updateItem(item.id, { notes: e.target.value })}
+                            placeholder="Serial #, notes..."
+                            className="flex-1"
+                          />
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => startBarcodeScanner(item.id)}
+                            title="Scan barcode"
+                          >
+                            <Scan className="h-4 w-4" />
+                          </Button>
+                        </div>
                         <p className="text-xs text-gray-500 mt-1">{item.image_ref}</p>
                       </div>
                     </div>
@@ -526,6 +571,17 @@ Analyze this image and identify all items visible. For each item, provide detail
                 </Button>
               </div>
             </div>
+          )}
+
+          {/* Barcode Scanner Modal */}
+          {showBarcodeScanner && (
+            <BarcodeScanner
+              onScan={handleBarcodeScanned}
+              onClose={() => {
+                setShowBarcodeScanner(false)
+                setSelectedItemForBarcode(null)
+              }}
+            />
           )}
         </div>
       </div>

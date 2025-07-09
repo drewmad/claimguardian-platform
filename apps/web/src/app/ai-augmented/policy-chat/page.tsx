@@ -57,6 +57,7 @@ const POLICY_TOPICS = [
 ]
 
 interface UploadedDocument {
+  id: string
   name: string
   content: string
   type: string
@@ -66,8 +67,10 @@ interface UploadedDocument {
 export default function PolicyChatPage() {
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null)
-  const [uploadedDocument, setUploadedDocument] = useState<UploadedDocument | null>(null)
+  const [uploadedDocuments, setUploadedDocuments] = useState<UploadedDocument[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
+  const [compareMode, setCompareMode] = useState(false)
+  const [selectedDocs, setSelectedDocs] = useState<string[]>([])
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { supabase, user } = useSupabase()
   const aiClient = new AIClient()
@@ -90,13 +93,14 @@ export default function PolicyChatPage() {
       }
 
       const doc: UploadedDocument = {
+        id: `doc-${Date.now()}`,
         name: file.name,
         content: content.slice(0, 50000), // Limit to 50k chars
         type: file.type,
         uploadedAt: new Date(),
       }
 
-      setUploadedDocument(doc)
+      setUploadedDocuments(prev => [...prev, doc])
       toast.success(`Document "${file.name}" uploaded successfully!`)
 
       // Log the upload
@@ -118,19 +122,39 @@ export default function PolicyChatPage() {
     }
   }
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (file) {
-      processDocument(file)
+  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    if (files && files.length > 0) {
+      for (let i = 0; i < files.length; i++) {
+        await processDocument(files[i])
+      }
     }
-  }
-
-  const removeDocument = () => {
-    setUploadedDocument(null)
     if (fileInputRef.current) {
       fileInputRef.current.value = ''
     }
+  }
+
+  const removeDocument = (docId: string) => {
+    setUploadedDocuments(prev => prev.filter(doc => doc.id !== docId))
+    setSelectedDocs(prev => prev.filter(id => id !== docId))
     toast.success('Document removed')
+  }
+
+  const toggleDocSelection = (docId: string) => {
+    setSelectedDocs(prev => 
+      prev.includes(docId) 
+        ? prev.filter(id => id !== docId)
+        : [...prev, docId]
+    )
+  }
+
+  const compareDocuments = () => {
+    if (selectedDocs.length < 2) {
+      toast.error('Please select at least 2 documents to compare')
+      return
+    }
+    setCompareMode(true)
+    toast.success('Comparison mode activated')
   }
 
   const handleSendMessage = async (message: string, history: Array<{id: string; role: string; content: string; timestamp: Date}>) => {
@@ -144,7 +168,8 @@ export default function PolicyChatPage() {
           model: selectedModel,
           topic: selectedTopic,
           message_length: message.length,
-          has_document: !!uploadedDocument,
+          has_documents: uploadedDocuments.length,
+          compare_mode: compareMode,
         },
       })
 
@@ -152,8 +177,22 @@ export default function PolicyChatPage() {
       let systemPrompt = AI_PROMPTS.POLICY_CHAT.SYSTEM
 
       // Add document context if available
-      if (uploadedDocument) {
-        systemPrompt += `\n\nThe user has uploaded a document titled "${uploadedDocument.name}". Here is the content of the document:\n\n${uploadedDocument.content}\n\nUse this document to provide specific answers based on the actual policy details when relevant.`
+      if (uploadedDocuments.length > 0) {
+        if (compareMode && selectedDocs.length >= 2) {
+          systemPrompt += '\n\nThe user wants to compare the following policy documents:\n'
+          selectedDocs.forEach(docId => {
+            const doc = uploadedDocuments.find(d => d.id === docId)
+            if (doc) {
+              systemPrompt += `\n\nDocument: "${doc.name}"\n${doc.content}\n`
+            }
+          })
+          systemPrompt += '\n\nWhen answering questions, compare and contrast these documents, highlighting differences in coverage, limits, deductibles, and exclusions.'
+        } else {
+          uploadedDocuments.forEach(doc => {
+            systemPrompt += `\n\nDocument: "${doc.name}"\n${doc.content}\n`
+          })
+          systemPrompt += '\n\nUse these documents to provide specific answers based on the actual policy details when relevant.'
+        }
       }
 
       const messages = [
@@ -256,65 +295,102 @@ export default function PolicyChatPage() {
 
               {/* Document Upload */}
               <Card className="p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <FileText className="h-4 w-4" />
-                  Policy Document
-                </h3>
-                {uploadedDocument ? (
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-3 p-3 bg-green-50 border border-green-200 rounded-lg">
-                      <FileCheck className="h-5 w-5 text-green-600 flex-shrink-0 mt-0.5" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-sm font-medium text-green-900 truncate">
-                          {uploadedDocument.name}
-                        </p>
-                        <p className="text-xs text-green-700">
-                          Uploaded {uploadedDocument.uploadedAt.toLocaleTimeString()}
-                        </p>
-                      </div>
-                      <button
-                        onClick={removeDocument}
-                        className="text-green-700 hover:text-green-900"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <p className="text-xs text-gray-600">
-                      The AI will use this document to provide specific answers about your policy.
-                    </p>
-                  </div>
-                ) : (
-                  <div className="space-y-3">
-                    <input
-                      ref={fileInputRef}
-                      type="file"
-                      accept=".pdf,.txt,.json"
-                      onChange={handleFileSelect}
-                      className="hidden"
-                    />
+                <h3 className="font-semibold mb-3 flex items-center justify-between">
+                  <span className="flex items-center gap-2">
+                    <FileText className="h-4 w-4" />
+                    Policy Documents ({uploadedDocuments.length})
+                  </span>
+                  {uploadedDocuments.length >= 2 && (
                     <Button
-                      variant="outline"
-                      className="w-full"
-                      onClick={() => fileInputRef.current?.click()}
-                      disabled={isProcessing}
+                      size="sm"
+                      variant={compareMode ? "default" : "outline"}
+                      onClick={() => setCompareMode(!compareMode)}
                     >
-                      {isProcessing ? (
-                        <>
-                          <span className="animate-spin mr-2">⏳</span>
-                          Processing...
-                        </>
-                      ) : (
-                        <>
-                          <Upload className="h-4 w-4 mr-2" />
-                          Upload Policy Document
-                        </>
-                      )}
+                      Compare
                     </Button>
-                    <p className="text-xs text-gray-600">
-                      Upload your insurance policy (PDF or text) to get specific answers about your coverage.
-                    </p>
+                  )}
+                </h3>
+                
+                {uploadedDocuments.length > 0 && (
+                  <div className="space-y-2 mb-3 max-h-60 overflow-y-auto">
+                    {uploadedDocuments.map(doc => (
+                      <div 
+                        key={doc.id} 
+                        className={`flex items-start gap-2 p-2 rounded-lg border ${
+                          selectedDocs.includes(doc.id) 
+                            ? 'bg-blue-50 border-blue-300' 
+                            : 'bg-green-50 border-green-200'
+                        }`}
+                      >
+                        {compareMode && (
+                          <input
+                            type="checkbox"
+                            checked={selectedDocs.includes(doc.id)}
+                            onChange={() => toggleDocSelection(doc.id)}
+                            className="mt-1"
+                          />
+                        )}
+                        <FileCheck className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs font-medium truncate">{doc.name}</p>
+                          <p className="text-xs text-gray-600">
+                            {doc.uploadedAt.toLocaleTimeString()}
+                          </p>
+                        </div>
+                        <button
+                          onClick={() => removeDocument(doc.id)}
+                          className="text-gray-500 hover:text-red-600"
+                        >
+                          <X className="h-3 w-3" />
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 )}
+
+                {compareMode && uploadedDocuments.length >= 2 && (
+                  <Button
+                    size="sm"
+                    className="w-full mb-3"
+                    onClick={compareDocuments}
+                    disabled={selectedDocs.length < 2}
+                  >
+                    Compare Selected ({selectedDocs.length})
+                  </Button>
+                )}
+
+                <div className="space-y-3">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept=".pdf,.txt,.json"
+                    onChange={handleFileSelect}
+                    className="hidden"
+                    multiple
+                  />
+                  <Button
+                    variant="outline"
+                    className="w-full"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <span className="animate-spin mr-2">⏳</span>
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="h-4 w-4 mr-2" />
+                        Add Document
+                      </>
+                    )}
+                  </Button>
+                  <p className="text-xs text-gray-600">
+                    Upload multiple policies to compare coverage or get comprehensive answers.
+                  </p>
+                </div>
               </Card>
 
               {/* Policy Topics */}
@@ -342,7 +418,11 @@ export default function PolicyChatPage() {
               <AIChatInterface
                 systemPrompt={AI_PROMPTS.POLICY_CHAT.SYSTEM}
                 placeholder="Ask about your insurance policy, coverage, deductibles, or claim procedures..."
-                welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${uploadedDocument ? `\n\nI see you've uploaded "${uploadedDocument.name}". I'll use this document to provide specific answers about your policy.` : '\n\nYou can upload your policy document for more specific answers, or ask general questions about insurance.'} What would you like to know?`}
+                welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${
+                  uploadedDocuments.length > 0 
+                    ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}` 
+                    : '\n\nYou can upload policy documents for specific answers or compare multiple policies.'
+                } What would you like to know?`}
                 onSendMessage={handleSendMessage}
                 className="h-[600px]"
               />
