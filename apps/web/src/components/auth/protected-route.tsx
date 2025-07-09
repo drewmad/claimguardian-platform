@@ -14,6 +14,8 @@
 import React, { useEffect } from 'react';
 import { useAuth } from './auth-provider';
 import { useRouter } from 'next/navigation';
+import { AuthLoading } from './auth-loading';
+import { logger } from '@/lib/logger';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -25,19 +27,13 @@ export function ProtectedRoute({ children }: ProtectedRouteProps) {
 
   useEffect(() => {
     if (!loading && !user) {
+      logger.info('Unauthenticated user attempted to access protected route');
       router.push('/');
     }
   }, [user, loading, router]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-slate-950 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-400 mx-auto"></div>
-          <p className="text-slate-400 mt-4">Loading...</p>
-        </div>
-      </div>
-    );
+    return <AuthLoading />;
   }
 
   if (!user) {

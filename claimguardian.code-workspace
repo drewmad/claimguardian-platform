@@ -1,0 +1,58 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Root",
+      "path": "."
+    },
+    {
+      "name": "🌐 Web App",
+      "path": "apps/web"
+    },
+    {
+      "name": "🎨 UI Package",
+      "path": "packages/ui"
+    },
+    {
+      "name": "🔧 Utils Package",
+      "path": "packages/utils"
+    },
+    {
+      "name": "⚙️ Config Package",
+      "path": "packages/config"
+    },
+    {
+      "name": "🤖 AI Config Package",
+      "path": "packages/ai-config"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/node_modules": true,
+      "**/.turbo": true,
+      "**/.next": true,
+      "**/dist": true
+    },
+    "search.exclude": {
+      "**/node_modules": true,
+      "**/.turbo": true,
+      "**/.next": true,
+      "**/dist": true,
+      "**/pnpm-lock.yaml": true
+    },
+    "typescript.tsdk": "node_modules/typescript/lib",
+    "typescript.enablePromptUseWorkspaceTsdk": true,
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.eslint": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "bradlc.vscode-tailwindcss",
+      "prisma.prisma",
+      "ms-vscode.vscode-typescript-next"
+    ]
+  }
+}

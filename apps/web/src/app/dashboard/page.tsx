@@ -2,9 +2,10 @@
 
 import React from 'react'
 import { Card } from '@claimguardian/ui'
-import { Home, FileText, Shield, Users, LogOut } from 'lucide-react'
+import { Home, FileText, Shield, Users, LogOut, Brain, Camera, Package, Sparkles } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { useAuth } from '@/components/auth/auth-provider'
+import Link from 'next/link'
 
 function DashboardContent() {
   const { user, signOut } = useAuth()
@@ -98,6 +99,52 @@ function DashboardContent() {
               </div>
             </div>
           </Card>
+        </div>
+
+        {/* AI Augmented Features */}
+        <div className="mb-8">
+          <div className="flex items-center gap-2 mb-4">
+            <Sparkles className="h-6 w-6 text-yellow-500" />
+            <h3 className="text-2xl font-semibold text-white">AI-Powered Tools</h3>
+            <span className="bg-yellow-600/20 text-yellow-400 px-2 py-1 text-xs rounded-full font-medium">NEW</span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Link href="/ai-augmented/policy-chat">
+              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <div className="flex flex-col items-center space-y-3 text-center">
+                  <div className="bg-gradient-to-br from-blue-500 to-blue-700 p-4 rounded-full">
+                    <Brain className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white">Policy Chat</h4>
+                  <p className="text-slate-400 text-sm">Get instant answers about your insurance coverage and policies</p>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/ai-augmented/damage-analyzer">
+              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <div className="flex flex-col items-center space-y-3 text-center">
+                  <div className="bg-gradient-to-br from-orange-500 to-orange-700 p-4 rounded-full">
+                    <Camera className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white">Damage Analyzer</h4>
+                  <p className="text-slate-400 text-sm">Upload photos for AI-powered damage assessment and documentation</p>
+                </div>
+              </Card>
+            </Link>
+
+            <Link href="/ai-augmented/inventory-scanner">
+              <Card className="card-bg rounded-xl p-6 hover:scale-105 transition-transform duration-300 cursor-pointer">
+                <div className="flex flex-col items-center space-y-3 text-center">
+                  <div className="bg-gradient-to-br from-purple-500 to-purple-700 p-4 rounded-full">
+                    <Package className="w-8 h-8 text-white" />
+                  </div>
+                  <h4 className="text-lg font-semibold text-white">Inventory Scanner</h4>
+                  <p className="text-slate-400 text-sm">Automatically catalog belongings for insurance documentation</p>
+                </div>
+              </Card>
+            </Link>
+          </div>
         </div>
 
         {/* Quick Actions */}

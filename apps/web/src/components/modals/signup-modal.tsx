@@ -10,15 +10,24 @@
  */
 'use client'
 
-import { useState } from 'react'
-import { X, Eye, EyeOff } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, Eye, EyeOff, AlertCircle } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/auth/auth-provider'
+import { logger } from '@/lib/logger'
+import { authService } from '@/lib/auth/auth-service'
+import { useRateLimit } from '@/hooks/use-rate-limit'
+import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 
 export function SignupModal() {
-  const router = useRouter()
   const { activeModal, closeModal, openModal } = useModalStore()
+  const { signUp, loading, error, clearError } = useAuth()
+  const [resending, setResending] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
+  const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
+    cooldownMs: 60000, // 60 seconds
+    key: 'signup-resend'
+  })
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -31,71 +40,72 @@ export function SignupModal() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [passwordStrength, setPasswordStrength] = useState(0)
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [validationError, setValidationError] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  // Clear errors when modal opens/closes
+  useEffect(() => {
+    if (activeModal === 'signup') {
+      clearError()
+      setValidationError('')
+      logger.track('signup_modal_opened')
+    }
+  }, [activeModal, clearError])
 
   if (activeModal !== 'signup') return null
 
   const validateForm = () => {
     if (!formData.firstName || !formData.lastName) {
-      setError('Please enter your full name')
+      setValidationError('Please enter your full name')
       return false
     }
     if (!formData.email || !formData.email.includes('@')) {
-      setError('Please enter a valid email address')
+      setValidationError('Please enter a valid email address')
       return false
     }
     if (!formData.password || formData.password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setValidationError('Password must be at least 8 characters')
       return false
     }
     if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
+      setValidationError('Passwords do not match')
       return false
     }
     if (!formData.phone || formData.phone.replace(/\D/g, '').length < 10) {
-      setError('Please enter a valid phone number')
+      setValidationError('Please enter a valid phone number')
       return false
     }
     if (!formData.agree) {
-      setError('You must agree to the terms')
+      setValidationError('You must agree to the terms')
       return false
     }
     return true
   }
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
+    clearError()
+    setValidationError('')
     
     if (!validateForm()) return
     
-    setLoading(true)
-
-    try {
-      const { error } = await supabase.auth.signUp({
-        email: formData.email,
-        password: formData.password,
-        options: {
-          data: {
-            firstName: formData.firstName,
-            lastName: formData.lastName,
-            phone: formData.phone,
-          }
-        }
-      })
-
-      if (error) throw error
-
+    const success = await signUp(formData)
+    
+    if (success) {
       setIsSubmitted(true)
       setTimeout(() => {
         closeModal()
-        router.push('/dashboard')
+        // Reset form
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          phone: '',
+          agree: false
+        })
+        setIsSubmitted(false)
       }, 2000)
-    } catch (error) {
-      setError((error as Error).message || 'Failed to sign up')
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -132,14 +142,115 @@ export function SignupModal() {
     }
   }
 
+  const handleResendEmail = async () => {
+    if (!checkLimit()) {
+      return
+    }
+    
+    try {
+      setResending(true)
+      setResendSuccess(false)
+      
+      const { error } = await authService.resendConfirmationEmail(formData.email)
+      
+      if (error) {
+        logger.error('Failed to resend confirmation email', error)
+        // Could show error toast here
+        return
+      }
+      
+      setResendSuccess(true)
+      logger.track('confirmation_email_resent', { email: formData.email })
+      
+      // Reset success state after 5 seconds
+      setTimeout(() => {
+        setResendSuccess(false)
+      }, 5000)
+    } catch (err) {
+      logger.error('Unexpected error resending email', err)
+    } finally {
+      setResending(false)
+    }
+  }
+
   if (isSubmitted) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div className="absolute inset-0 bg-black/50" />
-        <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-6 shadow-xl text-center">
-          <h2 className="text-2xl font-bold mb-4">Success!</h2>
-          <p className="text-slate-300 text-lg">Thank you for signing up!</p>
-          <p className="text-slate-400 mt-2">Redirecting to your dashboard...</p>
+        <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-8 shadow-xl">
+          <div className="text-center">
+            {/* Success Icon */}
+            <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
+              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+            
+            <h2 className="text-2xl font-bold mb-4">Check Your Email!</h2>
+            
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
+              <p className="text-blue-300 font-medium mb-2">
+                ✉️ We've sent a confirmation email to:
+              </p>
+              <p className="text-white font-semibold">
+                {formData.email}
+              </p>
+            </div>
+            
+            <div className="text-left space-y-3 mb-6">
+              <p className="text-slate-300">
+                <span className="font-semibold">Important:</span> You must confirm your email before you can sign in.
+              </p>
+              <ol className="list-decimal list-inside space-y-2 text-sm text-slate-400">
+                <li>Check your inbox for an email from ClaimGuardian</li>
+                <li>Click the confirmation link in the email</li>
+                <li>Once confirmed, return here to sign in</li>
+              </ol>
+            </div>
+            
+            <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
+              <p className="text-xs text-slate-400">
+                Can&apos;t find the email? Check your spam folder or click below to resend.
+              </p>
+              <button
+                onClick={handleResendEmail}
+                disabled={resending || resendSuccess || isLimited}
+                className="mt-3 w-full text-sm text-blue-400 hover:text-blue-300 disabled:text-slate-500 disabled:cursor-not-allowed"
+              >
+                {resending ? (
+                  'Sending...'
+                ) : resendSuccess ? (
+                  <span className="text-green-400">✓ Email sent!</span>
+                ) : isLimited ? (
+                  `Wait ${secondsRemaining}s to resend`
+                ) : (
+                  'Resend confirmation email'
+                )}
+              </button>
+            </div>
+            
+            <div className="flex gap-3">
+              <button
+                onClick={() => {
+                  setIsSubmitted(false)
+                  closeModal()
+                  openModal('login')
+                }}
+                className="flex-1 btn-primary py-2"
+              >
+                Go to Login
+              </button>
+              <button
+                onClick={() => {
+                  closeModal()
+                  setIsSubmitted(false)
+                }}
+                className="flex-1 btn-secondary py-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     )
@@ -271,38 +382,18 @@ export function SignupModal() {
             />
           </div>
 
-          <div className="flex items-start gap-2">
-            <input
-              type="checkbox"
-              name="agree"
-              id="agree"
-              checked={formData.agree}
-              onChange={handleChange}
-              className="mt-1"
-            />
-            <label htmlFor="agree" className="text-sm text-slate-400">
-              I agree to the{' '}
-              <button
-                type="button"
-                onClick={() => openModal('content', { title: 'Terms of Service' })}
-                className="text-blue-400 hover:text-blue-300 underline"
-              >
-                Terms of Service
-              </button>
-              {' '}and{' '}
-              <button
-                type="button"
-                onClick={() => openModal('content', { title: 'Privacy Policy' })}
-                className="text-blue-400 hover:text-blue-300 underline"
-              >
-                Privacy Policy
-              </button>
-            </label>
-          </div>
+          <LegalConsentForm
+            onConsentChange={(hasAllConsents) => {
+              setFormData(prev => ({ ...prev, agree: hasAllConsents }))
+            }}
+            showSubmitButton={false}
+            mode="signup"
+          />
 
-          {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
-              {error}
+          {(error || validationError) && (
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
+              <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+              <p className="text-red-400 text-sm">{error?.message || validationError}</p>
             </div>
           )}
 

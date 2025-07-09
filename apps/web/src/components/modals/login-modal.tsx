@@ -10,41 +10,78 @@
  */
 'use client'
 
-import { useState } from 'react'
-import { X } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X, AlertCircle, Mail } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
-import { supabase } from '@/lib/supabase'
-import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/auth/auth-provider'
+import { logger } from '@/lib/logger'
+import { authService } from '@/lib/auth/auth-service'
+import { useRateLimit } from '@/hooks/use-rate-limit'
 
 export function LoginModal() {
-  const router = useRouter()
   const { activeModal, closeModal, openModal } = useModalStore()
+  const { signIn, loading, error, clearError } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [rememberMe, setRememberMe] = useState(false)
+  const [resending, setResending] = useState(false)
+  const [resendSuccess, setResendSuccess] = useState(false)
+  const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
+    cooldownMs: 60000, // 60 seconds
+    key: 'login-resend'
+  })
+
+  // Clear error when modal opens/closes
+  useEffect(() => {
+    if (activeModal === 'login') {
+      clearError()
+      logger.track('login_modal_opened')
+    }
+  }, [activeModal, clearError])
 
   if (activeModal !== 'login') return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setError('')
-    setLoading(true)
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      })
-
-      if (error) throw error
-
+    
+    await signIn(email, password, rememberMe)
+    
+    // If no error, the auth provider will handle the redirect
+    if (!error) {
       closeModal()
-      router.push('/dashboard')
-    } catch (error) {
-      setError((error as Error).message || 'Failed to sign in')
+      setEmail('')
+      setPassword('')
+      setRememberMe(false)
+    }
+  }
+
+  const handleResendVerification = async () => {
+    if (!checkLimit()) {
+      return
+    }
+    
+    try {
+      setResending(true)
+      setResendSuccess(false)
+      
+      const { error } = await authService.resendConfirmationEmail(email)
+      
+      if (error) {
+        logger.error('Failed to resend verification email', error)
+        return
+      }
+      
+      setResendSuccess(true)
+      logger.track('verification_email_resent', { email })
+      
+      // Reset success state after 5 seconds
+      setTimeout(() => {
+        setResendSuccess(false)
+      }, 5000)
+    } catch (err) {
+      logger.error('Unexpected error resending verification email', err)
     } finally {
-      setLoading(false)
+      setResending(false)
     }
   }
 
@@ -85,9 +122,68 @@ export function LoginModal() {
             />
           </div>
 
+          <div className="flex items-center justify-between">
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+                className="w-4 h-4 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
+              />
+              <span className="ml-2 text-sm text-slate-400">Remember me</span>
+            </label>
+            <button
+              type="button"
+              onClick={() => {
+                closeModal()
+                openModal('forgotPassword')
+              }}
+              className="text-blue-400 hover:text-blue-300 text-sm"
+            >
+              Forgot password?
+            </button>
+          </div>
+
           {error && (
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 text-red-400 text-sm">
-              {error}
+            <div className={`border rounded-lg p-3 ${
+              error.code === 'AUTH_EMAIL_NOT_VERIFIED' 
+                ? 'bg-yellow-500/10 border-yellow-500/20' 
+                : 'bg-red-500/10 border-red-500/20'
+            }`}>
+              {error.code === 'AUTH_EMAIL_NOT_VERIFIED' ? (
+                <div>
+                  <div className="flex items-start gap-2 mb-3">
+                    <Mail className="w-5 h-5 text-yellow-400 flex-shrink-0 mt-0.5" />
+                    <div className="flex-1">
+                      <p className="text-yellow-400 text-sm font-medium">{error.message}</p>
+                      <p className="text-yellow-400/80 text-xs mt-1">
+                        We sent a verification link to {email}
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleResendVerification}
+                    disabled={resending || resendSuccess || !email || isLimited}
+                    className="w-full text-sm text-yellow-400 hover:text-yellow-300 disabled:text-slate-500 disabled:cursor-not-allowed"
+                  >
+                    {resending ? (
+                      'Sending...'
+                    ) : resendSuccess ? (
+                      <span className="text-green-400">✓ Verification email sent!</span>
+                    ) : isLimited ? (
+                      `Wait ${secondsRemaining}s to resend`
+                    ) : (
+                      'Resend verification email'
+                    )}
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-red-400 text-sm">{error.message}</p>
+                </div>
+              )}
             </div>
           )}
 
@@ -100,17 +196,7 @@ export function LoginModal() {
           </button>
         </form>
 
-        <div className="mt-6 text-center space-y-2">
-          <button
-            onClick={() => {
-              closeModal()
-              openModal('forgotPassword')
-            }}
-            className="text-blue-400 hover:text-blue-300 text-sm"
-          >
-            Forgot your password?
-          </button>
-          
+        <div className="mt-6 text-center">
           <p className="text-slate-400 text-sm">
             Don&apos;t have an account?{' '}
             <button
