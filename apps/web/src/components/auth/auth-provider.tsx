@@ -77,15 +77,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(session?.user ?? null)
           
           if (session?.user) {
+            // Check if session is still valid before starting monitoring
+            const now = Date.now() / 1000
+            const timeUntilExpiry = session.expires_at! - now
+            
             logger.setUser({
               id: session.user.id,
               email: session.user.email
             })
-            logger.info('User session restored', { userId: session.user.id })
+            logger.info('User session restored', { 
+              userId: session.user.id, 
+              timeUntilExpiry: Math.round(timeUntilExpiry / 60) 
+            })
             enhancedLogger.sessionEvent('start', { userId: session.user.id })
             
-            // Start session monitoring
-            sessionManager.startMonitoring()
+            // Only start session monitoring if session has sufficient time left
+            if (timeUntilExpiry > 60) {
+              sessionManager.startMonitoring()
+            } else {
+              logger.warn('Session expires very soon, skipping monitoring to avoid immediate logout')
+            }
           } else {
             logger.info('No active session found during initialization')
             enhancedLogger.info('No active session found during initialization')
@@ -160,7 +171,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           switch (event) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
-              sessionManager.startMonitoring()
+              
+              // Check session validity before starting monitoring
+              if (session) {
+                const now = Date.now() / 1000
+                const timeUntilExpiry = session.expires_at! - now
+                
+                if (timeUntilExpiry > 60) {
+                  sessionManager.startMonitoring()
+                } else {
+                  logger.warn('New session expires very soon, skipping monitoring')
+                }
+              }
+              
               // Don't set loading to false immediately to prevent flashing
               setTimeout(() => setLoading(false), 100)
               break

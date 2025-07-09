@@ -11,7 +11,7 @@
  */
 'use client'
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useAuth } from './auth-provider';
 import { useRouter } from 'next/navigation';
 import { AuthLoading } from './auth-loading';
@@ -26,46 +26,35 @@ interface ProtectedRouteProps {
 function ProtectedRouteInner({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
-  const [isChecking, setIsChecking] = useState(true);
-  
+
   // Debug logging
   if (typeof window !== 'undefined') {
     console.log('[ProtectedRoute] Rendered with user:', user?.id, 'loading:', loading, 'pathname:', window.location.pathname);
   }
 
   useEffect(() => {
-    // Give auth provider time to initialize
-    const checkAuth = async () => {
-      // Wait a bit for auth to stabilize
-      await new Promise(resolve => setTimeout(resolve, 100));
+    if (!loading && !user) {
+      const redirectInfo = {
+        loading,
+        user: user?.id,
+        pathname: window.location.pathname,
+        timestamp: new Date().toISOString(),
+        referrer: document.referrer,
+      };
       
-      if (!loading && !user) {
-        const redirectInfo = {
-          loading,
-          user: user?.id,
-          pathname: window.location.pathname,
-          timestamp: new Date().toISOString(),
-          referrer: document.referrer,
-        };
-        
-        logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
-        enhancedLogger.routeBlocked(window.location.pathname, 'unauthenticated', {
-          userId: user?.id,
-          ...redirectInfo
-        });
-        
-        console.warn('[ProtectedRoute] REDIRECT TO "/" - No authenticated user', redirectInfo);
-        router.push('/');
-      }
+      logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
+      enhancedLogger.routeBlocked(window.location.pathname, 'unauthenticated', {
+        userId: user?.id,
+        ...redirectInfo
+      });
       
-      setIsChecking(false);
-    };
-    
-    checkAuth();
+      console.warn('[ProtectedRoute] REDIRECT TO "/" - No authenticated user', redirectInfo);
+      router.push('/');
+    }
   }, [user, loading, router]);
 
   // Show loading state while checking authentication
-  if (loading || isChecking) {
+  if (loading) {
     return <AuthLoading />;
   }
 

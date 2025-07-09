@@ -89,6 +89,13 @@ class SessionManager {
     const expiryTime = expiresAt
     const timeUntilExpiry = expiryTime - now
     
+    // Check if session is already expired
+    if (timeUntilExpiry <= 0) {
+      logger.warn('Session already expired, triggering immediate logout')
+      this.config.onSessionExpired?.()
+      return
+    }
+    
     // Calculate when to refresh based on remember me preference
     const refreshThreshold = this.getRefreshThreshold() * 60
     const timeUntilRefresh = timeUntilExpiry - refreshThreshold
@@ -99,26 +106,33 @@ class SessionManager {
     
     logger.info('Session expiry scheduled', {
       expiresAt: new Date(expiresAt * 1000).toISOString(),
+      timeUntilExpiry: Math.round(timeUntilExpiry / 60),
       refreshIn: `${Math.round(timeUntilRefresh / 60)} minutes`,
       warnIn: `${Math.round(timeUntilWarning / 60)} minutes`
     })
     
-    // Schedule warning if configured
-    if (timeUntilWarning > 0 && this.config.onSessionExpiring) {
+    // Only schedule warning if there's enough time and configured
+    if (timeUntilWarning > 60 && this.config.onSessionExpiring) {
       this.warningTimer = setTimeout(() => {
         logger.warn('Session expiring soon')
         this.config.onSessionExpiring?.()
       }, timeUntilWarning * 1000)
     }
     
-    // Schedule refresh
-    if (timeUntilRefresh > 0) {
+    // Only schedule refresh if there's enough time (at least 2 minutes)
+    if (timeUntilRefresh > 120) {
       this.refreshTimer = setTimeout(async () => {
         await this.refreshSession()
       }, timeUntilRefresh * 1000)
+    } else if (timeUntilExpiry > 120) {
+      // If we can't refresh with the normal threshold, try refreshing with a shorter threshold
+      const shortRefreshTime = Math.max(60, timeUntilExpiry - 60) // 1 minute before expiry
+      this.refreshTimer = setTimeout(async () => {
+        await this.refreshSession()
+      }, shortRefreshTime * 1000)
     } else {
-      // Session is already close to expiry, refresh immediately
-      this.refreshSession()
+      // Session will expire very soon, don't attempt refresh to avoid logout loops
+      logger.warn('Session expires very soon, skipping refresh to avoid logout loop')
     }
   }
 
@@ -129,11 +143,32 @@ class SessionManager {
     try {
       logger.info('Attempting to refresh session')
       
+      // First check if we have a current session
+      const { data: { session: currentSession }, error: currentError } = await this.supabase.auth.getSession()
+      
+      if (currentError || !currentSession) {
+        logger.error('No current session to refresh', currentError)
+        this.config.onSessionExpired?.()
+        return
+      }
+      
+      // Check if current session is still valid
+      const now = Date.now() / 1000
+      if (currentSession.expires_at! <= now) {
+        logger.warn('Current session already expired, cannot refresh')
+        this.config.onSessionExpired?.()
+        return
+      }
+      
       const { data: { session }, error } = await this.supabase.auth.refreshSession()
       
       if (error) {
         logger.error('Failed to refresh session', error)
-        this.config.onSessionExpired?.()
+        // Only trigger logout if the error is not recoverable
+        if (error.message.includes('refresh_token_not_found') || 
+            error.message.includes('Invalid refresh token')) {
+          this.config.onSessionExpired?.()
+        }
         return
       }
       
@@ -143,14 +178,17 @@ class SessionManager {
         return
       }
       
-      logger.info('Session refreshed successfully')
+      logger.info('Session refreshed successfully', {
+        newExpiresAt: new Date(session.expires_at! * 1000).toISOString()
+      })
       this.config.onSessionRefreshed?.()
       
       // Schedule next refresh
       this.scheduleRefresh(session.expires_at!)
     } catch (err) {
       logger.error('Unexpected error refreshing session', err)
-      this.config.onSessionExpired?.()
+      // Don't automatically logout on unexpected errors to avoid logout loops
+      logger.warn('Session refresh failed, will retry on next scheduled refresh')
     }
   }
 
