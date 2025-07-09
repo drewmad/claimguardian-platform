@@ -220,23 +220,22 @@ Analyze this image and provide a detailed damage assessment in the following JSO
   }
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Camera className="h-6 w-6 text-orange-600" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Damage Analyzer</h1>
-              <Badge className="ml-2">Beta</Badge>
+    <div className="min-h-screen bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-orange-100 rounded-lg">
+              <Camera className="h-6 w-6 text-orange-600" />
             </div>
-            <p className="text-gray-600 max-w-3xl">
-              Upload photos of property damage for instant AI analysis. Get detailed assessments, 
-              severity ratings, and documentation guidance for your insurance claim.
-            </p>
+            <h1 className="text-3xl font-bold text-gray-900">AI Damage Analyzer</h1>
+            <Badge className="ml-2">Beta</Badge>
           </div>
+          <p className="text-gray-600 max-w-3xl">
+            Upload photos of property damage for instant AI analysis. Get detailed assessments, 
+            severity ratings, and documentation guidance for your insurance claim.
+          </p>
+        </div>
 
           {/* Model Selection */}
           <Card className="p-4 mb-6">
@@ -556,7 +555,6 @@ Analyze this image and provide a detailed damage assessment in the following JSO
           )}
         </div>
       </div>
-    </ProtectedRoute>
   )
 }
 

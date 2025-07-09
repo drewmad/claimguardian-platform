@@ -122,6 +122,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(null)
           setSessionWarning(false)
           logger.warn('Session expired - logging out user')
+          console.warn('[AuthProvider] REDIRECT TO "/" - Session expired', {
+            pathname: window.location.pathname,
+            timestamp: new Date().toISOString(),
+          })
           router.push('/')
         }
       },

@@ -40,14 +40,21 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
       await new Promise(resolve => setTimeout(resolve, 100));
       
       if (!loading && !user) {
-        logger.info('Unauthenticated user attempted to access protected route', {
+        const redirectInfo = {
           loading,
           user: user?.id,
-          pathname: window.location.pathname
-        });
+          pathname: window.location.pathname,
+          timestamp: new Date().toISOString(),
+          referrer: document.referrer,
+        };
+        
+        logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
         enhancedLogger.routeBlocked(window.location.pathname, 'unauthenticated', {
-          userId: user?.id
+          userId: user?.id,
+          ...redirectInfo
         });
+        
+        console.warn('[ProtectedRoute] REDIRECT TO "/" - No authenticated user', redirectInfo);
         router.push('/');
       }
       
