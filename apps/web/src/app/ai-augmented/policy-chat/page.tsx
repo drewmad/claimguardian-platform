@@ -1,11 +1,11 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import React, { useState, useRef } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { AIChatInterface } from '@/components/ai/ai-chat-interface'
 import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { 
   Shield, 
@@ -85,12 +85,9 @@ function PolicyChatContent() {
       let content = ''
       
       if (file.type === 'application/pdf') {
-        // For PDF files, we'll use a simpler approach for now
-        // In production, you'd want to use a proper PDF parsing library or server-side processing
         toast.info('PDF processing: For best results, please convert your PDF to text format')
         content = `[PDF Document: ${file.name}]\n\nNote: Full PDF text extraction requires server-side processing. For now, please use the text version of your policy document for best results.`
       } else if (file.type.startsWith('text/') || file.type === 'application/json') {
-        // For text files, read directly
         content = await file.text()
       } else {
         throw new Error('Unsupported file type. Please upload PDF or text files.')
@@ -99,7 +96,7 @@ function PolicyChatContent() {
       const doc: UploadedDocument = {
         id: `doc-${Date.now()}`,
         name: file.name,
-        content: content.slice(0, 50000), // Limit to 50k chars
+        content: content.slice(0, 50000),
         type: file.type,
         uploadedAt: new Date(),
       }
@@ -107,7 +104,6 @@ function PolicyChatContent() {
       setUploadedDocuments(prev => [...prev, doc])
       toast.success(`Document "${file.name}" uploaded successfully!`)
 
-      // Log the upload
       await supabase.from('audit_logs').insert({
         user_id: user?.id,
         action: 'document_upload',
@@ -169,7 +165,6 @@ function PolicyChatContent() {
     const timer = performanceTimer.start('PolicyChat', 'AI Response')
     
     try {
-      // Log the interaction
       await supabase.from('audit_logs').insert({
         user_id: user?.id,
         action: 'ai_policy_chat',
@@ -183,10 +178,8 @@ function PolicyChatContent() {
         },
       })
 
-      // Prepare messages with context
       let systemPrompt = AI_PROMPTS.POLICY_CHAT.SYSTEM
 
-      // Add document context if available
       if (uploadedDocuments.length > 0) {
         if (compareMode && selectedDocs.length >= 2) {
           systemPrompt += '\n\nThe user wants to compare the following policy documents:\n'
@@ -208,20 +201,18 @@ function PolicyChatContent() {
       const messages = [
         { role: 'system' as const, content: systemPrompt },
         ...history.map((msg) => ({
-          role: msg.role,
+          role: msg.role as 'user' | 'assistant',
           content: msg.content,
         })),
         { role: 'user' as const, content: message },
       ]
 
-      // Add topic context if selected
       if (selectedTopic) {
         messages[0].content += `\n\nThe user is specifically asking about: ${selectedTopic}`
       }
 
       const response = await aiClient.chat(messages, selectedModel)
       
-      // Log successful completion
       await timer.end({ feature: 'PolicyChat', action: 'AI Response', userId: user?.id, model: selectedModel }, {
         messageLength: message.length,
         responseLength: response.length,
@@ -243,7 +234,6 @@ function PolicyChatContent() {
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
             <div className="p-2 bg-blue-600/20 rounded-lg">
@@ -258,47 +248,45 @@ function PolicyChatContent() {
           </p>
         </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Left Sidebar */}
-            <div className="space-y-6">
-              {/* Model Selection */}
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-6">
-                  <h3 className="font-semibold mb-3 flex items-center gap-2 text-white">
-                    <Sparkles className="h-4 w-4 text-cyan-400" />
-                    AI Model
-                  </h3>
-                  <div className="space-y-2">
-                    <Button
-                      variant={selectedModel === 'openai' ? 'default' : 'outline'}
-                      className={`w-full justify-start ${
-                        selectedModel === 'openai' 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
-                      }`}
-                      onClick={() => setSelectedModel('openai')}
-                    >
-                      GPT-4 (OpenAI)
-                    </Button>
-                    <Button
-                      variant={selectedModel === 'gemini' ? 'default' : 'outline'}
-                      className={`w-full justify-start ${
-                        selectedModel === 'gemini' 
-                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
-                      }`}
-                      onClick={() => setSelectedModel('gemini')}
-                    >
-                      Gemini Pro (Google)
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="space-y-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-3 flex items-center gap-2 text-white">
+                  <Sparkles className="h-4 w-4 text-cyan-400" />
+                  AI Model
+                </h3>
+                <div className="space-y-2">
+                  <Button
+                    variant={selectedModel === 'openai' ? 'default' : 'outline'}
+                    className={`w-full justify-start ${
+                      selectedModel === 'openai' 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
+                    }`}
+                    onClick={() => setSelectedModel('openai')}
+                  >
+                    GPT-4 (OpenAI)
+                  </Button>
+                  <Button
+                    variant={selectedModel === 'gemini' ? 'default' : 'outline'}
+                    className={`w-full justify-start ${
+                      selectedModel === 'gemini' 
+                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
+                    }`}
+                    onClick={() => setSelectedModel('gemini')}
+                  >
+                    Gemini Pro (Google)
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
 
-              {/* Quick Questions */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <BookOpen className="h-4 w-4" />
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <h3 className="font-semibold mb-3 flex items-center gap-2 text-white">
+                  <BookOpen className="h-4 w-4 text-cyan-400" />
                   Quick Questions
                 </h3>
                 <div className="space-y-2">
@@ -322,154 +310,33 @@ function PolicyChatContent() {
                     </button>
                   ))}
                 </div>
-              </Card>
+              </CardContent>
+            </Card>
+          </div>
 
-              {/* Document Upload */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3 flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <FileText className="h-4 w-4" />
-                    Policy Documents ({uploadedDocuments.length})
-                  </span>
-                  {uploadedDocuments.length >= 2 && (
-                    <Button
-                      size="sm"
-                      variant={compareMode ? "default" : "outline"}
-                      onClick={() => setCompareMode(!compareMode)}
-                    >
-                      Compare
-                    </Button>
-                  )}
-                </h3>
-                
-                {uploadedDocuments.length > 0 && (
-                  <div className="space-y-2 mb-3 max-h-60 overflow-y-auto">
-                    {uploadedDocuments.map(doc => (
-                      <div 
-                        key={doc.id} 
-                        className={`flex items-start gap-2 p-2 rounded-lg border ${
-                          selectedDocs.includes(doc.id) 
-                            ? 'bg-blue-50 border-blue-300' 
-                            : 'bg-green-50 border-green-200'
-                        }`}
-                      >
-                        {compareMode && (
-                          <input
-                            type="checkbox"
-                            checked={selectedDocs.includes(doc.id)}
-                            onChange={() => toggleDocSelection(doc.id)}
-                            className="mt-1"
-                          />
-                        )}
-                        <FileCheck className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs font-medium truncate">{doc.name}</p>
-                          <p className="text-xs text-gray-600">
-                            {doc.uploadedAt.toLocaleTimeString()}
-                          </p>
-                        </div>
-                        <button
-                          onClick={() => removeDocument(doc.id)}
-                          className="text-gray-500 hover:text-red-600"
-                        >
-                          <X className="h-3 w-3" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
+          <div className="lg:col-span-2">
+            <AIChatInterface
+              systemPrompt={AI_PROMPTS.POLICY_CHAT.SYSTEM}
+              placeholder="Ask about your insurance policy, coverage, deductibles, or claim procedures..."
+              welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${
+                uploadedDocuments.length > 0 
+                  ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}` 
+                  : '\n\nYou can upload policy documents for specific answers or compare multiple policies.'
+              } What would you like to know?`}
+              onSendMessage={handleSendMessage}
+              className="h-[600px]"
+            />
 
-                {compareMode && uploadedDocuments.length >= 2 && (
-                  <Button
-                    size="sm"
-                    className="w-full mb-3"
-                    onClick={compareDocuments}
-                    disabled={selectedDocs.length < 2}
-                  >
-                    Compare Selected ({selectedDocs.length})
-                  </Button>
-                )}
-
-                <div className="space-y-3">
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".pdf,.txt,.json"
-                    onChange={handleFileSelect}
-                    className="hidden"
-                    multiple
-                  />
-                  <Button
-                    variant="outline"
-                    className="w-full"
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isProcessing}
-                  >
-                    {isProcessing ? (
-                      <>
-                        <span className="animate-spin mr-2">⏳</span>
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <Upload className="h-4 w-4 mr-2" />
-                        Add Document
-                      </>
-                    )}
-                  </Button>
-                  <p className="text-xs text-gray-600">
-                    Upload multiple policies to compare coverage or get comprehensive answers.
+            <div className="mt-4 p-4 bg-amber-900/20 border border-amber-500/30 rounded-lg">
+              <div className="flex gap-3">
+                <AlertCircle className="h-5 w-5 text-amber-400 flex-shrink-0 mt-0.5" />
+                <div className="text-sm text-amber-200">
+                  <p className="font-semibold mb-1">Important Disclaimer</p>
+                  <p>
+                    This AI assistant provides general information about insurance policies. 
+                    Always consult your actual policy documents and insurance agent for specific 
+                    coverage details and binding information.
                   </p>
-                </div>
-              </Card>
-
-              {/* Policy Topics */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3">Policy Topics</h3>
-                <div className="flex flex-wrap gap-2">
-                  {POLICY_TOPICS.map((topic, index) => (
-                    <Badge
-                      key={index}
-                      variant={selectedTopic === topic.label ? 'default' : 'outline'}
-                      className="cursor-pointer"
-                      onClick={() => setSelectedTopic(
-                        selectedTopic === topic.label ? null : topic.label
-                      )}
-                    >
-                      {topic.label}
-                    </Badge>
-                  ))}
-                </div>
-              </Card>
-            </div>
-
-            {/* Main Chat Interface */}
-            <div className="lg:col-span-2">
-              <AIChatInterface
-                systemPrompt={AI_PROMPTS.POLICY_CHAT.SYSTEM}
-                placeholder="Ask about your insurance policy, coverage, deductibles, or claim procedures..."
-                welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${
-                  uploadedDocuments.length > 0 
-                    ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}` 
-                    : '\n\nYou can upload policy documents for specific answers or compare multiple policies.'
-                } What would you like to know?`}
-                onSendMessage={handleSendMessage}
-                className="h-[600px]"
-              />
-
-              {/* Disclaimer */}
-              <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-lg">
-                <div className="flex gap-3">
-                  <AlertCircle className="h-5 w-5 text-amber-600 flex-shrink-0 mt-0.5" />
-                  <div className="text-sm text-amber-800">
-                    <p className="font-semibold mb-1">Important Disclaimer</p>
-                    <p>
-                      This AI assistant provides general information about insurance policies. 
-                      Always consult your actual policy documents and insurance agent for specific 
-                      coverage details and binding information.
-                    </p>
-                  </div>
                 </div>
               </div>
             </div>
