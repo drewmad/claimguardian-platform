@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase'
 import { logger } from '@/lib/logger'
@@ -19,7 +19,7 @@ import Link from 'next/link'
 
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'invalid'
 
-export default function VerifyEmailPage() {
+function VerifyEmailContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [status, setStatus] = useState<VerificationStatus>('verifying')
@@ -170,5 +170,25 @@ export default function VerifyEmailPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function VerifyEmailPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+        <div className="max-w-md w-full">
+          <div className="bg-slate-800 rounded-lg shadow-xl p-8">
+            <div className="text-center">
+              <Loader2 className="w-16 h-16 text-blue-500 animate-spin mx-auto mb-4" />
+              <h1 className="text-2xl font-bold mb-2">Loading...</h1>
+              <p className="text-slate-400">Please wait while we load the verification page.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    }>
+      <VerifyEmailContent />
+    </Suspense>
   )
 }
