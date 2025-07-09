@@ -2,6 +2,7 @@
 
 import { useState, useRef } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { AIChatInterface } from '@/components/ai/ai-chat-interface'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -24,6 +25,7 @@ import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
+import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
 
 const QUICK_QUESTIONS = [
   {
@@ -65,7 +67,7 @@ interface UploadedDocument {
   uploadedAt: Date
 }
 
-export default function PolicyChatPage() {
+function PolicyChatContent() {
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
   const [selectedTopic, setSelectedTopic] = useState<string | null>(null)
   const [uploadedDocuments, setUploadedDocuments] = useState<UploadedDocument[]>([])
@@ -117,7 +119,11 @@ export default function PolicyChatPage() {
         },
       })
     } catch (error) {
-      console.error('Document processing error:', error)
+      await aiErrorHelpers.policyChat.log(error as Error, 'Document Processing', user?.id, undefined, {
+        fileName: file.name,
+        fileType: file.type,
+        fileSize: file.size
+      })
       toast.error(error instanceof Error ? error.message : 'Failed to process document')
     } finally {
       setIsProcessing(false)
@@ -160,6 +166,8 @@ export default function PolicyChatPage() {
   }
 
   const handleSendMessage = async (message: string, history: Array<{id: string; role: string; content: string; timestamp: Date}>) => {
+    const timer = performanceTimer.start('PolicyChat', 'AI Response')
+    
     try {
       // Log the interaction
       await supabase.from('audit_logs').insert({
@@ -212,58 +220,79 @@ export default function PolicyChatPage() {
       }
 
       const response = await aiClient.chat(messages, selectedModel)
+      
+      // Log successful completion
+      await timer.end({ feature: 'PolicyChat', action: 'AI Response', userId: user?.id, model: selectedModel }, {
+        messageLength: message.length,
+        responseLength: response.length,
+        hasDocuments: uploadedDocuments.length > 0
+      })
+      
       return response
     } catch (error) {
-      console.error('Chat error:', error)
+      await aiErrorHelpers.policyChat.log(error as Error, 'AI Response', user?.id, selectedModel, {
+        messageLength: message.length,
+        documentsCount: uploadedDocuments.length,
+        compareMode
+      })
       toast.error('Failed to get AI response')
       throw error
     }
   }
 
   return (
-    <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          {/* Header */}
-          <div className="mb-8">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Shield className="h-6 w-6 text-blue-600" />
-              </div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Policy Advisor</h1>
-              <Badge className="ml-2">Beta</Badge>
+    <div className="p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
+        {/* Header */}
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-2 bg-blue-600/20 rounded-lg">
+              <Shield className="h-6 w-6 text-blue-400" />
             </div>
-            <p className="text-gray-600 max-w-3xl">
-              Get instant answers about your insurance policy, coverage details, and claim procedures. 
-              Our AI specializes in Florida property insurance and hurricane-related coverage.
-            </p>
+            <h1 className="text-3xl font-bold text-white">AI Policy Advisor</h1>
+            <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">Beta</Badge>
           </div>
+          <p className="text-gray-400 max-w-3xl">
+            Get instant answers about your insurance policy, coverage details, and claim procedures. 
+            Our AI specializes in Florida property insurance and hurricane-related coverage.
+          </p>
+        </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Sidebar */}
             <div className="space-y-6">
               {/* Model Selection */}
-              <Card className="p-4">
-                <h3 className="font-semibold mb-3 flex items-center gap-2">
-                  <Sparkles className="h-4 w-4" />
-                  AI Model
-                </h3>
-                <div className="space-y-2">
-                  <Button
-                    variant={selectedModel === 'openai' ? 'default' : 'outline'}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedModel('openai')}
-                  >
-                    GPT-4 (OpenAI)
-                  </Button>
-                  <Button
-                    variant={selectedModel === 'gemini' ? 'default' : 'outline'}
-                    className="w-full justify-start"
-                    onClick={() => setSelectedModel('gemini')}
-                  >
-                    Gemini Pro (Google)
-                  </Button>
-                </div>
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-6">
+                  <h3 className="font-semibold mb-3 flex items-center gap-2 text-white">
+                    <Sparkles className="h-4 w-4 text-cyan-400" />
+                    AI Model
+                  </h3>
+                  <div className="space-y-2">
+                    <Button
+                      variant={selectedModel === 'openai' ? 'default' : 'outline'}
+                      className={`w-full justify-start ${
+                        selectedModel === 'openai' 
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
+                      }`}
+                      onClick={() => setSelectedModel('openai')}
+                    >
+                      GPT-4 (OpenAI)
+                    </Button>
+                    <Button
+                      variant={selectedModel === 'gemini' ? 'default' : 'outline'}
+                      className={`w-full justify-start ${
+                        selectedModel === 'gemini' 
+                          ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                          : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
+                      }`}
+                      onClick={() => setSelectedModel('gemini')}
+                    >
+                      Gemini Pro (Google)
+                    </Button>
+                  </div>
+                </CardContent>
               </Card>
 
               {/* Quick Questions */}
@@ -276,7 +305,7 @@ export default function PolicyChatPage() {
                   {QUICK_QUESTIONS.map((item, index) => (
                     <button
                       key={index}
-                      className="w-full text-left p-3 rounded-lg hover:bg-gray-50 transition-colors group"
+                      className="w-full text-left p-3 rounded-lg hover:bg-gray-700 transition-colors group"
                       onClick={() => {
                         const input = document.querySelector('textarea') as HTMLTextAreaElement
                         if (input) {
@@ -286,9 +315,9 @@ export default function PolicyChatPage() {
                       }}
                     >
                       <div className="flex items-center gap-3">
-                        <item.icon className="h-4 w-4 text-gray-500" />
-                        <span className="text-sm font-medium">{item.label}</span>
-                        <ChevronRight className="h-4 w-4 ml-auto text-gray-400 group-hover:text-gray-600" />
+                        <item.icon className="h-4 w-4 text-gray-400" />
+                        <span className="text-sm font-medium text-gray-300">{item.label}</span>
+                        <ChevronRight className="h-4 w-4 ml-auto text-gray-400 group-hover:text-gray-300" />
                       </div>
                     </button>
                   ))}
@@ -447,6 +476,16 @@ export default function PolicyChatPage() {
           </div>
         </div>
       </div>
+    </div>
+  )
+}
+
+export default function PolicyChatPage() {
+  return (
+    <ProtectedRoute>
+      <DashboardLayout>
+        <PolicyChatContent />
+      </DashboardLayout>
     </ProtectedRoute>
   )
 }
