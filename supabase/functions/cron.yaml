@@ -1,0 +1,33 @@
+version: 1
+jobs:
+  # FGIO Quarterly Sync - Runs at 02:00 UTC on the 1st of Jan, Apr, Jul, Oct
+  fgio_sync:
+    schedule: "0 2 1 1,4,7,10 *"
+    command: "deno run --allow-net --allow-env /data_integrations/fl_parcels/fgio_sync.ts"
+    description: "Quarterly sync of Florida parcels from FGIO"
+    
+  # FDOT Weekly Delta - Runs every Sunday at 03:00 UTC
+  fdot_delta:
+    schedule: "0 3 * * 0"
+    command: "deno run --allow-net --allow-env /data_integrations/fl_parcels/fdot_delta.ts"
+    description: "Weekly delta sync of new parcels from FDOT"
+    
+  # FGDL Yearly Sync - Runs at 04:00 UTC on March 1st
+  fgdl_yearly:
+    schedule: "0 4 1 3 *"
+    command: |
+      YEAR=$(date -d "1 year ago" +%Y)
+      deno run --allow-net --allow-env /data_integrations/fl_parcels/zip_ingest.ts?url=https://fgdl.org/ftp/parcels_${YEAR}.zip&source=fgdl
+    description: "Yearly sync of FGDL parcel archive"
+    
+  # DOR Full Sync - Runs at 05:00 UTC on August 1st  
+  dor_full:
+    schedule: "0 5 1 8 *"
+    command: "echo 'DOR sync requires manual URL - check https://floridarevenue.com/property/Pages/DataPortal_RequestAssessmentRollGISData.aspx'"
+    description: "Annual sync of DOR tax roll shapes (manual URL required)"
+    
+  # Daily Materialized View Refresh - Runs at 06:00 UTC daily
+  refresh_parcels_view:
+    schedule: "0 6 * * *"
+    command: "supabase db query 'REFRESH MATERIALIZED VIEW CONCURRENTLY public.parcels;'"
+    description: "Daily refresh of parcels materialized view"
