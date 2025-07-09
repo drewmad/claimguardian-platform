@@ -11,7 +11,6 @@
 'use client'
 
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { Shield, AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
@@ -22,7 +21,6 @@ import { supabase } from '@/lib/supabase'
 type RecoveryStep = 'email' | 'questions' | 'reset' | 'success'
 
 export default function RecoverAccountPage() {
-  const router = useRouter()
   const [step, setStep] = useState<RecoveryStep>('email')
   const [email, setEmail] = useState('')
   const [userId, setUserId] = useState('')

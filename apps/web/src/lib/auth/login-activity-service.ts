@@ -49,7 +49,7 @@ class LoginActivityService {
     try {
       // Get user agent info
       const userAgent = typeof window !== 'undefined' ? window.navigator.userAgent : ''
-      const parser = new (UAParser as any)(userAgent)
+      const parser = new (UAParser as unknown as typeof UAParser)(userAgent)
       const device = parser.getDevice()
       const browser = parser.getBrowser()
       const os = parser.getOS()
@@ -223,7 +223,7 @@ class LoginActivityService {
       // In production, this would come from the server
       // For now, we'll use a placeholder
       return '127.0.0.1'
-    } catch (err) {
+    } catch {
       return '0.0.0.0'
     }
   }

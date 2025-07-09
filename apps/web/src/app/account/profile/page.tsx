@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
-  User, Shield, Mail, Phone, Camera, Save, Trash2, 
+  User, Shield, Mail, Save, Trash2, 
   AlertCircle, CheckCircle, Lock, Activity, Key
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -52,39 +52,37 @@ export default function ProfilePage() {
   const [deletePassword, setDeletePassword] = useState('')
   const [confirmDelete, setConfirmDelete] = useState(false)
 
-  useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-    } else if (user) {
-      loadProfile()
-    }
-  }, [user, authLoading, router])
-
-  const loadProfile = async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-      const data = await profileService.getProfile(user.id)
-      
-      if (data) {
-        setProfile(data)
-        setFirstName(data.firstName || '')
-        setLastName(data.lastName || '')
-        setPhone(data.phone || '')
-      }
-    } catch (err) {
-      logger.error('Failed to load profile', err)
-      showMessage('error', 'Failed to load profile')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const showMessage = (type: 'success' | 'error', text: string) => {
     setMessage({ type, text })
     setTimeout(() => setMessage({ type: '', text: '' }), 5000)
   }
+
+  useEffect(() => {
+    const load = async () => {
+      if (!authLoading && !user) {
+        router.push('/login')
+      } else if (user) {
+        try {
+          setLoading(true)
+          const data = await profileService.getProfile(user.id)
+          
+          if (data) {
+            setProfile(data)
+            setFirstName(data.firstName || '')
+            setLastName(data.lastName || '')
+            setPhone(data.phone || '')
+          }
+        } catch (err) {
+          logger.error('Failed to load profile', err)
+          showMessage('error', 'Failed to load profile')
+        } finally {
+          setLoading(false)
+        }
+      }
+    }
+    load()
+  }, [user, authLoading, router])
+
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -100,7 +98,14 @@ export default function ProfilePage() {
 
       if (success) {
         showMessage('success', 'Profile updated successfully')
-        loadProfile()
+        // Reload profile
+        const data = await profileService.getProfile(user.id)
+        if (data) {
+          setProfile(data)
+          setFirstName(data.firstName || '')
+          setLastName(data.lastName || '')
+          setPhone(data.phone || '')
+        }
       } else {
         showMessage('error', 'Failed to update profile')
       }

@@ -62,7 +62,7 @@ export default function TestAuthPage() {
         <div className="mt-8 p-4 bg-slate-800 rounded-lg">
           <h3 className="text-lg font-semibold mb-2">Test Instructions:</h3>
           <ol className="list-decimal list-inside space-y-1 text-sm text-slate-300">
-            <li>Click "Open Signup Modal" to test registration</li>
+            <li>Click &quot;Open Signup Modal&quot; to test registration</li>
             <li>Fill in all fields with valid data</li>
             <li>Use a unique email address</li>
             <li>Password must be at least 8 characters</li>

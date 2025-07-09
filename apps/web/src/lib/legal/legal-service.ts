@@ -31,7 +31,7 @@ export interface UserLegalAcceptance {
   accepted_at: string
   ip_address: string
   user_agent: string
-  signature_data?: Record<string, any>
+  signature_data?: Record<string, unknown>
   revoked_at?: string
 }
 
@@ -39,7 +39,7 @@ export interface AcceptanceRequest {
   legal_id: string
   ip_address?: string
   user_agent?: string
-  signature_data?: Record<string, any>
+  signature_data?: Record<string, unknown>
 }
 
 class LegalService {

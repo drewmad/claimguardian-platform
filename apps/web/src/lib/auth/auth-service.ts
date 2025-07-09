@@ -22,7 +22,7 @@ export class AuthError extends AppError {
   }
 }
 
-interface AuthResponse<T = any> {
+interface AuthResponse<T = unknown> {
   data?: T
   error?: AuthError
 }

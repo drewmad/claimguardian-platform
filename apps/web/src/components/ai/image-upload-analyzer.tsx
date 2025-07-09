@@ -9,7 +9,7 @@ import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 interface ImageUploadAnalyzerProps {
-  onAnalyze: (images: File[]) => Promise<any>
+  onAnalyze: (images: File[]) => Promise<void>
   maxFiles?: number
   maxSize?: number // in MB
   acceptedFormats?: string[]

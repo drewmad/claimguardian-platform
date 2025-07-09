@@ -83,7 +83,7 @@ class ProfileService {
    */
   async updateProfile(userId: string, data: ProfileUpdateData): Promise<boolean> {
     try {
-      const updateData: any = {
+      const updateData: Record<string, unknown> = {
         updated_at: new Date().toISOString()
       }
 
@@ -184,7 +184,7 @@ class ProfileService {
       }
 
       // Update password
-      const { data, error } = await authService.updatePassword(newPassword)
+      const { error } = await authService.updatePassword(newPassword)
 
       if (error) {
         return { success: false, error: error.message }

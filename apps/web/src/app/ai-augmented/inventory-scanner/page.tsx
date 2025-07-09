@@ -13,10 +13,7 @@ import {
   DollarSign,
   Home,
   AlertCircle,
-  CheckCircle,
-  Download,
   Sparkles,
-  Search,
   Filter,
   ArrowUpDown,
   Camera,
@@ -55,20 +52,6 @@ interface ScanResult {
   rooms: { [key: string]: number }
   recommendations: string[]
 }
-
-const ROOM_OPTIONS = [
-  'Living Room',
-  'Kitchen',
-  'Master Bedroom',
-  'Bedroom',
-  'Bathroom',
-  'Dining Room',
-  'Home Office',
-  'Garage',
-  'Basement',
-  'Attic',
-  'Outdoor',
-]
 
 const CATEGORY_ICONS = {
   electronics: '📱',
@@ -130,14 +113,14 @@ Analyze this image and identify all items visible. For each item, provide detail
 
         try {
           const parsed = JSON.parse(response)
-          const itemsWithIds = parsed.items.map((item: any, idx: number) => ({
+          const itemsWithIds = parsed.items.map((item: Partial<InventoryItem>, idx: number) => ({
             ...item,
             id: `item-${Date.now()}-${i}-${idx}`,
             image_ref: `Image ${i + 1}`,
           }))
           allItems.push(...itemsWithIds)
-        } catch (e) {
-          console.error('Parse error:', e)
+        } catch {
+          console.error('Parse error')
         }
       }
 
@@ -215,7 +198,7 @@ Analyze this image and identify all items visible. For each item, provide detail
       )
 
       toast.success('Inventory saved successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to save inventory')
     } finally {
       setIsSaving(false)
@@ -253,7 +236,7 @@ Analyze this image and identify all items visible. For each item, provide detail
   const updateItem = (id: string, updates: Partial<InventoryItem>) => {
     setEditingItems(prev => ({
       ...prev,
-      [id]: { ...(prev[id] || scanResult?.items.find(i => i.id === id)!), ...updates }
+      [id]: { ...(prev[id] || scanResult?.items.find(i => i.id === id) || {} as InventoryItem), ...updates }
     }))
   }
 
@@ -432,7 +415,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                     <ArrowUpDown className="h-4 w-4 text-gray-500" />
                     <select
                       value={sortBy}
-                      onChange={(e) => setSortBy(e.target.value as any)}
+                      onChange={(e) => setSortBy(e.target.value as 'value' | 'name' | 'room')}
                       className="text-sm border rounded px-2 py-1"
                     >
                       <option value="value">Sort by Value</option>
@@ -500,7 +483,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                         />
                         <select
                           value={item.condition}
-                          onChange={(e) => updateItem(item.id, { condition: e.target.value as any })}
+                          onChange={(e) => updateItem(item.id, { condition: e.target.value as 'new' | 'excellent' | 'good' | 'fair' | 'poor' })}
                           className="w-full text-sm border rounded px-2 py-1"
                         >
                           <option value="new">New</option>

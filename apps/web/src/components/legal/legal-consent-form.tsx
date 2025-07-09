@@ -44,6 +44,38 @@ export function LegalConsentForm({
   const [success, setSuccess] = useState(false)
 
   useEffect(() => {
+    const loadDocuments = async () => {
+      try {
+        setLoading(true)
+        setError('')
+
+        let docs: LegalDocument[]
+        
+        if (mode === 'update' && userId) {
+          // Load only documents that need acceptance
+          docs = await legalService.getDocumentsNeedingAcceptance(userId)
+        } else {
+          // Load all active documents (for signup or view)
+          docs = await legalService.getActiveLegalDocuments()
+        }
+
+        setDocuments(docs)
+        
+        // Initialize acceptance state
+        const initialState: DocumentState = {}
+        docs.forEach(doc => {
+          initialState[doc.id] = false
+        })
+        setAcceptedDocs(initialState)
+
+      } catch (err) {
+        logger.error('Failed to load legal documents', err)
+        setError('Failed to load legal documents. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+    
     loadDocuments()
   }, [userId, mode])
 
@@ -52,38 +84,6 @@ export function LegalConsentForm({
       documents.every(doc => acceptedDocs[doc.id] === true)
     onConsentChange?.(allAccepted)
   }, [acceptedDocs, documents, onConsentChange])
-
-  const loadDocuments = async () => {
-    try {
-      setLoading(true)
-      setError('')
-
-      let docs: LegalDocument[]
-      
-      if (mode === 'update' && userId) {
-        // Load only documents that need acceptance
-        docs = await legalService.getDocumentsNeedingAcceptance(userId)
-      } else {
-        // Load all active documents (for signup or view)
-        docs = await legalService.getActiveLegalDocuments()
-      }
-
-      setDocuments(docs)
-      
-      // Initialize acceptance state
-      const initialState: DocumentState = {}
-      docs.forEach(doc => {
-        initialState[doc.id] = false
-      })
-      setAcceptedDocs(initialState)
-
-    } catch (err) {
-      logger.error('Failed to load legal documents', err)
-      setError('Failed to load legal documents. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handleDocumentToggle = (documentId: string, accepted: boolean) => {
     if (disabled) return
@@ -106,7 +106,7 @@ export function LegalConsentForm({
     if (!onSubmit || submitting) return
 
     const acceptedDocumentIds = Object.entries(acceptedDocs)
-      .filter(([_, accepted]) => accepted)
+      .filter(([, accepted]) => accepted)
       .map(([docId]) => docId)
 
     if (acceptedDocumentIds.length !== documents.length) {

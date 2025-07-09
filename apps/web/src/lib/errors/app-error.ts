@@ -51,7 +51,7 @@ export interface ErrorContext {
   sessionId?: string
   requestId?: string
   timestamp?: Date
-  [key: string]: any
+  [key: string]: unknown
 }
 
 export class AppError extends Error {

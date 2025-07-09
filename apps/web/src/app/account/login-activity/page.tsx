@@ -27,33 +27,31 @@ export default function LoginActivityPage() {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login')
-    } else if (user) {
-      loadLoginActivity()
+    const load = async () => {
+      if (!authLoading && !user) {
+        router.push('/login')
+      } else if (user) {
+        try {
+          setLoading(true)
+          const [activityData, statsData] = await Promise.all([
+            loginActivityService.getUserLoginActivity(user.id),
+            loginActivityService.getLoginStats(user.id)
+          ])
+
+          setActivities(activityData)
+          setStats(statsData)
+          logger.track('login_activity_viewed', { userId: user.id })
+        } catch (err) {
+          logger.error('Failed to load login activity', err)
+          setError('Failed to load login activity')
+        } finally {
+          setLoading(false)
+        }
+      }
     }
+    load()
   }, [user, authLoading, router])
 
-  const loadLoginActivity = async () => {
-    if (!user) return
-
-    try {
-      setLoading(true)
-      const [activityData, statsData] = await Promise.all([
-        loginActivityService.getUserLoginActivity(user.id),
-        loginActivityService.getLoginStats(user.id)
-      ])
-
-      setActivities(activityData)
-      setStats(statsData)
-      logger.track('login_activity_viewed', { userId: user.id })
-    } catch (err) {
-      logger.error('Failed to load login activity', err)
-      setError('Failed to load login activity')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const getDeviceIcon = (deviceType?: string) => {
     switch (deviceType?.toLowerCase()) {
@@ -68,12 +66,6 @@ export default function LoginActivityPage() {
     }
   }
 
-  const formatLocation = (activity: LoginActivity) => {
-    if (activity.location_city && activity.location_country) {
-      return `${activity.location_city}, ${activity.location_country}`
-    }
-    return 'Unknown location'
-  }
 
   if (authLoading || loading) {
     return (

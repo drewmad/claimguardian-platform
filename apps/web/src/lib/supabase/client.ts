@@ -1,7 +1,7 @@
 'use client'
 
 import { createBrowserClient } from '@supabase/ssr'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useAuth } from '@/components/auth/auth-provider'
 
 export function createClient() {

@@ -6,7 +6,6 @@ import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
   Camera,
@@ -19,7 +18,6 @@ import {
   Droplets,
   Wind,
   Zap,
-  Shield,
   AlertCircle
 } from 'lucide-react'
 import { AIClient } from '@/lib/ai/client'
@@ -112,7 +110,7 @@ Analyze this image and provide a detailed damage assessment in the following JSO
           results.push(...parsed.damage_items)
           parsed.safety_warnings?.forEach((w: string) => safetyWarnings.add(w))
           parsed.immediate_actions?.forEach((a: string) => immediateActions.add(a))
-        } catch (e) {
+        } catch {
           // Fallback parsing if not valid JSON
           results.push({
             id: `damage-${Date.now()}-${i}`,
@@ -190,7 +188,7 @@ Analyze this image and provide a detailed damage assessment in the following JSO
     try {
       // TODO: Generate PDF report
       toast.success('Report generated successfully!')
-    } catch (error) {
+    } catch {
       toast.error('Failed to generate report')
     } finally {
       setIsGeneratingReport(false)

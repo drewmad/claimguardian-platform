@@ -20,7 +20,7 @@ export enum LogLevel {
 }
 
 interface LogContext {
-  [key: string]: any
+  [key: string]: unknown
 }
 
 class Logger {
@@ -116,7 +116,7 @@ class Logger {
    * Track custom events
    */
   track(eventName: string, properties?: LogContext): void {
-    const logData = this.formatLog(LogLevel.INFO, `Event: ${eventName}`, properties)
+    this.formatLog(LogLevel.INFO, `Event: ${eventName}`, properties)
     
     if (this.isDevelopment) {
       console.log(`[EVENT] ${eventName}`, properties)
@@ -136,7 +136,7 @@ class Logger {
   /**
    * Set user context for error tracking
    */
-  setUser(user: { id: string; email?: string; [key: string]: any } | null): void {
+  setUser(user: { id: string; email?: string; [key: string]: unknown } | null): void {
     if (user) {
       Sentry.setUser({
         id: user.id,

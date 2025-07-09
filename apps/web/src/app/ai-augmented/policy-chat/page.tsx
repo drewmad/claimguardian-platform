@@ -11,7 +11,6 @@ import {
   FileText, 
   AlertCircle, 
   Sparkles,
-  Home,
   DollarSign,
   Clock,
   BookOpen,
@@ -60,7 +59,7 @@ export default function PolicyChatPage() {
   const { supabase, user } = useSupabase()
   const aiClient = new AIClient()
 
-  const handleSendMessage = async (message: string, history: any[]) => {
+  const handleSendMessage = async (message: string, history: Array<{id: string; role: string; content: string; timestamp: Date}>) => {
     try {
       // Log the interaction
       await supabase.from('audit_logs').insert({
@@ -77,7 +76,7 @@ export default function PolicyChatPage() {
       // Prepare messages with context
       const messages = [
         { role: 'system' as const, content: AI_PROMPTS.POLICY_CHAT.SYSTEM },
-        ...history.map((msg: any) => ({
+        ...history.map((msg) => ({
           role: msg.role,
           content: msg.content,
         })),

@@ -23,7 +23,6 @@ interface AIChatInterfaceProps {
 }
 
 export function AIChatInterface({
-  systemPrompt,
   placeholder = 'Type your message...',
   welcomeMessage = 'Hello! How can I help you today?',
   onSendMessage,

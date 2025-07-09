@@ -76,7 +76,7 @@ class SecurityQuestionsService {
         throw error
       }
 
-      return data?.map((item: any) => ({
+      return data?.map((item: Record<string, unknown>) => ({
         id: item.id,
         user_id: item.user_id,
         question_id: item.question_id,
