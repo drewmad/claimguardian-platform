@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
 import { ReportGenerator } from '@/components/reports/report-generator'
 import { Button } from '@/components/ui/button'
@@ -35,6 +36,7 @@ import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { toast } from 'sonner'
+import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
 
 interface DamageItem {
   id: string
@@ -243,18 +245,18 @@ Analyze this image and provide a detailed damage assessment in the following JSO
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div className="p-6">
+      <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-2 bg-orange-100 rounded-lg">
-              <Camera className="h-6 w-6 text-orange-600" />
+            <div className="p-2 bg-orange-600/20 rounded-lg">
+              <Camera className="h-6 w-6 text-orange-400" />
             </div>
-            <h1 className="text-3xl font-bold text-gray-900">AI Damage Analyzer</h1>
-            <Badge className="ml-2">Beta</Badge>
+            <h1 className="text-3xl font-bold text-white">AI Damage Analyzer</h1>
+            <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">Beta</Badge>
           </div>
-          <p className="text-gray-600 max-w-3xl">
+          <p className="text-gray-400 max-w-3xl">
             Upload photos of property damage for instant AI analysis. Get detailed assessments, 
             severity ratings, and documentation guidance for your insurance claim.
           </p>
@@ -663,7 +665,9 @@ export default function DamageAnalyzerPage() {
   
   return (
     <ProtectedRoute>
-      <DamageAnalyzerContent />
+      <DashboardLayout>
+        <DamageAnalyzerContent />
+      </DashboardLayout>
     </ProtectedRoute>
   )
 }
