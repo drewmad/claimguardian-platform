@@ -9,6 +9,7 @@ import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
+import { Textarea } from '@/components/ui/textarea'
 import { 
   Camera,
   AlertTriangle,
@@ -23,7 +24,10 @@ import {
   MapPin,
   DollarSign,
   Clock,
-  Shield
+  Shield,
+  Settings,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react'
 import { AIClient } from '@/lib/ai/client'
 import { AI_PROMPTS } from '@/lib/ai/config'
@@ -71,6 +75,8 @@ function DamageAnalyzerContent() {
   const defaultModel = hasOpenAIKey ? 'openai' : hasGeminiKey ? 'gemini' : 'openai'
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>(defaultModel)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
+  const [customPrompt, setCustomPrompt] = useState(AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM)
+  const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
   const { supabase } = useSupabase()
   const { user } = useAuth()
   const aiClient = new AIClient()
@@ -101,7 +107,7 @@ function DamageAnalyzerContent() {
         // Convert to base64
         const base64 = await fileToBase64(files[i])
 
-        const prompt = `${AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM}
+        const prompt = `${customPrompt}
 
 Analyze this image and provide a detailed damage assessment in the following JSON format:
 {
@@ -298,6 +304,64 @@ Analyze this image and provide a detailed damage assessment in the following JSO
               </Alert>
             )}
           </Card>
+
+          {/* Prompt Editor */}
+          {hasAnyKey && (
+            <Card className="mb-6">
+              <div className="p-4">
+                <Button 
+                  variant="ghost" 
+                  className="w-full justify-between p-2"
+                  onClick={() => setIsPromptEditorOpen(!isPromptEditorOpen)}
+                >
+                  <div className="flex items-center gap-2">
+                    <Settings className="h-4 w-4" />
+                    <span className="font-semibold">Customize Analysis Prompt</span>
+                    <Badge variant="outline">Testing</Badge>
+                    {customPrompt !== AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM && (
+                      <Badge variant="default">Custom</Badge>
+                    )}
+                  </div>
+                  {isPromptEditorOpen ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+                
+                {isPromptEditorOpen && (
+                  <div className="mt-4 space-y-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-gray-600">
+                        Customize the system prompt used for damage analysis. The prompt will be combined with specific instructions for JSON output format.
+                      </p>
+                      <Textarea
+                        value={customPrompt}
+                        onChange={(e) => setCustomPrompt(e.target.value)}
+                        placeholder="Enter your custom prompt..."
+                        className="min-h-[120px] font-mono text-sm"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setCustomPrompt(AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM)}
+                      >
+                        Reset to Default
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={() => setIsPromptEditorOpen(false)}
+                      >
+                        Done
+                      </Button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </Card>
+          )}
 
           {/* Upload Section */}
           {!analysisResult && hasAnyKey && (
