@@ -62,7 +62,14 @@ const DAMAGE_ICONS = {
 
 
 function DamageAnalyzerContent() {
-  const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
+  // Check if AI API keys are configured
+  const hasOpenAIKey = !!process.env.NEXT_PUBLIC_OPENAI_API_KEY
+  const hasGeminiKey = !!process.env.NEXT_PUBLIC_GEMINI_API_KEY
+  const hasAnyKey = hasOpenAIKey || hasGeminiKey
+  
+  // Set default model to the first available one
+  const defaultModel = hasOpenAIKey ? 'openai' : hasGeminiKey ? 'gemini' : 'openai'
+  const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>(defaultModel)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const { supabase } = useSupabase()
   const { user } = useAuth()
@@ -72,6 +79,16 @@ function DamageAnalyzerContent() {
   useAuthDebug('DamageAnalyzerContent')
 
   const analyzeImages = async (files: File[]) => {
+    // Check if the selected model has an API key
+    if (selectedModel === 'openai' && !hasOpenAIKey) {
+      toast.error('OpenAI API key not configured. Please set NEXT_PUBLIC_OPENAI_API_KEY in your environment.')
+      return
+    }
+    if (selectedModel === 'gemini' && !hasGeminiKey) {
+      toast.error('Gemini API key not configured. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment.')
+      return
+    }
+
     try {
       const results: DamageItem[] = []
       const safetyWarnings = new Set<string>()
@@ -249,22 +266,41 @@ Analyze this image and provide a detailed damage assessment in the following JSO
                   size="sm"
                   variant={selectedModel === 'openai' ? 'default' : 'outline'}
                   onClick={() => setSelectedModel('openai')}
+                  disabled={!hasOpenAIKey}
                 >
                   GPT-4 Vision
+                  {!hasOpenAIKey && ' (Key Required)'}
                 </Button>
                 <Button
                   size="sm"
                   variant={selectedModel === 'gemini' ? 'default' : 'outline'}
                   onClick={() => setSelectedModel('gemini')}
+                  disabled={!hasGeminiKey}
                 >
                   Gemini Vision
+                  {!hasGeminiKey && ' (Key Required)'}
                 </Button>
               </div>
             </div>
+            {!hasAnyKey && (
+              <Alert className="mt-4">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <p className="font-semibold mb-2">AI API Keys Required</p>
+                  <p className="text-sm mb-2">
+                    To use the damage analyzer, you need to configure at least one AI API key:
+                  </p>
+                  <ul className="text-sm space-y-1 list-disc list-inside">
+                    <li>For OpenAI: Add <code>NEXT_PUBLIC_OPENAI_API_KEY</code> to your environment</li>
+                    <li>For Gemini: Add <code>NEXT_PUBLIC_GEMINI_API_KEY</code> to your environment</li>
+                  </ul>
+                </AlertDescription>
+              </Alert>
+            )}
           </Card>
 
           {/* Upload Section */}
-          {!analysisResult && (
+          {!analysisResult && hasAnyKey && (
             <ImageUploadAnalyzer
               onAnalyze={analyzeImages}
               maxFiles={20}
