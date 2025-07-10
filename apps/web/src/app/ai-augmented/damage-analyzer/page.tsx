@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
@@ -11,6 +11,8 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
+import { AIBreadcrumb } from '@/components/ui/breadcrumb'
+import { ImageAnalysisLoading, SkeletonCard } from '@/components/ui/loading-states'
 import { 
   Camera,
   AlertTriangle,
@@ -28,15 +30,23 @@ import {
   Shield,
   Settings,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  HelpCircle,
+  Upload,
+  Wifi,
+  WifiOff
 } from 'lucide-react'
-import { AIClient } from '@/lib/ai/client'
+import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { toast } from 'sonner'
 import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
+import { useAIKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
+import { useRealTimeStatus, useFallbackStatus } from '@/lib/real-time-status'
+import { useAIErrorRecovery, useNetworkStatus } from '@/lib/error-recovery'
+import { compressImage, useRequestCache, useLazyLoad, performanceMonitor, useBatchProcessor } from '@/lib/performance-utils'
 
 interface DamageItem {
   id: string
@@ -68,48 +78,117 @@ const DAMAGE_ICONS = {
 
 
 function DamageAnalyzerContent() {
-  // Check if AI API keys are configured
-  const hasOpenAIKey = !!process.env.NEXT_PUBLIC_OPENAI_API_KEY
-  const hasGeminiKey = !!process.env.NEXT_PUBLIC_GEMINI_API_KEY
-  const hasAnyKey = hasOpenAIKey || hasGeminiKey
+  // State for API keys (will be loaded dynamically)
+  const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
+  const [hasGeminiKey, setHasGeminiKey] = useState(false)
+  const [hasAnyKey, setHasAnyKey] = useState(false)
+  const [keysLoaded, setKeysLoaded] = useState(false)
   
   // Set default model to the first available one
   const defaultModel = hasOpenAIKey ? 'openai' : hasGeminiKey ? 'gemini' : 'openai'
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>(defaultModel)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
-  const [customPrompt, setCustomPrompt] = useState(AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM)
+  const [customPrompt, setCustomPrompt] = useState<string>(AI_PROMPTS.DAMAGE_ANALYZER.SYSTEM)
   const [isPromptEditorOpen, setIsPromptEditorOpen] = useState(false)
+  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [currentImageIndex, setCurrentImageIndex] = useState(0)
+  const [totalImages, setTotalImages] = useState(0)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
   const { supabase } = useSupabase()
   const { user } = useAuth()
-  const aiClient = new AIClient()
+  const aiClient = new AIClientService()
+  
+  // Load API key status on mount
+  useEffect(() => {
+    const checkKeys = async () => {
+      try {
+        const keysStatus = await aiClient.checkKeys()
+        setHasOpenAIKey(keysStatus.hasOpenAIKey)
+        setHasGeminiKey(keysStatus.hasGeminiKey)
+        setHasAnyKey(keysStatus.hasAnyKey)
+        
+        // Update selected model based on available keys
+        if (keysStatus.hasOpenAIKey) {
+          setSelectedModel('openai')
+        } else if (keysStatus.hasGeminiKey) {
+          setSelectedModel('gemini')
+        }
+      } catch (error) {
+        console.error('Failed to check API keys:', error)
+        toast.error('Failed to check AI service availability')
+      } finally {
+        setKeysLoaded(true)
+      }
+    }
+    
+    checkKeys()
+  }, [])
+  
+  // Enhanced hooks
+  const { isOnline } = useNetworkStatus()
+  const { executeAIOperation, isRetrying, retryState } = useAIErrorRecovery()
+  const { cachedRequest } = useRequestCache()
+  const { elementRef: lazyRef, isVisible: isLazyVisible } = useLazyLoad()
+  
+  // Real-time status (fallback if WebSocket not available)
+  const { statusUpdates, systemStatus, sendStatusUpdate } = process.env.NODE_ENV === 'development' 
+    ? useFallbackStatus() 
+    : useRealTimeStatus()
+  
+  // Batch processor for multiple images
+  const { addToQueue, processing: batchProcessing, results: batchResults, clearQueue } = useBatchProcessor(
+    async (files: File[]) => {
+      const results = []
+      for (const file of files) {
+        const result = await processImageWithRetry(file)
+        results.push(result)
+      }
+      return results
+    },
+    3, // Process 3 images at a time
+    500 // 500ms delay between batches
+  )
   
   // Debug logging
   useAuthDebug('DamageAnalyzerContent')
+  
+  // Keyboard shortcuts
+  const { showShortcutsHelp } = useAIKeyboardShortcuts({
+    onUpload: () => fileInputRef.current?.click(),
+    onSubmit: () => {/* Will be implemented in upload handler */},
+    onEscape: () => {
+      setIsPromptEditorOpen(false)
+      setAnalysisResult(null)
+    },
+    onShowHelp: () => showShortcutsHelp(),
+    uploadDisabled: !hasAnyKey || isAnalyzing,
+    submitDisabled: !hasAnyKey || isAnalyzing
+  })
 
-  const analyzeImages = async (files: File[]) => {
-    // Check if the selected model has an API key
-    if (selectedModel === 'openai' && !hasOpenAIKey) {
-      toast.error('OpenAI API key not configured. Please set NEXT_PUBLIC_OPENAI_API_KEY in your environment.')
-      return
-    }
-    if (selectedModel === 'gemini' && !hasGeminiKey) {
-      toast.error('Gemini API key not configured. Please set NEXT_PUBLIC_GEMINI_API_KEY in your environment.')
-      return
-    }
-
+  const processImageWithRetry = async (file: File) => {
+    const timer = performanceMonitor.startTimer('image_analysis')
+    
     try {
-      const results: DamageItem[] = []
-      const safetyWarnings = new Set<string>()
-      const immediateActions = new Set<string>()
+      // Compress image for better performance
+      const compressedFile = await compressImage(file, {
+        maxWidth: 1920,
+        maxHeight: 1080,
+        quality: 0.8,
+        format: 'jpeg'
+      })
 
-      // Analyze each image
-      for (let i = 0; i < files.length; i++) {
-        toast.loading(`Analyzing image ${i + 1} of ${files.length}...`)
-
-        // Convert to base64
-        const base64 = await fileToBase64(files[i])
-
-        const prompt = `${customPrompt}
+      // Convert to base64
+      const base64 = await fileToBase64(compressedFile)
+      
+      // Create cache key
+      const cacheKey = `analysis-${selectedModel}-${file.name}-${file.size}-${file.lastModified}`
+      
+      // Try to get from cache first
+      const cachedResult = await cachedRequest(
+        cacheKey,
+        async () => {
+          const prompt = `${customPrompt}
 
 Analyze this image and provide a detailed damage assessment in the following JSON format:
 {
@@ -128,28 +207,87 @@ Analyze this image and provide a detailed damage assessment in the following JSO
   "safety_warnings": ["critical safety concerns"]
 }`
 
-        const response = await aiClient.analyzeImage({
-          image: base64,
-          prompt,
-          model: selectedModel,
-        })
-
-        try {
-          const parsed = JSON.parse(response)
-          results.push(...parsed.damage_items)
-          parsed.safety_warnings?.forEach((w: string) => safetyWarnings.add(w))
-          parsed.immediate_actions?.forEach((a: string) => immediateActions.add(a))
-        } catch {
-          // Fallback parsing if not valid JSON
-          results.push({
-            id: `damage-${Date.now()}-${i}`,
-            type: 'other',
-            severity: 'moderate',
-            location: `Image ${i + 1}`,
-            description: response,
-            safety_concerns: [],
-            repair_priority: 'standard',
+          const response = await aiClient.analyzeImage({
+            image: base64,
+            prompt,
+            model: selectedModel,
           })
+
+          try {
+            return JSON.parse(response)
+          } catch {
+            // Fallback parsing if not valid JSON
+            return {
+              damage_items: [{
+                id: `damage-${Date.now()}`,
+                type: 'other',
+                severity: 'moderate',
+                location: `Image analysis`,
+                description: response,
+                safety_concerns: [],
+                repair_priority: 'standard',
+              }],
+              immediate_actions: [],
+              safety_warnings: []
+            }
+          }
+        },
+        10 * 60 * 1000 // 10 minutes cache
+      )
+
+      timer()
+      return cachedResult
+    } catch (error) {
+      timer()
+      throw error
+    }
+  }
+
+  const analyzeImages = async (files: File[]) => {
+    // Check if the selected model has an API key
+    if (selectedModel === 'openai' && !hasOpenAIKey) {
+      toast.error('OpenAI API key not configured. Please set OPENAI_API_KEY in your environment.')
+      return
+    }
+    if (selectedModel === 'gemini' && !hasGeminiKey) {
+      toast.error('Gemini API key not configured. Please set GEMINI_API_KEY in your environment.')
+      return
+    }
+
+    if (!isOnline) {
+      toast.error('No internet connection. Please check your network and try again.')
+      return
+    }
+
+    setIsAnalyzing(true)
+    setTotalImages(files.length)
+    setCurrentImageIndex(0)
+    clearQueue()
+
+    sendStatusUpdate({
+      type: 'info',
+      message: `Starting analysis of ${files.length} images`,
+      metadata: { model: selectedModel, imageCount: files.length }
+    })
+
+    try {
+      const results: DamageItem[] = []
+      const safetyWarnings = new Set<string>()
+      const immediateActions = new Set<string>()
+
+      // Process images with retry logic
+      for (let i = 0; i < files.length; i++) {
+        setCurrentImageIndex(i + 1)
+        
+        const analysisResult = await executeAIOperation(
+          () => processImageWithRetry(files[i]),
+          `Image ${i + 1} analysis`
+        )
+
+        if (analysisResult) {
+          results.push(...analysisResult.damage_items)
+          analysisResult.safety_warnings?.forEach((w: string) => safetyWarnings.add(w))
+          analysisResult.immediate_actions?.forEach((a: string) => immediateActions.add(a))
         }
       }
 
@@ -199,14 +337,28 @@ Analyze this image and provide a detailed damage assessment in the following JSO
           images_analyzed: files.length,
           overall_severity: overallSeverity,
           damage_items_found: results.length,
+          retry_count: retryState.retryCount,
         },
+      })
+
+      sendStatusUpdate({
+        type: 'success',
+        message: `Analysis complete! Found ${results.length} damage items with ${overallSeverity.toLowerCase()} severity`,
+        metadata: { results: results.length, severity: overallSeverity }
       })
 
       toast.success('Damage analysis complete!')
     } catch (error) {
       console.error('Analysis error:', error)
+      sendStatusUpdate({
+        type: 'error',
+        message: 'Failed to analyze images',
+        metadata: { error: (error as Error).message }
+      })
       toast.error('Failed to analyze images')
       throw error
+    } finally {
+      setIsAnalyzing(false)
     }
   }
 
@@ -247,6 +399,13 @@ Analyze this image and provide a detailed damage assessment in the following JSO
   return (
     <div className="p-6">
       <div className="max-w-7xl mx-auto space-y-6">
+        {/* Breadcrumb */}
+        <AIBreadcrumb 
+          section="Analysis" 
+          page="Damage Analyzer" 
+          className="mb-4" 
+        />
+        
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
@@ -255,12 +414,66 @@ Analyze this image and provide a detailed damage assessment in the following JSO
             </div>
             <h1 className="text-3xl font-bold text-white">AI Damage Analyzer</h1>
             <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">Beta</Badge>
+            {!isOnline && (
+              <Badge variant="destructive" className="ml-2">
+                <WifiOff className="h-3 w-3 mr-1" />
+                Offline
+              </Badge>
+            )}
+            {isRetrying && (
+              <Badge variant="secondary" className="ml-2">
+                Retrying... ({retryState.retryCount}/{3})
+              </Badge>
+            )}
           </div>
-          <p className="text-gray-400 max-w-3xl">
-            Upload photos of property damage for instant AI analysis. Get detailed assessments, 
-            severity ratings, and documentation guidance for your insurance claim.
-          </p>
+          <div className="flex items-center justify-between">
+            <p className="text-gray-400 max-w-3xl">
+              Upload photos of property damage for instant AI analysis. Get detailed assessments, 
+              severity ratings, and documentation guidance for your insurance claim.
+            </p>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={() => showShortcutsHelp()}
+              className="text-gray-400 hover:text-white"
+            >
+              <HelpCircle className="h-4 w-4 mr-1" />
+              Shortcuts
+            </Button>
+          </div>
         </div>
+        
+        {/* System Status */}
+        {systemStatus && (
+          <Card className="bg-gray-800 border-gray-700 mb-6">
+            <CardContent className="p-4">
+              <div className="flex items-center gap-4 text-sm">
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    systemStatus.ai_services.openai === 'online' ? 'bg-green-400' : 
+                    systemStatus.ai_services.openai === 'degraded' ? 'bg-yellow-400' : 'bg-red-400'
+                  }`} />
+                  <span className="text-gray-400">OpenAI: {systemStatus.ai_services.openai}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${
+                    systemStatus.ai_services.gemini === 'online' ? 'bg-green-400' : 
+                    systemStatus.ai_services.gemini === 'degraded' ? 'bg-yellow-400' : 'bg-red-400'
+                  }`} />
+                  <span className="text-gray-400">Gemini: {systemStatus.ai_services.gemini}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  {isOnline ? (
+                    <Wifi className="h-4 w-4 text-green-400" />
+                  ) : (
+                    <WifiOff className="h-4 w-4 text-red-400" />
+                  )}
+                  <span className="text-gray-400">Network: {isOnline ? 'Connected' : 'Disconnected'}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
           {/* Model Selection */}
           <Card className="p-4 mb-6">
@@ -290,7 +503,15 @@ Analyze this image and provide a detailed damage assessment in the following JSO
                 </Button>
               </div>
             </div>
-            {!hasAnyKey && (
+            {!keysLoaded ? (
+              <Alert className="mt-4">
+                <Sparkles className="h-4 w-4 animate-pulse" />
+                <AlertDescription>
+                  <p className="font-semibold mb-2">Checking AI Service Availability...</p>
+                  <p className="text-sm">Please wait while we verify the AI services.</p>
+                </AlertDescription>
+              </Alert>
+            ) : !hasAnyKey && (
               <Alert className="mt-4">
                 <AlertTriangle className="h-4 w-4" />
                 <AlertDescription>
@@ -299,8 +520,8 @@ Analyze this image and provide a detailed damage assessment in the following JSO
                     To use the damage analyzer, you need to configure at least one AI API key:
                   </p>
                   <ul className="text-sm space-y-1 list-disc list-inside">
-                    <li>For OpenAI: Add <code>NEXT_PUBLIC_OPENAI_API_KEY</code> to your environment</li>
-                    <li>For Gemini: Add <code>NEXT_PUBLIC_GEMINI_API_KEY</code> to your environment</li>
+                    <li>For OpenAI: Add <code>OPENAI_API_KEY</code> to your environment</li>
+                    <li>For Gemini: Add <code>GEMINI_API_KEY</code> to your environment</li>
                   </ul>
                 </AlertDescription>
               </Alert>
@@ -365,17 +586,47 @@ Analyze this image and provide a detailed damage assessment in the following JSO
             </Card>
           )}
 
-          {/* Upload Section */}
-          {!analysisResult && hasAnyKey && (
-            <ImageUploadAnalyzer
-              onAnalyze={analyzeImages}
-              maxFiles={20}
-              maxSize={10}
-              title="Upload Damage Photos"
-              description="Take clear photos of all damaged areas. Include wide shots for context and close-ups for detail."
+          {/* Loading State */}
+          {isAnalyzing && (
+            <ImageAnalysisLoading 
+              currentImage={currentImageIndex}
+              totalImages={totalImages}
               className="mb-6"
             />
           )}
+
+          {/* Upload Section */}
+          {!analysisResult && keysLoaded && hasAnyKey && !isAnalyzing && (
+            <div ref={lazyRef}>
+              {isLazyVisible ? (
+                <ImageUploadAnalyzer
+                  onAnalyze={analyzeImages}
+                  maxFiles={20}
+                  maxSize={10}
+                  title="Upload Damage Photos"
+                  description="Take clear photos of all damaged areas. Include wide shots for context and close-ups for detail."
+                  className="mb-6"
+                />
+              ) : (
+                <SkeletonCard className="mb-6 h-64" />
+              )}
+            </div>
+          )}
+          
+          {/* Hidden file input for keyboard shortcut */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const files = Array.from(e.target.files || [])
+              if (files.length > 0) {
+                analyzeImages(files)
+              }
+            }}
+          />
 
           {/* Analysis Results */}
           {analysisResult && (

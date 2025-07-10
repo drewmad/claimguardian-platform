@@ -230,99 +230,168 @@ function PersonalPropertyContent() {
             </div>
           </div>
 
-          {/* Categories */}
-          <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-2 mb-6">
-            {categories.map((category) => {
-              const Icon = category.icon
-              const isActive = selectedCategory === category.id
-              return (
-                <button
-                  key={category.id}
-                  onClick={() => setSelectedCategory(category.id as Category)}
-                  className={`p-3 rounded-lg border transition-all ${
-                    isActive 
-                      ? 'bg-blue-600 border-blue-600 text-white' 
-                      : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700'
-                  }`}
-                >
-                  <Icon className="w-5 h-5 mx-auto mb-1" />
-                  <p className="text-xs">{category.label}</p>
-                  <p className="text-xs font-semibold mt-1">{category.count}</p>
-                </button>
-              )
-            })}
-          </div>
-
-          {/* Items Grid/List */}
-          {viewMode === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredItems.map((item) => {
-                const Icon = getCategoryIcon(item.category)
+          {/* Categories - Improved Layout */}
+          <div className="space-y-4 mb-6">
+            <h3 className="text-lg font-semibold text-white">Categories</h3>
+            
+            {/* Primary Categories Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3">
+              {categories.slice(0, 5).map((category) => {
+                const Icon = category.icon
+                const isActive = selectedCategory === category.id
                 return (
-                  <Card key={item.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
-                          <Icon className="w-6 h-6 text-gray-400" />
-                        </div>
-                        <Badge variant={item.insured ? "default" : "secondary"}>
-                          {item.insured ? 'Insured' : 'Not Insured'}
-                        </Badge>
-                      </div>
-                      
-                      <h3 className="font-semibold text-white mb-1">{item.name}</h3>
-                      {item.brand && <p className="text-sm text-gray-400 mb-3">{item.brand} {item.model}</p>}
-                      
-                      <div className="space-y-2 mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Value</span>
-                          <span className="text-white font-medium">${item.currentValue.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Location</span>
-                          <span className="text-gray-300">{item.location}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Condition</span>
-                          <span className="text-gray-300">{item.condition}</span>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-2 mb-4">
-                        {item.tags.map((tag, index) => (
-                          <span key={index} className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
-                            {tag}
-                          </span>
-                        ))}
-                      </div>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="flex gap-2">
-                          {item.photos.length > 0 && (
-                            <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400">
-                              <Camera className="w-4 h-4" />
-                            </button>
-                          )}
-                          {item.receipts.length > 0 && (
-                            <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400">
-                              <FileText className="w-4 h-4" />
-                            </button>
-                          )}
-                          {item.serialNumber && (
-                            <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400">
-                              <QrCode className="w-4 h-4" />
-                            </button>
-                          )}
-                        </div>
-                        <button className="text-blue-400 hover:text-blue-300">
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </CardContent>
-                  </Card>
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id as Category)}
+                    className={`p-4 rounded-xl border transition-all group ${
+                      isActive 
+                        ? 'bg-blue-600 border-blue-600 text-white shadow-lg' 
+                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:border-gray-600'
+                    }`}
+                  >
+                    <Icon className={`w-6 h-6 mx-auto mb-2 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'}`} />
+                    <p className="text-sm font-medium mb-1">{category.label}</p>
+                    <div className={`text-lg font-bold ${isActive ? 'text-white' : 'text-gray-300'}`}>
+                      {category.count}
+                    </div>
+                  </button>
                 )
               })}
             </div>
+
+            {/* Secondary Categories Row */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {categories.slice(5).map((category) => {
+                const Icon = category.icon
+                const isActive = selectedCategory === category.id
+                return (
+                  <button
+                    key={category.id}
+                    onClick={() => setSelectedCategory(category.id as Category)}
+                    className={`p-3 rounded-lg border transition-all group ${
+                      isActive 
+                        ? 'bg-blue-600 border-blue-600 text-white' 
+                        : 'bg-gray-800 border-gray-700 text-gray-400 hover:bg-gray-700 hover:border-gray-600'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'}`} />
+                      <div className="text-left">
+                        <p className="text-sm font-medium">{category.label}</p>
+                        <p className={`text-xs ${isActive ? 'text-blue-100' : 'text-gray-500'}`}>{category.count} items</p>
+                      </div>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          </div>
+
+          {/* Items Section */}
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h3 className="text-lg font-semibold text-white">
+                {selectedCategory === 'all' 
+                  ? `All Items (${filteredItems.length})` 
+                  : `${categories.find(c => c.id === selectedCategory)?.label} (${filteredItems.length})`
+                }
+              </h3>
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <span>Showing {filteredItems.length} of {totalItems} items</span>
+              </div>
+            </div>
+
+            {filteredItems.length === 0 ? (
+              <Card className="bg-gray-800 border-gray-700">
+                <CardContent className="p-12 text-center">
+                  <Package className="w-12 h-12 text-gray-500 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-white mb-2">No items found</h3>
+                  <p className="text-gray-400 mb-6">
+                    {searchQuery 
+                      ? `No items match "${searchQuery}" in ${selectedCategory === 'all' ? 'any category' : selectedCategory}`
+                      : `No items in ${selectedCategory === 'all' ? 'your inventory' : selectedCategory} category`
+                    }
+                  </p>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 mx-auto">
+                    <Plus className="w-4 h-4" />
+                    Add Your First Item
+                  </button>
+                </CardContent>
+              </Card>
+            ) : viewMode === 'grid' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {filteredItems.map((item) => {
+                  const Icon = getCategoryIcon(item.category)
+                  return (
+                    <Card key={item.id} className="bg-gray-800 border-gray-700 hover:border-blue-500 transition-all duration-200 cursor-pointer group">
+                      <CardContent className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center group-hover:bg-gray-600 transition-colors">
+                            <Icon className="w-6 h-6 text-gray-400 group-hover:text-gray-300" />
+                          </div>
+                          <Badge variant={item.insured ? "default" : "secondary"} className="shrink-0">
+                            {item.insured ? 'Insured' : 'Not Insured'}
+                          </Badge>
+                        </div>
+                        
+                        <h3 className="font-semibold text-white mb-1 group-hover:text-blue-300 transition-colors">{item.name}</h3>
+                        {item.brand && <p className="text-sm text-gray-400 mb-3">{item.brand} {item.model}</p>}
+                        
+                        <div className="space-y-2 mb-4">
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Value</span>
+                            <span className="text-white font-medium">${item.currentValue.toLocaleString()}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Location</span>
+                            <span className="text-gray-300">{item.location}</span>
+                          </div>
+                          <div className="flex justify-between text-sm">
+                            <span className="text-gray-400">Condition</span>
+                            <span className="text-gray-300">{item.condition}</span>
+                          </div>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-1 mb-4">
+                          {item.tags.slice(0, 2).map((tag, index) => (
+                            <span key={index} className="text-xs bg-gray-700 text-gray-300 px-2 py-1 rounded">
+                              {tag}
+                            </span>
+                          ))}
+                          {item.tags.length > 2 && (
+                            <span className="text-xs bg-gray-700 text-gray-400 px-2 py-1 rounded">
+                              +{item.tags.length - 2}
+                            </span>
+                          )}
+                        </div>
+                        
+                        <div className="flex justify-between items-center">
+                          <div className="flex gap-1">
+                            {item.photos.length > 0 && (
+                              <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400 transition-colors">
+                                <Camera className="w-4 h-4" />
+                              </button>
+                            )}
+                            {item.receipts.length > 0 && (
+                              <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400 transition-colors">
+                                <FileText className="w-4 h-4" />
+                              </button>
+                            )}
+                            {item.serialNumber && (
+                              <button className="p-2 bg-gray-700 hover:bg-gray-600 rounded text-gray-400 transition-colors">
+                                <QrCode className="w-4 h-4" />
+                              </button>
+                            )}
+                          </div>
+                          <button className="text-blue-400 hover:text-blue-300 group-hover:translate-x-1 transition-all">
+                            <ChevronRight className="w-5 h-5" />
+                          </button>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  )
+                })}
+              </div>
           ) : (
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-0">
@@ -384,33 +453,57 @@ function PersonalPropertyContent() {
           )}
 
           {/* Quick Actions */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Download className="w-8 h-8 text-blue-400 mx-auto mb-3" />
-                <h3 className="font-semibold text-white mb-2">Export Inventory</h3>
-                <p className="text-sm text-gray-400">Download your complete inventory as PDF or CSV</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
-              <CardContent className="p-6 text-center">
-                <Shield className="w-8 h-8 text-green-400 mx-auto mb-3" />
-                <h3 className="font-semibold text-white mb-2">Insurance Review</h3>
-                <p className="text-sm text-gray-400">Check coverage gaps and update policies</p>
-              </CardContent>
-            </Card>
-            
-            <Card 
-              className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer"
-              onClick={() => router.push('/ai-augmented/inventory-scanner')}
-            >
-              <CardContent className="p-6 text-center">
-                <Camera className="w-8 h-8 text-purple-400 mx-auto mb-3" />
-                <h3 className="font-semibold text-white mb-2">AI Scanner</h3>
-                <p className="text-sm text-gray-400">Quick catalog items with AI-powered recognition</p>
-              </CardContent>
-            </Card>
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Quick Actions</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="bg-gray-800 border-gray-700 hover:border-blue-500 transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center group-hover:bg-blue-600/30 transition-colors">
+                      <Download className="w-6 h-6 text-blue-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white mb-1">Export Inventory</h3>
+                      <p className="text-sm text-gray-400">Download as PDF or CSV</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-gray-800 border-gray-700 hover:border-green-500 transition-all duration-200 cursor-pointer group">
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center group-hover:bg-green-600/30 transition-colors">
+                      <Shield className="w-6 h-6 text-green-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white mb-1">Insurance Review</h3>
+                      <p className="text-sm text-gray-400">Check coverage gaps</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                  </div>
+                </CardContent>
+              </Card>
+              
+              <Card 
+                className="bg-gray-800 border-gray-700 hover:border-purple-500 transition-all duration-200 cursor-pointer group"
+                onClick={() => router.push('/ai-augmented/inventory-scanner')}
+              >
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center group-hover:bg-purple-600/30 transition-colors">
+                      <Camera className="w-6 h-6 text-purple-400" />
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white mb-1">AI Scanner</h3>
+                      <p className="text-sm text-gray-400">Quick catalog items</p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-white transition-colors" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

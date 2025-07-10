@@ -27,7 +27,7 @@ import {
   FileSpreadsheet,
   Scan
 } from 'lucide-react'
-import { AIClient } from '@/lib/ai/client'
+import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -86,7 +86,7 @@ export default function InventoryScannerPage() {
   const [selectedItemForBarcode, setSelectedItemForBarcode] = useState<string | null>(null)
   const { supabase } = useSupabase()
   const { user } = useAuth()
-  const aiClient = new AIClient()
+  const aiClient = new AIClientService()
 
   const scanImages = async (files: File[]) => {
     try {

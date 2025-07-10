@@ -16,8 +16,8 @@ export class AIClient {
   private geminiKey: string | null
 
   constructor() {
-    this.openaiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || null
-    this.geminiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || null
+    this.openaiKey = process.env.OPENAI_API_KEY || null
+    this.geminiKey = process.env.GEMINI_API_KEY || null
   }
 
   async chat(messages: ChatMessage[], model: 'openai' | 'gemini' = 'openai') {

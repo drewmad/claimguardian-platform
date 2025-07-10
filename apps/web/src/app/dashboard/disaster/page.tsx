@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Disaster preparedness and emergency response hub
+ * @purpose Disaster hub with Prepare, Survive, Recover phases
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
@@ -12,11 +12,11 @@
 
 import { useState } from 'react'
 import { 
-  Shield, CloudRain, Phone,
-  Map, Radio, Battery, Package, Home, Users,
-  FileText, Download, ExternalLink, ChevronRight,
-  CheckCircle, XCircle, AlertCircle,
-  Megaphone, Navigation
+  Shield, CloudRain, Phone, AlertTriangle, Zap, Activity,
+  Map, Radio, Battery, Package, Home, Users, Target,
+  FileText, Download, ExternalLink, ChevronRight, Heart,
+  CheckCircle, XCircle, AlertCircle, Clock, Wrench,
+  Megaphone, Navigation, Wifi, Camera, ScanLine
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -25,6 +25,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { useRouter } from 'next/navigation'
 
+type DisasterPhase = 'prepare' | 'survive' | 'recover'
 type ThreatLevel = 'low' | 'moderate' | 'elevated' | 'high' | 'extreme'
 type SupplyStatus = 'stocked' | 'partial' | 'needed'
 type EmergencyContactType = 'emergency' | 'utility' | 'insurance' | 'medical' | 'shelter'
@@ -66,7 +67,8 @@ interface EvacuationZone {
 }
 
 function DisasterHubContent() {
-  const router = useRouter() // eslint-disable-line @typescript-eslint/no-unused-vars
+  const router = useRouter()
+  const [activePhase, setActivePhase] = useState<DisasterPhase>('prepare')
   
   // Mock data
   const [currentThreatLevel] = useState<ThreatLevel>('elevated')
@@ -76,6 +78,12 @@ function DisasterHubContent() {
     shelters: 3,
     lastUpdated: '2 hours ago'
   })
+
+  const phases = [
+    { id: 'prepare', label: 'Prepare', icon: Target, description: 'Ready your home and family' },
+    { id: 'survive', label: 'Survive', icon: Activity, description: 'Active emergency response' },
+    { id: 'recover', label: 'Recover', icon: Heart, description: 'Post-disaster restoration' }
+  ]
 
   const [supplies] = useState<PreparednesItem[]>([
     {
@@ -213,8 +221,8 @@ function DisasterHubContent() {
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Disaster Preparedness Hub</h1>
-              <p className="text-gray-400">Emergency resources and preparedness tracking</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Disaster Hub</h1>
+              <p className="text-gray-400">Comprehensive emergency management across all phases</p>
             </div>
             <div className="flex items-center gap-4">
               <div className="text-right">
@@ -228,6 +236,32 @@ function DisasterHubContent() {
                 <Phone className="w-4 h-4" />
                 Emergency
               </button>
+            </div>
+          </div>
+
+          {/* Phase Navigation */}
+          <div className="bg-gray-800 rounded-lg p-1 mb-6 overflow-x-auto">
+            <div className="flex gap-1 min-w-max">
+              {phases.map((phase) => {
+                const Icon = phase.icon
+                return (
+                  <button
+                    key={phase.id}
+                    onClick={() => setActivePhase(phase.id as DisasterPhase)}
+                    className={`flex items-center gap-3 px-6 py-4 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
+                      activePhase === phase.id
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <div className="text-left">
+                      <div className="font-semibold">{phase.label}</div>
+                      <div className="text-xs opacity-75">{phase.description}</div>
+                    </div>
+                  </button>
+                )
+              })}
             </div>
           </div>
 
@@ -265,203 +299,448 @@ function DisasterHubContent() {
             </div>
           )}
 
-          {/* Stats Overview */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <Shield className="w-5 h-5 text-green-400" />
-                  <span className="text-xs text-gray-400">Score</span>
-                </div>
-                <p className="text-2xl font-bold text-white">{preparednessScore}%</p>
-                <p className="text-sm text-gray-400">Preparedness</p>
-                <Progress value={preparednessScore} className="mt-2 h-2" />
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <Map className="w-5 h-5 text-orange-400" />
-                  <Badge variant={evacuationZone.status === 'mandatory' ? 'destructive' : 'secondary'}>
-                    {evacuationZone.status}
-                  </Badge>
-                </div>
-                <p className="text-2xl font-bold text-white">Zone {evacuationZone.zone}</p>
-                <p className="text-sm text-gray-400">Evacuation Zone</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <Package className="w-5 h-5 text-blue-400" />
-                  <span className="text-xs text-gray-400">Status</span>
-                </div>
-                <p className="text-2xl font-bold text-white">{stockedSupplies}/{totalSupplies}</p>
-                <p className="text-sm text-gray-400">Supplies Ready</p>
-              </CardContent>
-            </Card>
-            
-            <Card className="bg-gray-800 border-gray-700">
-              <CardContent className="p-6">
-                <div className="flex items-center justify-between mb-2">
-                  <Users className="w-5 h-5 text-purple-400" />
-                  <CheckCircle className="w-4 h-4 text-green-400" />
-                </div>
-                <p className="text-2xl font-bold text-white">Ready</p>
-                <p className="text-sm text-gray-400">Family Plan</p>
-              </CardContent>
-            </Card>
-          </div>
+          {/* Phase Content */}
+          {activePhase === 'prepare' && (
+            <div className="space-y-6">
+              {/* Preparedness Stats */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Shield className="w-5 h-5 text-green-400" />
+                      <span className="text-xs text-gray-400">Score</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">{preparednessScore}%</p>
+                    <p className="text-sm text-gray-400">Preparedness</p>
+                    <Progress value={preparednessScore} className="mt-2 h-2" />
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Package className="w-5 h-5 text-blue-400" />
+                      <span className="text-xs text-gray-400">Status</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">{stockedSupplies}/{totalSupplies}</p>
+                    <p className="text-sm text-gray-400">Supplies Ready</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Users className="w-5 h-5 text-purple-400" />
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                    </div>
+                    <p className="text-2xl font-bold text-white">Ready</p>
+                    <p className="text-sm text-gray-400">Family Plan</p>
+                  </CardContent>
+                </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Emergency Supplies Checklist */}
-            <div className="lg:col-span-2">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <div className="flex justify-between items-center">
-                    <CardTitle className="text-white">Emergency Supplies Checklist</CardTitle>
-                    <button className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1">
-                      <Download className="w-4 h-4" />
-                      Export
-                    </button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {supplies.map((item) => {
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Home className="w-5 h-5 text-cyan-400" />
+                      <Badge variant="default">Protected</Badge>
+                    </div>
+                    <p className="text-2xl font-bold text-white">Secured</p>
+                    <p className="text-sm text-gray-400">Property</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Preparation Checklist */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Emergency Kit Essentials</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    {supplies.slice(0, 3).map((item) => {
                       const StatusIcon = getSupplyStatusIcon(item.status)
                       return (
-                        <div key={item.id} className="p-4 bg-gray-700 rounded-lg">
-                          <div className="flex items-start justify-between">
-                            <div className="flex items-start gap-3">
-                              <StatusIcon className={`w-5 h-5 mt-0.5 ${getSupplyStatusColor(item.status)}`} />
-                              <div>
-                                <h4 className="font-medium text-white">{item.item}</h4>
-                                <p className="text-sm text-gray-400">{item.category}</p>
-                                {item.quantity && (
-                                  <p className="text-sm text-gray-300 mt-1">Quantity: {item.quantity}</p>
-                                )}
-                                {item.notes && (
-                                  <p className="text-sm text-gray-300 mt-1">{item.notes}</p>
-                                )}
-                                {item.expirationDate && (
-                                  <p className="text-sm text-yellow-400 mt-1">
-                                    Expires: {new Date(item.expirationDate).toLocaleDateString()}
-                                  </p>
-                                )}
-                              </div>
-                            </div>
-                            <button className="text-gray-400 hover:text-white">
-                              <ChevronRight className="w-5 h-5" />
-                            </button>
+                        <div key={item.id} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                          <StatusIcon className={`w-5 h-5 ${getSupplyStatusColor(item.status)}`} />
+                          <div className="flex-1">
+                            <p className="font-medium text-white text-sm">{item.item}</p>
+                            <p className="text-xs text-gray-400">{item.quantity}</p>
                           </div>
                         </div>
                       )
                     })}
+                    <button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm">
+                      View Full Checklist
+                    </button>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Home Hardening</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                      <CheckCircle className="w-5 h-5 text-green-400" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Storm Shutters</p>
+                        <p className="text-xs text-gray-400">All windows protected</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                      <AlertCircle className="w-5 h-5 text-yellow-400" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Roof Inspection</p>
+                        <p className="text-xs text-gray-400">Due for annual check</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
+                      <XCircle className="w-5 h-5 text-red-400" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Backup Generator</p>
+                        <p className="text-xs text-gray-400">Needs installation</p>
+                      </div>
+                    </div>
+                    <button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg text-sm">
+                      Schedule Inspection
+                    </button>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Family Emergency Plan */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white">Family Emergency Plan</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-gray-700 rounded-lg text-center">
+                      <Users className="w-8 h-8 text-blue-400 mx-auto mb-3" />
+                      <h3 className="font-semibold text-white mb-2">Meeting Points</h3>
+                      <p className="text-sm text-gray-400">Primary: Home</p>
+                      <p className="text-sm text-gray-400">Secondary: School</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg text-center">
+                      <Phone className="w-8 h-8 text-green-400 mx-auto mb-3" />
+                      <h3 className="font-semibold text-white mb-2">Emergency Contacts</h3>
+                      <p className="text-sm text-gray-400">4 contacts saved</p>
+                      <p className="text-sm text-gray-400">Cards printed</p>
+                    </div>
+                    <div className="p-4 bg-gray-700 rounded-lg text-center">
+                      <Map className="w-8 h-8 text-purple-400 mx-auto mb-3" />
+                      <h3 className="font-semibold text-white mb-2">Evacuation Routes</h3>
+                      <p className="text-sm text-gray-400">3 routes planned</p>
+                      <p className="text-sm text-gray-400">Maps downloaded</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          )}
+
+          {activePhase === 'survive' && (
+            <div className="space-y-6">
+              {/* Emergency Status */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-red-900/20 border-red-500/30">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <AlertTriangle className="w-5 h-5 text-red-400" />
+                      <Badge variant="destructive">Active</Badge>
+                    </div>
+                    <p className="text-2xl font-bold text-white">ALERT</p>
+                    <p className="text-sm text-red-300">Emergency Mode Active</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Zap className="w-5 h-5 text-yellow-400" />
+                      <span className="text-xs text-gray-400">Status</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">12 hrs</p>
+                    <p className="text-sm text-gray-400">Power Backup Left</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Wifi className="w-5 h-5 text-blue-400" />
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                    </div>
+                    <p className="text-2xl font-bold text-white">Connected</p>
+                    <p className="text-sm text-gray-400">Emergency Network</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Real-time Updates */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Activity className="w-5 h-5 text-red-400" />
+                    Live Emergency Updates
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Clock className="w-5 h-5 text-red-400 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white">Hurricane Warning Extended</p>
+                        <p className="text-sm text-gray-300 mt-1">Storm expected to make landfall in 6 hours. Seek immediate shelter.</p>
+                        <p className="text-xs text-gray-400 mt-2">Updated 15 minutes ago</p>
+                      </div>
+                    </div>
                   </div>
                   
-                  <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardContent className="p-4 text-center">
-                        <Battery className="w-8 h-8 text-yellow-400 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-white">Power Backup</p>
-                        <p className="text-xs text-gray-400 mt-1">Generator & batteries</p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardContent className="p-4 text-center">
-                        <Radio className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-white">Communication</p>
-                        <p className="text-xs text-gray-400 mt-1">Radio & phone backup</p>
-                      </CardContent>
-                    </Card>
-                    
-                    <Card className="bg-gray-700 border-gray-600">
-                      <CardContent className="p-4 text-center">
-                        <FileText className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                        <p className="text-sm font-medium text-white">Documents</p>
-                        <p className="text-xs text-gray-400 mt-1">Important papers safe</p>
-                      </CardContent>
-                    </Card>
+                  <div className="p-4 bg-orange-900/20 border border-orange-500/30 rounded-lg">
+                    <div className="flex items-start gap-3">
+                      <Zap className="w-5 h-5 text-orange-400 mt-0.5" />
+                      <div>
+                        <p className="font-semibold text-white">Power Outages Reported</p>
+                        <p className="text-sm text-gray-300 mt-1">Widespread outages in Zone B. Emergency services active.</p>
+                        <p className="text-xs text-gray-400 mt-2">Updated 1 hour ago</p>
+                      </div>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
-            </div>
 
-            {/* Emergency Contacts & Resources */}
-            <div className="space-y-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Emergency Contacts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    {emergencyContacts.map((contact) => (
-                      <div key={contact.id} className="p-3 bg-gray-700 rounded-lg">
-                        <div className="flex items-start justify-between mb-2">
-                          <div>
-                            <p className="font-medium text-white text-sm">{contact.name}</p>
-                            <p className="text-xs text-gray-400">{contact.description}</p>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {contact.available}
-                          </Badge>
+              {/* Emergency Actions */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Immediate Actions</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <button className="w-full p-4 bg-red-600 hover:bg-red-700 rounded-lg text-white font-semibold flex items-center gap-3">
+                      <Phone className="w-5 h-5" />
+                      Call 911 Emergency
+                    </button>
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Radio className="w-5 h-5 text-blue-400" />
+                        <span>Emergency Radio</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Map className="w-5 h-5 text-green-400" />
+                        <span>Evacuation Map</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <Home className="w-5 h-5 text-purple-400" />
+                        <span>Find Shelter</span>
+                      </div>
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Emergency Contacts</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    {emergencyContacts.slice(0, 4).map((contact) => (
+                      <div key={contact.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div>
+                          <p className="font-medium text-white text-sm">{contact.name}</p>
+                          <p className="text-xs text-gray-400">{contact.phone}</p>
                         </div>
-                        <a href={`tel:${contact.phone}`} className="text-blue-400 hover:text-blue-300 text-sm font-medium flex items-center gap-1">
-                          <Phone className="w-4 h-4" />
-                          {contact.phone}
-                        </a>
+                        <button className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs">
+                          Call
+                        </button>
                       </div>
                     ))}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {activePhase === 'recover' && (
+            <div className="space-y-6">
+              {/* Recovery Progress */}
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Heart className="w-5 h-5 text-green-400" />
+                      <span className="text-xs text-gray-400">Status</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">Safe</p>
+                    <p className="text-sm text-gray-400">Family Status</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Camera className="w-5 h-5 text-blue-400" />
+                      <span className="text-xs text-gray-400">Progress</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">65%</p>
+                    <p className="text-sm text-gray-400">Damage Assessed</p>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <FileText className="w-5 h-5 text-purple-400" />
+                      <Badge variant="default">Filed</Badge>
+                    </div>
+                    <p className="text-2xl font-bold text-white">1 Claim</p>
+                    <p className="text-sm text-gray-400">Insurance Claims</p>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Wrench className="w-5 h-5 text-orange-400" />
+                      <span className="text-xs text-gray-400">Est. Days</span>
+                    </div>
+                    <p className="text-2xl font-bold text-white">14</p>
+                    <p className="text-sm text-gray-400">Recovery Time</p>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Damage Assessment */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <Camera className="w-5 h-5 text-blue-400" />
+                    Damage Documentation
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 bg-red-900/20 border border-red-500/30 rounded-lg">
+                      <h3 className="font-semibold text-white mb-2">Roof Damage</h3>
+                      <p className="text-sm text-gray-300 mb-3">Missing shingles, minor leak detected</p>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="destructive">High Priority</Badge>
+                        <span className="text-xs text-gray-400">Estimated: $8,500</span>
+                      </div>
+                      <button 
+                        onClick={() => router.push('/ai-augmented/damage-analyzer')}
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded text-sm"
+                      >
+                        AI Damage Analysis
+                      </button>
+                    </div>
+                    
+                    <div className="p-4 bg-yellow-900/20 border border-yellow-500/30 rounded-lg">
+                      <h3 className="font-semibold text-white mb-2">Window Damage</h3>
+                      <p className="text-sm text-gray-300 mb-3">Cracked glass on east side windows</p>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="secondary">Medium Priority</Badge>
+                        <span className="text-xs text-gray-400">Estimated: $2,200</span>
+                      </div>
+                      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded text-sm">
+                        Schedule Repair
+                      </button>
+                    </div>
+                    
+                    <div className="p-4 bg-green-900/20 border border-green-500/30 rounded-lg">
+                      <h3 className="font-semibold text-white mb-2">Fence Repair</h3>
+                      <p className="text-sm text-gray-300 mb-3">Two fence sections need replacement</p>
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge variant="outline">Low Priority</Badge>
+                        <span className="text-xs text-gray-400">Estimated: $900</span>
+                      </div>
+                      <button className="w-full bg-gray-600 hover:bg-gray-700 text-white py-2 rounded text-sm">
+                        Get Quotes
+                      </button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                      <div className="flex items-center gap-3">
-                        <Navigation className="w-5 h-5 text-red-400" />
-                        <span className="text-sm text-white">Evacuation Routes</span>
-                      </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400" />
+              {/* Recovery Resources */}
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Recovery Assistance</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <button className="w-full p-3 bg-blue-600 hover:bg-blue-700 rounded-lg text-white font-medium flex items-center gap-3">
+                      <FileText className="w-5 h-5" />
+                      File Insurance Claim
                     </button>
-                    
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Home className="w-5 h-5 text-blue-400" />
-                        <span className="text-sm text-white">Find Shelters</span>
+                        <Users className="w-5 h-5 text-green-400" />
+                        <span>FEMA Assistance</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ExternalLink className="w-4 h-4" />
                     </button>
-                    
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <CloudRain className="w-5 h-5 text-cyan-400" />
-                        <span className="text-sm text-white">Weather Radar</span>
+                        <Wrench className="w-5 h-5 text-orange-400" />
+                        <span>Find Contractors</span>
                       </div>
-                      <ExternalLink className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
-                    
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-white flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <Megaphone className="w-5 h-5 text-purple-400" />
-                        <span className="text-sm text-white">Alert Settings</span>
+                        <ScanLine className="w-5 h-5 text-purple-400" />
+                        <span>Document Scanner</span>
                       </div>
-                      <ChevronRight className="w-4 h-4 text-gray-400" />
+                      <ChevronRight className="w-4 h-4" />
                     </button>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Recovery Timeline</CardTitle>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Initial Assessment</p>
+                        <p className="text-xs text-gray-400">Completed Day 1</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <CheckCircle className="w-5 h-5 text-green-400 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Insurance Contact</p>
+                        <p className="text-xs text-gray-400">Completed Day 2</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <Clock className="w-5 h-5 text-blue-400 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-white text-sm">Adjuster Visit</p>
+                        <p className="text-xs text-gray-400">Scheduled Day 5</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-3">
+                      <AlertCircle className="w-5 h-5 text-gray-400 mt-0.5" />
+                      <div>
+                        <p className="font-medium text-gray-300 text-sm">Repairs Begin</p>
+                        <p className="text-xs text-gray-400">Estimated Day 10</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </DashboardLayout>

@@ -1,0 +1,26 @@
+name: FDOT Parcel Sync
+
+on:
+  schedule:
+    - cron:  '0 4 20 6 *'   # 20 June 04:00 UTC – after annual DOR update
+  workflow_dispatch:
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gdal-bin python3-pip
+          pip install aiohttp orjson python-dotenv
+      - name: Fetch FDOT
+        env: 
+          FDOT_BASE: ${{ secrets.FDOT_BASE }}
+          OUTDIR: fdot_download
+        run: python fetch_parcels.py
+      - name: Import into Supabase
+        env:
+          SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+        run: bash import_to_supabase.sh

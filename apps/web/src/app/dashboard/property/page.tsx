@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Property management dashboard with sub-tabs
+ * @purpose Property overview and management dashboard
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
@@ -11,365 +11,193 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { 
-  Info, Building, Wrench, TreePine, Zap, FileText, Clock,
-  MapPin, Shield, CheckCircle, Wind, Award, Plus,
-  AlertCircle,
-  Camera, ChevronRight, Edit
+  MapPin, Shield, CheckCircle, Plus, ChevronRight, Edit, Camera, Building
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
 
-type SubTab = 'overview' | 'structures' | 'systems' | 'land' | 'utilities' | 'documents' | 'history'
-
-function PropertyDashboardContent() {
-  const [activeSubTab, setActiveSubTab] = useState<SubTab>('overview')
+function PropertyOverviewContent() {
+  const router = useRouter()
   
   // Mock data - would come from Supabase in production
-  const [property] = useState({
-    id: 1,
-    name: 'Main Residence',
-    address: '1234 Main Street, Austin, TX 78701',
-    type: 'Single Family Home',
-    value: 450000,
-    sqft: 2800,
-    yearBuilt: 2010,
-    bedrooms: 4,
-    bathrooms: 3,
-    lotSize: 0.25,
-    insurabilityScore: 92,
-    image: '🏠'
-  })
-
-  const [structures] = useState([
+  const [properties] = useState([
     {
       id: 1,
-      name: 'Architectural Shingle Roof',
-      type: 'Roof',
-      material: 'GAF Timberline HDZ',
-      installDate: '2019-08-20',
-      warrantyExpiration: '2044-08-20',
-      windRating: 'Class F',
-      insuranceScore: 98,
-      value: 15000
+      name: 'Main Residence',
+      address: '1234 Main Street, Austin, TX 78701',
+      type: 'Single Family Home',
+      value: 450000,
+      sqft: 2800,
+      yearBuilt: 2010,
+      bedrooms: 4,
+      bathrooms: 3,
+      lotSize: 0.25,
+      insurabilityScore: 92,
+      image: '🏠',
+      isPrimary: true
     },
     {
       id: 2,
-      name: 'Impact Windows - Front',
-      type: 'Windows',
-      material: 'PGT WinGuard Impact',
-      installDate: '2021-11-10',
-      warrantyExpiration: '2041-11-10',
-      windRating: 'Miami-Dade NOA',
-      insuranceScore: 100,
-      value: 25000
+      name: 'Beach House',
+      address: '567 Ocean Drive, Miami, FL 33101',
+      type: 'Vacation Home', 
+      value: 650000,
+      sqft: 2200,
+      yearBuilt: 2015,
+      bedrooms: 3,
+      bathrooms: 2,
+      lotSize: 0.15,
+      insurabilityScore: 88,
+      image: '🏖️',
+      isPrimary: false
     }
   ])
 
-  const subTabs = [
-    { id: 'overview', label: 'Overview', icon: Info },
-    { id: 'structures', label: 'Structures', icon: Building },
-    { id: 'systems', label: 'Home Systems', icon: Wrench },
-    { id: 'land', label: 'Land & Exterior', icon: TreePine },
-    { id: 'utilities', label: 'Utilities', icon: Zap },
-    { id: 'documents', label: 'Documents', icon: FileText },
-    { id: 'history', label: 'History', icon: Clock }
-  ]
+  const pageTitle = properties.length === 1 ? 'My Home' : 'My Properties'
+
+  const handlePropertyClick = (propertyId: number) => {
+    router.push(`/dashboard/property/${propertyId}`)
+  }
 
   return (
     <DashboardLayout>
       <div className="p-6">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">My Home</h1>
-            <p className="text-gray-400">Manage your property details and components</p>
+            <h1 className="text-3xl font-bold text-white mb-2">{pageTitle}</h1>
+            <p className="text-gray-400">
+              {properties.length === 1 ? 'Manage your property details and components' : 'Overview of all your properties'}
+            </p>
           </div>
 
-          {/* Property Overview Card */}
-          <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 mb-6">
-            <div className="h-48 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center text-6xl">
-              {property.image}
-            </div>
-            <div className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <div>
-                  <h2 className="text-2xl font-semibold text-white">{property.name}</h2>
-                  <p className="text-sm text-gray-400 flex items-center gap-1 mt-1">
-                    <MapPin className="w-4 h-4" />
-                    {property.address}
+          {/* Properties Grid */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {properties.map((property) => (
+              <Card 
+                key={property.id} 
+                className="bg-gray-800 border-gray-700 cursor-pointer hover:border-blue-500 transition-colors"
+                onClick={() => handlePropertyClick(property.id)}
+              >
+                <div className="h-48 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center text-6xl rounded-t-lg">
+                  {property.image}
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h2 className="text-xl font-semibold text-white">{property.name}</h2>
+                        {property.isPrimary && (
+                          <span className="px-2 py-1 bg-blue-600 text-white text-xs rounded-full">Primary</span>
+                        )}
+                      </div>
+                      <p className="text-sm text-gray-400 flex items-center gap-1">
+                        <MapPin className="w-4 h-4" />
+                        {property.address}
+                      </p>
+                    </div>
+                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <p className="text-xs text-gray-400">Value</p>
+                      <p className="text-lg font-bold text-cyan-300">${(property.value / 1000).toFixed(0)}k</p>
+                    </div>
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <p className="text-xs text-gray-400">Type</p>
+                      <p className="text-sm text-white font-medium">{property.type}</p>
+                    </div>
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <p className="text-xs text-gray-400">Size</p>
+                      <p className="text-sm text-white font-medium">{property.sqft.toLocaleString()} sqft</p>
+                    </div>
+                    <div className="bg-gray-700 rounded-lg p-3">
+                      <p className="text-xs text-gray-400">Built</p>
+                      <p className="text-sm text-white font-medium">{property.yearBuilt}</p>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-700">
+                    <div className="flex items-center gap-2">
+                      <Shield className="w-4 h-4 text-green-400" />
+                      <span className="text-sm text-gray-300">Insurability Score</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
+                        <div 
+                          className="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full"
+                          style={{ width: `${property.insurabilityScore}%` }}
+                        />
+                      </div>
+                      <span className="text-sm font-medium text-white">{property.insurabilityScore}%</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+
+            {/* Add Property Card */}
+            <Card className="bg-gray-800/50 border-gray-700 border-dashed cursor-pointer hover:border-blue-500 transition-colors">
+              <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center min-h-[400px]">
+                <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">
+                  <Plus className="w-8 h-8 text-gray-400" />
+                </div>
+                <h3 className="text-lg font-semibold text-white mb-2">Add Property</h3>
+                <p className="text-sm text-gray-400">
+                  Add another property to track and manage
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Summary Stats */}
+          {properties.length > 1 && (
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-8">
+              <Card className="bg-gray-800 border-gray-700 p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">{properties.length}</p>
+                  <p className="text-xs text-gray-400">Properties</p>
+                </div>
+              </Card>
+              <Card className="bg-gray-800 border-gray-700 p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-cyan-300">
+                    ${(properties.reduce((sum, p) => sum + p.value, 0) / 1000).toFixed(0)}k
                   </p>
+                  <p className="text-xs text-gray-400">Total Value</p>
                 </div>
-                <div className="text-right">
-                  <p className="text-3xl font-bold text-cyan-300">${(property.value / 1000).toFixed(0)}k</p>
-                  <p className="text-sm text-gray-400">Market Value</p>
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
-                <div className="bg-gray-700 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">Type</p>
-                  <p className="text-sm text-white font-medium">{property.type}</p>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">Size</p>
-                  <p className="text-sm text-white font-medium">{property.sqft.toLocaleString()} sqft</p>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">Built</p>
-                  <p className="text-sm text-white font-medium">{property.yearBuilt}</p>
-                </div>
-                <div className="bg-gray-700 rounded-lg p-3">
-                  <p className="text-xs text-gray-400">Beds/Baths</p>
-                  <p className="text-sm text-white font-medium">{property.bedrooms}/{property.bathrooms}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between pt-4 border-t border-gray-700">
-                <div className="flex items-center gap-2">
-                  <Shield className="w-4 h-4 text-green-400" />
-                  <span className="text-sm text-gray-300">Insurability Score</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-32 h-2 bg-gray-700 rounded-full overflow-hidden">
-                    <div 
-                      className="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full"
-                      style={{ width: `${property.insurabilityScore}%` }}
-                    />
-                  </div>
-                  <span className="text-sm font-medium text-white">{property.insurabilityScore}%</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Sub-tabs */}
-          <div className="bg-gray-800 rounded-lg p-1 mb-6 overflow-x-auto">
-            <div className="flex gap-1 min-w-max">
-              {subTabs.map((tab) => {
-                const Icon = tab.icon
-                return (
-                  <button
-                    key={tab.id}
-                    onClick={() => setActiveSubTab(tab.id as SubTab)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors whitespace-nowrap ${
-                      activeSubTab === tab.id
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-400 hover:text-white hover:bg-gray-700'
-                    }`}
-                  >
-                    <Icon className="w-4 h-4" />
-                    {tab.label}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Sub-tab Content */}
-          {activeSubTab === 'overview' && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Property Details</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Property Type</span>
-                      <span className="text-white">{property.type}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Year Built</span>
-                      <span className="text-white">{property.yearBuilt}</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Square Footage</span>
-                      <span className="text-white">{property.sqft.toLocaleString()} sqft</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Lot Size</span>
-                      <span className="text-white">{property.lotSize} acres</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Bedrooms</span>
-                      <span className="text-white">{property.bedrooms}</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span className="text-gray-400">Bathrooms</span>
-                      <span className="text-white">{property.bathrooms}</span>
-                    </div>
-                  </div>
-                </CardContent>
               </Card>
-
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="text-white">Quick Actions</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                      <span className="flex items-center gap-3">
-                        <Camera className="w-5 h-5 text-cyan-400" />
-                        <span>Update Property Photos</span>
-                      </span>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                      <span className="flex items-center gap-3">
-                        <FileText className="w-5 h-5 text-blue-400" />
-                        <span>View Insurance Documents</span>
-                      </span>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                      <span className="flex items-center gap-3">
-                        <Edit className="w-5 h-5 text-green-400" />
-                        <span>Edit Property Details</span>
-                      </span>
-                      <ChevronRight className="w-5 h-5 text-gray-400" />
-                    </button>
-                  </div>
-                </CardContent>
+              <Card className="bg-gray-800 border-gray-700 p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">
+                    {Math.round(properties.reduce((sum, p) => sum + p.insurabilityScore, 0) / properties.length)}%
+                  </p>
+                  <p className="text-xs text-gray-400">Avg. Score</p>
+                </div>
               </Card>
-
-              {/* Property Stats */}
-              <div className="lg:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4">
-                <Card className="bg-gray-800 border-gray-700 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Wrench className="w-5 h-5 text-blue-400" />
-                    <span className="text-xs text-green-400">All Good</span>
-                  </div>
-                  <p className="text-2xl font-bold text-white">12</p>
-                  <p className="text-xs text-gray-400">Systems Tracked</p>
-                </Card>
-                <Card className="bg-gray-800 border-gray-700 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Building className="w-5 h-5 text-cyan-400" />
-                    <CheckCircle className="w-4 h-4 text-green-400" />
-                  </div>
-                  <p className="text-2xl font-bold text-white">5</p>
-                  <p className="text-xs text-gray-400">Structures</p>
-                </Card>
-                <Card className="bg-gray-800 border-gray-700 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <Shield className="w-5 h-5 text-green-400" />
-                    <span className="text-xs text-green-400">35% Saved</span>
-                  </div>
-                  <p className="text-2xl font-bold text-white">3</p>
-                  <p className="text-xs text-gray-400">Wind Features</p>
-                </Card>
-                <Card className="bg-gray-800 border-gray-700 p-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <AlertCircle className="w-5 h-5 text-orange-400" />
-                    <span className="text-xs text-orange-400">1 Alert</span>
-                  </div>
-                  <p className="text-2xl font-bold text-white">2</p>
-                  <p className="text-xs text-gray-400">Action Items</p>
-                </Card>
-              </div>
+              <Card className="bg-gray-800 border-gray-700 p-4">
+                <div className="text-center">
+                  <p className="text-2xl font-bold text-white">
+                    {properties.reduce((sum, p) => sum + p.sqft, 0).toLocaleString()}
+                  </p>
+                  <p className="text-xs text-gray-400">Total Sqft</p>
+                </div>
+              </Card>
             </div>
           )}
-
-          {activeSubTab === 'structures' && (
-            <div className="space-y-6">
-              {/* Wind Mitigation Summary */}
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Wind className="w-5 h-5 text-blue-400" />
-                    Wind Mitigation Features
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div className="bg-gray-700 rounded-xl p-4 text-center">
-                      <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                      <p className="font-medium text-white">Impact Windows</p>
-                      <p className="text-xs text-gray-400 mt-1">100% Coverage</p>
-                    </div>
-                    <div className="bg-gray-700 rounded-xl p-4 text-center">
-                      <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
-                      <p className="font-medium text-white">Reinforced Roof</p>
-                      <p className="text-xs text-gray-400 mt-1">Class F Rating</p>
-                    </div>
-                    <div className="bg-gray-700 rounded-xl p-4 text-center">
-                      <Award className="w-8 h-8 text-blue-400 mx-auto mb-2" />
-                      <p className="font-medium text-white">Insurance Discount</p>
-                      <p className="text-xs text-green-400 mt-1">35% Savings</p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Structures List */}
-              <div className="space-y-4">
-                <div className="flex justify-between items-center">
-                  <h3 className="text-lg font-semibold text-white">Building Structures</h3>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
-                    <Plus className="w-4 h-4" />
-                    Add Structure
-                  </button>
-                </div>
-                
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {structures.map((structure) => (
-                    <Card key={structure.id} className="bg-gray-800 border-gray-700">
-                      <CardContent className="p-6">
-                        <div className="flex items-start justify-between mb-4">
-                          <div>
-                            <h4 className="font-semibold text-white">{structure.name}</h4>
-                            <p className="text-sm text-gray-400">{structure.type}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-lg font-bold text-cyan-300">${(structure.value / 1000).toFixed(0)}k</p>
-                            <p className="text-xs text-gray-400">Value</p>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2 mb-4">
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Material</span>
-                            <span className="text-gray-300">{structure.material}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Wind Rating</span>
-                            <span className="text-green-300">{structure.windRating}</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Insurance Score</span>
-                            <span className="text-white">{structure.insuranceScore}%</span>
-                          </div>
-                          <div className="flex justify-between text-sm">
-                            <span className="text-gray-400">Warranty Expires</span>
-                            <span className="text-gray-300">{new Date(structure.warrantyExpiration).toLocaleDateString()}</span>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Details</button>
-                          <button className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-sm">Documents</button>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Add more sub-tab content as needed */}
         </div>
       </div>
     </DashboardLayout>
   )
 }
 
-export default function PropertyDashboardPage() {
+export default function PropertyOverviewPage() {
   return (
     <ProtectedRoute>
-      <PropertyDashboardContent />
+      <PropertyOverviewContent />
     </ProtectedRoute>
   )
 }

@@ -20,6 +20,8 @@ import {
   Bot, Camera, FileSearch
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
+import { SettingsModal } from '@/components/modals/settings-modal'
+import { useSettingsModal } from '@/hooks/use-settings-modal'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -31,18 +33,17 @@ const navigationItems = [
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
   { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
-  { id: 'home-systems', label: 'Home Systems', icon: Wrench, href: '/dashboard/home-systems' },
   { id: 'maintenance', label: 'Maintenance Hub', icon: Calendar, href: '/dashboard/maintenance' },
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
-  { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' },
-  { id: 'settings', label: 'Settings', icon: Settings, href: '/account/profile' }
+  { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' }
 ]
 
 const aiFeatures = [
   { id: 'damage-analyzer', label: 'Damage Analyzer', icon: Camera, href: '/ai-augmented/damage-analyzer' },
   { id: 'policy-chat', label: 'Policy Advisor', icon: FileSearch, href: '/ai-augmented/policy-chat' },
-  { id: 'inventory-scanner', label: 'Inventory Scanner', icon: Package, href: '/ai-augmented/inventory-scanner' }
+  { id: 'inventory-scanner', label: 'Inventory Scanner', icon: Package, href: '/ai-augmented/inventory-scanner' },
+  { id: '3d-model-generator', label: '3D Model Generator', icon: Package, href: '/ai-augmented/3d-model-generator' }
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
@@ -52,6 +53,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { user, signOut } = useAuth()
+  const { isOpen: isSettingsOpen, openSettings, closeSettings } = useSettingsModal()
 
   useEffect(() => {
     const checkMobile = () => {
@@ -102,6 +104,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </span>
               )}
             </button>
+            <button 
+              onClick={() => openSettings('profile')}
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              title="Settings"
+            >
+              <Settings className="w-5 h-5 text-gray-400" />
+            </button>
             <div className="flex items-center gap-2 ml-2">
               <div className="text-right">
                 <p className="text-sm font-medium text-white">{user?.user_metadata?.firstName || 'User'}</p>
@@ -149,6 +158,18 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Link>
                 )
               })}
+              
+              {/* Settings Button */}
+              <button
+                onClick={() => {
+                  openSettings('profile')
+                  if (isMobile) setIsSidebarOpen(false)
+                }}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700"
+              >
+                <Settings className="w-5 h-5" />
+                <span className="font-medium">Settings</span>
+              </button>
             </div>
 
             {/* AI Features Section */}
@@ -213,6 +234,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </nav>
       )}
+      
+      {/* Settings Modal */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
     </div>
   )
 }
