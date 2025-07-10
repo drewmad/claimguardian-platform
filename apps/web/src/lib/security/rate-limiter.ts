@@ -48,7 +48,7 @@ class RateLimiter {
     const realIp = request.headers.get('x-real-ip')
     const cfConnectingIp = request.headers.get('cf-connecting-ip')
     
-    let ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
+    const ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
     
     // For authenticated requests, we could also use user ID
     // This would require extracting the user from the auth token
