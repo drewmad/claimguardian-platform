@@ -51,14 +51,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const supabase = createClient()
   
-  // Debug logging
-  if (typeof window !== 'undefined') {
-    console.log('[AuthProvider] Rendered with user:', user?.id, 'loading:', loading)
-  }
+  // Use secure debug logging only in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      import('@/lib/logger').then(({ logger }) => {
+        logger.authDebug('AuthProvider', {
+          loading,
+          hasUser: !!user,
+          error: error?.message
+        })
+      })
+    }
+  }, [user, loading, error])
 
-  // Initialize auth state
+  // Initialize auth state - run only once
   useEffect(() => {
     let mounted = true
+    let authSubscription: any = null
 
     const initializeAuth = async () => {
       try {
@@ -74,7 +83,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (mounted) {
-          setUser(session?.user ?? null)
+          // Batch state updates to prevent loops
+          const updates = {
+            user: session?.user ?? null,
+            loading: false,
+            error: null
+          }
+          
+          setUser(updates.user)
+          setLoading(updates.loading)
+          setError(updates.error)
           
           if (session?.user) {
             // Check if session is still valid before starting monitoring
@@ -110,51 +128,49 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             'AUTH_UNKNOWN_ERROR',
             err as Error
           ))
-        }
-      } finally {
-        if (mounted) {
           setLoading(false)
         }
       }
     }
 
-    initializeAuth()
-    
-    // Configure session manager callbacks
-    sessionManager.config = {
-      onSessionExpiring: () => {
-        if (mounted) {
-          setSessionWarning(true)
-          logger.warn('Session expiring soon - showing warning')
-        }
-      },
-      onSessionExpired: () => {
-        if (mounted) {
-          setUser(null)
-          setSessionWarning(false)
-          logger.warn('Session expired - logging out user')
-          console.warn('[AuthProvider] REDIRECT TO "/" - Session expired', {
-            pathname: window.location.pathname,
-            timestamp: new Date().toISOString(),
-          })
-          router.push('/')
-        }
-      },
-      onSessionRefreshed: () => {
-        if (mounted) {
-          setSessionWarning(false)
-          logger.info('Session refreshed - warning cleared')
+    // Configure session manager callbacks once
+    const configureSessionManager = () => {
+      sessionManager.config = {
+        onSessionExpiring: () => {
+          if (mounted) {
+            setSessionWarning(true)
+            logger.warn('Session expiring soon - showing warning')
+          }
+        },
+        onSessionExpired: () => {
+          if (mounted) {
+            setUser(null)
+            setSessionWarning(false)
+            logger.warn('Session expired - logging out user')
+            // Use window.location instead of router to avoid dependency
+            if (typeof window !== 'undefined') {
+              window.location.href = '/'
+            }
+          }
+        },
+        onSessionRefreshed: () => {
+          if (mounted) {
+            setSessionWarning(false)
+            logger.info('Session refreshed - warning cleared')
+          }
         }
       }
     }
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        logger.info('Auth state changed', { event, userId: session?.user?.id })
-        
-        if (mounted) {
-          // Always update user state on auth changes
+    // Set up auth state listener
+    const setupAuthListener = () => {
+      const { data: { subscription } } = supabase.auth.onAuthStateChange(
+        async (event, session) => {
+          logger.info('Auth state changed', { event, userId: session?.user?.id })
+          
+          if (!mounted) return
+          
+          // Update user state
           setUser(session?.user ?? null)
           
           // Update logger context
@@ -167,7 +183,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             logger.setUser(null)
           }
 
-          // Handle specific auth events
+          // Handle specific auth events without causing loops
           switch (event) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
@@ -184,14 +200,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                 }
               }
               
-              // Don't set loading to false immediately to prevent flashing
-              setTimeout(() => setLoading(false), 100)
+              setLoading(false)
               break
             case 'SIGNED_OUT':
               logger.track('user_signed_out')
               sessionManager.stopMonitoring()
               setLoading(false)
-              // Let ProtectedRoute handle the redirect
               break
             case 'TOKEN_REFRESHED':
               logger.info('Token refreshed successfully')
@@ -203,19 +217,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               logger.info('User data updated')
               break
             default:
-              setLoading(false)
+              // Don't set loading for unknown events to prevent loops
+              break
           }
         }
-      }
-    )
+      )
+      
+      authSubscription = subscription
+    }
+
+    // Initialize everything
+    configureSessionManager()
+    setupAuthListener()
+    initializeAuth()
 
     return () => {
       mounted = false
-      subscription.unsubscribe()
+      if (authSubscription) {
+        authSubscription.unsubscribe()
+      }
       sessionManager.stopMonitoring()
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [router])
+  }, []) // Remove router dependency to prevent re-initialization
 
   // Sign in handler
   const handleSignIn = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
@@ -227,12 +250,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         setError(error)
+        setLoading(false)
         return
       }
 
       if (data) {
         logger.track('signin_success', { userId: data.id, rememberMe })
-        router.push('/dashboard')
+        // Use window.location to avoid router dependency issues
+        window.location.href = '/dashboard'
       }
     } catch (err) {
       logger.error('Unexpected signin error', err)
@@ -241,10 +266,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'AUTH_UNKNOWN_ERROR',
         err as Error
       ))
-    } finally {
       setLoading(false)
     }
-  }, [router])
+  }, [])
 
   // Sign up handler
   const handleSignUp = useCallback(async (data: SignUpData) => {
@@ -288,12 +312,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       if (error) {
         setError(error)
+        setLoading(false)
         return
       }
 
       logger.track('signout_success')
       setUser(null)
-      router.push('/')
+      // Use window.location to avoid router dependency issues
+      window.location.href = '/'
     } catch (err) {
       logger.error('Unexpected signout error', err)
       setError(new AuthError(
@@ -301,10 +327,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'AUTH_UNKNOWN_ERROR',
         err as Error
       ))
-    } finally {
       setLoading(false)
     }
-  }, [router])
+  }, [])
 
   // Reset password handler
   const handleResetPassword = useCallback(async (email: string) => {

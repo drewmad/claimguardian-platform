@@ -13,9 +13,9 @@
 import { useState, useRef } from 'react'
 import { 
   Upload, Camera, RotateCcw, Download, Eye, Grid, 
-  Play, Pause, Settings, Info, CheckCircle, AlertCircle,
-  X, Plus, Move3D, Zap, Sparkles, Target, Layers,
-  Volume2, VolumeX, FullScreen, RotateCw, ZoomIn, ZoomOut
+  Play, Pause, Settings, Info, CheckCircle,
+  X, Move3D, Zap, Sparkles, Target, Layers,
+  Volume2, VolumeX, Maximize, ZoomIn, ZoomOut
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -256,11 +256,11 @@ function ThreeDModelGeneratorContent() {
                   <div className="space-y-3">
                     {images.map((image) => (
                       <div key={image.id} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                        <img 
-                          src={image.preview} 
-                          alt="Upload preview"
-                          className="w-12 h-12 rounded object-cover"
-                        />
+                        <div 
+                          className="w-12 h-12 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300"
+                        >
+                          IMG
+                        </div>
                         <div className="flex-1">
                           <p className="text-sm text-white truncate">{image.file.name}</p>
                           <p className="text-xs text-gray-400">
@@ -330,7 +330,7 @@ function ThreeDModelGeneratorContent() {
                       <label className="block text-sm font-medium text-white mb-2">Output Format</label>
                       <select 
                         value={modelSettings.outputFormat}
-                        onChange={(e) => setModelSettings(prev => ({ ...prev, outputFormat: e.target.value as any }))}
+                        onChange={(e) => setModelSettings(prev => ({ ...prev, outputFormat: e.target.value as 'obj' | 'fbx' | 'gltf' | 'stl' }))}
                         className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
                       >
                         <option value="obj">OBJ (Universal)</option>
@@ -388,7 +388,7 @@ function ThreeDModelGeneratorContent() {
                           {viewMode === '3d' ? '3D' : viewMode === 'wireframe' ? 'Wireframe' : 'Textured'}
                         </button>
                         <button className="p-2 bg-gray-700 hover:bg-gray-600 text-white rounded">
-                          <FullScreen className="w-4 h-4" />
+                          <Maximize className="w-4 h-4" />
                         </button>
                       </div>
                     )}

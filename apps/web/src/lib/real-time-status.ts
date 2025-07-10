@@ -44,7 +44,9 @@ class RealTimeStatusManager {
       this.ws.onopen = () => {
         this.isConnected = true
         this.reconnectAttempts = 0
-        console.log('Real-time status connected')
+        if (process.env.NODE_ENV === 'development') {
+          console.debug('Real-time status connected')
+        }
         
         // Subscribe to AI service updates
         this.send({
@@ -93,7 +95,9 @@ class RealTimeStatusManager {
   private reconnect() {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
-      console.log(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+      }
       
       setTimeout(() => {
         this.connect()

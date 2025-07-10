@@ -60,7 +60,16 @@ export async function middleware(request: NextRequest) {
                           request.nextUrl.pathname.startsWith('/account')
   
   if (isProtectedRoute && !session) {
-    console.log('Warning: Unauthenticated access to protected route:', request.nextUrl.pathname)
+    // Only log security events in production, avoid exposing internal paths
+    if (process.env.NODE_ENV === 'production') {
+      // Use structured logging for security monitoring
+      // This would typically go to your logging service
+      console.warn('Security: Unauthorized route access', {
+        timestamp: new Date().toISOString(),
+        userAgent: request.headers.get('user-agent'),
+        ip: request.ip
+      })
+    }
     // Let client-side handle the redirect for now to debug the issue
     // return NextResponse.redirect(new URL('/', request.url))
   }

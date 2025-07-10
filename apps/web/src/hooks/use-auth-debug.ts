@@ -20,28 +20,22 @@ export function useAuthDebug(componentName: string) {
   const supabase = createClient()
 
   useEffect(() => {
+    // Only enable debug logging in development
+    if (process.env.NODE_ENV !== 'development') return
+    
     const checkAuthState = async () => {
-      console.group(`[${componentName}] Auth Debug`)
-      console.log('Component:', componentName)
-      console.log('Loading:', loading)
-      console.log('User:', user?.id || 'null')
-      console.log('Error:', error?.message || 'none')
+      const { logger } = await import('@/lib/logger')
       
       // Check Supabase session directly
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      console.log('Direct session check:', {
-        hasSession: !!session,
-        sessionUser: session?.user?.id || 'null',
-        sessionError: sessionError?.message || 'none'
+      
+      logger.authDebug(componentName, {
+        loading,
+        hasUser: !!user,
+        error: error?.message,
+        sessionValid: !!session,
+        sessionError: sessionError?.message
       })
-      
-      // Check cookies
-      if (typeof window !== 'undefined') {
-        console.log('Cookies:', document.cookie)
-        console.log('Location:', window.location.pathname)
-      }
-      
-      console.groupEnd()
     }
 
     checkAuthState()

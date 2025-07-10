@@ -14,7 +14,7 @@ import { useState, useEffect, ReactNode } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { 
-  Home, Building, Package, Shield, FileText, Wrench, 
+  Home, Building, Package, Shield, FileText, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
   Bell, Search, Menu, LogOut,
   Bot, Camera, FileSearch

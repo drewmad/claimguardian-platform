@@ -27,10 +27,18 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
   const { user, loading } = useAuth();
   const router = useRouter();
 
-  // Debug logging
-  if (typeof window !== 'undefined') {
-    console.log('[ProtectedRoute] Rendered with user:', user?.id, 'loading:', loading, 'pathname:', window.location.pathname);
-  }
+  // Use secure debug logging only in development
+  useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      import('@/lib/logger').then(({ logger }) => {
+        logger.authDebug('ProtectedRoute', {
+          loading,
+          hasUser: !!user,
+          pathname: typeof window !== 'undefined' ? window.location.pathname : 'server'
+        })
+      })
+    }
+  }, [user, loading])
 
   useEffect(() => {
     if (!loading && !user) {

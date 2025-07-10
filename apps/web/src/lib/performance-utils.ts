@@ -112,11 +112,15 @@ export function useRequestCache() {
     const cached = requestCache.get(key)
     
     if (cached) {
-      console.log('Cache hit for:', key)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug('Cache hit for:', key)
+      }
       return cached
     }
 
-    console.log('Cache miss for:', key)
+    if (process.env.NODE_ENV === 'development') {
+      console.debug('Cache miss for:', key)
+    }
     const result = await requestFn()
     requestCache.set(key, result, ttl)
     
@@ -177,7 +181,9 @@ export class PerformanceMonitor {
         this.metrics[key] = this.metrics[key].slice(-100)
       }
       
-      console.log(`${key}: ${duration.toFixed(2)}ms`)
+      if (process.env.NODE_ENV === 'development') {
+        console.debug(`Performance: ${key}: ${duration.toFixed(2)}ms`)
+      }
     }
   }
 
