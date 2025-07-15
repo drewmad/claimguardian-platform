@@ -10,13 +10,13 @@
  */
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { 
   Info, Building, Wrench, TreePine, Zap, FileText, Clock,
   MapPin, Shield, CheckCircle, Wind, Award, Plus,
   AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
-  Home, Save, X
+  Home, Save, X, Loader2
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -25,6 +25,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+import { getProperty, updateProperty } from '@/actions/properties'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -34,30 +35,117 @@ function PropertyDetailContent() {
   const propertyId = params.id as string
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('detail')
   const [isEditing, setIsEditing] = useState(false)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   
-  // Mock data - would come from Supabase in production
-  const [property, setProperty] = useState({
-    id: parseInt(propertyId),
-    name: 'Main Residence',
-    address: '1234 Main Street, Austin, TX 78701',
-    type: 'Single Family Home',
-    value: 450000,
-    sqft: 2800,
-    yearBuilt: 2010,
-    bedrooms: 4,
-    bathrooms: 3,
-    lotSize: 0.25,
-    insurabilityScore: 92,
-    image: '🏠'
-  })
+  // Property state - will be loaded from Supabase
+  const [property, setProperty] = useState<any>(null)
 
   // Edit form state
-  const [editForm, setEditForm] = useState(property)
+  const [editForm, setEditForm] = useState<any>({})
 
-  const handleSave = () => {
-    setProperty(editForm)
-    setIsEditing(false)
-    toast.success('Property details updated successfully')
+  // Load property data on mount
+  useEffect(() => {
+    const loadProperty = async () => {
+      try {
+        const { data, error } = await getProperty({ propertyId })
+        if (error) throw error
+        
+        if (data) {
+          // Transform database data to display format
+          const transformedData = {
+            id: data.id,
+            name: data.name || 'Unnamed Property',
+            address: data.address?.street || '',
+            type: data.type || 'Single Family Home',
+            value: data.value || 0,
+            sqft: data.square_feet || 0,
+            yearBuilt: data.year_built || new Date().getFullYear(),
+            bedrooms: data.details?.bedrooms || 0,
+            bathrooms: data.details?.bathrooms || 0,
+            lotSize: data.details?.lot_size || 0,
+            insurabilityScore: data.insurability_score || 0,
+            image: '🏠'
+          }
+          setProperty(transformedData)
+          setEditForm(transformedData)
+        } else {
+          // If no property found, use mock data for now
+          const mockData = {
+            id: propertyId,
+            name: 'Main Residence',
+            address: '1234 Main Street, Austin, TX 78701',
+            type: 'Single Family Home',
+            value: 450000,
+            sqft: 2800,
+            yearBuilt: 2010,
+            bedrooms: 4,
+            bathrooms: 3,
+            lotSize: 0.25,
+            insurabilityScore: 92,
+            image: '🏠'
+          }
+          setProperty(mockData)
+          setEditForm(mockData)
+        }
+      } catch (error) {
+        console.error('Error loading property:', error)
+        toast.error('Failed to load property details')
+        // Use mock data as fallback
+        const mockData = {
+          id: propertyId,
+          name: 'Main Residence',
+          address: '1234 Main Street, Austin, TX 78701',
+          type: 'Single Family Home',
+          value: 450000,
+          sqft: 2800,
+          yearBuilt: 2010,
+          bedrooms: 4,
+          bathrooms: 3,
+          lotSize: 0.25,
+          insurabilityScore: 92,
+          image: '🏠'
+        }
+        setProperty(mockData)
+        setEditForm(mockData)
+      } finally {
+        setLoading(false)
+      }
+    }
+    
+    loadProperty()
+  }, [propertyId])
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      const updates = {
+        name: editForm.name,
+        address: editForm.address,
+        type: editForm.type,
+        year_built: editForm.yearBuilt,
+        square_feet: editForm.sqft,
+        details: {
+          bedrooms: editForm.bedrooms,
+          bathrooms: editForm.bathrooms,
+          lot_size: editForm.lotSize
+        }
+      }
+      
+      const { data, error } = await updateProperty({ propertyId, updates })
+      
+      if (error) throw error
+      
+      // Update local state with saved data
+      setProperty(editForm)
+      setIsEditing(false)
+      toast.success('Property details updated successfully')
+    } catch (error) {
+      console.error('Error saving property:', error)
+      toast.error('Failed to save property details')
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancel = () => {
@@ -151,6 +239,37 @@ function PropertyDetailContent() {
       case 'poor': return 'text-red-400'
       default: return 'text-gray-400'
     }
+  }
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-center h-96">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
+                <p className="text-gray-400">Loading property details...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (!property) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center">
+              <p className="text-gray-400">Property not found</p>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
@@ -258,16 +377,27 @@ function PropertyDetailContent() {
                         <Button
                           size="sm"
                           onClick={handleSave}
-                          className="bg-green-600 hover:bg-green-700"
+                          disabled={saving}
+                          className="bg-green-600 hover:bg-green-700 disabled:opacity-50"
                         >
-                          <Save className="w-4 h-4 mr-2" />
-                          Save
+                          {saving ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Saving...
+                            </>
+                          ) : (
+                            <>
+                              <Save className="w-4 h-4 mr-2" />
+                              Save
+                            </>
+                          )}
                         </Button>
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={handleCancel}
-                          className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                          disabled={saving}
+                          className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 disabled:opacity-50"
                         >
                           <X className="w-4 h-4 mr-2" />
                           Cancel

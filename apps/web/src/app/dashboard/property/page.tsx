@@ -10,41 +10,116 @@
  */
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
-  MapPin, Shield, CheckCircle, Plus, ChevronRight, Edit, Camera, Building
+  MapPin, Shield, CheckCircle, Plus, ChevronRight, Edit, Camera, Building, Loader2
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { getProperties } from '@/actions/properties'
+import { toast } from 'sonner'
 
 function PropertyOverviewContent() {
   const router = useRouter()
-  
-  // Mock data - would come from Supabase in production
-  const [properties] = useState([
-    {
-      id: 1,
-      name: 'Main Residence',
-      address: '1234 Main Street, Austin, TX 78701',
-      type: 'Single Family Home',
-      value: 450000,
-      sqft: 2800,
-      yearBuilt: 2010,
-      bedrooms: 4,
-      bathrooms: 3,
-      lotSize: 0.25,
-      insurabilityScore: 92,
-      image: '🏠',
-      isPrimary: true
+  const [loading, setLoading] = useState(true)
+  const [properties, setProperties] = useState<any[]>([])
+
+  useEffect(() => {
+    const loadProperties = async () => {
+      try {
+        const { data, error } = await getProperties()
+        if (error) throw error
+        
+        if (data && data.length > 0) {
+          // Transform database data to display format
+          const transformedData = data.map((prop: any) => ({
+            id: prop.id,
+            name: prop.name || 'Unnamed Property',
+            address: prop.address?.street || '',
+            type: prop.type || 'Single Family Home',
+            value: prop.value || 0,
+            sqft: prop.square_feet || 0,
+            yearBuilt: prop.year_built || new Date().getFullYear(),
+            bedrooms: prop.details?.bedrooms || 0,
+            bathrooms: prop.details?.bathrooms || 0,
+            lotSize: prop.details?.lot_size || 0,
+            insurabilityScore: prop.insurability_score || 0,
+            image: '🏠',
+            isPrimary: prop.is_primary || false
+          }))
+          setProperties(transformedData)
+        } else {
+          // If no properties, use mock data for demo
+          setProperties([
+            {
+              id: 1,
+              name: 'Main Residence',
+              address: '1234 Main Street, Austin, TX 78701',
+              type: 'Single Family Home',
+              value: 450000,
+              sqft: 2800,
+              yearBuilt: 2010,
+              bedrooms: 4,
+              bathrooms: 3,
+              lotSize: 0.25,
+              insurabilityScore: 92,
+              image: '🏠',
+              isPrimary: true
+            }
+          ])
+        }
+      } catch (error) {
+        console.error('Error loading properties:', error)
+        toast.error('Failed to load properties')
+        // Use mock data as fallback
+        setProperties([
+          {
+            id: 1,
+            name: 'Main Residence',
+            address: '1234 Main Street, Austin, TX 78701',
+            type: 'Single Family Home',
+            value: 450000,
+            sqft: 2800,
+            yearBuilt: 2010,
+            bedrooms: 4,
+            bathrooms: 3,
+            lotSize: 0.25,
+            insurabilityScore: 92,
+            image: '🏠',
+            isPrimary: true
+          }
+        ])
+      } finally {
+        setLoading(false)
+      }
     }
-  ])
+    
+    loadProperties()
+  }, [])
 
   const pageTitle = properties.length === 1 ? 'My Home' : 'My Properties'
 
-  const handlePropertyClick = (propertyId: number) => {
+  const handlePropertyClick = (propertyId: string | number) => {
     router.push(`/dashboard/property/${propertyId}`)
+  }
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex items-center justify-center h-96">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 animate-spin text-blue-500 mx-auto mb-4" />
+                <p className="text-gray-400">Loading properties...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </DashboardLayout>
+    )
   }
 
   return (
