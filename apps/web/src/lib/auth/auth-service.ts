@@ -117,13 +117,17 @@ class AuthService {
       })
 
       if (error) {
-        // Log failed login attempt
+        // Try to log failed login attempt, but don't let it break auth
         if (authData?.user?.id) {
-          await loginActivityService.logLoginAttempt(
-            authData.user.id,
-            false,
-            error.message
-          )
+          try {
+            await loginActivityService.logLoginAttempt(
+              authData.user.id,
+              false,
+              error.message
+            )
+          } catch (logError) {
+            logger.warn('Failed to log login attempt:', logError)
+          }
         }
         throw this.handleAuthError(error)
       }
@@ -147,8 +151,12 @@ class AuthService {
         }
       }
 
-      // Log successful login
-      await loginActivityService.logLoginAttempt(authData.user.id, true)
+      // Try to log successful login, but don't let it break auth
+      try {
+        await loginActivityService.logLoginAttempt(authData.user.id, true)
+      } catch (logError) {
+        logger.warn('Failed to log successful login:', logError)
+      }
 
       logger.info('User signin successful', { userId: authData.user.id })
       return { data: authData.user }

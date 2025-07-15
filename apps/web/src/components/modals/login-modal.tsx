@@ -49,13 +49,12 @@ export function LoginModal() {
     try {
       await signIn(email, password, rememberMe)
       
-      // If no error, the auth provider will handle the redirect
-      if (!error) {
-        closeModal()
-        setEmail('')
-        setPassword('')
-        setRememberMe(false)
-      }
+      // The auth provider will handle the redirect on success
+      // We'll only reach here if there's an error
+      // Modal will close automatically on successful redirect
+    } catch (err) {
+      // Error is handled by auth provider and will be shown in UI
+      console.error('Login error:', err)
     } finally {
       setLoading(false)
     }

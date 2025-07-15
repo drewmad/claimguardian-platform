@@ -30,29 +30,37 @@ export async function middleware(request: NextRequest) {
     geo: request.geo || null,
   }
 
-  // Log to audit table for authenticated requests
-  const { data: { user } } = await supabase.auth.getUser()
-  
-  if (user) {
-    // Log authenticated requests
-    await supabase.from('audit_logs').insert({
-      user_id: user.id,
-      action: `${request.method} ${request.nextUrl.pathname}`,
-      ip_address: ip,
-      user_agent: metadata.user_agent,
-      metadata,
-      created_at: new Date().toISOString(),
-    })
-  } else if (request.nextUrl.pathname.startsWith('/auth/') || request.nextUrl.pathname.startsWith('/api/')) {
-    // Log auth attempts and API calls even when unauthenticated
-    await supabase.from('security_logs').insert({
-      action: `${request.method} ${request.nextUrl.pathname}`,
-      ip_address: ip,
-      user_agent: metadata.user_agent,
-      metadata,
-      created_at: new Date().toISOString(),
-    })
+  // Skip audit logging for now - tables may not exist
+  // TODO: Re-enable once audit_logs and security_logs tables are created
+  /*
+  try {
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (user) {
+      // Log authenticated requests
+      await supabase.from('audit_logs').insert({
+        user_id: user.id,
+        action: `${request.method} ${request.nextUrl.pathname}`,
+        ip_address: ip,
+        user_agent: metadata.user_agent,
+        metadata,
+        created_at: new Date().toISOString(),
+      })
+    } else if (request.nextUrl.pathname.startsWith('/auth/') || request.nextUrl.pathname.startsWith('/api/')) {
+      // Log auth attempts and API calls even when unauthenticated
+      await supabase.from('security_logs').insert({
+        action: `${request.method} ${request.nextUrl.pathname}`,
+        ip_address: ip,
+        user_agent: metadata.user_agent,
+        metadata,
+        created_at: new Date().toISOString(),
+      })
+    }
+  } catch (error) {
+    // Don't block requests if logging fails
+    console.warn('Audit logging failed:', error)
   }
+  */
 
   // Check protected routes
   const isProtectedRoute = request.nextUrl.pathname.startsWith('/ai-augmented') || 

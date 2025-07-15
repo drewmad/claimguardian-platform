@@ -266,6 +266,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         'AUTH_UNKNOWN_ERROR',
         err as Error
       ))
+    } finally {
+      // Always clear loading state
       setLoading(false)
     }
   }, [])
