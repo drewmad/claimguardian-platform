@@ -16,11 +16,15 @@ import {
   Info, Building, Wrench, TreePine, Zap, FileText, Clock,
   MapPin, Shield, CheckCircle, Wind, Award, Plus,
   AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
-  Home
+  Home, Save, X
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -29,9 +33,10 @@ function PropertyDetailContent() {
   const router = useRouter()
   const propertyId = params.id as string
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('detail')
+  const [isEditing, setIsEditing] = useState(false)
   
   // Mock data - would come from Supabase in production
-  const [property] = useState({
+  const [property, setProperty] = useState({
     id: parseInt(propertyId),
     name: 'Main Residence',
     address: '1234 Main Street, Austin, TX 78701',
@@ -45,6 +50,25 @@ function PropertyDetailContent() {
     insurabilityScore: 92,
     image: '🏠'
   })
+
+  // Edit form state
+  const [editForm, setEditForm] = useState(property)
+
+  const handleSave = () => {
+    setProperty(editForm)
+    setIsEditing(false)
+    toast.success('Property details updated successfully')
+  }
+
+  const handleCancel = () => {
+    setEditForm(property)
+    setIsEditing(false)
+  }
+
+  const handleEditClick = () => {
+    setIsEditing(true)
+    setActiveSubTab('detail')
+  }
 
   const [systems] = useState([
     {
@@ -149,12 +173,23 @@ function PropertyDetailContent() {
             <span className="text-white">{property.name}</span>
           </div>
 
-          <div className="mb-8">
-            <h1 className="text-3xl font-bold text-white mb-2">{property.name}</h1>
-            <p className="text-gray-400 flex items-center gap-1">
-              <MapPin className="w-4 h-4" />
-              {property.address}
-            </p>
+          <div className="mb-8 flex justify-between items-start">
+            <div>
+              <h1 className="text-3xl font-bold text-white mb-2">{property.name}</h1>
+              <p className="text-gray-400 flex items-center gap-1">
+                <MapPin className="w-4 h-4" />
+                {property.address}
+              </p>
+            </div>
+            {!isEditing && (
+              <Button 
+                onClick={handleEditClick}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Edit className="w-4 h-4 mr-2" />
+                Edit Details
+              </Button>
+            )}
           </div>
 
           {/* Property Header Card */}
@@ -216,35 +251,155 @@ function PropertyDetailContent() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
-                  <CardTitle className="text-white">Property Details</CardTitle>
+                  <CardTitle className="text-white flex items-center justify-between">
+                    Property Details
+                    {isEditing && (
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          onClick={handleSave}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          <Save className="w-4 h-4 mr-2" />
+                          Save
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleCancel}
+                          className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                        >
+                          <X className="w-4 h-4 mr-2" />
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Property Type</span>
-                      <span className="text-white">{property.type}</span>
+                  {isEditing ? (
+                    <div className="space-y-4">
+                      <div>
+                        <Label className="text-gray-300">Property Name</Label>
+                        <Input
+                          value={editForm.name}
+                          onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-300">Address</Label>
+                        <Input
+                          value={editForm.address}
+                          onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
+                          className="bg-gray-700 border-gray-600 text-white"
+                        />
+                      </div>
+                      <div>
+                        <Label className="text-gray-300">Property Type</Label>
+                        <select
+                          value={editForm.type}
+                          onChange={(e) => setEditForm({ ...editForm, type: e.target.value })}
+                          className="w-full bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                        >
+                          <option value="Single Family Home">Single Family Home</option>
+                          <option value="Condo">Condo</option>
+                          <option value="Townhouse">Townhouse</option>
+                          <option value="Multi-Family">Multi-Family</option>
+                          <option value="Vacation Home">Vacation Home</option>
+                        </select>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-gray-300">Year Built</Label>
+                          <Input
+                            type="number"
+                            value={editForm.yearBuilt}
+                            onChange={(e) => setEditForm({ ...editForm, yearBuilt: parseInt(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Square Footage</Label>
+                          <Input
+                            type="number"
+                            value={editForm.sqft}
+                            onChange={(e) => setEditForm({ ...editForm, sqft: parseInt(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-gray-300">Bedrooms</Label>
+                          <Input
+                            type="number"
+                            value={editForm.bedrooms}
+                            onChange={(e) => setEditForm({ ...editForm, bedrooms: parseInt(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Bathrooms</Label>
+                          <Input
+                            type="number"
+                            step="0.5"
+                            value={editForm.bathrooms}
+                            onChange={(e) => setEditForm({ ...editForm, bathrooms: parseFloat(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-gray-300">Lot Size (acres)</Label>
+                          <Input
+                            type="number"
+                            step="0.01"
+                            value={editForm.lotSize}
+                            onChange={(e) => setEditForm({ ...editForm, lotSize: parseFloat(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-gray-300">Property Value</Label>
+                          <Input
+                            type="number"
+                            value={editForm.value}
+                            onChange={(e) => setEditForm({ ...editForm, value: parseInt(e.target.value) || 0 })}
+                            className="bg-gray-700 border-gray-600 text-white"
+                          />
+                        </div>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Year Built</span>
-                      <span className="text-white">{property.yearBuilt}</span>
+                  ) : (
+                    <div className="space-y-3">
+                      <div className="flex justify-between py-2 border-b border-gray-700">
+                        <span className="text-gray-400">Property Type</span>
+                        <span className="text-white">{property.type}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-700">
+                        <span className="text-gray-400">Year Built</span>
+                        <span className="text-white">{property.yearBuilt}</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-700">
+                        <span className="text-gray-400">Square Footage</span>
+                        <span className="text-white">{property.sqft.toLocaleString()} sqft</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-700">
+                        <span className="text-gray-400">Lot Size</span>
+                        <span className="text-white">{property.lotSize} acres</span>
+                      </div>
+                      <div className="flex justify-between py-2 border-b border-gray-700">
+                        <span className="text-gray-400">Bedrooms</span>
+                        <span className="text-white">{property.bedrooms}</span>
+                      </div>
+                      <div className="flex justify-between py-2">
+                        <span className="text-gray-400">Bathrooms</span>
+                        <span className="text-white">{property.bathrooms}</span>
+                      </div>
                     </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Square Footage</span>
-                      <span className="text-white">{property.sqft.toLocaleString()} sqft</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Lot Size</span>
-                      <span className="text-white">{property.lotSize} acres</span>
-                    </div>
-                    <div className="flex justify-between py-2 border-b border-gray-700">
-                      <span className="text-gray-400">Bedrooms</span>
-                      <span className="text-white">{property.bedrooms}</span>
-                    </div>
-                    <div className="flex justify-between py-2">
-                      <span className="text-gray-400">Bathrooms</span>
-                      <span className="text-white">{property.bathrooms}</span>
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -268,7 +423,10 @@ function PropertyDetailContent() {
                       </span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button 
+                      onClick={handleEditClick}
+                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                    >
                       <span className="flex items-center gap-3">
                         <Edit className="w-5 h-5 text-green-400" />
                         <span>Edit Property Details</span>
