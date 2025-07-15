@@ -35,34 +35,68 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
   const startCamera = useCallback(async () => {
     setIsLoading(true)
     try {
-      // Request camera permission
+      // Stop any existing stream
+      if (stream) {
+        stream.getTracks().forEach(track => track.stop())
+      }
+
+      // Request camera permission with fallback
       const constraints: MediaStreamConstraints = {
         video: {
-          facingMode,
-          width: { ideal: 1920 },
-          height: { ideal: 1080 }
+          facingMode: { ideal: facingMode },
+          width: { ideal: 1920, min: 640 },
+          height: { ideal: 1080, min: 480 }
         }
       }
       
-      const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
-      setStream(mediaStream)
-      setHasPermission(true)
+      let mediaStream: MediaStream | null = null
       
-      if (videoRef.current) {
-        videoRef.current.srcObject = mediaStream
-        await videoRef.current.play()
+      try {
+        // Try with facingMode first
+        mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
+      } catch (err) {
+        // Fallback to any available camera
+        console.log('Falling back to any available camera')
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
+      }
+      
+      if (mediaStream) {
+        setStream(mediaStream)
+        setHasPermission(true)
+        
+        if (videoRef.current) {
+          videoRef.current.srcObject = mediaStream
+          await videoRef.current.play()
+        }
       }
     } catch (err) {
       console.error('Error accessing camera:', err)
       setHasPermission(false)
-      toast.error('Unable to access camera. Please check permissions.')
+      
+      // More specific error messages
+      if (err instanceof DOMException) {
+        if (err.name === 'NotAllowedError') {
+          toast.error('Camera access denied. Please allow camera permissions.')
+        } else if (err.name === 'NotFoundError') {
+          toast.error('No camera found on this device.')
+        } else if (err.name === 'NotReadableError') {
+          toast.error('Camera is already in use by another application.')
+        } else {
+          toast.error('Unable to access camera. Please check your device settings.')
+        }
+      } else {
+        toast.error('Camera error. Please try again.')
+      }
     } finally {
       setIsLoading(false)
     }
-  }, [facingMode])
+  }, [facingMode, stream])
 
   useEffect(() => {
-    startCamera()
+    // Only start camera if not already started
+    if (!stream) {
+      startCamera()
+    }
     
     return () => {
       // Cleanup: stop camera stream
@@ -70,7 +104,7 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         stream.getTracks().forEach(track => track.stop())
       }
     }
-  }, [startCamera])
+  }, []) // Remove dependencies to avoid multiple calls
 
   const switchCamera = async () => {
     if (stream) {
