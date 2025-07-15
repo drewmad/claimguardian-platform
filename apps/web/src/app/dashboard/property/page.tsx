@@ -38,21 +38,6 @@ function PropertyOverviewContent() {
       insurabilityScore: 92,
       image: '🏠',
       isPrimary: true
-    },
-    {
-      id: 2,
-      name: 'Beach House',
-      address: '567 Ocean Drive, Miami, FL 33101',
-      type: 'Vacation Home', 
-      value: 650000,
-      sqft: 2200,
-      yearBuilt: 2015,
-      bedrooms: 3,
-      bathrooms: 2,
-      lotSize: 0.15,
-      insurabilityScore: 88,
-      image: '🏖️',
-      isPrimary: false
     }
   ])
 
