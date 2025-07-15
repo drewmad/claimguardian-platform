@@ -23,7 +23,13 @@ export default function SignInPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  
+  // Ensure component is mounted to avoid hydration mismatches
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -138,10 +144,19 @@ export default function SignInPage() {
 
             <Button
               type="submit"
-              disabled={loading}
+              disabled={loading || !mounted}
               className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {!mounted ? (
+                'Sign In'
+              ) : loading ? (
+                <span className="flex items-center gap-2">
+                  <span className="animate-spin h-4 w-4 border-2 border-white/30 border-t-white rounded-full" />
+                  Signing in...
+                </span>
+              ) : (
+                'Sign In'
+              )}
             </Button>
           </form>
 
