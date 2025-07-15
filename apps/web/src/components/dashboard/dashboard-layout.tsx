@@ -17,7 +17,7 @@ import {
   Home, Building, Package, Shield, FileText, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
   Bell, Search, Menu, LogOut,
-  Bot, Camera, FileSearch
+  Bot, Camera, FileSearch, Sparkles
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { SettingsModal } from '@/components/modals/settings-modal'
@@ -179,6 +179,23 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">AI Features</span>
               </div>
               <div className="space-y-1">
+                {/* AI Tools Main Link */}
+                <Link
+                  href="/ai-tools"
+                  onClick={() => {
+                    if (isMobile) setIsSidebarOpen(false)
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                    pathname === '/ai-tools'
+                      ? 'bg-cyan-600/20 text-cyan-300'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  }`}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>All AI Tools</span>
+                </Link>
+                
+                {/* Individual AI Features */}
                 {aiFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = pathname === feature.href

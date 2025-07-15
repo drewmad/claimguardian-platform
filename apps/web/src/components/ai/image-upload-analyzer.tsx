@@ -4,9 +4,10 @@ import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
-import { Upload, X, Loader2, Image as ImageIcon, AlertCircle } from 'lucide-react'
+import { Upload, X, Loader2, Image as ImageIcon, AlertCircle, Camera } from 'lucide-react'
 import Image from 'next/image'
 import { cn } from '@/lib/utils'
+import { CameraCapture } from './camera-capture'
 
 interface ImageUploadAnalyzerProps {
   onAnalyze: (images: File[]) => Promise<void>
@@ -31,6 +32,7 @@ export function ImageUploadAnalyzer({
   const [previews, setPreviews] = useState<string[]>([])
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [showCamera, setShowCamera] = useState(false)
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setError(null)
@@ -54,6 +56,19 @@ export function ImageUploadAnalyzer({
     setFiles(prev => [...prev, ...acceptedFiles])
     setPreviews(prev => [...prev, ...newPreviews])
   }, [files.length, maxFiles, maxSize])
+
+  const handleCameraCapture = (imageData: string, file: File) => {
+    setShowCamera(false)
+    setError(null)
+    
+    if (files.length >= maxFiles) {
+      setError(`Maximum ${maxFiles} images allowed`)
+      return
+    }
+    
+    setFiles(prev => [...prev, file])
+    setPreviews(prev => [...prev, imageData])
+  }
 
   const removeFile = (index: number) => {
     URL.revokeObjectURL(previews[index])
@@ -122,6 +137,15 @@ export function ImageUploadAnalyzer({
             <p className="text-xs text-gray-500 mt-2">
               Supported formats: JPG, PNG, WebP (max {maxSize}MB each)
             </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4 bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+              onClick={() => setShowCamera(true)}
+            >
+              <Camera className="h-4 w-4 mr-2" />
+              Use Camera
+            </Button>
           </div>
         )}
 
@@ -188,6 +212,14 @@ export function ImageUploadAnalyzer({
           </div>
         )}
       </div>
+      
+      {/* Camera Capture Modal */}
+      {showCamera && (
+        <CameraCapture
+          onCapture={handleCameraCapture}
+          onClose={() => setShowCamera(false)}
+        />
+      )}
     </Card>
   )
 }
