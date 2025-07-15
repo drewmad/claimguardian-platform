@@ -21,7 +21,8 @@ import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 
 export function SignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
-  const { signUp, loading, error, clearError } = useAuth()
+  const { signUp, error, clearError } = useAuth()
+  const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
   const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
@@ -88,24 +89,29 @@ export function SignupModal() {
     
     if (!validateForm()) return
     
-    const success = await signUp(formData)
-    
-    if (success) {
-      setIsSubmitted(true)
-      setTimeout(() => {
-        closeModal()
-        // Reset form
-        setFormData({
-          firstName: '',
-          lastName: '',
-          email: '',
-          password: '',
-          confirmPassword: '',
-          phone: '',
-          agree: false
-        })
-        setIsSubmitted(false)
-      }, 2000)
+    setLoading(true)
+    try {
+      const success = await signUp(formData)
+      
+      if (success) {
+        setIsSubmitted(true)
+        setTimeout(() => {
+          closeModal()
+          // Reset form
+          setFormData({
+            firstName: '',
+            lastName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
+            phone: '',
+            agree: false
+          })
+          setIsSubmitted(false)
+        }, 2000)
+      }
+    } finally {
+      setLoading(false)
     }
   }
 

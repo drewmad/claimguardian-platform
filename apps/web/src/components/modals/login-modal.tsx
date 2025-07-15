@@ -20,10 +20,11 @@ import { useRateLimit } from '@/hooks/use-rate-limit'
 
 export function LoginModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
-  const { signIn, loading, error, clearError } = useAuth()
+  const { signIn, error, clearError } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [rememberMe, setRememberMe] = useState(false)
+  const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
   const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
@@ -44,14 +45,19 @@ export function LoginModal() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     
-    await signIn(email, password, rememberMe)
-    
-    // If no error, the auth provider will handle the redirect
-    if (!error) {
-      closeModal()
-      setEmail('')
-      setPassword('')
-      setRememberMe(false)
+    setLoading(true)
+    try {
+      await signIn(email, password, rememberMe)
+      
+      // If no error, the auth provider will handle the redirect
+      if (!error) {
+        closeModal()
+        setEmail('')
+        setPassword('')
+        setRememberMe(false)
+      }
+    } finally {
+      setLoading(false)
     }
   }
 
