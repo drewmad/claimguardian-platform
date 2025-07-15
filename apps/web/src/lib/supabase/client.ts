@@ -2,15 +2,20 @@
 
 import { createBrowserClient } from '@supabase/ssr'
 import { useMemo } from 'react'
+import { getSupabaseConfig } from '@/lib/utils/check-env'
 
 let browserClient: ReturnType<typeof createBrowserClient> | undefined
 
 export function createClient() {
   if (!browserClient) {
-    browserClient = createBrowserClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    )
+    try {
+      const { url, anonKey } = getSupabaseConfig()
+      browserClient = createBrowserClient(url, anonKey)
+    } catch (error) {
+      console.error('[ClaimGuardian] Failed to initialize Supabase client:', error)
+      // Re-throw to prevent silent failures
+      throw error
+    }
   }
   return browserClient
 }

@@ -14,6 +14,7 @@ import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
 import { loginActivityService } from '@/lib/auth/login-activity-service'
+import { getAuthCallbackURL } from '@/lib/utils/site-url'
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {
@@ -60,7 +61,7 @@ class AuthService {
             lastName: data.lastName,
             phone: data.phone,
           },
-          emailRedirectTo: `${window.location.origin}/auth/verify`
+          emailRedirectTo: getAuthCallbackURL('/auth/verify')
         }
       })
 
@@ -100,6 +101,15 @@ class AuthService {
   async signIn(data: SignInData): Promise<AuthResponse<User>> {
     try {
       logger.info('Attempting user signin', { email: data.email, rememberMe: data.rememberMe })
+      
+      // Debug logging for production
+      if (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true') {
+        console.log('[ClaimGuardian Auth] Sign in attempt:', {
+          email: data.email,
+          url: typeof window !== 'undefined' ? window.location.href : 'server',
+          timestamp: new Date().toISOString()
+        })
+      }
       
       const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
@@ -199,7 +209,7 @@ class AuthService {
       logger.info('Attempting password reset', { email })
       
       const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/auth/reset-password`,
+        redirectTo: getAuthCallbackURL('/auth/reset-password'),
       })
 
       if (error) {
@@ -277,7 +287,7 @@ class AuthService {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/verify`
+          emailRedirectTo: getAuthCallbackURL('/auth/verify')
         }
       })
 
@@ -378,6 +388,17 @@ class AuthService {
       status: error.status,
       code: error.code 
     })
+
+    // Enhanced error logging for production debugging
+    if (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true') {
+      console.error('[ClaimGuardian Auth Error]', {
+        message: error.message,
+        status: error.status,
+        code: error.code,
+        url: typeof window !== 'undefined' ? window.location.href : 'server',
+        timestamp: new Date().toISOString()
+      })
+    }
 
     // Map Supabase error codes to our error codes
     switch (error.message) {
