@@ -38,6 +38,7 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
       // Stop any existing stream
       if (stream) {
         stream.getTracks().forEach(track => track.stop())
+        setStream(null)
       }
 
       // Request camera permission with fallback
@@ -57,17 +58,47 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
       } catch (err) {
         // Fallback to any available camera
         console.log('Falling back to any available camera')
-        mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
+        try {
+          mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
+        } catch (fallbackErr) {
+          throw fallbackErr
+        }
       }
       
-      if (mediaStream) {
+      if (mediaStream && videoRef.current) {
         setStream(mediaStream)
         setHasPermission(true)
         
-        if (videoRef.current) {
-          videoRef.current.srcObject = mediaStream
-          await videoRef.current.play()
-        }
+        const video = videoRef.current
+        video.srcObject = mediaStream
+        
+        // Wait for video metadata to load before playing
+        return new Promise<void>((resolve, reject) => {
+          const handleLoadedMetadata = () => {
+            video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+            video.removeEventListener('error', handleError)
+            
+            video.play()
+              .then(() => {
+                console.log('Camera started successfully')
+                resolve()
+              })
+              .catch((playErr) => {
+                console.error('Error playing video:', playErr)
+                reject(playErr)
+              })
+          }
+          
+          const handleError = (err: Event) => {
+            video.removeEventListener('loadedmetadata', handleLoadedMetadata)
+            video.removeEventListener('error', handleError)
+            console.error('Video error:', err)
+            reject(new Error('Video loading failed'))
+          }
+          
+          video.addEventListener('loadedmetadata', handleLoadedMetadata)
+          video.addEventListener('error', handleError)
+        })
       }
     } catch (err) {
       console.error('Error accessing camera:', err)
@@ -90,13 +121,11 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
     } finally {
       setIsLoading(false)
     }
-  }, [facingMode, stream])
+  }, [facingMode])
 
   useEffect(() => {
-    // Only start camera if not already started
-    if (!stream) {
-      startCamera()
-    }
+    // Start camera when component mounts
+    startCamera()
     
     return () => {
       // Cleanup: stop camera stream
@@ -104,43 +133,65 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         stream.getTracks().forEach(track => track.stop())
       }
     }
-  }, []) // Remove dependencies to avoid multiple calls
+  }, [startCamera])
 
   const switchCamera = async () => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
+      setStream(null)
     }
-    setFacingMode(prev => prev === 'user' ? 'environment' : 'user')
+    const newFacingMode = facingMode === 'user' ? 'environment' : 'user'
+    setFacingMode(newFacingMode)
+    
+    // Restart camera with new facing mode
+    setTimeout(() => startCamera(), 100)
   }
 
   const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
+    if (videoRef.current && canvasRef.current && stream) {
       const video = videoRef.current
       const canvas = canvasRef.current
       const context = canvas.getContext('2d')
       
-      if (context) {
-        // Set canvas size to match video
+      if (context && video.videoWidth > 0 && video.videoHeight > 0) {
+        // Set canvas size to match video dimensions
         canvas.width = video.videoWidth
         canvas.height = video.videoHeight
         
+        // Clear canvas
+        context.clearRect(0, 0, canvas.width, canvas.height)
+        
+        // Save context for transformations
+        context.save()
+        
+        // Mirror image for front camera
+        if (facingMode === 'user') {
+          context.scale(-1, 1)
+          context.translate(-canvas.width, 0)
+        }
+        
         // Draw video frame to canvas
-        context.drawImage(video, 0, 0)
+        context.drawImage(video, 0, 0, canvas.width, canvas.height)
+        
+        // Restore context
+        context.restore()
         
         // Convert to image data
         const imageData = canvas.toDataURL('image/jpeg', 0.9)
         setCapturedImage(imageData)
         
         // Stop camera stream
-        if (stream) {
-          stream.getTracks().forEach(track => track.stop())
-        }
+        stream.getTracks().forEach(track => track.stop())
+        setStream(null)
+      } else {
+        toast.error('Camera not ready. Please wait a moment and try again.')
       }
     }
   }
 
   const retakePhoto = () => {
     setCapturedImage(null)
+    setHasPermission(null)
     startCamera()
   }
 
@@ -204,6 +255,8 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
                   className="w-full h-full object-cover"
                   playsInline
                   muted
+                  autoPlay
+                  style={{ transform: facingMode === 'user' ? 'scaleX(-1)' : 'none' }}
                 />
                 {/* Camera frame overlay */}
                 <div className="absolute inset-0 pointer-events-none">
