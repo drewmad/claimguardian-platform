@@ -112,15 +112,145 @@ Your database contains these tables:
 3. **Use service role key** for server-side operations only
 4. **Row Level Security** is available for fine-grained access control
 
+## 🤖 Connecting with Gemini CLI
+
+### Prerequisites
+1. **Install Supabase CLI**:
+   ```bash
+   brew install supabase/tap/supabase
+   ```
+
+2. **Set Environment Variables**:
+   ```bash
+   export SUPABASE_ACCESS_TOKEN="your-access-token"
+   export SUPABASE_PROJECT_REF="tmlrvecuwgppbaynesji"
+   ```
+
+### Connection Steps for Gemini CLI
+
+1. **Login to Supabase**:
+   ```bash
+   supabase login --token "$SUPABASE_ACCESS_TOKEN"
+   ```
+
+2. **Link to Project**:
+   ```bash
+   supabase link --project-ref tmlrvecuwgppbaynesji
+   ```
+
+3. **Verify Connection**:
+   ```bash
+   supabase status
+   ```
+
+### Using Supabase in Gemini Scripts
+
+```bash
+#!/bin/bash
+# Example: Query data via Gemini CLI
+
+# Set up credentials
+PROJECT_URL="https://tmlrvecuwgppbaynesji.supabase.co"
+ANON_KEY="your-anon-key"
+
+# Query forms table
+curl -X GET "$PROJECT_URL/rest/v1/forms?limit=10" \
+  -H "apikey: $ANON_KEY" \
+  -H "Authorization: Bearer $ANON_KEY" | jq '.'
+
+# Insert data
+curl -X POST "$PROJECT_URL/rest/v1/forms" \
+  -H "apikey: $ANON_KEY" \
+  -H "Authorization: Bearer $ANON_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "filing_id": "GEMINI-001",
+    "form_number": "HO-3",
+    "company": "Test Insurance Co"
+  }'
+```
+
+### Gemini CLI Integration Pattern
+
+```python
+# Example: Python script for Gemini to interact with Supabase
+import os
+import requests
+
+class SupabaseGeminiClient:
+    def __init__(self):
+        self.url = "https://tmlrvecuwgppbaynesji.supabase.co"
+        self.key = os.environ.get("SUPABASE_ANON_KEY")
+        self.headers = {
+            "apikey": self.key,
+            "Authorization": f"Bearer {self.key}",
+            "Content-Type": "application/json"
+        }
+    
+    def query_forms(self, limit=10):
+        response = requests.get(
+            f"{self.url}/rest/v1/forms?limit={limit}",
+            headers=self.headers
+        )
+        return response.json()
+    
+    def create_form(self, data):
+        response = requests.post(
+            f"{self.url}/rest/v1/forms",
+            headers=self.headers,
+            json=data
+        )
+        return response.json()
+
+# Usage
+client = SupabaseGeminiClient()
+forms = client.query_forms()
+print(f"Found {len(forms)} forms")
+```
+
+### Database Migration via Gemini
+
+```bash
+# Pull current schema
+supabase db pull
+
+# Create new migration
+supabase migration new add_gemini_features
+
+# Edit the migration file in supabase/migrations/
+# Then push to production
+supabase db push
+
+# Generate updated TypeScript types
+supabase gen types typescript --project-id tmlrvecuwgppbaynesji > types/supabase.ts
+```
+
+### Environment Setup for Gemini
+
+Create a `.gemini.env` file:
+```bash
+# Supabase Configuration
+SUPABASE_URL=https://tmlrvecuwgppbaynesji.supabase.co
+SUPABASE_ANON_KEY=your-anon-key-here
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key-here
+SUPABASE_PROJECT_REF=tmlrvecuwgppbaynesji
+
+# Load in Gemini scripts
+source .gemini.env
+```
+
 ## 🔧 Next Steps
 
 1. **Generate Types**: Run `supabase gen types typescript` for TypeScript definitions
 2. **Set up Auth**: Configure authentication in your Next.js app
 3. **Add RLS**: Implement Row Level Security policies
 4. **Create Functions**: Add custom database functions as needed
+5. **Configure Gemini**: Set up environment variables for Gemini CLI access
 
 ## 📞 Need Help?
 
-Run the examples script: `./scripts/supabase-examples.sh`
+- Run the examples script: `./scripts/supabase-examples.sh`
+- Check Gemini connection: `supabase status`
+- View logs: `supabase db logs`
 
 Your Supabase setup is complete and ready for development! 🎉
