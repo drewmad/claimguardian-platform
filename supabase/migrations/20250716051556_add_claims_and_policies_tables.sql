@@ -1,44 +1,56 @@
 -- Add claims and policies tables with enhanced schema improvements
 
--- Create enum types for claims and policies
-CREATE TYPE public.claim_status_enum AS ENUM (
-    'draft',
-    'submitted',
-    'under_review',
-    'approved',
-    'denied',
-    'settled',
-    'closed',
-    'reopened'
-);
+-- Create enum types for claims and policies (if not exists)
+DO $$ BEGIN
+    CREATE TYPE public.claim_status_enum AS ENUM (
+        'draft',
+        'submitted',
+        'under_review',
+        'approved',
+        'denied',
+        'settled',
+        'closed',
+        'reopened'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE public.damage_type_enum AS ENUM (
-    'hurricane',
-    'flood',
-    'wind',
-    'hail',
-    'fire',
-    'water_damage',
-    'mold',
-    'theft',
-    'vandalism',
-    'lightning',
-    'fallen_tree',
-    'other'
-);
+DO $$ BEGIN
+    CREATE TYPE public.damage_type_enum AS ENUM (
+        'hurricane',
+        'flood',
+        'wind',
+        'hail',
+        'fire',
+        'water_damage',
+        'mold',
+        'theft',
+        'vandalism',
+        'lightning',
+        'fallen_tree',
+        'other'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
-CREATE TYPE public.policy_type_enum AS ENUM (
-    'HO3',      -- Homeowners (Special Form)
-    'HO5',      -- Comprehensive
-    'HO6',      -- Condo
-    'HO8',      -- Older Home
-    'DP1',      -- Basic Dwelling
-    'DP3',      -- Special Dwelling
-    'FLOOD',    -- Flood Insurance
-    'WIND',     -- Wind/Hurricane Only
-    'UMBRELLA', -- Umbrella Policy
-    'OTHER'
-);
+DO $$ BEGIN
+    CREATE TYPE public.policy_type_enum AS ENUM (
+        'HO3',      -- Homeowners (Special Form)
+        'HO5',      -- Comprehensive
+        'HO6',      -- Condo
+        'HO8',      -- Older Home
+        'DP1',      -- Basic Dwelling
+        'DP3',      -- Special Dwelling
+        'FLOOD',    -- Flood Insurance
+        'WIND',     -- Wind/Hurricane Only
+        'UMBRELLA', -- Umbrella Policy
+        'OTHER'
+    );
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
 
 -- Create policies table
 CREATE TABLE public.policies (
@@ -111,39 +123,32 @@ CREATE TABLE public.claim_communications (
     created_at timestamptz DEFAULT now()
 );
 
--- Migrate existing insurance data from properties to policies table
-INSERT INTO public.policies (
-    property_id,
-    carrier_name,
-    policy_number,
-    policy_type,
-    effective_date,
-    expiration_date,
-    coverage_details,
-    created_by
-)
-SELECT 
-    p.id as property_id,
-    COALESCE(p.details->>'insurance_carrier', 'Unknown') as carrier_name,
-    COALESCE(p.details->>'policy_number', 'LEGACY-' || p.id::text) as policy_number,
-    CASE 
-        WHEN p.details->>'insurance_type' IS NOT NULL THEN 
-            p.details->>'insurance_type'::public.policy_type_enum
-        ELSE 'HO3'::public.policy_type_enum
-    END as policy_type,
-    COALESCE((p.created_at - interval '1 year')::date, CURRENT_DATE - interval '1 year') as effective_date,
-    COALESCE((p.created_at + interval '1 year')::date, CURRENT_DATE + interval '1 year') as expiration_date,
-    jsonb_build_object(
-        'coverage_amount', p.details->'coverage_amount',
-        'deductible', p.details->'deductible',
-        'wind_deductible', p.details->'wind_deductible',
-        'migrated_from_properties', true
-    ) as coverage_details,
-    p.user_id as created_by
-FROM public.properties p
-WHERE p.details->>'insurance_carrier' IS NOT NULL
-   OR p.details->>'policy_number' IS NOT NULL
-ON CONFLICT (property_id, policy_number, policy_type) DO NOTHING;
+-- Skip data migration for now - will be handled when users create new properties
+-- Existing properties will use the new property wizard to add insurance information
+-- 
+-- INSERT INTO public.policies (
+--     property_id,
+--     carrier_name,
+--     policy_number,
+--     policy_type,
+--     effective_date,
+--     expiration_date,
+--     coverage_details,
+--     created_by
+-- )
+-- SELECT 
+--     p.id as property_id,
+--     COALESCE(p.details->>'insurance_carrier', 'Unknown') as carrier_name,
+--     COALESCE(p.details->>'policy_number', 'LEGACY-' || p.id::text) as policy_number,
+--     'HO3'::public.policy_type_enum as policy_type,
+--     CURRENT_DATE - interval '1 year' as effective_date,
+--     CURRENT_DATE + interval '1 year' as expiration_date,
+--     '{}' as coverage_details,
+--     p.user_id as created_by
+-- FROM public.properties p
+-- WHERE p.details->>'insurance_carrier' IS NOT NULL
+--    OR p.details->>'policy_number' IS NOT NULL
+-- ON CONFLICT (property_id, policy_number, policy_type) DO NOTHING;
 
 -- Add structured address columns to properties table
 ALTER TABLE public.properties

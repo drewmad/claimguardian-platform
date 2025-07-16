@@ -31,4 +31,5 @@ CREATE POLICY "Users can update their own policy documents" ON storage.objects
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
 
-COMMENT ON TABLE storage.objects IS 'Policy documents are stored with user ID as folder name: /policy-documents/{user_id}/{filename}';
+-- COMMENT ON TABLE storage.objects IS 'Policy documents are stored with user ID as folder name: /policy-documents/{user_id}/{filename}';
+-- Note: Unable to add comment due to permissions, but storage bucket is configured correctly

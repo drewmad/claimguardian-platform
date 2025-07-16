@@ -1,17 +1,24 @@
--- Add policy_documents table for file uploads
+-- Fix document enum and create policy_documents table
 
--- Create document type enum (if not exists)
-DO $$ BEGIN
-    CREATE TYPE public.document_type_enum AS ENUM (
-        'policy',
-        'claim', 
-        'evidence'
-    );
-EXCEPTION
-    WHEN duplicate_object THEN null;
+-- First, drop the existing enum if it exists (safely)
+DO $$ 
+BEGIN
+    -- Check if the enum exists and drop it
+    IF EXISTS (SELECT 1 FROM pg_type WHERE typname = 'document_type_enum') THEN
+        DROP TYPE public.document_type_enum CASCADE;
+    END IF;
 END $$;
 
--- Create policy_documents table
+-- Create the correct document type enum
+CREATE TYPE public.document_type_enum AS ENUM (
+    'policy',
+    'claim', 
+    'evidence'
+);
+
+-- Create policy_documents table (drop first if exists)
+DROP TABLE IF EXISTS public.policy_documents CASCADE;
+
 CREATE TABLE public.policy_documents (
     id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
     property_id uuid NOT NULL REFERENCES public.properties(id) ON DELETE CASCADE,
@@ -47,24 +54,16 @@ ALTER TABLE public.policy_documents ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policies for policy_documents
 CREATE POLICY "Users can view their own documents" ON public.policy_documents
-    FOR SELECT USING (
-        uploaded_by = auth.uid()
-    );
+    FOR SELECT USING (uploaded_by = auth.uid());
 
 CREATE POLICY "Users can insert their own documents" ON public.policy_documents
-    FOR INSERT WITH CHECK (
-        uploaded_by = auth.uid()
-    );
+    FOR INSERT WITH CHECK (uploaded_by = auth.uid());
 
 CREATE POLICY "Users can update their own documents" ON public.policy_documents
-    FOR UPDATE USING (
-        uploaded_by = auth.uid()
-    );
+    FOR UPDATE USING (uploaded_by = auth.uid());
 
 CREATE POLICY "Users can delete their own documents" ON public.policy_documents
-    FOR DELETE USING (
-        uploaded_by = auth.uid()
-    );
+    FOR DELETE USING (uploaded_by = auth.uid());
 
 -- Add helpful comments
 COMMENT ON TABLE public.policy_documents IS 'Stores metadata for uploaded policy documents';

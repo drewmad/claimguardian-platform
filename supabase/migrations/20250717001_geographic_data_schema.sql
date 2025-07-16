@@ -247,7 +247,7 @@ SELECT
 FROM public.states s
 JOIN public.counties co ON co.state_id = s.id AND co.name = 'Charlotte County'
 JOIN public.cities ci ON ci.county_id = co.id AND ci.name = 'Port Charlotte'
-JOIN (VALUES 
+CROSS JOIN (VALUES 
     ('33948', 'Port Charlotte', 26.9759, -82.0909),
     ('33952', 'Port Charlotte', 26.9870, -82.1101),
     ('33953', 'Port Charlotte', 26.9542, -82.0637),
