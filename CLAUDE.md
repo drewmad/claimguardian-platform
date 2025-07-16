@@ -206,6 +206,34 @@ Focus areas:
 - Property damage assessment and documentation
 - Claims negotiation support
 
-## Supabase Connection
+## Supabase Connection & Database Setup
 
-- Always connect to supabase with supabase login --token "$SUPABASE_ACCESS_TOKEN" and link to project tmlrvecuwgppbaynesji
+### Initial Setup
+Always connect to Supabase and run migrations:
+```bash
+# 1. Login to Supabase
+supabase login --token "$SUPABASE_ACCESS_TOKEN"
+
+# 2. Link to project
+supabase link --project-ref tmlrvecuwgppbaynesji
+
+# 3. Pull remote schema (if needed)
+supabase db pull
+
+# 4. Run any pending migrations
+supabase db push
+```
+
+### Auto-Migration on Development
+When starting development, always check and apply migrations:
+```bash
+# Check migration status
+supabase migration list
+
+# Apply new migrations if any
+supabase db push
+```
+
+### Project Reference
+- Project ID: `tmlrvecuwgppbaynesji`
+- Always ensure database schema is synced before development

@@ -1,16 +1,16 @@
 /**
  * @fileMetadata
- * @purpose Multi-step property creation wizard
+ * @purpose Enhanced multi-step property creation wizard with Google API integration
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@claimguardian/ui"]
  * @exports ["PropertyWizard"]
  * @complexity high
- * @tags ["property", "wizard", "form", "multi-step"]
+ * @tags ["property", "wizard", "form", "multi-step", "google-api"]
  * @status active
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { 
   Dialog, 
@@ -27,13 +27,17 @@ import {
   ChevronRight, ChevronLeft, X, Loader2,
   Building, Building2, TreePine, Warehouse,
   Calendar, Ruler, BedDouble, Bath, Trees,
-  Shield, Camera, Upload
+  Shield, Camera, Upload, AlertCircle,
+  Wrench, Zap, Droplet, Wind, Sun, Database
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createProperty } from '@/actions/properties'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
+import { floridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
+import { propertyDataService } from '@/lib/services/property-data-service'
+import { logger } from '@/lib/logger'
 
 interface PropertyWizardProps {
   open: boolean
@@ -60,28 +64,49 @@ interface PropertyData {
     googlePlaceId?: string
   }
   
-  // Step 3: Details
+  // Step 3: Details (auto-populated + manual)
   yearBuilt: number
   squareFeet: number
   bedrooms: number
   bathrooms: number
   lotSize: number
   
-  // Step 4: Value & Insurance
-  value: number
-  purchasePrice?: number
-  purchaseDate?: string
-  insuranceCarrier?: string
-  policyNumber?: string
-  
-  // Step 5: Features
-  features: string[]
+  // Home Systems & Structures
   roofType?: string
   roofAge?: number
+  roofMaterial?: string
+  hvacType?: string
   hvacAge?: number
+  electricalPanelType?: string
+  electricalPanelAge?: number
+  plumbingType?: string
+  plumbingAge?: number
   hasPool?: boolean
+  poolAge?: number
   hasGarage?: boolean
   garageSpaces?: number
+  hasHurricaneShutters?: boolean
+  hasImpactWindows?: boolean
+  hasGeneratorHookup?: boolean
+  hasSolarPanels?: boolean
+  
+  // Step 4: Insurance
+  insuranceCarrier?: string
+  insuranceType?: string
+  policyNumber?: string
+  coverageAmount?: number
+  deductible?: number
+  windDeductible?: number
+  
+  // Auto-populated Value Info
+  estimatedValue?: number
+  taxAssessedValue?: number
+  lastSalePrice?: number
+  lastSaleDate?: string
+  
+  // Additional Info
+  floodZone?: string
+  features: string[]
 }
 
 const propertyTypes = [
@@ -92,11 +117,27 @@ const propertyTypes = [
   { value: 'Vacant Land', label: 'Vacant Land', icon: TreePine },
 ]
 
+const roofMaterials = [
+  'Shingle', 'Tile', 'Metal', 'Flat/Built-up', 'Other'
+]
+
+const hvacTypes = [
+  'Central AC', 'Heat Pump', 'Window Units', 'Split System', 'Other'
+]
+
+const electricalPanelTypes = [
+  '100 Amp', '150 Amp', '200 Amp', '400 Amp', 'Other'
+]
+
+const plumbingTypes = [
+  'Copper', 'PVC', 'PEX', 'Galvanized', 'Mixed', 'Other'
+]
+
 const wizardSteps = [
   { id: 1, title: 'Basic Info', icon: Home, description: 'Property name and type' },
   { id: 2, title: 'Location', icon: MapPin, description: 'Property address' },
-  { id: 3, title: 'Details', icon: Info, description: 'Size and specifications' },
-  { id: 4, title: 'Value', icon: DollarSign, description: 'Value and insurance' },
+  { id: 3, title: 'Details', icon: Info, description: 'Home systems & features' },
+  { id: 4, title: 'Insurance', icon: Shield, description: 'Insurance information' },
   { id: 5, title: 'Review', icon: Check, description: 'Review and confirm' },
 ]
 
@@ -104,6 +145,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isFetchingData, setIsFetchingData] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   
   const [propertyData, setPropertyData] = useState<PropertyData>({
@@ -123,7 +165,6 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     bedrooms: 0,
     bathrooms: 0,
     lotSize: 0,
-    value: 0,
     features: []
   })
 
@@ -149,11 +190,57 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         bedrooms: 0,
         bathrooms: 0,
         lotSize: 0,
-        value: 0,
         features: []
       })
     }
   }, [open])
+
+  // Fetch property data when address is complete
+  const fetchPropertyData = useCallback(async () => {
+    if (!propertyData.address.street1 || !propertyData.address.city || !propertyData.address.zip) {
+      return
+    }
+
+    setIsFetchingData(true)
+    try {
+      const data = await propertyDataService.fetchPropertyData({
+        street: propertyData.address.street1,
+        city: propertyData.address.city,
+        state: propertyData.address.state,
+        zip: propertyData.address.zip
+      })
+
+      if (data) {
+        setPropertyData(prev => ({
+          ...prev,
+          // Only update if values are not already set by user
+          yearBuilt: prev.yearBuilt === new Date().getFullYear() ? data.yearBuilt || prev.yearBuilt : prev.yearBuilt,
+          squareFeet: prev.squareFeet === 0 ? data.squareFeet || prev.squareFeet : prev.squareFeet,
+          bedrooms: prev.bedrooms === 0 ? data.bedrooms || prev.bedrooms : prev.bedrooms,
+          bathrooms: prev.bathrooms === 0 ? data.bathrooms || prev.bathrooms : prev.bathrooms,
+          lotSize: prev.lotSize === 0 ? data.lotSize || prev.lotSize : prev.lotSize,
+          estimatedValue: data.estimatedValue,
+          taxAssessedValue: data.taxAssessedValue,
+          lastSalePrice: data.lastSalePrice,
+          lastSaleDate: data.lastSaleDate,
+          floodZone: data.floodZone
+        }))
+
+        toast.success('Property data loaded from public records')
+      }
+    } catch (error) {
+      logger.error('Failed to fetch property data', { error })
+    } finally {
+      setIsFetchingData(false)
+    }
+  }, [propertyData.address])
+
+  // Auto-fetch when moving to step 3
+  useEffect(() => {
+    if (currentStep === 3 && !propertyData.estimatedValue) {
+      fetchPropertyData()
+    }
+  }, [currentStep, propertyData.estimatedValue, fetchPropertyData])
 
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {}
@@ -187,9 +274,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         }
         break
       case 4:
-        if (propertyData.value <= 0) {
-          newErrors.value = 'Property value must be greater than 0'
-        }
+        // Insurance is optional
         break
     }
     
@@ -219,21 +304,47 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         address: propertyData.address,
         year_built: propertyData.yearBuilt,
         square_feet: propertyData.squareFeet,
-        value: propertyData.value,
+        value: propertyData.estimatedValue || 0,
         details: {
           bedrooms: propertyData.bedrooms,
           bathrooms: propertyData.bathrooms,
           lot_size: propertyData.lotSize,
-          purchase_price: propertyData.purchasePrice,
-          purchase_date: propertyData.purchaseDate,
-          insurance_carrier: propertyData.insuranceCarrier,
-          policy_number: propertyData.policyNumber,
+          
+          // Home systems
           roof_type: propertyData.roofType,
           roof_age: propertyData.roofAge,
+          roof_material: propertyData.roofMaterial,
+          hvac_type: propertyData.hvacType,
           hvac_age: propertyData.hvacAge,
+          electrical_panel_type: propertyData.electricalPanelType,
+          electrical_panel_age: propertyData.electricalPanelAge,
+          plumbing_type: propertyData.plumbingType,
+          plumbing_age: propertyData.plumbingAge,
+          
+          // Features
           has_pool: propertyData.hasPool,
+          pool_age: propertyData.poolAge,
           has_garage: propertyData.hasGarage,
           garage_spaces: propertyData.garageSpaces,
+          has_hurricane_shutters: propertyData.hasHurricaneShutters,
+          has_impact_windows: propertyData.hasImpactWindows,
+          has_generator_hookup: propertyData.hasGeneratorHookup,
+          has_solar_panels: propertyData.hasSolarPanels,
+          
+          // Insurance
+          insurance_carrier: propertyData.insuranceCarrier,
+          insurance_type: propertyData.insuranceType,
+          policy_number: propertyData.policyNumber,
+          coverage_amount: propertyData.coverageAmount,
+          deductible: propertyData.deductible,
+          wind_deductible: propertyData.windDeductible,
+          
+          // Values
+          tax_assessed_value: propertyData.taxAssessedValue,
+          last_sale_price: propertyData.lastSalePrice,
+          last_sale_date: propertyData.lastSaleDate,
+          flood_zone: propertyData.floodZone,
+          
           features: propertyData.features
         }
       })
@@ -241,11 +352,18 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
       if (error) throw error
       
       toast.success('Property created successfully!')
-      onClose()
+      
+      // Force refresh the property list
       if (onComplete && data?.id) {
         onComplete(data.id)
       }
-      router.push(`/dashboard/property/${data?.id}`)
+      
+      onClose()
+      
+      // Navigate to the new property
+      setTimeout(() => {
+        router.push(`/dashboard/property/${data?.id}`)
+      }, 100)
     } catch (error) {
       console.error('Error creating property:', error)
       toast.error('Failed to create property')
@@ -319,81 +437,245 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
               onChange={(address) => setPropertyData(prev => ({ ...prev, address }))}
               errors={errors}
             />
+            {propertyData.address.street1 && propertyData.address.city && propertyData.address.zip && (
+              <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3">
+                <p className="text-sm text-blue-300">
+                  <strong>Note:</strong> We'll automatically fetch property details from public records in the next step.
+                </p>
+              </div>
+            )}
           </div>
         )
 
       case 3:
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <Label htmlFor="yearBuilt">Year Built *</Label>
-                <Input
-                  id="yearBuilt"
-                  type="number"
-                  value={propertyData.yearBuilt}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, yearBuilt: parseInt(e.target.value) || 0 }))}
-                  min="1800"
-                  max={new Date().getFullYear()}
-                  className="mt-1 bg-gray-700 border-gray-600 text-white"
-                  error={errors.yearBuilt}
-                />
+            {isFetchingData && (
+              <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3 flex items-center gap-2">
+                <Loader2 className="w-4 h-4 animate-spin text-blue-400" />
+                <p className="text-sm text-blue-300">Fetching property data from public records...</p>
               </div>
-              <div>
-                <Label htmlFor="squareFeet">Square Feet *</Label>
-                <Input
-                  id="squareFeet"
-                  type="number"
-                  value={propertyData.squareFeet || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, squareFeet: parseInt(e.target.value) || 0 }))}
-                  placeholder="e.g., 2500"
-                  className="mt-1 bg-gray-700 border-gray-600 text-white"
-                  error={errors.squareFeet}
-                />
-              </div>
-            </div>
+            )}
 
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <Label htmlFor="bedrooms">Bedrooms</Label>
-                <Input
-                  id="bedrooms"
-                  type="number"
-                  value={propertyData.bedrooms || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, bedrooms: parseInt(e.target.value) || 0 }))}
-                  min="0"
-                  className="mt-1 bg-gray-700 border-gray-600 text-white"
-                />
+            {/* Auto-populated data section */}
+            {propertyData.estimatedValue && (
+              <div className="bg-gray-700/50 rounded-lg p-4 space-y-2">
+                <h4 className="text-sm font-medium text-gray-300 mb-2 flex items-center gap-2">
+                  <Database className="w-4 h-4" />
+                  Data from Public Records
+                </h4>
+                <div className="grid grid-cols-2 gap-2 text-sm">
+                  {propertyData.estimatedValue && (
+                    <div>
+                      <span className="text-gray-400">Estimated Value:</span>
+                      <span className="text-white ml-2">${propertyData.estimatedValue.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {propertyData.taxAssessedValue && (
+                    <div>
+                      <span className="text-gray-400">Tax Assessed:</span>
+                      <span className="text-white ml-2">${propertyData.taxAssessedValue.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {propertyData.lastSalePrice && (
+                    <div>
+                      <span className="text-gray-400">Last Sale:</span>
+                      <span className="text-white ml-2">${propertyData.lastSalePrice.toLocaleString()}</span>
+                    </div>
+                  )}
+                  {propertyData.floodZone && (
+                    <div>
+                      <span className="text-gray-400">Flood Zone:</span>
+                      <span className="text-white ml-2">{propertyData.floodZone}</span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <div>
-                <Label htmlFor="bathrooms">Bathrooms</Label>
-                <Input
-                  id="bathrooms"
-                  type="number"
-                  step="0.5"
-                  value={propertyData.bathrooms || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, bathrooms: parseFloat(e.target.value) || 0 }))}
-                  min="0"
-                  className="mt-1 bg-gray-700 border-gray-600 text-white"
-                />
-              </div>
-              <div>
-                <Label htmlFor="lotSize">Lot Size (acres)</Label>
-                <Input
-                  id="lotSize"
-                  type="number"
-                  step="0.01"
-                  value={propertyData.lotSize || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, lotSize: parseFloat(e.target.value) || 0 }))}
-                  min="0"
-                  className="mt-1 bg-gray-700 border-gray-600 text-white"
-                />
-              </div>
-            </div>
+            )}
 
+            {/* Basic Details */}
             <div>
-              <Label>Quick Features</Label>
-              <div className="grid grid-cols-2 gap-3 mt-2">
+              <h4 className="text-sm font-medium text-gray-300 mb-3">Basic Information</h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="yearBuilt">Year Built *</Label>
+                  <Input
+                    id="yearBuilt"
+                    type="number"
+                    value={propertyData.yearBuilt}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, yearBuilt: parseInt(e.target.value) || 0 }))}
+                    min="1800"
+                    max={new Date().getFullYear()}
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                    error={errors.yearBuilt}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="squareFeet">Square Feet *</Label>
+                  <Input
+                    id="squareFeet"
+                    type="number"
+                    value={propertyData.squareFeet || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, squareFeet: parseInt(e.target.value) || 0 }))}
+                    placeholder="e.g., 2500"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                    error={errors.squareFeet}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-3 gap-4 mt-4">
+                <div>
+                  <Label htmlFor="bedrooms">Bedrooms</Label>
+                  <Input
+                    id="bedrooms"
+                    type="number"
+                    value={propertyData.bedrooms || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, bedrooms: parseInt(e.target.value) || 0 }))}
+                    min="0"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="bathrooms">Bathrooms</Label>
+                  <Input
+                    id="bathrooms"
+                    type="number"
+                    step="0.5"
+                    value={propertyData.bathrooms || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, bathrooms: parseFloat(e.target.value) || 0 }))}
+                    min="0"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="lotSize">Lot Size (acres)</Label>
+                  <Input
+                    id="lotSize"
+                    type="number"
+                    step="0.01"
+                    value={propertyData.lotSize || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, lotSize: parseFloat(e.target.value) || 0 }))}
+                    min="0"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Home Systems */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                <Wrench className="w-4 h-4" />
+                Home Systems
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Roof Material</Label>
+                  <select
+                    value={propertyData.roofMaterial || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, roofMaterial: e.target.value }))}
+                    className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                  >
+                    <option value="">Select Material</option>
+                    {roofMaterials.map(material => (
+                      <option key={material} value={material}>{material}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>Roof Age (years)</Label>
+                  <Input
+                    type="number"
+                    value={propertyData.roofAge || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, roofAge: parseInt(e.target.value) || undefined }))}
+                    min="0"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <Label>HVAC Type</Label>
+                  <select
+                    value={propertyData.hvacType || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hvacType: e.target.value }))}
+                    className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                  >
+                    <option value="">Select Type</option>
+                    {hvacTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>HVAC Age (years)</Label>
+                  <Input
+                    type="number"
+                    value={propertyData.hvacAge || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hvacAge: parseInt(e.target.value) || undefined }))}
+                    min="0"
+                    className="mt-1 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div>
+                  <Label>Electrical Panel</Label>
+                  <select
+                    value={propertyData.electricalPanelType || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, electricalPanelType: e.target.value }))}
+                    className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                  >
+                    <option value="">Select Type</option>
+                    {electricalPanelTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <Label>Plumbing Type</Label>
+                  <select
+                    value={propertyData.plumbingType || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, plumbingType: e.target.value }))}
+                    className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                  >
+                    <option value="">Select Type</option>
+                    {plumbingTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            {/* Florida-specific Features */}
+            <div>
+              <h4 className="text-sm font-medium text-gray-300 mb-3 flex items-center gap-2">
+                <Wind className="w-4 h-4" />
+                Florida Features
+              </h4>
+              <div className="grid grid-cols-2 gap-3">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.hasHurricaneShutters}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hasHurricaneShutters: e.target.checked }))}
+                    className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
+                  />
+                  <span className="text-sm text-gray-300">Hurricane Shutters</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.hasImpactWindows}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hasImpactWindows: e.target.checked }))}
+                    className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
+                  />
+                  <span className="text-sm text-gray-300">Impact Windows</span>
+                </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
@@ -402,6 +684,24 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
                   />
                   <span className="text-sm text-gray-300">Swimming Pool</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.hasGeneratorHookup}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hasGeneratorHookup: e.target.checked }))}
+                    className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
+                  />
+                  <span className="text-sm text-gray-300">Generator Hookup</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={propertyData.hasSolarPanels}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, hasSolarPanels: e.target.checked }))}
+                    className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
+                  />
+                  <span className="text-sm text-gray-300">Solar Panels</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
@@ -420,60 +720,129 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
       case 4:
         return (
           <div className="space-y-6">
+            <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3">
+              <p className="text-sm text-blue-300">
+                <strong>Optional:</strong> Add insurance information to help track coverage and claims.
+              </p>
+            </div>
+
             <div>
-              <Label htmlFor="value">Estimated Property Value *</Label>
-              <div className="relative mt-1">
-                <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <Input
-                  id="value"
-                  type="number"
-                  value={propertyData.value || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, value: parseInt(e.target.value) || 0 }))}
-                  placeholder="450000"
-                  className="pl-9 bg-gray-700 border-gray-600 text-white"
-                  error={errors.value}
-                />
-              </div>
-              <p className="text-xs text-gray-400 mt-1">Current market value of your property</p>
+              <Label>Insurance Carrier</Label>
+              <select
+                value={propertyData.insuranceCarrier || ''}
+                onChange={(e) => setPropertyData(prev => ({ ...prev, insuranceCarrier: e.target.value }))}
+                className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+              >
+                <option value="">Select Insurance Carrier</option>
+                <optgroup label="State-Backed">
+                  {floridaInsuranceCarriers
+                    .filter(c => c.type === 'state')
+                    .map(carrier => (
+                      <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
+                    ))}
+                </optgroup>
+                <optgroup label="Private Carriers">
+                  {floridaInsuranceCarriers
+                    .filter(c => c.type === 'private')
+                    .map(carrier => (
+                      <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
+                    ))}
+                </optgroup>
+                <optgroup label="Surplus Lines">
+                  {floridaInsuranceCarriers
+                    .filter(c => c.type === 'surplus')
+                    .map(carrier => (
+                      <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
+                    ))}
+                </optgroup>
+              </select>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="purchasePrice">Purchase Price</Label>
-                <div className="relative mt-1">
-                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                  <Input
-                    id="purchasePrice"
-                    type="number"
-                    value={propertyData.purchasePrice || ''}
-                    onChange={(e) => setPropertyData(prev => ({ ...prev, purchasePrice: parseInt(e.target.value) || undefined }))}
-                    placeholder="400000"
-                    className="pl-9 bg-gray-700 border-gray-600 text-white"
-                  />
-                </div>
+                <Label>Insurance Type</Label>
+                <select
+                  value={propertyData.insuranceType || ''}
+                  onChange={(e) => setPropertyData(prev => ({ ...prev, insuranceType: e.target.value }))}
+                  className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
+                >
+                  <option value="">Select Type</option>
+                  {insuranceTypes.map(type => (
+                    <option key={type.value} value={type.value}>{type.label}</option>
+                  ))}
+                </select>
               </div>
               <div>
-                <Label htmlFor="purchaseDate">Purchase Date</Label>
+                <Label>Policy Number</Label>
                 <Input
-                  id="purchaseDate"
-                  type="date"
-                  value={propertyData.purchaseDate || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, purchaseDate: e.target.value }))}
+                  value={propertyData.policyNumber || ''}
+                  onChange={(e) => setPropertyData(prev => ({ ...prev, policyNumber: e.target.value }))}
+                  placeholder="e.g., HO-123456789"
                   className="mt-1 bg-gray-700 border-gray-600 text-white"
                 />
               </div>
             </div>
 
-            <div>
-              <Label htmlFor="insuranceCarrier">Insurance Carrier</Label>
-              <Input
-                id="insuranceCarrier"
-                value={propertyData.insuranceCarrier || ''}
-                onChange={(e) => setPropertyData(prev => ({ ...prev, insuranceCarrier: e.target.value }))}
-                placeholder="e.g., State Farm, Citizens"
-                className="mt-1 bg-gray-700 border-gray-600 text-white"
-              />
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label>Coverage Amount</Label>
+                <div className="relative mt-1">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    type="number"
+                    value={propertyData.coverageAmount || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, coverageAmount: parseInt(e.target.value) || undefined }))}
+                    placeholder="500000"
+                    className="pl-9 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Deductible</Label>
+                <div className="relative mt-1">
+                  <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                  <Input
+                    type="number"
+                    value={propertyData.deductible || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, deductible: parseInt(e.target.value) || undefined }))}
+                    placeholder="2500"
+                    className="pl-9 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+              <div>
+                <Label>Wind Deductible</Label>
+                <div className="relative mt-1">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">%</span>
+                  <Input
+                    type="number"
+                    value={propertyData.windDeductible || ''}
+                    onChange={(e) => setPropertyData(prev => ({ ...prev, windDeductible: parseInt(e.target.value) || undefined }))}
+                    placeholder="2"
+                    min="1"
+                    max="10"
+                    className="pl-8 bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <p className="text-xs text-gray-400 mt-1">Percentage of coverage</p>
+              </div>
             </div>
+
+            {propertyData.insuranceCarrier && (
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <h4 className="text-sm font-medium text-gray-300 mb-2">Carrier Information</h4>
+                {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone && (
+                  <p className="text-sm text-gray-400">
+                    Phone: {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone}
+                  </p>
+                )}
+                {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website && (
+                  <p className="text-sm text-gray-400">
+                    Website: {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website}
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         )
 
@@ -485,9 +854,10 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                 propertyType={propertyData.type}
                 propertyName={propertyData.name}
                 location={`${propertyData.address.city}, Florida`}
-                width={200}
-                height={150}
-                className="mx-auto mb-4"
+                width={400}
+                height={250}
+                className="mx-auto mb-4 rounded-lg shadow-lg"
+                generateAI={true}
               />
               <h3 className="text-xl font-semibold text-white">{propertyData.name}</h3>
               <p className="text-gray-400">{propertyData.type}</p>
@@ -525,24 +895,102 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     <span className="text-gray-400">Bathrooms:</span>
                     <span className="text-white ml-2">{propertyData.bathrooms}</span>
                   </div>
-                </div>
-              </div>
-
-              <div className="bg-gray-700 rounded-lg p-4">
-                <h4 className="text-sm font-medium text-gray-300 mb-2">Value & Insurance</h4>
-                <div className="text-sm">
-                  <div>
-                    <span className="text-gray-400">Estimated Value:</span>
-                    <span className="text-white ml-2">${propertyData.value.toLocaleString()}</span>
-                  </div>
-                  {propertyData.insuranceCarrier && (
-                    <div className="mt-1">
-                      <span className="text-gray-400">Insurance:</span>
-                      <span className="text-white ml-2">{propertyData.insuranceCarrier}</span>
+                  {propertyData.lotSize > 0 && (
+                    <div>
+                      <span className="text-gray-400">Lot Size:</span>
+                      <span className="text-white ml-2">{propertyData.lotSize} acres</span>
+                    </div>
+                  )}
+                  {propertyData.floodZone && (
+                    <div>
+                      <span className="text-gray-400">Flood Zone:</span>
+                      <span className="text-white ml-2">{propertyData.floodZone}</span>
                     </div>
                   )}
                 </div>
               </div>
+
+              {(propertyData.roofMaterial || propertyData.hvacType || propertyData.electricalPanelType) && (
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">Home Systems</h4>
+                  <div className="grid grid-cols-2 gap-2 text-sm">
+                    {propertyData.roofMaterial && (
+                      <div>
+                        <span className="text-gray-400">Roof:</span>
+                        <span className="text-white ml-2">
+                          {propertyData.roofMaterial}
+                          {propertyData.roofAge && ` (${propertyData.roofAge} years)`}
+                        </span>
+                      </div>
+                    )}
+                    {propertyData.hvacType && (
+                      <div>
+                        <span className="text-gray-400">HVAC:</span>
+                        <span className="text-white ml-2">
+                          {propertyData.hvacType}
+                          {propertyData.hvacAge && ` (${propertyData.hvacAge} years)`}
+                        </span>
+                      </div>
+                    )}
+                    {propertyData.electricalPanelType && (
+                      <div>
+                        <span className="text-gray-400">Electrical:</span>
+                        <span className="text-white ml-2">{propertyData.electricalPanelType}</span>
+                      </div>
+                    )}
+                    {propertyData.plumbingType && (
+                      <div>
+                        <span className="text-gray-400">Plumbing:</span>
+                        <span className="text-white ml-2">{propertyData.plumbingType}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {propertyData.insuranceCarrier && (
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">Insurance</h4>
+                  <div className="text-sm">
+                    <div>
+                      <span className="text-gray-400">Carrier:</span>
+                      <span className="text-white ml-2">{propertyData.insuranceCarrier}</span>
+                    </div>
+                    {propertyData.insuranceType && (
+                      <div className="mt-1">
+                        <span className="text-gray-400">Type:</span>
+                        <span className="text-white ml-2">
+                          {insuranceTypes.find(t => t.value === propertyData.insuranceType)?.label}
+                        </span>
+                      </div>
+                    )}
+                    {propertyData.coverageAmount && (
+                      <div className="mt-1">
+                        <span className="text-gray-400">Coverage:</span>
+                        <span className="text-white ml-2">${propertyData.coverageAmount.toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {propertyData.estimatedValue && (
+                <div className="bg-gray-700 rounded-lg p-4">
+                  <h4 className="text-sm font-medium text-gray-300 mb-2">Value Information</h4>
+                  <div className="text-sm">
+                    <div>
+                      <span className="text-gray-400">Estimated Value:</span>
+                      <span className="text-white ml-2">${propertyData.estimatedValue.toLocaleString()}</span>
+                    </div>
+                    {propertyData.taxAssessedValue && (
+                      <div className="mt-1">
+                        <span className="text-gray-400">Tax Assessed:</span>
+                        <span className="text-white ml-2">${propertyData.taxAssessedValue.toLocaleString()}</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4">
@@ -557,7 +1005,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl bg-gray-800 border-gray-700">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto bg-gray-800 border-gray-700">
         <DialogHeader>
           <DialogTitle className="text-xl font-semibold text-white">
             Add New Property

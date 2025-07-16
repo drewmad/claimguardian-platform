@@ -190,6 +190,36 @@ export async function validateAddress({
   state?: string
 }) {
   try {
+    // First try to validate using local data
+    if (zipCode && state === 'FL') {
+      const { getZipCodeInfo } = await import('@/data/florida-zip-codes')
+      const zipInfo = getZipCodeInfo(zipCode)
+      
+      if (zipInfo) {
+        return {
+          data: {
+            isValid: true,
+            suggestions: [{
+              zipCode: zipInfo.zip,
+              city: zipInfo.city,
+              county: zipInfo.county,
+              state: 'FL',
+              fullCity: zipInfo.city
+            }],
+            exactMatch: {
+              zipCode: zipInfo.zip,
+              city: zipInfo.city,
+              county: zipInfo.county,
+              state: 'FL',
+              fullCity: zipInfo.city
+            }
+          },
+          error: null
+        }
+      }
+    }
+    
+    // Fall back to database query
     const supabase = await createClient()
     
     let query = supabase
@@ -220,7 +250,18 @@ export async function validateAddress({
     
     const { data, error } = await query.limit(10)
     
-    if (error) throw error
+    if (error) {
+      // If database fails, return not found
+      console.warn('Database query failed, using local data only:', error)
+      return {
+        data: {
+          isValid: false,
+          suggestions: [],
+          exactMatch: null
+        },
+        error: null
+      }
+    }
     
     const isValid = data && data.length > 0
     const suggestions = data?.map(item => ({
