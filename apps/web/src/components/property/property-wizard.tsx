@@ -38,6 +38,7 @@ import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
 import { sortedFloridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
 import { propertyDataService } from '@/lib/services/property-data-service'
+import { fileUploadService, POLICY_DOCUMENT_VALIDATION } from '@/lib/services/file-upload-service'
 import { logger } from '@/lib/logger'
 
 interface PropertyWizardProps {
@@ -100,6 +101,7 @@ interface PropertyData {
   windDeductible?: number
   customCarrierName?: string // For 'Other' carrier option
   policyDocuments?: File[] // For PDF/image uploads
+  uploadedDocuments?: { fileName: string; filePath: string; uploadResult: any }[] // Successfully uploaded docs
   
   // Auto-populated Value Info
   estimatedValue?: number
@@ -149,6 +151,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
   const [currentStep, setCurrentStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isFetchingData, setIsFetchingData] = useState(false)
+  const [isUploadingFiles, setIsUploadingFiles] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   
   const [propertyData, setPropertyData] = useState<PropertyData>({
@@ -386,10 +389,10 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             }
           }
           
-          // TODO: Upload policy documents to storage and process with AI
-          if (propertyData.policyDocuments && propertyData.policyDocuments.length > 0) {
-            console.log('Policy documents ready for upload:', propertyData.policyDocuments)
-            // Future implementation: Upload to Supabase storage and process with AI
+          // Documents are already uploaded to storage when selected
+          // TODO: In the future, we can process uploaded documents with AI to extract policy data
+          if (propertyData.uploadedDocuments && propertyData.uploadedDocuments.length > 0) {
+            console.log('Policy documents uploaded:', propertyData.uploadedDocuments.map(d => d.filePath))
           }
         }
       }
@@ -928,42 +931,97 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                   id="policy-upload"
                   accept=".pdf,.png,.jpg,.jpeg"
                   multiple
-                  onChange={(e) => {
+                  onChange={async (e) => {
                     const files = Array.from(e.target.files || [])
-                    if (files.length > 0) {
-                      setPropertyData(prev => ({
-                        ...prev,
-                        policyDocuments: [...(prev.policyDocuments || []), ...files]
-                      }))
-                      toast.success(`Added ${files.length} document${files.length > 1 ? 's' : ''}`)
+                    if (files.length === 0) return
+
+                    setIsUploadingFiles(true)
+                    
+                    try {
+                      // Upload files immediately when selected
+                      const uploadResults = await fileUploadService.uploadMultipleFiles(
+                        files, 
+                        'policies', // folder name
+                        POLICY_DOCUMENT_VALIDATION
+                      )
+
+                      const successfulUploads = uploadResults
+                        .map((result, index) => ({
+                          fileName: files[index].name,
+                          filePath: result.path || '',
+                          uploadResult: result,
+                          file: files[index]
+                        }))
+                        .filter(upload => upload.uploadResult.success)
+
+                      const failedUploads = uploadResults.filter(result => !result.success)
+
+                      if (successfulUploads.length > 0) {
+                        setPropertyData(prev => ({
+                          ...prev,
+                          uploadedDocuments: [...(prev.uploadedDocuments || []), ...successfulUploads]
+                        }))
+                        
+                        toast.success(`Uploaded ${successfulUploads.length} document${successfulUploads.length > 1 ? 's' : ''} successfully`)
+                      }
+
+                      if (failedUploads.length > 0) {
+                        failedUploads.forEach(result => {
+                          toast.error(`Upload failed: ${result.error}`)
+                        })
+                      }
+                    } catch (error) {
+                      console.error('Upload error:', error)
+                      toast.error('Failed to upload documents')
+                    } finally {
+                      setIsUploadingFiles(false)
+                      // Clear the input so the same file can be selected again
+                      e.target.value = ''
                     }
                   }}
                   className="hidden"
+                  disabled={isUploadingFiles}
                 />
-                <label htmlFor="policy-upload" className="cursor-pointer">
-                  <Camera className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                  <p className="text-sm text-gray-300 mb-1">Upload policy documents</p>
+                <label htmlFor="policy-upload" className={cn("cursor-pointer", isUploadingFiles && "pointer-events-none opacity-50")}>
+                  {isUploadingFiles ? (
+                    <Loader2 className="w-8 h-8 mx-auto mb-2 text-blue-400 animate-spin" />
+                  ) : (
+                    <Camera className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  )}
+                  <p className="text-sm text-gray-300 mb-1">
+                    {isUploadingFiles ? 'Uploading documents...' : 'Upload policy documents'}
+                  </p>
                   <p className="text-xs text-gray-400">PDF or images (PNG, JPG) supported</p>
-                  <Button type="button" size="sm" className="mt-3">
-                    Choose Files
+                  <Button type="button" size="sm" className="mt-3" disabled={isUploadingFiles}>
+                    {isUploadingFiles ? 'Uploading...' : 'Choose Files'}
                   </Button>
                 </label>
               </div>
               
-              {propertyData.policyDocuments && propertyData.policyDocuments.length > 0 && (
+              {propertyData.uploadedDocuments && propertyData.uploadedDocuments.length > 0 && (
                 <div className="mt-3 space-y-2">
-                  {propertyData.policyDocuments.map((file, index) => (
+                  {propertyData.uploadedDocuments.map((upload, index) => (
                     <div key={index} className="flex items-center justify-between bg-gray-700 rounded p-2">
-                      <span className="text-sm text-gray-300 truncate">{file.name}</span>
+                      <div className="flex items-center gap-2 flex-1 min-w-0">
+                        <Check className="w-4 h-4 text-green-400 flex-shrink-0" />
+                        <span className="text-sm text-gray-300 truncate">{upload.fileName}</span>
+                      </div>
                       <button
                         type="button"
-                        onClick={() => {
-                          setPropertyData(prev => ({
-                            ...prev,
-                            policyDocuments: prev.policyDocuments?.filter((_, i) => i !== index)
-                          }))
+                        onClick={async () => {
+                          // Delete from storage
+                          const deleted = await fileUploadService.deleteFile(upload.filePath)
+                          if (deleted) {
+                            setPropertyData(prev => ({
+                              ...prev,
+                              uploadedDocuments: prev.uploadedDocuments?.filter((_, i) => i !== index)
+                            }))
+                            toast.success('Document deleted')
+                          } else {
+                            toast.error('Failed to delete document')
+                          }
                         }}
-                        className="text-red-400 hover:text-red-300"
+                        className="text-red-400 hover:text-red-300 flex-shrink-0"
                       >
                         <X className="w-4 h-4" />
                       </button>
@@ -971,7 +1029,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                   ))}
                   <p className="text-xs text-blue-300 mt-2">
                     <AlertCircle className="w-3 h-3 inline mr-1" />
-                    AI will extract data from these documents to auto-populate fields
+                    AI will extract data from these documents to auto-populate fields (coming soon)
                   </p>
                 </div>
               )}
