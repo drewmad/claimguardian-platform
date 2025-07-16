@@ -20,6 +20,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
 import { getProperties } from '@/actions/properties'
 import { toast } from 'sonner'
+import { PropertyAvatar } from '@/components/ui/property-image'
 
 function PropertyOverviewContent() {
   const router = useRouter()
@@ -46,7 +47,6 @@ function PropertyOverviewContent() {
             bathrooms: prop.details?.bathrooms || 0,
             lotSize: prop.details?.lot_size || 0,
             insurabilityScore: prop.insurability_score || 0,
-            image: '🏠',
             isPrimary: prop.is_primary || false
           }))
           setProperties(transformedData)
@@ -65,7 +65,6 @@ function PropertyOverviewContent() {
               bathrooms: 3,
               lotSize: 0.25,
               insurabilityScore: 92,
-              image: '🏠',
               isPrimary: true
             }
           ])
@@ -87,7 +86,6 @@ function PropertyOverviewContent() {
             bathrooms: 3,
             lotSize: 0.25,
             insurabilityScore: 92,
-            image: '🏠',
             isPrimary: true
           }
         ])
@@ -141,8 +139,11 @@ function PropertyOverviewContent() {
                 className="bg-gray-800 border-gray-700 cursor-pointer hover:border-blue-500 transition-colors"
                 onClick={() => handlePropertyClick(property.id)}
               >
-                <div className="h-48 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center text-6xl rounded-t-lg">
-                  {property.image}
+                <div className="h-48 relative rounded-t-lg overflow-hidden">
+                  <PropertyAvatar
+                    propertyType={property.type}
+                    className="w-full h-full"
+                  />
                 </div>
                 <CardContent className="p-6">
                   <div className="flex justify-between items-start mb-4">

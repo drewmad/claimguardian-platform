@@ -27,6 +27,7 @@ import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { getProperty, updateProperty } from '@/actions/properties'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
+import { PropertyImage } from '@/components/ui/property-image'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -95,8 +96,7 @@ function PropertyDetailContent() {
             bedrooms: 4,
             bathrooms: 3,
             lotSize: 0.25,
-            insurabilityScore: 92,
-            image: '🏠'
+            insurabilityScore: 92
           }
           setProperty(mockData)
           setEditForm({ ...mockData, ...addressParts })
@@ -122,8 +122,7 @@ function PropertyDetailContent() {
             bedrooms: data.details?.bedrooms || 0,
             bathrooms: data.details?.bathrooms || 0,
             lotSize: data.details?.lot_size || 0,
-            insurabilityScore: data.insurability_score || 0,
-            image: '🏠'
+            insurabilityScore: data.insurability_score || 0
           }
           setProperty(transformedData)
           setEditForm({ ...transformedData, ...addressParts })
@@ -143,8 +142,7 @@ function PropertyDetailContent() {
             bedrooms: 4,
             bathrooms: 3,
             lotSize: 0.25,
-            insurabilityScore: 92,
-            image: '🏠'
+            insurabilityScore: 92
           }
           setProperty(mockData)
           setEditForm({ ...mockData, ...addressParts })
@@ -398,8 +396,18 @@ function PropertyDetailContent() {
 
           {/* Property Header Card */}
           <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 mb-6">
-            <div className="h-48 bg-gradient-to-br from-blue-600/20 to-cyan-600/20 flex items-center justify-center text-6xl">
-              {property.image}
+            <div className="h-48 relative">
+              <PropertyImage
+                propertyType={property.type}
+                propertyName={property.name}
+                location={`${property.addressParts?.city || ''}, FL`}
+                style="florida-style"
+                width={800}
+                height={192}
+                className="w-full h-full"
+                priority={true}
+                generateAI={false}
+              />
             </div>
             <div className="p-6">
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
