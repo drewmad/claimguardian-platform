@@ -95,7 +95,7 @@ export async function uploadPolicyDocument(params: DocumentUploadParams) {
     })
 
     // Upload file to storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('policy-documents')
       .upload(filePath, file, {
         cacheControl: '3600',
