@@ -134,6 +134,36 @@ class Logger {
   clearLogs() {
     this.logBuffer = []
   }
+
+  // Track events (for analytics)
+  track(eventName: string, properties?: Record<string, any>) {
+    this.log(LogLevel.INFO, `Event: ${eventName}`, { 
+      ...properties, 
+      eventType: 'track',
+      eventName 
+    })
+  }
+
+  // Track page views
+  pageView(path: string, properties?: Record<string, any>) {
+    this.track('page_view', { path, ...properties })
+  }
+
+  // Set user context
+  setUser(user: { id: string; email?: string } | null) {
+    if (user) {
+      this.info('User context set', { userId: user.id, email: user.email })
+    } else {
+      this.info('User context cleared')
+    }
+  }
+
+  // Auth debug logging (only in development)
+  authDebug(component: string, data: any) {
+    if (this.isDevelopment) {
+      this.debug(`[AUTH DEBUG] ${component}`, data)
+    }
+  }
 }
 
 // Export singleton instance

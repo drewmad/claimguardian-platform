@@ -16,7 +16,6 @@ import { useAuth } from './auth-provider';
 import { useRouter } from 'next/navigation';
 import { AuthLoading } from './auth-loading';
 import { logger } from '@/lib/logger';
-import { enhancedLogger } from '@/lib/logger/enhanced-logger';
 import { ClientOnlyAuth } from './client-only-auth';
 
 interface ProtectedRouteProps {
@@ -51,7 +50,9 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
       };
       
       logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
-      enhancedLogger.routeBlocked(window.location.pathname, 'unauthenticated', {
+      logger.warn('Route blocked - unauthenticated user', {
+        path: window.location.pathname,
+        reason: 'unauthenticated',
         userId: user?.id,
         ...redirectInfo
       });

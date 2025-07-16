@@ -15,7 +15,6 @@ import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
-import { enhancedLogger } from '@/lib/logger/enhanced-logger'
 import { useRouter } from 'next/navigation'
 import { sessionManager } from '@/lib/auth/session-manager'
 
@@ -72,7 +71,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         logger.info('Initializing authentication')
-        enhancedLogger.info('Authentication provider initializing')
+        logger.info('Authentication provider initializing')
         
         // Get initial session
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
@@ -107,7 +106,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               userId: session.user.id, 
               timeUntilExpiry: Math.round(timeUntilExpiry / 60) 
             })
-            enhancedLogger.sessionEvent('start', { userId: session.user.id })
+            logger.info('Session started', { userId: session.user.id, event: 'session_start' })
             
             // Only start session monitoring if session has sufficient time left
             if (timeUntilExpiry > 60) {
@@ -117,7 +116,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             }
           } else {
             logger.info('No active session found during initialization')
-            enhancedLogger.info('No active session found during initialization')
+            logger.info('No active session found during initialization')
           }
         }
       } catch (err) {
