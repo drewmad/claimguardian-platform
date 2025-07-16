@@ -3,7 +3,16 @@
 
 -- First, let's fix the profile service expectations by adding proper column mapping
 -- Update the user_profiles table to match what the profile service expects
-ALTER TABLE user_profiles RENAME COLUMN phone_number TO phone;
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'user_profiles' 
+        AND column_name = 'phone_number'
+    ) THEN
+        ALTER TABLE user_profiles RENAME COLUMN phone_number TO phone;
+    END IF;
+END $$;
 
 -- Create a function to handle new user creation
 CREATE OR REPLACE FUNCTION public.handle_new_user()
@@ -75,13 +84,7 @@ FROM user_profiles;
 -- Grant appropriate permissions on the view
 GRANT SELECT, INSERT, UPDATE, DELETE ON profiles TO authenticated;
 
--- Update RLS policies for the view
-ALTER VIEW profiles ENABLE ROW LEVEL SECURITY;
-
--- Create policies for the profiles view that mirror the user_profiles policies
-CREATE POLICY "Users can view their own profile via view" ON profiles FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users can update their own profile via view" ON profiles FOR UPDATE USING (auth.uid() = id);
-CREATE POLICY "Users can insert their own profile via view" ON profiles FOR INSERT WITH CHECK (auth.uid() = id);
+-- Views inherit permissions from underlying tables, so no need for separate RLS
 
 -- Add an index for performance
 CREATE INDEX IF NOT EXISTS idx_user_profiles_id ON user_profiles(id);

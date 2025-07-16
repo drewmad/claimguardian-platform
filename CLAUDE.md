@@ -202,3 +202,7 @@ Focus areas:
 - Florida-specific insurance regulations
 - Property damage assessment and documentation
 - Claims negotiation support
+
+## Supabase Connection
+
+- Always connect to supabase with supabase login --token "$SUPABASE_ACCESS_TOKEN" and link to project tmlrvecuwgppbaynesji

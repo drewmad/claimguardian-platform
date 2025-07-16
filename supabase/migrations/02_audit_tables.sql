@@ -67,18 +67,36 @@ ALTER TABLE security_logs ENABLE ROW LEVEL SECURITY;
 ALTER TABLE login_activity ENABLE ROW LEVEL SECURITY;
 
 -- Policies for audit_logs (users can only see their own logs)
-CREATE POLICY "Users can view their own audit logs" ON audit_logs
-    FOR SELECT USING (auth.uid() = user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'audit_logs' 
+        AND policyname = 'Users can view their own audit logs'
+    ) THEN
+        CREATE POLICY "Users can view their own audit logs" ON audit_logs
+            FOR SELECT USING (auth.uid() = user_id);
+    END IF;
+END $$;
 
 -- Policies for security_logs (admin only)
 -- No policies = no access for regular users
 
 -- Policies for login_activity (users can only see their own activity)
-CREATE POLICY "Users can view their own login activity" ON login_activity
-    FOR SELECT USING (auth.uid() = user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'login_activity' 
+        AND policyname = 'Users can view their own login activity'
+    ) THEN
+        CREATE POLICY "Users can view their own login activity" ON login_activity
+            FOR SELECT USING (auth.uid() = user_id);
+    END IF;
+END $$;
 
--- Create indexes for performance
-CREATE INDEX idx_audit_logs_user_id ON audit_logs(user_id);
-CREATE INDEX idx_audit_logs_created_at ON audit_logs(created_at DESC);
-CREATE INDEX idx_login_activity_user_id ON login_activity(user_id);
-CREATE INDEX idx_login_activity_created_at ON login_activity(created_at DESC);
+-- Create indexes for performance (IF NOT EXISTS)
+CREATE INDEX IF NOT EXISTS idx_audit_logs_user_id ON audit_logs(user_id);
+CREATE INDEX IF NOT EXISTS idx_audit_logs_created_at ON audit_logs(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_activity_user_id ON login_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_activity_created_at ON login_activity(created_at DESC);

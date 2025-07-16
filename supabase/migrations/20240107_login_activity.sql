@@ -16,16 +16,25 @@ CREATE TABLE IF NOT EXISTS public.login_activity (
 );
 
 -- Create indexes
-CREATE INDEX idx_login_activity_user_id ON public.login_activity(user_id);
-CREATE INDEX idx_login_activity_created_at ON public.login_activity(created_at DESC);
-CREATE INDEX idx_login_activity_user_created ON public.login_activity(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_activity_user_id ON public.login_activity(user_id);
+CREATE INDEX IF NOT EXISTS idx_login_activity_created_at ON public.login_activity(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_login_activity_user_created ON public.login_activity(user_id, created_at DESC);
 
 -- Enable RLS
 ALTER TABLE public.login_activity ENABLE ROW LEVEL SECURITY;
 
 -- Users can only view their own login activity
-CREATE POLICY "Users can view own login activity" ON public.login_activity
-  FOR SELECT USING (auth.uid() = user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'login_activity' 
+        AND policyname = 'Users can view own login activity'
+    ) THEN
+        CREATE POLICY "Users can view own login activity" ON public.login_activity
+          FOR SELECT USING (auth.uid() = user_id);
+    END IF;
+END $$;
 
 -- Create function to log login activity
 CREATE OR REPLACE FUNCTION public.log_login_activity(
@@ -66,4 +75,9 @@ FROM public.login_activity la
 WHERE la.created_at > NOW() - INTERVAL '30 days';
 
 -- Grant access to the view
-GRANT SELECT ON public.recent_login_activity TO authenticated;
+DO $$
+BEGIN
+    GRANT SELECT ON public.recent_login_activity TO authenticated;
+EXCEPTION
+    WHEN duplicate_object THEN NULL;
+END $$;

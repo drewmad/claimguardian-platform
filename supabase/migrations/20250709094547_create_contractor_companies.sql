@@ -1,6 +1,6 @@
 CREATE SCHEMA IF NOT EXISTS contractor_connection;
 
-CREATE TABLE contractor_connection.contractor_companies (
+CREATE TABLE IF NOT EXISTS contractor_connection.contractor_companies (
   id                  uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   company_name        text            NOT NULL,
   license_number      text            NOT NULL UNIQUE,
@@ -23,5 +23,5 @@ CREATE TABLE contractor_connection.contractor_companies (
 COMMENT ON TABLE  contractor_connection.contractor_companies IS
 'Master record for every contractor company we track. Updated weekly by merge_license_into_contractor().';
 
-CREATE UNIQUE INDEX contractor_companies_license_idx
+CREATE UNIQUE INDEX IF NOT EXISTS contractor_companies_license_idx
   ON contractor_connection.contractor_companies (license_number);

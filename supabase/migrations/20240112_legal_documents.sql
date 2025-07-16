@@ -33,11 +33,47 @@ CREATE TABLE IF NOT EXISTS public.user_legal_acceptance (
   PRIMARY KEY (user_id, legal_id)
 );
 
+-- Add is_active column if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'legal_documents' 
+                   AND column_name = 'is_active') THEN
+        ALTER TABLE public.legal_documents 
+        ADD COLUMN is_active BOOLEAN DEFAULT true;
+    END IF;
+END $$;
+
+-- Add revoked_at column if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
+                   WHERE table_name = 'user_legal_acceptance' 
+                   AND column_name = 'revoked_at') THEN
+        ALTER TABLE public.user_legal_acceptance 
+        ADD COLUMN revoked_at TIMESTAMPTZ;
+    END IF;
+END $$;
+
+-- Add unique constraint on slug, version if it doesn't exist
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM information_schema.table_constraints 
+        WHERE table_name = 'legal_documents' 
+        AND constraint_type = 'UNIQUE'
+        AND constraint_name = 'legal_documents_slug_version_key'
+    ) THEN
+        ALTER TABLE public.legal_documents 
+        ADD CONSTRAINT legal_documents_slug_version_key UNIQUE(slug, version);
+    END IF;
+END $$;
+
 -- Indexes for performance
-CREATE INDEX idx_legal_documents_slug_active ON public.legal_documents(slug, is_active) WHERE is_active = true;
-CREATE INDEX idx_legal_documents_effective_date ON public.legal_documents(effective_date DESC);
-CREATE INDEX idx_user_legal_acceptance_user_id ON public.user_legal_acceptance(user_id);
-CREATE INDEX idx_user_legal_acceptance_accepted_at ON public.user_legal_acceptance(accepted_at DESC);
+CREATE INDEX IF NOT EXISTS idx_legal_documents_slug_active ON public.legal_documents(slug, is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_legal_documents_effective_date ON public.legal_documents(effective_date DESC);
+CREATE INDEX IF NOT EXISTS idx_user_legal_acceptance_user_id ON public.user_legal_acceptance(user_id);
+CREATE INDEX IF NOT EXISTS idx_user_legal_acceptance_accepted_at ON public.user_legal_acceptance(accepted_at DESC);
 
 -- Enable RLS
 ALTER TABLE public.legal_documents ENABLE ROW LEVEL SECURITY;
@@ -45,16 +81,43 @@ ALTER TABLE public.user_legal_acceptance ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies
 -- Legal documents are viewable by everyone (public)
-CREATE POLICY "Legal documents are viewable by everyone" ON public.legal_documents
-  FOR SELECT USING (true);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'legal_documents' 
+        AND policyname = 'Legal documents are viewable by everyone'
+    ) THEN
+        CREATE POLICY "Legal documents are viewable by everyone" ON public.legal_documents
+          FOR SELECT USING (true);
+    END IF;
+END $$;
 
 -- Users can only view their own acceptances
-CREATE POLICY "Users can view own legal acceptances" ON public.user_legal_acceptance
-  FOR SELECT USING (auth.uid() = user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_legal_acceptance' 
+        AND policyname = 'Users can view own legal acceptances'
+    ) THEN
+        CREATE POLICY "Users can view own legal acceptances" ON public.user_legal_acceptance
+          FOR SELECT USING (auth.uid() = user_id);
+    END IF;
+END $$;
 
 -- Users can insert their own acceptances
-CREATE POLICY "Users can insert own legal acceptances" ON public.user_legal_acceptance
-  FOR INSERT WITH CHECK (auth.uid() = user_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_policies 
+        WHERE tablename = 'user_legal_acceptance' 
+        AND policyname = 'Users can insert own legal acceptances'
+    ) THEN
+        CREATE POLICY "Users can insert own legal acceptances" ON public.user_legal_acceptance
+          FOR INSERT WITH CHECK (auth.uid() = user_id);
+    END IF;
+END $$;
 
 -- Function to get documents needing acceptance by user
 CREATE OR REPLACE FUNCTION public.needs_reaccept(uid UUID)
