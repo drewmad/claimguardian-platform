@@ -88,7 +88,7 @@ export async function updateProperty({
     if (!user) throw new Error('Not authenticated')
     
     // Format the data for the database
-    const dbUpdates: any = {
+    const dbUpdates: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     }
     
