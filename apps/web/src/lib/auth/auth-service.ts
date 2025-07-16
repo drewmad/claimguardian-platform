@@ -52,6 +52,15 @@ class AuthService {
     try {
       logger.info('Attempting user signup', { email: data.email })
       
+      // Enhanced logging for debugging
+      console.log('[AUTH DEBUG] Starting signup process', {
+        email: data.email,
+        hasFirstName: !!data.firstName,
+        hasLastName: !!data.lastName,
+        hasPhone: !!data.phone,
+        timestamp: new Date().toISOString()
+      })
+      
       const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
         password: data.password,
@@ -65,20 +74,61 @@ class AuthService {
         }
       })
 
+      // Log detailed response
+      console.log('[AUTH DEBUG] Supabase signup response', {
+        hasUser: !!authData?.user,
+        userId: authData?.user?.id,
+        userEmail: authData?.user?.email,
+        hasSession: !!authData?.session,
+        error: error ? {
+          message: error.message,
+          status: error.status,
+          code: error.code
+        } : null,
+        timestamp: new Date().toISOString()
+      })
+
       if (error) {
+        console.error('[AUTH DEBUG] Signup error details', {
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          name: error.name,
+          stack: error.stack
+        })
         throw this.handleAuthError(error)
       }
 
       if (!authData.user) {
+        console.error('[AUTH DEBUG] No user data returned despite successful signup')
         throw new AuthError(
           'Signup successful but no user data returned',
           'AUTH_INVALID_RESPONSE'
         )
       }
 
+      // Check if user was created successfully
+      console.log('[AUTH DEBUG] User created successfully', {
+        userId: authData.user.id,
+        email: authData.user.email,
+        emailConfirmedAt: authData.user.email_confirmed_at,
+        createdAt: authData.user.created_at,
+        userMetadata: authData.user.user_metadata,
+        appMetadata: authData.user.app_metadata
+      })
+
       logger.info('User signup successful', { userId: authData.user.id })
       return { data: authData.user }
     } catch (error) {
+      console.error('[AUTH DEBUG] Signup process failed', {
+        error: error instanceof Error ? {
+          message: error.message,
+          name: error.name,
+          stack: error.stack
+        } : error,
+        timestamp: new Date().toISOString()
+      })
+      
       logger.error('Signup failed', error)
       
       if (error instanceof AuthError) {
