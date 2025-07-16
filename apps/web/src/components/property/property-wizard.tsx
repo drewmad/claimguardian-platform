@@ -34,11 +34,13 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createProperty } from '@/actions/properties'
 import { createPolicy } from '@/actions/policies'
+import { uploadPolicyDocument, createDocumentRecord } from '@/actions/documents'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
 import { sortedFloridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
 import { propertyDataService } from '@/lib/services/property-data-service'
 import { fileUploadService, POLICY_DOCUMENT_VALIDATION } from '@/lib/services/file-upload-service'
+import { DocumentExtractionReview } from '@/components/documents/document-extraction-review'
 import { logger } from '@/lib/logger'
 
 interface PropertyWizardProps {
@@ -101,7 +103,7 @@ interface PropertyData {
   windDeductible?: number
   customCarrierName?: string // For 'Other' carrier option
   policyDocuments?: File[] // For PDF/image uploads
-  uploadedDocuments?: { fileName: string; filePath: string; uploadResult: any }[] // Successfully uploaded docs
+  uploadedDocuments?: { fileName: string; filePath: string; uploadResult: any; documentId?: string }[] // Successfully uploaded docs
   
   // Auto-populated Value Info
   estimatedValue?: number
@@ -300,6 +302,28 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
+  const handleExtractedDataApplied = (extractedData: any) => {
+    // Apply extracted data to form fields
+    setPropertyData(prev => ({
+      ...prev,
+      insuranceCarrier: extractedData.carrierName || prev.insuranceCarrier,
+      policyNumber: extractedData.policyNumber || prev.policyNumber,
+      coverageAmount: extractedData.coverageAmount || prev.coverageAmount,
+      deductible: extractedData.deductible || prev.deductible,
+      windDeductible: extractedData.windDeductible ? 
+        (typeof extractedData.windDeductible === 'string' ? 
+          parseInt(extractedData.windDeductible.replace('%', '')) : 
+          extractedData.windDeductible
+        ) : prev.windDeductible,
+      // Add insurance type if not already selected
+      insuranceTypes: extractedData.policyType && !prev.insuranceTypes?.includes(extractedData.policyType) ?
+        [...(prev.insuranceTypes || []), extractedData.policyType] :
+        prev.insuranceTypes
+    }))
+    
+    toast.success('Policy data applied to form!')
+  }
+
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return
     
@@ -389,10 +413,35 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             }
           }
           
-          // Documents are already uploaded to storage when selected
-          // TODO: In the future, we can process uploaded documents with AI to extract policy data
+          // Create document records for uploaded files
           if (propertyData.uploadedDocuments && propertyData.uploadedDocuments.length > 0) {
-            console.log('Policy documents uploaded:', propertyData.uploadedDocuments.map(d => d.filePath))
+            for (const uploadedDoc of propertyData.uploadedDocuments) {
+              try {
+                const { data: documentRecord, error: docError } = await createDocumentRecord({
+                  propertyId: createdProperty.id,
+                  filePath: uploadedDoc.filePath,
+                  fileName: uploadedDoc.fileName,
+                  fileSize: uploadedDoc.file.size,
+                  fileType: uploadedDoc.file.type,
+                  documentType: 'policy',
+                  description: `Policy document: ${uploadedDoc.fileName}`
+                })
+                
+                if (docError) {
+                  console.error('Failed to create document record:', docError)
+                  toast.warning(`Could not save document record for ${uploadedDoc.fileName}`)
+                } else {
+                  logger.info('Document record created', { 
+                    documentId: documentRecord?.id,
+                    fileName: uploadedDoc.fileName 
+                  })
+                  // Update the local data with the document ID for potential AI processing
+                  uploadedDoc.documentId = documentRecord?.id
+                }
+              } catch (error) {
+                console.error('Error creating document record:', error)
+              }
+            }
           }
         }
       }
@@ -400,7 +449,13 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
       const data = createdProperty
       const error = propertyError
       
-      toast.success('Property created successfully!')
+      const hasDocuments = propertyData.uploadedDocuments && propertyData.uploadedDocuments.length > 0
+      
+      if (hasDocuments) {
+        toast.success('Property created! Visit the property page to process your uploaded documents with AI.')
+      } else {
+        toast.success('Property created successfully!')
+      }
       
       // Force refresh the property list
       if (onComplete && data?.id) {
@@ -1027,10 +1082,11 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                       </button>
                     </div>
                   ))}
-                  <p className="text-xs text-blue-300 mt-2">
-                    <AlertCircle className="w-3 h-3 inline mr-1" />
-                    AI will extract data from these documents to auto-populate fields (coming soon)
-                  </p>
+                  
+                  <div className="text-xs text-blue-300 mt-2 p-3 bg-blue-900/20 border border-blue-600/30 rounded">
+                    <Database className="w-3 h-3 inline mr-1" />
+                    Documents uploaded successfully! After creating your property, you can use AI to extract policy data from these documents and auto-populate your insurance information.
+                  </div>
                 </div>
               )}
             </div>

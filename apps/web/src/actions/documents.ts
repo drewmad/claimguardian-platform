@@ -23,6 +23,17 @@ export interface DocumentUploadParams {
   description?: string
 }
 
+export interface DocumentRecordParams {
+  propertyId: string
+  policyId?: string
+  filePath: string
+  fileName: string
+  fileSize: number
+  fileType: string
+  documentType: 'policy' | 'claim' | 'evidence'
+  description?: string
+}
+
 export interface DocumentRecord {
   id: string
   property_id: string
@@ -135,6 +146,67 @@ export async function uploadPolicyDocument(params: DocumentUploadParams) {
     return { data: documentRecord, error: null }
   } catch (error) {
     logger.error('Unexpected error uploading policy document', { error })
+    return { 
+      data: null, 
+      error: error instanceof Error ? error.message : 'Unknown error'
+    }
+  }
+}
+
+/**
+ * Create a document record for an already uploaded file
+ */
+export async function createDocumentRecord(params: DocumentRecordParams) {
+  try {
+    const supabase = createClient()
+    
+    // Get current user
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (userError || !user) {
+      logger.error('User not authenticated for document record creation', { error: userError })
+      return { data: null, error: 'User not authenticated' }
+    }
+
+    logger.info('Creating document record for uploaded file', { 
+      fileName: params.fileName, 
+      filePath: params.filePath, 
+      propertyId: params.propertyId 
+    })
+
+    // Create database record
+    const { data: documentRecord, error: dbError } = await supabase
+      .from('policy_documents')
+      .insert({
+        property_id: params.propertyId,
+        policy_id: params.policyId,
+        file_path: params.filePath,
+        file_name: params.fileName,
+        file_size: params.fileSize,
+        file_type: params.fileType,
+        document_type: params.documentType,
+        description: params.description,
+        uploaded_by: user.id
+      })
+      .select()
+      .single()
+
+    if (dbError) {
+      logger.error('Failed to create document record', { error: dbError, filePath: params.filePath })
+      return { data: null, error: dbError.message }
+    }
+
+    logger.info('Document record created successfully', { 
+      documentId: documentRecord.id,
+      filePath: params.filePath 
+    })
+
+    // Revalidate relevant pages
+    revalidatePath('/dashboard')
+    revalidatePath(`/dashboard/property/${params.propertyId}`)
+
+    return { data: documentRecord, error: null }
+  } catch (error) {
+    logger.error('Unexpected error creating document record', { error })
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Unknown error'
