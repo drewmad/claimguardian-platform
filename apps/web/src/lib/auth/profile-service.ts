@@ -56,7 +56,7 @@ class ProfileService {
       }
 
       const { data: profile, error: profileError } = await this.supabase
-        .from('profiles')
+        .from('user_profiles')
         .select('*')
         .eq('id', userId)
         .single()
@@ -73,6 +73,8 @@ class ProfileService {
         lastName: profile.last_name,
         phone: profile.phone,
         avatarUrl: profile.avatar_url,
+        xHandle: profile.x_handle,
+        isXConnected: profile.is_x_connected,
         createdAt: profile.created_at,
         updatedAt: profile.updated_at,
         emailVerified: user.user.email_confirmed_at !== null
@@ -96,9 +98,11 @@ class ProfileService {
       if (data.lastName !== undefined) updateData.last_name = data.lastName
       if (data.phone !== undefined) updateData.phone = data.phone
       if (data.avatarUrl !== undefined) updateData.avatar_url = data.avatarUrl
+      if (data.xHandle !== undefined) updateData.x_handle = data.xHandle
+      if (data.isXConnected !== undefined) updateData.is_x_connected = data.isXConnected
 
       const { error } = await this.supabase
-        .from('profiles')
+        .from('user_profiles')
         .update(updateData)
         .eq('id', userId)
 
