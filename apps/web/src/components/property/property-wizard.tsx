@@ -33,6 +33,7 @@ import {
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createProperty } from '@/actions/properties'
+import { createPolicy } from '@/actions/policies'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
 import { floridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
@@ -297,7 +298,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     
     setIsSubmitting(true)
     try {
-      const { data, error } = await createProperty({
+      // First create the property without insurance info
+      const { data: createdProperty, error: propertyError } = await createProperty({
         name: propertyData.name,
         type: propertyData.type,
         is_primary: propertyData.isPrimary,
@@ -331,14 +333,6 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
           has_generator_hookup: propertyData.hasGeneratorHookup,
           has_solar_panels: propertyData.hasSolarPanels,
           
-          // Insurance
-          insurance_carrier: propertyData.insuranceCarrier,
-          insurance_type: propertyData.insuranceType,
-          policy_number: propertyData.policyNumber,
-          coverage_amount: propertyData.coverageAmount,
-          deductible: propertyData.deductible,
-          wind_deductible: propertyData.windDeductible,
-          
           // Values
           tax_assessed_value: propertyData.taxAssessedValue,
           last_sale_price: propertyData.lastSalePrice,
@@ -349,7 +343,36 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         }
       })
       
-      if (error) throw error
+      if (propertyError) throw propertyError
+      
+      // Then create the policy if insurance info was provided
+      if (propertyData.insuranceCarrier && createdProperty?.id) {
+        const policyInfo = {
+          property_id: createdProperty.id,
+          carrier_name: propertyData.insuranceCarrier,
+          policy_number: propertyData.policyNumber || `POLICY-${Date.now()}`,
+          policy_type: (propertyData.insuranceType || 'HO3') as any,
+          effective_date: new Date().toISOString().split('T')[0],
+          expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+          coverage_details: {
+            coverage_amount: propertyData.coverageAmount,
+            deductible: propertyData.deductible,
+            wind_deductible: propertyData.windDeductible
+          },
+          deductible_amount: propertyData.deductible,
+          wind_deductible_percentage: propertyData.windDeductible
+        }
+        
+        const { error: policyError } = await createPolicy(policyInfo)
+        
+        if (policyError) {
+          console.error('Failed to create policy:', policyError)
+          toast.warning('Property created but insurance policy could not be saved')
+        }
+      }
+      
+      const data = createdProperty
+      const error = propertyError
       
       toast.success('Property created successfully!')
       
