@@ -95,33 +95,76 @@ export async function updateProperty({
   try {
     const supabase = await createClient()
     
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Not authenticated')
+    // Debug logging
+    console.log('[UPDATE PROPERTY] Starting update for property:', propertyId)
+    console.log('[UPDATE PROPERTY] Updates:', updates)
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError) {
+      console.error('[UPDATE PROPERTY] Auth error:', authError)
+      throw new Error(`Authentication failed: ${authError.message}`)
+    }
+    if (!user) {
+      console.error('[UPDATE PROPERTY] No user found')
+      throw new Error('Not authenticated')
+    }
+    
+    console.log('[UPDATE PROPERTY] User authenticated:', user.id)
+    
+    // Handle demo property case - it doesn't exist in database
+    if (propertyId === 'demo-property-uuid') {
+      console.log('[UPDATE PROPERTY] Demo property detected - skipping database update')
+      // For demo property, just return success without database operation
+      return { 
+        data: { 
+          id: propertyId, 
+          ...updates,
+          updated_at: new Date().toISOString() 
+        }, 
+        error: null 
+      }
+    }
+    
+    // First check if property exists and user owns it
+    const { data: existingProperty, error: checkError } = await supabase
+      .from('properties')
+      .select('id, user_id, details')
+      .eq('id', propertyId)
+      .eq('user_id', user.id)
+      .single()
+    
+    if (checkError) {
+      console.error('[UPDATE PROPERTY] Property check error:', checkError)
+      throw new Error(`Property not found or access denied: ${checkError.message}`)
+    }
+    
+    if (!existingProperty) {
+      console.error('[UPDATE PROPERTY] Property not found for user')
+      throw new Error('Property not found or you do not have permission to update it')
+    }
+    
+    console.log('[UPDATE PROPERTY] Property found, proceeding with update')
     
     // Format the data for the database
     const dbUpdates: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     }
     
-    if (updates.name) dbUpdates.name = updates.name
-    if (updates.address) dbUpdates.address = { street: updates.address }
-    if (updates.type) dbUpdates.type = updates.type
-    if (updates.year_built) dbUpdates.year_built = updates.year_built
-    if (updates.square_feet) dbUpdates.square_feet = updates.square_feet
+    if (updates.name !== undefined) dbUpdates.name = updates.name
+    if (updates.address !== undefined) dbUpdates.address = { street: updates.address }
+    if (updates.type !== undefined) dbUpdates.type = updates.type
+    if (updates.year_built !== undefined) dbUpdates.year_built = updates.year_built
+    if (updates.square_feet !== undefined) dbUpdates.square_feet = updates.square_feet
     
-    // Handle nested details
+    // Handle nested details - merge with existing
     if (updates.details) {
-      const { data: currentProperty } = await supabase
-        .from('properties')
-        .select('details')
-        .eq('id', propertyId)
-        .single()
-      
       dbUpdates.details = {
-        ...(currentProperty?.details || {}),
+        ...(existingProperty.details || {}),
         ...updates.details
       }
     }
+    
+    console.log('[UPDATE PROPERTY] Database updates:', dbUpdates)
     
     const { data, error } = await supabase
       .from('properties')
@@ -131,14 +174,19 @@ export async function updateProperty({
       .select()
       .single()
     
-    if (error) throw error
+    if (error) {
+      console.error('[UPDATE PROPERTY] Database update error:', error)
+      throw new Error(`Failed to update property: ${error.message}`)
+    }
+    
+    console.log('[UPDATE PROPERTY] Update successful:', data)
     
     revalidatePath('/dashboard/property')
     revalidatePath(`/dashboard/property/${propertyId}`)
     
     return { data, error: null }
   } catch (error) {
-    console.error('Error updating property:', error)
+    console.error('[UPDATE PROPERTY] Error updating property:', error)
     return { data: null, error: error as Error }
   }
 }

@@ -154,6 +154,9 @@ SUPABASE_SERVICE_ROLE_KEY=
 # AI Features (Optional)
 NEXT_PUBLIC_GEMINI_API_KEY=
 NEXT_PUBLIC_OPENAI_API_KEY=
+
+# Google Maps API (Optional - for address autocomplete)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
 ```
 
 ## Common Issues & Solutions

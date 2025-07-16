@@ -26,6 +26,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { getProperty, updateProperty } from '@/actions/properties'
+import { AddressAutocomplete } from '@/components/forms/address-autocomplete'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -43,6 +44,36 @@ function PropertyDetailContent() {
 
   // Edit form state
   const [editForm, setEditForm] = useState<any>({})
+  
+  // Address parsing helper
+  const parseAddress = (addressString: string) => {
+    // Simple address parsing - could be enhanced with Google Places API
+    const parts = addressString.split(',').map(part => part.trim())
+    const stateZipPart = parts[2] || ''
+    const stateZipMatch = stateZipPart.match(/^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/)
+    
+    return {
+      street1: parts[0] || '',
+      street2: '',
+      city: parts[1] || '',
+      state: stateZipMatch ? stateZipMatch[1] : (stateZipPart.split(' ')[0] || ''),
+      zip: stateZipMatch ? stateZipMatch[2] : (stateZipPart.split(' ')[1] || ''),
+      county: parts[1] === 'Port Charlotte' ? 'Charlotte County' : ''
+    }
+  }
+  
+  const formatAddress = (addressParts: any) => {
+    const parts = []
+    if (addressParts.street1) parts.push(addressParts.street1)
+    if (addressParts.street2) parts.push(addressParts.street2)
+    if (addressParts.city) parts.push(addressParts.city)
+    if (addressParts.state && addressParts.zip) {
+      parts.push(`${addressParts.state} ${addressParts.zip}`)
+    } else if (addressParts.state) {
+      parts.push(addressParts.state)
+    }
+    return parts.join(', ')
+  }
 
   // Load property data on mount
   useEffect(() => {
@@ -50,10 +81,13 @@ function PropertyDetailContent() {
       try {
         // Handle demo property UUID - use mock data directly
         if (propertyId === 'demo-property-uuid') {
+          const addressString = '3407 Knox Terrace Port Charlotte, FL 33948'
+          const addressParts = parseAddress(addressString)
           const mockData = {
             id: propertyId,
             name: 'Main Residence',
-            address: '1234 Main Street, Austin, TX 78701',
+            address: addressString,
+            addressParts,
             type: 'Single Family Home',
             value: 450000,
             sqft: 2800,
@@ -65,7 +99,7 @@ function PropertyDetailContent() {
             image: '🏠'
           }
           setProperty(mockData)
-          setEditForm(mockData)
+          setEditForm({ ...mockData, ...addressParts })
           return
         }
 
@@ -74,10 +108,13 @@ function PropertyDetailContent() {
         
         if (data) {
           // Transform database data to display format
+          const addressString = data.address?.street || ''
+          const addressParts = parseAddress(addressString)
           const transformedData = {
             id: data.id,
             name: data.name || 'Unnamed Property',
-            address: data.address?.street || '',
+            address: addressString,
+            addressParts,
             type: data.type || 'Single Family Home',
             value: data.value || 0,
             sqft: data.square_feet || 0,
@@ -89,13 +126,16 @@ function PropertyDetailContent() {
             image: '🏠'
           }
           setProperty(transformedData)
-          setEditForm(transformedData)
+          setEditForm({ ...transformedData, ...addressParts })
         } else {
           // If no property found, use mock data for now
+          const addressString = '1234 Main Street, Austin, TX 78701'
+          const addressParts = parseAddress(addressString)
           const mockData = {
             id: propertyId,
             name: 'Main Residence',
-            address: '1234 Main Street, Austin, TX 78701',
+            address: addressString,
+            addressParts,
             type: 'Single Family Home',
             value: 450000,
             sqft: 2800,
@@ -107,16 +147,19 @@ function PropertyDetailContent() {
             image: '🏠'
           }
           setProperty(mockData)
-          setEditForm(mockData)
+          setEditForm({ ...mockData, ...addressParts })
         }
       } catch (error) {
         console.error('Error loading property:', error)
         toast.error('Failed to load property details')
         // Use mock data as fallback
+        const addressString = '1234 Main Street, Austin, TX 78701'
+        const addressParts = parseAddress(addressString)
         const mockData = {
           id: propertyId,
           name: 'Main Residence',
-          address: '1234 Main Street, Austin, TX 78701',
+          address: addressString,
+          addressParts,
           type: 'Single Family Home',
           value: 450000,
           sqft: 2800,
@@ -128,7 +171,7 @@ function PropertyDetailContent() {
           image: '🏠'
         }
         setProperty(mockData)
-        setEditForm(mockData)
+        setEditForm({ ...mockData, ...addressParts })
       } finally {
         setLoading(false)
       }
@@ -140,30 +183,51 @@ function PropertyDetailContent() {
   const handleSave = async () => {
     setSaving(true)
     try {
+      console.log('[PROPERTY SAVE] Starting save for property:', propertyId)
+      console.log('[PROPERTY SAVE] Edit form data:', editForm)
+      
+      // Reconstruct address from individual fields
+      const fullAddress = formatAddress({
+        street1: editForm.street1,
+        street2: editForm.street2,
+        city: editForm.city,
+        state: editForm.state,
+        zip: editForm.zip
+      })
+      
       const updates = {
         name: editForm.name,
-        address: editForm.address,
+        address: fullAddress,
         type: editForm.type,
         year_built: editForm.yearBuilt,
         square_feet: editForm.sqft,
         details: {
           bedrooms: editForm.bedrooms,
           bathrooms: editForm.bathrooms,
-          lot_size: editForm.lotSize
+          lot_size: editForm.lotSize,
+          county: editForm.county
         }
       }
       
+      console.log('[PROPERTY SAVE] Sending updates:', updates)
+      
       const { data, error } = await updateProperty({ propertyId, updates })
       
-      if (error) throw error
+      if (error) {
+        console.error('[PROPERTY SAVE] Update failed:', error)
+        throw error
+      }
+      
+      console.log('[PROPERTY SAVE] Update successful:', data)
       
       // Update local state with saved data
       setProperty(editForm)
       setIsEditing(false)
       toast.success('Property details updated successfully')
     } catch (error) {
-      console.error('Error saving property:', error)
-      toast.error('Failed to save property details')
+      console.error('[PROPERTY SAVE] Error saving property:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Failed to save property details'
+      toast.error(errorMessage)
     } finally {
       setSaving(false)
     }
@@ -438,14 +502,24 @@ function PropertyDetailContent() {
                           className="bg-gray-700 border-gray-600 text-white"
                         />
                       </div>
-                      <div>
-                        <Label className="text-gray-300">Address</Label>
-                        <Input
-                          value={editForm.address}
-                          onChange={(e) => setEditForm({ ...editForm, address: e.target.value })}
-                          className="bg-gray-700 border-gray-600 text-white"
-                        />
-                      </div>
+                      {/* Address Fields with Google Places Autocomplete */}
+                      <AddressAutocomplete
+                        value={{
+                          street1: editForm.street1 || '',
+                          street2: editForm.street2 || '',
+                          city: editForm.city || '',
+                          state: editForm.state || '',
+                          zip: editForm.zip || '',
+                          county: editForm.county || ''
+                        }}
+                        onChange={(addressComponents) => {
+                          setEditForm({
+                            ...editForm,
+                            ...addressComponents
+                          })
+                        }}
+                        disabled={saving}
+                      />
                       <div>
                         <Label className="text-gray-300">Property Type</Label>
                         <select
