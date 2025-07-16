@@ -32,14 +32,26 @@ interface AddressAutocompleteProps {
 
 declare global {
   interface Window {
-    google: any
+    google: {
+      maps: {
+        places: {
+          Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
+            addListener: (event: string, callback: () => void) => void
+            getPlace: () => { address_components?: Array<{ types: string[]; long_name: string; short_name: string }> }
+          }
+        }
+        event: {
+          clearInstanceListeners: (instance: unknown) => void
+        }
+      }
+    }
     initGooglePlaces: () => void
   }
 }
 
 export function AddressAutocomplete({ value, onChange, disabled, className }: AddressAutocompleteProps) {
   const street1Ref = useRef<HTMLInputElement>(null)
-  const [autocomplete, setAutocomplete] = useState<any>(null)
+  const [autocomplete, setAutocomplete] = useState<unknown>(null)
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
 
   // Load Google Places API
@@ -106,7 +118,7 @@ export function AddressAutocomplete({ value, onChange, disabled, className }: Ad
       }
 
       // Parse address components
-      place.address_components.forEach((component: any) => {
+      place.address_components.forEach((component: { types: string[]; long_name: string; short_name: string }) => {
         const types = component.types
 
         if (types.includes('street_number')) {

@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { 
-  Info, Building, Wrench, TreePine, Zap, FileText, Clock,
+  Info, Building, Wrench, FileText,
   MapPin, Shield, CheckCircle, Wind, Award, Plus,
   AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
   Home, Save, X, Loader2
@@ -26,7 +26,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 import { getProperty, updateProperty } from '@/actions/properties'
-import { AddressAutocomplete } from '@/components/forms/address-autocomplete'
+import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -40,10 +40,10 @@ function PropertyDetailContent() {
   const [saving, setSaving] = useState(false)
   
   // Property state - will be loaded from Supabase
-  const [property, setProperty] = useState<any>(null)
+  const [property, setProperty] = useState<Record<string, unknown> | null>(null)
 
   // Edit form state
-  const [editForm, setEditForm] = useState<any>({})
+  const [editForm, setEditForm] = useState<Record<string, unknown>>({})
   
   // Address parsing helper
   const parseAddress = (addressString: string) => {
@@ -56,13 +56,13 @@ function PropertyDetailContent() {
       street1: parts[0] || '',
       street2: '',
       city: parts[1] || '',
-      state: stateZipMatch ? stateZipMatch[1] : (stateZipPart.split(' ')[0] || ''),
+      state: 'FL', // Always Florida for this application
       zip: stateZipMatch ? stateZipMatch[2] : (stateZipPart.split(' ')[1] || ''),
       county: parts[1] === 'Port Charlotte' ? 'Charlotte County' : ''
     }
   }
   
-  const formatAddress = (addressParts: any) => {
+  const formatAddress = (addressParts: Record<string, string>) => {
     const parts = []
     if (addressParts.street1) parts.push(addressParts.street1)
     if (addressParts.street2) parts.push(addressParts.street2)
@@ -502,13 +502,13 @@ function PropertyDetailContent() {
                           className="bg-gray-700 border-gray-600 text-white"
                         />
                       </div>
-                      {/* Address Fields with Google Places Autocomplete */}
-                      <AddressAutocomplete
+                      {/* Florida Address Form with Dependent Dropdowns */}
+                      <FloridaAddressForm
                         value={{
                           street1: editForm.street1 || '',
                           street2: editForm.street2 || '',
                           city: editForm.city || '',
-                          state: editForm.state || '',
+                          state: 'FL',
                           zip: editForm.zip || '',
                           county: editForm.county || ''
                         }}
