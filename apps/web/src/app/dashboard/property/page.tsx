@@ -54,7 +54,7 @@ function PropertyOverviewContent() {
           // If no properties, use mock data for demo
           setProperties([
             {
-              id: 1,
+              id: 'demo-property-uuid',
               name: 'Main Residence',
               address: '1234 Main Street, Austin, TX 78701',
               type: 'Single Family Home',
@@ -76,7 +76,7 @@ function PropertyOverviewContent() {
         // Use mock data as fallback
         setProperties([
           {
-            id: 1,
+            id: 'demo-property-uuid',
             name: 'Main Residence',
             address: '1234 Main Street, Austin, TX 78701',
             type: 'Single Family Home',

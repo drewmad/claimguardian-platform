@@ -56,8 +56,16 @@ export async function getProperties() {
   try {
     const supabase = await createClient()
     
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) throw new Error('Not authenticated')
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError) {
+      console.error('Auth error in getProperties:', authError)
+      throw new Error('Authentication failed')
+    }
+    
+    if (!user) {
+      console.error('No user found in getProperties')
+      throw new Error('Not authenticated')
+    }
     
     const { data, error } = await supabase
       .from('properties')
@@ -65,7 +73,10 @@ export async function getProperties() {
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
     
-    if (error) throw error
+    if (error) {
+      console.error('Database error in getProperties:', error)
+      throw error
+    }
     
     return { data, error: null }
   } catch (error) {

@@ -48,6 +48,27 @@ function PropertyDetailContent() {
   useEffect(() => {
     const loadProperty = async () => {
       try {
+        // Handle demo property UUID - use mock data directly
+        if (propertyId === 'demo-property-uuid') {
+          const mockData = {
+            id: propertyId,
+            name: 'Main Residence',
+            address: '1234 Main Street, Austin, TX 78701',
+            type: 'Single Family Home',
+            value: 450000,
+            sqft: 2800,
+            yearBuilt: 2010,
+            bedrooms: 4,
+            bathrooms: 3,
+            lotSize: 0.25,
+            insurabilityScore: 92,
+            image: '🏠'
+          }
+          setProperty(mockData)
+          setEditForm(mockData)
+          return
+        }
+
         const { data, error } = await getProperty({ propertyId })
         if (error) throw error
         

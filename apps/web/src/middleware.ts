@@ -78,8 +78,7 @@ export async function middleware(request: NextRequest) {
         ip: request.ip
       })
     }
-    // Let client-side handle the redirect for now to debug the issue
-    // return NextResponse.redirect(new URL('/', request.url))
+    return NextResponse.redirect(new URL('/', request.url))
   }
 
   // Add security headers
