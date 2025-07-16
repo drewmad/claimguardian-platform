@@ -15,6 +15,7 @@
     "@claimguardian/ui": "workspace:*",
     "@claimguardian/utils": "workspace:*",
     "@eslint/eslintrc": "^3.3.1",
+    "@radix-ui/react-dialog": "^1.1.14",
     "@supabase/ssr": "^0.5.2",
     "@supabase/supabase-js": "^2.50.3",
     "@types/bcryptjs": "^3.0.0",

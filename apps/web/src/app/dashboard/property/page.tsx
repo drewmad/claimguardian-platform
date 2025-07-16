@@ -21,11 +21,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
 import { getProperties } from '@/actions/properties'
 import { toast } from 'sonner'
 import { PropertyAvatar } from '@/components/ui/property-image'
+import { PropertyWizard } from '@/components/property/property-wizard'
 
 function PropertyOverviewContent() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
   const [properties, setProperties] = useState<any[]>([])
+  const [showWizard, setShowWizard] = useState(false)
 
   useEffect(() => {
     const loadProperties = async () => {
@@ -251,7 +253,10 @@ function PropertyOverviewContent() {
             ))}
 
             {/* Add Property Card */}
-            <Card className="bg-gray-800/50 border-gray-700 border-dashed cursor-pointer hover:border-blue-500 transition-colors">
+            <Card 
+              className="bg-gray-800/50 border-gray-700 border-dashed cursor-pointer hover:border-blue-500 transition-colors"
+              onClick={() => setShowWizard(true)}
+            >
               <CardContent className="p-6 h-full flex flex-col items-center justify-center text-center min-h-[400px]">
                 <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mb-4">
                   <Plus className="w-8 h-8 text-gray-400" />
@@ -301,6 +306,16 @@ function PropertyOverviewContent() {
           )}
         </div>
       </div>
+
+      {/* Property Creation Wizard */}
+      <PropertyWizard 
+        open={showWizard} 
+        onClose={() => setShowWizard(false)}
+        onComplete={(propertyId) => {
+          // Refresh properties list
+          window.location.reload()
+        }}
+      />
     </DashboardLayout>
   )
 }
