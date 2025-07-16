@@ -46,12 +46,16 @@ class PropertyDataService {
     try {
       logger.info('Fetching property data', { address })
       
-      // For now, return mock data
-      // In production, this would integrate with:
-      // - Zillow API
+      // IMPORTANT: This is currently returning MOCK DATA
+      // Real integration requires API keys from:
+      // - Zillow API (GetDeepSearchResults)
       // - Redfin API
       // - County property appraiser databases
-      // - Google Maps API for additional details
+      // - Florida Department of Revenue API
+      // - FEMA Flood Map Service Center API
+      
+      // TODO: Replace with real API calls when keys are available
+      logger.warn('Using mock property data - real API integration pending')
       
       const mockData: PropertyDataResponse = {
         estimatedValue: this.estimatePropertyValue(address),

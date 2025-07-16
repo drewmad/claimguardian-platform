@@ -36,7 +36,7 @@ import { createProperty } from '@/actions/properties'
 import { createPolicy } from '@/actions/policies'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
-import { floridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
+import { sortedFloridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
 import { propertyDataService } from '@/lib/services/property-data-service'
 import { logger } from '@/lib/logger'
 
@@ -93,11 +93,13 @@ interface PropertyData {
   
   // Step 4: Insurance
   insuranceCarrier?: string
-  insuranceType?: string
+  insuranceTypes?: string[] // Changed to array for multiple selections
   policyNumber?: string
   coverageAmount?: number
   deductible?: number
   windDeductible?: number
+  customCarrierName?: string // For 'Other' carrier option
+  policyDocuments?: File[] // For PDF/image uploads
   
   // Auto-populated Value Info
   estimatedValue?: number
@@ -166,7 +168,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     bedrooms: 0,
     bathrooms: 0,
     lotSize: 0,
-    features: []
+    features: [],
+    insuranceTypes: [] // Initialize as empty array
   })
 
   // Reset wizard when opened
@@ -191,7 +194,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         bedrooms: 0,
         bathrooms: 0,
         lotSize: 0,
-        features: []
+        features: [],
+        insuranceTypes: [] // Reset insurance types array
       })
     }
   }, [open])
@@ -345,29 +349,48 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
       
       if (propertyError) throw propertyError
       
-      // Then create the policy if insurance info was provided
+      // Then create policies if insurance info was provided
       if (propertyData.insuranceCarrier && createdProperty?.id) {
-        const policyInfo = {
-          property_id: createdProperty.id,
-          carrier_name: propertyData.insuranceCarrier,
-          policy_number: propertyData.policyNumber || `POLICY-${Date.now()}`,
-          policy_type: (propertyData.insuranceType || 'HO3') as any,
-          effective_date: new Date().toISOString().split('T')[0],
-          expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          coverage_details: {
-            coverage_amount: propertyData.coverageAmount,
-            deductible: propertyData.deductible,
-            wind_deductible: propertyData.windDeductible
-          },
-          deductible_amount: propertyData.deductible,
-          wind_deductible_percentage: propertyData.windDeductible
-        }
+        // Determine the actual carrier name (handle custom carrier case)
+        const carrierName = propertyData.insuranceCarrier === 'Other (Not Listed)' 
+          ? propertyData.customCarrierName || 'Other'
+          : propertyData.insuranceCarrier
+
+        // Create a policy for each selected insurance type
+        const selectedTypes = propertyData.insuranceTypes || []
         
-        const { error: policyError } = await createPolicy(policyInfo)
-        
-        if (policyError) {
-          console.error('Failed to create policy:', policyError)
-          toast.warning('Property created but insurance policy could not be saved')
+        if (selectedTypes.length > 0) {
+          for (const insuranceType of selectedTypes) {
+            const policyInfo = {
+              property_id: createdProperty.id,
+              carrier_name: carrierName,
+              policy_number: propertyData.policyNumber || `POLICY-${insuranceType}-${Date.now()}`,
+              policy_type: insuranceType as any,
+              effective_date: new Date().toISOString().split('T')[0],
+              expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+              coverage_details: {
+                coverage_amount: propertyData.coverageAmount,
+                deductible: propertyData.deductible,
+                wind_deductible: propertyData.windDeductible,
+                documents: propertyData.policyDocuments?.map(f => f.name) || []
+              },
+              deductible_amount: propertyData.deductible,
+              wind_deductible_percentage: propertyData.windDeductible
+            }
+            
+            const { error: policyError } = await createPolicy(policyInfo)
+            
+            if (policyError) {
+              console.error('Failed to create policy:', policyError)
+              toast.warning(`Could not save ${insuranceType} policy`)
+            }
+          }
+          
+          // TODO: Upload policy documents to storage and process with AI
+          if (propertyData.policyDocuments && propertyData.policyDocuments.length > 0) {
+            console.log('Policy documents ready for upload:', propertyData.policyDocuments)
+            // Future implementation: Upload to Supabase storage and process with AI
+          }
         }
       }
       
@@ -753,27 +776,41 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
               <Label>Insurance Carrier</Label>
               <select
                 value={propertyData.insuranceCarrier || ''}
-                onChange={(e) => setPropertyData(prev => ({ ...prev, insuranceCarrier: e.target.value }))}
+                onChange={(e) => {
+                  const value = e.target.value
+                  setPropertyData(prev => ({ 
+                    ...prev, 
+                    insuranceCarrier: value,
+                    customCarrierName: value === 'Other (Not Listed)' ? prev.customCarrierName || '' : undefined
+                  }))
+                }}
                 className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
               >
                 <option value="">Select Insurance Carrier</option>
                 <optgroup label="State-Backed">
-                  {floridaInsuranceCarriers
+                  {sortedFloridaInsuranceCarriers
                     .filter(c => c.type === 'state')
                     .map(carrier => (
                       <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
                     ))}
                 </optgroup>
                 <optgroup label="Private Carriers">
-                  {floridaInsuranceCarriers
-                    .filter(c => c.type === 'private')
+                  {sortedFloridaInsuranceCarriers
+                    .filter(c => c.type === 'private' && c.id !== 'self-insured' && c.id !== 'other')
                     .map(carrier => (
                       <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
                     ))}
                 </optgroup>
                 <optgroup label="Surplus Lines">
-                  {floridaInsuranceCarriers
+                  {sortedFloridaInsuranceCarriers
                     .filter(c => c.type === 'surplus')
+                    .map(carrier => (
+                      <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
+                    ))}
+                </optgroup>
+                <optgroup label="Other">
+                  {sortedFloridaInsuranceCarriers
+                    .filter(c => c.id === 'self-insured' || c.id === 'other')
                     .map(carrier => (
                       <option key={carrier.id} value={carrier.name}>{carrier.name}</option>
                     ))}
@@ -781,29 +818,57 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
               </select>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            {propertyData.insuranceCarrier === 'Other (Not Listed)' && (
               <div>
-                <Label>Insurance Type</Label>
-                <select
-                  value={propertyData.insuranceType || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, insuranceType: e.target.value }))}
-                  className="w-full mt-1 bg-gray-700 border-gray-600 text-white rounded px-3 py-2"
-                >
-                  <option value="">Select Type</option>
-                  {insuranceTypes.map(type => (
-                    <option key={type.value} value={type.value}>{type.label}</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <Label>Policy Number</Label>
+                <Label>Custom Carrier Name</Label>
                 <Input
-                  value={propertyData.policyNumber || ''}
-                  onChange={(e) => setPropertyData(prev => ({ ...prev, policyNumber: e.target.value }))}
-                  placeholder="e.g., HO-123456789"
+                  value={propertyData.customCarrierName || ''}
+                  onChange={(e) => setPropertyData(prev => ({ ...prev, customCarrierName: e.target.value }))}
+                  placeholder="Enter carrier name"
                   className="mt-1 bg-gray-700 border-gray-600 text-white"
                 />
               </div>
+            )}
+
+            <div>
+              <Label>Insurance Types</Label>
+              <p className="text-xs text-gray-400 mb-3">Select all that apply for this property</p>
+              <div className="grid grid-cols-2 gap-3">
+                {insuranceTypes.map(type => (
+                  <label key={type.value} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={propertyData.insuranceTypes?.includes(type.value) || false}
+                      onChange={(e) => {
+                        const currentTypes = propertyData.insuranceTypes || []
+                        if (e.target.checked) {
+                          setPropertyData(prev => ({ 
+                            ...prev, 
+                            insuranceTypes: [...currentTypes, type.value]
+                          }))
+                        } else {
+                          setPropertyData(prev => ({ 
+                            ...prev, 
+                            insuranceTypes: currentTypes.filter(t => t !== type.value)
+                          }))
+                        }
+                      }}
+                      className="w-4 h-4 bg-gray-700 border-gray-600 rounded text-blue-500"
+                    />
+                    <span className="text-sm text-gray-300">{type.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <Label>Policy Number</Label>
+              <Input
+                value={propertyData.policyNumber || ''}
+                onChange={(e) => setPropertyData(prev => ({ ...prev, policyNumber: e.target.value }))}
+                placeholder="e.g., HO-123456789"
+                className="mt-1 bg-gray-700 border-gray-600 text-white"
+              />
             </div>
 
             <div className="grid grid-cols-3 gap-4">
@@ -851,17 +916,78 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
               </div>
             </div>
 
+            {/* Policy Documents Upload */}
+            <div>
+              <Label className="flex items-center gap-2 mb-3">
+                <Upload className="w-4 h-4" />
+                Policy Documents
+              </Label>
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center">
+                <input
+                  type="file"
+                  id="policy-upload"
+                  accept=".pdf,.png,.jpg,.jpeg"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || [])
+                    if (files.length > 0) {
+                      setPropertyData(prev => ({
+                        ...prev,
+                        policyDocuments: [...(prev.policyDocuments || []), ...files]
+                      }))
+                      toast.success(`Added ${files.length} document${files.length > 1 ? 's' : ''}`)
+                    }
+                  }}
+                  className="hidden"
+                />
+                <label htmlFor="policy-upload" className="cursor-pointer">
+                  <Camera className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                  <p className="text-sm text-gray-300 mb-1">Upload policy documents</p>
+                  <p className="text-xs text-gray-400">PDF or images (PNG, JPG) supported</p>
+                  <Button type="button" size="sm" className="mt-3">
+                    Choose Files
+                  </Button>
+                </label>
+              </div>
+              
+              {propertyData.policyDocuments && propertyData.policyDocuments.length > 0 && (
+                <div className="mt-3 space-y-2">
+                  {propertyData.policyDocuments.map((file, index) => (
+                    <div key={index} className="flex items-center justify-between bg-gray-700 rounded p-2">
+                      <span className="text-sm text-gray-300 truncate">{file.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setPropertyData(prev => ({
+                            ...prev,
+                            policyDocuments: prev.policyDocuments?.filter((_, i) => i !== index)
+                          }))
+                        }}
+                        className="text-red-400 hover:text-red-300"
+                      >
+                        <X className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <p className="text-xs text-blue-300 mt-2">
+                    <AlertCircle className="w-3 h-3 inline mr-1" />
+                    AI will extract data from these documents to auto-populate fields
+                  </p>
+                </div>
+              )}
+            </div>
+
             {propertyData.insuranceCarrier && (
               <div className="bg-gray-700/50 rounded-lg p-4">
                 <h4 className="text-sm font-medium text-gray-300 mb-2">Carrier Information</h4>
-                {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone && (
+                {sortedFloridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone && (
                   <p className="text-sm text-gray-400">
-                    Phone: {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone}
+                    Phone: {sortedFloridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.phone}
                   </p>
                 )}
-                {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website && (
+                {sortedFloridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website && (
                   <p className="text-sm text-gray-400">
-                    Website: {floridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website}
+                    Website: {sortedFloridaInsuranceCarriers.find(c => c.name === propertyData.insuranceCarrier)?.website}
                   </p>
                 )}
               </div>
@@ -979,11 +1105,13 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                       <span className="text-gray-400">Carrier:</span>
                       <span className="text-white ml-2">{propertyData.insuranceCarrier}</span>
                     </div>
-                    {propertyData.insuranceType && (
+                    {propertyData.insuranceTypes && propertyData.insuranceTypes.length > 0 && (
                       <div className="mt-1">
-                        <span className="text-gray-400">Type:</span>
+                        <span className="text-gray-400">Types:</span>
                         <span className="text-white ml-2">
-                          {insuranceTypes.find(t => t.value === propertyData.insuranceType)?.label}
+                          {propertyData.insuranceTypes
+                            .map(type => insuranceTypes.find(t => t.value === type)?.label || type)
+                            .join(', ')}
                         </span>
                       </div>
                     )}

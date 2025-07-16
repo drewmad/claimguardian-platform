@@ -234,6 +234,54 @@ export const floridaInsuranceCarriers: InsuranceCarrier[] = [
     website: 'https://www.americantraditions.com',
     phone: '727-893-1600'
   },
+  {
+    id: 'typtap',
+    name: 'TypTap Insurance Company',
+    type: 'private',
+    active: true,
+    website: 'https://www.typtap.com',
+    phone: '844-897-8271'
+  },
+  {
+    id: 'kin',
+    name: 'Kin Insurance',
+    type: 'private',
+    active: true,
+    website: 'https://www.kin.com',
+    phone: '866-204-2219'
+  },
+  {
+    id: 'slide',
+    name: 'Slide Insurance',
+    type: 'private',
+    active: true,
+    website: 'https://www.slide.com',
+    phone: '813-579-3100'
+  },
+  {
+    id: 'united-property',
+    name: 'United Property & Casualty Insurance',
+    type: 'private',
+    active: true,
+    website: 'https://www.upcinsurance.com',
+    phone: '800-399-7677'
+  },
+  {
+    id: 'florida-family',
+    name: 'Florida Family Insurance Company',
+    type: 'private',
+    active: true,
+    website: 'https://www.myfloridafamily.com',
+    phone: '888-908-3863'
+  },
+  {
+    id: 'anchor',
+    name: 'Anchor Property & Casualty Insurance',
+    type: 'private',
+    active: true,
+    website: 'https://www.anchorpci.com',
+    phone: '855-200-9992'
+  },
   
   // Surplus Lines Carriers
   {
@@ -275,3 +323,24 @@ export const floridaInsuranceCarriers: InsuranceCarrier[] = [
     active: true
   }
 ]
+
+// Sort carriers alphabetically within their types
+export const sortedFloridaInsuranceCarriers = (() => {
+  const stateCarriers = floridaInsuranceCarriers
+    .filter(c => c.type === 'state')
+    .sort((a, b) => a.name.localeCompare(b.name))
+  
+  const privateCarriers = floridaInsuranceCarriers
+    .filter(c => c.type === 'private' && c.id !== 'self-insured' && c.id !== 'other')
+    .sort((a, b) => a.name.localeCompare(b.name))
+  
+  const surplusCarriers = floridaInsuranceCarriers
+    .filter(c => c.type === 'surplus')
+    .sort((a, b) => a.name.localeCompare(b.name))
+  
+  const specialOptions = floridaInsuranceCarriers
+    .filter(c => c.id === 'self-insured' || c.id === 'other')
+    .sort((a, b) => a.name.localeCompare(b.name))
+  
+  return [...stateCarriers, ...privateCarriers, ...surplusCarriers, ...specialOptions]
+})()
