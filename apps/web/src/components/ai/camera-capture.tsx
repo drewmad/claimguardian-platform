@@ -34,6 +34,9 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
 
   const startCamera = useCallback(async () => {
     setIsLoading(true)
+    setHasPermission(null) // Reset permission state while checking
+    console.log('[CAMERA] Starting camera initialization...')
+    
     try {
       // Stop any existing stream
       if (stream) {
@@ -41,6 +44,13 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         setStream(null)
       }
 
+      // Check if mediaDevices is available
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('MediaDevices not supported in this browser')
+      }
+
+      console.log('[CAMERA] Requesting camera access...')
+      
       // Request camera permission with fallback
       const constraints: MediaStreamConstraints = {
         video: {
@@ -54,18 +64,21 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
       
       try {
         // Try with facingMode first
+        console.log('[CAMERA] Attempting getUserMedia with constraints:', constraints)
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
       } catch (err) {
         // Fallback to any available camera
-        console.log('Falling back to any available camera')
+        console.log('[CAMERA] Falling back to any available camera')
         try {
           mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
         } catch (fallbackErr) {
+          console.error('[CAMERA] Fallback also failed:', fallbackErr)
           throw fallbackErr
         }
       }
       
       if (mediaStream && videoRef.current) {
+        console.log('[CAMERA] Got media stream, setting up video element')
         setStream(mediaStream)
         setHasPermission(true)
         
@@ -74,54 +87,96 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         
         // Wait for video metadata to load before playing
         return new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => {
+            console.error('[CAMERA] Video loading timeout')
+            reject(new Error('Video loading timeout'))
+          }, 10000) // 10 second timeout
+          
           const handleLoadedMetadata = () => {
+            clearTimeout(timeout)
             video.removeEventListener('loadedmetadata', handleLoadedMetadata)
             video.removeEventListener('error', handleError)
             
+            console.log('[CAMERA] Video metadata loaded, attempting to play')
             video.play()
               .then(() => {
-                console.log('Camera started successfully')
+                console.log('[CAMERA] Camera started successfully')
+                setIsLoading(false)
                 resolve()
               })
               .catch((playErr) => {
-                console.error('Error playing video:', playErr)
+                console.error('[CAMERA] Error playing video:', playErr)
+                setIsLoading(false)
                 reject(playErr)
               })
           }
           
           const handleError = (err: Event) => {
+            clearTimeout(timeout)
             video.removeEventListener('loadedmetadata', handleLoadedMetadata)
             video.removeEventListener('error', handleError)
-            console.error('Video error:', err)
+            console.error('[CAMERA] Video error:', err)
+            setIsLoading(false)
             reject(new Error('Video loading failed'))
           }
           
           video.addEventListener('loadedmetadata', handleLoadedMetadata)
           video.addEventListener('error', handleError)
+          
+          // Force metadata load if not triggered
+          if (video.readyState >= 1) {
+            handleLoadedMetadata()
+          }
         })
+      } else {
+        throw new Error('Failed to get media stream or video element')
       }
     } catch (err) {
-      console.error('Error accessing camera:', err)
+      console.error('[CAMERA] Error accessing camera:', err)
       setHasPermission(false)
+      setIsLoading(false)
       
       // More specific error messages
       if (err instanceof DOMException) {
+        console.error('[CAMERA] DOMException details:', {
+          name: err.name,
+          message: err.message,
+          code: err.code
+        })
+        
         if (err.name === 'NotAllowedError') {
-          toast.error('Camera access denied. Please allow camera permissions.')
+          console.error('[CAMERA] Permission denied by user')
+          toast.error('Camera access denied. Please allow camera permissions and refresh the page.')
         } else if (err.name === 'NotFoundError') {
           toast.error('No camera found on this device.')
         } else if (err.name === 'NotReadableError') {
           toast.error('Camera is already in use by another application.')
+        } else if (err.name === 'OverconstrainedError') {
+          console.log('[CAMERA] Trying with basic constraints...')
+          // Try again with minimal constraints
+          try {
+            const basicStream = await navigator.mediaDevices.getUserMedia({ video: true })
+            if (basicStream && videoRef.current) {
+              setStream(basicStream)
+              setHasPermission(true)
+              videoRef.current.srcObject = basicStream
+              await videoRef.current.play()
+              setIsLoading(false)
+              return
+            }
+          } catch (basicErr) {
+            console.error('[CAMERA] Basic constraints also failed:', basicErr)
+            toast.error('Camera constraints not supported.')
+          }
         } else {
-          toast.error('Unable to access camera. Please check your device settings.')
+          toast.error(`Camera error: ${err.message}`)
         }
       } else {
+        console.error('[CAMERA] Non-DOMException error:', err)
         toast.error('Camera error. Please try again.')
       }
-    } finally {
-      setIsLoading(false)
     }
-  }, [facingMode])
+  }, [facingMode, stream])
 
   useEffect(() => {
     // Start camera when component mounts

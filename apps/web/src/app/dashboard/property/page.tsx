@@ -34,11 +34,17 @@ function PropertyOverviewContent() {
         if (error) throw error
         
         if (data && data.length > 0) {
-          // Transform database data to display format
+          // Transform database data to display format with full address
           const transformedData = data.map((prop: any) => ({
             id: prop.id,
             name: prop.name || 'Unnamed Property',
-            address: prop.address?.street || '',
+            address: prop.address ? [
+              prop.address.street1,
+              prop.address.street2,
+              prop.address.city,
+              prop.address.state,
+              prop.address.zip
+            ].filter(Boolean).join(', ') : 'Address not set',
             type: prop.type || 'Single Family Home',
             value: prop.value || 0,
             sqft: prop.square_feet || 0,
@@ -96,6 +102,50 @@ function PropertyOverviewContent() {
     
     loadProperties()
   }, [])
+
+  // Refresh properties when returning to this page
+  useEffect(() => {
+    const handleFocus = () => {
+      if (!loading) {
+        const loadProperties = async () => {
+          try {
+            const { data, error } = await getProperties()
+            if (error) throw error
+            
+            if (data && data.length > 0) {
+              const transformedData = data.map((prop: any) => ({
+                id: prop.id,
+                name: prop.name || 'Unnamed Property',
+                address: prop.address ? [
+                  prop.address.street1,
+                  prop.address.street2,
+                  prop.address.city,
+                  prop.address.state,
+                  prop.address.zip
+                ].filter(Boolean).join(', ') : 'Address not set',
+                type: prop.type || 'Single Family Home',
+                value: prop.value || 0,
+                sqft: prop.square_feet || 0,
+                yearBuilt: prop.year_built || new Date().getFullYear(),
+                bedrooms: prop.details?.bedrooms || 0,
+                bathrooms: prop.details?.bathrooms || 0,
+                lotSize: prop.details?.lot_size || 0,
+                insurabilityScore: prop.insurability_score || 0,
+                isPrimary: prop.is_primary || false
+              }))
+              setProperties(transformedData)
+            }
+          } catch (error) {
+            console.error('Error refreshing properties:', error)
+          }
+        }
+        loadProperties()
+      }
+    }
+
+    window.addEventListener('focus', handleFocus)
+    return () => window.removeEventListener('focus', handleFocus)
+  }, [loading])
 
   const pageTitle = properties.length === 1 ? 'My Home' : 'My Properties'
 
