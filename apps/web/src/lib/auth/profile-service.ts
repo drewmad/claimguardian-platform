@@ -20,6 +20,8 @@ export interface UserProfile {
   lastName?: string
   phone?: string
   avatarUrl?: string
+  xHandle?: string
+  isXConnected?: boolean
   createdAt: string
   updatedAt: string
   emailVerified: boolean
@@ -30,6 +32,8 @@ export interface ProfileUpdateData {
   lastName?: string
   phone?: string
   avatarUrl?: string
+  xHandle?: string
+  isXConnected?: boolean
 }
 
 export interface EmailChangeRequest {

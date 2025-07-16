@@ -46,6 +46,8 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
+  const [xHandle, setXHandle] = useState('')
+  const [isXConnected, setIsXConnected] = useState(false)
   
   // Preferences state
   const [preferences, setPreferences] = useState<UserPreferences>({
@@ -105,6 +107,8 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
         setFirstName(data.firstName || '')
         setLastName(data.lastName || '')
         setPhone(data.phone || '')
+        setXHandle(data.xHandle || '')
+        setIsXConnected(data.isXConnected || false)
       }
     } catch (error) {
       console.error('Failed to load profile:', error)
@@ -123,7 +127,8 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
       const success = await profileService.updateProfile(user.id, {
         firstName,
         lastName,
-        phone
+        phone,
+        xHandle
       })
 
       if (success) {
@@ -177,6 +182,24 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
     setPreferences(prev => ({ ...prev, [key]: value }))
     // Auto-save preferences
     toast.success(`${key} updated`)
+  }
+
+  const handleXConnect = async () => {
+    if (isXConnected) {
+      // Disconnect X account
+      setIsXConnected(false)
+      setXHandle('')
+      toast.success('X account disconnected')
+    } else {
+      // In a real implementation, this would redirect to X OAuth
+      // For now, we'll simulate the connection
+      const handle = prompt('Enter your X handle (without @):')
+      if (handle) {
+        setXHandle(handle)
+        setIsXConnected(true)
+        toast.success('X account connected successfully')
+      }
+    }
   }
 
   if (!isOpen) return null
@@ -297,6 +320,41 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
                           placeholder="Enter your phone number"
                         />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium text-gray-300 mb-2">Social Media</label>
+                        <div className="bg-gray-800 border border-gray-600 rounded-lg p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 bg-black rounded-lg">
+                                <X className="h-4 w-4 text-white" />
+                              </div>
+                              <div>
+                                <p className="font-medium text-white">X (Twitter)</p>
+                                <p className="text-sm text-gray-400">
+                                  {isXConnected ? `Connected as @${xHandle}` : 'Connect your X account'}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {isXConnected && (
+                                <Badge variant="default" className="bg-green-600">
+                                  Connected
+                                </Badge>
+                              )}
+                              <Button
+                                type="button"
+                                onClick={handleXConnect}
+                                variant={isXConnected ? "destructive" : "outline"}
+                                size="sm"
+                                className={isXConnected ? "" : "border-gray-600 text-gray-300 hover:bg-gray-700"}
+                              >
+                                {isXConnected ? 'Disconnect' : 'Connect'}
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
                       </div>
 
                       <Button
