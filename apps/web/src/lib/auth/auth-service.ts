@@ -441,68 +441,101 @@ class AuthService {
    * Handle Supabase auth errors and convert to our error format
    */
   private handleAuthError(error: SupabaseAuthError): AuthError {
-    logger.error('Supabase auth error', { 
-      message: error.message, 
+    // Comprehensive error logging
+    const errorDetails = {
+      message: error.message,
       status: error.status,
-      code: error.code 
-    })
+      code: error.code,
+      name: error.name,
+      __isAuthError: error.__isAuthError,
+      url: typeof window !== 'undefined' ? window.location.href : 'server',
+      timestamp: new Date().toISOString()
+    }
+    
+    logger.error('Supabase auth error', errorDetails)
 
-    // Enhanced error logging for production debugging
-    if (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true') {
-      console.error('[ClaimGuardian Auth Error]', {
-        message: error.message,
-        status: error.status,
-        code: error.code,
-        url: typeof window !== 'undefined' ? window.location.href : 'server',
-        timestamp: new Date().toISOString()
-      })
+    // Always log auth errors for debugging
+    console.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
+    
+    // If there's additional error info, log it
+    if (error.stack) {
+      console.error('[ClaimGuardian Auth Error] Stack trace:', error.stack)
     }
 
     // Map Supabase error codes to our error codes
-    switch (error.message) {
-      case 'Invalid login credentials':
-        return new AuthError(
-          'Invalid email or password',
-          'AUTH_INVALID_CREDENTIALS',
-          error
-        )
-      
-      case 'User already registered':
-        return new AuthError(
-          'An account with this email already exists',
-          'AUTH_USER_EXISTS',
-          error
-        )
-      
-      case 'Email not confirmed':
-        return new AuthError(
-          'Please verify your email before signing in',
-          'AUTH_EMAIL_NOT_VERIFIED',
-          error
-        )
-      
-      case 'Invalid email':
-        return new AuthError(
-          'Please enter a valid email address',
-          'VALIDATION_ERROR',
-          error
-        )
-      
-      default:
-        if (error.status === 429) {
-          return new AuthError(
-            'Too many attempts. Please try again later',
-            'RATE_LIMIT_ERROR',
-            error
-          )
-        }
-        
-        return new AuthError(
-          error.message || 'Authentication failed',
-          'AUTH_UNKNOWN_ERROR',
-          error
-        )
+    // Check both message and status for better error mapping
+    if (error.message?.toLowerCase().includes('invalid login credentials') || 
+        error.message?.toLowerCase().includes('invalid credentials')) {
+      return new AuthError(
+        'Invalid email or password',
+        'AUTH_INVALID_CREDENTIALS',
+        error
+      )
     }
+    
+    if (error.message?.toLowerCase().includes('user already registered')) {
+      return new AuthError(
+        'An account with this email already exists',
+        'AUTH_USER_EXISTS',
+        error
+      )
+    }
+    
+    if (error.message?.toLowerCase().includes('email not confirmed')) {
+      return new AuthError(
+        'Please verify your email before signing in',
+        'AUTH_EMAIL_NOT_VERIFIED',
+        error
+      )
+    }
+    
+    if (error.message?.toLowerCase().includes('invalid email')) {
+      return new AuthError(
+        'Please enter a valid email address',
+        'VALIDATION_ERROR',
+        error
+      )
+    }
+    
+    // Handle status-based errors
+    if (error.status === 400) {
+      return new AuthError(
+        'Invalid request. Please check your information and try again.',
+        'VALIDATION_ERROR',
+        error
+      )
+    }
+    
+    if (error.status === 401) {
+      return new AuthError(
+        'Authentication failed. Please check your credentials.',
+        'AUTH_INVALID_CREDENTIALS',
+        error
+      )
+    }
+    
+    if (error.status === 429) {
+      return new AuthError(
+        'Too many attempts. Please try again later',
+        'RATE_LIMIT_ERROR',
+        error
+      )
+    }
+    
+    if (error.status === 500 || error.status === 503) {
+      return new AuthError(
+        'Service temporarily unavailable. Please try again later.',
+        'SERVICE_UNAVAILABLE',
+        error
+      )
+    }
+    
+    // Default error with more helpful message
+    return new AuthError(
+      error.message || 'An unexpected error occurred. Please try again.',
+      'AUTH_UNKNOWN_ERROR',
+      error
+    )
   }
 }
 

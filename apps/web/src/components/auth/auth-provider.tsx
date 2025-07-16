@@ -246,9 +246,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setLoading(true)
       setError(null)
       
+      logger.info('Starting sign in process', { email })
+      
       const { data, error } = await authService.signIn({ email, password, rememberMe })
       
       if (error) {
+        logger.error('Sign in error received', { 
+          errorCode: error.code, 
+          errorMessage: error.message 
+        })
         setError(error)
         setLoading(false)
         return
@@ -260,9 +266,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         window.location.href = '/dashboard'
       }
     } catch (err) {
-      logger.error('Unexpected signin error', err)
+      // Log full error details
+      const errorDetails = {
+        message: err instanceof Error ? err.message : 'Unknown error',
+        name: err instanceof Error ? err.name : 'UnknownError',
+        stack: err instanceof Error ? err.stack : undefined,
+        error: err
+      }
+      
+      logger.error('Unexpected signin error', errorDetails, err as Error)
+      console.error('[AuthProvider] Sign in failed with unexpected error:', errorDetails)
+      
       setError(new AuthError(
-        'An unexpected error occurred',
+        err instanceof Error ? err.message : 'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',
         err as Error
       ))
