@@ -30,10 +30,17 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
   try {
     const supabase = await createClient()
     
+    // Get authenticated user first
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      throw new Error('Not authenticated')
+    }
+    
     const { data, error } = await supabase
       .from('properties')
       .select('*')
       .eq('id', propertyId)
+      .eq('user_id', user.id) // Ensure user owns the property
       .single()
     
     if (error) throw error

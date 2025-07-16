@@ -74,14 +74,14 @@ create index idx_parcels_landuse on public.parcels(landuse_code);
 create index idx_parcels_value on public.parcels(just_value);
 create index idx_parcels_geom on public.parcels using gist(geom);
 
--- Enable RLS on materialized view
-alter table public.parcels enable row level security;
+-- Note: Cannot enable RLS on materialized views, skipping
+-- alter table public.parcels enable row level security;
 
--- Read-only policy for all authenticated users
-create policy "Read-only access for authenticated users" on public.parcels
-  for select
-  to authenticated
-  using (true);
+-- Note: Cannot create policies on materialized views without RLS, skipping
+-- create policy "Read-only access for authenticated users" on public.parcels
+--   for select
+--   to authenticated
+--   using (true);
 
 -- Helper function to get max ObjectID for FDOT delta sync
 create or replace function public.max_objectid_for_county(cnty_layer int)

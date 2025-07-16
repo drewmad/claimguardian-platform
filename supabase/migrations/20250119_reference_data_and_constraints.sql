@@ -48,29 +48,10 @@ CREATE TABLE IF NOT EXISTS reference.florida_county (
 -- Florida counties - skipping, already exists
 
 -- ============================================================================
--- PART 2: CONTRACTOR AND VENDOR IMPROVEMENTS
+-- PART 2: CONTRACTOR AND VENDOR IMPROVEMENTS (SKIPPED)
 -- ============================================================================
 
--- Standardize contractor companies table
-ALTER TABLE contractor_connection.contractor_companies
-    ALTER COLUMN id SET DEFAULT core.generate_uuid(),
-    ADD COLUMN IF NOT EXISTS verified_at TIMESTAMPTZ,
-    ADD COLUMN IF NOT EXISTS rating DECIMAL(3,2) CHECK (rating BETWEEN 0 AND 5),
-    ADD COLUMN IF NOT EXISTS review_count INTEGER DEFAULT 0,
-    ADD COLUMN IF NOT EXISTS specialties TEXT[],
-    ADD COLUMN IF NOT EXISTS service_areas TEXT[],
-    ADD COLUMN IF NOT EXISTS insurance_verified BOOLEAN DEFAULT false;
-
--- Contractor specialties reference
-CREATE TABLE IF NOT EXISTS reference.contractor_specialty (
-    id UUID PRIMARY KEY DEFAULT core.generate_uuid(),
-    code TEXT NOT NULL UNIQUE,
-    name TEXT NOT NULL,
-    description TEXT,
-    license_required BOOLEAN DEFAULT true
-);
-
--- Contractor specialties - skipping, already exists
+-- Note: Contractor connection schema doesn't exist yet, skipping for now
 
 -- ============================================================================
 -- PART 3: FINANCIAL TRACKING

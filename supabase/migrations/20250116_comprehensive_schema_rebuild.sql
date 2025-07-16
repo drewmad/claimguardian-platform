@@ -122,8 +122,7 @@ $$;
 ALTER TABLE public.properties
     ALTER COLUMN id SET DEFAULT core.generate_uuid(),
     ADD COLUMN IF NOT EXISTS property_type TEXT,
-    ADD COLUMN IF NOT EXISTS parcel_id TEXT,
-    ADD COLUMN IF NOT EXISTS location geometry(Point, 4326);
+    ADD COLUMN IF NOT EXISTS parcel_id TEXT;
 
 -- Add constraints if they don't exist
 DO $$
