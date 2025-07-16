@@ -6,6 +6,7 @@ import { Card } from '@/components/ui/card'
 import { Camera, CameraOff, RefreshCw, X, Check, Loader2 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
+import { cameraLogger } from '@/lib/logger'
 
 interface CameraCaptureProps {
   onCapture: (imageData: string, file: File) => void
@@ -29,27 +30,46 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
     navigator.mediaDevices.enumerateDevices().then(devices => {
       const videoInputs = devices.filter(device => device.kind === 'videoinput')
       setHasMultipleCameras(videoInputs.length > 1)
+      cameraLogger.info('Camera devices enumerated', {
+        videoInputCount: videoInputs.length,
+        devices: videoInputs.map(d => ({ id: d.deviceId, label: d.label }))
+      })
+    }).catch(err => {
+      cameraLogger.error('Failed to enumerate devices', {}, err as Error)
     })
   }, [])
 
   const startCamera = useCallback(async () => {
     setIsLoading(true)
     setHasPermission(null) // Reset permission state while checking
-    console.log('[CAMERA] Starting camera initialization...')
+    cameraLogger.info('Starting camera initialization', {
+      hasMediaDevices: !!navigator.mediaDevices,
+      hasGetUserMedia: !!(navigator.mediaDevices?.getUserMedia),
+      protocol: window.location.protocol,
+      hostname: window.location.hostname
+    })
     
     try {
       // Stop any existing stream
       if (stream) {
-        stream.getTracks().forEach(track => track.stop())
+        cameraLogger.debug('Stopping existing stream')
+        stream.getTracks().forEach(track => {
+          track.stop()
+          cameraLogger.debug('Stopped track', { kind: track.kind, id: track.id })
+        })
         setStream(null)
       }
 
       // Check if mediaDevices is available
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        cameraLogger.error('MediaDevices not available', {
+          mediaDevices: !!navigator.mediaDevices,
+          getUserMedia: !!(navigator.mediaDevices?.getUserMedia)
+        })
         throw new Error('MediaDevices not supported in this browser')
       }
 
-      console.log('[CAMERA] Requesting camera access...')
+      cameraLogger.info('Requesting camera access')
       
       // Request camera permission with fallback
       const constraints: MediaStreamConstraints = {
@@ -64,21 +84,24 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
       
       try {
         // Try with facingMode first
-        console.log('[CAMERA] Attempting getUserMedia with constraints:', constraints)
+        cameraLogger.debug('Attempting getUserMedia', { constraints })
         mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
       } catch (err) {
         // Fallback to any available camera
-        console.log('[CAMERA] Falling back to any available camera')
+        cameraLogger.warn('Falling back to any available camera')
         try {
           mediaStream = await navigator.mediaDevices.getUserMedia({ video: true })
         } catch (fallbackErr) {
-          console.error('[CAMERA] Fallback also failed:', fallbackErr)
+          cameraLogger.error('Camera fallback failed', {}, fallbackErr as Error)
           throw fallbackErr
         }
       }
       
       if (mediaStream && videoRef.current) {
-        console.log('[CAMERA] Got media stream, setting up video element')
+        cameraLogger.info('Got media stream, setting up video element', {
+          streamId: mediaStream.id,
+          tracks: mediaStream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled }))
+        })
         setStream(mediaStream)
         setHasPermission(true)
         
@@ -88,7 +111,7 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         // Wait for video metadata to load before playing
         return new Promise<void>((resolve, reject) => {
           const timeout = setTimeout(() => {
-            console.error('[CAMERA] Video loading timeout')
+            cameraLogger.error('Video loading timeout')
             reject(new Error('Video loading timeout'))
           }, 10000) // 10 second timeout
           
@@ -97,15 +120,15 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
             video.removeEventListener('loadedmetadata', handleLoadedMetadata)
             video.removeEventListener('error', handleError)
             
-            console.log('[CAMERA] Video metadata loaded, attempting to play')
+            cameraLogger.info('Video metadata loaded, attempting to play')
             video.play()
               .then(() => {
-                console.log('[CAMERA] Camera started successfully')
+                cameraLogger.info('Camera started successfully')
                 setIsLoading(false)
                 resolve()
               })
               .catch((playErr) => {
-                console.error('[CAMERA] Error playing video:', playErr)
+                cameraLogger.error('Error playing video', {}, playErr as Error)
                 setIsLoading(false)
                 reject(playErr)
               })
@@ -115,7 +138,7 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
             clearTimeout(timeout)
             video.removeEventListener('loadedmetadata', handleLoadedMetadata)
             video.removeEventListener('error', handleError)
-            console.error('[CAMERA] Video error:', err)
+            cameraLogger.error('Video error event', { error: err })
             setIsLoading(false)
             reject(new Error('Video loading failed'))
           }
@@ -132,27 +155,27 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
         throw new Error('Failed to get media stream or video element')
       }
     } catch (err) {
-      console.error('[CAMERA] Error accessing camera:', err)
+      cameraLogger.error('Error accessing camera', {}, err as Error)
       setHasPermission(false)
       setIsLoading(false)
       
       // More specific error messages
       if (err instanceof DOMException) {
-        console.error('[CAMERA] DOMException details:', {
+        cameraLogger.error('DOMException details', {
           name: err.name,
           message: err.message,
           code: err.code
         })
         
         if (err.name === 'NotAllowedError') {
-          console.error('[CAMERA] Permission denied by user')
+          cameraLogger.error('Permission denied by user')
           toast.error('Camera access denied. Please allow camera permissions and refresh the page.')
         } else if (err.name === 'NotFoundError') {
           toast.error('No camera found on this device.')
         } else if (err.name === 'NotReadableError') {
           toast.error('Camera is already in use by another application.')
         } else if (err.name === 'OverconstrainedError') {
-          console.log('[CAMERA] Trying with basic constraints...')
+          cameraLogger.info('Trying with basic constraints')
           // Try again with minimal constraints
           try {
             const basicStream = await navigator.mediaDevices.getUserMedia({ video: true })
@@ -165,30 +188,35 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
               return
             }
           } catch (basicErr) {
-            console.error('[CAMERA] Basic constraints also failed:', basicErr)
+            cameraLogger.error('Basic constraints also failed', {}, basicErr as Error)
             toast.error('Camera constraints not supported.')
           }
         } else {
           toast.error(`Camera error: ${err.message}`)
         }
       } else {
-        console.error('[CAMERA] Non-DOMException error:', err)
+        cameraLogger.error('Non-DOMException error', { error: err })
         toast.error('Camera error. Please try again.')
       }
     }
   }, [facingMode, stream])
 
   useEffect(() => {
+    cameraLogger.info('Camera component mounted')
     // Start camera when component mounts
     startCamera()
     
     return () => {
+      cameraLogger.info('Camera component unmounting, cleaning up streams')
       // Cleanup: stop camera stream
       if (stream) {
-        stream.getTracks().forEach(track => track.stop())
+        stream.getTracks().forEach(track => {
+          track.stop()
+          cameraLogger.debug('Cleaned up track on unmount', { kind: track.kind })
+        })
       }
     }
-  }, [startCamera])
+  }, []) // Remove startCamera dependency to prevent loops
 
   const switchCamera = async () => {
     if (stream) {
@@ -290,20 +318,28 @@ export function CameraCapture({ onCapture, onClose, className }: CameraCapturePr
               </div>
             )}
             
-            {!hasPermission && !isLoading && (
+            {!hasPermission && hasPermission !== null && !isLoading && (
               <div className="absolute inset-0 flex flex-col items-center justify-center p-6 text-center">
                 <CameraOff className="h-12 w-12 text-gray-400 mb-4" />
                 <p className="text-gray-300 mb-2">Camera access denied</p>
                 <p className="text-sm text-gray-500 mb-4">
                   Please enable camera permissions in your browser settings to capture photos.
                 </p>
-                <Button onClick={startCamera} variant="outline">
-                  Try Again
-                </Button>
+                <div className="space-y-2">
+                  <Button onClick={startCamera} variant="outline">
+                    Try Again
+                  </Button>
+                  <p className="text-xs text-gray-500">
+                    If camera still doesn't work, try:
+                    <br />• Refreshing the page
+                    <br />• Checking site permissions in browser settings
+                    <br />• Using a different browser
+                  </p>
+                </div>
               </div>
             )}
 
-            {hasPermission && !capturedImage && (
+            {(hasPermission === true || (hasPermission === null && !isLoading)) && !capturedImage && (
               <>
                 <video
                   ref={videoRef}

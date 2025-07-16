@@ -10,7 +10,11 @@ export async function middleware(request: NextRequest) {
   const { data: { session }, error } = await supabase.auth.getSession()
   
   if (error) {
-    console.error('Middleware session error:', error)
+    console.error('[MIDDLEWARE] Session error:', {
+      error: error.message,
+      path: request.nextUrl.pathname,
+      timestamp: new Date().toISOString()
+    })
   }
   
   // Get client IP
@@ -28,6 +32,17 @@ export async function middleware(request: NextRequest) {
     method: request.method,
     timestamp: new Date().toISOString(),
     geo: request.geo || null,
+  }
+
+  // Enhanced logging for debugging
+  if (request.nextUrl.pathname.startsWith('/dashboard') || 
+      request.nextUrl.pathname.startsWith('/ai-augmented')) {
+    console.log('[MIDDLEWARE] Protected route access:', {
+      path: request.nextUrl.pathname,
+      hasSession: !!session,
+      sessionUser: session?.user?.email || 'none',
+      timestamp: new Date().toISOString()
+    })
   }
 
   // Skip audit logging for now - tables may not exist
@@ -86,7 +101,15 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-  response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  
+  // Allow camera access for damage analyzer and AI tools
+  if (request.nextUrl.pathname.includes('/damage-analyzer') || 
+      request.nextUrl.pathname.includes('/ai-tools') ||
+      request.nextUrl.pathname.includes('/evidence-organizer')) {
+    response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
+  } else {
+    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+  }
 
   return response
 }
