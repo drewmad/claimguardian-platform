@@ -1,11 +1,11 @@
 /**
  * @fileMetadata
- * @purpose TypeScript types for enhanced database schema (claims and policies)
+ * @purpose TypeScript types for enhanced database schema (claims, policies, and inventory)
  * @owner data-team
  * @dependencies []
- * @exports ["Database types for claims and policies"]
+ * @exports ["Database types for claims, policies, and Florida insurance-grade inventory"]
  * @complexity medium
- * @tags ["types", "database", "claims", "policies"]
+ * @tags ["types", "database", "claims", "policies", "inventory"]
  * @status active
  */
 
@@ -245,4 +245,231 @@ export interface ClaimTimelineEvent {
   description?: string;
   user_name?: string;
   metadata?: Record<string, any>;
+}
+
+// Inventory types
+export type InventoryCategory = 
+  | 'Electronics'
+  | 'Appliance' 
+  | 'Furniture'
+  | 'Tool'
+  | 'Jewelry'
+  | 'Collectible'
+  | 'Other';
+
+export type ConditionGrade = 'NEW' | 'GOOD' | 'FAIR' | 'POOR' | 'DAMAGED';
+
+export type WarrantyStatus = 'IN_WARRANTY' | 'OUT_OF_WARRANTY' | 'UNKNOWN';
+
+export type DocumentType = 'photo' | 'receipt' | 'warranty' | 'manual' | 'appraisal' | 'other';
+
+export type ImportSource = 'ai_photo_scan' | 'csv_upload' | 'manual_entry' | 'api_import';
+
+export type BatchStatus = 'pending' | 'processing' | 'completed' | 'failed' | 'partial';
+
+export type AIProvider = 'openai' | 'gemini' | 'claude' | 'none';
+
+// Inventory item interface
+export interface InventoryItem {
+  id: string;
+  user_id: string;
+  property_id?: string;
+  
+  // Photo reference
+  photo_id?: string;
+  photo_url?: string;
+  
+  // Item identification
+  item_id: number;
+  category: InventoryCategory;
+  description: string;
+  
+  // Manufacturer details
+  brand: string;
+  model: string;
+  serial_number: string;
+  
+  // Purchase information
+  purchase_date?: string; // ISO date string
+  purchase_price_usd?: number;
+  proof_of_purchase: boolean;
+  florida_tax_included?: boolean;
+  
+  // Condition and valuation
+  condition_grade: ConditionGrade;
+  estimated_replacement_cost?: number;
+  depreciation_percent: number;
+  
+  // Location and warranty
+  location_in_home: string;
+  warranty_status: WarrantyStatus;
+  warranty_expiration_date?: string; // ISO date string
+  
+  // Additional details
+  quantity: number;
+  notes?: string;
+  
+  // Metadata
+  created_at: string;
+  updated_at: string;
+  
+  // Full-text search vector (readonly)
+  search_vector?: string;
+}
+
+// Inventory document interface
+export interface InventoryDocument {
+  id: string;
+  inventory_item_id: string;
+  user_id: string;
+  
+  // Document details
+  document_type: DocumentType;
+  file_name: string;
+  file_path: string;
+  file_size?: number;
+  mime_type?: string;
+  
+  // Photo-specific metadata
+  is_primary_photo: boolean;
+  contains_serial_number: boolean;
+  contains_model_info: boolean;
+  
+  // AI analysis results
+  ai_extracted_text?: string;
+  ai_detected_items?: any[];
+  ai_confidence_score?: number;
+  
+  // Metadata
+  uploaded_at: string;
+  
+  // Runtime property
+  publicUrl?: string;
+}
+
+// Import batch interface
+export interface InventoryImportBatch {
+  id: string;
+  user_id: string;
+  property_id?: string;
+  
+  // Batch details
+  batch_name: string;
+  import_source: ImportSource;
+  
+  // Processing status
+  status: BatchStatus;
+  total_items: number;
+  processed_items: number;
+  failed_items: number;
+  
+  // AI processing metadata
+  ai_provider?: AIProvider;
+  ai_model?: string;
+  ai_processing_time_ms?: number;
+  
+  // Results
+  import_results?: {
+    imported_item_ids?: string[];
+    [key: string]: any;
+  };
+  error_log?: {
+    errors?: Array<{
+      item: string;
+      error: string;
+    }>;
+    [key: string]: any;
+  };
+  
+  // Export formats
+  csv_export_url?: string;
+  json_export_url?: string;
+  
+  // Timestamps
+  created_at: string;
+  started_at?: string;
+  completed_at?: string;
+}
+
+// Inventory statistics view
+export interface InventoryStatistics {
+  property_id?: string;
+  user_id: string;
+  total_items: number;
+  unique_categories: number;
+  total_quantity: number;
+  total_purchase_value: number;
+  total_replacement_value: number;
+  items_in_warranty: number;
+  damaged_items: number;
+  avg_depreciation: number;
+}
+
+// Form input types
+export interface CreateInventoryItemInput {
+  property_id?: string;
+  photo_id?: string;
+  photo_url?: string;
+  category: InventoryCategory;
+  description: string;
+  brand?: string;
+  model?: string;
+  serial_number?: string;
+  purchase_date?: string;
+  purchase_price_usd?: number;
+  proof_of_purchase?: boolean;
+  florida_tax_included?: boolean;
+  condition_grade: ConditionGrade;
+  estimated_replacement_cost?: number;
+  depreciation_percent?: number;
+  location_in_home?: string;
+  warranty_status?: WarrantyStatus;
+  warranty_expiration_date?: string;
+  quantity?: number;
+  notes?: string;
+}
+
+// Validation result type
+export interface InventoryValidationResult {
+  total_items: number;
+  items_with_photos: number;
+  items_with_receipts: number;
+  items_with_serial_numbers: number;
+  items_with_purchase_info: number;
+  items_missing_critical_data: number;
+  total_declared_value: number;
+  total_replacement_value: number;
+  validation_score: number;
+  recommendations: string[];
+}
+
+// AI analysis result type
+export interface AIInventoryAnalysisResult {
+  items: Array<{
+    photo_id?: string;
+    item_id?: number;
+    category: InventoryCategory;
+    description: string;
+    brand: string;
+    model: string;
+    serial_number: string;
+    purchase_date?: string;
+    purchase_price_usd?: string | number;
+    condition_grade: ConditionGrade;
+    estimated_replacement_cost: string | number;
+    depreciation_percent?: string | number;
+    location_in_home: string;
+    warranty_status: WarrantyStatus;
+    warranty_expiration_date?: string;
+    proof_of_purchase: 'YES' | 'NO' | boolean;
+    florida_tax_included?: 'YES' | 'NO' | 'UNK' | boolean;
+    notes?: string;
+  }>;
+  batchId?: string;
+  processedCount?: number;
+  failedCount?: number;
+  errors?: Array<{
+    item: string;
+    error: string;
+  }>;
 }

@@ -49,9 +49,43 @@ next-env.d.ts
 # AI context logs
 .ai-context/retrospectives/*.jsonl
 
+# Data and temporary files
+CleanedSplit/
+CleanedSplit_imported/
+temp_extract/
+import_logs/
+*.geojson
+*.gdb/
+county_codes_temp.txt
+
+# SQL dumps and temporary files
+supabase_dump.sql
+schema.sql
+*-temp.sql
+fix-*.sql
+test-*.sql
+
+# Import and processing scripts (archived)
+import-*.sh
+import-*.js
+continue-*.sh
+continue-*.js
+complete-*.sh
+extract-*.sh
+update-*.sh
+test-import-*.sh
+test-scraper*.js
+verify-*.sh
+
+# Deno files (if not actively used)
+deno.lock
+
 # ide
 .idea/
 # .vscode/
 !.vscode/settings.json
 *.swp
 *.swo
+
+# Ignore environment example files
+.env.example

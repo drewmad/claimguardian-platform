@@ -2,6 +2,17 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## User Preferences for AI Assistant
+
+- **Stack multiple improvements together** - Don't just provide one solution, combine optimizations
+- **Holistic problem-solving** - Consider the entire workflow, not just the immediate issue
+- **Layer optimizations** - Combine speed + parallelization + monitoring + verification
+- **Provide complete solutions** - Include automation scripts, progress tracking, and error handling
+- **Build in resilience** - Add recovery options, clear status reporting, and fallback methods
+- **Maximize efficiency** - Think beyond quick fixes to comprehensive, production-ready solutions
+
+Example: When asked to speed up imports, don't just make batches bigger. Instead: increase batch size + add parallel processing + create monitoring dashboard + include verification script + provide one-command automation.
+
 ## Project Overview
 
 ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners built with:
@@ -20,6 +31,7 @@ pnpm build          # Build all packages
 pnpm test           # Run all tests (Jest)
 pnpm lint           # ESLint all packages
 pnpm type-check     # TypeScript validation
+pnpm validate       # Run all checks before commit
 ```
 
 ### Dependency Management
@@ -27,10 +39,12 @@ pnpm type-check     # TypeScript validation
 pnpm deps:check     # Validate lockfile integrity
 pnpm deps:update    # Update dependencies interactively
 pnpm deps:clean     # Clean reinstall all dependencies
+pnpm fix:imports    # Fix @claimguardian/ui and @claimguardian/db imports
 ```
 
 ### Git Operations
 ```bash
+pnpm cz             # Commit with conventional format
 HUSKY=0 git commit  # Skip pre-commit hooks (use sparingly)
 pnpm prepare        # Setup git hooks
 ```
@@ -52,6 +66,8 @@ pnpm test path/to/file.test.ts     # Specific test file
 /packages/utils     # Shared utilities
 /packages/config    # Shared configuration
 /packages/ai-config # AI configurations
+/packages/db        # Database models and Supabase client
+/packages/mcp-server # MCP server implementation
 ```
 
 ### Import Rules
@@ -188,8 +204,10 @@ NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
    - Test with `pnpm dev` to see changes
 
 3. **Before Committing**
+   - Run `pnpm validate` to check all validations
    - Run `pnpm lint` and fix issues
    - Ensure `pnpm build` succeeds
+   - Use `pnpm cz` for conventional commits
    - Use `HUSKY=0` only if build passes but lint has minor warnings
 
 ## Domain Context
@@ -208,32 +226,53 @@ Focus areas:
 
 ## Supabase Connection & Database Setup
 
-### Initial Setup
-Always connect to Supabase and run migrations:
+### Single Schema File Approach
+We use a single `supabase/schema.sql` file instead of migrations to avoid CLI conflicts.
+
+### Database Management
 ```bash
-# 1. Login to Supabase
-supabase login --token "$SUPABASE_ACCESS_TOKEN"
+# View current schema
+cat supabase/schema.sql
 
-# 2. Link to project
-supabase link --project-ref tmlrvecuwgppbaynesji
+# Update schema from production
+./scripts/db-schema.sh dump
 
-# 3. Pull remote schema (if needed)
-supabase db pull
+# Apply schema (opens dashboard and copies to clipboard)
+./scripts/db-schema.sh apply
 
-# 4. Run any pending migrations
-supabase db push
-```
+# Compare local vs production
+./scripts/db-schema.sh diff
 
-### Auto-Migration on Development
-When starting development, always check and apply migrations:
-```bash
-# Check migration status
-supabase migration list
-
-# Apply new migrations if any
-supabase db push
+# Validate schema file
+./scripts/db-schema.sh validate
 ```
 
 ### Project Reference
 - Project ID: `tmlrvecuwgppbaynesji`
-- Always ensure database schema is synced before development
+- Schema file: `supabase/schema.sql` (single source of truth)
+- No migrations folder - all archived
+
+### Making Schema Changes
+1. Test changes in development/staging
+2. Dump updated schema: `./scripts/db-schema.sh dump`
+3. Commit the updated `schema.sql` file
+4. Apply to other environments via dashboard
+
+## Pre-commit Hooks
+
+Husky runs these checks automatically:
+- `pnpm deps:check` - Validates lockfile integrity
+- `pnpm lint` - ESLint checks
+- `pnpm type-check` - TypeScript validation
+
+## Code Documentation
+
+Add JSDoc-style `@fileMetadata` headers to new/modified files:
+```typescript
+/**
+ * @fileMetadata
+ * @purpose Brief description of file purpose
+ * @owner team-name
+ * @status active|deprecated
+ */
+```
