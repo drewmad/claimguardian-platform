@@ -1,0 +1,59 @@
+name: Update database types
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  # Allow manual dispatch via GitHub Actions dashboard
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+      SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+      SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: '10.12.4'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate Supabase types
+        run: |
+          npx supabase gen types typescript --project-id tmlrvecuwgppbaynesji > packages/db/src/types.ts
+          echo "Generated types:"
+          echo "$(head -20 packages/db/src/types.ts)"
+
+      - name: Check for file changes
+        id: git_status
+        run: |
+          echo "status=$(git status -s)" >> $GITHUB_OUTPUT
+
+      - name: Commit updated types
+        if: ${{ contains(steps.git_status.outputs.status, 'packages/db/src/types.ts') }}
+        run: |
+          git add packages/db/src/types.ts
+          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit -m "chore: Update Supabase database types"
+
+      - name: Push changes
+        if: ${{ contains(steps.git_status.outputs.status, 'packages/db/src/types.ts') }}
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
