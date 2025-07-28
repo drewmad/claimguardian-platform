@@ -3,7 +3,6 @@
   "buildCommand": "pnpm build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
-  "ignoreCommand": "git diff HEAD^ HEAD --quiet .",
   "github": {
     "silent": true
   },
