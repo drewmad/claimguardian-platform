@@ -1,0 +1,44 @@
+# Ignore everything except what we need for deployment
+.git
+.github
+.husky
+.vscode
+.idea
+.DS_Store
+*.log
+*.tsbuildinfo
+coverage
+.turbo
+.next
+dist
+build
+node_modules
+.env*.local
+.env.example
+
+# Large data files
+*.gdb/
+CleanedSplit/
+data/
+deployment_logs/
+import_logs/
+temp_extract/
+
+# Scripts and tools not needed for deployment
+scripts/
+agents/
+docs/
+__tests__/
+
+# Development files
+*.md
+!README.md
+*.sh
+*.py
+*.sql
+
+# Backup and temporary files
+*-backup/
+*-temp/
+*.bak
+*.tmp
