@@ -275,3 +275,32 @@ tools/
 data_integrations/
 deployment_logs/
 import_logs/
+
+# ==============================================================================
+# DATA PLATFORM
+# ==============================================================================
+# Data platform processed files
+data-platform/raw/**/*.csv
+data-platform/raw/**/*.gdb
+data-platform/raw/**/*.shp
+data-platform/processed/**/*
+!data-platform/**/README.md
+!data-platform/**/.gitkeep
+
+# Keep schema and script files
+!data-platform/schemas/**
+!data-platform/scripts/**
+
+# ==============================================================================
+# REORGANIZED SUPABASE FUNCTIONS
+# ==============================================================================
+# Ignore function build artifacts
+supabase/functions/*/.env
+supabase/functions/*/node_modules/
+supabase/functions/*/dist/
+
+# ==============================================================================
+# TEMPORARY REORGANIZATION FILES
+# ==============================================================================
+.supbase/
+cron.yaml.backup
