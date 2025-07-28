@@ -21,4 +21,8 @@ export const COLORS = {
   bgSecondary: '#1E1E1E',
   bgTertiary: '#2A2A2A',
   border: '#424242',
+  glass: {
+    bg: 'rgba(255, 255, 255, 0.05)',
+    border: 'rgba(255, 255, 255, 0.1)',
+  },
 };

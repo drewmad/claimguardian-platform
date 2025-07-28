@@ -16,6 +16,8 @@ import { WhoWeServe } from '@/components/landing/who-we-serve'
 import { WhoWeFightFor } from '@/components/landing/who-we-fight-for'
 import { HowItWorks } from '@/components/landing/how-it-works'
 import { Features } from '@/components/landing/features'
+import { FounderStory } from '@/components/landing/founder-story'
+import { Pricing } from '@/components/landing/pricing'
 import { Testimonials } from '@/components/landing/testimonials'
 import { FAQ } from '@/components/landing/faq'
 import { GetStarted } from '@/components/landing/get-started'
@@ -37,6 +39,8 @@ export default function HomePage() {
         <WhoWeFightFor />
         <HowItWorks />
         <Features />
+        <FounderStory />
+        <Pricing />
         <Testimonials />
         <FAQ />
         <GetStarted />
