@@ -219,11 +219,32 @@ files-to-fix.txt
 # ==============================================================================
 # Action plans and temporary documentation
 actionplan.md
+UNUSED_FILES_REPORT.md
 
 # Large agent directories (if they become too large)
 agents/temp/
 agents/output/
 
 # Deployment and setup guides (if they contain sensitive info)
-# FLOIR_DEPLOYMENT_GUIDE.md
-# FLORIDA_PLATFORM_SETUP.md
+FLOIR_DEPLOYMENT_GUIDE.md
+FLORIDA_DATA_PLATFORM_SUMMARY.md
+FLORIDA_PLATFORM_SETUP.md
+
+# Data directories
+data/
+
+# Scripts that are temporary or one-off
+scripts/find-unused-files.js
+
+# All SQL files in supabase migrations directories
+supabase/migrations_ai/
+supabase/migrations_archive*/
+supabase/migrations_backup*/
+supabase/migrations_consolidated/
+
+# Schema and seed files
+supabase/schema.sql
+supabase/seed.sql
+
+# Root level SQL files (temporary)
+/*.sql

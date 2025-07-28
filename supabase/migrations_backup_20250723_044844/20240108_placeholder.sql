@@ -1,2 +1,0 @@
--- This is a placeholder migration for the existing 20240108 migration in remote
--- The actual login_activity table was already created
