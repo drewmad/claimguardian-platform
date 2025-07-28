@@ -55,6 +55,9 @@ dist/
 .turbo
 **/.turbo/
 
+# TypeScript build info
+*.tsbuildinfo
+
 # ==============================================================================
 # OPERATING SYSTEM & EDITOR FILES
 # ==============================================================================
@@ -228,6 +231,9 @@ agents/output/
 FLOIR_DEPLOYMENT_GUIDE.md
 FLORIDA_DATA_PLATFORM_SUMMARY.md
 FLORIDA_PLATFORM_SETUP.md
+docs/florida-platform/FLOIR_DEPLOYMENT_GUIDE.md
+docs/florida-platform/FLORIDA_DATA_PLATFORM_SUMMARY.md
+docs/florida-platform/FLORIDA_PLATFORM_SETUP.md
 
 # Data directories
 data/
@@ -239,11 +245,12 @@ supabase/_migrations_archive/
 # Backup directories
 repo_backup_*/
 
-# Large GDB files
+# Large GDB files and directories
 *.gdb
 *.gdb/
-temp_extract/
+*Cadastral_Statewide.gdb*/
 "Cadastral_Statewide.gdb 2"/
+temp_extract/
 
 # Import and deployment logs
 import_logs/
