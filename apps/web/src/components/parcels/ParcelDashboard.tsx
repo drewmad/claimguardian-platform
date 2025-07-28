@@ -1,8 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { createClient } from '@/lib/supabase/client'
 import { 
@@ -205,7 +205,7 @@ export default function ParcelDashboard() {
           <Button
             onClick={() => enrichProperties()}
             disabled={refreshing}
-            variant="outline"
+            variant="secondary"
             size="sm"
           >
             <Activity className="h-4 w-4 mr-2" />
@@ -217,7 +217,7 @@ export default function ParcelDashboard() {
               fetchData()
             }}
             disabled={refreshing}
-            variant="outline"
+            variant="secondary"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
@@ -342,7 +342,7 @@ export default function ParcelDashboard() {
                   </div>
                   <Button
                     size="sm"
-                    variant="outline"
+                    variant="secondary"
                     onClick={() => triggerIngest(source)}
                     disabled={refreshing}
                   >

@@ -72,7 +72,7 @@ export function LoginModal() {
       const { error } = await authService.resendConfirmationEmail(email)
       
       if (error) {
-        logger.error('Failed to resend verification email', error)
+        logger.error('Failed to resend verification email', {}, error instanceof Error ? error : new Error(String(error)))
         return
       }
       
@@ -84,7 +84,7 @@ export function LoginModal() {
         setResendSuccess(false)
       }, 5000)
     } catch (err) {
-      logger.error('Unexpected error resending verification email', err)
+      logger.error('Unexpected error resending verification email', {}, err instanceof Error ? err : new Error(String(err)))
     } finally {
       setResending(false)
     }

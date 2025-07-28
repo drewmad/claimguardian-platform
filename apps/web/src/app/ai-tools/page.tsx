@@ -17,7 +17,7 @@ interface AITool {
   id: string
   title: string
   description: string
-  icon: unknown
+  icon: React.ComponentType<{ className?: string }>
   color: string
   href: string
   status: 'active' | 'coming-soon' | 'beta'
@@ -202,6 +202,8 @@ export default function AIToolsPage() {
             Coming Soon
           </Badge>
         )
+      default:
+        return null
     }
   }
 

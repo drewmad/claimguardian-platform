@@ -20,12 +20,12 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 const nextConfig = {
   distDir: '.next',
   
-  // TODO: Remove these once we fix all ESLint and TypeScript errors
+  // Build validation enabled - fixing errors
   eslint: {
-    ignoreDuringBuilds: true, // Temporarily ignore to test deployment
+    ignoreDuringBuilds: false,
   },
   typescript: {
-    ignoreBuildErrors: true, // Temporarily ignore to test deployment
+    ignoreBuildErrors: false,
   },
   output: 'standalone',
   experimental: {

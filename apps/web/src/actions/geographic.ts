@@ -264,7 +264,13 @@ export async function validateAddress({
     }
     
     const isValid = data && data.length > 0
-    const suggestions = data?.map(item => ({
+    const suggestions = data?.map((item: {
+      zip_code: string;
+      cities: { name: string };
+      counties: { name: string };
+      states: { code: string };
+      primary_city: string;
+    }) => ({
       zipCode: item.zip_code,
       city: item.cities.name,
       county: item.counties.name,

@@ -107,7 +107,7 @@ export function useRequestCache() {
     requestFn: () => Promise<T>,
     ttl?: number
   ): Promise<T> => {
-    const cached = requestCache.get(key)
+    const cached = requestCache.get(key) as T | undefined
     
     if (cached) {
       if (process.env.NODE_ENV === 'development') {
@@ -263,7 +263,7 @@ export function useMemoryMonitoring() {
   useEffect(() => {
     const checkMemory = () => {
       if ('memory' in performance) {
-        const info = (performance as unknown).memory
+        const info = (performance as unknown as { memory: { usedJSHeapSize: number, totalJSHeapSize: number } }).memory
         setMemoryInfo({
           used: info.usedJSHeapSize,
           total: info.totalJSHeapSize,

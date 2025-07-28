@@ -12,6 +12,13 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { 
+  PaginationParams, 
+  PaginatedResponse,
+  normalizePaginationParams,
+  createPaginationMeta 
+} from '@claimguardian/utils'
+import { updatePropertySchema } from '@/lib/validation/schemas'
 
 interface PropertyData {
   name: string
@@ -52,7 +59,20 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
   }
 }
 
-export async function getProperties() {
+interface PropertyRecord {
+  id: string
+  user_id: string
+  name: string
+  address: string
+  type: string
+  year_built: number
+  square_feet: number
+  details: Record<string, unknown>
+  created_at: string
+  updated_at: string
+}
+
+export async function getProperties(params?: PaginationParams) {
   try {
     const supabase = await createClient()
     
@@ -67,32 +87,46 @@ export async function getProperties() {
       throw new Error('Not authenticated')
     }
     
+    // Normalize pagination parameters
+    const { page, limit, offset } = normalizePaginationParams(params)
+    
+    // Get total count
+    const { count } = await supabase
+      .from('properties')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+    
+    // Get paginated data
     const { data, error } = await supabase
       .from('properties')
       .select('*')
       .eq('user_id', user.id)
       .order('created_at', { ascending: false })
+      .range(offset, offset + limit - 1)
     
     if (error) {
       console.error('Database error in getProperties:', error)
       throw error
     }
     
-    return { data, error: null }
+    // Create paginated response
+    const paginatedResponse: PaginatedResponse<PropertyRecord> = {
+      data: data || [],
+      meta: createPaginationMeta(page, limit, count || 0)
+    }
+    
+    return { data: paginatedResponse, error: null }
   } catch (error) {
     console.error('Error fetching properties:', error)
     return { data: null, error: error as Error }
   }
 }
 
-export async function updateProperty({ 
-  propertyId, 
-  updates 
-}: { 
-  propertyId: string
-  updates: Partial<PropertyData> 
-}) {
+export async function updateProperty(params: unknown) {
   try {
+    // Validate input
+    const { propertyId, updates } = updatePropertySchema.parse(params)
+    
     const supabase = await createClient()
     
     // Debug logging

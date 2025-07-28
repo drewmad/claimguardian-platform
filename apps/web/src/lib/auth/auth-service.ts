@@ -129,7 +129,7 @@ class AuthService {
         timestamp: new Date().toISOString()
       })
       
-      logger.error('Signup failed', error)
+      logger.error('Signup failed', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -168,16 +168,14 @@ class AuthService {
 
       if (error) {
         // Try to log failed login attempt, but don't let it break auth
-        if (authData?.user?.id) {
-          try {
-            await loginActivityService.logLoginAttempt(
-              authData.user.id,
-              false,
-              error.message
-            )
-          } catch (logError) {
-            logger.warn('Failed to log login attempt:', logError)
-          }
+        try {
+          await loginActivityService.logLoginAttempt(
+            data.email,
+            false,
+            error.message
+          )
+        } catch (logError) {
+          logger.warn('Failed to log login attempt:', { error: (logError as Error).message })
         }
         throw this.handleAuthError(error)
       }
@@ -205,13 +203,13 @@ class AuthService {
       try {
         await loginActivityService.logLoginAttempt(authData.user.id, true)
       } catch (logError) {
-        logger.warn('Failed to log successful login:', logError)
+        logger.warn('Failed to log successful login:', { error: (logError as Error).message })
       }
 
       logger.info('User signin successful', { userId: authData.user.id })
       return { data: authData.user }
     } catch (error) {
-      logger.error('Signin failed', error)
+      logger.error('Signin failed', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -243,7 +241,7 @@ class AuthService {
       logger.info('User signout successful')
       return { data: undefined }
     } catch (error) {
-      logger.error('Signout failed', error)
+      logger.error('Signout failed', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -277,7 +275,7 @@ class AuthService {
       logger.info('Password reset email sent', { email })
       return { data: undefined }
     } catch (error) {
-      logger.error('Password reset failed', error)
+      logger.error('Password reset failed', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -318,7 +316,7 @@ class AuthService {
       logger.info('Password update successful', { userId: data.user.id })
       return { data: data.user }
     } catch (error) {
-      logger.error('Password update failed', error)
+      logger.error('Password update failed', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -356,7 +354,7 @@ class AuthService {
       logger.info('Confirmation email resent', { email })
       return { data: undefined }
     } catch (error) {
-      logger.error('Failed to resend confirmation email', error)
+      logger.error('Failed to resend confirmation email', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -385,7 +383,7 @@ class AuthService {
 
       return { data: user }
     } catch (error) {
-      logger.error('Failed to get current user', error)
+      logger.error('Failed to get current user', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -421,7 +419,7 @@ class AuthService {
 
       return { data: session.user }
     } catch (error) {
-      logger.error('Failed to refresh session', error)
+      logger.error('Failed to refresh session', {}, error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -447,7 +445,6 @@ class AuthService {
       status: error.status,
       code: error.code,
       name: error.name,
-      __isAuthError: error.__isAuthError,
       url: typeof window !== 'undefined' ? window.location.href : 'server',
       timestamp: new Date().toISOString()
     }

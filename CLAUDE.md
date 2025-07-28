@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. It also serves as a dynamic config and knowledge base for Claude Code CLI agents, queried via tools for context and learnings. Incorporates Agent OS principles for spec-driven development.
 
 ## User Preferences for AI Assistant
 
@@ -63,7 +63,16 @@ ClaimGuardian/
 │   ├── samples/           # Sample datasets
 │   ├── schemas/           # Data schemas
 │   └── florida/           # Florida-specific data
-├── archives/              # Historical files (gitignored contents)
+├── standards/             # Agent OS standards (NEW)
+│   ├── best-practices.md  # Development philosophy
+│   ├── code-style.md      # Code formatting rules
+│   └── tech-stack.md      # Technology choices
+├── .claude/               # Agent configurations (NEW)
+│   └── agents/            # Subagent definitions
+├── .agent-os/             # Agent OS workspace (generated)
+│   ├── product/           # Product docs (mission, roadmap)
+│   └── specs/             # Feature specifications
+├── learnings.md           # Agent learning log
 └── [root configs]         # Essential configuration files only
 ```
 
@@ -261,9 +270,9 @@ NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 SUPABASE_SERVICE_ROLE_KEY=
 
-# AI Features (Optional)
-NEXT_PUBLIC_GEMINI_API_KEY=
-NEXT_PUBLIC_OPENAI_API_KEY=
+# AI Features (Now server-side only)
+GEMINI_API_KEY=              # Server-side Edge Functions
+OPENAI_API_KEY=              # Server-side Edge Functions
 
 # Google Maps API (Optional - for address autocomplete)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
@@ -411,11 +420,12 @@ cat supabase/schema.sql
 ClaimGuardian leverages Deno Edge Functions for:
 
 #### AI Processing Functions
-1. **`floir-extractor`**: Extract data from Florida insurance documents
-2. **`floir-rag-search`**: RAG-based search across insurance regulations
-3. **`property-ai-enrichment`**: Enhance property data with AI insights
-4. **`florida-parcel-ingest`**: Process large-scale cadastral data imports
-5. **`florida-parcel-monitor`**: Monitor and validate data import status
+1. **`ai-document-extraction`**: Extract data from insurance documents securely
+2. **`floir-extractor`**: Extract data from Florida insurance documents
+3. **`floir-rag-search`**: RAG-based search across insurance regulations
+4. **`property-ai-enrichment`**: Enhance property data with AI insights
+5. **`florida-parcel-ingest`**: Process large-scale cadastral data imports
+6. **`florida-parcel-monitor`**: Monitor and validate data import status
 
 #### Function Development Pattern
 ```typescript
@@ -497,3 +507,57 @@ Add JSDoc-style `@fileMetadata` headers to new/modified files:
 - Parallel execution for large datasets
 - Progress tracking and status reporting
 - Error recovery and retry mechanisms
+
+## Agent OS Integration for Spec-Driven Workflows
+
+Inspired by Agent OS, we use layered context: global standards/ folder, repo-specific .agent-os/product/ (generate via subagents), feature specs in .agent-os/specs/. Subagents query these for context; generate/update them.
+
+- **Standards**: See standards/ folder (global, customizable).
+- **Product Docs**: Mission, roadmap, decisions in .agent-os/product/.
+- **Specs**: Dated folders in .agent-os/specs/ with SRD, tech spec, tasks.
+
+Refinement: After tasks, subagents suggest updates to standards based on learnings.
+
+### Slash Commands for Agent OS Workflows
+```bash
+/plan-product      # Generate product docs and roadmap
+/create-spec       # Create feature specification
+/execute-tasks     # Execute spec tasks with TDD
+```
+
+## Enhanced Adaptive Agent System (Claude Code CLI Optimized)
+
+### Claude Code CLI Setup & Extensions
+- Install: `pip install claude-code` (Python SDK).
+- Config: Set `ANTHROPIC_API_KEY` env var.
+- Init: `claude-code init --repo . --hooks` (auto-installs Git hooks).
+- Subagents: Defined as native .md files in `.claude/agents/` (project-level).
+- Management: Use `/agents` command for create/edit/delete; auto-delegates based on descriptions.
+- Agent OS Setup: Run installation scripts from Agent OS repo; customize standards/.
+
+### Hooks Integration
+Triggers for automation:
+- Pre-commit: Invoke plan-orchestrator subagent to validate/optimize changes.
+- Post-merge: Spawn data-import for schema sync.
+
+Setup: `claude-code hooks install`  # Adds to .git/hooks
+
+### Local Docs as Dynamic Memory
+- Subagents use Read tool to query sections of this file, standards/, and learnings.md for context.
+- Learnings appended to learnings.md via Write tool; queried on init for adaptation.
+
+### Sub-Agents with Parallelism
+- Native delegation: Automatic based on task match; explicit via "Use [name] subagent".
+- Parallelism: Chain subagents for non-conflicting tasks.
+- Conflict Avoidance: Prompts include checks via Grep/Glob.
+
+### Learning Layer
+- Record: Subagents use Write to append {task, mistake, learning} to learnings.md.
+- Retrieve: Use Read to query learnings.md at start; adapt behavior.
+- Refinement: Suggest updates to standards/ based on learnings.
+
+## Important Instruction Reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

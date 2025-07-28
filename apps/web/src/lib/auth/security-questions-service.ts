@@ -30,6 +30,16 @@ interface SecurityAnswerInput {
   answer: string
 }
 
+interface UserSecurityAnswerRow {
+  id: string
+  user_id: string
+  question_id: string
+  security_questions: {
+    id: string
+    question: string
+  }
+}
+
 class SecurityQuestionsService {
   private supabase = createClient()
   /**
@@ -43,14 +53,14 @@ class SecurityQuestionsService {
         .order('question')
 
       if (error) {
-        logger.error('Failed to fetch security questions', error)
+        logger.error('Failed to fetch security questions', {}, error)
         throw error
       }
 
       return data || []
-    } catch (err) {
-      logger.error('Error fetching security questions', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching security questions', {}, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -73,19 +83,19 @@ class SecurityQuestionsService {
         .eq('user_id', userId)
 
       if (error) {
-        logger.error('Failed to fetch user security questions', error)
+        logger.error('Failed to fetch user security questions', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
-      return data?.map((item: Record<string, unknown>) => ({
+      return (data as unknown as UserSecurityAnswerRow[])?.map((item) => ({
         id: item.id,
         user_id: item.user_id,
         question_id: item.question_id,
         question: item.security_questions
       })) || []
-    } catch (err) {
-      logger.error('Error fetching user security questions', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching user security questions', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -110,7 +120,7 @@ class SecurityQuestionsService {
         .eq('user_id', userId)
 
       if (deleteError) {
-        logger.error('Failed to delete existing security answers', deleteError)
+        logger.error('Failed to delete existing security answers', { userId }, deleteError instanceof Error ? deleteError : new Error(String(deleteError)))
         throw deleteError
       }
 
@@ -120,14 +130,14 @@ class SecurityQuestionsService {
         .insert(hashedAnswers)
 
       if (insertError) {
-        logger.error('Failed to save security answers', insertError)
+        logger.error('Failed to save security answers', { userId }, insertError instanceof Error ? insertError : new Error(String(insertError)))
         throw insertError
       }
 
       logger.info('Security answers saved successfully', { userId, count: answers.length })
-    } catch (err) {
-      logger.error('Error saving security answers', err)
-      throw err
+    } catch (error) {
+      logger.error('Error saving security answers', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -144,7 +154,7 @@ class SecurityQuestionsService {
         .single()
 
       if (error || !data) {
-        logger.error('Failed to fetch security answer', error)
+        logger.error('Failed to fetch security answer', {}, error instanceof Error ? error : new Error(String(error)))
         return false
       }
 
@@ -157,8 +167,8 @@ class SecurityQuestionsService {
       })
 
       return isValid
-    } catch (err) {
-      logger.error('Error verifying security answer', err)
+    } catch (error) {
+      logger.error('Error verifying security answer', { userId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }
@@ -183,8 +193,8 @@ class SecurityQuestionsService {
       })
 
       return allValid
-    } catch (err) {
-      logger.error('Error verifying multiple security answers', err)
+    } catch (error) {
+      logger.error('Error verifying multiple security answers', { userId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }
@@ -218,13 +228,13 @@ class SecurityQuestionsService {
         .eq('user_id', userId)
 
       if (error) {
-        logger.error('Failed to check security questions', error)
+        logger.error('Failed to check security questions', {}, error instanceof Error ? error : new Error(String(error)))
         return false
       }
 
       return (count || 0) > 0
-    } catch (err) {
-      logger.error('Error checking security questions', err)
+    } catch (error) {
+      logger.error('Error checking security questions', { userId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }

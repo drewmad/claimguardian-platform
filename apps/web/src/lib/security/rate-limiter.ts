@@ -167,4 +167,5 @@ export async function withRateLimit(
   return response
 }
 
+export { RateLimiter }
 export type { RateLimitConfig, RateLimitEntry }

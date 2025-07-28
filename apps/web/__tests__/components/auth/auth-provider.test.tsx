@@ -82,7 +82,12 @@ const TestComponent = () => {
 }
 
 describe('AuthProvider', () => {
-  let mockSupabase: any
+  let mockSupabase: {
+    auth: {
+      getSession: jest.Mock
+      onAuthStateChange: jest.Mock
+    }
+  }
   let console: ReturnType<typeof mockConsole>
 
   beforeEach(() => {
@@ -180,7 +185,7 @@ describe('AuthProvider', () => {
       const mockUser = createMockUser()
       const mockSession = createMockSession({ user: mockUser })
       
-      let authStateCallback: any
+      let authStateCallback: (event: string, session: any) => void
       mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
         authStateCallback = callback
         return { data: { subscription: { unsubscribe: jest.fn() } } }
@@ -208,7 +213,7 @@ describe('AuthProvider', () => {
     })
 
     it('should handle SIGNED_OUT event', async () => {
-      let authStateCallback: any
+      let authStateCallback: (event: string, session: any) => void
       mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
         authStateCallback = callback
         return { data: { subscription: { unsubscribe: jest.fn() } } }

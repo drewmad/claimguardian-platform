@@ -44,7 +44,6 @@ class InputSanitizer {
         sanitized = DOMPurify.sanitize(sanitized, {
           ALLOWED_TAGS: allowedTags,
           ALLOWED_ATTR: allowedAttributes,
-          FORBID_SCRIPT: true,
           FORBID_ATTR: ['onerror', 'onload', 'onclick', 'onmouseover'],
           ALLOW_DATA_ATTR: false
         })
@@ -192,7 +191,7 @@ class InputSanitizer {
     }
     
     if (typeof obj === 'object') {
-      const sanitized: unknown = {}
+      const sanitized: Record<string, unknown> = {}
       for (const [key, value] of Object.entries(obj)) {
         // Sanitize key names too
         const sanitizedKey = this.sanitizeText(key, 50)

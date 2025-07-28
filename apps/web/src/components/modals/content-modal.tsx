@@ -36,11 +36,11 @@ export function ContentModal() {
         </div>
 
         <div className="p-6 overflow-y-auto max-h-[calc(80vh-5rem)]">
-          {content.description && (
+          {content?.description && (
             <p className="text-slate-300 mb-4">{content.description}</p>
           )}
           
-          {content.benefits && (
+          {content?.benefits && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Benefits</h3>
               <ul className="space-y-2">
@@ -55,7 +55,7 @@ export function ContentModal() {
           )}
           
           {/* Add more content types as needed */}
-          {content.sections && content.sections.map((section, index) => (
+          {content?.sections && content.sections.map((section: any, index: number) => (
             <div key={index} className="mt-6">
               <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
               <p className="text-slate-300">{section.content}</p>

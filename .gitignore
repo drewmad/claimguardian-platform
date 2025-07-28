@@ -205,6 +205,16 @@ lint-report.txt
 lint-analysis.json
 files-to-fix.txt
 
+# Backup files
+*.backup
+*.bak
+*~
+*.orig
+
+# Learning and documentation drafts
+learnings.md
+LEARNINGS.md
+
 # ==============================================================================
 # SECURITY & SENSITIVE DATA
 # ==============================================================================

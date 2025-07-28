@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     return response
 
   } catch (error) {
-    logger.error('Failed to fetch legal documents', error)
+    logger.error('Failed to fetch legal documents', {}, error instanceof Error ? error : new Error(String(error)))
     
     return NextResponse.json(
       { error: 'Failed to fetch legal documents' },

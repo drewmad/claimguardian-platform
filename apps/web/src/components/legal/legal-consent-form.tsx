@@ -14,6 +14,7 @@ import { useState, useEffect } from 'react'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
 import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
+import type { LegalDocument } from '@claimguardian/db'
 
 interface LegalConsentFormProps {
   userId?: string
@@ -43,39 +44,39 @@ export function LegalConsentForm({
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  useEffect(() => {
-    const loadDocuments = async () => {
-      try {
-        setLoading(true)
-        setError('')
+  const loadDocuments = async () => {
+    try {
+      setLoading(true)
+      setError('')
 
-        let docs: LegalDocument[]
-        
-        if (mode === 'update' && userId) {
-          // Load only documents that need acceptance
-          docs = await legalService.getDocumentsNeedingAcceptance(userId)
-        } else {
-          // Load all active documents (for signup or view)
-          docs = await legalService.getActiveLegalDocuments()
-        }
-
-        setDocuments(docs)
-        
-        // Initialize acceptance state
-        const initialState: DocumentState = {}
-        docs.forEach(doc => {
-          initialState[doc.id] = false
-        })
-        setAcceptedDocs(initialState)
-
-      } catch (err) {
-        logger.error('Failed to load legal documents', err)
-        setError('Failed to load legal documents. Please try again.')
-      } finally {
-        setLoading(false)
+      let docs: LegalDocument[]
+      
+      if (mode === 'update' && userId) {
+        // Load only documents that need acceptance
+        docs = await legalService.getDocumentsNeedingAcceptance(userId)
+      } else {
+        // Load all active documents (for signup or view)
+        docs = await legalService.getActiveLegalDocuments()
       }
+
+      setDocuments(docs)
+      
+      // Initialize acceptance state
+      const initialState: DocumentState = {}
+      docs.forEach(doc => {
+        initialState[doc.id] = false
+      })
+      setAcceptedDocs(initialState)
+
+    } catch (err) {
+      logger.error('Failed to load legal documents', { userId }, err instanceof Error ? err : new Error(String(err)))
+      setError('Failed to load legal documents. Please try again.')
+    } finally {
+      setLoading(false)
     }
-    
+  }
+
+  useEffect(() => {
     loadDocuments()
   }, [userId, mode])
 
@@ -128,7 +129,7 @@ export function LegalConsentForm({
       })
 
     } catch (err) {
-      logger.error('Failed to submit legal consent', err)
+      logger.error('Failed to submit legal consent', { userId }, err instanceof Error ? err : new Error(String(err)))
       setError('Failed to record consent. Please try again.')
     } finally {
       setSubmitting(false)

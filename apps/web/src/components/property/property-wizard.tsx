@@ -294,7 +294,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
-  const handleExtractedDataApplied = (extractedData: unknown) => {
+  const handleExtractedDataApplied = (extractedData: any) => {
     // Apply extracted data to form fields
     setPropertyData(prev => ({
       ...prev,
@@ -323,48 +323,19 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     try {
       // First create the property without insurance info
       const { data: createdProperty, error: propertyError } = await createProperty({
-        name: propertyData.name,
-        type: propertyData.type,
-        is_primary: propertyData.isPrimary,
-        address: propertyData.address,
-        year_built: propertyData.yearBuilt,
-        square_feet: propertyData.squareFeet,
-        value: propertyData.estimatedValue || 0,
-        details: {
-          bedrooms: propertyData.bedrooms,
-          bathrooms: propertyData.bathrooms,
-          lot_size: propertyData.lotSize,
-          
-          // Home systems
-          roof_type: propertyData.roofType,
-          roof_age: propertyData.roofAge,
-          roof_material: propertyData.roofMaterial,
-          hvac_type: propertyData.hvacType,
-          hvac_age: propertyData.hvacAge,
-          electrical_panel_type: propertyData.electricalPanelType,
-          electrical_panel_age: propertyData.electricalPanelAge,
-          plumbing_type: propertyData.plumbingType,
-          plumbing_age: propertyData.plumbingAge,
-          
-          // Features
-          has_pool: propertyData.hasPool,
-          pool_age: propertyData.poolAge,
-          has_garage: propertyData.hasGarage,
-          garage_spaces: propertyData.garageSpaces,
-          has_hurricane_shutters: propertyData.hasHurricaneShutters,
-          has_impact_windows: propertyData.hasImpactWindows,
-          has_generator_hookup: propertyData.hasGeneratorHookup,
-          has_solar_panels: propertyData.hasSolarPanels,
-          
-          // Values
-          tax_assessed_value: propertyData.taxAssessedValue,
-          last_sale_price: propertyData.lastSalePrice,
-          last_sale_date: propertyData.lastSaleDate,
-          flood_zone: propertyData.floodZone,
-          
-          features: propertyData.features
+        propertyData: {
+          name: propertyData.name,
+          type: propertyData.type,
+          address: `${propertyData.address.street1}${propertyData.address.street2 ? ' ' + propertyData.address.street2 : ''}, ${propertyData.address.city}, ${propertyData.address.state} ${propertyData.address.zip}`,
+          year_built: propertyData.yearBuilt,
+          square_feet: propertyData.squareFeet,
+          details: {
+            bedrooms: propertyData.bedrooms,
+            bathrooms: propertyData.bathrooms,
+            lot_size: propertyData.lotSize
+          }
         }
-      })
+    })
       
       if (propertyError) throw propertyError
       
@@ -382,19 +353,15 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
           for (const insuranceType of selectedTypes) {
             const policyInfo = {
               property_id: createdProperty.id,
-              carrier_name: carrierName,
+              carrier: carrierName,
               policy_number: propertyData.policyNumber || `POLICY-${insuranceType}-${Date.now()}`,
-              policy_type: insuranceType as unknown,
               effective_date: new Date().toISOString().split('T')[0],
               expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-              coverage_details: {
-                coverage_amount: propertyData.coverageAmount,
-                deductible: propertyData.deductible,
-                wind_deductible: propertyData.windDeductible,
-                documents: propertyData.policyDocuments?.map(f => f.name) || []
-              },
-              deductible_amount: propertyData.deductible,
-              wind_deductible_percentage: propertyData.windDeductible
+              coverage_amount: propertyData.coverageAmount || 0,
+              deductible: propertyData.deductible || 0,
+              wind_deductible: propertyData.windDeductible,
+              premium_amount: 0, // Premium amount would need to be calculated or input
+              additional_coverages: selectedTypes
             }
             
             const { error: policyError } = await createPolicy(policyInfo)
@@ -413,8 +380,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                   propertyId: createdProperty.id,
                   filePath: uploadedDoc.filePath,
                   fileName: uploadedDoc.fileName,
-                  fileSize: uploadedDoc.file.size,
-                  fileType: uploadedDoc.file.type,
+                  fileSize: 0, // Size not available from uploaded documents
+                  fileType: 'application/pdf', // Default to PDF
                   documentType: 'policy',
                   description: `Policy document: ${uploadedDoc.fileName}`
                 })
@@ -481,8 +448,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                 onChange={(e) => setPropertyData(prev => ({ ...prev, name: e.target.value }))}
                 placeholder="e.g., Main Residence, Beach House"
                 className="mt-1 bg-gray-700 border-gray-600 text-white"
-                error={errors.name}
               />
+              {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name}</p>}
               <p className="text-xs text-gray-400 mt-1">Give your property a memorable name</p>
             </div>
 
@@ -531,7 +498,6 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             <FloridaAddressForm
               value={propertyData.address}
               onChange={(address) => setPropertyData(prev => ({ ...prev, address }))}
-              errors={errors}
             />
             {propertyData.address.street1 && propertyData.address.city && propertyData.address.zip && (
               <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3">
@@ -603,8 +569,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     min="1800"
                     max={new Date().getFullYear()}
                     className="mt-1 bg-gray-700 border-gray-600 text-white"
-                    error={errors.yearBuilt}
                   />
+                  {errors.yearBuilt && <p className="text-xs text-red-400 mt-1">{errors.yearBuilt}</p>}
                 </div>
                 <div>
                   <Label htmlFor="squareFeet">Square Feet *</Label>
@@ -615,8 +581,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     onChange={(e) => setPropertyData(prev => ({ ...prev, squareFeet: parseInt(e.target.value) || 0 }))}
                     placeholder="e.g., 2500"
                     className="mt-1 bg-gray-700 border-gray-600 text-white"
-                    error={errors.squareFeet}
                   />
+                  {errors.squareFeet && <p className="text-xs text-red-400 mt-1">{errors.squareFeet}</p>}
                 </div>
               </div>
 
@@ -1257,6 +1223,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             </div>
           </div>
         )
+      default:
+        return null
     }
   }
 

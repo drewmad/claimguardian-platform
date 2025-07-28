@@ -105,10 +105,25 @@ Object.defineProperty(window, 'sessionStorage', {
 
 // Mock IntersectionObserver
 global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  observe() { return null }
-  disconnect() { return null }
-  unobserve() { return null }
+  root: Element | Document | null = null
+  rootMargin: string = ''
+  thresholds: ReadonlyArray<number> = []
+  
+  constructor(
+    callback: IntersectionObserverCallback,
+    options?: IntersectionObserverInit
+  ) {
+    this.root = options?.root || null
+    this.rootMargin = options?.rootMargin || ''
+    this.thresholds = options?.threshold ? (Array.isArray(options.threshold) ? options.threshold : [options.threshold]) : []
+  }
+  
+  observe(_target: Element): void {}
+  unobserve(_target: Element): void {}
+  disconnect(): void {}
+  takeRecords(): IntersectionObserverEntry[] {
+    return []
+  }
 }
 
 // Mock ResizeObserver

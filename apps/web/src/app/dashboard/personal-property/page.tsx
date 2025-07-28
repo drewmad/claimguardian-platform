@@ -9,7 +9,7 @@
 import React, { useState } from 'react'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { ProtectedRoute } from '@/components/auth/protected-route'
-import { Card } from '@claimguardian/ui'
+import { Card } from '@/components/ui/card'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'

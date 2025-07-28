@@ -1,11 +1,11 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { Input } from '@claimguardian/ui'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@claimguardian/ui'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
 import { 
   Search, 
@@ -83,13 +83,13 @@ export default function UnifiedFloridaSearch() {
 
       const [floirResponse, propertyResponse] = await Promise.all(searches)
       
-      if (floirResponse.error) throw new Error(`FLOIR search failed: ${floirResponse.error.message}`)
-      if (propertyResponse.error) throw new Error(`Property search failed: ${propertyResponse.error}`)
+      if ('error' in floirResponse && floirResponse.error) throw new Error(`FLOIR search failed: ${floirResponse.error.message}`)
+      if ('error' in propertyResponse && propertyResponse.error) throw new Error(`Property search failed: ${propertyResponse.error}`)
 
       // Combine and rank results
       const combinedResults = combineResults(
-        floirResponse.data?.results || [],
-        propertyResponse.results || []
+        'data' in floirResponse ? floirResponse.data?.results || [] : [],
+        'results' in propertyResponse ? propertyResponse.results || [] : []
       )
 
       // Generate unified answer if we have both types of results
@@ -104,14 +104,14 @@ export default function UnifiedFloridaSearch() {
         answer: unifiedAnswer,
         total_results: combinedResults.length,
         search_time_ms: Date.now() - startTime,
-        floir_results: floirResponse.data?.results?.length || 0,
-        property_results: propertyResponse.results?.length || 0
+        floir_results: 'data' in floirResponse ? floirResponse.data?.results?.length || 0 : 0,
+        property_results: 'results' in propertyResponse ? propertyResponse.results?.length || 0 : 0
       }
 
       setResults(response)
     } catch (err: unknown) {
       console.error('Unified search error:', err)
-      setError(err.message || 'Search failed')
+      setError(err instanceof Error ? err.message : 'Search failed')
     } finally {
       setLoading(false)
     }
@@ -153,13 +153,13 @@ export default function UnifiedFloridaSearch() {
 
       return { results, error: null }
     } catch (error: unknown) {
-      return { results: [], error: error.message }
+      return { results: [], error: error instanceof Error ? error.message : String(error) }
     }
   }
 
   const combineResults = (floirResults: unknown[], propertyResults: unknown[]): UnifiedSearchResult[] => {
-    const combined = [
-      ...floirResults.map((result: unknown) => ({
+    const combined: UnifiedSearchResult[] = [
+      ...floirResults.map((result: any) => ({
         type: 'floir' as const,
         id: result.id,
         title: `${formatDataType(result.data_type)} - ${result.primary_key}`,
@@ -168,7 +168,7 @@ export default function UnifiedFloridaSearch() {
         metadata: result,
         source_url: result.source_url
       })),
-      ...propertyResults
+      ...(propertyResults as UnifiedSearchResult[])
     ]
 
     // Sort by relevance (similarity score)
@@ -194,7 +194,7 @@ export default function UnifiedFloridaSearch() {
     }
   }
 
-  const calculatePropertyRelevance = (property: unknown, searchQuery: string): number => {
+  const calculatePropertyRelevance = (property: any, searchQuery: string): number => {
     const query = searchQuery.toLowerCase()
     let score = 0
 
@@ -259,21 +259,21 @@ export default function UnifiedFloridaSearch() {
                 <Filter className="h-4 w-4 text-gray-500" />
                 <div className="flex space-x-1">
                   <Button
-                    variant={searchType === 'all' ? 'default' : 'outline'}
+                    variant={searchType === 'all' ? 'default' : 'secondary'}
                     size="sm"
                     onClick={() => setSearchType('all')}
                   >
                     All Data
                   </Button>
                   <Button
-                    variant={searchType === 'regulation' ? 'default' : 'outline'}
+                    variant={searchType === 'regulation' ? 'default' : 'secondary'}
                     size="sm"
                     onClick={() => setSearchType('regulation')}
                   >
                     Regulation
                   </Button>
                   <Button
-                    variant={searchType === 'property' ? 'default' : 'outline'}
+                    variant={searchType === 'property' ? 'default' : 'secondary'}
                     size="sm"
                     onClick={() => setSearchType('property')}
                   >
@@ -334,10 +334,10 @@ export default function UnifiedFloridaSearch() {
                   <p className="text-sm text-gray-600 dark:text-gray-400">
                     Found {results.total_results} results in {results.search_time_ms}ms
                   </p>
-                  <Badge variant="outline">
+                  <Badge variant="secondary">
                     {results.floir_results} regulation
                   </Badge>
-                  <Badge variant="outline">
+                  <Badge variant="secondary">
                     {results.property_results} property
                   </Badge>
                 </div>
@@ -374,7 +374,7 @@ export default function UnifiedFloridaSearch() {
                       </div>
                       {result.source_url && (
                         <Button
-                          variant="outline"
+                          variant="secondary"
                           size="sm"
                           onClick={() => window.open(result.source_url, '_blank')}
                         >
@@ -392,22 +392,21 @@ export default function UnifiedFloridaSearch() {
                       {result.description}
                     </p>
 
-                    {/* Type-specific metadata */}
-                    {result.type === 'property' && result.metadata && (
+                    {result.type === 'property' && result.metadata ? (
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Location:</span>
-                          <p className="font-medium">{result.metadata.city}, {result.metadata.county}</p>
+                          <p className="font-medium">{(result.metadata as any).city}, {(result.metadata as any).county}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{result.metadata.property_type || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as any).property_type || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {result.metadata.property_value 
-                              ? `$${result.metadata.property_value.toLocaleString()}`
+                            {(result.metadata as any).property_value 
+                              ? `$${(result.metadata as any).property_value.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
@@ -415,11 +414,11 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Risk:</span>
                           <p className="font-medium">
-                            Hurricane: {Math.round((result.metadata.hurricane_risk || 0) * 100)}%
+                            Hurricane: {Math.round(((result.metadata as any).hurricane_risk || 0) * 100)}%
                           </p>
                         </div>
                       </div>
-                    )}
+                    ) : null}
                   </CardContent>
                 </Card>
               ))}
@@ -438,7 +437,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-3">
                           <FileText className="h-5 w-5 text-blue-500" />
                           <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                            {formatDataType(result.metadata.data_type)}
+                            {formatDataType((result.metadata as any).data_type)}
                           </Badge>
                           <span className="text-sm text-gray-500">
                             {Math.round((result.similarity || 0) * 100)}% match
@@ -446,7 +445,7 @@ export default function UnifiedFloridaSearch() {
                         </div>
                         {result.source_url && (
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             onClick={() => window.open(result.source_url, '_blank')}
                           >
@@ -488,7 +487,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-500">
-                            {result.metadata.latitude?.toFixed(4)}, {result.metadata.longitude?.toFixed(4)}
+                            {(result.metadata as any).latitude?.toFixed(4)}, {(result.metadata as any).longitude?.toFixed(4)}
                           </span>
                         </div>
                       </div>
@@ -501,17 +500,17 @@ export default function UnifiedFloridaSearch() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Owner:</span>
-                          <p className="font-medium">{result.metadata.owner_name || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as any).owner_name || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{result.metadata.property_type || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as any).property_type || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {result.metadata.property_value 
-                              ? `$${result.metadata.property_value.toLocaleString()}`
+                            {(result.metadata as any).property_value 
+                              ? `$${(result.metadata as any).property_value.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
@@ -519,7 +518,7 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Hurricane Risk:</span>
                           <p className="font-medium">
-                            {Math.round((result.metadata.hurricane_risk || 0) * 100)}%
+                            {Math.round(((result.metadata as any).hurricane_risk || 0) * 100)}%
                           </p>
                         </div>
                       </div>

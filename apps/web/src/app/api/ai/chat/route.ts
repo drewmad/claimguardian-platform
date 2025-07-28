@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AIClient } from '@/lib/ai/client'
 import { inputSanitizer } from '@/lib/security/input-sanitizer'
-import { withRateLimit, rateLimiter } from '@/lib/security/rate-limiter'
+import { withRateLimit, rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
 
 export async function POST(request: NextRequest) {
   return withRateLimit(
     request,
     'ai-chat',
-    rateLimiter.configs.moderate, // 50 requests per 15 minutes
+    RateLimiter.configs.moderate, // 50 requests per 15 minutes
     async () => {
       try {
         const body = await request.json()

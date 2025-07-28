@@ -101,7 +101,7 @@ export async function POST(request: NextRequest) {
     })
 
   } catch (error) {
-    logger.error('Failed to record legal acceptances', error)
+    logger.error('Failed to record legal acceptances', {}, error instanceof Error ? error : new Error(String(error)))
     
     return NextResponse.json(
       { error: 'Internal server error' },

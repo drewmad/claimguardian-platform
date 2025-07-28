@@ -161,7 +161,8 @@ class Logger {
   // Auth debug logging (only in development)
   authDebug(component: string, data: unknown) {
     if (this.isDevelopment) {
-      this.debug(`[AUTH DEBUG] ${component}`, data)
+      const context: LogContext = typeof data === 'object' && data !== null ? data as LogContext : { data }
+      this.debug(`[AUTH DEBUG] ${component}`, context)
     }
   }
 }

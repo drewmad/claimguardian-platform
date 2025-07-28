@@ -40,11 +40,10 @@ export function usePolicy(id: string) {
 }
 
 // Fetch active policies
-export function useActivePolicies(propertyId?: string) {
+export function useActivePolicies() {
   return useQuery({
     queryKey: policyKeys.active(),
-    queryFn: () => getActivePolicies(propertyId!),
-    enabled: !!propertyId,
+    queryFn: () => getActivePolicies(),
     select: (result) => result.data,
   })
 }
@@ -77,7 +76,7 @@ export function useUpdatePolicy() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: unknown }) => 
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<CreatePolicyInput> }) => 
       updatePolicy(id, updates),
     onSuccess: (result, variables) => {
       if (result.data) {

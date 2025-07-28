@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Shield, Monitor, Globe, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
-import { loginActivityService } from '@/lib/auth/login-activity-service'
+import { loginActivityService, type LoginActivity, type LoginActivityStats } from '@/lib/auth/login-activity-service'
 import { logger } from '@/lib/logger'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -42,7 +42,7 @@ export default function LoginActivityPage() {
           setStats(statsData)
           logger.track('login_activity_viewed', { userId: user.id })
         } catch (err) {
-          logger.error('Failed to load login activity', err)
+          logger.error('Failed to load login activity', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
           setError('Failed to load login activity')
         } finally {
           setLoading(false)

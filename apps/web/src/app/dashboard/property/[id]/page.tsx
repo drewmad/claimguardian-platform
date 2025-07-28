@@ -20,7 +20,7 @@ import {
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -30,6 +30,23 @@ import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
+
+interface EditFormData {
+  name: string
+  street1: string
+  street2?: string
+  city: string
+  state: string
+  zip: string
+  county?: string
+  type: string
+  year_built: number
+  square_feet: number
+  bedrooms?: number
+  bathrooms?: number
+  lotSize?: number
+  value?: number
+}
 
 function PropertyDetailContent() {
   const params = useParams()
@@ -44,7 +61,22 @@ function PropertyDetailContent() {
   const [property, setProperty] = useState<Record<string, unknown> | null>(null)
 
   // Edit form state
-  const [editForm, setEditForm] = useState<Record<string, unknown>>({})
+  const [editForm, setEditForm] = useState<EditFormData>({
+    name: '',
+    street1: '',
+    street2: '',
+    city: '',
+    state: '',
+    zip: '',
+    county: '',
+    type: '',
+    year_built: 0,
+    square_feet: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    lotSize: 0,
+    value: 0
+  })
   
   // Address parsing helper
   const parseAddress = (addressString: string) => {
@@ -99,7 +131,22 @@ function PropertyDetailContent() {
             insurabilityScore: 92
           }
           setProperty(mockData)
-          setEditForm({ ...mockData, ...addressParts })
+          setEditForm({
+            name: mockData.name || '',
+            street1: addressParts.street1 || '',
+            street2: addressParts.street2 || '',
+            city: addressParts.city || '',
+            state: addressParts.state || '',
+            zip: addressParts.zip || '',
+            county: '',
+            type: mockData.type || '',
+            year_built: mockData.yearBuilt || 0,
+            square_feet: mockData.sqft || 0,
+            bedrooms: mockData.bedrooms || 0,
+            bathrooms: mockData.bathrooms || 0,
+            lotSize: mockData.lotSize || 0,
+            value: mockData.value || 0
+          })
           return
         }
 
@@ -122,10 +169,26 @@ function PropertyDetailContent() {
             bedrooms: data.details?.bedrooms || 0,
             bathrooms: data.details?.bathrooms || 0,
             lotSize: data.details?.lot_size || 0,
-            insurabilityScore: data.insurability_score || 0
+            insurabilityScore: data.insurability_score || 0,
+            details: data.details
           }
           setProperty(transformedData)
-          setEditForm({ ...transformedData, ...addressParts })
+          setEditForm({
+            name: transformedData.name || '',
+            street1: addressParts.street1 || '',
+            street2: addressParts.street2 || '',
+            city: addressParts.city || '',
+            state: addressParts.state || '',
+            zip: addressParts.zip || '',
+            county: data.details?.county || '',
+            type: transformedData.type || '',
+            year_built: transformedData.yearBuilt || 0,
+            square_feet: transformedData.sqft || 0,
+            bedrooms: transformedData.bedrooms || 0,
+            bathrooms: transformedData.bathrooms || 0,
+            lotSize: transformedData.lotSize || 0,
+            value: transformedData.value || 0
+          })
         } else {
           // If no property found, use mock data for now
           const addressString = '1234 Main Street, Austin, TX 78701'
@@ -145,7 +208,22 @@ function PropertyDetailContent() {
             insurabilityScore: 92
           }
           setProperty(mockData)
-          setEditForm({ ...mockData, ...addressParts })
+          setEditForm({
+            name: mockData.name || '',
+            street1: addressParts.street1 || '',
+            street2: addressParts.street2 || '',
+            city: addressParts.city || '',
+            state: addressParts.state || '',
+            zip: addressParts.zip || '',
+            county: '',
+            type: mockData.type || '',
+            year_built: mockData.yearBuilt || 0,
+            square_feet: mockData.sqft || 0,
+            bedrooms: mockData.bedrooms || 0,
+            bathrooms: mockData.bathrooms || 0,
+            lotSize: mockData.lotSize || 0,
+            value: mockData.value || 0
+          })
         }
       } catch (error) {
         console.error('Error loading property:', error)
@@ -169,7 +247,22 @@ function PropertyDetailContent() {
           image: '🏠'
         }
         setProperty(mockData)
-        setEditForm({ ...mockData, ...addressParts })
+        setEditForm({
+            name: mockData.name || '',
+            street1: addressParts.street1 || '',
+            street2: addressParts.street2 || '',
+            city: addressParts.city || '',
+            state: addressParts.state || '',
+            zip: addressParts.zip || '',
+            county: '',
+            type: mockData.type || '',
+            year_built: mockData.yearBuilt || 0,
+            square_feet: mockData.sqft || 0,
+            bedrooms: mockData.bedrooms || 0,
+            bathrooms: mockData.bathrooms || 0,
+            lotSize: mockData.lotSize || 0,
+            value: mockData.value || 0
+          })
       } finally {
         setLoading(false)
       }
@@ -187,7 +280,7 @@ function PropertyDetailContent() {
       // Reconstruct address from individual fields
       const fullAddress = formatAddress({
         street1: editForm.street1,
-        street2: editForm.street2,
+        street2: editForm.street2 || '',
         city: editForm.city,
         state: editForm.state,
         zip: editForm.zip
@@ -197,8 +290,8 @@ function PropertyDetailContent() {
         name: editForm.name,
         address: fullAddress,
         type: editForm.type,
-        year_built: editForm.yearBuilt,
-        square_feet: editForm.sqft,
+        year_built: editForm.year_built,
+        square_feet: editForm.square_feet,
         details: {
           bedrooms: editForm.bedrooms,
           bathrooms: editForm.bathrooms,
@@ -219,7 +312,20 @@ function PropertyDetailContent() {
       console.log('[PROPERTY SAVE] Update successful:', data)
       
       // Update local state with saved data
-      setProperty(editForm)
+      setProperty({
+        ...property,
+        name: editForm.name,
+        address: formatAddress({
+          street1: editForm.street1,
+          street2: editForm.street2 || '',
+          city: editForm.city,
+          state: editForm.state,
+          zip: editForm.zip
+        }),
+        type: editForm.type,
+        yearBuilt: editForm.year_built,
+        sqft: editForm.square_feet
+      })
       setIsEditing(false)
       toast.success('Property details updated successfully')
     } catch (error) {
@@ -232,7 +338,25 @@ function PropertyDetailContent() {
   }
 
   const handleCancel = () => {
-    setEditForm(property)
+    if (property) {
+      const addressParts = parseAddress(property.address as string || '')
+      setEditForm({
+        name: property.name as string || '',
+        street1: addressParts.street1 || '',
+        street2: addressParts.street2 || '',
+        city: addressParts.city || '',
+        state: addressParts.state || '',
+        zip: addressParts.zip || '',
+        county: (property.details as any)?.county || '',
+        type: property.type as string || '',
+        year_built: property.yearBuilt as number || 0,
+        square_feet: property.sqft as number || 0,
+        bedrooms: property.bedrooms as number || 0,
+        bathrooms: property.bathrooms as number || 0,
+        lotSize: property.lotSize as number || 0,
+        value: property.value as number || 0
+      })
+    }
     setIsEditing(false)
   }
 
@@ -372,15 +496,15 @@ function PropertyDetailContent() {
             <Home className="w-4 h-4" />
             <span>Properties</span>
             <span>/</span>
-            <span className="text-white">{property.name}</span>
+            <span className="text-white">{property.name as string}</span>
           </div>
 
           <div className="mb-8 flex justify-between items-start">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">{property.name}</h1>
+              <h1 className="text-3xl font-bold text-white mb-2">{property.name as string}</h1>
               <p className="text-gray-400 flex items-center gap-1">
                 <MapPin className="w-4 h-4" />
-                {property.address}
+                {property.address as string}
               </p>
             </div>
             {!isEditing && (
@@ -398,9 +522,9 @@ function PropertyDetailContent() {
           <div className="bg-gray-800 rounded-lg overflow-hidden border border-gray-700 mb-6">
             <div className="h-48 relative">
               <PropertyImage
-                propertyType={property.type}
-                propertyName={property.name}
-                location={`${property.addressParts?.city || ''}, FL`}
+                propertyType={property.type as string}
+                propertyName={property.name as string}
+                location={`${(property.addressParts as any)?.city || ''}, FL`}
                 style="florida-style"
                 width={800}
                 height={192}
@@ -413,23 +537,23 @@ function PropertyDetailContent() {
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Value</p>
-                  <p className="text-lg font-bold text-cyan-300">${(property.value / 1000).toFixed(0)}k</p>
+                  <p className="text-lg font-bold text-cyan-300">${((property.value as number) / 1000).toFixed(0)}k</p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Type</p>
-                  <p className="text-sm text-white font-medium">{property.type}</p>
+                  <p className="text-sm text-white font-medium">{property.type as string}</p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Size</p>
-                  <p className="text-sm text-white font-medium">{property.sqft.toLocaleString()} sqft</p>
+                  <p className="text-sm text-white font-medium">{(property.sqft as number).toLocaleString()} sqft</p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Built</p>
-                  <p className="text-sm text-white font-medium">{property.yearBuilt}</p>
+                  <p className="text-sm text-white font-medium">{property.yearBuilt as number}</p>
                 </div>
                 <div className="bg-gray-700 rounded-lg p-3">
                   <p className="text-xs text-gray-400">Score</p>
-                  <p className="text-sm text-white font-medium">{property.insurabilityScore}%</p>
+                  <p className="text-sm text-white font-medium">{property.insurabilityScore as number}%</p>
                 </div>
               </div>
             </div>
@@ -547,8 +671,8 @@ function PropertyDetailContent() {
                           <Label className="text-gray-300">Year Built</Label>
                           <Input
                             type="number"
-                            value={editForm.yearBuilt}
-                            onChange={(e) => setEditForm({ ...editForm, yearBuilt: parseInt(e.target.value) || 0 })}
+                            value={editForm.year_built}
+                            onChange={(e) => setEditForm({ ...editForm, year_built: parseInt(e.target.value) || 0 })}
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
@@ -556,8 +680,8 @@ function PropertyDetailContent() {
                           <Label className="text-gray-300">Square Footage</Label>
                           <Input
                             type="number"
-                            value={editForm.sqft}
-                            onChange={(e) => setEditForm({ ...editForm, sqft: parseInt(e.target.value) || 0 })}
+                            value={editForm.square_feet}
+                            onChange={(e) => setEditForm({ ...editForm, square_feet: parseInt(e.target.value) || 0 })}
                             className="bg-gray-700 border-gray-600 text-white"
                           />
                         </div>
@@ -609,27 +733,27 @@ function PropertyDetailContent() {
                     <div className="space-y-3">
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Property Type</span>
-                        <span className="text-white">{property.type}</span>
+                        <span className="text-white">{property.type as string}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Year Built</span>
-                        <span className="text-white">{property.yearBuilt}</span>
+                        <span className="text-white">{property.yearBuilt as number}</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Square Footage</span>
-                        <span className="text-white">{property.sqft.toLocaleString()} sqft</span>
+                        <span className="text-white">{(property.sqft as number).toLocaleString()} sqft</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Lot Size</span>
-                        <span className="text-white">{property.lotSize} acres</span>
+                        <span className="text-white">{property.lotSize as number} acres</span>
                       </div>
                       <div className="flex justify-between py-2 border-b border-gray-700">
                         <span className="text-gray-400">Bedrooms</span>
-                        <span className="text-white">{property.bedrooms}</span>
+                        <span className="text-white">{property.bedrooms as number}</span>
                       </div>
                       <div className="flex justify-between py-2">
                         <span className="text-gray-400">Bathrooms</span>
-                        <span className="text-white">{property.bathrooms}</span>
+                        <span className="text-white">{property.bathrooms as number}</span>
                       </div>
                     </div>
                   )}

@@ -19,7 +19,7 @@ import {
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { useRouter } from 'next/navigation'
 
@@ -422,7 +422,7 @@ function ContractorsDashboardContent() {
                                 <Star 
                                   key={i} 
                                   className={`w-3 h-3 ${
-                                    i < job.rating 
+                                    i < (job.rating || 0) 
                                       ? 'text-yellow-400 fill-current' 
                                       : 'text-gray-600'
                                   }`} 

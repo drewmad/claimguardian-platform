@@ -102,7 +102,7 @@ export class AsyncErrorHandler {
       return { success: true, data }
     } catch (error) {
       const contextMessage = context ? ` in ${context}` : ''
-      logger.error(`Operation failed${contextMessage}`, error)
+      logger.error(`Operation failed${contextMessage}`, {}, error instanceof Error ? error : new Error(String(error)))
       
       return {
         success: false,
@@ -160,7 +160,7 @@ export class AsyncErrorHandler {
     }
 
     const contextMessage = context ? ` in ${context}` : ''
-    logger.error(`Operation failed after ${finalConfig.maxAttempts} attempts${contextMessage}`, lastError)
+    logger.error(`Operation failed after ${finalConfig.maxAttempts} attempts${contextMessage}`, {}, lastError || undefined)
     
     return {
       success: false,
@@ -187,7 +187,7 @@ export class AsyncErrorHandler {
       return { success: true, data }
     } catch (error) {
       const contextMessage = context ? ` in ${context}` : ''
-      logger.error(`Operation timed out${contextMessage}`, error)
+      logger.error(`Operation timed out${contextMessage}`, {}, error instanceof Error ? error : new Error(String(error)))
       
       return {
         success: false,

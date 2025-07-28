@@ -18,7 +18,7 @@ interface CommunicationTemplate {
   id: string
   title: string
   description: string
-  icon: unknown
+  icon: React.ComponentType<{ className?: string }>
   tone: 'formal' | 'professional' | 'assertive' | 'friendly'
   context: string
 }

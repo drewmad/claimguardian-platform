@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { Input } from '@claimguardian/ui'
 import { createClient } from '@/lib/supabase/client'
@@ -69,7 +69,7 @@ export default function FLOIRSearch() {
       setResults(data)
     } catch (err: unknown) {
       console.error('Search error:', err)
-      setError(err.message || 'Search failed')
+      setError(err instanceof Error ? err.message : 'Search failed')
     } finally {
       setLoading(false)
     }
@@ -191,7 +191,7 @@ export default function FLOIRSearch() {
                     </div>
                     {result.source_url && (
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
                         onClick={() => window.open(result.source_url, '_blank')}
                       >

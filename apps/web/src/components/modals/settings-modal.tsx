@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { X, User, Shield, Bell, Palette, Globe, Key, Save, Trash2, AlertCircle, CheckCircle, Moon, Sun, Monitor, Volume2, VolumeX, Mail, Phone, Lock, Eye, EyeOff, Smartphone, Settings as SettingsIcon, Wrench, FileText } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
-import { profileService } from '@/lib/auth/profile-service'
+import { profileService, UserProfile } from '@/lib/auth/profile-service'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'

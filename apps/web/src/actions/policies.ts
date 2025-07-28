@@ -92,7 +92,7 @@ export async function getPolicies(propertyId?: string) {
       return { data: [], error: null }
     }
     
-    const propertyIds = userProperties.map(p => p.id)
+    const propertyIds = userProperties.map((p: { id: string }) => p.id)
     query = query.in('property_id', propertyIds)
     
     const { data, error } = await query.order('expiration_date', { ascending: true })
@@ -172,7 +172,7 @@ export async function updatePolicy(policyId: string, updates: Partial<CreatePoli
       .eq('id', policyId)
       .single()
     
-    if (!policy || policy.properties.user_id !== user.id) {
+    if (!policy || (policy.properties as any)?.user_id !== user.id) {
       return { data: null, error: 'Policy not found or access denied' }
     }
     
@@ -222,8 +222,8 @@ export async function getActivePolicies() {
       .select('id')
       .eq('user_id', user.id)
     
-    const propertyIds = userProperties?.map(p => p.id) || []
-    const userPolicies = data?.filter(p => propertyIds.includes(p.property_id)) || []
+    const propertyIds = userProperties?.map((p: { id: string }) => p.id) || []
+    const userPolicies = data?.filter((p: { property_id: string }) => propertyIds.includes(p.property_id)) || []
     
     return { data: userPolicies, error: null }
   } catch (error) {
@@ -254,7 +254,7 @@ export async function deactivatePolicy(policyId: string) {
       .eq('id', policyId)
       .single()
     
-    if (!policy || policy.properties.user_id !== user.id) {
+    if (!policy || (policy.properties as any)?.user_id !== user.id) {
       return { data: null, error: 'Policy not found or access denied' }
     }
     

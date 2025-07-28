@@ -160,7 +160,7 @@ export function SignupModal() {
       const { error } = await authService.resendConfirmationEmail(formData.email)
       
       if (error) {
-        logger.error('Failed to resend confirmation email', error)
+        logger.error('Failed to resend confirmation email', {}, error)
         // Could show error toast here
         return
       }
@@ -173,7 +173,7 @@ export function SignupModal() {
         setResendSuccess(false)
       }, 5000)
     } catch (err) {
-      logger.error('Unexpected error resending email', err)
+      logger.error('Unexpected error resending email', {}, err instanceof Error ? err : new Error(String(err)))
     } finally {
       setResending(false)
     }

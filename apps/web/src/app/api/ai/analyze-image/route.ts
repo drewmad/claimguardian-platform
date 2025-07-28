@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AIClient } from '@/lib/ai/client'
 import { inputSanitizer } from '@/lib/security/input-sanitizer'
-import { withRateLimit, rateLimiter } from '@/lib/security/rate-limiter'
+import { withRateLimit, rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
 import { withErrorHandling } from '@/lib/error-handling/async-error-handler'
 import { logger } from '@/lib/logger'
 
@@ -9,7 +9,7 @@ export async function POST(request: NextRequest) {
   return withRateLimit(
     request,
     'ai-analyze-image',
-    rateLimiter.configs.strict, // 5 requests per 15 minutes for image analysis
+    RateLimiter.configs.strict, // 5 requests per 15 minutes for image analysis
     async () => {
       const result = await withErrorHandling(async () => {
         const body = await request.json()
@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
       }, 'AI Image Analysis')
 
       if (!result.success) {
-        logger.error('AI Image Analysis failed', result.error)
+        logger.error('AI Image Analysis failed', {}, result.error instanceof Error ? result.error : new Error(String(result.error)))
         
         // Determine appropriate status code based on error
         const status = result.error.message.includes('required') || 

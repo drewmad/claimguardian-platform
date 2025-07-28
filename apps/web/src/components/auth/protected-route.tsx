@@ -43,7 +43,6 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
     if (!loading && !user) {
       const redirectInfo = {
         loading,
-        user: user?.id,
         pathname: window.location.pathname,
         timestamp: new Date().toISOString(),
         referrer: document.referrer,
@@ -53,7 +52,7 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
       logger.warn('Route blocked - unauthenticated user', {
         path: window.location.pathname,
         reason: 'unauthenticated',
-        userId: user?.id,
+        userId: undefined,
         ...redirectInfo
       });
       

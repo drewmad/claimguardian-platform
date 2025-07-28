@@ -11,6 +11,7 @@
 
 import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
+import type { StorageFile } from './types'
 
 export interface FileUploadResult {
   success: boolean
@@ -166,7 +167,7 @@ class FileUploadService {
   /**
    * List files in a user's folder
    */
-  async listUserFiles(userId: string, folder: string = ''): Promise<any[]> {
+  async listUserFiles(userId: string, folder: string = ''): Promise<StorageFile[]> {
     try {
       const prefix = folder ? `${userId}/${folder}` : userId
       
@@ -223,18 +224,13 @@ class FileUploadService {
    */
   async getFileMetadata(filePath: string) {
     try {
-      const { data, error } = await this.supabase.storage
+      const { data } = this.supabase.storage
         .from(this.bucketName)
         .getPublicUrl(filePath)
 
-      if (error) {
-        logger.error('Failed to get file metadata', { error, filePath })
-        return null
-      }
-
       return data
     } catch (error) {
-      logger.error('Unexpected error getting file metadata', { error })
+      logger.error('Unexpected error getting file metadata', { error, filePath })
       return null
     }
   }

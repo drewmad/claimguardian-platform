@@ -222,7 +222,7 @@ class ErrorBoundary extends Component<Props, State> {
         }
       })
     } catch (reportingError) {
-      logger.error('Failed to report error to monitoring service', reportingError)
+      logger.error('Failed to report error to monitoring service', {}, reportingError instanceof Error ? reportingError : new Error(String(reportingError)))
     }
   }
 

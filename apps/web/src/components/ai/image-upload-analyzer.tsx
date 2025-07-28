@@ -226,7 +226,13 @@ export function ImageUploadAnalyzer({
       {/* Camera Capture Modal */}
       {showCamera && (
         <CameraCapture
-          onCapture={handleCameraCapture}
+          onCapture={(file: File) => {
+            const reader = new FileReader()
+            reader.onloadend = () => {
+              handleCameraCapture(reader.result as string, file)
+            }
+            reader.readAsDataURL(file)
+          }}
           onClose={() => setShowCamera(false)}
         />
       )}

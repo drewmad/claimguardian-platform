@@ -10,6 +10,7 @@
  */
 
 import { logger } from '@/lib/logger'
+import type { GooglePlaceResult } from './types'
 
 interface PropertyDataResponse {
   estimatedValue?: number
@@ -84,7 +85,7 @@ class PropertyDataService {
   /**
    * Get property details from Google Places API
    */
-  async getGooglePlaceDetails(placeId: string): Promise<any> {
+  async getGooglePlaceDetails(placeId: string): Promise<GooglePlaceResult | null> {
     if (!this.googleApiKey) {
       logger.warn('Google Maps API key not configured')
       return null

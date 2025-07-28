@@ -33,11 +33,16 @@ export function useAIChat() {
       model = 'openai',
       systemPrompt
     }: { 
-      messages: Array<{ role: string; content: string }>;
+      messages: Array<{ role: 'system' | 'user' | 'assistant'; content: string }>;
       model?: 'openai' | 'gemini';
       systemPrompt?: string;
     }) => {
-      return aiClient.chat({ messages, model, systemPrompt })
+      // If systemPrompt is provided, prepend it as a system message
+      const allMessages = systemPrompt 
+        ? [{ role: 'system' as const, content: systemPrompt }, ...messages]
+        : messages;
+      
+      return aiClient.chat(allMessages, model)
     },
     onError: (error) => {
       toast.error('Failed to get AI response')
@@ -77,7 +82,7 @@ export function useAIDocumentAnalysis() {
 }
 
 // AI Bulk Analysis (for multiple items)
-export function useAIBulkAnalysis<T>() {
+export function useAIBulkAnalysis<T, R = unknown>() {
   return useMutation({
     mutationFn: async ({ 
       items, 
@@ -86,7 +91,7 @@ export function useAIBulkAnalysis<T>() {
       onProgress
     }: { 
       items: T[];
-      processor: (item: T) => Promise<any>;
+      processor: (item: T) => Promise<R>;
       batchSize?: number;
       onProgress?: (completed: number, total: number) => void;
     }) => {

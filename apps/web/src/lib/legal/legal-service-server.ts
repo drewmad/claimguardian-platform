@@ -23,14 +23,14 @@ class LegalServiceServer {
       const { data, error } = await supabase.rpc('get_active_legal_documents')
 
       if (error) {
-        logger.error('Failed to fetch active legal documents', error)
+        logger.error('Failed to fetch active legal documents', {}, error)
         throw error
       }
 
       return data || []
-    } catch (err) {
-      logger.error('Error fetching active legal documents', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching active legal documents', {}, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -43,14 +43,14 @@ class LegalServiceServer {
       const { data, error } = await supabase.rpc('needs_reaccept', { uid: userId })
 
       if (error) {
-        logger.error('Failed to fetch documents needing acceptance', error)
+        logger.error('Failed to fetch documents needing acceptance', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
       return data || []
-    } catch (err) {
-      logger.error('Error fetching documents needing acceptance', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching documents needing acceptance', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -78,7 +78,7 @@ class LegalServiceServer {
       // Check for any errors
       const errors = results.filter(result => result.error)
       if (errors.length > 0) {
-        logger.error('Failed to record some acceptances', errors)
+        logger.error('Failed to record some acceptances', { errors })
         throw new Error('Failed to record legal acceptances')
       }
 
@@ -87,9 +87,9 @@ class LegalServiceServer {
         count: acceptances.length,
         documents: acceptances.map(a => a.legal_id)
       })
-    } catch (err) {
-      logger.error('Error recording legal acceptances', err)
-      throw err
+    } catch (error) {
+      logger.error('Error recording legal acceptances', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -114,14 +114,14 @@ class LegalServiceServer {
         .order('accepted_at', { ascending: false })
 
       if (error) {
-        logger.error('Failed to fetch user acceptance history', error)
+        logger.error('Failed to fetch user acceptance history', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
       return data || []
-    } catch (err) {
-      logger.error('Error fetching user acceptance history', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching user acceptance history', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -132,8 +132,8 @@ class LegalServiceServer {
     try {
       const outstandingDocs = await this.getDocumentsNeedingAcceptance(userId)
       return outstandingDocs.length === 0
-    } catch (err) {
-      logger.error('Error checking user acceptance status', err)
+    } catch (error) {
+      logger.error('Error checking user acceptance status', { userId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }
@@ -156,14 +156,14 @@ class LegalServiceServer {
           // No rows returned
           return null
         }
-        logger.error('Failed to fetch legal document by slug', error)
+        logger.error('Failed to fetch legal document by slug', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
       return data
-    } catch (err) {
-      logger.error('Error fetching legal document by slug', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching legal document by slug', { slug }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -188,9 +188,9 @@ class LegalServiceServer {
         outstanding_documents: outstanding,
         generated_at: new Date().toISOString()
       }
-    } catch (err) {
-      logger.error('Error generating compliance report', err)
-      throw err
+    } catch (error) {
+      logger.error('Error generating compliance report', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -207,7 +207,7 @@ class LegalServiceServer {
         .single()
 
       if (error || !data) {
-        logger.error('Failed to fetch document for hash validation', error)
+        logger.error('Failed to fetch document for hash validation', {}, error instanceof Error ? error : new Error(String(error)))
         return false
       }
 
@@ -222,8 +222,8 @@ class LegalServiceServer {
       }
 
       return isValid
-    } catch (err) {
-      logger.error('Error validating document hash', err)
+    } catch (error) {
+      logger.error('Error validating document hash', { documentId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }

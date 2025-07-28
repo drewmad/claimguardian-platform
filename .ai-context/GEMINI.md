@@ -1,253 +1,563 @@
-<!--
-@fileMetadata
-@purpose Provides guidance to AI models (specifically Gemini) on working with this repository.
-@owner dev-ops
-@status active
-@notes Contains project overview, development commands, architecture details, and important patterns for AI agents.
--->
-# GEMINI.md
+# CLAUDE.md
 
-This file provides guidance to Gemini when working with code in this repository.
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. It also serves as a dynamic config and knowledge base for Claude Code CLI agents, queried via tools for context and learnings. Incorporates Agent OS principles for spec-driven development.
 
-## Shared Guidelines
+## User Preferences for AI Assistant
 
-For general project overview, development commands, architecture, and common patterns, please refer to the [Shared AI Guidelines](./.ai-context/shared/SHARED_AI_GUIDELINES.md).
+- **Stack multiple improvements together** - Don't just provide one solution, combine optimizations
+- **Holistic problem-solving** - Consider the entire workflow, not just the immediate issue
+- **Layer optimizations** - Combine speed + parallelization + monitoring + verification
+- **Provide complete solutions** - Include automation scripts, progress tracking, and error handling
+- **Build in resilience** - Add recovery options, clear status reporting, and fallback methods
+- **Maximize efficiency** - Think beyond quick fixes to comprehensive, production-ready solutions
 
-## AI Assistant Instructions (Gemini Specific)
+Example: When asked to speed up imports, don't just make batches bigger. Instead: increase batch size + add parallel processing + create monitoring dashboard + include verification script + provide one-command automation.
 
-When implementing features:
-1.  Always check existing patterns in the codebase first
-2.  Follow the established file organization structure
-3.  Use Server Actions for data mutations
-4.  Implement proper error handling with try-catch blocks
-5.  Add loading states for better UX
-6.  Use TypeScript strictly - no any types
-7.  Follow the component composition patterns from existing code
-8.  Test your changes with `pnpm test` and `pnpm typecheck`
-9.  Use the established import patterns - never import from subpaths
-10. Check for existing utilities before creating new ones
+## Project Overview
 
-## CRITICAL: Development Verification Rules (Gemini Specific)
+ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners built with:
 
-### 1. Function Signatures
-**NEVER** change a function call without first:
--   Reading the actual function definition
--   Checking all parameters and their types
--   Verifying the return type
+### Frontend Stack
+- **Next.js 15.3.5**: React framework with App Router for file-based routing
+- **TypeScript 5.8.3**: Type safety and enhanced developer experience
+- **Turborepo**: Monorepo structure for scalable package management
+- **pnpm 10.13.1**: Fast, efficient package manager
+- **Node.js 22+**: Modern JavaScript runtime requirement
 
-Example workflow:
+### Backend Architecture (Supabase)
+- **PostgreSQL 17.4.1.064**: Primary database with PostGIS for geographic data
+- **PostgREST 12.2.12**: Auto-generated REST API from database schema
+- **GoTrue 2.177.0**: Authentication service with JWT and RLS integration
+- **Deno Edge Functions**: Serverless functions for AI processing and business logic
+- **Storage API**: S3-compatible file storage with PostgreSQL metadata
+- **Realtime Engine**: WebSocket-based live updates and multiplayer features
+
+## Repository Structure (Updated)
+
+The repository has been reorganized for better maintainability:
+
+```
+ClaimGuardian/
+├── apps/web/              # Next.js application
+├── packages/              # Shared packages (ui, utils, db, ai-config, config)
+├── services/              # External services
+│   ├── scraper/           # Data scraping service
+│   ├── integrations/      # Third-party integrations
+│   └── workers/           # Background workers
+├── supabase/              # Database & backend
+│   ├── functions/         # Edge Functions (Deno)
+│   ├── migrations/        # Active migrations only
+│   ├── sql/               # SQL utilities (schema.sql is source of truth)
+│   └── config.toml        # Supabase configuration
+├── scripts/               # Simplified core scripts
+│   ├── dev.sh             # Development utilities
+│   ├── build.sh           # Build operations
+│   ├── data.sh            # Data management
+│   ├── db.sh              # Database operations
+│   └── utils/             # Complex internal scripts
+├── config/                # Centralized configuration
+│   ├── environments/      # Environment-specific configs
+│   ├── database/          # Database configurations
+│   └── ci/                # CI/CD configurations
+├── data/                  # Organized data
+│   ├── samples/           # Sample datasets
+│   ├── schemas/           # Data schemas
+│   └── florida/           # Florida-specific data
+├── standards/             # Agent OS standards (NEW)
+│   ├── best-practices.md  # Development philosophy
+│   ├── code-style.md      # Code formatting rules
+│   └── tech-stack.md      # Technology choices
+├── .claude/               # Agent configurations (NEW)
+│   └── agents/            # Subagent definitions
+├── .agent-os/             # Agent OS workspace (generated)
+│   ├── product/           # Product docs (mission, roadmap)
+│   └── specs/             # Feature specifications
+├── learnings.md           # Agent learning log
+└── [root configs]         # Essential configuration files only
+```
+
+## Essential Commands
+
+### Core Script Operations (New)
 ```bash
-# Before changing getTasks(undefined, workspaceId)
-# First check: grep -n "function getTasks" or read the file
-# Verify the actual signature before making changes
+# Development
+./scripts/dev.sh setup     # Setup development environment
+./scripts/dev.sh clean     # Clean build artifacts
+./scripts/dev.sh lint      # Run smart lint fix
+
+# Building
+./scripts/build.sh all     # Build all packages
+./scripts/build.sh web     # Build web app only
+./scripts/build.sh packages # Build packages only
+
+# Data Management
+./scripts/data.sh import   # Import data with parallel processing
+./scripts/data.sh verify   # Verify import completion
+./scripts/data.sh clean    # Clean processed data
+
+# Database Operations
+./scripts/db.sh schema     # Manage database schema
+./scripts/db.sh backup     # Create database backup
+./scripts/db.sh migrate    # Apply migrations
 ```
 
-### 2. Type Definitions
-
-**NEVER** assume types without checking:
--   Always read the actual type definitions from `@mad/db`
--   Check Supabase query return types before assertions
--   Use proper type imports rather than inline definitions
-
-Example workflow:
+### Development
 ```bash
-# Before assuming a type
-# Check: find . -name "*.ts" -type f | xargs grep -l "type TaskRow"
-# Or read the database types directly
+pnpm dev            # Start all apps (port 3000)
+pnpm build          # Build all packages
+pnpm test           # Run all tests (Jest)
+pnpm lint           # ESLint all packages
+pnpm type-check     # TypeScript validation
+pnpm validate       # Run all checks before commit
 ```
 
-### 3. Component Interfaces
-
-**NEVER** change component props without verifying:
--   Check the component's actual prop types
--   Verify available variants/options
--   Look for existing usage patterns
-
-Example workflow:
+### Dependency Management
 ```bash
-# Before using variant="outline"
-# Check: grep -r "variant=" --include="*.tsx" | grep Button
-# See what variants are actually used
-```
-
-### 4. Import Patterns
-
-**ALWAYS** check existing import patterns:
--   Look at neighboring files for import style
--   Check if imports are from package root or subpaths
--   Verify the package exports
-
-### 5. Before Making Changes
-
-#### A. Search First
-
-```bash
-# Search for existing patterns
-grep -r "pattern" --include="*.ts" --include="*.tsx"
-
-# Find type definitions
-find . -name "*.d.ts" -o -name "types.ts" | xargs grep "TypeName"
-
-# Check function signatures
-grep -A5 -B5 "function functionName"
-```
-
-#### B. Read Dependencies
-
--   Always check `package.json` for available dependencies
--   Don't assume a package exists
--   Check the actual version and its API
-
-#### C. Test Assumptions
-
-```bash
-# Run type checking on specific files before committing
-pnpm tsc --noEmit path/to/file.ts
-
-# Run linting on specific files
-pnpm eslint path/to/file.ts
-```
-
-### 6. Git Operations
-
-**ALWAYS** check git status after operations:
--   Verify no duplicate files are created
--   Check for unintended changes
--   Review the full diff before committing
-
-### 7. Type Safety Rules
-
-#### Never Use `any`
-
-Instead of:
-```typescript
-const data = result as any;
-```
-
-Do:
-```typescript
-// First, check the actual type
-const data = result as unknown;
-// Then assert to the verified type
-const typedData = data as VerifiedType;
-```
-
-#### Always Handle Union Types
-
-Instead of:
-```typescript
-data.property.value // Assuming it exists
-```
-
-Do:
-```typescript
-// Check if it's an array or object first
-if (Array.isArray(data.property)) {
-  data.property[0]?.value
-} else {
-  data.property?.value
-}
-```
-
-### 8. Development Workflow
-
-1.  **Understand Before Changing**
-    -   Read the existing code thoroughly
-    -   Check related files for patterns
-    -   Verify all assumptions
-2.  **Make Incremental Changes**
-    -   Change one thing at a time
-    -   Run type checking after each change
-    -   Commit working states frequently
-3.  **Verify Changes**
-    -   Run `pnpm typecheck` after changes
-    -   Run `pnpm lint` to catch issues
-    -   Check `git diff` carefully
-4.  **Document Assumptions**
-    -   Comment why you're making specific type assertions
-    -   Note any discovered patterns for future reference
-
-## Common Patterns in This Codebase
-
-### Server Actions
-
--   All use object parameters, not positional
--   Return `{ data/result, error }` pattern
--   Require proper error handling
-
-### Supabase Queries
-
--   Joins can return arrays OR single objects
--   Always handle both cases
--   Check RLS policies affect on returns
-
-### Component Libraries
-
--   `@apps/web/src/types/ui.d.ts` components have specific, limited variants
--   Always import from package root, not subpaths
--   Check existing usage for patterns
-
-## Verification Commands
-
-```bash
-# Check function signature
-ast-grep --pattern 'function $FUNC($_) { $$$ }'
-
-# Find all usages of a function
-grep -r "functionName(" --include="*.ts" --include="*.tsx"
-
-# Check type definitions
-find . -name "*.d.ts" -exec grep -l "TypeName" {} \;
-
-# Verify imports
-grep -r "from ' @ui" --include="*.tsx" | sort | uniq
-```
-
-## Remember
-
--   Never assume - always verify
--   Read first - change second
--   Test incrementally - catch errors early
--   Check patterns - follow existing conventions
-
-## Git and File Management
-
-### Duplicate File Prevention
-
-```bash
-# Check for duplicates before committing
-find . -name "*[0-9].tsx" -o -name "*[0-9].ts" | grep -E "[0-9]\.(ts|tsx)$"
-
-# Clean up duplicates
-git clean -fd  # Remove untracked files
+pnpm deps:check     # Validate lockfile integrity
+pnpm deps:update    # Update dependencies interactively
+pnpm deps:clean     # Clean reinstall all dependencies
+pnpm fix:imports    # Fix @claimguardian/ui and @claimguardian/db imports
 ```
 
 ### Git Operations
+```bash
+pnpm cz             # Commit with conventional format
+HUSKY=0 git commit  # Skip pre-commit hooks (use sparingly)
+pnpm prepare        # Setup git hooks
+pnpm lint:smart-fix # Auto-fix lint issues before commit
+```
 
--   Always check `git status` after file moves
--   Use `HUSKY=0` sparingly and only after understanding what's being skipped
--   Make atomic commits - don't mix cleanup with features
+### Auto-fix Lint Issues
+The pre-commit hook now automatically attempts to fix lint issues before rejecting commits:
+1. Runs ESLint auto-fix on all fixable issues
+2. Applies targeted fixes for common problems
+3. Re-stages fixed files automatically
+4. Only fails if unfixable issues remain
 
-## Next.js Specific Rules
+To test: `pnpm pre-commit:test`
 
-### Server Actions (`'use server'`)
+### Testing
+```bash
+pnpm test                          # All tests
+pnpm --filter=web test             # Web app tests only
+pnpm --filter=web test:watch       # Watch mode
+pnpm test path/to/file.test.ts     # Specific test file
+```
 
--   ALL exports must be async functions
--   No helper functions, constants, or synchronous exports
--   Helper functions go in `lib/_utils/` instead
+### Data Management
+```bash
+# Simplified Data Operations (New Structure)
+./scripts/data.sh import                       # Parallel data import
+./scripts/data.sh verify                       # Verify import status
+./scripts/data.sh clean                        # Clean processed data
 
-### File Organization
+# Advanced Data Processing (in utils)
+./scripts/utils/data-import/run-parallel-import.sh              # Parallel data import
+./scripts/utils/data-import/verify-import-complete.js           # Verify import status
+./scripts/utils/data-import/benchmark-import-performance.sh     # Performance testing
 
--   `actions/`          # Server actions only (all async)
--   `lib/`
-    -   `_utils/`        # Pure utility functions
-    -   `*.ts`           # Client utilities
--   `components/`      # React components
+# Property Data Processing
+python ./scripts/utils/data-import/analyze_cadastral_gdb.py     # Analyze GDB files
+node ./scripts/utils/data-import/import_cadastral_gdb.js        # Import cadastral data
+```
 
-## Error Resolution Pattern
+## Architecture & Code Patterns
 
-1.  Read the FULL error message including stack traces
-2.  Check import traces in build errors
-3.  Verify actual code - don't assume
-4.  Make minimal targeted fixes
-5.  Test with `pnpm typecheck` before committing
+### Monorepo Structure
+```
+/apps/web           # Next.js application
+/packages/ui        # Shared React components
+/packages/utils     # Shared utilities
+/packages/config    # Shared configuration
+/packages/ai-config # AI configurations
+/packages/db        # Database models and Supabase client
+```
+
+### Import Rules
+```typescript
+// ✅ CORRECT - Always from package root
+import { Button, Card } from '@claimguardian/ui'
+import { formatDate } from '@claimguardian/utils'
+
+// ❌ WRONG - Never from subpaths
+import { Button } from '@claimguardian/ui/button'
+```
+
+### File Organization (apps/web)
+```
+/actions/           # Server actions ('use server' - async only)
+/lib/               # Client utilities
+  /_utils/          # Pure utility functions
+/components/        # React components
+/app/               # App Router pages
+  /ai-tools/        # AI feature pages
+  /ai-augmented/    # Legacy AI pages
+```
+
+### Server Actions Pattern
+```typescript
+// All server actions use object parameters
+export async function createClaim({ 
+  propertyId, 
+  damageType 
+}: CreateClaimParams) {
+  try {
+    // Implementation
+    return { data: result, error: null }
+  } catch (error) {
+    return { data: null, error: error.message }
+  }
+}
+```
+
+### Component Patterns
+- Components from `@claimguardian/ui` export from root index
+- Use `CardContent, CardHeader` from local components when not in UI package
+- Dark theme: bg-gray-800 cards with border-gray-700
+- Consistent spacing: p-6 for page containers
+
+## AI Features Architecture
+
+### Main AI Tools Hub
+- `/ai-tools/` - Central hub for all AI features
+- Status indicators for API key availability
+- Categories: analysis, assistance, documentation, communication
+
+### AI Tools Pages
+1. **Damage Analyzer** (`/ai-augmented/damage-analyzer/`)
+   - Camera capture integration
+   - Image upload with AI analysis
+   
+2. **Policy Chat** (`/ai-augmented/policy-chat/`)
+   - PDF parsing
+   - Gemini integration
+
+3. **Claim Assistant** (`/ai-tools/claim-assistant/`)
+   - Step-by-step guidance
+   - Progress tracking
+
+4. **Document Generator** (`/ai-tools/document-generator/`)
+   - Template-based generation
+   - AI content assistance
+
+5. **Communication Helper** (`/ai-tools/communication-helper/`)
+   - Email/message templates
+   - Tone selection
+
+6. **Settlement Analyzer** (`/ai-tools/settlement-analyzer/`)
+   - Offer analysis
+   - Market comparisons
+
+7. **Evidence Organizer** (`/ai-tools/evidence-organizer/`)
+   - Drag-and-drop upload
+   - Auto-categorization
+
+8. **3D Model Generator** (`/ai-augmented/3d-model-generator/`)
+   - Photogrammetry simulation
+   - Multi-image processing
+
+### Camera Integration
+- `CameraCapture` component for vision features
+- Handles permissions and stream management
+- Supports front/back camera switching
+
+## Environment Variables
+
+Required for development:
+```bash
+# Supabase
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+
+# AI Features (Now server-side only)
+GEMINI_API_KEY=              # Server-side Edge Functions
+OPENAI_API_KEY=              # Server-side Edge Functions
+
+# Google Maps API (Optional - for address autocomplete)
+NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+
+# Monitoring (Optional)
+SENTRY_AUTH_TOKEN=
+NEXT_PUBLIC_SENTRY_DSN=
+```
+
+## Performance Optimizations
+
+### Bundle Analysis
+- Run `ANALYZE=true pnpm build` to generate bundle analysis report
+- View interactive visualization at http://localhost:8888
+- Identifies large dependencies and opportunities for code splitting
+
+### Code Splitting & Lazy Loading
+- Heavy components use dynamic imports with lazy loading
+- AI tools and feature-specific pages load on demand
+- Reduces initial bundle size by ~40%
+
+### Data Management
+- React Query (TanStack Query) integrated for caching
+- Automatic cache invalidation and background refetching
+- Optimistic updates for better perceived performance
+
+### Build Performance
+- Bundle analyzer integrated in next.config.js
+- Optimized package imports for lucide-react, Radix UI, Framer Motion
+- Image optimization with AVIF/WebP formats
+
+## Common Issues & Solutions
+
+### Build Errors
+- Type-check temporarily disabled in web app build (TODO: Fix remaining errors)
+- Tests may have type errors but build succeeds
+- Use `HUSKY=0` to bypass pre-commit if build passes but lint has warnings
+
+### Import Issues
+- Always import UI components from `@claimguardian/ui` root
+- Local components for CardContent, CardHeader when needed
+- Check `packages/ui/src/index.tsx` for available exports
+- Fixed: BuildingIcon replaced with Building from lucide-react
+
+### Missing Components
+- Create in local `components/ui/` first if not in UI package
+- Follow existing patterns (e.g., Label component)
+
+### TypeScript Errors
+- Temporary type definitions added to @claimguardian/db
+- Database types will be auto-generated once schema stabilizes
+- Use type assertions sparingly for rapid development
+
+## Development Workflow
+
+1. **Before Making Changes**
+   - Check existing patterns in similar files
+   - Verify function signatures before modifying calls
+   - Read actual type definitions, don't assume
+
+2. **During Development**
+   - Make incremental changes
+   - Run `pnpm type-check` frequently
+   - Test with `pnpm dev` to see changes
+
+3. **Before Committing**
+   - Run `pnpm validate` to check all validations
+   - Run `pnpm lint` and fix issues
+   - Ensure `pnpm build` succeeds
+   - Use `pnpm cz` for conventional commits
+   - Use `HUSKY=0` only if build passes but lint has minor warnings
+
+## Domain Context
+
+ClaimGuardian helps Florida property owners with insurance claims:
+- **Properties**: Digital twins of physical properties
+- **Claims**: Insurance claim tracking
+- **Damage Assessments**: Photo documentation
+- **AI Tools**: Automated assistance for claim processes
+
+Focus areas:
+- Hurricane and flood damage documentation
+- Florida-specific insurance regulations
+- Property damage assessment and documentation
+- Claims negotiation support
+
+## Supabase Architecture & Backend Setup
+
+### Architecture Overview
+ClaimGuardian uses Supabase's open-source architecture with these core components:
+
+#### Core Services
+- **PostgreSQL 17.4.1.064**: Primary database with full privileges and Row Level Security (RLS)
+- **PostgREST 12.2.12**: Auto-generated RESTful API from database schema
+- **GoTrue 2.177.0**: JWT-based authentication with PostgreSQL RLS integration  
+- **Storage API**: S3-compatible object storage for property images and documents
+- **Edge Functions**: Deno runtime for AI processing and custom business logic
+- **Kong Gateway**: API gateway managing all service access
+
+#### Integration Pattern
+```typescript
+// Next.js app connects via @supabase/supabase-js
+import { createClient } from '@supabase/supabase-js'
+
+// Direct PostgreSQL access for complex GIS queries
+// Real-time subscriptions for live updates
+// Server actions for database operations
+```
+
+### Database Management
+
+#### Single Schema File Approach
+We use a single `supabase/schema.sql` file instead of migrations to avoid CLI conflicts.
+
+```bash
+# View current schema
+cat supabase/schema.sql
+
+# Update schema from production
+./scripts/db-schema.sh dump
+
+# Apply schema (opens dashboard and copies to clipboard)
+./scripts/db-schema.sh apply
+
+# Compare local vs production
+./scripts/db-schema.sh diff
+
+# Validate schema file
+./scripts/db-schema.sh validate
+```
+
+#### Key Database Features
+- **Row Level Security (RLS)**: User-based data access control
+- **Real-time Subscriptions**: Live updates for claims and property changes
+- **PostGIS Extension**: Geographic data processing for Florida parcels
+- **Full-text Search**: Document and claim content indexing
+
+### Project Configuration
+- **Project ID**: `tmlrvecuwgppbaynesji`
+- **Schema file**: `supabase/schema.sql` (single source of truth)
+- **No migrations folder**: All archived to avoid CLI conflicts
+- **Region**: US East (closest to Florida data sources)
+
+### Edge Functions Architecture
+ClaimGuardian leverages Deno Edge Functions for:
+
+#### AI Processing Functions
+1. **`ai-document-extraction`**: Extract data from insurance documents securely
+2. **`floir-extractor`**: Extract data from Florida insurance documents
+3. **`floir-rag-search`**: RAG-based search across insurance regulations
+4. **`property-ai-enrichment`**: Enhance property data with AI insights
+5. **`florida-parcel-ingest`**: Process large-scale cadastral data imports
+6. **`florida-parcel-monitor`**: Monitor and validate data import status
+
+#### Function Development Pattern
+```typescript
+// Edge Function structure
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+
+Deno.serve(async (req: Request) => {
+  // AI processing logic
+  // Database operations via service role
+  // Return structured responses
+})
+```
+
+### Service Versions & Compatibility
+- **Auth (GoTrue)**: 2.177.0 - JWT tokens, user management
+- **PostgREST**: 12.2.12 - Auto-generated API from schema
+- **Postgres**: 17.4.1.064 - Latest with PostGIS for GIS operations
+- **Realtime**: Latest - WebSocket connections for live updates
+- **Storage**: Latest - File uploads with metadata in Postgres
+
+### Schema Change Workflow
+1. **Development**: Test changes in local environment
+2. **Schema Update**: Run `./scripts/db-schema.sh dump` to capture changes
+3. **Version Control**: Commit updated `schema.sql` file
+4. **Deployment**: Apply via Supabase Dashboard to production
+5. **Verification**: Validate with `./scripts/db-schema.sh validate`
+
+### Data Architecture Principles
+Following Supabase's design philosophy:
+- **PostgreSQL as Single Source of Truth**: All data in one ACID-compliant database
+- **API Auto-generation**: Schema drives API structure automatically  
+- **Real-time by Default**: Live updates without additional infrastructure
+- **Security via RLS**: Row-level permissions enforce data access rules
+- **Extensibility**: Custom functions for Florida-specific business logic
+
+## Pre-commit Hooks
+
+Husky runs these checks automatically:
+- `pnpm deps:check` - Validates lockfile integrity
+- `pnpm lint` - ESLint checks
+- `pnpm type-check` - TypeScript validation
+
+## Performance & Monitoring
+
+### Build Optimization
+- Uses standalone Next.js output for Vercel deployment
+- Type checking disabled during build for speed
+- Incremental builds with Turborepo caching
+- Package import optimization (Lucide React)
+
+### Error Monitoring
+- Sentry integration for error tracking and performance
+- Audit logging middleware (currently disabled)
+- Security headers via Next.js middleware
+- Rate limiting implementation
+
+## Code Documentation
+
+Add JSDoc-style `@fileMetadata` headers to new/modified files:
+```typescript
+/**
+ * @fileMetadata
+ * @purpose Brief description of file purpose
+ * @owner team-name
+ * @status active|deprecated
+ */
+```
+
+## Data Processing Pipeline
+
+### Florida-Specific Data Integration
+- **Cadastral Data**: Large-scale GIS dataset processing with parallel imports
+- **Property Scraping**: Automated collection of Florida property information
+- **Performance Monitoring**: Benchmarking tools for import operations
+- **Verification Scripts**: Automated validation of data completeness
+
+### Processing Patterns
+- Batch processing with configurable chunk sizes
+- Parallel execution for large datasets
+- Progress tracking and status reporting
+- Error recovery and retry mechanisms
+
+## Agent OS Integration for Spec-Driven Workflows
+
+Inspired by Agent OS, we use layered context: global standards/ folder, repo-specific .agent-os/product/ (generate via subagents), feature specs in .agent-os/specs/. Subagents query these for context; generate/update them.
+
+- **Standards**: See standards/ folder (global, customizable).
+- **Product Docs**: Mission, roadmap, decisions in .agent-os/product/.
+- **Specs**: Dated folders in .agent-os/specs/ with SRD, tech spec, tasks.
+
+Refinement: After tasks, subagents suggest updates to standards based on learnings.
+
+### Slash Commands for Agent OS Workflows
+```bash
+/plan-product      # Generate product docs and roadmap
+/create-spec       # Create feature specification
+/execute-tasks     # Execute spec tasks with TDD
+```
+
+## Enhanced Adaptive Agent System (Claude Code CLI Optimized)
+
+### Claude Code CLI Setup & Extensions
+- Install: `pip install claude-code` (Python SDK).
+- Config: Set `ANTHROPIC_API_KEY` env var.
+- Init: `claude-code init --repo . --hooks` (auto-installs Git hooks).
+- Subagents: Defined as native .md files in `.claude/agents/` (project-level).
+- Management: Use `/agents` command for create/edit/delete; auto-delegates based on descriptions.
+- Agent OS Setup: Run installation scripts from Agent OS repo; customize standards/.
+
+### Hooks Integration
+Triggers for automation:
+- Pre-commit: Invoke plan-orchestrator subagent to validate/optimize changes.
+- Post-merge: Spawn data-import for schema sync.
+
+Setup: `claude-code hooks install`  # Adds to .git/hooks
+
+### Local Docs as Dynamic Memory
+- Subagents use Read tool to query sections of this file, standards/, and learnings.md for context.
+- Learnings appended to learnings.md via Write tool; queried on init for adaptation.
+
+### Sub-Agents with Parallelism
+- Native delegation: Automatic based on task match; explicit via "Use [name] subagent".
+- Parallelism: Chain subagents for non-conflicting tasks.
+- Conflict Avoidance: Prompts include checks via Grep/Glob.
+
+### Learning Layer
+- Record: Subagents use Write to append {task, mistake, learning} to learnings.md.
+- Retrieve: Use Read to query learnings.md at start; adapt behavior.
+- Refinement: Suggest updates to standards/ based on learnings.
+
+## Important Instruction Reminders
+Do what has been asked; nothing more, nothing less.
+NEVER create files unless they're absolutely necessary for achieving your goal.
+ALWAYS prefer editing an existing file to creating a new one.
+NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.

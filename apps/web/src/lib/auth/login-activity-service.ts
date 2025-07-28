@@ -68,7 +68,7 @@ class LoginActivityService {
       })
 
       if (error) {
-        logger.error('Failed to log login activity', error)
+        logger.error('Failed to log login activity', {}, error)
         throw error
       }
 
@@ -86,7 +86,7 @@ class LoginActivityService {
         browser: browser.name
       })
     } catch (err) {
-      logger.error('Error logging login activity', err)
+      logger.error('Error logging login activity', { userId }, err instanceof Error ? err : new Error(String(err)))
       // Don't throw - we don't want login tracking failures to break login
     }
   }
@@ -107,14 +107,14 @@ class LoginActivityService {
         .limit(limit)
 
       if (error) {
-        logger.error('Failed to fetch login activity', error)
+        logger.error('Failed to fetch login activity', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
       return data || []
-    } catch (err) {
-      logger.error('Error fetching login activity', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching login activity', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -129,7 +129,7 @@ class LoginActivityService {
         .eq('user_id', userId)
 
       if (error) {
-        logger.error('Failed to fetch login stats', error)
+        logger.error('Failed to fetch login stats', {}, error instanceof Error ? error : new Error(String(error)))
         throw error
       }
 
@@ -162,9 +162,9 @@ class LoginActivityService {
         lastLoginDate: data[0]?.created_at,
         suspiciousActivity
       }
-    } catch (err) {
-      logger.error('Error fetching login stats', err)
-      throw err
+    } catch (error) {
+      logger.error('Error fetching login stats', { userId }, error instanceof Error ? error : new Error(String(error)))
+      throw error
     }
   }
 
@@ -212,7 +212,7 @@ class LoginActivityService {
         reasons
       }
     } catch (err) {
-      logger.error('Error checking suspicious activity', err)
+      logger.error('Error checking suspicious activity', { userId }, err instanceof Error ? err : new Error(String(err)))
       return { suspicious: false, reasons: [] }
     }
   }
@@ -246,7 +246,7 @@ class LoginActivityService {
       // For now, we'll just log it
       logger.info('Device info captured', { userId, ...deviceInfo })
     } catch (err) {
-      logger.error('Error updating device info', err)
+      logger.error('Error updating device info', { userId }, err instanceof Error ? err : new Error(String(err)))
     }
   }
 }

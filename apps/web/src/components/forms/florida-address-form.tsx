@@ -17,7 +17,7 @@ import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographi
 
 interface AddressComponents {
   street1: string
-  street2: string
+  street2?: string
   city: string
   state: string
   zip: string
@@ -113,7 +113,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
 
       return () => {
         document.head.removeChild(script)
-        delete window.initGooglePlaces
+        delete (window as any).initGooglePlaces
       }
     }
 

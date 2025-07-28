@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state - run only once
   useEffect(() => {
     let mounted = true
-    let authSubscription: unknown = null
+    let authSubscription: { unsubscribe: () => void } | null = null
 
     const initializeAuth = async () => {
       try {
@@ -77,7 +77,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
-          logger.error('Failed to get initial session', sessionError)
+          logger.error('Failed to get initial session', {}, sessionError)
           throw sessionError
         }
 
@@ -120,7 +120,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       } catch (err) {
-        logger.error('Auth initialization failed', err)
+        logger.error('Auth initialization failed', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
         if (mounted) {
           setError(new AuthError(
             'Failed to initialize authentication',
@@ -307,7 +307,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       return false
     } catch (err) {
-      logger.error('Unexpected signup error', err)
+      logger.error('Unexpected signup error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       setError(new AuthError(
         'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',
@@ -338,7 +338,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Use window.location to avoid router dependency issues
       window.location.href = '/'
     } catch (err) {
-      logger.error('Unexpected signout error', err)
+      logger.error('Unexpected signout error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       setError(new AuthError(
         'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',
@@ -363,7 +363,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       logger.track('password_reset_requested', { email })
     } catch (err) {
-      logger.error('Unexpected password reset error', err)
+      logger.error('Unexpected password reset error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       setError(new AuthError(
         'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',
@@ -391,7 +391,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.track('password_updated', { userId: data.id })
       }
     } catch (err) {
-      logger.error('Unexpected password update error', err)
+      logger.error('Unexpected password update error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       setError(new AuthError(
         'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',

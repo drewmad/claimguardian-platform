@@ -57,7 +57,7 @@ class SessionManager {
     const { data: { session }, error } = await this.supabase.auth.getSession()
     
     if (error || !session) {
-      logger.error('Failed to get session for monitoring', error)
+      logger.error('Failed to get session for monitoring', {}, error || undefined)
       return
     }
     
@@ -147,7 +147,7 @@ class SessionManager {
       const { data: { session: currentSession }, error: currentError } = await this.supabase.auth.getSession()
       
       if (currentError || !currentSession) {
-        logger.error('No current session to refresh', currentError)
+        logger.error('No current session to refresh', {}, currentError || undefined)
         this.config.onSessionExpired?.()
         return
       }
@@ -163,7 +163,7 @@ class SessionManager {
       const { data: { session }, error } = await this.supabase.auth.refreshSession()
       
       if (error) {
-        logger.error('Failed to refresh session', error)
+        logger.error('Failed to refresh session', {}, error)
         // Only trigger logout if the error is not recoverable
         if (error.message.includes('refresh_token_not_found') || 
             error.message.includes('Invalid refresh token')) {
@@ -186,7 +186,7 @@ class SessionManager {
       // Schedule next refresh
       this.scheduleRefresh(session.expires_at!)
     } catch (err) {
-      logger.error('Unexpected error refreshing session', err)
+      logger.error('Unexpected error refreshing session', {}, err instanceof Error ? err : new Error(String(err)))
       // Don't automatically logout on unexpected errors to avoid logout loops
       logger.warn('Session refresh failed, will retry on next scheduled refresh')
     }

@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { MapPin, Plus, ChevronRight, Building } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
 import { PropertyWizard } from '@/components/property/property-wizard'
 import { useProperties } from '@/hooks/queries/use-properties'
@@ -29,7 +29,7 @@ function PropertyOverviewContent() {
   const { data: properties = [], isLoading, error } = useProperties()
 
   // Transform data for display
-  const displayProperties = properties.map((prop) => ({
+  const displayProperties = properties.map((prop: any) => ({
     id: prop.id,
     name: prop.name || 'Unnamed Property',
     address: prop.address ? [
@@ -126,8 +126,7 @@ function PropertyOverviewContent() {
                     </p>
                   </div>
                   <PropertyAvatar 
-                    propertyId={property.id}
-                    propertyName={property.name}
+                    propertyType={property.type}
                     className="w-12 h-12"
                   />
                 </div>
@@ -202,9 +201,9 @@ function PropertyOverviewContent() {
       {/* Property Wizard Modal */}
       {showWizard && (
         <PropertyWizard
-          isOpen={showWizard}
+          open={showWizard}
           onClose={() => setShowWizard(false)}
-          onSuccess={() => {
+          onComplete={() => {
             setShowWizard(false)
             // React Query will automatically refetch due to invalidation in the mutation
           }}

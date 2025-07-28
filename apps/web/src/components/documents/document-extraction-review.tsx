@@ -12,7 +12,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -66,7 +66,7 @@ export function DocumentExtractionReview({
 
       if (data) {
         setExtractionStatus({
-          status: data.processing_status as unknown,
+          status: data.processing_status as 'idle' | 'processing' | 'completed' | 'failed',
           confidence: data.confidence_score,
           data: data.extracted_data as ExtractedPolicyData,
           error: data.error_message || undefined

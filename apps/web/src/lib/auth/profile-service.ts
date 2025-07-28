@@ -51,7 +51,7 @@ class ProfileService {
       const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
-        logger.error('Failed to get auth user', userError)
+        logger.error('Failed to get auth user', {}, userError || undefined)
         return null
       }
 
@@ -62,7 +62,7 @@ class ProfileService {
         .single()
 
       if (profileError) {
-        logger.error('Failed to fetch profile', profileError)
+        logger.error('Failed to fetch profile', {}, profileError || undefined)
         return null
       }
 
@@ -80,7 +80,7 @@ class ProfileService {
         emailVerified: user.user.email_confirmed_at !== null
       }
     } catch (err) {
-      logger.error('Error fetching profile', err)
+      logger.error('Error fetching profile', { userId }, err instanceof Error ? err : new Error(String(err)))
       return null
     }
   }
@@ -107,14 +107,14 @@ class ProfileService {
         .eq('id', userId)
 
       if (error) {
-        logger.error('Failed to update profile', error)
+        logger.error('Failed to update profile', {}, error instanceof Error ? error : new Error(String(error)))
         return false
       }
 
       logger.info('Profile updated successfully', { userId })
       return true
-    } catch (err) {
-      logger.error('Error updating profile', err)
+    } catch (error) {
+      logger.error('Error updating profile', { userId }, error instanceof Error ? error : new Error(String(error)))
       return false
     }
   }
@@ -150,7 +150,7 @@ class ProfileService {
       })
 
       if (updateError) {
-        logger.error('Failed to update email', updateError)
+        logger.error('Failed to update email', {}, updateError || undefined)
         
         if (updateError.message.includes('already registered')) {
           return { success: false, error: 'This email is already in use' }
@@ -161,8 +161,8 @@ class ProfileService {
 
       logger.info('Email change requested', { userId, newEmail: data.newEmail })
       return { success: true }
-    } catch (err) {
-      logger.error('Error requesting email change', err)
+    } catch (error) {
+      logger.error('Error requesting email change', { userId }, error instanceof Error ? error : new Error(String(error)))
       return { success: false, error: 'An unexpected error occurred' }
     }
   }
@@ -201,8 +201,8 @@ class ProfileService {
 
       logger.info('Password updated successfully', { userId: user.user.id })
       return { success: true }
-    } catch (err) {
-      logger.error('Error updating password', err)
+    } catch (error) {
+      logger.error('Error updating password', {}, error instanceof Error ? error : new Error(String(error)))
       return { success: false, error: 'An unexpected error occurred' }
     }
   }
@@ -228,7 +228,7 @@ class ProfileService {
         })
 
       if (uploadError) {
-        logger.error('Failed to upload avatar', uploadError)
+        logger.error('Failed to upload avatar', {}, uploadError || undefined)
         return { error: 'Failed to upload avatar' }
       }
 
@@ -243,7 +243,7 @@ class ProfileService {
       logger.info('Avatar uploaded successfully', { userId, filePath })
       return { url: publicUrl }
     } catch (err) {
-      logger.error('Error uploading avatar', err)
+      logger.error('Error uploading avatar', { userId }, err instanceof Error ? err : new Error(String(err)))
       return { error: 'An unexpected error occurred' }
     }
   }
@@ -283,7 +283,7 @@ class ProfileService {
       
       return { success: true }
     } catch (err) {
-      logger.error('Error deleting account', err)
+      logger.error('Error deleting account', { userId }, err instanceof Error ? err : new Error(String(err)))
       return { success: false, error: 'An unexpected error occurred' }
     }
   }

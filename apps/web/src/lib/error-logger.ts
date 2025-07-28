@@ -39,7 +39,7 @@ interface ErrorLogEntry {
 }
 
 export class AIErrorLogger {
-  private supabase: unknown
+  private supabase: ReturnType<typeof createClient> | null = null
   private isEnabled: boolean = true
 
   constructor() {

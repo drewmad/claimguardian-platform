@@ -62,7 +62,7 @@ export default function LegalUpdatePage() {
       router.push('/dashboard')
 
     } catch (error) {
-      logger.error('Failed to submit legal consent', error)
+      logger.error('Failed to submit legal consent', {}, error instanceof Error ? error : new Error(String(error)))
       throw error
     } finally {
       setSubmitting(false)

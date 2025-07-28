@@ -17,23 +17,23 @@ const LoadingChat = () => (
 )
 
 // AI Components
-export const LazyImageUploadAnalyzer = dynamic(
+export const LazyImageUploadAnalyzer = dynamic<any>(
   () => import('@/components/ai/image-upload-analyzer').then(mod => ({ default: mod.ImageUploadAnalyzer })),
   { loading: () => <LoadingCard />, ssr: false }
 )
 
-export const LazyAIChatInterface = dynamic(
+export const LazyAIChatInterface = dynamic<any>(
   () => import('@/components/ai/ai-chat-interface').then(mod => ({ default: mod.AIChatInterface })),
   { loading: () => <LoadingChat />, ssr: false }
 )
 
-export const LazyCameraCapture = dynamic(
+export const LazyCameraCapture = dynamic<any>(
   () => import('@/components/ai/camera-capture').then(mod => ({ default: mod.CameraCapture })),
   { loading: () => <LoadingCard />, ssr: false }
 )
 
 // Report Components
-export const LazyReportGenerator = dynamic(
+export const LazyReportGenerator = dynamic<any>(
   () => import('@/components/reports/report-generator').then(mod => ({ default: mod.ReportGenerator })),
   { loading: () => <LoadingCard />, ssr: false }
 )
@@ -41,7 +41,7 @@ export const LazyReportGenerator = dynamic(
 // Note: PDF and 3D viewer components will be added when implemented
 
 // Dropzone for Evidence Organizer
-export const LazyDropzone = dynamic(
+export const LazyDropzone = dynamic<any>(
   () => import('react-dropzone').then(mod => ({ default: mod.useDropzone as unknown as ComponentType<any> })),
   { loading: () => <LoadingCard />, ssr: false }
 )

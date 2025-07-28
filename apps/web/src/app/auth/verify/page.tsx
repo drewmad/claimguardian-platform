@@ -27,6 +27,8 @@ function VerifyEmailContent() {
   const [countdown, setCountdown] = useState(5)
 
   useEffect(() => {
+    let timer: NodeJS.Timeout | undefined
+
     const verifyEmail = async () => {
       try {
         // Get the token from URL
@@ -52,7 +54,7 @@ function VerifyEmailContent() {
         if (error) {
           setStatus('error')
           setErrorMessage(error.message || 'Verification failed')
-          logger.error('Email verification failed', error)
+          logger.error('Email verification failed', {}, error)
           return
         }
 
@@ -61,26 +63,31 @@ function VerifyEmailContent() {
           logger.track('email_verified', { userId: data.user.id })
           
           // Start countdown for auto-redirect
-          const timer = setInterval(() => {
+          timer = setInterval(() => {
             setCountdown(prev => {
               if (prev <= 1) {
-                clearInterval(timer)
+                clearInterval(timer!)
                 router.push('/dashboard')
               }
               return prev - 1
             })
           }, 1000)
-
-          return () => clearInterval(timer)
         }
       } catch (err) {
         setStatus('error')
         setErrorMessage('An unexpected error occurred')
-        logger.error('Unexpected verification error', err)
+        logger.error('Unexpected verification error', {}, err instanceof Error ? err : new Error(String(err)))
       }
     }
 
     verifyEmail()
+
+    // Cleanup timer on unmount
+    return () => {
+      if (timer) {
+        clearInterval(timer)
+      }
+    }
   }, [router, searchParams])
 
   return (

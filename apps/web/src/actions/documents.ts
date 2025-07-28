@@ -53,7 +53,7 @@ export interface DocumentRecord {
  */
 export async function uploadPolicyDocument(params: DocumentUploadParams) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -158,7 +158,7 @@ export async function uploadPolicyDocument(params: DocumentUploadParams) {
  */
 export async function createDocumentRecord(params: DocumentRecordParams) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -219,7 +219,7 @@ export async function createDocumentRecord(params: DocumentRecordParams) {
  */
 export async function deletePolicyDocument(documentId: string) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -285,7 +285,7 @@ export async function deletePolicyDocument(documentId: string) {
  */
 export async function getPolicyDocuments(propertyId: string) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -320,7 +320,7 @@ export async function getPolicyDocuments(propertyId: string) {
  */
 export async function getDocumentDownloadUrl(documentId: string) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()

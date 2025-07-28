@@ -18,8 +18,7 @@ export async function middleware(request: NextRequest) {
   }
   
   // Get client IP
-  const ip = request.ip || 
-    request.headers.get('x-forwarded-for')?.split(',')[0] || 
+  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
     request.headers.get('x-real-ip') ||
     'unknown'
 
@@ -31,7 +30,7 @@ export async function middleware(request: NextRequest) {
     path: request.nextUrl.pathname,
     method: request.method,
     timestamp: new Date().toISOString(),
-    geo: request.geo || null,
+    geo: null,
   }
 
   // Enhanced logging for debugging
@@ -90,7 +89,7 @@ export async function middleware(request: NextRequest) {
       console.warn('Security: Unauthorized route access', {
         timestamp: new Date().toISOString(),
         userAgent: request.headers.get('user-agent'),
-        ip: request.ip
+        ip: ip
       })
     }
     return NextResponse.redirect(new URL('/', request.url))

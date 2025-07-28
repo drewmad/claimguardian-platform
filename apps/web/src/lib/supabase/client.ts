@@ -1,18 +1,16 @@
 'use client'
 
-import { createBrowserClient } from '@supabase/ssr'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { useMemo } from 'react'
-import { getSupabaseConfig } from '@/lib/utils/check-env'
 import { authLogger } from '@/lib/logger'
 
-let browserClient: ReturnType<typeof createBrowserClient> | undefined
+let browserClient: ReturnType<typeof createBrowserSupabaseClient> | undefined
 
 export function createClient() {
   if (!browserClient) {
     try {
-      const { url, anonKey } = getSupabaseConfig()
-      browserClient = createBrowserClient(url, anonKey)
-      authLogger.info('Supabase client initialized', { url })
+      browserClient = createBrowserSupabaseClient()
+      authLogger.info('Supabase client initialized')
     } catch (error) {
       authLogger.error('Failed to initialize Supabase client', {}, error as Error)
       // Re-throw to prevent silent failures

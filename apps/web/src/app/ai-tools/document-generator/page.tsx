@@ -19,7 +19,7 @@ interface DocumentTemplate {
   id: string
   title: string
   description: string
-  icon: unknown
+  icon: React.ComponentType<{ className?: string }>
   category: 'claim' | 'appeal' | 'communication' | 'legal'
   fields: DocumentField[]
 }

@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { Shield, AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { securityQuestionsService } from '@/lib/auth/security-questions-service'
+import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
@@ -71,7 +71,7 @@ export default function RecoverAccountPage() {
       setStep('questions')
       logger.track('account_recovery_started', { email })
     } catch (err) {
-      logger.error('Failed to start account recovery', err)
+      logger.error('Failed to start account recovery', { userId }, err instanceof Error ? err : new Error(String(err)))
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -100,7 +100,7 @@ export default function RecoverAccountPage() {
       logger.track('security_questions_verified', { userId })
       setStep('reset')
     } catch (err) {
-      logger.error('Failed to verify security questions', err)
+      logger.error('Failed to verify security questions', { userId }, err instanceof Error ? err : new Error(String(err)))
       setError('An error occurred. Please try again.')
     } finally {
       setLoading(false)
@@ -135,7 +135,7 @@ export default function RecoverAccountPage() {
       logger.track('account_recovered', { userId })
       setStep('success')
     } catch (err) {
-      logger.error('Failed to reset password', err)
+      logger.error('Failed to reset password', { userId }, err instanceof Error ? err : new Error(String(err)))
       setError('Failed to reset password. Please check your email for reset instructions.')
     } finally {
       setLoading(false)

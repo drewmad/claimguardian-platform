@@ -47,6 +47,9 @@ export function useRateLimit(options: UseRateLimitOptions = {}) {
       setIsLimited(false)
       localStorage.removeItem(storageKey)
     }
+    
+    // Ensure all code paths return a value
+    return undefined
   }, [secondsRemaining, isLimited, storageKey])
   
   const checkLimit = useCallback(() => {

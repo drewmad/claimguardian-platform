@@ -38,7 +38,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         videoRef.current.srcObject = stream
         
         await reader.decodeFromVideoDevice(
-          undefined,
+          null,
           videoRef.current,
           (result) => {
             if (result) {

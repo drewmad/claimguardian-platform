@@ -17,7 +17,7 @@ import {
   AlertCircle, CheckCircle, Lock, Activity, Key
 } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
-import { profileService } from '@/lib/auth/profile-service'
+import { profileService, type UserProfile } from '@/lib/auth/profile-service'
 import { useModalStore } from '@/stores/modal-store'
 import { logger } from '@/lib/logger'
 import Link from 'next/link'
@@ -73,7 +73,7 @@ export default function ProfilePage() {
             setPhone(data.phone || '')
           }
         } catch (err) {
-          logger.error('Failed to load profile', err)
+          logger.error('Failed to load profile', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
           showMessage('error', 'Failed to load profile')
         } finally {
           setLoading(false)
@@ -110,7 +110,7 @@ export default function ProfilePage() {
         showMessage('error', 'Failed to update profile')
       }
     } catch (err) {
-      logger.error('Failed to update profile', err)
+      logger.error('Failed to update profile', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
       showMessage('error', 'An error occurred')
     } finally {
       setSaving(false)
@@ -136,7 +136,7 @@ export default function ProfilePage() {
         showMessage('error', result.error || 'Failed to change email')
       }
     } catch (err) {
-      logger.error('Failed to change email', err)
+      logger.error('Failed to change email', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
       showMessage('error', 'An error occurred')
     } finally {
       setSaving(false)
@@ -169,7 +169,7 @@ export default function ProfilePage() {
         showMessage('error', result.error || 'Failed to update password')
       }
     } catch (err) {
-      logger.error('Failed to update password', err)
+      logger.error('Failed to update password', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       showMessage('error', 'An error occurred')
     } finally {
       setSaving(false)
@@ -191,7 +191,7 @@ export default function ProfilePage() {
         showMessage('error', result.error || 'Failed to delete account')
       }
     } catch (err) {
-      logger.error('Failed to delete account', err)
+      logger.error('Failed to delete account', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
       showMessage('error', 'An error occurred')
     } finally {
       setSaving(false)

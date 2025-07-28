@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { MapPin, Shield, Plus, ChevronRight, Loader2 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent } from '@claimguardian/ui'
+import { Card, CardContent } from '@/components/ui/card'
 import { getProperties } from '@/actions/properties'
 import { toast } from 'sonner'
 import { PropertyAvatar } from '@/components/ui/property-image'
@@ -30,12 +30,14 @@ function PropertyOverviewContent() {
   useEffect(() => {
     const loadProperties = async () => {
       try {
-        const { data, error } = await getProperties()
-        if (error) throw error
+        const result = await getProperties()
+        if (result.error) throw result.error
         
-        if (data && data.length > 0) {
+        const propertiesData = result.data?.data || []
+        
+        if (propertiesData.length > 0) {
           // Transform database data to display format with full address
-          const transformedData = data.map((prop: unknown) => ({
+          const transformedData = propertiesData.map((prop: any) => ({
             id: prop.id,
             name: prop.name || 'Unnamed Property',
             address: prop.address ? [
@@ -109,11 +111,13 @@ function PropertyOverviewContent() {
       if (!loading) {
         const loadProperties = async () => {
           try {
-            const { data, error } = await getProperties()
-            if (error) throw error
+            const result = await getProperties()
+            if (result.error) throw result.error
             
-            if (data && data.length > 0) {
-              const transformedData = data.map((prop: unknown) => ({
+            const propertiesData = result.data?.data || []
+            
+            if (propertiesData.length > 0) {
+              const transformedData = propertiesData.map((prop: any) => ({
                 id: prop.id,
                 name: prop.name || 'Unnamed Property',
                 address: prop.address ? [

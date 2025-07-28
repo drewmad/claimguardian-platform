@@ -1,26 +1,19 @@
 // Re-export database types
 export * from './types/database.types'
+export * from './schema'
 
-// Export Supabase client factory
-import { createServerClient } from '@supabase/ssr'
-import { Database } from './types/database.types'
+import type { Database } from './types/database.types'
 
+// Export Supabase client factory functions
+export {
+  createServerSupabaseClient,
+  createBrowserSupabaseClient,
+  createServiceRoleClient,
+  createEdgeFunctionClient
+} from './supabase-factory'
+
+// Re-export Database type
 export type { Database }
-
-// Client creation functions
-export function createSupabaseServerClient(
-  supabaseUrl: string,
-  supabaseAnonKey: string,
-  cookies: any
-) {
-  return createServerClient<Database>(supabaseUrl, supabaseAnonKey, {
-    cookies: {
-      get(name: string) {
-        return cookies().get(name)?.value
-      },
-    },
-  })
-}
 
 // Re-export common types for easier access
 export type Tables = Database['public']['Tables']

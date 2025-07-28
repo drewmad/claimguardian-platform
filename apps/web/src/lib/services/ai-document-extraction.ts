@@ -10,6 +10,7 @@
  */
 
 import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 export interface ExtractedPolicyData {
   // Basic Policy Information
@@ -63,11 +64,10 @@ const DEFAULT_OPTIONS: DocumentExtractionOptions = {
 }
 
 class AIDocumentExtractionService {
-  private geminiApiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY
-  private openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY
+  private supabase = createClient()
   
   /**
-   * Extract policy data from a document file
+   * Extract policy data from a document file using server-side Edge Function
    */
   async extractPolicyData(
     fileUrl: string, 
@@ -96,28 +96,26 @@ class AIDocumentExtractionService {
         }
       }
 
-      // Choose extraction method based on file type and options
-      let extractionResult: ExtractionResult
+      // Call Edge Function for secure AI processing
+      const { data, error } = await this.supabase.functions.invoke('ai-document-extraction', {
+        body: {
+          fileUrl,
+          fileName,
+          apiProvider: options.apiProvider,
+          useOCR: options.useOCR,
+          confidenceThreshold: options.confidenceThreshold
+        }
+      })
 
-      if (options.apiProvider === 'gemini' && this.geminiApiKey) {
-        extractionResult = await this.extractWithGemini(fileUrl)
-      } else if (options.apiProvider === 'openai' && this.openaiApiKey) {
-        extractionResult = await this.extractWithOpenAI(fileUrl)
-      } else {
-        // Fallback to mock extraction for demo purposes
-        extractionResult = await this.mockExtraction(fileName)
+      if (error) {
+        throw error
       }
 
-      // Add processing time
-      extractionResult.processingTime = Date.now() - startTime
+      const extractionResult = data as ExtractionResult
 
-      // Check confidence threshold
-      if (extractionResult.confidence && extractionResult.confidence < options.confidenceThreshold!) {
-        logger.warn('Extraction confidence below threshold', {
-          confidence: extractionResult.confidence,
-          threshold: options.confidenceThreshold,
-          fileName
-        })
+      // Add processing time if not already included
+      if (!extractionResult.processingTime) {
+        extractionResult.processingTime = Date.now() - startTime
       }
 
       logger.info('Policy document extraction completed', {
@@ -143,106 +141,6 @@ class AIDocumentExtractionService {
     }
   }
 
-  /**
-   * Extract using Google Gemini Vision API
-   */
-  private async extractWithGemini(
-    fileUrl: string
-  ): Promise<ExtractionResult> {
-    try {
-      // For demo purposes, this is a simplified implementation
-      // In production, you would:
-      // 1. Download the file from the URL
-      // 2. Convert PDF to images if needed
-      // 3. Send to Gemini Vision API with proper prompts
-      // 4. Parse the response and extract structured data
-
-      const prompt = this.buildExtractionPrompt()
-      
-      // Mock Gemini API call for now
-      logger.info('Would call Gemini API for document extraction', { 
-        fileUrl: fileUrl.substring(0, 50) + '...', 
-        prompt: prompt.substring(0, 100) + '...' 
-      })
-
-      // Return mock data for demonstration
-      return await this.mockExtraction('gemini-processed')
-    } catch (error) {
-      logger.error('Gemini extraction failed', { error })
-      return {
-        success: false,
-        error: 'Gemini API extraction failed'
-      }
-    }
-  }
-
-  /**
-   * Extract using OpenAI GPT-4 Vision API
-   */
-  private async extractWithOpenAI(
-    fileUrl: string
-  ): Promise<ExtractionResult> {
-    try {
-      // For demo purposes, this is a simplified implementation
-      // In production, you would:
-      // 1. Download the file from the URL
-      // 2. Convert PDF to images if needed
-      // 3. Send to OpenAI Vision API with proper prompts
-      // 4. Parse the response and extract structured data
-
-      const prompt = this.buildExtractionPrompt()
-      
-      // Mock OpenAI API call for now
-      logger.info('Would call OpenAI API for document extraction', { 
-        fileUrl: fileUrl.substring(0, 50) + '...', 
-        prompt: prompt.substring(0, 100) + '...' 
-      })
-
-      // Return mock data for demonstration
-      return await this.mockExtraction('openai-processed')
-    } catch (error) {
-      logger.error('OpenAI extraction failed', { error })
-      return {
-        success: false,
-        error: 'OpenAI API extraction failed'
-      }
-    }
-  }
-
-  /**
-   * Build extraction prompt for AI models
-   */
-  private buildExtractionPrompt(): string {
-    return `
-You are an AI assistant specialized in extracting structured data from insurance policy documents. 
-
-Please analyze this insurance policy document and extract the following information in JSON format:
-
-{
-  "policyNumber": "string - The policy number",
-  "carrierName": "string - Insurance company name",
-  "policyType": "string - Type of policy (HO3, HO5, etc.)",
-  "coverageAmount": "number - Total coverage amount in dollars",
-  "deductible": "number - Standard deductible amount",
-  "windDeductible": "string|number - Wind/hurricane deductible (percentage or dollar amount)",
-  "floodDeductible": "number - Flood deductible if applicable",
-  "effectiveDate": "string - Policy effective date (YYYY-MM-DD)",
-  "expirationDate": "string - Policy expiration date (YYYY-MM-DD)",
-  "propertyAddress": "string - Insured property address",
-  "namedInsured": "string - Primary insured person/entity",
-  "premiumAmount": "number - Annual premium amount",
-  "additionalCoverages": ["array of strings - Additional coverage types"],
-  "confidence": "number - Your confidence in the extraction (0-1)"
-}
-
-Rules:
-- Only include fields you can clearly identify in the document
-- For dates, use YYYY-MM-DD format
-- For monetary amounts, use numbers without currency symbols
-- If uncertain about a field, omit it rather than guessing
-- Provide a confidence score between 0 and 1
-    `.trim()
-  }
 
   /**
    * Mock extraction for demonstration purposes
