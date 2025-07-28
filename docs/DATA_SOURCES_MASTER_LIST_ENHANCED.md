@@ -1,6 +1,6 @@
 # ClaimGuardian Data Sources Master List - Enhanced Edition
 
-Last Updated: July 23, 2025
+Last Updated: July 28, 2025
 
 ## 1. Florida Property & Parcel Data
 

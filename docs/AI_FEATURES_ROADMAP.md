@@ -37,14 +37,16 @@ This document outlines the comprehensive AI-powered features planned for the Cla
 
 ## Implementation Priorities
 
-### Phase 1: Foundation (Current)
+### Phase 1: Foundation (Complete)
 - ✅ Policy Chat Assistant (#17)
 - ✅ AI Damage Analyzer (#12)
 - ✅ Inventory Scanner (#19)
-- 🚧 Smart Document Ingest (#1)
-- 🚧 pgvector Embedding Layer (#5)
+- ✅ pgvector Embedding Layer (#5)
+- ✅ AI Schema Implementation
+- ✅ 3D Model Generator (#19)
 
-### Phase 2: Core Processing
+### Phase 2: Core Processing (In Progress)
+- 🚧 Smart Document Ingest (#1)
 - ISO Form Parser (#2)
 - Adaptive Field Mapping (#3)
 - Canonical Claims & Policy Tables (#4)

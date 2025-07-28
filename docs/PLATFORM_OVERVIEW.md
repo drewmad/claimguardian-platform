@@ -15,11 +15,13 @@
 ClaimGuardian is a comprehensive AI-powered insurance claim advocacy platform specifically designed for Florida homeowners. Built with modern web technologies and a security-first approach.
 
 ### Technology Stack
-- **Frontend**: Next.js 15.3.5, React 18.2.0, TypeScript 5.8.3
+- **Frontend**: Next.js 15.3.5, React 19.0.0, TypeScript 5.8.3
 - **Backend**: Supabase (PostgreSQL, Auth, Storage, Edge Functions)
-- **AI Integration**: OpenAI GPT-4, Google Gemini, Custom MCP Server
+- **AI Integration**: OpenAI GPT-4, Google Gemini Pro Vision, Custom MCP Server
 - **Infrastructure**: Vercel, Turborepo monorepo
 - **Styling**: Tailwind CSS, shadcn/ui components
+- **Package Manager**: pnpm 10.13.1
+- **Node.js**: 22+ required
 
 ### Project Structure
 ```
@@ -31,6 +33,7 @@ ClaimGuardian/
 │   ├── utils/               # Shared utilities
 │   ├── config/              # Shared configuration
 │   ├── ai-config/           # AI configuration and prompts
+│   ├── db/                  # Database types and Supabase client
 │   └── mcp-server/          # Model Context Protocol server
 ├── docs/                    # Documentation
 ├── supabase/               # Database migrations and functions
