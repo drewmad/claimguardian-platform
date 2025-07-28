@@ -1,0 +1,1306 @@
+{
+  "timestamp": "2025-07-28T15:49:18.455Z",
+  "analysis": {
+    "scripts": {
+      "migration": [
+        "apply-ai-migration.js",
+        "apply-ai-migrations-sequential.js",
+        "apply-column-enhancements.js",
+        "apply-critical-fixes.js",
+        "apply-csv-import-fix.js",
+        "apply-csv-import-solution.js",
+        "apply-database-enhancements.sh",
+        "apply-final-enhancements.js",
+        "apply-fixes-via-api.js",
+        "apply-florida-counties-final.js",
+        "apply-florida-counties-migration.js",
+        "apply-florida-counties-updates.js",
+        "apply-florida-parcels-columns.js",
+        "apply-florida-parcels-migration.js",
+        "apply-inventory-migrations.js",
+        "apply-learnings.js",
+        "apply-migration-cli.sh",
+        "apply-migration-direct.sh",
+        "apply-migration-supabase.mjs",
+        "apply-parcels-fix.js",
+        "apply-parcels-migration-direct.mjs",
+        "apply-property-schema.js",
+        "apply-property-schema.sh",
+        "apply-remaining-schema.sh",
+        "apply-schema-direct.js",
+        "apply-single-table-merge.js",
+        "apply-uppercase-fix.js",
+        "apply-uppercase-view.js",
+        "charlotte-county-schema.sql",
+        "db-schema.sh",
+        "deploy-schema-http.js",
+        "execute-migration.js",
+        "execute-migration.sh",
+        "migration-steps.sql",
+        "run-migration-node.js",
+        "test-property-schema.js",
+        "test-schema.sh",
+        "verify-property-schema.sh",
+        "verify-schema-fast.js",
+        "verify-schema.sql"
+      ],
+      "import": [
+        "benchmark-import-performance.sh",
+        "bulk-import-florida-parcels.js",
+        "charlotte-simple-import.js",
+        "clean_all_parcels_csv.py",
+        "clean_parcels_csv.py",
+        "csv-import-optimization.md",
+        "extract-charlotte-county.js",
+        "extract-charlotte-fast.sh",
+        "final-import-verification.js",
+        "import-cleaned-split-direct.js",
+        "import-cleaned-split-resilient.js",
+        "import-cleaned-split-sequential.js",
+        "import-cleaned-split-simple.js",
+        "import-cleaned-split.js",
+        "import-florida-parcels-csv.js",
+        "import-florida-parcels-streaming.js",
+        "import-florida-parcels.sh",
+        "import-parallel-optimal.js",
+        "import-parcels-batch.js",
+        "import-remaining-fast.js",
+        "import-subset.js",
+        "import_cadastral_gdb.js",
+        "phase1-charlotte-existing.js",
+        "phase1-charlotte.sh",
+        "prepare-csv-import.sql",
+        "run-parallel-import-v1-backup.sh",
+        "run-parallel-import.sh",
+        "setup-parcels-db.js",
+        "test-import-quick.sh",
+        "test-uppercase-import.js",
+        "verify-florida-parcels-live.js",
+        "verify-import-complete.js",
+        "verify-parcels-columns.sql"
+      ],
+      "scraper": [
+        "check-scraper-logs.sh",
+        "fix-scraper-logs-table.js",
+        "scrape-florida-counties.js",
+        "scrape-florida-public.js",
+        "scrape-florida-simple.js",
+        "scrape-florida-statewide-fixed.js",
+        "scrape-florida-statewide.js",
+        "verify_scraper_run.ts"
+      ],
+      "utility": [
+        ".DS_Store",
+        "add-all-staging-columns.sql",
+        "ai-embeddings.js",
+        "ai-retrospective.js",
+        "analyze-column-types.js",
+        "analyze-repo-cleanup.js",
+        "analyze_cadastral_gdb.py",
+        "auto-fix-lint.js",
+        "claude-learn.sh",
+        "db-backup.sh",
+        "db-validate.sh",
+        "deploy-floir-only.sql",
+        "deploy-florida-platform.sql",
+        "execute-sql-direct.sh",
+        "execute-sql-via-api.mjs",
+        "find-unused-files.js",
+        "geo-data-transformer.js",
+        "install-deps.sh",
+        "lint-fix.sh",
+        "lint-gradual-fix.sh",
+        "migrate-via-api.sh",
+        "phased-deployment.sh",
+        "pre-deploy-check.sh",
+        "smart-lint-fix.js",
+        "spatial-analyzer.js",
+        "supabase-examples.sh",
+        "sync-ai-context.js",
+        "sync-lockfile.js",
+        "update-claude-md.js",
+        "validate-lockfile.js",
+        "vercel-install.sh"
+      ],
+      "deprecated": [
+        "archive/complete-charlotte-import.sh",
+        "archive/continue-charlotte-import.sh",
+        "archive/continue-charlotte-js.js",
+        "archive/extract-charlotte-only.sh",
+        "archive/import-all-counties.sh",
+        "archive/import-charlotte-batched.sh",
+        "archive/import-charlotte-batches.sh",
+        "archive/import-charlotte-chunked.sh",
+        "archive/import-charlotte-clean.sh",
+        "archive/import-charlotte-complete.sh",
+        "archive/import-charlotte-correct.sh",
+        "archive/import-charlotte-direct.sh",
+        "archive/import-charlotte-fast.sh",
+        "archive/import-charlotte-final-geojson.sh",
+        "archive/import-charlotte-final.sh",
+        "archive/import-charlotte-full.sh",
+        "archive/import-charlotte-geojson.sh",
+        "archive/import-charlotte-projection.sh",
+        "archive/import-charlotte-resume.sh",
+        "archive/import-charlotte-simple.js",
+        "archive/import-charlotte-simple.sh",
+        "archive/import-charlotte-skip.sh",
+        "archive/import-charlotte-skipfailures.sh",
+        "archive/import-charlotte-streaming.js",
+        "archive/import-charlotte-targeted.sh",
+        "archive/import-charlotte-working.sh",
+        "archive/import-florida-parcels-direct.sh",
+        "archive/import-lee-county.sh",
+        "archive/import-parcels-auto.sh",
+        "archive/import-parcels-batch-api.js",
+        "archive/test-import-10-records.sh",
+        "archive/test-scraper-api.js",
+        "archive/test-scraper.js",
+        "archive/update-charlotte-import.sh",
+        "archive/verify-florida-counties.sh"
+      ],
+      "documentation": [
+        "digital-ocean-setup.md",
+        "do-complete-steps.md",
+        "do-quick-setup.sh",
+        "do-terminal-setup.md",
+        "enhanced-automation-pipeline.md",
+        "setup-ai-context.sh"
+      ],
+      "testing": [
+        "test-florida-platform.sh",
+        "verify-deployment.js",
+        "verify-merged-table.js",
+        "verify-uppercase-view.js"
+      ]
+    },
+    "data": {
+      "csv": [
+        {
+          "path": "data/charlotte_county/charlotte_parcels.csv",
+          "size": "1.91 MB"
+        }
+      ],
+      "gdb": [
+        {
+          "path": "Cadastral_Statewide.gdb 2",
+          "size": "19758.93 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb",
+          "size": "19758.93 MB"
+        }
+      ],
+      "logs": [
+        {
+          "path": "import_logs/performance.jsonl",
+          "size": "0.33 KB"
+        },
+        {
+          "path": "import_logs/process1.log",
+          "size": "3.47 KB"
+        },
+        {
+          "path": "import_logs/process2.log",
+          "size": "3.56 KB"
+        },
+        {
+          "path": "import_logs/process3.log",
+          "size": "3.64 KB"
+        },
+        {
+          "path": "import_logs/process4.log",
+          "size": "4.08 KB"
+        },
+        {
+          "path": "import_logs/process5.log",
+          "size": "3.88 KB"
+        },
+        {
+          "path": "import_logs/process6.log",
+          "size": "4.10 KB"
+        },
+        {
+          "path": "import_logs/process7.log",
+          "size": "3.81 KB"
+        },
+        {
+          "path": "import_logs/test_1.log",
+          "size": "1.20 KB"
+        },
+        {
+          "path": "deployment_logs/deployment.log",
+          "size": "0.45 KB"
+        }
+      ]
+    },
+    "config": {
+      "root": [
+        {
+          "file": "complete-view.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "create-florida-parcels-schema.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "create-property-table.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-database.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-permissions.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-scraper-auth.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-scraper-runs-table.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "schema.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "supabase_dump.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "test-fixes.sh",
+          "type": "Test",
+          "shouldMove": true,
+          "suggestedLocation": "scripts/tests/"
+        },
+        {
+          "file": "test-import-sample.js",
+          "type": "Test",
+          "shouldMove": true,
+          "suggestedLocation": "scripts/tests/"
+        }
+      ],
+      "supabase": [
+        {
+          "type": "backup",
+          "path": "backups",
+          "size": "0.91 MB",
+          "recommendation": "Remove or move to external backup"
+        },
+        {
+          "type": "backup",
+          "path": "migrations-backup",
+          "size": "0.13 MB",
+          "recommendation": "Remove or move to external backup"
+        },
+        {
+          "type": "backup",
+          "path": "migrations_archive_20250723_220534",
+          "size": "0.28 MB",
+          "recommendation": "Remove or move to external backup"
+        },
+        {
+          "type": "backup",
+          "path": "migrations_backup",
+          "size": "0.00 MB",
+          "recommendation": "Remove or move to external backup"
+        },
+        {
+          "type": "backup",
+          "path": "migrations_backup_20250723_044844",
+          "size": "0.20 MB",
+          "recommendation": "Remove or move to external backup"
+        }
+      ],
+      "deployment": [
+        ".vercelignore",
+        "sentry.client.config.js",
+        "sentry.edge.config.js",
+        "sentry.server.config.js",
+        "vercel.json"
+      ]
+    },
+    "duplicates": [
+      {
+        "pattern": "import-charlotte",
+        "count": 21,
+        "files": [
+          "archive/import-charlotte-batched.sh",
+          "archive/import-charlotte-batches.sh",
+          "archive/import-charlotte-chunked.sh",
+          "archive/import-charlotte-clean.sh",
+          "archive/import-charlotte-complete.sh",
+          "archive/import-charlotte-correct.sh",
+          "archive/import-charlotte-direct.sh",
+          "archive/import-charlotte-fast.sh",
+          "archive/import-charlotte-final-geojson.sh",
+          "archive/import-charlotte-final.sh",
+          "archive/import-charlotte-full.sh",
+          "archive/import-charlotte-geojson.sh",
+          "archive/import-charlotte-projection.sh",
+          "archive/import-charlotte-resume.sh",
+          "archive/import-charlotte-simple.js",
+          "archive/import-charlotte-simple.sh",
+          "archive/import-charlotte-skip.sh",
+          "archive/import-charlotte-skipfailures.sh",
+          "archive/import-charlotte-streaming.js",
+          "archive/import-charlotte-targeted.sh",
+          "archive/import-charlotte-working.sh"
+        ]
+      },
+      {
+        "pattern": "apply-migration",
+        "count": 3,
+        "files": [
+          "apply-migration-cli.sh",
+          "apply-migration-direct.sh",
+          "apply-migration-supabase.mjs"
+        ]
+      },
+      {
+        "pattern": "scrape-florida",
+        "count": 5,
+        "files": [
+          "scrape-florida-counties.js",
+          "scrape-florida-public.js",
+          "scrape-florida-simple.js",
+          "scrape-florida-statewide-fixed.js",
+          "scrape-florida-statewide.js"
+        ]
+      },
+      {
+        "pattern": "import-parcels",
+        "count": 3,
+        "files": [
+          "import-parcels-batch.js",
+          "archive/import-parcels-auto.sh",
+          "archive/import-parcels-batch-api.js"
+        ]
+      },
+      {
+        "pattern": "verify",
+        "count": 8,
+        "files": [
+          "verify-property-schema.sh",
+          "verify-schema-fast.js",
+          "verify-schema.sql",
+          "verify-florida-parcels-live.js",
+          "verify-import-complete.js",
+          "verify-parcels-columns.sql",
+          "verify_scraper_run.ts",
+          "archive/verify-florida-counties.sh"
+        ]
+      }
+    ],
+    "largeFiles": [
+      {
+        "path": "Cadastral_Statewide.gdb 2/a00000009.PARCEL_ID.atx",
+        "size": "678.23 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a00000009.gdbtable",
+        "size": "10542.37 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a00000009.gdbtablx",
+        "size": "53.16 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a00000009.spx",
+        "size": "162.07 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a0000000a.gdbtable",
+        "size": "8144.32 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a0000000a.gdbtablx",
+        "size": "51.08 MB"
+      },
+      {
+        "path": "Cadastral_Statewide.gdb 2/a0000000a.spx",
+        "size": "123.43 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00064.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00065.csv",
+        "size": "95.05 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00066.csv",
+        "size": "95.06 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00067.csv",
+        "size": "95.06 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00068.csv",
+        "size": "95.05 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00069.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00070.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00071.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00072.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00073.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00074.csv",
+        "size": "91.74 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00075.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00076.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00077.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00078.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00079.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00080.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00081.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00082.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00083.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00084.csv",
+        "size": "95.05 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00085.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00086.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00087.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00088.csv",
+        "size": "95.12 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00089.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00090.csv",
+        "size": "91.69 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00091.csv",
+        "size": "92.34 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00092.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00093.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00094.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00095.csv",
+        "size": "95.07 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00096.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00097.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00098.csv",
+        "size": "95.12 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00099.csv",
+        "size": "95.12 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00100.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00101.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00102.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00103.csv",
+        "size": "95.02 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00104.csv",
+        "size": "95.06 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00105.csv",
+        "size": "95.06 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00106.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00107.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00108.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00109.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00110.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00111.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00112.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00113.csv",
+        "size": "95.00 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00114.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00115.csv",
+        "size": "95.05 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00116.csv",
+        "size": "95.08 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00117.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00118.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00119.csv",
+        "size": "95.14 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00120.csv",
+        "size": "95.13 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00121.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00122.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00123.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00124.csv",
+        "size": "95.02 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00125.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00126.csv",
+        "size": "95.01 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00127.csv",
+        "size": "95.03 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00128.csv",
+        "size": "95.04 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00129.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00130.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00131.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00132.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00133.csv",
+        "size": "95.09 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00134.csv",
+        "size": "95.11 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00135.csv",
+        "size": "95.10 MB"
+      },
+      {
+        "path": "CleanedSplit/parcels_part_00136.csv",
+        "size": "88.49 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.PARCEL_ID.atx",
+        "size": "678.23 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.gdbtable",
+        "size": "10542.37 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.gdbtablx",
+        "size": "53.16 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.spx",
+        "size": "162.07 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.gdbtable",
+        "size": "8144.32 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.gdbtablx",
+        "size": "51.08 MB"
+      },
+      {
+        "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.spx",
+        "size": "123.43 MB"
+      }
+    ],
+    "temporaryFiles": []
+  },
+  "recommendations": [
+    {
+      "category": "Scripts",
+      "issue": "Found 35 archived scripts",
+      "action": "Remove scripts/archive folder",
+      "impact": "Reduce clutter"
+    },
+    {
+      "category": "Scripts",
+      "issue": "21 scripts with \"import-charlotte\" pattern",
+      "action": "Consolidate to single script or remove old versions",
+      "files": [
+        "archive/import-charlotte-batched.sh",
+        "archive/import-charlotte-batches.sh",
+        "archive/import-charlotte-chunked.sh",
+        "archive/import-charlotte-clean.sh",
+        "archive/import-charlotte-complete.sh",
+        "archive/import-charlotte-correct.sh",
+        "archive/import-charlotte-direct.sh",
+        "archive/import-charlotte-fast.sh",
+        "archive/import-charlotte-final-geojson.sh",
+        "archive/import-charlotte-final.sh",
+        "archive/import-charlotte-full.sh",
+        "archive/import-charlotte-geojson.sh",
+        "archive/import-charlotte-projection.sh",
+        "archive/import-charlotte-resume.sh",
+        "archive/import-charlotte-simple.js",
+        "archive/import-charlotte-simple.sh",
+        "archive/import-charlotte-skip.sh",
+        "archive/import-charlotte-skipfailures.sh",
+        "archive/import-charlotte-streaming.js",
+        "archive/import-charlotte-targeted.sh",
+        "archive/import-charlotte-working.sh"
+      ]
+    },
+    {
+      "category": "Scripts",
+      "issue": "5 scripts with \"scrape-florida\" pattern",
+      "action": "Consolidate to single script or remove old versions",
+      "files": [
+        "scrape-florida-counties.js",
+        "scrape-florida-public.js",
+        "scrape-florida-simple.js",
+        "scrape-florida-statewide-fixed.js",
+        "scrape-florida-statewide.js"
+      ]
+    },
+    {
+      "category": "Scripts",
+      "issue": "8 scripts with \"verify\" pattern",
+      "action": "Consolidate to single script or remove old versions",
+      "files": [
+        "verify-property-schema.sh",
+        "verify-schema-fast.js",
+        "verify-schema.sql",
+        "verify-florida-parcels-live.js",
+        "verify-import-complete.js",
+        "verify-parcels-columns.sql",
+        "verify_scraper_run.ts",
+        "archive/verify-florida-counties.sh"
+      ]
+    },
+    {
+      "category": "Data",
+      "issue": "GDB directories using 39517.86 MB",
+      "action": "Remove or gitignore GDB data files",
+      "files": [
+        "Cadastral_Statewide.gdb 2",
+        "temp_extract/Cadastral_Statewide.gdb"
+      ]
+    },
+    {
+      "category": "Organization",
+      "issue": "SQL and test files at root level",
+      "action": "Move to appropriate subdirectories",
+      "files": [
+        {
+          "file": "complete-view.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "create-florida-parcels-schema.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "create-property-table.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-database.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-permissions.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-scraper-auth.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "fix-scraper-runs-table.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "schema.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "supabase_dump.sql",
+          "type": "SQL",
+          "shouldMove": true,
+          "suggestedLocation": "supabase/migrations/"
+        },
+        {
+          "file": "test-fixes.sh",
+          "type": "Test",
+          "shouldMove": true,
+          "suggestedLocation": "scripts/tests/"
+        },
+        {
+          "file": "test-import-sample.js",
+          "type": "Test",
+          "shouldMove": true,
+          "suggestedLocation": "scripts/tests/"
+        }
+      ]
+    },
+    {
+      "category": "Supabase",
+      "issue": "backup directory using 0.91 MB",
+      "action": "Remove or move to external backup",
+      "path": "backups"
+    },
+    {
+      "category": "Supabase",
+      "issue": "backup directory using 0.13 MB",
+      "action": "Remove or move to external backup",
+      "path": "migrations-backup"
+    },
+    {
+      "category": "Supabase",
+      "issue": "backup directory using 0.28 MB",
+      "action": "Remove or move to external backup",
+      "path": "migrations_archive_20250723_220534"
+    },
+    {
+      "category": "Supabase",
+      "issue": "backup directory using 0.00 MB",
+      "action": "Remove or move to external backup",
+      "path": "migrations_backup"
+    },
+    {
+      "category": "Supabase",
+      "issue": "backup directory using 0.20 MB",
+      "action": "Remove or move to external backup",
+      "path": "migrations_backup_20250723_044844"
+    },
+    {
+      "category": "Large Files",
+      "issue": "87 files over 10MB",
+      "action": "Review and gitignore if appropriate",
+      "files": [
+        {
+          "path": "Cadastral_Statewide.gdb 2/a00000009.PARCEL_ID.atx",
+          "size": "678.23 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a00000009.gdbtable",
+          "size": "10542.37 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a00000009.gdbtablx",
+          "size": "53.16 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a00000009.spx",
+          "size": "162.07 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a0000000a.gdbtable",
+          "size": "8144.32 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a0000000a.gdbtablx",
+          "size": "51.08 MB"
+        },
+        {
+          "path": "Cadastral_Statewide.gdb 2/a0000000a.spx",
+          "size": "123.43 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00064.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00065.csv",
+          "size": "95.05 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00066.csv",
+          "size": "95.06 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00067.csv",
+          "size": "95.06 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00068.csv",
+          "size": "95.05 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00069.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00070.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00071.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00072.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00073.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00074.csv",
+          "size": "91.74 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00075.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00076.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00077.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00078.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00079.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00080.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00081.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00082.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00083.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00084.csv",
+          "size": "95.05 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00085.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00086.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00087.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00088.csv",
+          "size": "95.12 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00089.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00090.csv",
+          "size": "91.69 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00091.csv",
+          "size": "92.34 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00092.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00093.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00094.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00095.csv",
+          "size": "95.07 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00096.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00097.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00098.csv",
+          "size": "95.12 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00099.csv",
+          "size": "95.12 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00100.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00101.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00102.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00103.csv",
+          "size": "95.02 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00104.csv",
+          "size": "95.06 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00105.csv",
+          "size": "95.06 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00106.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00107.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00108.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00109.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00110.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00111.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00112.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00113.csv",
+          "size": "95.00 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00114.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00115.csv",
+          "size": "95.05 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00116.csv",
+          "size": "95.08 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00117.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00118.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00119.csv",
+          "size": "95.14 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00120.csv",
+          "size": "95.13 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00121.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00122.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00123.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00124.csv",
+          "size": "95.02 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00125.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00126.csv",
+          "size": "95.01 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00127.csv",
+          "size": "95.03 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00128.csv",
+          "size": "95.04 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00129.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00130.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00131.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00132.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00133.csv",
+          "size": "95.09 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00134.csv",
+          "size": "95.11 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00135.csv",
+          "size": "95.10 MB"
+        },
+        {
+          "path": "CleanedSplit/parcels_part_00136.csv",
+          "size": "88.49 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.PARCEL_ID.atx",
+          "size": "678.23 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.gdbtable",
+          "size": "10542.37 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.gdbtablx",
+          "size": "53.16 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a00000009.spx",
+          "size": "162.07 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.gdbtable",
+          "size": "8144.32 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.gdbtablx",
+          "size": "51.08 MB"
+        },
+        {
+          "path": "temp_extract/Cadastral_Statewide.gdb/a0000000a.spx",
+          "size": "123.43 MB"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalScripts": 157,
+    "potentialRemovals": 53,
+    "duplicatePatterns": 5,
+    "largeFiles": 87
+  }
+}
