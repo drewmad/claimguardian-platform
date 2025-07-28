@@ -220,6 +220,8 @@ files-to-fix.txt
 # Action plans and temporary documentation
 actionplan.md
 UNUSED_FILES_REPORT.md
+REPO_CLEANUP_ANALYSIS.json
+REPOSITORY_FINAL_CLEANUP_PLAN.md
 
 # Large agent directories (if they become too large)
 agents/temp/
@@ -232,19 +234,46 @@ FLORIDA_PLATFORM_SETUP.md
 
 # Data directories
 data/
+CleanedSplit/
 
 # Scripts that are temporary or one-off
 scripts/find-unused-files.js
+scripts/analyze-repo-cleanup.js
+scripts/execute-repo-cleanup.sh
+scripts/safe-cleanup.sh
 
 # All SQL files in supabase migrations directories
 supabase/migrations_ai/
 supabase/migrations_archive*/
 supabase/migrations_backup*/
 supabase/migrations_consolidated/
+supabase/sql-archive/
 
 # Schema and seed files
 supabase/schema.sql
 supabase/seed.sql
+supabase/remote_schema.sql
 
 # Root level SQL files (temporary)
 /*.sql
+
+# Archive directories
+scripts/archive/
+
+# Backup directories
+repo_backup_*/
+
+# Large GDB files
+*.gdb
+*.gdb/
+temp_extract/
+"Cadastral_Statewide.gdb 2"/
+
+# Import and deployment logs
+import_logs/
+deployment_logs/
+*.log
+
+# Test files at root
+test-*.sh
+test-*.js
