@@ -2,27 +2,40 @@
  * @fileMetadata
  * @purpose Next.js configuration for the web application.
  * @owner frontend-team
- * @dependencies ["next"]
+ * @dependencies ["next", "@next/bundle-analyzer"]
  * @exports ["nextConfig"]
- * @lastModifiedBy Drew Madison
- * @lastModifiedDate 2025-07-03T22:53:03-04:00
+ * @lastModifiedBy Claude AI Assistant
+ * @lastModifiedDate 2025-07-28
  * @complexity medium
  * @status active
- * @notes Configures standalone output, package transpilation, and experimental features.
+ * @notes Configures standalone output, package transpilation, bundle analysis, and experimental features.
  */
+
+// Bundle analyzer setup
+const withBundleAnalyzer = require('@next/bundle-analyzer')({
+  enabled: process.env.ANALYZE === 'true',
+})
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: '.next',
   
+  // TODO: Remove these once we fix all ESLint and TypeScript errors
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: true, // Temporarily ignore to test deployment
   },
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: true, // Temporarily ignore to test deployment
   },
   output: 'standalone',
   experimental: {
-    optimizePackageImports: ['lucide-react']
+    // Optimize more packages for better performance
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', 'framer-motion']
+  },
+  // Add image optimization
+  images: {
+    formats: ['image/avif', 'image/webp'],
+    minimumCacheTTL: 60,
   },
   async headers() {
     return [
@@ -64,4 +77,5 @@ const nextConfig = {
   }
 }
 
-module.exports = nextConfig
+// Export with bundle analyzer
+module.exports = withBundleAnalyzer(nextConfig)

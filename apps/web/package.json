@@ -57,6 +57,7 @@
   },
   "devDependencies": {
     "@claimguardian/config": "workspace:*",
+    "@next/bundle-analyzer": "^15.4.4",
     "@sentry/nextjs": "^7.x.x",
     "@tailwindcss/typography": "^0.5.10",
     "@testing-library/jest-dom": "^6.0.0",
