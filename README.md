@@ -31,8 +31,7 @@ ClaimGuardian/
 │   ├── utils/             # Shared utilities
 │   ├── config/            # Shared configuration
 │   ├── ai-config/         # AI prompts and configurations
-│   ├── db/                # Database types and Supabase client
-│   └── mcp-server/        # Model Context Protocol server
+│   └── db/                # Database types and Supabase client
 ├── supabase/              # Database schema and edge functions
 ├── docs/                  # Documentation
 └── scripts/               # Automation and deployment scripts

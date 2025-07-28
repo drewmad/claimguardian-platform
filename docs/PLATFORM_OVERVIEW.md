@@ -33,8 +33,7 @@ ClaimGuardian/
 │   ├── utils/               # Shared utilities
 │   ├── config/              # Shared configuration
 │   ├── ai-config/           # AI configuration and prompts
-│   ├── db/                  # Database types and Supabase client
-│   └── mcp-server/          # Model Context Protocol server
+│   └── db/                  # Database types and Supabase client
 ├── docs/                    # Documentation
 ├── supabase/               # Database migrations and functions
 └── legal/                  # Legal documents

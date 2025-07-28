@@ -90,7 +90,6 @@ node scripts/import_cadastral_gdb.js          # Import cadastral data
 /packages/config    # Shared configuration
 /packages/ai-config # AI configurations
 /packages/db        # Database models and Supabase client
-/packages/mcp-server # MCP server implementation
 ```
 
 ### Import Rules
