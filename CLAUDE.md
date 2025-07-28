@@ -16,12 +16,21 @@ Example: When asked to speed up imports, don't just make batches bigger. Instead
 ## Project Overview
 
 ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners built with:
-- Next.js 15.3.5 (App Router)
-- TypeScript 5.8.3
-- Turborepo monorepo structure
-- Supabase for backend
-- pnpm 10.13.1 package manager
-- Node.js 22+ requirement
+
+### Frontend Stack
+- **Next.js 15.3.5**: React framework with App Router for file-based routing
+- **TypeScript 5.8.3**: Type safety and enhanced developer experience
+- **Turborepo**: Monorepo structure for scalable package management
+- **pnpm 10.13.1**: Fast, efficient package manager
+- **Node.js 22+**: Modern JavaScript runtime requirement
+
+### Backend Architecture (Supabase)
+- **PostgreSQL 17.4.1.064**: Primary database with PostGIS for geographic data
+- **PostgREST 12.2.12**: Auto-generated REST API from database schema
+- **GoTrue 2.177.0**: Authentication service with JWT and RLS integration
+- **Deno Edge Functions**: Serverless functions for AI processing and business logic
+- **Storage API**: S3-compatible file storage with PostgreSQL metadata
+- **Realtime Engine**: WebSocket-based live updates and multiplayer features
 
 ## Essential Commands
 
@@ -250,12 +259,34 @@ Focus areas:
 - Property damage assessment and documentation
 - Claims negotiation support
 
-## Supabase Connection & Database Setup
+## Supabase Architecture & Backend Setup
 
-### Single Schema File Approach
-We use a single `supabase/schema.sql` file instead of migrations to avoid CLI conflicts.
+### Architecture Overview
+ClaimGuardian uses Supabase's open-source architecture with these core components:
+
+#### Core Services
+- **PostgreSQL 17.4.1.064**: Primary database with full privileges and Row Level Security (RLS)
+- **PostgREST 12.2.12**: Auto-generated RESTful API from database schema
+- **GoTrue 2.177.0**: JWT-based authentication with PostgreSQL RLS integration  
+- **Storage API**: S3-compatible object storage for property images and documents
+- **Edge Functions**: Deno runtime for AI processing and custom business logic
+- **Kong Gateway**: API gateway managing all service access
+
+#### Integration Pattern
+```typescript
+// Next.js app connects via @supabase/supabase-js
+import { createClient } from '@supabase/supabase-js'
+
+// Direct PostgreSQL access for complex GIS queries
+// Real-time subscriptions for live updates
+// Server actions for database operations
+```
 
 ### Database Management
+
+#### Single Schema File Approach
+We use a single `supabase/schema.sql` file instead of migrations to avoid CLI conflicts.
+
 ```bash
 # View current schema
 cat supabase/schema.sql
@@ -273,21 +304,61 @@ cat supabase/schema.sql
 ./scripts/db-schema.sh validate
 ```
 
-### Project Reference
-- Project ID: `tmlrvecuwgppbaynesji`
-- Schema file: `supabase/schema.sql` (single source of truth)
-- No migrations folder - all archived
+#### Key Database Features
+- **Row Level Security (RLS)**: User-based data access control
+- **Real-time Subscriptions**: Live updates for claims and property changes
+- **PostGIS Extension**: Geographic data processing for Florida parcels
+- **Full-text Search**: Document and claim content indexing
 
-### Service Versions
-- **Auth**: 2.177.0
-- **PostgREST**: 12.2.12
-- **Postgres**: 17.4.1.064 (Latest)
+### Project Configuration
+- **Project ID**: `tmlrvecuwgppbaynesji`
+- **Schema file**: `supabase/schema.sql` (single source of truth)
+- **No migrations folder**: All archived to avoid CLI conflicts
+- **Region**: US East (closest to Florida data sources)
 
-### Making Schema Changes
-1. Test changes in development/staging
-2. Dump updated schema: `./scripts/db-schema.sh dump`
-3. Commit the updated `schema.sql` file
-4. Apply to other environments via dashboard
+### Edge Functions Architecture
+ClaimGuardian leverages Deno Edge Functions for:
+
+#### AI Processing Functions
+1. **`floir-extractor`**: Extract data from Florida insurance documents
+2. **`floir-rag-search`**: RAG-based search across insurance regulations
+3. **`property-ai-enrichment`**: Enhance property data with AI insights
+4. **`florida-parcel-ingest`**: Process large-scale cadastral data imports
+5. **`florida-parcel-monitor`**: Monitor and validate data import status
+
+#### Function Development Pattern
+```typescript
+// Edge Function structure
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+
+Deno.serve(async (req: Request) => {
+  // AI processing logic
+  // Database operations via service role
+  // Return structured responses
+})
+```
+
+### Service Versions & Compatibility
+- **Auth (GoTrue)**: 2.177.0 - JWT tokens, user management
+- **PostgREST**: 12.2.12 - Auto-generated API from schema
+- **Postgres**: 17.4.1.064 - Latest with PostGIS for GIS operations
+- **Realtime**: Latest - WebSocket connections for live updates
+- **Storage**: Latest - File uploads with metadata in Postgres
+
+### Schema Change Workflow
+1. **Development**: Test changes in local environment
+2. **Schema Update**: Run `./scripts/db-schema.sh dump` to capture changes
+3. **Version Control**: Commit updated `schema.sql` file
+4. **Deployment**: Apply via Supabase Dashboard to production
+5. **Verification**: Validate with `./scripts/db-schema.sh validate`
+
+### Data Architecture Principles
+Following Supabase's design philosophy:
+- **PostgreSQL as Single Source of Truth**: All data in one ACID-compliant database
+- **API Auto-generation**: Schema drives API structure automatically  
+- **Real-time by Default**: Live updates without additional infrastructure
+- **Security via RLS**: Row-level permissions enforce data access rules
+- **Extensibility**: Custom functions for Florida-specific business logic
 
 ## Pre-commit Hooks
 
