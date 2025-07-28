@@ -1,0 +1,45 @@
+# Code Owners for ClaimGuardian
+# These owners will be requested for review when someone opens a pull request
+
+# Global owners
+* @madengineering
+
+# Frontend application
+/apps/web/ @frontend-team @madengineering
+/apps/web/app/ @frontend-team
+/apps/web/components/ @frontend-team
+/apps/web/styles/ @frontend-team
+
+# Shared packages
+/packages/ @platform-team @madengineering
+/packages/ui/ @frontend-team @platform-team
+/packages/db/ @backend-team @platform-team
+/packages/utils/ @platform-team
+/packages/ai-config/ @ai-team @platform-team
+
+# Backend and database
+/supabase/ @backend-team @madengineering
+/supabase/migrations/ @backend-team @database-team
+/supabase/functions/ @backend-team
+/supabase/sql/ @database-team
+
+# Scripts and automation
+/scripts/ @devops-team @madengineering
+/scripts/data-import/ @data-team @backend-team
+/scripts/database/ @database-team
+/scripts/automation/ @devops-team
+
+# Documentation
+/docs/ @documentation-team @madengineering
+*.md @documentation-team
+
+# Configuration files
+/.github/ @devops-team @madengineering
+/turbo.json @platform-team
+/package.json @platform-team
+/.env.example @devops-team @security-team
+
+# Security-sensitive files
+*.env @security-team @madengineering
+/apps/web/middleware.ts @security-team @backend-team
+/supabase/functions/**/index.ts @security-team @backend-team

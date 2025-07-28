@@ -1,0 +1,3 @@
+@sentry/cli:build
+sharp:install
+esbuild:postinstall

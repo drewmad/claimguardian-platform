@@ -135,6 +135,7 @@ complete-*.sql
 # SUPABASE & DATABASE MIGRATIONS
 # ==============================================================================
 # Migration backups and archives
+supabase/_migrations_archive/
 supabase/migrations-backup/
 supabase/migrations_backup*/
 supabase/migrations_archive*/
@@ -162,23 +163,17 @@ temp_extract/
 county_codes_temp.txt
 
 # ==============================================================================
-# SCRIPTS & AUTOMATION (ARCHIVED)
+# SCRIPTS & AUTOMATION
 # ==============================================================================
-# Import and processing scripts
-import-*.sh
-import-*.js
-continue-*.sh
-continue-*.js
-complete-*.sh
-extract-*.sh
-update-*.sh
-test-import-*.sh
-test-scraper*.js
-verify-*.sh
-apply-*.js
-deploy-*.sql
-*-import.js
-*-extract.js
+# Archive directories
+scripts/_archive/
+scripts/archive/
+
+# Temporary one-off scripts
+scripts/find-unused-files.js
+scripts/analyze-repo-cleanup.js
+scripts/execute-repo-cleanup.sh
+scripts/safe-cleanup.sh
 
 # ==============================================================================
 # DEVELOPMENT ARTIFACTS
@@ -236,29 +231,12 @@ FLORIDA_PLATFORM_SETUP.md
 data/
 CleanedSplit/
 
-# Scripts that are temporary or one-off
-scripts/find-unused-files.js
-scripts/analyze-repo-cleanup.js
-scripts/execute-repo-cleanup.sh
-scripts/safe-cleanup.sh
-
 # All SQL files in supabase migrations directories
 supabase/migrations_ai/
 supabase/migrations_archive*/
 supabase/migrations_backup*/
 supabase/migrations_consolidated/
 supabase/sql-archive/
-
-# Schema and seed files
-supabase/schema.sql
-supabase/seed.sql
-supabase/remote_schema.sql
-
-# Root level SQL files (temporary)
-/*.sql
-
-# Archive directories
-scripts/archive/
 
 # Backup directories
 repo_backup_*/
