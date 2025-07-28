@@ -69,7 +69,7 @@ class FileUploadService {
       })
 
       // Upload file
-      const { data, error } = await this.supabase.storage
+      const { error } = await this.supabase.storage
         .from(this.bucketName)
         .upload(filePath, file, {
           cacheControl: '3600',

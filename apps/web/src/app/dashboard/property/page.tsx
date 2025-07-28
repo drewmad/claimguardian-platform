@@ -12,12 +12,10 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  MapPin, Shield, CheckCircle, Plus, ChevronRight, Edit, Camera, Building, Loader2
-} from 'lucide-react'
+import { MapPin, Shield, Plus, ChevronRight, Loader2 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent } from '@claimguardian/ui'
 import { getProperties } from '@/actions/properties'
 import { toast } from 'sonner'
 import { PropertyAvatar } from '@/components/ui/property-image'
@@ -37,7 +35,7 @@ function PropertyOverviewContent() {
         
         if (data && data.length > 0) {
           // Transform database data to display format with full address
-          const transformedData = data.map((prop: any) => ({
+          const transformedData = data.map((prop: unknown) => ({
             id: prop.id,
             name: prop.name || 'Unnamed Property',
             address: prop.address ? [
@@ -115,7 +113,7 @@ function PropertyOverviewContent() {
             if (error) throw error
             
             if (data && data.length > 0) {
-              const transformedData = data.map((prop: any) => ({
+              const transformedData = data.map((prop: unknown) => ({
                 id: prop.id,
                 name: prop.name || 'Unnamed Property',
                 address: prop.address ? [

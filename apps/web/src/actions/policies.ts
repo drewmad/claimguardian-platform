@@ -13,9 +13,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 import type { 
-  Policy, 
-  CreatePolicyInput,
-  PolicyType 
+  CreatePolicyInput
 } from '@/types/database-enhancements'
 
 export async function createPolicy(input: CreatePolicyInput) {

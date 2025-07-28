@@ -25,7 +25,7 @@ interface UnifiedSearchResult {
   title: string
   description: string
   similarity?: number
-  metadata: any
+  metadata: unknown
   source_url?: string
 }
 
@@ -109,7 +109,7 @@ export default function UnifiedFloridaSearch() {
       }
 
       setResults(response)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Unified search error:', err)
       setError(err.message || 'Search failed')
     } finally {
@@ -152,14 +152,14 @@ export default function UnifiedFloridaSearch() {
       }))
 
       return { results, error: null }
-    } catch (error: any) {
+    } catch (error: unknown) {
       return { results: [], error: error.message }
     }
   }
 
-  const combineResults = (floirResults: any[], propertyResults: any[]): UnifiedSearchResult[] => {
+  const combineResults = (floirResults: unknown[], propertyResults: unknown[]): UnifiedSearchResult[] => {
     const combined = [
-      ...floirResults.map((result: any) => ({
+      ...floirResults.map((result: unknown) => ({
         type: 'floir' as const,
         id: result.id,
         title: `${formatDataType(result.data_type)} - ${result.primary_key}`,
@@ -194,7 +194,7 @@ export default function UnifiedFloridaSearch() {
     }
   }
 
-  const calculatePropertyRelevance = (property: any, searchQuery: string): number => {
+  const calculatePropertyRelevance = (property: unknown, searchQuery: string): number => {
     const query = searchQuery.toLowerCase()
     let score = 0
 

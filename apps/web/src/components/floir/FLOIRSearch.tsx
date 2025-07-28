@@ -12,7 +12,7 @@ interface SearchResult {
   id: string
   data_type: string
   primary_key: string
-  normalized_data: any
+  normalized_data: unknown
   source_url: string
   similarity: number
   content_snippet?: string
@@ -67,7 +67,7 @@ export default function FLOIRSearch() {
       if (funcError) throw funcError
 
       setResults(data)
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Search error:', err)
       setError(err.message || 'Search failed')
     } finally {

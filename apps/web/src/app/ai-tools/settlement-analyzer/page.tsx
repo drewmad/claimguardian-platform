@@ -11,11 +11,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Calculator, TrendingUp, TrendingDown, DollarSign, AlertTriangle,
-  FileText, CheckCircle, XCircle, Info, BarChart, Sparkles,
-  Scale, Target, Shield, Brain, Loader2
-} from 'lucide-react'
+import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
@@ -60,7 +56,7 @@ export default function SettlementAnalyzerPage() {
       }
     }
     checkKeys()
-  }, [])
+  }, [aiClient])
 
   const analyzeSettlement = async () => {
     if (!claimAmount || !offeredAmount || !damageType || (!hasOpenAIKey && !hasGeminiKey)) return

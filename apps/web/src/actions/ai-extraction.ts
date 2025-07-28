@@ -248,7 +248,7 @@ export async function applyExtractionToProperty(extractionId: string, propertyId
         property_id: propertyId,
         carrier_name: extractedData.carrierName,
         policy_number: extractedData.policyNumber,
-        policy_type: (extractedData.policyType || 'HO3') as any,
+        policy_type: (extractedData.policyType || 'HO3') as unknown,
         effective_date: extractedData.effectiveDate || new Date().toISOString().split('T')[0],
         expiration_date: extractedData.expirationDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
         coverage_details: {

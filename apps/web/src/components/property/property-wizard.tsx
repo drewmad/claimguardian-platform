@@ -22,25 +22,17 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  Home, MapPin, DollarSign, Info, Check, 
-  ChevronRight, ChevronLeft, X, Loader2,
-  Building, Building2, TreePine, Warehouse,
-  Calendar, Ruler, BedDouble, Bath, Trees,
-  Shield, Camera, Upload, AlertCircle,
-  Wrench, Zap, Droplet, Wind, Sun, Database
-} from 'lucide-react'
+import { Home, MapPin, DollarSign, Info, Check, ChevronRight, ChevronLeft, X, Loader2, Building, Building2, TreePine, Warehouse, Shield, Camera, Upload, Wrench, Wind, Database } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { createProperty } from '@/actions/properties'
 import { createPolicy } from '@/actions/policies'
-import { uploadPolicyDocument, createDocumentRecord } from '@/actions/documents'
+import { createDocumentRecord } from '@/actions/documents'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { PropertyImage } from '@/components/ui/property-image'
 import { sortedFloridaInsuranceCarriers, insuranceTypes } from '@/data/florida-insurance-carriers'
 import { propertyDataService } from '@/lib/services/property-data-service'
 import { fileUploadService, POLICY_DOCUMENT_VALIDATION } from '@/lib/services/file-upload-service'
-import { DocumentExtractionReview } from '@/components/documents/document-extraction-review'
 import { logger } from '@/lib/logger'
 
 interface PropertyWizardProps {
@@ -103,7 +95,7 @@ interface PropertyData {
   windDeductible?: number
   customCarrierName?: string // For 'Other' carrier option
   policyDocuments?: File[] // For PDF/image uploads
-  uploadedDocuments?: { fileName: string; filePath: string; uploadResult: any; documentId?: string }[] // Successfully uploaded docs
+  uploadedDocuments?: { fileName: string; filePath: string; uploadResult: unknown; documentId?: string }[] // Successfully uploaded docs
   
   // Auto-populated Value Info
   estimatedValue?: number
@@ -302,7 +294,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
-  const handleExtractedDataApplied = (extractedData: any) => {
+  const handleExtractedDataApplied = (extractedData: unknown) => {
     // Apply extracted data to form fields
     setPropertyData(prev => ({
       ...prev,
@@ -392,7 +384,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
               property_id: createdProperty.id,
               carrier_name: carrierName,
               policy_number: propertyData.policyNumber || `POLICY-${insuranceType}-${Date.now()}`,
-              policy_type: insuranceType as any,
+              policy_type: insuranceType as unknown,
               effective_date: new Date().toISOString().split('T')[0],
               expiration_date: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
               coverage_details: {

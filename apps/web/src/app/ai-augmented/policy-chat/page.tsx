@@ -3,29 +3,17 @@
 import React, { useState, useRef } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { LazyAIChatInterface as AIChatInterface } from '@/components/lazy'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Shield, 
-  FileText, 
-  AlertCircle, 
-  Sparkles,
-  DollarSign,
-  Clock,
-  BookOpen,
-  ChevronRight,
-  Upload,
-  X,
-  FileCheck
-} from 'lucide-react'
+import { Shield, FileText, AlertCircle, Sparkles, DollarSign, Clock, BookOpen, ChevronRight } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
 import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
+import { LazyAIChatInterface as AIChatInterface } from '@/components/lazy'
 
 const QUICK_QUESTIONS = [
   {

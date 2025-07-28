@@ -71,7 +71,7 @@ class InputSanitizer {
       .replace(/&/g, '&amp;')
       .replace(/</g, '&lt;')
       .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
+      .replace(/"/g, '"')
       .replace(/'/g, '&#x27;')
       .replace(/\//g, '&#x2F;')
   }
@@ -162,7 +162,7 @@ class InputSanitizer {
   /**
    * Sanitize JSON input
    */
-  sanitizeJsonInput(input: string): any {
+  sanitizeJsonInput(input: string): unknown {
     if (!input || typeof input !== 'string') return null
 
     try {
@@ -176,7 +176,7 @@ class InputSanitizer {
   /**
    * Recursively sanitize object properties
    */
-  private sanitizeObject(obj: any): any {
+  private sanitizeObject(obj: unknown): unknown {
     if (obj === null || obj === undefined) return obj
     
     if (typeof obj === 'string') {
@@ -192,7 +192,7 @@ class InputSanitizer {
     }
     
     if (typeof obj === 'object') {
-      const sanitized: any = {}
+      const sanitized: unknown = {}
       for (const [key, value] of Object.entries(obj)) {
         // Sanitize key names too
         const sanitizedKey = this.sanitizeText(key, 50)

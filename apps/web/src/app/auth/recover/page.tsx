@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { Shield, AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
+import { securityQuestionsService } from '@/lib/auth/security-questions-service'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
@@ -151,7 +151,7 @@ export default function RecoverAccountPage() {
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
               <h1 className="text-2xl font-bold mb-2">Recovery Email Sent!</h1>
               <p className="text-slate-400 mb-6">
-                We&apos;ve sent password reset instructions to your email.
+                We've sent password reset instructions to your email.
               </p>
               <p className="text-sm text-slate-500 mb-6">
                 Please check your inbox and follow the link to reset your password.

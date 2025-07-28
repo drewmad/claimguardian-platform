@@ -1,8 +1,6 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { toast } from 'sonner'
-
 // Image compression utility
 export async function compressImage(
   file: File,
@@ -69,9 +67,9 @@ export async function compressImage(
 
 // Request caching utility
 class RequestCache {
-  private cache = new Map<string, { data: any; timestamp: number; ttl: number }>()
+  private cache = new Map<string, { data: unknown; timestamp: number; ttl: number }>()
 
-  set(key: string, data: any, ttl: number = 5 * 60 * 1000) { // 5 minutes default
+  set(key: string, data: unknown, ttl: number = 5 * 60 * 1000) { // 5 minutes default
     this.cache.set(key, {
       data,
       timestamp: Date.now(),
@@ -79,7 +77,7 @@ class RequestCache {
     })
   }
 
-  get(key: string): any | null {
+  get(key: string): unknown | null {
     const cached = this.cache.get(key)
     
     if (!cached) return null
@@ -200,7 +198,7 @@ export class PerformanceMonitor {
   }
 
   getAllMetrics() {
-    const result: { [key: string]: any } = {}
+    const result: { [key: string]: unknown } = {}
     
     for (const [key, times] of Object.entries(this.metrics)) {
       result[key] = this.getMetrics(key)
@@ -265,7 +263,7 @@ export function useMemoryMonitoring() {
   useEffect(() => {
     const checkMemory = () => {
       if ('memory' in performance) {
-        const info = (performance as any).memory
+        const info = (performance as unknown).memory
         setMemoryInfo({
           used: info.usedJSHeapSize,
           total: info.totalJSHeapSize,

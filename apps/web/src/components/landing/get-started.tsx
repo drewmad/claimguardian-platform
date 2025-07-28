@@ -20,10 +20,10 @@ export function GetStarted() {
       <div className="container mx-auto px-6">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-3xl md:text-5xl font-extrabold mb-6">
-            Ready to Fight for What&apos;s Yours?
+            Ready to Fight for What's Yours?
           </h2>
           <p className="text-xl text-slate-300 mb-8">
-            Join thousands of property owners who&apos;ve taken control of their insurance claims.
+            Join thousands of property owners who've taken control of their insurance claims.
             Start your free trial today and see why ClaimGuardian users recover 3x more on average.
           </p>
           

@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useModalStore } from '@/stores/modal-store'
-import { Home, Briefcase, Building as BuildingIcon, BrainCircuit, Hammer, KeyRound, ArrowRight } from 'lucide-react'
+import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight } from 'lucide-react'
 import { COLORS } from '@/lib/constants'
 
 // Animation hook

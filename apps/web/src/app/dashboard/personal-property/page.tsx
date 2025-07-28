@@ -14,15 +14,8 @@ import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { 
-  Package, DollarSign, Home, AlertCircle, Camera, Upload, FileText,
-  Plus, Search, Filter, Download, BarChart3, Shield, Sparkles,
-  Tv, Watch, Sofa, Shirt, Diamond, Car, Music, Gamepad, 
-  Grid, List, ChevronRight, Edit, Trash2, Eye, Clock
-} from 'lucide-react'
+import { Package, DollarSign, AlertCircle, Camera, Upload, FileText, Plus, Search, Filter, Download, BarChart3, Shield, Sparkles, Tv, Watch, Sofa, Shirt, Diamond, Car, Music, Gamepad, Grid, List, ChevronRight, Edit, Trash2, Eye } from 'lucide-react'
 import Link from 'next/link'
-import { toast } from 'sonner'
-
 interface PropertyItem {
   id: string
   name: string

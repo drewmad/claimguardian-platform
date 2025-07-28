@@ -10,11 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  FileText, Download, Copy, Send, Sparkles, AlertTriangle,
-  FileSearch, Calendar, DollarSign, User, Building, Phone,
-  Mail, Shield, ChevronRight, Edit, Eye, Loader2
-} from 'lucide-react'
+import { FileText, Download, Copy, Send, Sparkles, AlertTriangle, FileSearch, Calendar, Shield, Edit, Loader2 } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
@@ -23,7 +19,7 @@ interface DocumentTemplate {
   id: string
   title: string
   description: string
-  icon: any
+  icon: unknown
   category: 'claim' | 'appeal' | 'communication' | 'legal'
   fields: DocumentField[]
 }

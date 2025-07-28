@@ -12,9 +12,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { 
-  MapPin, Shield, CheckCircle, Plus, ChevronRight, Edit, Camera, Building, Loader2
-} from 'lucide-react'
+import { MapPin, Plus, ChevronRight, Building } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'

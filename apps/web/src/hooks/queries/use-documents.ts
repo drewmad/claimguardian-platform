@@ -102,7 +102,7 @@ export function useUpdateDocument() {
   const queryClient = useQueryClient()
   
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: any }) => 
+    mutationFn: ({ id, updates }: { id: string; updates: unknown }) => 
       updateDocument(id, updates),
     onSuccess: (result, variables) => {
       if (result.data) {

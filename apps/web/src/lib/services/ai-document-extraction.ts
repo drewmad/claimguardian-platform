@@ -100,9 +100,9 @@ class AIDocumentExtractionService {
       let extractionResult: ExtractionResult
 
       if (options.apiProvider === 'gemini' && this.geminiApiKey) {
-        extractionResult = await this.extractWithGemini(fileUrl, isImage, isPDF)
+        extractionResult = await this.extractWithGemini(fileUrl)
       } else if (options.apiProvider === 'openai' && this.openaiApiKey) {
-        extractionResult = await this.extractWithOpenAI(fileUrl, isImage, isPDF)
+        extractionResult = await this.extractWithOpenAI(fileUrl)
       } else {
         // Fallback to mock extraction for demo purposes
         extractionResult = await this.mockExtraction(fileName)
@@ -147,9 +147,7 @@ class AIDocumentExtractionService {
    * Extract using Google Gemini Vision API
    */
   private async extractWithGemini(
-    fileUrl: string, 
-    isImage: boolean, 
-    isPDF: boolean
+    fileUrl: string
   ): Promise<ExtractionResult> {
     try {
       // For demo purposes, this is a simplified implementation
@@ -182,9 +180,7 @@ class AIDocumentExtractionService {
    * Extract using OpenAI GPT-4 Vision API
    */
   private async extractWithOpenAI(
-    fileUrl: string, 
-    isImage: boolean, 
-    isPDF: boolean
+    fileUrl: string
   ): Promise<ExtractionResult> {
     try {
       // For demo purposes, this is a simplified implementation
@@ -251,7 +247,7 @@ Rules:
   /**
    * Mock extraction for demonstration purposes
    */
-  private async mockExtraction(fileName: string): Promise<ExtractionResult> {
+  private async mockExtraction(_fileName: string): Promise<ExtractionResult> {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1500))
 

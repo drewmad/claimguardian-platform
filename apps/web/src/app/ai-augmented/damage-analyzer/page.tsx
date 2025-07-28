@@ -3,7 +3,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { LazyImageUploadAnalyzer as ImageUploadAnalyzer, LazyReportGenerator as ReportGenerator } from '@/components/lazy'
 import { Button } from '@/components/ui/button'
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
@@ -41,11 +40,11 @@ import { useSupabase } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { toast } from 'sonner'
-import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
 import { useAIKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { useRealTimeStatus, useFallbackStatus } from '@/lib/real-time-status'
 import { useAIErrorRecovery, useNetworkStatus } from '@/lib/error-recovery'
 import { compressImage, useRequestCache, useLazyLoad, performanceMonitor, useBatchProcessor } from '@/lib/performance-utils'
+import { LazyImageUploadAnalyzer as ImageUploadAnalyzer, LazyReportGenerator as ReportGenerator } from '@/components/lazy'
 
 interface DamageItem {
   id: string
@@ -131,9 +130,11 @@ function DamageAnalyzerContent() {
   const { elementRef: lazyRef, isVisible: isLazyVisible } = useLazyLoad()
   
   // Real-time status (fallback if WebSocket not available)
+  const fallbackStatus = useFallbackStatus()
+  const realTimeStatus = useRealTimeStatus()
   const { statusUpdates, systemStatus, sendStatusUpdate } = process.env.NODE_ENV === 'development' 
-    ? useFallbackStatus() 
-    : useRealTimeStatus()
+    ? fallbackStatus 
+    : realTimeStatus
   
   // Batch processor for multiple images
   const { addToQueue, processing: batchProcessing, results: batchResults, clearQueue } = useBatchProcessor(

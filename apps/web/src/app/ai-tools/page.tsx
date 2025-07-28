@@ -7,11 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
-import { 
-  Shield, Camera, FileText, Users, Calculator, FolderOpen,
-  MessageSquare, FileSearch, Sparkles, ChevronRight, Zap,
-  CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff
-} from 'lucide-react'
+import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { AIClientService } from '@/lib/ai/client-service'
 import { toast } from 'sonner'
@@ -21,7 +17,7 @@ interface AITool {
   id: string
   title: string
   description: string
-  icon: any
+  icon: unknown
   color: string
   href: string
   status: 'active' | 'coming-soon' | 'beta'

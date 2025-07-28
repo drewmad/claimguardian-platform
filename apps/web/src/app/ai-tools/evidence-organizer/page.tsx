@@ -7,13 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Progress } from '@/components/ui/progress'
-import { 
-  FolderOpen, Upload, Search, Filter, Calendar, Tag, FileText,
-  Image as ImageIcon, Video, File, Clock, MapPin, Sparkles,
-  Download, Trash2, Eye, Grid, List, ChevronRight, Check
-} from 'lucide-react'
+import { FolderOpen, Upload, Search, FileText, Video, File, Download, Trash2, Eye, Grid, List, Check, Image as ImageIcon } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
 import { useDropzone } from 'react-dropzone'

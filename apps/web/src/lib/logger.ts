@@ -22,7 +22,7 @@ export interface LogContext {
   userId?: string
   sessionId?: string
   requestId?: string
-  [key: string]: any
+  [key: string]: unknown
 }
 
 interface LogEntry {
@@ -41,8 +41,8 @@ class Logger {
 
   private formatMessage(entry: LogEntry): string {
     const prefix = `[${entry.timestamp}] [${entry.level.toUpperCase()}]`
-    const module = entry.context?.module ? ` [${entry.context.module}]` : ''
-    return `${prefix}${module} ${entry.message}`
+    const moduleInfo = entry.context?.module ? ` [${entry.context.module}]` : ''
+    return `${prefix}${moduleInfo} ${entry.message}`
   }
 
   private log(level: LogLevel, message: string, context?: LogContext, error?: Error) {
@@ -159,7 +159,7 @@ class Logger {
   }
 
   // Auth debug logging (only in development)
-  authDebug(component: string, data: any) {
+  authDebug(component: string, data: unknown) {
     if (this.isDevelopment) {
       this.debug(`[AUTH DEBUG] ${component}`, data)
     }

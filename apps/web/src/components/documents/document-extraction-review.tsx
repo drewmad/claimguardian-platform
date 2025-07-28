@@ -16,17 +16,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  Brain, FileText, CheckCircle, XCircle, Clock, 
-  Loader2, AlertCircle, Edit3, Save, X, Eye 
-} from 'lucide-react'
+import { Brain, FileText, CheckCircle, XCircle, Clock, Loader2, Edit3, Save, X } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { 
-  processDocumentExtraction, 
-  getExtractionResults, 
-  applyExtractionToProperty 
-} from '@/actions/ai-extraction'
+import { processDocumentExtraction, getExtractionResults } from '@/actions/ai-extraction'
 import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
 import { insuranceTypes } from '@/data/florida-insurance-carriers'
 
@@ -73,7 +66,7 @@ export function DocumentExtractionReview({
 
       if (data) {
         setExtractionStatus({
-          status: data.processing_status as any,
+          status: data.processing_status as unknown,
           confidence: data.confidence_score,
           data: data.extracted_data as ExtractedPolicyData,
           error: data.error_message || undefined
@@ -140,7 +133,7 @@ export function DocumentExtractionReview({
     }
   }
 
-  const handleFieldChange = (field: keyof ExtractedPolicyData, value: any) => {
+  const handleFieldChange = (field: keyof ExtractedPolicyData, value: unknown) => {
     setEditedData(prev => ({
       ...prev,
       [field]: value

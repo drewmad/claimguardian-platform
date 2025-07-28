@@ -12,7 +12,7 @@
 
 import { useState, useEffect } from 'react'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
-import { legalService, type LegalDocument } from '@/lib/legal/legal-service'
+import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
 
 interface LegalConsentFormProps {

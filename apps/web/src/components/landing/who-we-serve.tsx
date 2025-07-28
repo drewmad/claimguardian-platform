@@ -43,7 +43,7 @@ export function WhoWeServe() {
           Who We Serve
         </h2>
         <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
-          Whether you&apos;re a homeowner facing your first claim or a professional managing multiple properties, ClaimGuardian has the tools you need.
+          Whether you're a homeowner facing your first claim or a professional managing multiple properties, ClaimGuardian has the tools you need.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

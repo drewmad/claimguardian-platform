@@ -7,13 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  FileText, ChevronRight, CheckCircle, Circle, AlertTriangle,
-  Calendar, Camera, Phone, FileCheck, DollarSign, Home,
-  Clock, Shield, Sparkles, Download, Send, HelpCircle
-} from 'lucide-react'
+import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
@@ -23,7 +18,7 @@ interface ClaimStep {
   id: string
   title: string
   description: string
-  icon: any
+  icon: unknown
   status: 'completed' | 'current' | 'upcoming'
   tasks: ClaimTask[]
 }

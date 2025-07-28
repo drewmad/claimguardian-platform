@@ -12,8 +12,6 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { Upload, BrainCircuit, FileText, DollarSign } from 'lucide-react'
-import { COLORS } from '@/lib/constants'
-
 // Animation hook reused from hero
 const useInView = (options: IntersectionObserverInit) => {
   const ref = useRef<HTMLDivElement>(null)

@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
 import { Button } from '@/components/ui/button'
-import { CheckCircle, XCircle, Loader2, Copy, ExternalLink } from 'lucide-react'
+import { CheckCircle, Copy, ExternalLink } from 'lucide-react'
 import { toast } from 'sonner'
 
 const migrationSteps = [

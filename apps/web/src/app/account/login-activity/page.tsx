@@ -14,7 +14,7 @@ import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Shield, Monitor, Globe, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
-import { loginActivityService, type LoginActivity, type LoginActivityStats } from '@/lib/auth/login-activity-service'
+import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { logger } from '@/lib/logger'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -139,7 +139,7 @@ export default function LoginActivityPage() {
                     Suspicious Activity Detected
                   </h3>
                   <p className="text-sm text-yellow-400/80">
-                    We&apos;ve detected unusual login patterns on your account. 
+                    We've detected unusual login patterns on your account. 
                     Please review recent activity and consider changing your password.
                   </p>
                 </div>

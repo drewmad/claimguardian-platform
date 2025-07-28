@@ -66,7 +66,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // Initialize auth state - run only once
   useEffect(() => {
     let mounted = true
-    let authSubscription: any = null
+    let authSubscription: unknown = null
 
     const initializeAuth = async () => {
       try {

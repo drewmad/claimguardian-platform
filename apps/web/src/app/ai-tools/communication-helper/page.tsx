@@ -9,11 +9,7 @@ import { Badge } from '@/components/ui/badge'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  MessageSquare, Send, Copy, RefreshCw, Sparkles, FileText,
-  Phone, Mail, User, Calendar, AlertTriangle, CheckCircle,
-  Edit3, Zap, Target, Brain, Loader2
-} from 'lucide-react'
+import { MessageSquare, Send, Copy, RefreshCw, Sparkles, FileText, Phone, Mail, Calendar, AlertTriangle, Edit3, Target, Brain, Loader2 } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
@@ -22,7 +18,7 @@ interface CommunicationTemplate {
   id: string
   title: string
   description: string
-  icon: any
+  icon: unknown
   tone: 'formal' | 'professional' | 'assertive' | 'friendly'
   context: string
 }

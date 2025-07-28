@@ -39,7 +39,7 @@ interface ErrorLogEntry {
 }
 
 export class AIErrorLogger {
-  private supabase: any
+  private supabase: unknown
   private isEnabled: boolean = true
 
   constructor() {
@@ -104,8 +104,8 @@ export class AIErrorLogger {
     status: number,
     message: string,
     context: ErrorContext,
-    requestData?: any,
-    responseData?: any
+    requestData?: unknown,
+    responseData?: unknown
   ) {
     const error = new Error(`API Error [${status}]: ${message}`)
     
@@ -251,7 +251,7 @@ export const errorLogger = new AIErrorLogger()
 // Helper functions for specific AI features
 export const aiErrorHelpers = {
   damageAnalyzer: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: any) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
       errorLogger.logError(error, errorLogger.getAIContext('DamageAnalyzer', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
@@ -262,7 +262,7 @@ export const aiErrorHelpers = {
   },
 
   policyChat: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: any) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
       errorLogger.logError(error, errorLogger.getAIContext('PolicyChat', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
@@ -273,7 +273,7 @@ export const aiErrorHelpers = {
   },
 
   inventoryScanner: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: any) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
       errorLogger.logError(error, errorLogger.getAIContext('InventoryScanner', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>

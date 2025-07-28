@@ -3,6 +3,7 @@
 import { useEffect } from 'react'
 import { AlertCircle, RefreshCw, Home } from 'lucide-react'
 import { logger } from '@/lib/logger'
+import Link from 'next/link'
 
 export default function Error({
   error,
@@ -64,13 +65,13 @@ export default function Error({
               Go Back
             </button>
 
-            <a
+            <Link
               href="/"
               className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gray-700 hover:bg-gray-600 text-gray-300 font-medium rounded-lg transition-colors"
             >
               <Home className="w-4 h-4" />
               Home
-            </a>
+            </Link>
           </div>
         </div>
       </div>

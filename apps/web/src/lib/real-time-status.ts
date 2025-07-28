@@ -108,7 +108,7 @@ class RealTimeStatusManager {
     }
   }
 
-  private send(message: any) {
+  private send(message: unknown) {
     if (this.ws && this.isConnected) {
       this.ws.send(JSON.stringify(message))
     }
