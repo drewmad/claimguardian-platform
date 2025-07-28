@@ -23,7 +23,10 @@
     "lint:staged": "lint-staged",
     "fix:auto": "./scripts/lint-fix.sh",
     "lint:smart-fix": "node scripts/smart-lint-fix.js",
-    "pre-commit:test": "bash .husky/pre-commit"
+    "pre-commit:test": "bash .husky/pre-commit",
+    "lockfile:check": "node scripts/sync-lockfile.js --check",
+    "lockfile:sync": "node scripts/sync-lockfile.js --fix",
+    "lockfile:fix": "pnpm install --no-frozen-lockfile"
   },
   "devDependencies": {
     "lint-staged": "^15.3.0",

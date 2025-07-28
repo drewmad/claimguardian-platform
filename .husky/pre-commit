@@ -1,5 +1,13 @@
 
 
+# Ensure lockfile is in sync BEFORE running other checks
+echo "🔒 Checking lockfile synchronization..."
+if ! node scripts/sync-lockfile.js --check; then
+  echo "🔄 Updating lockfile..."
+  node scripts/sync-lockfile.js --fix --stage
+  echo "✅ Lockfile updated and staged"
+fi
+
 # Run lockfile validation
 pnpm deps:check || exit 1
 

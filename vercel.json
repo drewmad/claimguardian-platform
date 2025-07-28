@@ -1,6 +1,7 @@
 {
-  "buildCommand": "turbo build",
-  "installCommand": "rm -rf node_modules pnpm-lock.yaml && pnpm install",
+  "installCommand": "pnpm install --no-frozen-lockfile",
+  "buildCommand": "pnpm build",
+  "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
-  "outputDirectory": ".next"
+  "ignoreCommand": "git diff HEAD^ HEAD --quiet ."
 }
