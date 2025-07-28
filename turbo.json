@@ -25,13 +25,15 @@
         "POSTGRES_HOST", 
         "POSTGRES_PASSWORD", 
         "POSTGRES_DATABASE", 
-        "SUPABASE_JWT_SECRET"
+        "SUPABASE_JWT_SECRET",
+        "GEMINI_API_KEY",
+        "OPENAI_API_KEY"
       ]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["NODE_ENV", "NEXT_PUBLIC_*"]
+      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "GEMINI_API_KEY", "OPENAI_API_KEY"]
     },
     "lint": {
       "dependsOn": ["^lint"],
