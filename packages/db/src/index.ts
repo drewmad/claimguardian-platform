@@ -29,8 +29,26 @@ export type Enums = Database['public']['Enums']
 // Export specific table types for convenience
 export type Property = Database['public']['Tables']['properties']['Row']
 export type Claim = Database['public']['Tables']['claims']['Row']
-export type User = Database['public']['Tables']['users']['Row']
-export type Profile = Database['public']['Tables']['profiles']['Row']
+
+// TODO: Fix these once users and profiles tables are added to database types
+// export type User = Database['public']['Tables']['users']['Row']
+// export type Profile = Database['public']['Tables']['profiles']['Row']
+
+// Temporary types until database types are fixed
+export type User = {
+  id: string
+  email: string
+  created_at: string
+}
+
+export type Profile = {
+  id: string
+  user_id: string
+  full_name: string | null
+  phone: string | null
+  created_at: string
+  updated_at: string
+}
 
 // Export insert/update types
 export type PropertyInsert = Database['public']['Tables']['properties']['Insert']
