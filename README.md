@@ -23,9 +23,33 @@ pnpm dev
 pnpm build
 ```
 
+## Development Workflow
+
+### Pre-commit Checks
+The project includes automated pre-commit checks that:
+- Sync lockfiles automatically
+- Auto-fix common lint issues
+- Validate dependencies
+- Run type checks (non-blocking)
+
+### Common Commands
+```bash
+# Run all validation checks
+pnpm validate
+
+# Fix lint issues
+pnpm lint:fix
+
+# Type check
+pnpm type-check
+
+# Update dependencies
+pnpm deps:update
+```
+
 ## Deployment
 
-This project is configured for automatic deployment with Vercel.
+This project is configured for automatic deployment with Vercel. The deployment uses `pnpm install --no-frozen-lockfile` to handle lockfile synchronization automatically.
 
 ---
 
