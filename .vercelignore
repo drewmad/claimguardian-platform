@@ -19,7 +19,7 @@ node_modules
 # Large data files
 *.gdb/
 CleanedSplit/
-data/
+/data/
 deployment_logs/
 import_logs/
 temp_extract/
