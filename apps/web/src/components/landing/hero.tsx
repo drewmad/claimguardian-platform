@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { useModalStore } from '@/stores/modal-store'
-import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight } from 'lucide-react'
+import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight, Building } from 'lucide-react'
 import { COLORS } from '@/lib/constants'
 
 // Animation hook
@@ -77,7 +77,7 @@ export function Hero() {
   const pills = [
     { label: 'Homeowners', icon: Home },
     { label: 'Renters', icon: KeyRound },
-    { label: 'Landlords', icon: BuildingIcon },
+    { label: 'Landlords', icon: Building },
     { label: 'Builders', icon: Hammer },
     { label: 'AI-Augmented', icon: BrainCircuit },
   ]
