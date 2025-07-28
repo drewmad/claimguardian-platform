@@ -7,9 +7,25 @@ pnpm deps:check || exit 1
 pnpm lint || exit 1
 
 # Run type-check
-# Run type-check
-# # Run type-check
 pnpm type-check || exit 1
+
+# Database lint and type validation if supabase is running
+if supabase status 2>/dev/null | grep -q "API URL"; then
+  echo "🔍 Linting database schema..."
+  cd apps/web && pnpm db:lint
+  
+  # Generate fresh types to ensure they're up to date
+  echo "🔄 Generating fresh database types..."
+  pnpm db:types:local
+  
+  # Check if types file has uncommitted changes
+  if ! git diff --quiet ../../packages/db/src/types/database.types.ts; then
+    echo "❌ Database types are out of date. Please commit the updated types."
+    echo "Run 'cd apps/web && pnpm db:types:local' to regenerate."
+    exit 1
+  fi
+  cd ../..
+fi
 
 # Run prettier check (optional, can be combined with lint)
 # pnpm prettier --check . || exit 1

@@ -9,7 +9,20 @@
     "start": "next start",
     "type-check": "tsc --noEmit",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "db:types": "supabase gen types typescript --linked --schema public,claims,properties > ../../packages/db/src/types/database.types.ts",
+    "db:types:local": "supabase gen types typescript --local --schema public,claims,properties > ../../packages/db/src/types/database.types.ts",
+    "db:diff": "supabase db diff --linked",
+    "db:lint": "supabase db lint --local --fail-on warning",
+    "db:dump": "supabase db dump --linked -f ../../supabase/schema.sql --keep-comments",
+    "db:push:dry": "supabase db push --dry-run",
+    "db:reset:safe": "pnpm db:dump && supabase db reset --local",
+    "db:validate": "pnpm db:lint && pnpm db:types:local",
+    "db:status": "supabase db remote status",
+    "db:pull": "supabase db pull",
+    "db:backup": "../../scripts/db-backup.sh",
+    "db:backup:all": "../../scripts/db-backup.sh both --with-data",
+    "pre-migration": "pnpm db:backup && pnpm db:validate"
   },
   "dependencies": {
     "@claimguardian/ui": "workspace:*",

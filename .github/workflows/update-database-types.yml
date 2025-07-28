@@ -34,9 +34,9 @@ jobs:
 
       - name: Generate Supabase types
         run: |
-          npx supabase gen types typescript --project-id tmlrvecuwgppbaynesji > packages/db/src/types.ts
+          npx supabase gen types typescript --project-id tmlrvecuwgppbaynesji > apps/web/src/types/database-generated.ts
           echo "Generated types:"
-          echo "$(head -20 packages/db/src/types.ts)"
+          echo "$(head -20 apps/web/src/types/database-generated.ts)"
 
       - name: Check for file changes
         id: git_status
@@ -44,15 +44,15 @@ jobs:
           echo "status=$(git status -s)" >> $GITHUB_OUTPUT
 
       - name: Commit updated types
-        if: ${{ contains(steps.git_status.outputs.status, 'packages/db/src/types.ts') }}
+        if: ${{ contains(steps.git_status.outputs.status, 'apps/web/src/types/database-generated.ts') }}
         run: |
-          git add packages/db/src/types.ts
+          git add apps/web/src/types/database-generated.ts
           git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git commit -m "chore: Update Supabase database types"
 
       - name: Push changes
-        if: ${{ contains(steps.git_status.outputs.status, 'packages/db/src/types.ts') }}
+        if: ${{ contains(steps.git_status.outputs.status, 'apps/web/src/types/database-generated.ts') }}
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -36,6 +36,7 @@
   "dependencies": {
     "@supabase/ssr": "^0.1.0",
     "@supabase/supabase-js": "^2.50.3",
+    "csv-parser": "^3.2.0",
     "dotenv": "^17.2.1"
   },
   "resolutions": {

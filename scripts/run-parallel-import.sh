@@ -1,306 +1,438 @@
 #!/bin/bash
 
-# Optimal Parallel Import Runner
-# This script runs 3 parallel imports for maximum speed
+##############################################################################
+# OPTIMIZED PARALLEL IMPORT V2 - PRODUCTION-GRADE PERFORMANCE
+##############################################################################
 
-echo "🚀 Starting Optimal Parallel Import for 73 Remaining Files"
-echo "========================================================="
-echo ""
+set -euo pipefail
 
-# Check if files exist
-FILE_COUNT=$(ls CleanedSplit/*.csv 2>/dev/null | wc -l | tr -d ' ')
-echo "📊 Found $FILE_COUNT CSV files to process"
-echo ""
+# Color codes for enhanced output
+readonly RED='\033[0;31m'
+readonly GREEN='\033[0;32m'
+readonly YELLOW='\033[1;33m'
+readonly BLUE='\033[0;34m'
+readonly PURPLE='\033[0;35m'
+readonly CYAN='\033[0;36m'
+readonly WHITE='\033[1;37m'
+readonly NC='\033[0m'
+readonly BOLD='\033[1m'
+readonly DIM='\033[2m'
 
-if [ "$FILE_COUNT" -eq 0 ]; then
-    echo "❌ No CSV files found in CleanedSplit/"
-    exit 1
-fi
+# Configuration
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
+readonly LOG_DIR="$PROJECT_ROOT/import_logs"
+readonly STATE_FILE="$LOG_DIR/import_state.json"
+readonly PERF_LOG="$LOG_DIR/performance.jsonl"
+readonly CSV_DIR="$PROJECT_ROOT/CleanedSplit"
+readonly IMPORTED_DIR="$PROJECT_ROOT/CleanedSplit_imported"
 
-# Kill any existing node processes importing CSVs
-echo "🧹 Cleaning up any existing import processes..."
-pkill -f "import-parallel-optimal.js" 2>/dev/null
-sleep 1
+# System detection and optimization
+readonly CPU_CORES=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo "4")
+readonly TOTAL_RAM_GB=$(free -g 2>/dev/null | awk 'NR==2{print $2}' || echo "8")
+readonly AVAILABLE_RAM_GB=$(free -g 2>/dev/null | awk 'NR==2{print $7}' || echo "4")
 
-# Create log directory
-mkdir -p import_logs
+# Dynamic performance tuning
+calculate_optimal_processes() {
+    local file_count=$1
+    local min_processes=2
+    local max_processes=$((CPU_CORES + 1))
+    
+    if [ "$file_count" -lt 10 ]; then
+        echo $((file_count < min_processes ? file_count : min_processes))
+    elif [ "$file_count" -lt 50 ]; then
+        echo $((CPU_CORES / 2 + 1))
+    else
+        echo $max_processes
+    fi
+}
 
-# Calculate file distribution
-THIRD=$((FILE_COUNT / 3))
-REMAINDER=$((FILE_COUNT % 3))
+calculate_batch_size() {
+    local avg_file_size_mb=$1
+    local base_batch=1000
+    
+    if [ "$avg_file_size_mb" -gt 100 ]; then
+        echo $((base_batch / 2))
+    elif [ "$avg_file_size_mb" -lt 50 ] && [ "$AVAILABLE_RAM_GB" -gt 8 ]; then
+        echo $((base_batch * 2))
+    else
+        echo $base_batch
+    fi
+}
 
-# Adjust for remainder
-FIRST_END=$THIRD
-SECOND_START=$FIRST_END
-SECOND_END=$((FIRST_END + THIRD))
-THIRD_START=$SECOND_END
-THIRD_END=$FILE_COUNT
+# Advanced logging with structured data
+log_performance() {
+    local event="$1"
+    local data="$2"
+    local timestamp=$(date -u +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null)
+    
+    echo "{\"timestamp\":\"$timestamp\",\"event\":\"$event\",\"data\":$data}" >> "$PERF_LOG"
+}
 
-# Add remainder to last batch
-if [ $REMAINDER -gt 0 ]; then
-    THIRD_END=$((THIRD_END))
-fi
+# Enhanced progress calculation with ETA
+calculate_progress() {
+    local imported=$1
+    local total=$2
+    local start_time=$3
+    local current_time=$4
+    
+    local elapsed=$((current_time - start_time))
+    local rate=0
+    local eta="--:--"
+    
+    if [ "$imported" -gt 0 ] && [ "$elapsed" -gt 0 ]; then
+        rate=$(echo "scale=2; $imported / $elapsed * 60" | bc 2>/dev/null || echo "0")
+        local remaining=$((total - imported))
+        if [ "$rate" != "0" ]; then
+            local eta_mins=$(echo "scale=0; $remaining / $rate" | bc 2>/dev/null || echo "0")
+            eta=$(printf "%02d:%02d" $((eta_mins / 60)) $((eta_mins % 60)))
+        fi
+    fi
+    
+    echo "$rate|$eta"
+}
 
-echo "📋 File distribution:"
-echo "   Process 1: Files 0-${FIRST_END} ($((FIRST_END)) files)"
-echo "   Process 2: Files ${SECOND_START}-${SECOND_END} ($((SECOND_END - SECOND_START)) files)"
-echo "   Process 3: Files ${THIRD_START}-${THIRD_END} ($((THIRD_END - THIRD_START)) files)"
-echo ""
+# Smart retry logic with exponential backoff
+retry_with_backoff() {
+    local cmd="$1"
+    local max_attempts=5
+    local attempt=1
+    local delay=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        if eval "$cmd"; then
+            return 0
+        fi
+        
+        echo -e "${YELLOW}⏳ Retry $attempt/$max_attempts failed, waiting ${delay}s...${NC}"
+        sleep $delay
+        delay=$((delay * 2))
+        attempt=$((attempt + 1))
+    done
+    
+    echo -e "${RED}❌ Command failed after $max_attempts attempts${NC}"
+    return 1
+}
 
-# Start imports in background
-echo "🚀 Starting 3 parallel import processes..."
-echo ""
-
-# Process 1
-node scripts/import-parallel-optimal.js 0 $FIRST_END > import_logs/process1.log 2>&1 &
-PID1=$!
-echo "   Process 1 started (PID: $PID1)"
-
-# Process 2
-node scripts/import-parallel-optimal.js $SECOND_START $SECOND_END > import_logs/process2.log 2>&1 &
-PID2=$!
-echo "   Process 2 started (PID: $PID2)"
-
-# Process 3
-node scripts/import-parallel-optimal.js $THIRD_START $THIRD_END > import_logs/process3.log 2>&1 &
-PID3=$!
-echo "   Process 3 started (PID: $PID3)"
-
-echo ""
-echo "📊 Monitoring progress..."
-echo "   Logs: tail -f import_logs/process*.log"
-echo ""
-
-# Monitor progress with enhanced display
-SECONDS=0
-LAST_IMPORTED=0
-LAST_TIME=0
-
-# Function to draw progress bar
-draw_progress_bar() {
+# Advanced progress bar with color coding
+draw_enhanced_progress_bar() {
     local current=$1
     local total=$2
-    local width=40
+    local width=50
     local percent=$((current * 100 / total))
     local filled=$((current * width / total))
     local empty=$((width - filled))
     
-    printf "["
+    local color=$RED
+    if [ $percent -gt 30 ]; then color=$YELLOW; fi
+    if [ $percent -gt 70 ]; then color=$GREEN; fi
+    
+    printf "${color}["
     printf "%*s" $filled | tr ' ' '█'
-    printf "%*s" $empty | tr ' ' '░'
-    printf "] %3d%%" $percent
+    printf "${DIM}%*s${NC}${color}" $empty | tr ' ' '░'
+    printf "] %3d%%${NC}" $percent
 }
 
-# Function to estimate completion time
-estimate_completion() {
-    local imported=$1
-    local total=$2
-    local elapsed=$3
+# Memory-optimized file analysis
+analyze_files() {
+    local file_count=0
+    local total_size=0
+    local sample_files=0
+    local max_samples=10
     
-    if [ $imported -gt 0 ] && [ $elapsed -gt 0 ]; then
-        local rate=$((imported * 60 / elapsed))  # files per minute
-        local remaining=$((total - imported))
-        local eta_mins=$((remaining / rate))
-        printf "ETA: %dm" $eta_mins
-    else
-        printf "ETA: --"
+    for file in "$CSV_DIR"/*.csv; do
+        if [ -f "$file" ]; then
+            file_count=$((file_count + 1))
+            local size=$(stat -f%z "$file" 2>/dev/null || stat -c%s "$file" 2>/dev/null || echo "0")
+            total_size=$((total_size + size))
+            
+            sample_files=$((sample_files + 1))
+            if [ $sample_files -ge $max_samples ]; then
+                break
+            fi
+        fi
+    done
+    
+    local avg_size_mb=50
+    if [ $file_count -gt 0 ] && [ $total_size -gt 0 ]; then
+        avg_size_mb=$(echo "scale=0; $total_size / $sample_files / 1024 / 1024" | bc 2>/dev/null || echo "50")
     fi
+    
+    echo "$file_count|$avg_size_mb"
 }
 
-# Function to get detailed process status
-get_process_details() {
-    local logfile=$1
-    local current_file=""
-    local progress=""
+# Process distribution with load balancing
+distribute_files() {
+    local file_count=$1
+    local num_processes=$2
     
-    if [ -f "$logfile" ]; then
-        # Get the last file being processed
-        current_file=$(tail -n 10 "$logfile" | grep -o '\[[0-9]*/[0-9]*\] [^(]*' | tail -1 | cut -d']' -f2 | xargs)
-        # Get the last progress line
-        progress=$(tail -n 5 "$logfile" | grep -o 'Progress: [0-9]*/[0-9]* ([0-9]*%)' | tail -1)
-    fi
+    local base_files_per_process=$((file_count / num_processes))
+    local remainder=$((file_count % num_processes))
+    local current_start=0
     
-    if [ -z "$current_file" ]; then
-        current_file="Starting..."
-    fi
-    
-    if [ -z "$progress" ]; then
-        progress="Initializing..."
-    fi
-    
-    echo "${current_file} | ${progress}"
-}
-
-clear
-echo "🚀 PARALLEL IMPORT PROGRESS MONITOR"
-echo "══════════════════════════════════════════════════════════════════════════"
-
-while kill -0 $PID1 2>/dev/null || kill -0 $PID2 2>/dev/null || kill -0 $PID3 2>/dev/null; do
-    IMPORTED=$(ls CleanedSplit_imported/*.csv 2>/dev/null | wc -l | tr -d ' ')
-    REMAINING=$(ls CleanedSplit/*.csv 2>/dev/null | wc -l | tr -d ' ')
-    
-    # Calculate elapsed time
-    ELAPSED=$SECONDS
-    MINS=$((ELAPSED / 60))
-    SECS=$((ELAPSED % 60))
-    
-    # Calculate import rate
-    RATE=""
-    if [ $ELAPSED -gt $LAST_TIME ] && [ $IMPORTED -gt $LAST_IMPORTED ]; then
-        FILES_PER_SEC=$(echo "scale=2; ($IMPORTED - $LAST_IMPORTED) / ($ELAPSED - $LAST_TIME)" | bc 2>/dev/null || echo "0")
-        RATE=$(printf "%.1f files/sec" $FILES_PER_SEC)
-    fi
-    
-    # Status for each process
-    P1_STATUS="✅ Complete"
-    P2_STATUS="✅ Complete"  
-    P3_STATUS="✅ Complete"
-    
-    kill -0 $PID1 2>/dev/null && P1_STATUS="🔄 Running"
-    kill -0 $PID2 2>/dev/null && P2_STATUS="🔄 Running"
-    kill -0 $PID3 2>/dev/null && P3_STATUS="🔄 Running"
-    
-    # Clear screen and redraw
-    printf "\033[H\033[J"
-    echo "🚀 PARALLEL IMPORT PROGRESS MONITOR"
-    echo "══════════════════════════════════════════════════════════════════════════"
-    echo ""
-    
-    # Overall progress
-    echo "📊 OVERALL PROGRESS"
-    printf "   "
-    draw_progress_bar $IMPORTED $FILE_COUNT
-    echo ""
-    printf "   Files: %d/%d imported | %d remaining\n" $IMPORTED $FILE_COUNT $REMAINING
-    echo ""
-    
-    # Time and rate info
-    echo "⏱️  TIMING"
-    printf "   Elapsed: %02d:%02d | Rate: %s | " $MINS $SECS "$RATE"
-    estimate_completion $IMPORTED $FILE_COUNT $ELAPSED
-    echo ""
-    echo ""
-    
-    # Process details
-    echo "🔧 PROCESS STATUS"
-    printf "   Process 1: %s\n" "$P1_STATUS"
-    if kill -0 $PID1 2>/dev/null; then
-        printf "      └─ %s\n" "$(get_process_details import_logs/process1.log)"
-    fi
-    echo ""
-    
-    printf "   Process 2: %s\n" "$P2_STATUS"
-    if kill -0 $PID2 2>/dev/null; then
-        printf "      └─ %s\n" "$(get_process_details import_logs/process2.log)"
-    fi
-    echo ""
-    
-    printf "   Process 3: %s\n" "$P3_STATUS"
-    if kill -0 $PID3 2>/dev/null; then
-        printf "      └─ %s\n" "$(get_process_details import_logs/process3.log)"
-    fi
-    echo ""
-    
-    # Recent activity
-    echo "📋 RECENT ACTIVITY"
-    if [ -f "import_logs/process1.log" ] || [ -f "import_logs/process2.log" ] || [ -f "import_logs/process3.log" ]; then
-        tail -n 3 import_logs/process*.log 2>/dev/null | grep -E "(✅|❌|📤)" | tail -5 | sed 's/^/   /'
-    else
-        echo "   Starting up processes..."
-    fi
-    echo ""
-    
-    echo "💡 TIP: Use 'tail -f import_logs/process*.log' in another terminal for detailed logs"
-    echo "══════════════════════════════════════════════════════════════════════════"
-    
-    # Update tracking variables
-    LAST_IMPORTED=$IMPORTED
-    LAST_TIME=$ELAPSED
-    
-    sleep 3
-done
-
-# Wait for all processes to complete
-wait $PID1 $PID2 $PID3
-
-# Final calculations
-FINAL_ELAPSED=$SECONDS
-FINAL_MINS=$((FINAL_ELAPSED / 60))
-FINAL_SECS=$((FINAL_ELAPSED % 60))
-FINAL_IMPORTED=$(ls CleanedSplit_imported/*.csv 2>/dev/null | wc -l | tr -d ' ')
-FINAL_REMAINING=$(ls CleanedSplit/*.csv 2>/dev/null | wc -l | tr -d ' ')
-
-# Calculate final stats
-TOTAL_RECORDS=0
-SUCCESS_COUNT=0
-ERROR_COUNT=0
-
-for logfile in import_logs/process*.log; do
-    if [ -f "$logfile" ]; then
-        RECORDS=$(grep -o '[0-9]* records' "$logfile" | tail -1 | grep -o '[0-9]*' | head -1)
-        SUCCESSES=$(grep -c "✅ Success" "$logfile" 2>/dev/null || echo 0)
-        ERRORS=$(grep -c "❌ Failed" "$logfile" 2>/dev/null || echo 0)
+    for ((i=0; i<num_processes; i++)); do
+        local files_for_this_process=$base_files_per_process
+        if [ $i -lt $remainder ]; then
+            files_for_this_process=$((files_for_this_process + 1))
+        fi
         
-        TOTAL_RECORDS=$((TOTAL_RECORDS + ${RECORDS:-0}))
-        SUCCESS_COUNT=$((SUCCESS_COUNT + SUCCESSES))
-        ERROR_COUNT=$((ERROR_COUNT + ERRORS))
-    fi
-done
+        local end=$((current_start + files_for_this_process))
+        echo "$current_start:$end"
+        current_start=$end
+    done
+}
 
-# Clear screen for final report
-printf "\033[H\033[J"
-echo "🎉 IMPORT COMPLETE!"
-echo "══════════════════════════════════════════════════════════════════════════"
-echo ""
-
-# Final progress bar
-echo "📊 FINAL RESULTS"
-printf "   "
-draw_progress_bar $FINAL_IMPORTED $FILE_COUNT
-echo ""
-printf "   Files: %d/%d imported (%d remaining)\n" $FINAL_IMPORTED $FILE_COUNT $FINAL_REMAINING
-echo ""
-
-# Performance stats
-echo "⚡ PERFORMANCE"
-RATE_PER_MIN=$(echo "scale=1; $FINAL_IMPORTED * 60 / $FINAL_ELAPSED" | bc 2>/dev/null || echo "0")
-printf "   Total time: %02d:%02d (%d seconds)\n" $FINAL_MINS $FINAL_SECS $FINAL_ELAPSED
-printf "   Average rate: %s files/min\n" $RATE_PER_MIN
-if [ $TOTAL_RECORDS -gt 0 ]; then
-    RECORDS_PER_SEC=$(echo "scale=0; $TOTAL_RECORDS / $FINAL_ELAPSED" | bc 2>/dev/null || echo "0")
-    printf "   Records processed: %s (~%s records/sec)\n" $TOTAL_RECORDS $RECORDS_PER_SEC
-fi
-echo ""
-
-# Error summary
-echo "🔍 QUALITY REPORT"
-if [ $ERROR_COUNT -gt 0 ]; then
-    printf "   ⚠️  %d files had errors\n" $ERROR_COUNT
-    printf "   ✅ %d files imported successfully\n" $SUCCESS_COUNT
+# Main execution function
+main() {
+    # Initialize
+    echo -e "${BOLD}${BLUE}"
+    echo "██████╗  █████╗ ██████╗  █████╗ ██╗     ██╗     ███████╗██╗     "
+    echo "██╔══██╗██╔══██╗██╔══██╗██╔══██╗██║     ██║     ██╔════╝██║     "
+    echo "██████╔╝███████║██████╔╝███████║██║     ██║     █████╗  ██║     "
+    echo "██╔═══╝ ██╔══██║██╔══██╗██╔══██║██║     ██║     ██╔══╝  ██║     "
+    echo "██║     ██║  ██║██║  ██║██║  ██║███████╗███████╗███████╗███████╗"
+    echo "╚═╝     ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝  ╚═╝╚══════╝╚══════╝╚══════╝╚══════╝"
+    echo -e "${NC}${BOLD}           IMPORT V2 - PRODUCTION OPTIMIZED${NC}"
     echo ""
-    echo "   🔎 Error details:"
-    grep -n "❌\|Error\|Failed" import_logs/*.log 2>/dev/null | head -5 | sed 's/^/      /'
-    if [ $(grep -c "❌\|Error\|Failed" import_logs/*.log 2>/dev/null | wc -l) -gt 5 ]; then
-        echo "      ... (run 'grep -n \"❌\\|Error\\|Failed\" import_logs/*.log' for all errors)"
+    
+    # Create directories
+    mkdir -p "$LOG_DIR"
+    
+    # System information
+    echo -e "${WHITE}🖥️  SYSTEM CONFIGURATION${NC}"
+    echo -e "   CPU Cores: ${GREEN}$CPU_CORES${NC}"
+    echo -e "   Total RAM: ${GREEN}${TOTAL_RAM_GB}GB${NC}"
+    echo -e "   Available RAM: ${GREEN}${AVAILABLE_RAM_GB}GB${NC}"
+    echo ""
+    
+    # File analysis
+    echo -e "${CYAN}🔍 Analyzing CSV files for optimization...${NC}"
+    local analysis_result
+    analysis_result=$(analyze_files)
+    local file_count=$(echo "$analysis_result" | cut -d'|' -f1)
+    local avg_file_size=$(echo "$analysis_result" | cut -d'|' -f2)
+    
+    if [ "$file_count" -eq 0 ]; then
+        echo -e "${RED}❌ No CSV files found in $CSV_DIR${NC}"
+        exit 1
     fi
-else
-    printf "   ✅ All %d files imported successfully!\n" $SUCCESS_COUNT
-    echo "   🎯 No errors detected!"
-fi
-echo ""
-
-# Next steps
-echo "📋 NEXT STEPS"
-echo "   📁 Imported files moved to: CleanedSplit_imported/"
-echo "   📊 Detailed logs available in: import_logs/"
-echo "   🔍 Running verification script..."
-echo ""
-
-# Run verification
-if [ -f "scripts/verify-import-complete.js" ]; then
+    
+    # Performance optimization calculations
+    local num_processes
+    num_processes=$(calculate_optimal_processes "$file_count")
+    local batch_size
+    batch_size=$(calculate_batch_size "$avg_file_size")
+    
+    echo -e "${WHITE}⚡ PERFORMANCE OPTIMIZATION${NC}"
+    echo -e "   Files to process: ${GREEN}$file_count${NC}"
+    echo -e "   Average file size: ${GREEN}${avg_file_size}MB${NC}"
+    echo -e "   Parallel processes: ${GREEN}$num_processes${NC}"
+    echo -e "   Batch size: ${GREEN}$batch_size${NC}"
+    echo ""
+    
+    # Clean up existing processes
+    echo -e "${YELLOW}🧹 Cleaning up existing processes...${NC}"
+    pkill -f "import-parallel-optimal.js" 2>/dev/null || true
+    sleep 2
+    
+    # Distribute files across processes
+    local file_ranges
+    file_ranges=($(distribute_files "$file_count" "$num_processes"))
+    
+    echo -e "${WHITE}📋 PROCESS DISTRIBUTION${NC}"
+    local pids=()
+    for ((i=0; i<num_processes; i++)); do
+        local range=${file_ranges[$i]}
+        local start=$(echo "$range" | cut -d':' -f1)
+        local end=$(echo "$range" | cut -d':' -f2)
+        local count=$((end - start))
+        
+        echo -e "   Process $((i+1)): Files $start-$((end-1)) (${count} files)"
+        
+        # Start process with optimized parameters
+        BATCH_SIZE=$batch_size node "$SCRIPT_DIR/import-parallel-optimal.js" \
+            "$start" "$end" > "$LOG_DIR/process$((i+1)).log" 2>&1 &
+        pids[$i]=$!
+    done
+    echo ""
+    
+    # Performance monitoring loop
+    local start_time
+    start_time=$(date +%s)
+    local peak_rate=0
+    local initial_file_count=$file_count  # Store initial count to avoid recalculation issues
+    
+    log_performance "import_start" "{\"files\":$file_count,\"processes\":$num_processes,\"batch_size\":$batch_size}"
+    
+    while true; do
+        local running_processes=0
+        for pid in "${pids[@]}"; do
+            if kill -0 "$pid" 2>/dev/null; then
+                running_processes=$((running_processes + 1))
+            fi
+        done
+        
+        if [ $running_processes -eq 0 ]; then
+            break
+        fi
+        
+        # Collect metrics
+        local current_time
+        current_time=$(date +%s)
+        local remaining
+        remaining=$(find "$CSV_DIR" -name "*.csv" 2>/dev/null | wc -l | tr -d ' ')
+        local imported=$((initial_file_count - remaining))
+        
+        # Ensure imported count is not negative
+        if [ $imported -lt 0 ]; then
+            imported=0
+        fi
+        
+        # Calculate performance metrics
+        local progress_info
+        progress_info=$(calculate_progress "$imported" "$initial_file_count" "$start_time" "$current_time")
+        local current_rate=$(echo "$progress_info" | cut -d'|' -f1)
+        local eta=$(echo "$progress_info" | cut -d'|' -f2)
+        
+        # Track peak performance
+        if [ "$current_rate" != "0" ] && (( $(echo "$current_rate > $peak_rate" | bc -l 2>/dev/null || echo "0") )); then
+            peak_rate=$current_rate
+        fi
+        
+        # Enhanced display
+        printf "\033[H\033[J"
+        echo -e "${BOLD}${BLUE}🚀 PARALLEL IMPORT V2 - LIVE MONITOR${NC}"
+        echo "══════════════════════════════════════════════════════════════════════════"
+        echo ""
+        
+        # Progress section
+        echo -e "${WHITE}📊 OVERALL PROGRESS${NC}"
+        printf "   "
+        draw_enhanced_progress_bar "$imported" "$initial_file_count"
+        echo ""
+        echo -e "   Files: ${GREEN}$imported${NC}/${BLUE}$initial_file_count${NC} | Remaining: ${YELLOW}$remaining${NC}"
+        echo -e "   Rate: ${GREEN}${current_rate} files/min${NC} | Peak: ${PURPLE}${peak_rate} files/min${NC}"
+        echo -e "   ETA: ${CYAN}$eta${NC}"
+        echo ""
+        
+        # Process status
+        echo -e "${WHITE}🔧 PROCESS STATUS${NC}"
+        for ((i=0; i<num_processes; i++)); do
+            local pid=${pids[$i]}
+            local status="✅ Complete"
+            
+            if kill -0 "$pid" 2>/dev/null; then
+                status="${GREEN}🔄 Running${NC}"
+            fi
+            
+            echo -e "   Process $((i+1)): $status"
+        done
+        echo ""
+        
+        # Performance metrics
+        local elapsed=$((current_time - start_time))
+        local hours=$((elapsed / 3600))
+        local minutes=$(((elapsed % 3600) / 60))
+        local seconds=$((elapsed % 60))
+        
+        echo -e "${WHITE}⏱️  PERFORMANCE METRICS${NC}"
+        printf "   Elapsed: %02d:%02d:%02d | " $hours $minutes $seconds
+        echo -e "Active Processes: ${GREEN}$running_processes${NC}/$num_processes"
+        echo ""
+        
+        # Recent activity
+        echo -e "${WHITE}📋 RECENT ACTIVITY${NC}"
+        if find "$LOG_DIR" -name "process*.log" -exec grep -l . {} \; &>/dev/null; then
+            find "$LOG_DIR" -name "process*.log" -exec tail -n 2 {} \; 2>/dev/null | \
+                grep -E "(✅|❌|📤|Progress)" | tail -4 | sed 's/^/   /' || echo "   Starting processes..."
+        else
+            echo "   Initializing import processes..."
+        fi
+        echo ""
+        
+        echo -e "${DIM}💡 TIP: Use 'tail -f $LOG_DIR/process*.log' for detailed logs${NC}"
+        echo "══════════════════════════════════════════════════════════════════════════"
+        
+        sleep 2
+    done
+    
+    # Wait for all processes to complete
+    for pid in "${pids[@]}"; do
+        wait "$pid" 2>/dev/null || true
+    done
+    
+    # Final report
+    local end_time
+    end_time=$(date +%s)
+    local total_time=$((end_time - start_time))
+    local final_imported
+    local final_remaining
+    final_remaining=$(find "$CSV_DIR" -name "*.csv" 2>/dev/null | wc -l | tr -d ' ')
+    local final_imported=$((initial_file_count - final_remaining))
+    
+    # Ensure final imported count is not negative
+    if [ $final_imported -lt 0 ]; then
+        final_imported=0
+    fi
+    
+    printf "\033[H\033[J"
+    echo -e "${BOLD}${GREEN}🎉 IMPORT COMPLETE!${NC}"
     echo "══════════════════════════════════════════════════════════════════════════"
-    node scripts/verify-import-complete.js
-else
-    echo "✅ Import process completed successfully!"
+    echo ""
+    
+    # Success metrics - avoid division by zero
+    local success_rate=0
+    if [ $initial_file_count -gt 0 ]; then
+        success_rate=$((final_imported * 100 / initial_file_count))
+    fi
+    
+    echo -e "${WHITE}📊 FINAL RESULTS${NC}"
+    printf "   "
+    draw_enhanced_progress_bar "$final_imported" "$initial_file_count"
+    echo ""
+    echo -e "   Files processed: ${GREEN}$final_imported${NC}/$initial_file_count (${GREEN}$success_rate%${NC})"
+    
+    local hours=$((total_time / 3600))
+    local minutes=$(((total_time % 3600) / 60))
+    local seconds=$((total_time % 60))
+    
+    echo -e "   Total time: ${BLUE}%02d:%02d:%02d${NC}" $hours $minutes $seconds
+    echo ""
+    
+    # Error analysis
+    local total_errors=0
+    for logfile in "$LOG_DIR"/process*.log; do
+        if [ -f "$logfile" ]; then
+            local errors
+            errors=$(grep -c "❌\|Error\|Failed" "$logfile" 2>/dev/null || echo "0")
+            total_errors=$((total_errors + errors))
+        fi
+    done
+    
+    echo -e "${WHITE}🔍 QUALITY REPORT${NC}"
+    if [ $total_errors -gt 0 ]; then
+        echo -e "   ⚠️  ${YELLOW}$total_errors${NC} errors detected"
+        echo -e "   📋 Check logs: ${CYAN}$LOG_DIR/${NC}"
+    else
+        echo -e "   ✅ ${GREEN}No errors detected - Perfect execution!${NC}"
+    fi
+    echo ""
+    
+    # Run verification if available
+    if [ -f "$SCRIPT_DIR/verify-import-complete.js" ]; then
+        echo "══════════════════════════════════════════════════════════════════════════"
+        echo -e "${GREEN}🔍 Running verification...${NC}"
+        retry_with_backoff "node '$SCRIPT_DIR/verify-import-complete.js'" || true
+    else
+        echo -e "${GREEN}✅ Import process completed successfully!${NC}"
+    fi
+    
     echo "══════════════════════════════════════════════════════════════════════════"
-fi
+}
+
+# Dependency checks
+command -v node >/dev/null 2>&1 || { echo -e "${RED}❌ Node.js not found${NC}"; exit 1; }
+command -v bc >/dev/null 2>&1 || { echo -e "${RED}❌ bc calculator not found${NC}"; exit 1; }
+
+# Execute main function
+main "$@"

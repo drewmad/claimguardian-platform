@@ -9045,7 +9045,7 @@ GRANT USAGE ON SCHEMA "history" TO "authenticated";
 
 
 GRANT USAGE ON SCHEMA "monitoring" TO "authenticated";
-GRANT USAGE ON SCHEMA "monitoring" TO "monitoring_viewer";
+-- GRANT USAGE ON SCHEMA "monitoring" TO "monitoring_viewer";
 
 
 
@@ -9068,7 +9068,7 @@ GRANT USAGE ON SCHEMA "security" TO "authenticated";
 
 
 GRANT USAGE ON SCHEMA "test" TO "authenticated";
-GRANT USAGE ON SCHEMA "test" TO "test_runner";
+-- GRANT USAGE ON SCHEMA "test" TO "test_runner";
 
 
 
@@ -15903,47 +15903,47 @@ GRANT ALL ON SEQUENCE "external_raw_fl"."property_data_id_seq" TO "service_role"
 
 
 
-GRANT SELECT ON TABLE "monitoring"."alert_history" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."alert_history" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."alert_history_2025_01" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."alert_history_2025_01" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."alert_rule" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."alert_rule" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."data_quality_result" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."data_quality_result" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."data_quality_result_2025_01" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."data_quality_result_2025_01" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."data_quality_rule" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."data_quality_rule" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."database_stats" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."database_stats" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."deployment" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."deployment" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."health_check" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."health_check" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."performance_metric" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."performance_metric" TO "monitoring_viewer";
 
 
 
-GRANT SELECT ON TABLE "monitoring"."performance_metric_2025_01" TO "monitoring_viewer";
+-- GRANT SELECT ON TABLE "monitoring"."performance_metric_2025_01" TO "monitoring_viewer";
 
 
 

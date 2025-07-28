@@ -2,70 +2,169 @@
 # @fileMetadata
 # @purpose Specifies intentionally untracked files that Git should ignore.
 # @owner dev-ops
-# @lastModifiedBy Drew Madison
-# @lastModifiedDate 2025-07-03T19:43:12-04:00
+# @lastModifiedBy Claude Code AI Assistant
+# @lastModifiedDate 2025-07-28T06:58:00Z
 # @status active
 # @notes Defines patterns for files and directories to be excluded from version control.
 #
-# dependencies
+
+# ==============================================================================
+# DEPENDENCIES & PACKAGE MANAGERS
+# ==============================================================================
 node_modules/
 .pnpm-store/
-
-# testing
-coverage/
-
-# next.js
-.next/
-out/
-
-# production
-build/
-dist/
-
-# misc
-.DS_Store
-*.pem
-
-# debug
+.yarn/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# local env files
-.env*.local
-.env
+# ==============================================================================
+# TESTING & COVERAGE
+# ==============================================================================
+coverage/
+.nyc_output/
+*.lcov
 
-# vercel
-.vercel
-
-# typescript
-*.tsbuildinfo
+# ==============================================================================
+# NEXT.JS & REACT
+# ==============================================================================
+.next/
+out/
 next-env.d.ts
 
-# turbo
+# ==============================================================================
+# BUILD OUTPUTS & PRODUCTION
+# ==============================================================================
+build/
+dist/
+*.tsbuildinfo
+
+# ==============================================================================
+# ENVIRONMENT & CONFIGURATION
+# ==============================================================================
+# Environment files
+.env
+.env*.local
+.env.example
+
+# Vercel deployment
+.vercel
+
+# Turbo build cache
 .turbo
 
-# AI context logs
-.ai-context/retrospectives/*.jsonl
+# ==============================================================================
+# OPERATING SYSTEM & EDITOR FILES
+# ==============================================================================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
 
-# Data and temporary files
+# Windows
+*.tmp
+*.temp
+
+# Linux
+*~
+
+# IDE & Editor files
+.idea/
+.vscode/
+!.vscode/settings.json
+*.swp
+*.swo
+*.sublime-project
+*.sublime-workspace
+
+# ==============================================================================
+# CERTIFICATES & KEYS
+# ==============================================================================
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# ==============================================================================
+# LARGE DATA FILES & GIS DATA
+# ==============================================================================
+# GIS Database files (ESRI FileGDB)
+*.gdb/
+*Cadastral_Statewide.gdb*/
+Cadastral_Statewide.gdb*/
+
+# Large CSV datasets
 CleanedSplit/
 CleanedSplit_imported/
-temp_extract/
-import_logs/
-*.geojson
-*.gdb/
-county_codes_temp.txt
+data/*/parcels_*.csv
+parcels_part_*.csv
 
-# SQL dumps and temporary files
-supabase_dump.sql
+# Geospatial data files
+*.geojson
+*.shp
+*.shx
+*.dbf
+*.prj
+*.kml
+*.kmz
+
+# ==============================================================================
+# DATABASE & SCHEMA FILES
+# ==============================================================================
+# Schema dumps and backups
 schema.sql
+supabase_dump.sql
+remote_schema.sql
+*.schema.sql
+*_dump.sql
+
+# Database-related temporary files
 *-temp.sql
 fix-*.sql
 test-*.sql
+create-*.sql
+complete-*.sql
 
-# Import and processing scripts (archived)
+# ==============================================================================
+# SUPABASE & DATABASE MIGRATIONS
+# ==============================================================================
+# Migration backups and archives
+supabase/migrations-backup/
+supabase/migrations_backup*/
+supabase/migrations_archive*/
+supabase/migrations_ai/
+supabase/migrations_consolidated/
+
+# Supabase config backups
+supabase/config.toml.bak
+
+# Database backups
+supabase/backups/
+
+# ==============================================================================
+# LOGS & PROCESSING FILES
+# ==============================================================================
+# Application logs
+*.log
+*.jsonl
+deployment_logs/
+import_logs/
+process*.log
+
+# Temporary extraction and processing
+temp_extract/
+county_codes_temp.txt
+
+# ==============================================================================
+# SCRIPTS & AUTOMATION (ARCHIVED)
+# ==============================================================================
+# Import and processing scripts
 import-*.sh
 import-*.js
 continue-*.sh
@@ -76,16 +175,46 @@ update-*.sh
 test-import-*.sh
 test-scraper*.js
 verify-*.sh
+apply-*.js
+deploy-*.sql
+*-import.js
+*-extract.js
 
-# Deno files (if not actively used)
+# ==============================================================================
+# DEVELOPMENT ARTIFACTS
+# ==============================================================================
+# AI context and retrospectives
+.ai-context/retrospectives/*.jsonl
+
+# Workspace files
+*.code-workspace
+claimguardian.code-workspace
+
+# Deno (if not actively used)
 deno.lock
 
-# ide
-.idea/
-# .vscode/
-!.vscode/settings.json
-*.swp
-*.swo
+# Package metadata
+*.meta
 
-# Ignore environment example files
-.env.example
+# ==============================================================================
+# SECURITY & SENSITIVE DATA
+# ==============================================================================
+# Never commit API keys or secrets
+*secret*
+*password*
+*token*
+*credential*
+
+# ==============================================================================
+# CUSTOM PROJECT EXCLUSIONS
+# ==============================================================================
+# Action plans and temporary documentation
+actionplan.md
+
+# Large agent directories (if they become too large)
+agents/temp/
+agents/output/
+
+# Deployment and setup guides (if they contain sensitive info)
+# FLOIR_DEPLOYMENT_GUIDE.md
+# FLORIDA_PLATFORM_SETUP.md

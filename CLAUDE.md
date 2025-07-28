@@ -20,7 +20,8 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 - TypeScript 5.8.3
 - Turborepo monorepo structure
 - Supabase for backend
-- pnpm 10.12.4 package manager
+- pnpm 10.13.1 package manager
+- Node.js 22+ requirement
 
 ## Essential Commands
 
@@ -55,6 +56,18 @@ pnpm test                          # All tests
 pnpm --filter=web test             # Web app tests only
 pnpm --filter=web test:watch       # Watch mode
 pnpm test path/to/file.test.ts     # Specific test file
+```
+
+### Data Management
+```bash
+# Florida Cadastral Data Import
+./scripts/run-parallel-import.sh              # Parallel data import
+./scripts/verify-import-complete.js           # Verify import status
+./scripts/benchmark-import-performance.sh     # Performance testing
+
+# Property Data Processing
+python scripts/analyze_cadastral_gdb.py       # Analyze GDB files
+node scripts/import_cadastral_gdb.js          # Import cadastral data
 ```
 
 ## Architecture & Code Patterns
@@ -173,6 +186,10 @@ NEXT_PUBLIC_OPENAI_API_KEY=
 
 # Google Maps API (Optional - for address autocomplete)
 NEXT_PUBLIC_GOOGLE_MAPS_API_KEY=
+
+# Monitoring (Optional)
+SENTRY_AUTH_TOKEN=
+NEXT_PUBLIC_SENTRY_DSN=
 ```
 
 ## Common Issues & Solutions
@@ -252,6 +269,11 @@ cat supabase/schema.sql
 - Schema file: `supabase/schema.sql` (single source of truth)
 - No migrations folder - all archived
 
+### Service Versions
+- **Auth**: 2.177.0
+- **PostgREST**: 12.2.12
+- **Postgres**: 17.4.1.064 (Latest)
+
 ### Making Schema Changes
 1. Test changes in development/staging
 2. Dump updated schema: `./scripts/db-schema.sh dump`
@@ -265,6 +287,20 @@ Husky runs these checks automatically:
 - `pnpm lint` - ESLint checks
 - `pnpm type-check` - TypeScript validation
 
+## Performance & Monitoring
+
+### Build Optimization
+- Uses standalone Next.js output for Vercel deployment
+- Type checking disabled during build for speed
+- Incremental builds with Turborepo caching
+- Package import optimization (Lucide React)
+
+### Error Monitoring
+- Sentry integration for error tracking and performance
+- Audit logging middleware (currently disabled)
+- Security headers via Next.js middleware
+- Rate limiting implementation
+
 ## Code Documentation
 
 Add JSDoc-style `@fileMetadata` headers to new/modified files:
@@ -276,3 +312,17 @@ Add JSDoc-style `@fileMetadata` headers to new/modified files:
  * @status active|deprecated
  */
 ```
+
+## Data Processing Pipeline
+
+### Florida-Specific Data Integration
+- **Cadastral Data**: Large-scale GIS dataset processing with parallel imports
+- **Property Scraping**: Automated collection of Florida property information
+- **Performance Monitoring**: Benchmarking tools for import operations
+- **Verification Scripts**: Automated validation of data completeness
+
+### Processing Patterns
+- Batch processing with configurable chunk sizes
+- Parallel execution for large datasets
+- Progress tracking and status reporting
+- Error recovery and retry mechanisms
