@@ -82,6 +82,9 @@ Thumbs.db
 *.sublime-project
 *.sublime-workspace
 
+# Claude Code settings
+.claude/settings.local*
+
 # ==============================================================================
 # CERTIFICATES & KEYS
 # ==============================================================================
