@@ -16,6 +16,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
+import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from 'sonner'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -34,10 +35,12 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-slate-950 text-slate-100`}>
         <ErrorBoundary>
-          <AuthProvider>
-            {children}
-            <Toaster position="top-right" richColors />
-          </AuthProvider>
+          <QueryProvider>
+            <AuthProvider>
+              {children}
+              <Toaster position="top-right" richColors />
+            </AuthProvider>
+          </QueryProvider>
         </ErrorBoundary>
       </body>
     </html>
