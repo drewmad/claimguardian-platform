@@ -1,10 +1,13 @@
 {
-  "installCommand": "rm -rf node_modules pnpm-lock.yaml && pnpm install --no-frozen-lockfile",
+  "installCommand": "bash scripts/install-deps.sh",
   "buildCommand": "pnpm build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
   "ignoreCommand": "git diff HEAD^ HEAD --quiet .",
   "github": {
     "silent": true
+  },
+  "env": {
+    "SKIP_ENV_VALIDATION": "true"
   }
 }
