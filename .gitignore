@@ -46,13 +46,14 @@ dist/
 # Environment files
 .env
 .env*.local
-.env.example
+!.env.example
 
 # Vercel deployment
 .vercel
 
 # Turbo build cache
 .turbo
+**/.turbo/
 
 # ==============================================================================
 # OPERATING SYSTEM & EDITOR FILES
@@ -120,19 +121,13 @@ parcels_part_*.csv
 # ==============================================================================
 # DATABASE & SCHEMA FILES
 # ==============================================================================
-# Schema dumps and backups
-schema.sql
-supabase_dump.sql
-remote_schema.sql
-*.schema.sql
-*_dump.sql
+# Schema dumps and backups (now in supabase/sql/)
+supabase/sql/*_dump.sql
+supabase/sql/*_backup.sql
+supabase/sql/temp-*.sql
 
-# Database-related temporary files
-*-temp.sql
-fix-*.sql
-test-*.sql
-create-*.sql
-complete-*.sql
+# Keep tracked schema files
+!supabase/sql/schema.sql
 
 # ==============================================================================
 # SUPABASE & DATABASE MIGRATIONS
@@ -168,15 +163,19 @@ county_codes_temp.txt
 # ==============================================================================
 # SCRIPTS & AUTOMATION
 # ==============================================================================
-# Archive directories
-scripts/_archive/
-scripts/archive/
+# Archive directories (keep contents but ignore new additions)
+scripts/_archive/*
+!scripts/_archive/.gitkeep
+supabase/_migrations_archive/*
+!supabase/_migrations_archive/.gitkeep
 
-# Temporary one-off scripts
+# Temporary/utility scripts
 scripts/find-unused-files.js
 scripts/analyze-repo-cleanup.js
 scripts/execute-repo-cleanup.sh
 scripts/safe-cleanup.sh
+scripts/*-temp.*
+scripts/*-test.*
 
 # ==============================================================================
 # DEVELOPMENT ARTIFACTS
@@ -234,12 +233,8 @@ FLORIDA_PLATFORM_SETUP.md
 data/
 CleanedSplit/
 
-# All SQL files in supabase migrations directories
-supabase/migrations_ai/
-supabase/migrations_archive*/
-supabase/migrations_backup*/
-supabase/migrations_consolidated/
-supabase/sql-archive/
+# Consolidated migration archives
+supabase/_migrations_archive/
 
 # Backup directories
 repo_backup_*/
