@@ -199,6 +199,12 @@ deno.lock
 # Lockfile tracking
 .lockfile-hash
 
+# Lint reports
+lint-report.html
+lint-report.txt
+lint-analysis.json
+files-to-fix.txt
+
 # ==============================================================================
 # SECURITY & SENSITIVE DATA
 # ==============================================================================

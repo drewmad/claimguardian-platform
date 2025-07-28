@@ -1,5 +1,5 @@
 {
-  "installCommand": "bash scripts/install-deps.sh",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm build",
   "outputDirectory": "apps/web/.next",
   "framework": "nextjs",
