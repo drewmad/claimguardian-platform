@@ -16,9 +16,17 @@
     "deps:check": "node scripts/validate-lockfile.js",
     "deps:update": "pnpm update -r",
     "deps:clean": "rm -rf node_modules **/node_modules pnpm-lock.yaml && pnpm install",
-    "postinstall": "husky"
+    "postinstall": "husky",
+    "lint:fix": "turbo lint:fix",
+    "lint:fix:all": "eslint . --fix --ext .js,.jsx,.ts,.tsx",
+    "lint:report": "eslint . --format html -o lint-report.html",
+    "lint:staged": "lint-staged",
+    "fix:auto": "./scripts/lint-fix.sh",
+    "lint:smart-fix": "node scripts/smart-lint-fix.js",
+    "pre-commit:test": "bash .husky/pre-commit"
   },
   "devDependencies": {
+    "lint-staged": "^15.3.0",
     "@turbo/gen": "^2.5.4",
     "@types/node": "^24.0.10",
     "@types/react": "18.3.23",

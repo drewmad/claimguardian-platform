@@ -48,7 +48,17 @@ pnpm fix:imports    # Fix @claimguardian/ui and @claimguardian/db imports
 pnpm cz             # Commit with conventional format
 HUSKY=0 git commit  # Skip pre-commit hooks (use sparingly)
 pnpm prepare        # Setup git hooks
+pnpm lint:smart-fix # Auto-fix lint issues before commit
 ```
+
+### Auto-fix Lint Issues
+The pre-commit hook now automatically attempts to fix lint issues before rejecting commits:
+1. Runs ESLint auto-fix on all fixable issues
+2. Applies targeted fixes for common problems
+3. Re-stages fixed files automatically
+4. Only fails if unfixable issues remain
+
+To test: `pnpm pre-commit:test`
 
 ### Testing
 ```bash
