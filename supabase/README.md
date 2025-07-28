@@ -1,60 +1,34 @@
-# Supabase Schema
+# Supabase Configuration
 
-This directory contains the complete database schema for ClaimGuardian.
+## Structure
+- `/functions` - Edge Functions (Deno runtime for AI processing and business logic)
+- `/migrations` - Active migrations only (historical migrations in /archives/)
+- `/sql` - SQL utilities and schema management
+  - `schema.sql` - Single source of truth for database schema
+  - `/archived` - Historical SQL utilities
+- `config.toml` - Supabase project configuration
+- `seed.sql` - Initial seed data for development
 
-## Single Source of Truth
+## Architecture
+ClaimGuardian uses Supabase's open-source architecture:
+- **PostgreSQL 17.4.1.064** - Primary database with PostGIS for GIS data
+- **PostgREST 12.2.12** - Auto-generated REST API from schema
+- **GoTrue 2.177.0** - JWT-based authentication with RLS integration
+- **Edge Functions** - Deno-based serverless functions for AI processing
+- **Storage API** - S3-compatible file storage with PostgreSQL metadata
 
-**`schema.sql`** - The complete database schema dumped from production. This is the single source of truth for our database structure.
+## Schema Management
+We use a single `schema.sql` file approach to avoid CLI migration conflicts.
 
-## Approach
+Use `./scripts/db.sh` for all database operations:
+- `./scripts/db.sh schema dump` - Export current schema
+- `./scripts/db.sh schema apply` - Apply schema changes
+- `./scripts/db.sh backup` - Create database backup
 
-We use a single schema file approach instead of migrations because:
-
-1. **Simplicity** - One file to manage instead of dozens of migration files
-2. **Clarity** - See the entire schema at once
-3. **No Migration Conflicts** - Avoid Supabase CLI migration history issues
-4. **Easy Deployment** - Just run the schema file on a fresh database
-
-## Usage
-
-### Deploy to New Database
-```bash
-# Create a new Supabase project and run:
-psql $DATABASE_URL -f supabase/schema.sql
-```
-
-### Update Schema
-1. Make changes in development/staging
-2. Test thoroughly
-3. Dump the new schema:
-   ```bash
-   supabase db dump --schema public > supabase/schema.sql
-   ```
-4. Commit the updated schema file
-
-### Local Development
-```bash
-# Start local Supabase
-supabase start
-
-# Apply schema
-psql postgresql://postgres:postgres@localhost:54322/postgres -f supabase/schema.sql
-```
-
-## Schema Overview
-
-The schema includes:
-
-- **Core Tables**: users, properties, claims, policies, etc.
-- **Property Hierarchy**: properties → land, structures, systems, insurance, damage, contractors
-- **Security**: Row-Level Security (RLS) on all user data
-- **Performance**: Optimized indexes and materialized views
-- **Audit**: Update triggers and versioning capabilities
-
-## Archived Migrations
-
-Previous migration files are archived in:
-- `migrations_archive_*` - Historical migrations for reference
-- `migrations_backup_*` - Backup folders from previous approaches
-
-These are kept for historical reference but are not used for deployment.
+## Edge Functions
+Located in `/functions/`, these handle:
+- AI processing (property enrichment, document extraction)
+- Florida data ingestion and monitoring
+- RAG-based search and analysis
+- Business logic requiring server-side execution
+EOF < /dev/null

@@ -253,3 +253,18 @@ deployment_logs/
 # Test files at root
 test-*.sh
 test-*.js
+
+# ==============================================================================
+# REORGANIZED STRUCTURE ARCHIVES
+# ==============================================================================
+# Archives (keep structure but ignore contents)
+archives/**/*
+!archives/**/README.md
+!archives/**/.gitkeep
+
+# Old directories (for backwards compatibility during transition)
+edge_functions/
+tools/
+data_integrations/
+deployment_logs/
+import_logs/

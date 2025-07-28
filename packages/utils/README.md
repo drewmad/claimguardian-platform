@@ -1,10 +1,10 @@
-# @claimguardian/ai-config
+# @claimguardian/utils
 
-Shared ai-config package for ClaimGuardian platform.
+Shared utils package for ClaimGuardian platform.
 
 ## Installation
 ```bash
-pnpm add @claimguardian/ai-config
+pnpm add @claimguardian/utils
 ```
 
 ## Usage

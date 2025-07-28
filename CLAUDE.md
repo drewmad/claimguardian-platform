@@ -32,7 +32,65 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 - **Storage API**: S3-compatible file storage with PostgreSQL metadata
 - **Realtime Engine**: WebSocket-based live updates and multiplayer features
 
+## Repository Structure (Updated)
+
+The repository has been reorganized for better maintainability:
+
+```
+ClaimGuardian/
+├── apps/web/              # Next.js application
+├── packages/              # Shared packages (ui, utils, db, ai-config, config)
+├── services/              # External services
+│   ├── scraper/           # Data scraping service
+│   ├── integrations/      # Third-party integrations
+│   └── workers/           # Background workers
+├── supabase/              # Database & backend
+│   ├── functions/         # Edge Functions (Deno)
+│   ├── migrations/        # Active migrations only
+│   ├── sql/               # SQL utilities (schema.sql is source of truth)
+│   └── config.toml        # Supabase configuration
+├── scripts/               # Simplified core scripts
+│   ├── dev.sh             # Development utilities
+│   ├── build.sh           # Build operations
+│   ├── data.sh            # Data management
+│   ├── db.sh              # Database operations
+│   └── utils/             # Complex internal scripts
+├── config/                # Centralized configuration
+│   ├── environments/      # Environment-specific configs
+│   ├── database/          # Database configurations
+│   └── ci/                # CI/CD configurations
+├── data/                  # Organized data
+│   ├── samples/           # Sample datasets
+│   ├── schemas/           # Data schemas
+│   └── florida/           # Florida-specific data
+├── archives/              # Historical files (gitignored contents)
+└── [root configs]         # Essential configuration files only
+```
+
 ## Essential Commands
+
+### Core Script Operations (New)
+```bash
+# Development
+./scripts/dev.sh setup     # Setup development environment
+./scripts/dev.sh clean     # Clean build artifacts
+./scripts/dev.sh lint      # Run smart lint fix
+
+# Building
+./scripts/build.sh all     # Build all packages
+./scripts/build.sh web     # Build web app only
+./scripts/build.sh packages # Build packages only
+
+# Data Management
+./scripts/data.sh import   # Import data with parallel processing
+./scripts/data.sh verify   # Verify import completion
+./scripts/data.sh clean    # Clean processed data
+
+# Database Operations
+./scripts/db.sh schema     # Manage database schema
+./scripts/db.sh backup     # Create database backup
+./scripts/db.sh migrate    # Apply migrations
+```
 
 ### Development
 ```bash
@@ -79,14 +137,19 @@ pnpm test path/to/file.test.ts     # Specific test file
 
 ### Data Management
 ```bash
-# Florida Cadastral Data Import
-./scripts/run-parallel-import.sh              # Parallel data import
-./scripts/verify-import-complete.js           # Verify import status
-./scripts/benchmark-import-performance.sh     # Performance testing
+# Simplified Data Operations (New Structure)
+./scripts/data.sh import                       # Parallel data import
+./scripts/data.sh verify                       # Verify import status
+./scripts/data.sh clean                        # Clean processed data
+
+# Advanced Data Processing (in utils)
+./scripts/utils/data-import/run-parallel-import.sh              # Parallel data import
+./scripts/utils/data-import/verify-import-complete.js           # Verify import status
+./scripts/utils/data-import/benchmark-import-performance.sh     # Performance testing
 
 # Property Data Processing
-python scripts/analyze_cadastral_gdb.py       # Analyze GDB files
-node scripts/import_cadastral_gdb.js          # Import cadastral data
+python ./scripts/utils/data-import/analyze_cadastral_gdb.py     # Analyze GDB files
+node ./scripts/utils/data-import/import_cadastral_gdb.js        # Import cadastral data
 ```
 
 ## Architecture & Code Patterns

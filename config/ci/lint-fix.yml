@@ -1,0 +1,76 @@
+name: Auto-fix Lint Issues
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * 1' # Weekly on Monday
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  lint-fix:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+      
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10.13.1
+      
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+      
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      
+      - name: Run ESLint auto-fix
+        run: |
+          # Auto-fix what we can
+          pnpm lint:fix:all || true
+          
+          # Check if there are changes
+          if git diff --quiet; then
+            echo "No auto-fixable issues found"
+            exit 0
+          fi
+      
+      - name: Create Pull Request
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: 'fix: auto-fix ESLint issues'
+          title: 'fix: auto-fix ESLint issues'
+          body: |
+            This PR contains automated ESLint fixes for:
+            - Unescaped entities
+            - Import ordering
+            - Quote consistency
+            - Semicolon consistency
+            - Other auto-fixable issues
+            
+            Please review the changes before merging.
+          branch: auto-fix/eslint
+          delete-branch: true
+      
+      - name: Add comment to PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const output = await exec.getExecOutput('pnpm', ['lint'], {ignoreReturnCode: true});
+            const lintErrors = output.stderr.match(/\d+ errors?/)?.[0] || '0 errors';
+            const lintWarnings = output.stderr.match(/\d+ warnings?/)?.[0] || '0 warnings';
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `## 🔍 ESLint Report\n\nAfter auto-fixes:\n- ${lintErrors}\n- ${lintWarnings}\n\nRun \`pnpm lint:fix\` locally to auto-fix more issues.`
+            });
