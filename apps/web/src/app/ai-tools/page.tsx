@@ -15,6 +15,7 @@ import {
 import { useAuth } from '@/components/auth/auth-provider'
 import { AIClientService } from '@/lib/ai/client-service'
 import { toast } from 'sonner'
+import { usePreload } from '@/hooks/use-preload'
 
 interface AITool {
   id: string
@@ -146,6 +147,7 @@ export default function AIToolsPage() {
   const [isOnline, setIsOnline] = useState(true)
   const { user } = useAuth()
   const aiClient = new AIClientService()
+  const { preloadComponent } = usePreload()
 
   useEffect(() => {
     // Check API keys
@@ -329,7 +331,19 @@ export default function AIToolsPage() {
                             Coming Soon
                           </Button>
                         ) : (
-                          <Link href={tool.href} className="block">
+                          <Link 
+                            href={tool.href} 
+                            className="block"
+                            onMouseEnter={() => {
+                              // Preload components based on tool
+                              if (tool.id === 'damage-analyzer') {
+                                preloadComponent('ImageUploadAnalyzer')
+                                preloadComponent('ReportGenerator')
+                              } else if (tool.id === 'policy-advisor') {
+                                preloadComponent('AIChatInterface')
+                              }
+                            }}
+                          >
                             <Button 
                               className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                               disabled={!hasOpenAIKey && !hasGeminiKey}

@@ -3,7 +3,7 @@
 import React, { useState, useRef } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { AIChatInterface } from '@/components/ai/ai-chat-interface'
+import { LazyAIChatInterface as AIChatInterface } from '@/components/lazy'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
