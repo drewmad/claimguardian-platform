@@ -23,6 +23,16 @@ Welcome to the ClaimGuardian documentation. This directory contains technical do
   - [LEGAL_COMPLIANCE.md](./setup/LEGAL_COMPLIANCE.md) - Legal compliance system
   - [AUTH_IMPLEMENTATION.md](./setup/AUTH_IMPLEMENTATION.md) - Auth implementation details
   - [AUTH_QUICK_REFERENCE.md](./setup/AUTH_QUICK_REFERENCE.md) - Auth quick reference
+- **`/florida-platform`** - Florida data platform documentation
+  - [README.md](./florida-platform/README.md) - Platform overview
+  - [ACTION_PLAN.md](./florida-platform/ACTION_PLAN.md) - Implementation plan
+  - [FLORIDA_PLATFORM_SETUP.md](./florida-platform/FLORIDA_PLATFORM_SETUP.md) - Setup guide
+  - [FLOIR_DEPLOYMENT_GUIDE.md](./florida-platform/FLOIR_DEPLOYMENT_GUIDE.md) - Deployment guide
+  - [FLORIDA_DATA_PLATFORM_SUMMARY.md](./florida-platform/FLORIDA_DATA_PLATFORM_SUMMARY.md) - Platform summary
+- **`/deployment`** - Deployment and maintenance documentation
+  - [README.md](./deployment/README.md) - Deployment overview
+  - [REPOSITORY_CLEANUP_SUMMARY.md](./deployment/REPOSITORY_CLEANUP_SUMMARY.md) - Cleanup actions
+  - [UNUSED_FILES_REPORT.md](./deployment/UNUSED_FILES_REPORT.md) - Unused files analysis
 
 ## Getting Started
 
