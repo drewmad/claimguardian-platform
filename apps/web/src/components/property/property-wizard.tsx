@@ -85,7 +85,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
         case 'UPDATE_FIELD':
             const { section, field, value } = action.payload;
             if (section) {
-                return { ...state, [section]: { ...state[section], [field]: value } };
+                return { ...state, [section]: { ...(state as any)[section], [field]: value } };
             }
             return { ...state, [field]: value };
         case 'NEXT_STEP':
