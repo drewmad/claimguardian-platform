@@ -134,6 +134,7 @@ export function OnboardingFlow() {
     dark_mode?: boolean
     onboarding_completed?: boolean
     onboarding_current_step?: string
+    onboarding_skipped_at?: string
   }>) => {
     if (!user) return
 
