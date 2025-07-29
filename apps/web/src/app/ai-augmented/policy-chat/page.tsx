@@ -56,7 +56,7 @@ function PolicyChatContent() {
   const { user } = useAuth()
   const aiClient = new AIClientService()
 
-  const handleSendMessage = async (message: string, history: Array<{id: string; role: string; content: string; timestamp: Date}>) => {
+  const handleSendMessage = async (message: string, history: Array<{role: string; content: string}>) => {
     const timer = performanceTimer.start('PolicyChat', 'AI Response')
     
     try {
