@@ -13,6 +13,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
 import { legalService } from '@/lib/legal/legal-service'
+import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
 import type { LegalDocument } from '@claimguardian/db'
 
@@ -53,10 +54,10 @@ export function LegalConsentForm({
       
       if (mode === 'update' && userId) {
         // Load only documents that need acceptance
-        docs = await legalService.getDocumentsNeedingAcceptance(userId)
+        docs = await legalServiceClientFix.getDocumentsNeedingAcceptance(userId)
       } else {
         // Load all active documents (for signup or view)
-        docs = await legalService.getActiveLegalDocuments()
+        docs = await legalServiceClientFix.getActiveLegalDocuments()
       }
 
       setDocuments(docs)

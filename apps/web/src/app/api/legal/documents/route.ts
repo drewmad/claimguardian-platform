@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
 
     // Add cache headers for better performance
     const response = NextResponse.json({ 
-      documents,
+      data: documents,
       count: documents.length,
       timestamp: new Date().toISOString()
     })

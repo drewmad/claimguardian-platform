@@ -34,7 +34,12 @@ class LegalServiceServer {
   async getActiveLegalDocuments(): Promise<LegalDocument[]> {
     try {
       const supabase = await createClient()
-      const { data, error } = await supabase.rpc('get_active_legal_documents')
+      const { data, error } = await supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('is_active', true)
+        .eq('requires_acceptance', true)
+        .order('type')
 
       if (error) {
         logger.error('Failed to fetch active legal documents', {}, error)
