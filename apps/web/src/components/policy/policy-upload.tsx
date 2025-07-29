@@ -30,7 +30,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
     progress: 0,
     message: ''
   })
-  const [uploadedDocument, setUploadedDocument] = useState<{ id: string; carrier_name?: string; policy_number?: string; effective_date?: string; expiration_date?: string } | null>(null)
+  const [uploadedDocument, setUploadedDocument] = useState<{ id: string; file_name?: string; carrier_name?: string; policy_number?: string; effective_date?: string; expiration_date?: string } | null>(null)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!user || acceptedFiles.length === 0) return
