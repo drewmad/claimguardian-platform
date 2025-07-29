@@ -10,6 +10,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import { createServiceRoleClient } from '@claimguardian/db'
 import { logger } from '@/lib/logger'
 import type { LegalDocument, UserConsent } from '@claimguardian/db'
 
@@ -33,7 +34,8 @@ class LegalServiceServer {
    */
   async getActiveLegalDocuments(): Promise<LegalDocument[]> {
     try {
-      const supabase = await createClient()
+      // Use service role client to bypass RLS for legal documents
+      const supabase = createServiceRoleClient()
       const { data, error } = await supabase
         .from('legal_documents')
         .select('*')
@@ -58,7 +60,8 @@ class LegalServiceServer {
    */
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
-      const supabase = await createClient()
+      // Use service role client to bypass RLS for legal documents
+      const supabase = createServiceRoleClient()
       
       // For now, return all active documents that require acceptance
       // In the future, this should check user's acceptance history
@@ -170,7 +173,8 @@ class LegalServiceServer {
    */
   async getLegalDocumentBySlug(slug: string): Promise<LegalDocument | null> {
     try {
-      const supabase = await createClient()
+      // Use service role client to bypass RLS for legal documents
+      const supabase = createServiceRoleClient()
       const { data, error } = await supabase
         .from('legal_documents')
         .select('*')
@@ -226,7 +230,8 @@ class LegalServiceServer {
    */
   async validateDocumentHash(documentId: string, expectedHash: string): Promise<boolean> {
     try {
-      const supabase = await createClient()
+      // Use service role client to bypass RLS for legal documents
+      const supabase = createServiceRoleClient()
       const { data, error } = await supabase
         .from('legal_documents')
         .select('sha256_hash')

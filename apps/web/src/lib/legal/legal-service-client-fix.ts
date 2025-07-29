@@ -31,7 +31,7 @@ class LegalServiceClientFix {
    */
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
-      const response = await fetch(`/api/legal/documents?needsAcceptance=true&userId=${userId}`)
+      const response = await fetch(`/api/legal/documents?mode=needed&userId=${userId}`)
       
       if (!response.ok) {
         const error = await response.json()
