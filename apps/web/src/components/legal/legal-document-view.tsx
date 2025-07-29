@@ -7,7 +7,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Print, ExternalLink } from 'lucide-react'
+import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Printer } from 'lucide-react'
 import Link from 'next/link'
 import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
@@ -137,7 +137,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
               className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-all"
               title="Print document"
             >
-              <Print className="w-5 h-5" />
+              <Printer className="w-5 h-5" />
             </button>
             {document.storage_url && (
               <button

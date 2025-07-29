@@ -15,7 +15,7 @@ import { useRouter } from 'next/navigation'
 import { ArrowLeft, Shield, FileText } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
-import { legalService } from '@/lib/legal/legal-service'
+import { recordLegalAcceptances } from '@/actions/legal'
 import { logger } from '@/lib/logger'
 import Link from 'next/link'
 
@@ -36,22 +36,8 @@ export default function LegalUpdatePage() {
     try {
       setSubmitting(true)
       
-      // Get client metadata
-      const metadata = legalService.getClientMetadata()
-      
-      // Prepare acceptance requests
-      const acceptances = acceptedDocuments.map(docId => ({
-        legal_id: docId,
-        ...metadata,
-        signature_data: {
-          timestamp: new Date().toISOString(),
-          method: 'update_page',
-          page_url: window.location.href
-        }
-      }))
-
-      // Record acceptances
-      await legalService.recordAcceptances(user.id, acceptances)
+      // Record acceptances using server action
+      await recordLegalAcceptances(user.id, acceptedDocuments)
 
       logger.track('legal_update_completed', {
         userId: user.id,

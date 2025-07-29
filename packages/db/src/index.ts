@@ -1,6 +1,5 @@
 // Re-export database types
 export * from './types/database.types'
-export * from './schema'
 
 // Export domain-specific types
 export * from './types/asset'

@@ -11,7 +11,21 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
-import type { LegalDocument, UserLegalAcceptance, AcceptanceRequest } from './legal-service'
+import type { LegalDocument, UserConsent } from '@claimguardian/db'
+
+// Define AcceptanceRequest interface
+interface AcceptanceRequest {
+  legal_id: string
+  ip_address?: string
+  user_agent?: string
+  signature_data?: {
+    timestamp: string
+    method?: string
+    page_url?: string
+    request_id?: string
+    user_agent_hash?: string | null
+  }
+}
 
 class LegalServiceServer {
   /**
@@ -96,7 +110,7 @@ class LegalServiceServer {
   /**
    * Get user's legal acceptance history
    */
-  async getUserAcceptanceHistory(userId: string): Promise<UserLegalAcceptance[]> {
+  async getUserAcceptanceHistory(userId: string): Promise<UserConsent[]> {
     try {
       const supabase = await createClient()
       const { data, error } = await supabase
@@ -172,7 +186,7 @@ class LegalServiceServer {
    */
   async generateComplianceReport(userId: string): Promise<{
     user_id: string
-    acceptances: UserLegalAcceptance[]
+    acceptances: UserConsent[]
     outstanding_documents: LegalDocument[]
     generated_at: string
   }> {

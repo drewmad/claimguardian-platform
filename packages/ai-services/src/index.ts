@@ -1,26 +1,33 @@
-export * from './types'
-export { DocumentExtractor } from './document-extractor'
-export { ClaimAssistant } from './claim-assistant'
-export { GeminiProvider } from './providers/gemini'
-export { OpenAIProvider } from './providers/openai'
+// Export existing types from types.ts for backward compatibility
+export * from './types';
 
-// Singleton instances for convenience
-import { DocumentExtractor } from './document-extractor'
-import { ClaimAssistant } from './claim-assistant'
+// Export new types from types/index.ts
+export * from './types/index';
 
-let documentExtractorInstance: DocumentExtractor | null = null
-let claimAssistantInstance: ClaimAssistant | null = null
+// Export providers
+export { AIProvider } from './providers/base';
+export { GeminiProvider } from './providers/gemini';
+export { OpenAIProvider } from './providers/openai';
 
-export function getDocumentExtractor(): DocumentExtractor {
-  if (!documentExtractorInstance) {
-    documentExtractorInstance = new DocumentExtractor()
-  }
-  return documentExtractorInstance
-}
+// Export services
+export { DocumentExtractor } from './document-extractor';
+export { ClaimAssistant } from './claim-assistant';
 
-export function getClaimAssistant(): ClaimAssistant {
-  if (!claimAssistantInstance) {
-    claimAssistantInstance = new ClaimAssistant()
-  }
-  return claimAssistantInstance
-}
+// Export new architecture components (as they're implemented)
+export { BaseAIProvider } from './providers/base.provider';
+export { GeminiProvider as NewGeminiProvider } from './providers/gemini.provider';
+
+// Export orchestrator and services
+export { AIOrchestrator } from './orchestrator/orchestrator';
+export { CacheManager } from './cache/cache.manager';
+export { SemanticCache } from './cache/semantic-cache';
+export { CostTracker } from './monitoring/cost-tracker';
+export { AIMonitoringDashboard } from './monitoring/dashboard';
+
+// Export main service
+export { AIService, aiService } from './service';
+
+// Export feature services
+export { ClarityService } from './features/clarity/clarity.service';
+export { SentinelService } from './features/sentinel/sentinel.service';
+export { DocumentCategorizerService } from './features/categorizer/document-categorizer.service';

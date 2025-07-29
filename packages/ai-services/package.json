@@ -14,7 +14,9 @@
     "@supabase/supabase-js": "^2.50.3",
     "openai": "^4.73.0",
     "p-retry": "^6.2.0",
-    "zod": "^4.0.10"
+    "zod": "^4.0.10",
+    "ioredis": "^5.4.1",
+    "dotenv": "^16.4.5"
   },
   "devDependencies": {
     "@claimguardian/config": "workspace:*",

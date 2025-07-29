@@ -53,8 +53,8 @@ class LegalService {
 
       // Filter documents that need update
       const docsNeedingUpdate = consentStatus
-        ?.filter(status => status.needs_update)
-        .map(status => status.document_type) || []
+        ?.filter((status: any) => status.needs_update)
+        .map((status: any) => status.document_type) || []
 
       if (docsNeedingUpdate.length === 0) return []
 
@@ -382,7 +382,7 @@ class LegalService {
         }
       }
     } catch (error) {
-      logger.warn('Failed to get location data', {}, error as Error)
+      logger.warn('Failed to get location data', {})
       // Fallback to just IP
       return {
         ip: 'unknown'

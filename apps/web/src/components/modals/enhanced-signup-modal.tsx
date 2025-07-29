@@ -15,7 +15,7 @@ import { authService } from '@/lib/auth/auth-service'
 import { legalService } from '@/lib/legal/legal-service'
 import { useRateLimit } from '@/hooks/use-rate-limit'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
-import type { SignUpData } from '@claimguardian/db'
+import type { SignupData } from '@claimguardian/db'
 
 export function EnhancedSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -157,7 +157,7 @@ export function EnhancedSignupModal() {
     setLoading(true)
     try {
       // Prepare signup data with all tracking info
-      const signupData: SignUpData = {
+      const signupData: SignupData = {
         ...formData,
         acceptedDocuments,
         ...trackingData
@@ -166,20 +166,8 @@ export function EnhancedSignupModal() {
       const success = await signUp(signupData)
       
       if (success) {
-        // Record legal consents
-        try {
-          await legalService.recordMultipleConsents({
-            userId: success.id,
-            documentIds: acceptedDocuments,
-            ipAddress: trackingData.ipAddress || 'unknown',
-            userAgent: trackingData.userAgent,
-            deviceFingerprint: trackingData.deviceFingerprint,
-            geolocation: trackingData.geolocation,
-            consentMethod: 'signup'
-          })
-        } catch (consentError) {
-          logger.error('Failed to record consent', {}, consentError as Error)
-        }
+        // Legal consents are recorded server-side during signup
+        // No need to record them separately here
         
         setIsSubmitted(true)
         setTimeout(() => {
