@@ -18,15 +18,6 @@ import { ReportGeneratorProps } from '@/components/reports/report-generator'
 import { DropzoneOptions } from 'react-dropzone'
 import { MapProps } from '@/components/maps/map'
 
-// Loading components for different types
-const LoadingCard = () => (
-  <div className="animate-pulse bg-gray-800 rounded-lg h-64 w-full" />
-)
-
-const LoadingChat = () => (
-  <div className="animate-pulse bg-gray-800 rounded-lg h-96 w-full" />
-)
-
 // AI Components
 export const LazyImageUploadAnalyzer = dynamic<ImageUploadAnalyzerProps>(
   () => import('@/components/ai/image-upload-analyzer').then(mod => ({ default: mod.ImageUploadAnalyzer })),
