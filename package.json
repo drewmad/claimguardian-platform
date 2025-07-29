@@ -38,7 +38,13 @@
     "husky": "^9.1.7",
     "prettier": "^3.6.2",
     "turbo": "^2.5.4",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@vitest/ui": "^2.1.8",
+    "msw": "^2.7.0",
+    "vitest": "^2.1.8"
   },
   "workspaces": [
     "apps/*",

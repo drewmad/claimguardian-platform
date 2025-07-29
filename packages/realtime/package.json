@@ -1,0 +1,27 @@
+{
+  "name": "@claimguardian/realtime",
+  "version": "1.0.0",
+  "description": "Real-time features and subscriptions for ClaimGuardian",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "lint": "eslint src",
+    "test": "vitest"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.50.3",
+    "eventemitter3": "^5.0.1"
+  },
+  "peerDependencies": {
+    "react": "^18.0.0"
+  },
+  "devDependencies": {
+    "@claimguardian/config": "workspace:*",
+    "@types/node": "^24.0.10",
+    "@types/react": "18.3.23",
+    "react": "^18.2.0",
+    "typescript": "^5.8.3",
+    "vitest": "^2.1.8"
+  }
+}

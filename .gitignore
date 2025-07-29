@@ -246,6 +246,32 @@ docs/florida-platform/FLOIR_DEPLOYMENT_GUIDE.md
 docs/florida-platform/FLORIDA_DATA_PLATFORM_SUMMARY.md
 docs/florida-platform/FLORIDA_PLATFORM_SETUP.md
 
+# ==============================================================================
+# NEW PACKAGE BUILD OUTPUTS
+# ==============================================================================
+# Package dist directories
+packages/*/dist/
+packages/*/build/
+packages/*/.turbo/
+
+# Vitest coverage
+packages/*/coverage/
+.vitest/
+
+# MSW generated files
+public/mockServiceWorker.js
+
+# Performance monitoring artifacts
+.monitoring/
+performance-reports/
+
+# Agent OS workspace
+.agent-os/
+
+# Example/demo files
+apps/web/src/app/example-*.tsx
+apps/web/src/app/demo-*.tsx
+
 # Data directories
 data/
 CleanedSplit/
