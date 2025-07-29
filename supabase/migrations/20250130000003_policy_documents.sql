@@ -140,10 +140,8 @@ BEGIN
 END;
 $$;
 
--- Add policy reference to damage assessments
-ALTER TABLE public.property_damage
-ADD COLUMN IF NOT EXISTS policy_document_id uuid REFERENCES public.policy_documents_extended(id),
-ADD COLUMN IF NOT EXISTS coverage_analysis jsonb DEFAULT '{}';
+-- Note: property_damage table doesn't exist yet, skipping this ALTER
+-- This can be added later when the property_damage table is created
 
 -- Create view for active policies
 CREATE OR REPLACE VIEW public.active_policy_documents AS
