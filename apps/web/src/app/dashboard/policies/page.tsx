@@ -11,7 +11,15 @@ import {
   AlertCircle, CheckCircle, Plus, Eye, Download,
   Home, Droplets, Wind, AlertTriangle
 } from 'lucide-react'
-import { PolicyUpload } from '@/components/policy/policy-upload'
+import dynamic from 'next/dynamic'
+
+const PolicyUpload = dynamic(
+  () => import('@/components/policy/policy-upload').then(mod => ({ default: mod.PolicyUpload })),
+  { 
+    ssr: false,
+    loading: () => <div className="text-gray-400">Loading upload component...</div>
+  }
+)
 import { usePolicyData, formatCoverage, formatDeductible, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
 import { usePropertyStore } from '@/stores/property-store'
 import { format } from 'date-fns'

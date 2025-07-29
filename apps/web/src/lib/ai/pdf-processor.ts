@@ -1,8 +1,5 @@
 // PDF processing utilities for AI analysis
-import * as pdfjs from 'pdfjs-dist'
-
-// Configure PDF.js worker
-pdfjs.GlobalWorkerOptions.workerSrc = `https://esm.sh/pdfjs-dist@4.5.136/build/pdf.worker.mjs`
+import { getPdfLib } from './pdf-client'
 
 export interface ProcessedPDF {
   text: string
@@ -24,6 +21,9 @@ export interface PageContent {
 }
 
 export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF> {
+  // Get PDF.js library (client-side only)
+  const pdfjs = await getPdfLib()
+  
   try {
     const data = file instanceof File ? await file.arrayBuffer() : file
     const pdf = await pdfjs.getDocument({ data }).promise
