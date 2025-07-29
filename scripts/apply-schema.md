@@ -9,7 +9,7 @@
 ### Step 1: Apply Complete Schema v1.1
 Copy and paste the contents of:
 ```
-supabase/migrations/20250130_complete_schema_v1.1.sql
+supabase/migrations/20250130000001_complete_schema_v1.sql
 ```
 
 This creates all the core tables with real Florida county data.
@@ -17,7 +17,7 @@ This creates all the core tables with real Florida county data.
 ### Step 2: Apply User Tracking Tables
 Copy and paste the contents of:
 ```
-supabase/migrations/20250130_user_tracking.sql
+supabase/migrations/20250130000002_user_tracking.sql
 ```
 
 This adds user tracking and analytics tables.
@@ -25,7 +25,7 @@ This adds user tracking and analytics tables.
 ### Step 3: Apply Policy Documents Tables
 Copy and paste the contents of:
 ```
-supabase/migrations/20250130_policy_documents.sql
+supabase/migrations/20250130000003_policy_documents.sql
 ```
 
 This adds policy document storage and AI extraction tables.

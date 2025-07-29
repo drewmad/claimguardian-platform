@@ -1,6 +1,81 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Claim, ClaimEvidence, ClaimStatusHistory, ClaimContact, ClaimPayment, ClaimLineItem, ClaimStatus, SettlementOffer, ClaimAppeal } from '@claimguardian/db'
+import type { Database } from '@claimguardian/db'
+
+// Database types
+type DbClaim = Database['public']['Tables']['claims']['Row']
+type ClaimStatus = Database['public']['Enums']['claim_status_enum']
+
+// Extended types for the store
+interface ClaimEvidence {
+  id: string
+  type: 'photo' | 'document' | 'video' | 'receipt' | 'estimate' | 'report'
+  name: string
+  description: string
+  url: string
+  uploadDate: string
+}
+
+interface ClaimStatusHistory {
+  id: string
+  date: string
+  status: ClaimStatus
+  notes?: string
+}
+
+interface ClaimContact {
+  id: string
+  role: 'Adjuster' | 'Contractor' | 'Attorney' | 'Public Adjuster' | 'Other'
+  name: string
+  company?: string
+  phone?: string
+  email?: string
+}
+
+interface ClaimPayment {
+  id: string
+  date: string
+  amount: number
+  type: 'Initial' | 'Supplemental' | 'Final' | 'Depreciation Recovery'
+  checkNumber?: string
+  description?: string
+}
+
+interface ClaimLineItem {
+  id: string
+  category: string
+  item: string
+  description: string
+  quantity: number
+  unitPrice: number
+  totalPrice: number
+  status: 'pending' | 'approved' | 'denied' | 'partially_approved'
+  rcv?: number
+}
+
+interface SettlementOffer {
+  id: string
+  claimId: string
+  offerAmount: number
+}
+
+interface ClaimAppeal {
+  id: string
+  claimId: string
+}
+
+// Store claim type extends database claim with additional fields
+interface Claim extends DbClaim {
+  evidence: ClaimEvidence[]
+  statusHistory: ClaimStatusHistory[]
+  lineItems?: ClaimLineItem[]
+  contacts?: ClaimContact[]
+  payments?: ClaimPayment[]
+  paidAmount?: number
+  estimatedLoss?: number
+  claimedAmount?: number
+  closed_date?: string | null
+}
 
 interface ClaimState {
   // Claims
@@ -70,10 +145,10 @@ export const useClaimStore = create<ClaimState>()(
       
       getClaimById: (id) => get().claims.find(c => c.id === id),
       
-      getClaimsByPropertyId: (propertyId) => get().claims.filter(c => c.assetId === propertyId),
+      getClaimsByPropertyId: (propertyId) => get().claims.filter(c => c.property_id === propertyId),
       
       getActiveClaims: () => get().claims.filter(c => 
-        !['Closed', 'Denied', 'Withdrawn'].includes(c.status)
+        !['closed', 'denied'].includes(c.status)
       ),
       
       setSelectedClaim: (id) => set({ selectedClaimId: id }),
@@ -84,13 +159,13 @@ export const useClaimStore = create<ClaimState>()(
         const newClaim: Claim = {
           ...claimData,
           id,
-          createdAt: now,
-          updatedAt: now,
+          created_at: now,
+          updated_at: now,
           evidence: [],
           statusHistory: [{
             id: generateId(),
             date: now,
-            status: claimData.status || 'Draft',
+            status: claimData.status || 'draft',
             notes: 'Claim created'
           }],
           lineItems: [],
@@ -108,7 +183,7 @@ export const useClaimStore = create<ClaimState>()(
       updateClaim: (id, updates) => {
         set(state => ({
           claims: state.claims.map(c =>
-            c.id === id ? { ...c, ...updates, updatedAt: new Date().toISOString() } : c
+            c.id === id ? { ...c, ...updates, updated_at: new Date().toISOString() } : c
           )
         }))
       },
@@ -126,7 +201,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, evidence: [...c.evidence, evidenceWithId], updatedAt: new Date().toISOString() }
+              ? { ...c, evidence: [...c.evidence, evidenceWithId], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -141,7 +216,7 @@ export const useClaimStore = create<ClaimState>()(
                   evidence: c.evidence.map(e =>
                     e.id === evidenceId ? { ...e, ...updates } : e
                   ),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -155,7 +230,7 @@ export const useClaimStore = create<ClaimState>()(
               ? {
                   ...c,
                   evidence: c.evidence.filter(e => e.id !== evidenceId),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -167,7 +242,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, evidence: [...c.evidence, ...evidenceWithIds], updatedAt: new Date().toISOString() }
+              ? { ...c, evidence: [...c.evidence, ...evidenceWithIds], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -191,8 +266,8 @@ export const useClaimStore = create<ClaimState>()(
                   status,
                   statusHistory: [...c.statusHistory, statusHistory],
                   updatedAt: now,
-                  filedDate: status === 'Filed' && !c.filedDate ? now : c.filedDate,
-                  closedDate: ['Closed', 'Denied', 'Withdrawn'].includes(status) ? now : c.closedDate
+                  date_reported: status === 'submitted' && !c.date_reported ? now : c.date_reported,
+                  closed_date: ['closed', 'denied'].includes(status) ? now : c.closed_date
                 }
               : c
           )
@@ -204,7 +279,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, statusHistory: [...c.statusHistory, historyWithId], updatedAt: new Date().toISOString() }
+              ? { ...c, statusHistory: [...c.statusHistory, historyWithId], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -216,7 +291,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, contacts: [...(c.contacts || []), contactWithId], updatedAt: new Date().toISOString() }
+              ? { ...c, contacts: [...(c.contacts || []), contactWithId], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -231,7 +306,7 @@ export const useClaimStore = create<ClaimState>()(
                   contacts: (c.contacts || []).map(contact =>
                     contact.id === contactId ? { ...contact, ...updates } : contact
                   ),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -245,7 +320,7 @@ export const useClaimStore = create<ClaimState>()(
               ? {
                   ...c,
                   contacts: (c.contacts || []).filter(contact => contact.id !== contactId),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -258,7 +333,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, lineItems: [...(c.lineItems || []), itemWithId], updatedAt: new Date().toISOString() }
+              ? { ...c, lineItems: [...(c.lineItems || []), itemWithId], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -273,7 +348,7 @@ export const useClaimStore = create<ClaimState>()(
                   lineItems: (c.lineItems || []).map(item =>
                     item.id === itemId ? { ...item, ...updates } : item
                   ),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -287,7 +362,7 @@ export const useClaimStore = create<ClaimState>()(
               ? {
                   ...c,
                   lineItems: (c.lineItems || []).filter(item => item.id !== itemId),
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -299,7 +374,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, lineItems: [...(c.lineItems || []), ...itemsWithIds], updatedAt: new Date().toISOString() }
+              ? { ...c, lineItems: [...(c.lineItems || []), ...itemsWithIds], updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -315,7 +390,7 @@ export const useClaimStore = create<ClaimState>()(
                   ...c,
                   payments: [...(c.payments || []), paymentWithId],
                   paidAmount: (c.paidAmount || 0) + payment.amount,
-                  updatedAt: new Date().toISOString()
+                  updated_at: new Date().toISOString()
                 }
               : c
           )
@@ -336,7 +411,7 @@ export const useClaimStore = create<ClaimState>()(
                 ...c,
                 payments: updatedPayments,
                 paidAmount,
-                updatedAt: new Date().toISOString()
+                updated_at: new Date().toISOString()
               }
             }
             return c
@@ -355,7 +430,7 @@ export const useClaimStore = create<ClaimState>()(
                 ...c,
                 payments: updatedPayments,
                 paidAmount,
-                updatedAt: new Date().toISOString()
+                updated_at: new Date().toISOString()
               }
             }
             return c
@@ -370,7 +445,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, settlementAmount: offer.offerAmount, updatedAt: new Date().toISOString() }
+              ? { ...c, settlementAmount: offer.offerAmount, updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -381,7 +456,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, updatedAt: new Date().toISOString() }
+              ? { ...c, updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -394,7 +469,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, status: 'Appealed' as ClaimStatus, updatedAt: new Date().toISOString() }
+              ? { ...c, status: 'under_review' as ClaimStatus, updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -405,7 +480,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, updatedAt: new Date().toISOString() }
+              ? { ...c, updated_at: new Date().toISOString() }
               : c
           )
         }))
@@ -421,7 +496,7 @@ export const useClaimStore = create<ClaimState>()(
         const estimatedLoss = claim.estimatedLoss || 0
         const claimedAmount = claim.claimedAmount || lineItems.reduce((sum, item) => sum + item.totalPrice, 0)
         const approvedAmount = lineItems
-          .filter(item => item.status === 'Approved' || item.status === 'Partially Approved')
+          .filter(item => item.status === 'approved' || item.status === 'partially_approved')
           .reduce((sum, item) => sum + (item.rcv || item.totalPrice), 0)
         const paidAmount = claim.paidAmount || 0
         

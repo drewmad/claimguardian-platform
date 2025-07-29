@@ -10,12 +10,19 @@ interface PolicyDocument {
   effective_date: string | null
   expiration_date: string | null
   dwelling_coverage: number | null
+  other_structures_coverage: number | null
+  personal_property_coverage: number | null
+  loss_of_use_coverage: number | null
+  liability_coverage: number | null
+  medical_payments_coverage: number | null
   standard_deductible: number | null
   hurricane_deductible: string | null
+  flood_deductible: number | null
   extraction_status: string
   special_coverages: any[]
   exclusions: string[]
   endorsements: any[]
+  created_at: string
 }
 
 interface UsePolicyDataReturn {

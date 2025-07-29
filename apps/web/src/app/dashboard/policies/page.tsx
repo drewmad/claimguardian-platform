@@ -71,7 +71,9 @@ function PoliciesContent() {
                     >
                       <Home className="w-5 h-5 mb-2" />
                       <p className="font-medium">{property.name}</p>
-                      <p className="text-sm opacity-75">{property.address}</p>
+                      <p className="text-sm opacity-75">
+                        {property.address?.street || property.address?.addressLine1 || 'No address'}
+                      </p>
                     </button>
                   ))}
                 </div>
@@ -200,11 +202,11 @@ function PoliciesContent() {
 
                 {/* Action Buttons */}
                 <div className="flex gap-4 pt-4">
-                  <Button variant="outline" className="border-gray-600 text-gray-300">
+                  <Button variant="secondary" className="border-gray-600 text-gray-300">
                     <Eye className="w-4 h-4 mr-2" />
                     View Full Policy
                   </Button>
-                  <Button variant="outline" className="border-gray-600 text-gray-300">
+                  <Button variant="secondary" className="border-gray-600 text-gray-300">
                     <Download className="w-4 h-4 mr-2" />
                     Download PDF
                   </Button>
