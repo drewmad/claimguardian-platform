@@ -379,29 +379,30 @@ export function SignupModal() {
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Confirm Password</label>
+          <div className="group">
+            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors">Confirm Password</label>
             <div className="relative">
               <input
                 type={showConfirmPassword ? 'text' : 'password'}
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10"
+                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 transition-all duration-200 hover:bg-slate-700/70"
+                placeholder="••••••••"
                 required
               />
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white"
+                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white transition-colors"
               >
                 {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Phone Number</label>
+          <div className="group">
+            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors">Phone Number</label>
             <input
               type="tel"
               name="phone"
@@ -410,7 +411,7 @@ export function SignupModal() {
                 const digits = e.target.value.replace(/\D/g, '')
                 handleChange({ ...e, target: { ...e.target, name: 'phone', value: digits } })
               }}
-              className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
               placeholder="(555) 123-4567"
               required
             />

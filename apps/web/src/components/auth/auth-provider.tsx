@@ -37,6 +37,18 @@ interface SignUpData {
   firstName?: string
   lastName?: string
   phone?: string
+  // Legal compliance
+  acceptedDocuments?: string[]
+  gdprConsent?: boolean
+  marketingConsent?: boolean
+  dataProcessingConsent?: boolean
+  // Tracking data
+  ipAddress?: string
+  userAgent?: string
+  deviceFingerprint?: string
+  geolocation?: any
+  referrer?: string
+  utmParams?: any
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

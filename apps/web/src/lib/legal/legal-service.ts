@@ -1,64 +1,41 @@
 /**
  * @fileMetadata
- * @purpose Legal documents and consent tracking service
+ * @purpose Enhanced legal service for comprehensive consent tracking
  * @owner legal-team
- * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
- * @exports ["legalService"]
- * @complexity medium
- * @tags ["legal", "compliance", "consent", "gdpr"]
  * @status active
  */
 
 import { createClient } from '@/lib/supabase/client'
+import type {
+  LegalDocument,
+  UserConsent,
+  ConsentStatus,
+  LegalDocumentType,
+  ConsentActionType,
+  Geolocation
+} from '@claimguardian/db'
 import { logger } from '@/lib/logger'
-
-export interface LegalDocument {
-  id: string
-  slug: string
-  title: string
-  version: string
-  effective_date: string
-  sha256_hash: string
-  storage_url: string
-  is_active: boolean
-  created_at: string
-  updated_at: string
-}
-
-export interface UserLegalAcceptance {
-  user_id: string
-  legal_id: string
-  accepted_at: string
-  ip_address: string
-  user_agent: string
-  signature_data?: Record<string, unknown>
-  revoked_at?: string
-}
-
-export interface AcceptanceRequest {
-  legal_id: string
-  ip_address?: string
-  user_agent?: string
-  signature_data?: Record<string, unknown>
-}
 
 class LegalService {
   private supabase = createClient()
+
   /**
    * Get all active legal documents
    */
   async getActiveLegalDocuments(): Promise<LegalDocument[]> {
     try {
-      const { data, error } = await this.supabase.rpc('get_active_legal_documents')
+      const { data, error } = await this.supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('is_active', true)
+        .eq('requires_acceptance', true)
+        .order('type')
 
-      if (error) {
-        logger.error('Failed to fetch active legal documents', {}, error)
-        throw error
-      }
+      if (error) throw error
 
       return data || []
     } catch (error) {
-      logger.error('Error fetching active legal documents', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to fetch legal documents', {}, error as Error)
       throw error
     }
   }
@@ -68,108 +45,187 @@ class LegalService {
    */
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
-      const { data, error } = await this.supabase.rpc('needs_reaccept', { uid: userId })
+      // Get user's consent status
+      const { data: consentStatus, error: statusError } = await this.supabase
+        .rpc('get_user_consent_status', { p_user_id: userId })
 
-      if (error) {
-        logger.error('Failed to fetch documents needing acceptance', { userId }, error instanceof Error ? error : new Error(String(error)))
-        throw error
-      }
+      if (statusError) throw statusError
+
+      // Filter documents that need update
+      const docsNeedingUpdate = consentStatus
+        ?.filter(status => status.needs_update)
+        .map(status => status.document_type) || []
+
+      if (docsNeedingUpdate.length === 0) return []
+
+      // Fetch the actual documents
+      const { data, error } = await this.supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('is_active', true)
+        .in('type', docsNeedingUpdate)
+
+      if (error) throw error
 
       return data || []
     } catch (error) {
-      logger.error('Error fetching documents needing acceptance', { userId }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to fetch documents needing acceptance', { userId }, error as Error)
       throw error
     }
   }
 
   /**
-   * Record user acceptance of legal documents
+   * Get user's consent status for all document types
    */
-  async recordAcceptances(
-    userId: string,
-    acceptances: AcceptanceRequest[]
-  ): Promise<void> {
+  async getUserConsentStatus(userId: string): Promise<ConsentStatus[]> {
     try {
-      const acceptancePromises = acceptances.map(acceptance =>
-        this.supabase.rpc('record_legal_acceptance', {
+      const { data, error } = await this.supabase
+        .rpc('get_user_consent_status', { p_user_id: userId })
+
+      if (error) throw error
+
+      return data || []
+    } catch (error) {
+      logger.error('Failed to fetch user consent status', { userId }, error as Error)
+      throw error
+    }
+  }
+
+  /**
+   * Record user consent with full tracking data
+   */
+  async recordConsent({
+    userId,
+    documentId,
+    action,
+    ipAddress,
+    userAgent,
+    deviceFingerprint,
+    geolocation,
+    sessionId,
+    consentMethod,
+    referrerUrl,
+    pageUrl
+  }: {
+    userId: string
+    documentId: string
+    action: ConsentActionType
+    ipAddress: string
+    userAgent?: string
+    deviceFingerprint?: string
+    geolocation?: Geolocation
+    sessionId?: string
+    consentMethod?: string
+    referrerUrl?: string
+    pageUrl?: string
+  }): Promise<string> {
+    try {
+      const metadata = {
+        geolocation,
+        sessionId,
+        consentMethod,
+        referrerUrl,
+        pageUrl,
+        timestamp: new Date().toISOString()
+      }
+
+      const { data, error } = await this.supabase
+        .rpc('record_user_consent', {
           p_user_id: userId,
-          p_legal_id: acceptance.legal_id,
-          p_ip_address: acceptance.ip_address,
-          p_user_agent: acceptance.user_agent,
-          p_signature_data: acceptance.signature_data || null
+          p_document_id: documentId,
+          p_action: action,
+          p_ip_address: ipAddress,
+          p_user_agent: userAgent,
+          p_device_fingerprint: deviceFingerprint,
+          p_metadata: metadata
+        })
+
+      if (error) throw error
+
+      logger.track('legal_consent_recorded', {
+        userId,
+        documentId,
+        action,
+        ipAddress
+      })
+
+      return data
+    } catch (error) {
+      logger.error('Failed to record consent', { userId, documentId }, error as Error)
+      throw error
+    }
+  }
+
+  /**
+   * Record multiple consents at once (e.g., during signup)
+   */
+  async recordMultipleConsents({
+    userId,
+    documentIds,
+    ipAddress,
+    userAgent,
+    deviceFingerprint,
+    geolocation,
+    consentMethod = 'signup'
+  }: {
+    userId: string
+    documentIds: string[]
+    ipAddress: string
+    userAgent?: string
+    deviceFingerprint?: string
+    geolocation?: Geolocation
+    consentMethod?: string
+  }): Promise<void> {
+    try {
+      const promises = documentIds.map(documentId =>
+        this.recordConsent({
+          userId,
+          documentId,
+          action: 'accepted',
+          ipAddress,
+          userAgent,
+          deviceFingerprint,
+          geolocation,
+          consentMethod
         })
       )
 
-      const results = await Promise.all(acceptancePromises)
-      
-      // Check for any errors
-      const errors = results.filter(result => result.error)
-      if (errors.length > 0) {
-        logger.error('Failed to record some acceptances', { errors })
-        throw new Error('Failed to record legal acceptances')
-      }
+      await Promise.all(promises)
 
-      logger.info('Legal acceptances recorded successfully', {
+      logger.track('multiple_consents_recorded', {
         userId,
-        count: acceptances.length,
-        documents: acceptances.map(a => a.legal_id)
+        documentCount: documentIds.length,
+        consentMethod
       })
     } catch (error) {
-      logger.error('Error recording legal acceptances', { userId }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to record multiple consents', { userId }, error as Error)
       throw error
     }
   }
 
   /**
-   * Get user's legal acceptance history
+   * Get user's consent history
    */
-  async getUserAcceptanceHistory(userId: string): Promise<UserLegalAcceptance[]> {
+  async getUserConsentHistory(userId: string): Promise<UserConsent[]> {
     try {
       const { data, error } = await this.supabase
-        .from('user_legal_acceptance')
+        .from('user_consents')
         .select(`
           *,
           legal_documents (
-            slug,
-            title,
+            type,
             version,
-            effective_date
+            title
           )
         `)
         .eq('user_id', userId)
-        .order('accepted_at', { ascending: false })
+        .order('consented_at', { ascending: false })
 
-      if (error) {
-        logger.error('Failed to fetch user acceptance history', {}, error instanceof Error ? error : new Error(String(error)))
-        throw error
-      }
+      if (error) throw error
 
       return data || []
     } catch (error) {
-      logger.error('Error fetching user acceptance history', { userId }, error instanceof Error ? error : new Error(String(error)))
-      throw error
-    }
-  }
-
-  /**
-   * Revoke user consent (GDPR compliance)
-   */
-  async revokeConsent(userId: string, legalId: string): Promise<void> {
-    try {
-      const { error } = await this.supabase
-        .from('user_legal_acceptance')
-        .update({ revoked_at: new Date().toISOString() })
-        .eq('user_id', userId)
-        .eq('legal_id', legalId)
-
-      if (error) {
-        logger.error('Failed to revoke consent', {}, error instanceof Error ? error : new Error(String(error)))
-        throw error
-      }
-
-      logger.info('Consent revoked successfully', { userId, legalId })
-    } catch (error) {
-      logger.error('Error revoking consent', { userId, legalId }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to fetch consent history', { userId }, error as Error)
       throw error
     }
   }
@@ -177,13 +233,160 @@ class LegalService {
   /**
    * Check if user has accepted all required documents
    */
-  async hasUserAcceptedAllRequired(userId: string): Promise<boolean> {
+  async hasAcceptedAllRequiredDocuments(userId: string): Promise<boolean> {
     try {
-      const outstandingDocs = await this.getDocumentsNeedingAcceptance(userId)
-      return outstandingDocs.length === 0
+      const consentStatus = await this.getUserConsentStatus(userId)
+      
+      return consentStatus.every(status => 
+        status.is_accepted && !status.needs_update
+      )
     } catch (error) {
-      logger.error('Error checking user acceptance status', { userId }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to check document acceptance', { userId }, error as Error)
       return false
+    }
+  }
+
+  /**
+   * Get specific document by type
+   */
+  async getDocumentByType(type: LegalDocumentType): Promise<LegalDocument | null> {
+    try {
+      const { data, error } = await this.supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('type', type)
+        .eq('is_active', true)
+        .single()
+
+      if (error && error.code !== 'PGRST116') throw error
+
+      return data
+    } catch (error) {
+      logger.error('Failed to fetch document by type', { type }, error as Error)
+      throw error
+    }
+  }
+
+  /**
+   * Validate document hash for integrity
+   */
+  async validateDocumentHash(documentId: string, hash: string): Promise<boolean> {
+    try {
+      const { data, error } = await this.supabase
+        .from('legal_documents')
+        .select('sha256_hash')
+        .eq('id', documentId)
+        .single()
+
+      if (error) throw error
+
+      return data?.sha256_hash === hash
+    } catch (error) {
+      logger.error('Failed to validate document hash', { documentId }, error as Error)
+      return false
+    }
+  }
+
+  /**
+   * Get device fingerprint information
+   */
+  async getDeviceInfo(): Promise<{
+    fingerprint: string
+    userAgent: string
+    timezone: string
+    language: string
+    platform: string
+    screenResolution: string
+  }> {
+    // This would typically use a library like FingerprintJS
+    // For now, we'll create a basic fingerprint
+    const nav = navigator
+    const screen = window.screen
+    
+    const fingerprint = await this.generateFingerprint()
+    
+    return {
+      fingerprint,
+      userAgent: nav.userAgent,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: nav.language,
+      platform: nav.platform,
+      screenResolution: `${screen.width}x${screen.height}`
+    }
+  }
+
+  /**
+   * Generate device fingerprint
+   */
+  private async generateFingerprint(): Promise<string> {
+    // Basic fingerprinting - in production, use FingerprintJS
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    
+    if (ctx) {
+      ctx.textBaseline = 'top'
+      ctx.font = '14px "Arial"'
+      ctx.textBaseline = 'alphabetic'
+      ctx.fillStyle = '#f60'
+      ctx.fillRect(125, 1, 62, 20)
+      ctx.fillStyle = '#069'
+      ctx.fillText('ClaimGuardian', 2, 15)
+      ctx.fillStyle = 'rgba(102, 204, 0, 0.7)'
+      ctx.fillText('ClaimGuardian', 4, 17)
+    }
+    
+    const canvasData = canvas.toDataURL()
+    
+    // Combine with other browser properties
+    const fingerPrintData = [
+      navigator.userAgent,
+      navigator.language,
+      screen.colorDepth,
+      screen.width + 'x' + screen.height,
+      new Date().getTimezoneOffset(),
+      canvasData
+    ].join('|')
+    
+    // Hash the fingerprint data
+    const msgUint8 = new TextEncoder().encode(fingerPrintData)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+    
+    return hashHex
+  }
+
+  /**
+   * Get user's IP and geolocation
+   */
+  async getUserLocationData(): Promise<{
+    ip: string
+    geolocation?: Geolocation
+  }> {
+    try {
+      // Use a geolocation API service
+      const response = await fetch('https://ipapi.co/json/')
+      const data = await response.json()
+      
+      return {
+        ip: data.ip,
+        geolocation: {
+          country: data.country_name,
+          country_code: data.country_code,
+          region: data.region,
+          city: data.city,
+          postal_code: data.postal,
+          lat: data.latitude,
+          lon: data.longitude,
+          timezone: data.timezone
+        }
+      }
+    } catch (error) {
+      logger.warn('Failed to get location data', {}, error as Error)
+      // Fallback to just IP
+      return {
+        ip: 'unknown'
+      }
     }
   }
 
@@ -199,18 +402,11 @@ class LegalService {
         .eq('is_active', true)
         .single()
 
-      if (error) {
-        if (error.code === 'PGRST116') {
-          // No rows returned
-          return null
-        }
-        logger.error('Failed to fetch legal document by slug', {}, error instanceof Error ? error : new Error(String(error)))
-        throw error
-      }
+      if (error && error.code !== 'PGRST116') throw error
 
       return data
     } catch (error) {
-      logger.error('Error fetching legal document by slug', { slug }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to fetch document by slug', { slug }, error as Error)
       throw error
     }
   }
@@ -220,89 +416,26 @@ class LegalService {
    */
   async generateComplianceReport(userId: string): Promise<{
     user_id: string
-    acceptances: UserLegalAcceptance[]
-    outstanding_documents: LegalDocument[]
+    consent_status: ConsentStatus[]
+    consent_history: UserConsent[]
     generated_at: string
   }> {
     try {
-      const [acceptances, outstanding] = await Promise.all([
-        this.getUserAcceptanceHistory(userId),
-        this.getDocumentsNeedingAcceptance(userId)
+      const [consentStatus, consentHistory] = await Promise.all([
+        this.getUserConsentStatus(userId),
+        this.getUserConsentHistory(userId)
       ])
 
       return {
         user_id: userId,
-        acceptances,
-        outstanding_documents: outstanding,
+        consent_status: consentStatus,
+        consent_history: consentHistory,
         generated_at: new Date().toISOString()
       }
     } catch (error) {
-      logger.error('Error generating compliance report', { userId }, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Error generating compliance report', { userId }, error as Error)
       throw error
     }
-  }
-
-  /**
-   * Validate document hash (for integrity verification)
-   */
-  async validateDocumentHash(documentId: string, expectedHash: string): Promise<boolean> {
-    try {
-      const { data, error } = await this.supabase
-        .from('legal_documents')
-        .select('sha256_hash')
-        .eq('id', documentId)
-        .single()
-
-      if (error || !data) {
-        logger.error('Failed to fetch document for hash validation', {}, error instanceof Error ? error : new Error(String(error)))
-        return false
-      }
-
-      const isValid = data.sha256_hash === expectedHash
-      
-      if (!isValid) {
-        logger.warn('Document hash validation failed', {
-          documentId,
-          expected: expectedHash,
-          actual: data.sha256_hash
-        })
-      }
-
-      return isValid
-    } catch (error) {
-      logger.error('Error validating document hash', { documentId }, error instanceof Error ? error : new Error(String(error)))
-      return false
-    }
-  }
-
-  /**
-   * Get client IP and user agent for acceptance recording
-   */
-  getClientMetadata(request?: Request): {
-    ip_address?: string
-    user_agent?: string
-  } {
-    if (typeof window !== 'undefined') {
-      // Client side - limited info
-      return {
-        user_agent: navigator.userAgent
-      }
-    }
-
-    if (request) {
-      // Server side - full info
-      const ip = request.headers.get('x-forwarded-for') || 
-                 request.headers.get('x-real-ip') ||
-                 'unknown'
-      const userAgent = request.headers.get('user-agent') || 'unknown'
-
-      return {
-        ip_address: ip,
-        user_agent: userAgent
-      }
-    }
-
-    return {}
   }
 }
 

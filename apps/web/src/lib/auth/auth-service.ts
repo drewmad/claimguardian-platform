@@ -35,6 +35,24 @@ interface SignUpData {
   firstName?: string
   lastName?: string
   phone?: string
+  // Legal compliance
+  acceptedDocuments?: string[]
+  gdprConsent?: boolean
+  marketingConsent?: boolean
+  dataProcessingConsent?: boolean
+  // Tracking data
+  ipAddress?: string
+  userAgent?: string
+  deviceFingerprint?: string
+  geolocation?: any
+  referrer?: string
+  utmParams?: {
+    source?: string
+    medium?: string
+    campaign?: string
+    term?: string
+    content?: string
+  }
 }
 
 interface SignInData {
@@ -70,6 +88,19 @@ class AuthService {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.phone,
+            // Legal compliance
+            acceptedDocuments: data.acceptedDocuments,
+            gdprConsent: data.gdprConsent,
+            marketingConsent: data.marketingConsent,
+            dataProcessingConsent: data.dataProcessingConsent,
+            // Tracking data
+            signup_ip_address: data.ipAddress,
+            signup_user_agent: data.userAgent,
+            signup_device_fingerprint: data.deviceFingerprint,
+            signup_geolocation: data.geolocation,
+            signup_referrer: data.referrer,
+            signup_utm_params: data.utmParams,
+            signup_timestamp: new Date().toISOString()
           },
           emailRedirectTo: getAuthCallbackURL('/auth/verify')
         }

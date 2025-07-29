@@ -6,6 +6,7 @@ export * from './schema'
 export * from './types/asset'
 export * from './types/claim'
 export * from './types/insurance'
+export * from './types/legal-compliance'
 
 import type { Database } from './types/database.types'
 
