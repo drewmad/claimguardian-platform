@@ -144,7 +144,7 @@ export function EnhancedSignupModal() {
         deviceFingerprint: device.fingerprint,
         deviceType: device.type,
         screenResolution: device.screenResolution,
-        geolocation: location,
+        geolocation: location || undefined,
         // URL data
         referrer: urlData.referrer,
         landingPage: urlData.landingPage,
