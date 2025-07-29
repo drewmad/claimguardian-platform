@@ -158,11 +158,14 @@ class AuthService {
       // Capture comprehensive signup tracking data
       try {
         const { captureSignupData } = await import('@/actions/user-tracking')
-        await captureSignupData({
-          userId: authData.user.id,
-          eventType: 'signup_completed',
-          preferences: {
-            gdprConsent: data.gdprConsent || false,
+        
+        // Wrap in try-catch to not fail signup if tracking fails
+        try {
+          await captureSignupData({
+            userId: authData.user.id,
+            eventType: 'signup_completed',
+            preferences: {
+              gdprConsent: data.gdprConsent || false,
             marketingConsent: data.marketingConsent || false,
             dataProcessingConsent: data.dataProcessingConsent || false,
             aiProcessingConsent: data.dataProcessingConsent || false // Default to data processing consent
@@ -177,9 +180,14 @@ class AuthService {
           referrer: data.referrer,
           landingPage: data.landingPage
         })
+        } catch (innerError) {
+          // Don't fail signup if tracking fails
+          console.warn('[AUTH DEBUG] Tracking capture failed (non-critical):', innerError)
+          logger.error('Failed to capture signup tracking data', { userId: authData.user.id }, innerError as Error)
+        }
       } catch (trackingError) {
-        // Don't fail signup if tracking fails
-        logger.error('Failed to capture signup tracking data', { userId: authData.user.id }, trackingError as Error)
+        // Don't fail signup if tracking module fails to load
+        console.warn('[AUTH DEBUG] Failed to load tracking module:', trackingError)
       }
       
       return { data: authData.user }

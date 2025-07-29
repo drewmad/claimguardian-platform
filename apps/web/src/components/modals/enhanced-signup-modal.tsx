@@ -7,7 +7,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, Eye, EyeOff, AlertCircle, Shield, Check, Loader2, Globe, Fingerprint } from 'lucide-react'
+import { X, Eye, EyeOff, AlertCircle, Shield, Check, Loader2, Globe, Fingerprint, Lock, Bell, Brain } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
@@ -508,79 +508,105 @@ export function EnhancedSignupModal() {
                     {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
                   </button>
                 </div>
+                {formData.confirmPassword && formData.password !== formData.confirmPassword && (
+                  <p className="mt-2 text-sm text-red-400 flex items-center gap-2">
+                    <AlertCircle className="w-4 h-4" />
+                    Passwords do not match
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Legal Consents */}
             <div className="space-y-4">
-              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Legal Agreements</h3>
+              <div className="flex items-center gap-2">
+                <Shield className="w-5 h-5 text-blue-400" />
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Legal & Privacy</h3>
+              </div>
               
-              <LegalConsentForm
-                onConsentChange={() => {
-                  // This is handled by onSubmit
-                }}
-                onSubmit={async (documentIds) => {
-                  setAcceptedDocuments(documentIds)
-                }}
-                showSubmitButton={false}
-                mode="signup"
-              />
+              <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
+                <LegalConsentForm
+                  onConsentChange={() => {
+                    // This is handled by onSubmit
+                  }}
+                  onSubmit={async (documentIds) => {
+                    setAcceptedDocuments(documentIds)
+                  }}
+                  showSubmitButton={false}
+                  mode="signup"
+                />
+              </div>
 
               {/* Additional Consents */}
-              <div className="space-y-3 border-t border-slate-700 pt-4">
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="gdprConsent"
-                    checked={formData.gdprConsent}
-                    onChange={handleChange}
-                    className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
-                  />
-                  <div>
-                    <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
-                      I consent to the processing of my personal data in accordance with GDPR
-                    </span>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Required for users in the European Union
-                    </p>
-                  </div>
-                </label>
+              <div className="space-y-3 pt-4">
+                <div className="bg-slate-700/20 rounded-lg p-4 border border-slate-600/30 hover:border-slate-600/50 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="gdprConsent"
+                      checked={formData.gdprConsent}
+                      onChange={handleChange}
+                      className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Lock className="w-4 h-4 text-blue-400" />
+                        <span className="text-sm font-medium text-slate-200">
+                          GDPR Data Protection
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        I consent to the processing of my personal data in accordance with GDPR regulations. Required for EU users.
+                      </p>
+                    </div>
+                  </label>
+                </div>
 
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="marketingConsent"
-                    checked={formData.marketingConsent}
-                    onChange={handleChange}
-                    className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
-                  />
-                  <div>
-                    <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
-                      Send me helpful tips and updates about protecting my property
-                    </span>
-                    <p className="text-xs text-slate-500 mt-1">
-                      You can unsubscribe at any time
-                    </p>
-                  </div>
-                </label>
+                <div className="bg-slate-700/20 rounded-lg p-4 border border-slate-600/30 hover:border-slate-600/50 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="marketingConsent"
+                      checked={formData.marketingConsent}
+                      onChange={handleChange}
+                      className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Bell className="w-4 h-4 text-green-400" />
+                        <span className="text-sm font-medium text-slate-200">
+                          Property Protection Updates
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Receive helpful tips and updates about protecting your property. Unsubscribe anytime.
+                      </p>
+                    </div>
+                  </label>
+                </div>
 
-                <label className="flex items-start gap-3 cursor-pointer group">
-                  <input
-                    type="checkbox"
-                    name="dataProcessingConsent"
-                    checked={formData.dataProcessingConsent}
-                    onChange={handleChange}
-                    className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
-                  />
-                  <div>
-                    <span className="text-sm text-slate-300 group-hover:text-white transition-colors">
-                      Allow AI-powered features to analyze my claim data
-                    </span>
-                    <p className="text-xs text-slate-500 mt-1">
-                      Helps provide better claim assistance and recommendations
-                    </p>
-                  </div>
-                </label>
+                <div className="bg-slate-700/20 rounded-lg p-4 border border-slate-600/30 hover:border-slate-600/50 transition-all">
+                  <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      name="dataProcessingConsent"
+                      checked={formData.dataProcessingConsent}
+                      onChange={handleChange}
+                      className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Brain className="w-4 h-4 text-purple-400" />
+                        <span className="text-sm font-medium text-slate-200">
+                          AI-Powered Assistance
+                        </span>
+                      </div>
+                      <p className="text-xs text-slate-400">
+                        Enable AI features to analyze claim data for better assistance and personalized recommendations.
+                      </p>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
 
