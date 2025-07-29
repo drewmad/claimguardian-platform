@@ -400,7 +400,7 @@ export class SentinelService {
     const { error } = await this.supabase
       .from('claim_deadlines')
       .update({
-        reminders_sent: this.supabase.sql`reminders_sent + 1`,
+        reminders_sent: { increment: 1 },
         last_reminder_at: new Date().toISOString()
       })
       .eq('id', deadlineId);
@@ -426,7 +426,7 @@ export class SentinelService {
     return data || [];
   }
   
-  private async shouldSendReminder(deadline: ClaimDeadline): boolean {
+  private async shouldSendReminder(deadline: ClaimDeadline): Promise<boolean> {
     const daysUntilDue = Math.ceil(
       (deadline.dueDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24)
     );

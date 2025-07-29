@@ -99,7 +99,11 @@ export class AIOrchestrator {
     if (this.costTracker && response!) {
       await this.costTracker.track(
         request.userId,
-        response.usage,
+        {
+          ...response.usage,
+          provider: response.provider,
+          model: response.model
+        },
         request.feature,
         response.provider
       );
@@ -140,7 +144,11 @@ export class AIOrchestrator {
     if (this.costTracker) {
       await this.costTracker.track(
         request.userId,
-        response.usage,
+        {
+          ...response.usage,
+          provider: response.provider,
+          model: response.model
+        },
         request.feature,
         response.provider
       );
@@ -172,7 +180,11 @@ export class AIOrchestrator {
     if (this.costTracker) {
       await this.costTracker.track(
         request.userId,
-        response.usage,
+        {
+          ...response.usage,
+          provider: response.provider,
+          model: response.model
+        },
         request.feature,
         response.provider
       );
@@ -233,7 +245,7 @@ export class AIOrchestrator {
     }
     
     // Return default provider if available
-    return this.providers.get(this.defaultProvider) || this.providers.values().next().value;
+    return this.providers.get(this.defaultProvider) || this.providers.values().next().value || null;
   }
   
   private getFallbackProvider(primary: BaseAIProvider): BaseAIProvider | null {

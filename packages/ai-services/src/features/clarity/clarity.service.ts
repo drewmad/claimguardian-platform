@@ -258,7 +258,7 @@ export class ClarityService {
     // - Type of materials
     // - Maintenance history
     
-    const rate = this.DEPRECIATION_RATES[claimData.damageType] || this.DEPRECIATION_RATES.general;
+    const rate = (this.DEPRECIATION_RATES as any)[claimData.damageType] || this.DEPRECIATION_RATES.general;
     const years = 5; // Would get from actual property data
     const value = Math.round(replacementCost * rate * years);
     

@@ -217,7 +217,7 @@ Make it professional and compelling, citing relevant Florida insurance statutes.
 Follow the official complaint format required by Florida regulators.`
     }
 
-    return templates[templateType] || 'Generate a professional insurance document.'
+    return (templates as any)[templateType] || 'Generate a professional insurance document.'
   }
 
   getAvailableProviders(): string[] {

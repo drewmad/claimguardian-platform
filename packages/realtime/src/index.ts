@@ -23,6 +23,5 @@ export * from './types'
 export type {
   RealtimeChannel,
   RealtimePostgresChangesPayload,
-  RealtimePresenceState,
-  RealtimeBroadcastMessage
+  RealtimePresenceState
 } from '@supabase/supabase-js'

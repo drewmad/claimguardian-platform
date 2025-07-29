@@ -1,7 +1,4 @@
-// Export existing types from types.ts for backward compatibility
-export * from './types';
-
-// Export new types from types/index.ts
+// Export types
 export * from './types/index';
 
 // Export providers

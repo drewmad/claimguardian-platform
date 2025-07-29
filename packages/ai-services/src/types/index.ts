@@ -11,16 +11,21 @@ export interface AIResponse {
   cached: boolean;
   latency: number;
   requestId: string;
+  orchestrated?: boolean;
+  cacheScore?: number;
+  totalLatency?: number;
 }
 
 // Request types
+export type AIFeature = 'clara' | 'clarity' | 'max' | 'sentinel' | 'generic' | 'document-categorizer' | 'damage-analyzer' | 'document-extractor';
+
 export interface AIRequest {
   prompt: string;
   systemPrompt?: string;
   maxTokens?: number;
   temperature?: number;
   userId: string;
-  feature: 'clara' | 'clarity' | 'max' | 'sentinel' | 'generic';
+  feature: AIFeature;
   responseFormat?: 'text' | 'json';
   examples?: Array<{ input: string; output: string }>;
   metadata?: Record<string, any>;
@@ -47,6 +52,7 @@ export interface ChatRequest extends Omit<AIRequest, 'prompt'> {
 
 export interface ChatResponse extends AIResponse {
   role: 'assistant';
+  orchestrated?: boolean;
 }
 
 // Image analysis types
@@ -55,7 +61,7 @@ export interface ImageAnalysisRequest {
   imageBase64?: string;
   prompt: string;
   userId: string;
-  feature: string;
+  feature: AIFeature;
 }
 
 export interface ImageAnalysisResponse extends AIResponse {

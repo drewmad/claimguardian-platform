@@ -9,7 +9,7 @@ import {
 } from '../types/index';
 
 export class CacheManager {
-  private redis: Redis | null = null;
+  protected redis: Redis | null = null;
   private defaultTTL: number = 3600; // 1 hour default
   private enabled: boolean = true;
   
@@ -159,7 +159,7 @@ export class CacheManager {
     }
   }
   
-  private generateCacheKey(request: AIRequest | ChatRequest): string {
+  protected generateCacheKey(request: AIRequest | ChatRequest): string {
     // Normalize request for consistent cache keys
     const normalized: any = {
       feature: request.feature,
@@ -190,7 +190,7 @@ export class CacheManager {
     return `ai:cache:${request.feature}:${hash}`;
   }
   
-  private calculateTTL(request: AIRequest | ChatRequest): number {
+  protected calculateTTL(request: AIRequest | ChatRequest): number {
     // Dynamic TTL based on feature and content type
     const ttlMap: Record<string, number> = {
       'clarity': 7 * 24 * 60 * 60,     // 7 days - calculations rarely change

@@ -199,15 +199,7 @@ export class SemanticCache extends CacheManager {
     return hash;
   }
   
-  private generateCacheKey(request: AIRequest | ChatRequest): string {
-    // Use parent class method
-    return super['generateCacheKey'](request);
-  }
   
-  private calculateTTL(request: AIRequest | ChatRequest): number {
-    // Use parent class method
-    return super['calculateTTL'](request);
-  }
   
   async clearSemanticCache(): Promise<void> {
     this.embeddings.clear();

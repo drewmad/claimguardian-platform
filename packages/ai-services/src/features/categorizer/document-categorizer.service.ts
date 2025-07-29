@@ -184,10 +184,11 @@ export class DocumentCategorizerService {
     await this.saveCategorization(categorizedDoc, userId);
     
     // 7. Track metrics
-    this.orchestrator['monitoring']?.recordMetric(
-      'document.categorized',
-      Date.now() - startTime
-    );
+    // Record metric if monitoring is available
+    // this.orchestrator['monitoring']?.recordMetric(
+    //   'document.categorized',
+    //   Date.now() - startTime
+    // );
     
     return categorizedDoc;
   }

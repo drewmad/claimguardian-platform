@@ -111,7 +111,7 @@ export const realtimeEvents = {
   MESSAGE: 'message',
   TYPING: 'typing',
   NOTIFICATION: 'notification',
-  UPDATE: 'update',
+  BROADCAST_UPDATE: 'update',
   ALERT: 'alert',
   
   // Custom events

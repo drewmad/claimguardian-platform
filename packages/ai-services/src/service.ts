@@ -1,6 +1,7 @@
 import { AIOrchestrator } from './orchestrator/orchestrator';
 import { GeminiProvider } from './providers/gemini.provider';
 import { SemanticCache } from './cache/semantic-cache';
+import { CacheManager } from './cache/cache.manager';
 import { CostTracker } from './monitoring/cost-tracker';
 import { AIMonitoringDashboard } from './monitoring/dashboard';
 
@@ -9,7 +10,7 @@ let aiServiceInstance: AIService | null = null;
 
 export class AIService {
   private orchestrator: AIOrchestrator;
-  private cache: SemanticCache;
+  private cache: CacheManager;
   private costTracker: CostTracker;
   private monitoring: AIMonitoringDashboard;
   
