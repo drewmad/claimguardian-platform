@@ -28,6 +28,15 @@ interface PropertyMetadata {
   latitude?: number
   longitude?: number
   address?: string
+  owner_name?: string
+}
+
+interface FloirMetadata {
+  data_type: string
+  primary_key: string
+  content_snippet?: string
+  similarity: number
+  source_url?: string
 }
 
 interface PropertySearchResult {
@@ -431,7 +440,7 @@ export default function UnifiedFloridaSearch() {
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
                             {(result.metadata as PropertyMetadata).property_value 
-                              ? `${(result.metadata as PropertyMetadata).property_value.toLocaleString()}`
+                              ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
@@ -462,7 +471,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-3">
                           <FileText className="h-5 w-5 text-blue-500" />
                           <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                            {formatDataType((result.metadata as PropertyMetadata).data_type)}
+                            {formatDataType((result.metadata as FloirMetadata).data_type)}
                           </Badge>
                           <span className="text-sm text-gray-500">
                             {Math.round((result.similarity || 0) * 100)}% match
@@ -512,7 +521,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-500">
-                            {(result.metadata as PropertyMetadata).latitude?.toFixed(4)}, {(result.metadata as PropertyMetadata).longitude?.toFixed(4)}
+                            {(result.metadata as PropertyMetadata).latitude?.toFixed(4) || 'N/A'}, {(result.metadata as PropertyMetadata).longitude?.toFixed(4) || 'N/A'}
                           </span>
                         </div>
                       </div>
@@ -535,7 +544,7 @@ export default function UnifiedFloridaSearch() {
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
                             {(result.metadata as PropertyMetadata).property_value 
-                              ? `$${(result.metadata as PropertyMetadata).property_value.toLocaleString()}`
+                              ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
