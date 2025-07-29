@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -42,8 +42,8 @@ export default function SettlementAnalyzerPage() {
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
   const [hasGeminiKey, setHasGeminiKey] = useState(false)
-  const { user } = useAuth()
-  const aiClient = new AIClientService()
+  const { } = useAuth()
+  const aiClient = useMemo(() => new AIClientService(), [])
 
   useEffect(() => {
     const checkKeys = async () => {
@@ -502,7 +502,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       <ul className="space-y-1">
                         <li>• Consider hiring a public adjuster for large claims</li>
                         <li>• Review your policy limits and coverage</li>
-                        <li>• Don't sign releases until you're satisfied</li>
+                        <li>• Don&apos;t sign releases until you&apos;re satisfied</li>
                       </ul>
                     </div>
                   </div>

@@ -125,7 +125,6 @@ export function PropertyImage({
 // Simplified property avatar for smaller displays
 export function PropertyAvatar({
   propertyType = 'Single Family Home',
-  size = 48,
   className = '',
   fallbackEmoji = '🏠'
 }: {

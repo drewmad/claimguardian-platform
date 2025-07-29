@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useRef } from 'react'
+import React, { useState } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Button } from '@/components/ui/button'
@@ -38,15 +38,6 @@ const QUICK_QUESTIONS = [
   },
 ]
 
-const POLICY_TOPICS = [
-  { label: 'Wind Coverage', color: 'blue' },
-  { label: 'Flood Insurance', color: 'cyan' },
-  { label: 'Additional Living Expenses', color: 'green' },
-  { label: 'Personal Property', color: 'purple' },
-  { label: 'Liability Protection', color: 'orange' },
-  { label: 'Loss Assessment', color: 'pink' },
-]
-
 interface UploadedDocument {
   id: string
   name: string
@@ -57,97 +48,13 @@ interface UploadedDocument {
 
 function PolicyChatContent() {
   const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
-  const [selectedTopic, setSelectedTopic] = useState<string | null>(null)
-  const [uploadedDocuments, setUploadedDocuments] = useState<UploadedDocument[]>([])
-  const [isProcessing, setIsProcessing] = useState(false)
-  const [compareMode, setCompareMode] = useState(false)
-  const [selectedDocs, setSelectedDocs] = useState<string[]>([])
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [selectedTopic] = useState<string | null>(null)
+  const [uploadedDocuments] = useState<UploadedDocument[]>([])
+  const [compareMode] = useState(false)
+  const [selectedDocs] = useState<string[]>([])
   const { supabase } = useSupabase()
   const { user } = useAuth()
   const aiClient = new AIClientService()
-
-  const processDocument = async (file: File) => {
-    setIsProcessing(true)
-    try {
-      let content = ''
-      
-      if (file.type === 'application/pdf') {
-        toast.info('PDF processing: For best results, please convert your PDF to text format')
-        content = `[PDF Document: ${file.name}]\n\nNote: Full PDF text extraction requires server-side processing. For now, please use the text version of your policy document for best results.`
-      } else if (file.type.startsWith('text/') || file.type === 'application/json') {
-        content = await file.text()
-      } else {
-        throw new Error('Unsupported file type. Please upload PDF or text files.')
-      }
-
-      const doc: UploadedDocument = {
-        id: `doc-${Date.now()}`,
-        name: file.name,
-        content: content.slice(0, 50000),
-        type: file.type,
-        uploadedAt: new Date(),
-      }
-
-      setUploadedDocuments(prev => [...prev, doc])
-      toast.success(`Document "${file.name}" uploaded successfully!`)
-
-      await supabase.from('audit_logs').insert({
-        user_id: user?.id,
-        action: 'document_upload',
-        resource_type: 'policy_document',
-        metadata: { 
-          filename: file.name,
-          file_type: file.type,
-          content_length: content.length,
-        },
-      })
-    } catch (error) {
-      await aiErrorHelpers.policyChat.log(error as Error, 'Document Processing', user?.id, undefined, {
-        fileName: file.name,
-        fileType: file.type,
-        fileSize: file.size
-      })
-      toast.error(error instanceof Error ? error.message : 'Failed to process document')
-    } finally {
-      setIsProcessing(false)
-    }
-  }
-
-  const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    if (files && files.length > 0) {
-      for (let i = 0; i < files.length; i++) {
-        await processDocument(files[i])
-      }
-    }
-    if (fileInputRef.current) {
-      fileInputRef.current.value = ''
-    }
-  }
-
-  const removeDocument = (docId: string) => {
-    setUploadedDocuments(prev => prev.filter(doc => doc.id !== docId))
-    setSelectedDocs(prev => prev.filter(id => id !== docId))
-    toast.success('Document removed')
-  }
-
-  const toggleDocSelection = (docId: string) => {
-    setSelectedDocs(prev => 
-      prev.includes(docId) 
-        ? prev.filter(id => id !== docId)
-        : [...prev, docId]
-    )
-  }
-
-  const compareDocuments = () => {
-    if (selectedDocs.length < 2) {
-      toast.error('Please select at least 2 documents to compare')
-      return
-    }
-    setCompareMode(true)
-    toast.success('Comparison mode activated')
-  }
 
   const handleSendMessage = async (message: string, history: Array<{id: string; role: string; content: string; timestamp: Date}>) => {
     const timer = performanceTimer.start('PolicyChat', 'AI Response')

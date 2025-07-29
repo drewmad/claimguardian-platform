@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
@@ -49,7 +49,7 @@ export default function ParcelDashboard() {
   
   const supabase = createClient()
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // Fetch parcel statistics
       const { data: statsData, error: statsError } = await supabase
@@ -76,7 +76,7 @@ export default function ParcelDashboard() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [supabase])
 
   const triggerIngest = async (dataSource: string) => {
     try {
@@ -128,7 +128,7 @@ export default function ParcelDashboard() {
     const interval = setInterval(fetchData, 30000)
     
     return () => clearInterval(interval)
-  }, [])
+  }, [fetchData])
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -301,7 +301,7 @@ export default function ParcelDashboard() {
         <CardContent>
           <div className="space-y-4">
             {Object.entries(
-              stats.reduce((acc, stat) => {
+              stats.reduce((acc: Record<string, { total_properties: number; total_acres: number; counties: Set<string>; last_updated: string }>, stat) => {
                 if (!acc[stat.data_source]) {
                   acc[stat.data_source] = {
                     total_properties: 0,
@@ -314,7 +314,7 @@ export default function ParcelDashboard() {
                 acc[stat.data_source].total_acres += stat.total_acres
                 acc[stat.data_source].counties.add(stat.county)
                 return acc
-              }, {} as Record<string, any>)
+              }, {})
             ).map(([source, data]) => (
               <div
                 key={source}

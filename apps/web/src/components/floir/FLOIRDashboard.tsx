@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
@@ -37,7 +37,7 @@ export default function FLOIRDashboard() {
   
   const supabase = createClient()
 
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     try {
       // Fetch FLOIR statistics
       const { data: statsData, error: statsError } = await supabase
@@ -62,7 +62,7 @@ export default function FLOIRDashboard() {
       setLoading(false)
       setRefreshing(false)
     }
-  }
+  }, [supabase])
 
   const triggerCrawl = async (dataType: string) => {
     try {
@@ -88,7 +88,7 @@ export default function FLOIRDashboard() {
     
     // Set up real-time subscriptions for crawl updates
     Object.values(DATA_TYPE_CONFIG).forEach(config => {
-      const channel = supabase.channel(`floir:${config.key}`)
+      supabase.channel(`floir:${config.key}`)
         .on('broadcast', { event: 'crawl_complete' }, (payload) => {
           console.log('Crawl completed:', payload)
           fetchData()
@@ -103,7 +103,7 @@ export default function FLOIRDashboard() {
       clearInterval(interval)
       supabase.removeAllChannels()
     }
-  }, [])
+  }, [fetchData, supabase])
 
   const getStatusIcon = (status: string) => {
     switch (status) {

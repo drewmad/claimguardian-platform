@@ -14,7 +14,7 @@ import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Package, DollarSign, AlertCircle, Camera, Upload, FileText, Plus, Search, Filter, Download, BarChart3, Shield, Sparkles, Tv, Watch, Sofa, Shirt, Diamond, Car, Music, Gamepad, Grid, List, ChevronRight, Edit, Trash2, Eye } from 'lucide-react'
+import { AlertCircle, BarChart3, Camera, Car, ChevronRight, Diamond, DollarSign, Download, Edit, Eye, FileText, Gamepad, Grid, List, Music, Package, Plus, Search, Shield, Shirt, Sofa, Sparkles, Trash2, Tv, Watch } from 'lucide-react'
 import Link from 'next/link'
 interface PropertyItem {
   id: string
@@ -96,11 +96,11 @@ const mockItems: PropertyItem[] = [
 ]
 
 function PersonalPropertyContent() {
-  const [items, setItems] = useState<PropertyItem[]>(mockItems)
+  const [items] = useState<PropertyItem[]>(mockItems)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  const [showAddModal, setShowAddModal] = useState(false)
+  const [, setShowAddModal] = useState(false)
 
   // Calculate statistics
   const totalValue = items.reduce((sum, item) => sum + item.currentValue, 0)

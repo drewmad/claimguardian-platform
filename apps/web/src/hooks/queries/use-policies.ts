@@ -54,7 +54,7 @@ export function useCreatePolicy() {
   
   return useMutation({
     mutationFn: (input: CreatePolicyInput) => createPolicy(input),
-    onSuccess: (result, variables) => {
+    onSuccess: (result) => {
       if (result.data) {
         // Invalidate and refetch policies list
         queryClient.invalidateQueries({ queryKey: policyKeys.lists() })

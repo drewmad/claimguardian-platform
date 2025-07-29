@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -139,10 +139,10 @@ export default function AIToolsPage() {
   const [selectedCategory, setSelectedCategory] = useState('all')
   const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
   const [hasGeminiKey, setHasGeminiKey] = useState(false)
-  const [keysLoaded, setKeysLoaded] = useState(false)
+  const [, setKeysLoaded] = useState(false)
   const [isOnline, setIsOnline] = useState(true)
-  const { user } = useAuth()
-  const aiClient = new AIClientService()
+  const { } = useAuth()
+  const aiClient = useMemo(() => new AIClientService(), [])
   const { preloadComponent } = usePreload()
 
   useEffect(() => {
@@ -173,7 +173,7 @@ export default function AIToolsPage() {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
-  }, [])
+  }, [aiClient])
 
   const filteredTools = selectedCategory === 'all' 
     ? AI_TOOLS 

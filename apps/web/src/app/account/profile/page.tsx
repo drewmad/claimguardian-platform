@@ -441,7 +441,7 @@ export default function ProfilePage() {
                 
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-400">
-                    Changing your email will require verification. You'll receive a confirmation link at your new email address.
+                    Changing your email will require verification. You&apos;ll receive a confirmation link at your new email address.
                   </p>
                 </div>
 

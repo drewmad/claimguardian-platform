@@ -113,7 +113,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
 
       return () => {
         document.head.removeChild(script)
-        delete (window as any).initGooglePlaces
+        delete (window as Window).initGooglePlaces
       }
     }
 
@@ -198,7 +198,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
         window.google.maps.event.clearInstanceListeners(autocompleteInstance)
       }
     }
-  }, [isGoogleLoaded, onChange, autocomplete])
+  }, [isGoogleLoaded, onChange, autocomplete, inferCountyFromCity])
 
   // Infer county from city name
   const inferCountyFromCity = useCallback(async (cityName: string): Promise<string | null> => {

@@ -29,7 +29,7 @@ function PropertyOverviewContent() {
   const { data: properties = [], isLoading, error } = useProperties()
 
   // Transform data for display
-  const displayProperties = properties.map((prop: any) => ({
+  const displayProperties = properties.map((prop) => ({
     id: prop.id,
     name: prop.name || 'Unnamed Property',
     address: prop.address ? [

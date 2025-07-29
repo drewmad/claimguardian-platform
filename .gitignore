@@ -214,6 +214,7 @@ files-to-fix.txt
 # Learning and documentation drafts
 learnings.md
 LEARNINGS.md
+type-safety-fixes.md
 
 # ==============================================================================
 # SECURITY & SENSITIVE DATA

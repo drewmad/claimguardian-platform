@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -10,7 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Textarea } from '@/components/ui/textarea'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { FileText, Download, Copy, Send, Sparkles, AlertTriangle, FileSearch, Calendar, Shield, Edit, Loader2 } from 'lucide-react'
+import { FileText, Download, Copy, Sparkles, AlertTriangle, FileSearch, Calendar, Shield, Edit, Loader2 } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
@@ -103,7 +103,7 @@ export default function DocumentGeneratorPage() {
   const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
   const [hasGeminiKey, setHasGeminiKey] = useState(false)
   const { user } = useAuth()
-  const aiClient = new AIClientService()
+  const aiClient = useMemo(() => new AIClientService(), [])
 
   useEffect(() => {
     const checkKeys = async () => {
@@ -116,7 +116,7 @@ export default function DocumentGeneratorPage() {
       }
     }
     checkKeys()
-  }, [])
+  }, [aiClient])
 
   const handleFieldChange = (fieldId: string, value: string) => {
     setFormData(prev => ({ ...prev, [fieldId]: value }))

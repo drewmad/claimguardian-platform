@@ -200,7 +200,7 @@ export class PerformanceMonitor {
   getAllMetrics() {
     const result: { [key: string]: unknown } = {}
     
-    for (const [key, times] of Object.entries(this.metrics)) {
+    for (const key of Object.keys(this.metrics)) {
       result[key] = this.getMetrics(key)
     }
     

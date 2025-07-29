@@ -11,7 +11,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Shield, CloudRain, Phone, AlertTriangle, Zap, Activity, Map, Radio, Package, Home, Users, Target, FileText, ExternalLink, ChevronRight, Heart, CheckCircle, XCircle, AlertCircle, Clock, Wrench, Navigation, Wifi, Camera, ScanLine } from 'lucide-react'
+import { Shield, CloudRain, Phone, AlertTriangle, Zap, Activity, Map, Radio, Package, Home, Users, Target, FileText, ExternalLink, ChevronRight, Heart, CheckCircle, XCircle, AlertCircle, Clock, Wrench, Wifi, Camera, ScanLine } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -66,7 +66,7 @@ function DisasterHubContent() {
   
   // Mock data
   const [currentThreatLevel] = useState<ThreatLevel>('elevated')
-  const [evacuationZone] = useState<EvacuationZone>({
+  const [] = useState<EvacuationZone>({
     zone: 'B',
     status: 'watch',
     shelters: 3,

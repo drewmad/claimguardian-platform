@@ -50,7 +50,7 @@ export function FAQ() {
           Frequently Asked Questions
         </h2>
         <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
-          Got questions? We've got answers.
+          Got questions? We&apos;ve got answers.
         </p>
         
         <div className="max-w-3xl mx-auto space-y-4">

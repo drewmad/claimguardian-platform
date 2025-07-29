@@ -13,6 +13,11 @@
 import { X } from 'lucide-react'
 import { useModalStore } from '@/stores/modal-store'
 
+interface Section {
+  title: string;
+  content: string;
+}
+
 export function ContentModal() {
   const { activeModal, modalData, closeModal } = useModalStore()
 
@@ -55,7 +60,7 @@ export function ContentModal() {
           )}
           
           {/* Add more content types as needed */}
-          {content?.sections && content.sections.map((section: any, index: number) => (
+          {content?.sections && content.sections.map((section: Section, index: number) => (
             <div key={index} className="mt-6">
               <h3 className="text-lg font-semibold mb-2">{section.title}</h3>
               <p className="text-slate-300">{section.content}</p>

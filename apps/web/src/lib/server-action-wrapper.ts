@@ -6,11 +6,8 @@
  */
 
 import { 
-  BaseError, 
   AuthError, 
   ValidationError,
-  NotFoundError,
-  PermissionError,
   DatabaseError,
   ExternalServiceError,
   isBaseError,

@@ -15,7 +15,6 @@ import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
-import { useRouter } from 'next/navigation'
 import { sessionManager } from '@/lib/auth/session-manager'
 
 interface AuthContextType {
@@ -47,7 +46,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<AuthError | null>(null)
   const [sessionWarning, setSessionWarning] = useState(false)
-  const router = useRouter()
   const supabase = createClient()
   
   // Use secure debug logging only in development
@@ -237,7 +235,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       sessionManager.stopMonitoring()
     }
-  }, []) // Remove router dependency to prevent re-initialization
+  }, [supabase.auth, user?.id]) // Add dependencies to prevent re-initialization
 
   // Sign in handler
   const handleSignIn = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
@@ -317,7 +315,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [user?.id])
 
   // Sign out handler
   const handleSignOut = useCallback(async () => {
@@ -346,7 +344,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       ))
       setLoading(false)
     }
-  }, [])
+  }, [user?.id])
 
   // Reset password handler
   const handleResetPassword = useCallback(async (email: string) => {
@@ -372,7 +370,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [user?.id])
 
   // Update password handler
   const handleUpdatePassword = useCallback(async (newPassword: string) => {
@@ -400,7 +398,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [user?.id])
 
   // Clear error handler
   const clearError = useCallback(() => {

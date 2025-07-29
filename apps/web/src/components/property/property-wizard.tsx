@@ -294,28 +294,6 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     setCurrentStep(prev => Math.max(prev - 1, 1))
   }
 
-  const handleExtractedDataApplied = (extractedData: any) => {
-    // Apply extracted data to form fields
-    setPropertyData(prev => ({
-      ...prev,
-      insuranceCarrier: extractedData.carrierName || prev.insuranceCarrier,
-      policyNumber: extractedData.policyNumber || prev.policyNumber,
-      coverageAmount: extractedData.coverageAmount || prev.coverageAmount,
-      deductible: extractedData.deductible || prev.deductible,
-      windDeductible: extractedData.windDeductible ? 
-        (typeof extractedData.windDeductible === 'string' ? 
-          parseInt(extractedData.windDeductible.replace('%', '')) : 
-          extractedData.windDeductible
-        ) : prev.windDeductible,
-      // Add insurance type if not already selected
-      insuranceTypes: extractedData.policyType && !prev.insuranceTypes?.includes(extractedData.policyType) ?
-        [...(prev.insuranceTypes || []), extractedData.policyType] :
-        prev.insuranceTypes
-    }))
-    
-    toast.success('Policy data applied to form!')
-  }
-
   const handleSubmit = async () => {
     if (!validateStep(currentStep)) return
     
@@ -406,7 +384,6 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
       }
       
       const data = createdProperty
-      const error = propertyError
       
       const hasDocuments = propertyData.uploadedDocuments && propertyData.uploadedDocuments.length > 0
       
@@ -502,7 +479,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             {propertyData.address.street1 && propertyData.address.city && propertyData.address.zip && (
               <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-3">
                 <p className="text-sm text-blue-300">
-                  <strong>Note:</strong> We'll automatically fetch property details from public records in the next step.
+                  <strong>Note:</strong> We&apos;ll automatically fetch property details from public records in the next step.
                 </p>
               </div>
             )}
@@ -1218,7 +1195,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
 
             <div className="bg-blue-900/20 border border-blue-600/30 rounded-lg p-4">
               <p className="text-sm text-blue-300">
-                <strong>Ready to create your property?</strong> Review the details above and click "Create Property" to continue.
+                <strong>Ready to create your property?</strong> Review the details above and click &quot;Create Property&quot; to continue.
               </p>
             </div>
           </div>
@@ -1236,7 +1213,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             Add New Property
           </DialogTitle>
           <DialogDescription className="text-gray-400">
-            Let's set up your property in a few simple steps
+            Let&apos;s set up your property in a few simple steps
           </DialogDescription>
         </DialogHeader>
 

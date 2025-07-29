@@ -102,7 +102,7 @@ export default function LegalUpdatePage() {
             
             <h1 className="text-2xl font-bold mb-2">Legal Documents Updated</h1>
             <p className="text-slate-400 text-sm max-w-md mx-auto">
-              We've updated our legal documents. Please review and accept the new versions 
+              We&apos;ve updated our legal documents. Please review and accept the new versions 
               to continue using your account.
             </p>
           </div>
@@ -134,9 +134,9 @@ export default function LegalUpdatePage() {
             <h3 className="text-sm font-medium mb-2">What happens next?</h3>
             <ul className="text-xs text-slate-400 space-y-1">
               <li>• Your acceptance will be recorded with timestamp and IP address</li>
-              <li>• You'll be redirected to your dashboard</li>
+              <li>• You&apos;ll be redirected to your dashboard</li>
               <li>• You can view your consent history in account settings</li>
-              <li>• We'll notify you of any future document updates</li>
+              <li>• We&apos;ll notify you of any future document updates</li>
             </ul>
           </div>
         </div>

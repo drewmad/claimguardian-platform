@@ -169,48 +169,6 @@ export function useErrorRecovery(config: Partial<RetryConfig> = {}) {
   }
 }
 
-// Specific error recovery for AI operations
-export function useAIErrorRecovery() {
-  const errorRecovery = useErrorRecovery({
-    maxRetries: 2,
-    initialDelay: 2000,
-    retryCondition: (error) => {
-      // Retry on rate limits, network errors, and temporary server issues
-      return error.message.includes('rate limit') ||
-             error.message.includes('network') ||
-             error.message.includes('timeout') ||
-             error.message.includes('503') ||
-             error.message.includes('502') ||
-             error.message.includes('504')
-    }
-  })
-
-  const executeAIOperation = useCallback(async <T>(
-    operation: () => Promise<T>,
-    operationName: string
-  ): Promise<T | null> => {
-    return errorRecovery.executeWithRetry(
-      operation,
-      {
-        onRetry: (attempt, error) => {
-          console.log(`Retrying ${operationName} (attempt ${attempt}):`, error.message)
-        },
-        onSuccess: (result) => {
-          console.log(`${operationName} succeeded`)
-        },
-        onError: (error) => {
-          console.error(`${operationName} failed after retries:`, error)
-        }
-      }
-    )
-  }, [errorRecovery])
-
-  return {
-    ...errorRecovery,
-    executeAIOperation
-  }
-}
-
 // Error boundary for graceful degradation
 export function withErrorBoundary<T>(
   operation: () => Promise<T>,

@@ -19,6 +19,35 @@ import {
   Filter
 } from 'lucide-react'
 
+interface PropertyMetadata {
+  city: string
+  county: string
+  property_type?: string
+  property_value?: number
+  hurricane_risk?: number
+  latitude?: number
+  longitude?: number
+  address?: string
+}
+
+interface PropertySearchResult {
+  type: 'property';
+  id: string;
+  title: string;
+  description: string;
+  metadata: unknown;
+  similarity: number;
+}
+
+interface FloirSearchResult {
+  id: string;
+  data_type: string;
+  primary_key: string;
+  content_snippet?: string;
+  similarity: number;
+  source_url?: string;
+}
+
 interface UnifiedSearchResult {
   type: 'floir' | 'property'
   id: string
@@ -157,9 +186,9 @@ export default function UnifiedFloridaSearch() {
     }
   }
 
-  const combineResults = (floirResults: unknown[], propertyResults: unknown[]): UnifiedSearchResult[] => {
+  const combineResults = (floirResults: FloirSearchResult[], propertyResults: PropertySearchResult[]): UnifiedSearchResult[] => {
     const combined: UnifiedSearchResult[] = [
-      ...floirResults.map((result: any) => ({
+      ...floirResults.map((result) => ({
         type: 'floir' as const,
         id: result.id,
         title: `${formatDataType(result.data_type)} - ${result.primary_key}`,
@@ -168,7 +197,7 @@ export default function UnifiedFloridaSearch() {
         metadata: result,
         source_url: result.source_url
       })),
-      ...(propertyResults as UnifiedSearchResult[])
+      ...propertyResults
     ]
 
     // Sort by relevance (similarity score)
@@ -179,10 +208,6 @@ export default function UnifiedFloridaSearch() {
     if (results.length === 0) return undefined
 
     try {
-      const context = results.slice(0, 5).map((result, index) => 
-        `[${index + 1}] ${result.type.toUpperCase()}: ${result.title}\n${result.description}`
-      ).join('\n\n')
-
       // Use a simple summary instead of calling OpenAI again
       const floirCount = results.filter(r => r.type === 'floir').length
       const propertyCount = results.filter(r => r.type === 'property').length
@@ -194,7 +219,7 @@ export default function UnifiedFloridaSearch() {
     }
   }
 
-  const calculatePropertyRelevance = (property: any, searchQuery: string): number => {
+  const calculatePropertyRelevance = (property: { address?: string; city?: string; county?: string; owner_name?: string; property_type?: string }, searchQuery: string): number => {
     const query = searchQuery.toLowerCase()
     let score = 0
 
@@ -354,7 +379,7 @@ export default function UnifiedFloridaSearch() {
             </TabsList>
 
             <TabsContent value="all" className="space-y-4">
-              {results.results.map((result, index) => (
+              {results.results.map((result) => (
                 <Card 
                   key={`${result.type}-${result.id}`}
                   className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
@@ -396,17 +421,17 @@ export default function UnifiedFloridaSearch() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Location:</span>
-                          <p className="font-medium">{(result.metadata as any).city}, {(result.metadata as any).county}</p>
+                          <p className="font-medium">{(result.metadata as PropertyMetadata).city}, {(result.metadata as PropertyMetadata).county}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{(result.metadata as any).property_type || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as PropertyMetadata).property_type || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as any).property_value 
-                              ? `$${(result.metadata as any).property_value.toLocaleString()}`
+                            {(result.metadata as PropertyMetadata).property_value 
+                              ? `${(result.metadata as PropertyMetadata).property_value.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
@@ -414,7 +439,7 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Risk:</span>
                           <p className="font-medium">
-                            Hurricane: {Math.round(((result.metadata as any).hurricane_risk || 0) * 100)}%
+                            Hurricane: {Math.round(((result.metadata as PropertyMetadata).hurricane_risk || 0) * 100)}%
                           </p>
                         </div>
                       </div>
@@ -427,7 +452,7 @@ export default function UnifiedFloridaSearch() {
             <TabsContent value="regulation">
               {results.results
                 .filter(r => r.type === 'floir')
-                .map((result, index) => (
+                .map((result) => (
                   <Card 
                     key={result.id}
                     className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
@@ -437,7 +462,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-3">
                           <FileText className="h-5 w-5 text-blue-500" />
                           <Badge className="bg-blue-100 text-blue-800 border-blue-200">
-                            {formatDataType((result.metadata as any).data_type)}
+                            {formatDataType((result.metadata as PropertyMetadata).data_type)}
                           </Badge>
                           <span className="text-sm text-gray-500">
                             {Math.round((result.similarity || 0) * 100)}% match
@@ -468,7 +493,7 @@ export default function UnifiedFloridaSearch() {
             <TabsContent value="property">
               {results.results
                 .filter(r => r.type === 'property')
-                .map((result, index) => (
+                .map((result) => (
                   <Card 
                     key={result.id}
                     className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
@@ -487,7 +512,7 @@ export default function UnifiedFloridaSearch() {
                         <div className="flex items-center space-x-2">
                           <MapPin className="h-4 w-4 text-gray-400" />
                           <span className="text-sm text-gray-500">
-                            {(result.metadata as any).latitude?.toFixed(4)}, {(result.metadata as any).longitude?.toFixed(4)}
+                            {(result.metadata as PropertyMetadata).latitude?.toFixed(4)}, {(result.metadata as PropertyMetadata).longitude?.toFixed(4)}
                           </span>
                         </div>
                       </div>
@@ -500,17 +525,17 @@ export default function UnifiedFloridaSearch() {
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-gray-500">Owner:</span>
-                          <p className="font-medium">{(result.metadata as any).owner_name || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as PropertyMetadata).owner_name || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Type:</span>
-                          <p className="font-medium">{(result.metadata as any).property_type || 'N/A'}</p>
+                          <p className="font-medium">{(result.metadata as PropertyMetadata).property_type || 'N/A'}</p>
                         </div>
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as any).property_value 
-                              ? `$${(result.metadata as any).property_value.toLocaleString()}`
+                            {(result.metadata as PropertyMetadata).property_value 
+                              ? `$${(result.metadata as PropertyMetadata).property_value.toLocaleString()}`
                               : 'N/A'
                             }
                           </p>
@@ -518,7 +543,7 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Hurricane Risk:</span>
                           <p className="font-medium">
-                            {Math.round(((result.metadata as any).hurricane_risk || 0) * 100)}%
+                            {Math.round(((result.metadata as PropertyMetadata).hurricane_risk || 0) * 100)}%
                           </p>
                         </div>
                       </div>

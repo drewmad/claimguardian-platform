@@ -148,7 +148,7 @@ export function Pricing() {
     <section className="px-4 md:px-8 py-20 bg-black/10">
       <AnimatedSection className="max-w-6xl mx-auto text-center">
         <h2 className="font-slab text-3xl md:text-4xl font-bold">Simple, Powerful Pricing</h2>
-        <p className="mt-3 max-w-2xl mx-auto text-gray-300">Choose the plan that's right for you. Start for free, upgrade for more power.</p>
+        <p className="mt-3 max-w-2xl mx-auto text-gray-300">Choose the plan that&apos;s right for you. Start for free, upgrade for more power.</p>
 
         <div className="flex justify-center my-8">
           <div className="p-1 rounded-lg flex items-center gap-2" style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
@@ -159,8 +159,8 @@ export function Pricing() {
 
         <div className="my-12 p-6 rounded-2xl text-left text-sm" style={{ backgroundColor: COLORS.glass.bg, border: `1px solid ${COLORS.glass.border}`}}>
           <h3 className="font-bold text-primary mb-2">Why we charge:</h3>
-          <p className="text-gray-300">Running cutting-edge AI models and secure hosting costs thousands each month. We're a family-run Florida business, built during late nights while the baby sleeps, because we believe every Floridian deserves access to tools that protect their legacy. That's why we're committed to maintaining a free tier - no one should face insurance companies alone.</p>
-          <p className="text-gray-300 mt-2">Living the Florida dream comes with hurricanes, floods, and storms - but protecting your family's future shouldn't be another battle. Your subscription helps us keep the servers running and continue building tools for homeowners like you.</p>
+          <p className="text-gray-300">Running cutting-edge AI models and secure hosting costs thousands each month. We&apos;re a family-run Florida business, built during late nights while the baby sleeps, because we believe every Floridian deserves access to tools that protect their legacy. That&apos;s why we&apos;re committed to maintaining a free tier - no one should face insurance companies alone.</p>
+          <p className="text-gray-300 mt-2">Living the Florida dream comes with hurricanes, floods, and storms - but protecting your family&apos;s future shouldn&apos;t be another battle. Your subscription helps us keep the servers running and continue building tools for homeowners like you.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">

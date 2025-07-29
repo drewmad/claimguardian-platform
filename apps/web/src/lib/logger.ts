@@ -136,7 +136,7 @@ class Logger {
   }
 
   // Track events (for analytics)
-  track(eventName: string, properties?: Record<string, any>) {
+  track(eventName: string, properties?: Record<string, unknown>) {
     this.log(LogLevel.INFO, `Event: ${eventName}`, { 
       ...properties, 
       eventType: 'track',
@@ -145,7 +145,7 @@ class Logger {
   }
 
   // Track page views
-  pageView(path: string, properties?: Record<string, any>) {
+  pageView(path: string, properties?: Record<string, unknown>) {
     this.track('page_view', { path, ...properties })
   }
 

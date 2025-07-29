@@ -183,7 +183,7 @@ const CLAIM_STEPS: ClaimStep[] = [
       {
         id: 'negotiate',
         title: 'Negotiate if Needed',
-        description: 'Don\'t accept the first offer if it\'s inadequate',
+        description: 'Don&apos;t accept the first offer if it&apos;s inadequate',
         completed: false,
         required: false
       }
@@ -195,8 +195,7 @@ export default function ClaimAssistantPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] = useState(CLAIM_STEPS)
   const [claimNotes, setClaimNotes] = useState('')
-  const [showAIAssist, setShowAIAssist] = useState(false)
-  const { user } = useAuth()
+  const { } = useAuth()
   const aiClient = new AIClientService()
 
   const toggleTask = (stepId: string, taskId: string) => {
@@ -286,7 +285,7 @@ Format the summary for submission to an insurance company.`
                 </Badge>
               </div>
               <p className="text-gray-400 max-w-3xl">
-                Step-by-step guidance through the insurance claim process. Follow each step carefully to ensure you don't miss any critical actions or documentation.
+                Step-by-step guidance through the insurance claim process. Follow each step carefully to ensure you don&apos;t miss any critical actions or documentation.
               </p>
             </div>
 
@@ -498,7 +497,7 @@ Format the summary for submission to an insurance company.`
                           <li>• Always document everything - photos, conversations, receipts</li>
                           <li>• Never admit fault or sign anything without reading carefully</li>
                           <li>• Keep a detailed log of all interactions with your insurer</li>
-                          <li>• Don't throw away damaged items until the adjuster approves</li>
+                          <li>• Don&apos;t throw away damaged items until the adjuster approves</li>
                         </ul>
                       </div>
                     </div>

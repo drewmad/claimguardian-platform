@@ -22,17 +22,6 @@ export async function middleware(request: NextRequest) {
     request.headers.get('x-real-ip') ||
     'unknown'
 
-  // Get metadata
-  const metadata = {
-    ip,
-    user_agent: request.headers.get('user-agent') || 'unknown',
-    referer: request.headers.get('referer') || null,
-    path: request.nextUrl.pathname,
-    method: request.method,
-    timestamp: new Date().toISOString(),
-    geo: null,
-  }
-
   // Enhanced logging for debugging
   if (request.nextUrl.pathname.startsWith('/dashboard') || 
       request.nextUrl.pathname.startsWith('/ai-augmented')) {

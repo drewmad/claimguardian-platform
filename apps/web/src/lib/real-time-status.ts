@@ -9,7 +9,7 @@ export interface StatusUpdate {
   message: string
   progress?: number
   timestamp: Date
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface SystemStatus {
@@ -209,7 +209,7 @@ export function useRealTimeStatus() {
 // Fallback implementation for when WebSocket is not available
 export function useFallbackStatus() {
   const [statusUpdates, setStatusUpdates] = useState<StatusUpdate[]>([])
-  const [systemStatus, setSystemStatus] = useState<SystemStatus>({
+  const [systemStatus] = useState<SystemStatus>({
     ai_services: {
       openai: 'online',
       gemini: 'online'

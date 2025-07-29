@@ -347,7 +347,7 @@ function PropertyDetailContent() {
         city: addressParts.city || '',
         state: addressParts.state || '',
         zip: addressParts.zip || '',
-        county: (property.details as any)?.county || '',
+        county: (property.details as Record<string, unknown>)?.county as string || '',
         type: property.type as string || '',
         year_built: property.yearBuilt as number || 0,
         square_feet: property.sqft as number || 0,
@@ -524,7 +524,7 @@ function PropertyDetailContent() {
               <PropertyImage
                 propertyType={property.type as string}
                 propertyName={property.name as string}
-                location={`${(property.addressParts as any)?.city || ''}, FL`}
+                location={`${(property.addressParts as Record<string, unknown>)?.city || ''}, FL`}
                 style="florida-style"
                 width={800}
                 height={192}

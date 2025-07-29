@@ -1,0 +1,25 @@
+{
+  "hooks_patterns": {
+    "aiClient": "wrap in useMemo",
+    "supabase.auth": "add to deps",
+    "router": "add to deps",
+    "user?.id": "add to deps",
+    "functions_in_component": "wrap in useCallback",
+    "imported_functions": "generally stable, add to deps"
+  },
+  "files_to_fix": [
+    "./src/app/ai-augmented/damage-analyzer/page.tsx",
+    "./src/app/ai-tools/communication-helper/page.tsx",
+    "./src/app/ai-tools/document-generator/page.tsx",
+    "./src/app/ai-tools/page.tsx",
+    "./src/app/ai-tools/settlement-analyzer/page.tsx",
+    "./src/components/auth/auth-provider.tsx",
+    "./src/components/documents/document-extraction-review.tsx",
+    "./src/components/floir/FLOIRDashboard.tsx",
+    "./src/components/forms/florida-address-form.tsx",
+    "./src/components/legal/legal-consent-form.tsx",
+    "./src/components/modals/settings-modal.tsx",
+    "./src/components/parcels/ParcelDashboard.tsx"
+  ],
+  "fixes_applied": {}
+}

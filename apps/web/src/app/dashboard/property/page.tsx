@@ -21,10 +21,49 @@ import { toast } from 'sonner'
 import { PropertyAvatar } from '@/components/ui/property-image'
 import { PropertyWizard } from '@/components/property/property-wizard'
 
+
+interface DisplayProperty {
+  id: string
+  name: string
+  address: string
+  type: string
+  value: number
+  sqft: number
+  yearBuilt: number
+  bedrooms: number
+  bathrooms: number
+  lotSize: number
+  insurabilityScore: number
+  isPrimary: boolean
+}
+
+interface Property {
+  id: string;
+  name: string | null;
+  address: {
+    street1: string;
+    street2?: string;
+    city: string;
+    state: string;
+    zip: string;
+  } | null;
+  type: string | null;
+  value: number | null;
+  square_feet: number | null;
+  year_built: number | null;
+  details: {
+    bedrooms?: number;
+    bathrooms?: number;
+    lot_size?: number;
+  } | null;
+  insurability_score: number | null;
+  is_primary: boolean | null;
+}
+
 function PropertyOverviewContent() {
   const router = useRouter()
   const [loading, setLoading] = useState(true)
-  const [properties, setProperties] = useState<any[]>([])
+  const [properties, setProperties] = useState<DisplayProperty[]>([])
   const [showWizard, setShowWizard] = useState(false)
 
   useEffect(() => {
@@ -37,7 +76,7 @@ function PropertyOverviewContent() {
         
         if (propertiesData.length > 0) {
           // Transform database data to display format with full address
-          const transformedData = propertiesData.map((prop: any) => ({
+          const transformedData = propertiesData.map((prop: Property) => ({
             id: prop.id,
             name: prop.name || 'Unnamed Property',
             address: prop.address ? [
@@ -117,7 +156,7 @@ function PropertyOverviewContent() {
             const propertiesData = result.data?.data || []
             
             if (propertiesData.length > 0) {
-              const transformedData = propertiesData.map((prop: any) => ({
+              const transformedData = propertiesData.map((prop: Property) => ({
                 id: prop.id,
                 name: prop.name || 'Unnamed Property',
                 address: prop.address ? [
@@ -313,7 +352,7 @@ function PropertyOverviewContent() {
       <PropertyWizard 
         open={showWizard} 
         onClose={() => setShowWizard(false)}
-        onComplete={(propertyId) => {
+        onComplete={() => {
           // Refresh properties list
           window.location.reload()
         }}

@@ -17,7 +17,7 @@ interface ErrorContext {
   action: string
   userId?: string
   model?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   userAgent?: string
   url?: string
   timestamp?: Date
@@ -26,12 +26,12 @@ interface ErrorContext {
 interface ErrorLogEntry {
   id: string
   feature: string
-  action: string
+  action:string
   error_type: string
   error_message: string
   error_stack?: string
   user_id?: string
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
   user_agent?: string
   url?: string
   timestamp: Date
@@ -48,8 +48,9 @@ export class AIErrorLogger {
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
-    } catch (error) {
+    } catch (_error) {
       console.warn('Error logger: Supabase client not initialized')
+      console.log(_error)
       this.isEnabled = false
     }
   }
@@ -157,12 +158,12 @@ export class AIErrorLogger {
         metadata: context.metadata,
         timestamp: new Date()
       }])
-    } catch (error) {
-      console.error('Failed to log user action:', error)
+    } catch (dbError) {
+      console.error('Failed to log user action:', dbError)
     }
   }
 
-  private showUserNotification(error: Error, severity: ErrorLogEntry['severity'], context: ErrorContext) {
+  private showUserNotification(_error: Error, severity: ErrorLogEntry['severity'], context: ErrorContext) {
     const feature = context.feature.replace(/([A-Z])/g, ' $1').trim()
     
     switch (severity) {
@@ -215,7 +216,7 @@ export class AIErrorLogger {
     action: string,
     startTime: number,
     context: ErrorContext,
-    additionalMetrics?: Record<string, any>
+    additionalMetrics?: Record<string, unknown>
   ) {
     const duration = Date.now() - startTime
     
@@ -234,8 +235,8 @@ export class AIErrorLogger {
         },
         timestamp: new Date()
       }])
-    } catch (error) {
-      console.error('Failed to log performance:', error)
+    } catch (dbError) {
+      console.error('Failed to log performance:', dbError)
     }
 
     // Warn if action is taking too long
@@ -251,7 +252,7 @@ export const errorLogger = new AIErrorLogger()
 // Helper functions for specific AI features
 export const aiErrorHelpers = {
   damageAnalyzer: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('DamageAnalyzer', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
@@ -262,7 +263,7 @@ export const aiErrorHelpers = {
   },
 
   policyChat: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('PolicyChat', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
@@ -273,7 +274,7 @@ export const aiErrorHelpers = {
   },
 
   inventoryScanner: {
-    log: (error: Error | string, action: string, userId?: string, model?: string, metadata?: unknown) =>
+    log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('InventoryScanner', action, userId, model), 'medium'),
     
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
@@ -289,7 +290,7 @@ export const performanceTimer = {
   start: (feature: string, action: string) => {
     const startTime = Date.now()
     return {
-      end: (context: ErrorContext, additionalMetrics?: Record<string, any>) =>
+      end: (context: ErrorContext, additionalMetrics?: Record<string, unknown>) =>
         errorLogger.logPerformance(feature, action, startTime, context, additionalMetrics)
     }
   }

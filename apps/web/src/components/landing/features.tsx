@@ -60,9 +60,9 @@ export function Features() {
   return (
     <section className="px-4 md:px-8 py-20 bg-black/10">
       <AnimatedSection className="max-w-6xl mx-auto text-center">
-        <h2 className="font-slab text-3xl md:text-4xl font-bold">More Than Insurance. It's Total Asset Command.</h2>
+        <h2 className="font-slab text-3xl md:text-4xl font-bold">More Than Insurance. It&apos;s Total Asset Command.</h2>
         <p className="mt-3 max-w-3xl mx-auto text-gray-300">
-          ClaimGuardian evolves with you, creating a living digital twin of your property. From routine maintenance to weathering the storm, we're your partner for the entire lifecycle of ownership.
+          ClaimGuardian evolves with you, creating a living digital twin of your property. From routine maintenance to weathering the storm, we&apos;re your partner for the entire lifecycle of ownership.
         </p>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="value-prop-card p-6 rounded-2xl h-full flex flex-col text-left" style={{ backgroundColor: COLORS.glass.bg, border: `1px solid ${COLORS.glass.border}` }}>
@@ -95,7 +95,7 @@ export function Features() {
               <h3 className="font-bold text-lg">Command Peace of Mind</h3>
             </div>
             <p className="text-sm text-gray-300 flex-grow">
-              Know your property is protected, your coverage is solid, and you're ready for anything. When disaster strikes, you're not a victim; you're prepared. That's the ClaimGuardian advantage.
+              Know your property is protected, your coverage is solid, and you&apos;re ready for anything. When disaster strikes, you&apos;re not a victim; you&apos;re prepared. That&apos;s the ClaimGuardian advantage.
             </p>
           </div>
         </div>

@@ -145,7 +145,7 @@ class AIDocumentExtractionService {
   /**
    * Mock extraction for demonstration purposes
    */
-  private async mockExtraction(_fileName: string): Promise<ExtractionResult> {
+  private async mockExtraction(): Promise<ExtractionResult> {
     // Simulate processing time
     await new Promise(resolve => setTimeout(resolve, 1500))
 

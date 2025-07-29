@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
 import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
@@ -44,7 +44,7 @@ export function LegalConsentForm({
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
 
-  const loadDocuments = async () => {
+  const loadDocuments = useCallback(async () => {
     try {
       setLoading(true)
       setError('')
@@ -74,11 +74,11 @@ export function LegalConsentForm({
     } finally {
       setLoading(false)
     }
-  }
+  }, [mode, userId])
 
   useEffect(() => {
     loadDocuments()
-  }, [userId, mode])
+  }, [loadDocuments])
 
   useEffect(() => {
     const allAccepted = documents.length > 0 && 

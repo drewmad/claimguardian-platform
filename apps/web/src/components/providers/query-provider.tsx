@@ -14,11 +14,11 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             // above 0 to avoid refetching immediately on the client
             staleTime: 60 * 1000, // 1 minute
             gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
-            retry: (failureCount, error: unknown) => {
+            retry: (failureCount, error: { status?: number }) => {
               // Don't retry on 4xx errors
               if (error && typeof error === 'object' && 'status' in error) {
-                const status = (error as any).status
-                if (status >= 400 && status < 500) {
+                const status = error.status
+                if (status && status >= 400 && status < 500) {
                   return false
                 }
               }

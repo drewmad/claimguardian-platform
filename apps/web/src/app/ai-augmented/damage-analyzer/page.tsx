@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useMemo } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Button } from '@/components/ui/button'
@@ -30,7 +30,6 @@ import {
   ChevronDown,
   ChevronUp,
   HelpCircle,
-  Upload,
   Wifi,
   WifiOff
 } from 'lucide-react'
@@ -95,7 +94,7 @@ function DamageAnalyzerContent() {
   
   const { supabase } = useSupabase()
   const { user } = useAuth()
-  const aiClient = new AIClientService()
+  const aiClient = useMemo(() => new AIClientService(), [])
   
   // Load API key status on mount
   useEffect(() => {
@@ -121,7 +120,7 @@ function DamageAnalyzerContent() {
     }
     
     checkKeys()
-  }, [])
+  }, [aiClient])
   
   // Enhanced hooks
   const { isOnline } = useNetworkStatus()
@@ -132,12 +131,12 @@ function DamageAnalyzerContent() {
   // Real-time status (fallback if WebSocket not available)
   const fallbackStatus = useFallbackStatus()
   const realTimeStatus = useRealTimeStatus()
-  const { statusUpdates, systemStatus, sendStatusUpdate } = process.env.NODE_ENV === 'development' 
+  const { systemStatus, sendStatusUpdate } = process.env.NODE_ENV === 'development' 
     ? fallbackStatus 
     : realTimeStatus
   
   // Batch processor for multiple images
-  const { addToQueue, processing: batchProcessing, results: batchResults, clearQueue } = useBatchProcessor(
+  const { clearQueue } = useBatchProcessor(
     async (files: File[]) => {
       const results = []
       for (const file of files) {

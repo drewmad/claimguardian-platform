@@ -81,7 +81,7 @@ export function HowItWorks() {
   return (
     <section id="how-it-works" className="px-4 md:px-8 py-20 bg-[#0a0e1a]">
       <AnimatedSection className="max-w-6xl mx-auto">
-        <h2 className="font-slab text-3xl md:text-4xl font-bold text-center">Your Property's Command Center</h2>
+        <h2 className="font-slab text-3xl md:text-4xl font-bold text-center">Your Property&apos;s Command Center</h2>
         <p className="mt-3 max-w-3xl mx-auto text-center text-gray-300">
           From considering a purchase to managing, maintaining, and eventually selling or donating, ClaimGuardian is your partner for the complete asset lifecycle.
         </p>

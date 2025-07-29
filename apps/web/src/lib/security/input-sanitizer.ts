@@ -208,8 +208,8 @@ class InputSanitizer {
   /**
    * Validate and sanitize form data
    */
-  sanitizeFormData(data: Record<string, any>): Record<string, any> {
-    const sanitized: Record<string, any> = {}
+  sanitizeFormData(data: Record<string, unknown>): Record<string, unknown> {
+    const sanitized: Record<string, unknown> = {}
 
     for (const [key, value] of Object.entries(data)) {
       const sanitizedKey = this.sanitizeText(key, 50)

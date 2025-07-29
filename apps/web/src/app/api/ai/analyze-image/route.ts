@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { AIClient } from '@/lib/ai/client'
 import { inputSanitizer } from '@/lib/security/input-sanitizer'
-import { withRateLimit, rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
+import { withRateLimit, RateLimiter } from '@/lib/security/rate-limiter'
 import { withErrorHandling } from '@/lib/error-handling/async-error-handler'
 import { logger } from '@/lib/logger'
 

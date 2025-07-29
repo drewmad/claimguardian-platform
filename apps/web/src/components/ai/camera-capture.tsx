@@ -3,11 +3,10 @@
 import React from 'react'
 
 interface CameraCaptureProps {
-  onCapture: (file: File) => void
   onClose: () => void
 }
 
-export function CameraCapture({ onCapture, onClose }: CameraCaptureProps) {
+export function CameraCapture({ onClose }: CameraCaptureProps) {
   return (
     <div className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center">
       <div className="bg-white rounded-lg p-6 max-w-md">

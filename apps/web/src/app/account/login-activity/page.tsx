@@ -139,7 +139,7 @@ export default function LoginActivityPage() {
                     Suspicious Activity Detected
                   </h3>
                   <p className="text-sm text-yellow-400/80">
-                    We've detected unusual login patterns on your account. 
+                    We&apos;ve detected unusual login patterns on your account. 
                     Please review recent activity and consider changing your password.
                   </p>
                 </div>

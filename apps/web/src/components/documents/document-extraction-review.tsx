@@ -11,7 +11,7 @@
 
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -50,20 +50,10 @@ export function DocumentExtractionReview({
   const [editedData, setEditedData] = useState<Partial<ExtractedPolicyData>>({})
   const [isApplying, setIsApplying] = useState(false)
 
-  // Check for existing extraction results on mount
-  useEffect(() => {
-    checkExistingExtraction()
-  }, [documentId])
-
-  const checkExistingExtraction = async () => {
+  const checkExistingExtraction = useCallback(async () => {
     try {
-      const { data, error } = await getExtractionResults(documentId)
+      const { data } = await getExtractionResults(documentId)
       
-      if (error) {
-        console.error('Failed to get extraction results:', error)
-        return
-      }
-
       if (data) {
         setExtractionStatus({
           status: data.processing_status as 'idle' | 'processing' | 'completed' | 'failed',
@@ -76,7 +66,12 @@ export function DocumentExtractionReview({
     } catch (error) {
       console.error('Error checking extraction:', error)
     }
-  }
+  }, [documentId])
+
+  // Check for existing extraction results on mount
+  useEffect(() => {
+    checkExistingExtraction()
+  }, [checkExistingExtraction])
 
   const startExtraction = async () => {
     setExtractionStatus({ status: 'processing' })
@@ -105,7 +100,7 @@ export function DocumentExtractionReview({
         setEditedData(data.extracted_data as ExtractedPolicyData)
         toast.success('Document processed successfully!')
       }
-    } catch (error) {
+    } catch {
       setExtractionStatus({ 
         status: 'failed', 
         error: 'Unexpected error during processing' 
@@ -126,7 +121,7 @@ export function DocumentExtractionReview({
       
       toast.success('Policy data applied successfully!')
       onApplied?.()
-    } catch (error) {
+    } catch {
       toast.error('Failed to apply policy data')
     } finally {
       setIsApplying(false)

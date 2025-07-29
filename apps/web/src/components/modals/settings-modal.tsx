@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { X, User, Shield, Bell, Palette, Globe, Key, Save, Trash2, AlertCircle, CheckCircle, Moon, Sun, Monitor, Volume2, VolumeX, Mail, Phone, Lock, Eye, EyeOff, Smartphone, Settings as SettingsIcon, Wrench, FileText } from 'lucide-react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { profileService, UserProfile } from '@/lib/auth/profile-service'
@@ -77,21 +77,7 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
     { id: 'warranty', label: 'Warranty Center', icon: Wrench },
   ] as const
 
-  // Load profile data
-  useEffect(() => {
-    if (isOpen && user) {
-      loadProfile()
-    }
-  }, [isOpen, user])
-
-  // Update active tab when defaultTab changes
-  useEffect(() => {
-    if (isOpen) {
-      setActiveTab(defaultTab)
-    }
-  }, [isOpen, defaultTab])
-
-  const loadProfile = async () => {
+  const loadProfile = useCallback(async () => {
     if (!user) return
     
     setLoading(true)
@@ -111,7 +97,14 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
     } finally {
       setLoading(false)
     }
-  }
+  }, [user])
+
+  // Load profile data
+  useEffect(() => {
+    if (isOpen && user) {
+      loadProfile()
+    }
+  }, [isOpen, user, loadProfile])
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()

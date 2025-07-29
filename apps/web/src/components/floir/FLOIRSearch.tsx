@@ -162,7 +162,7 @@ export default function FLOIRSearch() {
                     Found {results.total_results} results in {results.search_time_ms}ms
                   </p>
                   <Badge variant="outline">
-                    Query: "{results.query}"
+                    Query: &quot;{results.query}&quot;
                   </Badge>
                 </div>
               </div>
@@ -171,7 +171,7 @@ export default function FLOIRSearch() {
 
           {/* Search Results */}
           <div className="space-y-4">
-            {results.results.map((result, index) => (
+            {results.results.map((result) => (
               <Card 
                 key={result.id}
                 className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"

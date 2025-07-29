@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +11,7 @@ import { FolderOpen, Upload, Search, FileText, Video, File, Download, Trash2, Ey
 import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
 import { useDropzone } from 'react-dropzone'
+import Image from 'next/image'
 
 interface Evidence {
   id: string
@@ -42,8 +43,7 @@ export default function EvidenceOrganizerPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [isUploading, setIsUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [, setIsUploading] = useState(false)
   const { user } = useAuth()
 
   const onDrop = async (acceptedFiles: File[]) => {
@@ -427,9 +427,11 @@ export default function EvidenceOrganizerPage() {
                         >
                           <div className="relative">
                             {item.thumbnail ? (
-                              <img
+                              <Image
                                 src={item.thumbnail}
                                 alt={item.name}
+                                width={400}
+                                height={192}
                                 className="w-full h-48 object-cover"
                               />
                             ) : (
