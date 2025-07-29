@@ -2,6 +2,11 @@
 export * from './types/database.types'
 export * from './schema'
 
+// Export domain-specific types
+export * from './types/asset'
+export * from './types/claim'
+export * from './types/insurance'
+
 import type { Database } from './types/database.types'
 
 // Export Supabase client factory functions

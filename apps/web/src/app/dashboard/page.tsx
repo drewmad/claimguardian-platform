@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { 
   Shield, Building, TrendingUp, Wrench, CheckCircle, 
   AlertCircle, CloudRain, Wind, Droplets, Activity,
@@ -10,10 +10,59 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
+import { useSupabase } from '@/lib/supabase/client'
+import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 
 function DashboardContent() {
   const { user } = useAuth()
   const router = useRouter()
+  const { supabase } = useSupabase()
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const checkOnboardingStatus = async () => {
+      if (!user) return
+
+      try {
+        const { data, error } = await supabase
+          .from('user_preferences')
+          .select('onboarding_completed')
+          .eq('user_id', user.id)
+          .single()
+
+        if (error && error.code !== 'PGRST116') {
+          console.error('Error checking onboarding:', error)
+        }
+
+        // Show onboarding if not completed or no record exists
+        if (!data?.onboarding_completed) {
+          setShowOnboarding(true)
+        }
+      } catch (error) {
+        console.error('Error checking onboarding status:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    checkOnboardingStatus()
+  }, [user, supabase])
+
+
+  if (loading) {
+    return (
+      <DashboardLayout>
+        <div className="flex items-center justify-center h-screen">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
+  if (showOnboarding) {
+    return <OnboardingFlow />
+  }
 
   return (
     <DashboardLayout>

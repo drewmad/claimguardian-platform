@@ -15,6 +15,7 @@ import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
 import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { getAuthCallbackURL } from '@/lib/utils/site-url'
+import { userTracker } from '@/lib/tracking/user-tracker'
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {
@@ -186,6 +187,12 @@ class AuthService {
           'AUTH_INVALID_RESPONSE'
         )
       }
+
+      // Track successful login
+      await userTracker.trackLogin({
+        userId: authData.user.id,
+        loginMethod: 'email'
+      })
 
       // Store remember me preference
       if (data.rememberMe !== undefined) {
