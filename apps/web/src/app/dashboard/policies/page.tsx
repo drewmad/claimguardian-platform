@@ -72,7 +72,7 @@ function PoliciesContent() {
                       <Home className="w-5 h-5 mb-2" />
                       <p className="font-medium">{property.name}</p>
                       <p className="text-sm opacity-75">
-                        {property.address?.street || property.address?.addressLine1 || 'No address'}
+                        {property.address?.street || 'No address'}
                       </p>
                     </button>
                   ))}

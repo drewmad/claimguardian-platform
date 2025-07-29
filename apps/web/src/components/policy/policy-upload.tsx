@@ -262,7 +262,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
             )}
             <Button
               onClick={resetUpload}
-              variant="outline"
+              variant="secondary"
               className="border-gray-600 text-gray-300"
             >
               Upload Another Policy
