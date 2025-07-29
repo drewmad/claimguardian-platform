@@ -147,7 +147,7 @@ export function useDeviceTracking(): TrackingInfo {
         })
       }
     } catch (error) {
-      logger.warn('Failed to capture location info', error as Error)
+      logger.warn('Failed to capture location info', { error: (error as Error).message })
       
       // Fallback to timezone-based location guess
       const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone

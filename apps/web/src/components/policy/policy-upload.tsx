@@ -32,6 +32,49 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
   })
   const [uploadedDocument, setUploadedDocument] = useState<{ id: string; file_name?: string; carrier_name?: string; policy_number?: string; effective_date?: string; expiration_date?: string } | null>(null)
 
+  // Define pollExtractionStatus before it's used
+  const pollExtractionStatus = useCallback(async (documentId: string) => {
+    const maxAttempts = 30 // 30 seconds timeout
+    let attempts = 0
+
+    const checkStatus = async () => {
+      const { data, error } = await supabase
+        .from('policy_documents')
+        .select('extraction_status, extracted_data')
+        .eq('id', documentId)
+        .single()
+
+      if (error || !data) return
+
+      if (data.extraction_status === 'completed' && data.extracted_data) {
+        setUploadedDocument(prev => ({
+          ...prev!,
+          ...data.extracted_data
+        }))
+        return true
+      }
+
+      if (data.extraction_status === 'failed') {
+        toast.error('Failed to extract policy data')
+        return true
+      }
+
+      return false
+    }
+
+    const interval = setInterval(async () => {
+      attempts++
+      const isComplete = await checkStatus()
+      
+      if (isComplete || attempts >= maxAttempts) {
+        clearInterval(interval)
+        if (attempts >= maxAttempts) {
+          toast.warning('Policy extraction is taking longer than expected')
+        }
+      }
+    }, 1000)
+  }, [supabase])
+
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!user || acceptedFiles.length === 0) return
 
@@ -140,48 +183,6 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
       toast.error('Failed to upload policy document')
     }
   }, [user, propertyId, supabase, onUploadComplete, pollExtractionStatus])
-
-  const pollExtractionStatus = useCallback(async (documentId: string) => {
-    const maxAttempts = 30 // 30 seconds timeout
-    let attempts = 0
-
-    const checkStatus = async () => {
-      const { data, error } = await supabase
-        .from('policy_documents_extended')
-        .select('extraction_status, extracted_data')
-        .eq('id', documentId)
-        .single()
-
-      if (error || !data) return
-
-      if (data.extraction_status === 'completed') {
-        setUploadStatus({
-          stage: 'complete',
-          progress: 100,
-          message: 'Policy analysis complete!'
-        })
-        toast.success('Policy data extracted successfully')
-        return
-      }
-
-      if (data.extraction_status === 'failed') {
-        setUploadStatus({
-          stage: 'error',
-          progress: 0,
-          message: 'AI extraction failed',
-          error: 'Failed to extract policy data'
-        })
-        return
-      }
-
-      attempts++
-      if (attempts < maxAttempts) {
-        setTimeout(checkStatus, 1000)
-      }
-    }
-
-    setTimeout(checkStatus, 1000)
-  }, [supabase])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

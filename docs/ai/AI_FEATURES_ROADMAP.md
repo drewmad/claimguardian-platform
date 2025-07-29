@@ -141,6 +141,12 @@ This document outlines the comprehensive AI-powered features planned for the Cla
 - **Data Retention**: Configurable retention policies
 - **User Consent**: Explicit consent management
 
+## Future Features
+
+### User Experience Enhancements
+- **A/B Testing Framework**: Test different AI prompts and UI variations to optimize user experience
+- **User Feedback Collection**: In-app feedback system to gather user insights on AI feature performance
+
 ## Development Guidelines
 
 ### AI Model Integration

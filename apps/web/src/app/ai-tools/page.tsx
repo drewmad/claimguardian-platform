@@ -110,7 +110,7 @@ const AI_TOOLS: AITool[] = [
     icon: Calculator,
     color: 'yellow',
     href: '/ai-tools/settlement-analyzer',
-    status: 'coming-soon',
+    status: 'active',
     category: 'analysis',
     features: ['Offer Analysis', 'Market Comparison', 'Negotiation Tips', 'Fair Value Assessment']
   },
