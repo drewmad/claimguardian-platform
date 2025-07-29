@@ -139,9 +139,9 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
       })
       toast.error('Failed to upload policy document')
     }
-  }, [user, propertyId, supabase, onUploadComplete])
+  }, [user, propertyId, supabase, onUploadComplete, pollExtractionStatus])
 
-  const pollExtractionStatus = async (documentId: string) => {
+  const pollExtractionStatus = useCallback(async (documentId: string) => {
     const maxAttempts = 30 // 30 seconds timeout
     let attempts = 0
 
@@ -181,7 +181,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
     }
 
     setTimeout(checkStatus, 1000)
-  }
+  }, [supabase])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,

@@ -2,11 +2,11 @@
  * Debug API route to test legal documents loading
  */
 
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
 
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     logger.info('Debug: Testing legal documents API')
     

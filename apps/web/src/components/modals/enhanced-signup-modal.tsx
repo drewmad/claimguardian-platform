@@ -12,14 +12,15 @@ import { useModalStore } from '@/stores/modal-store'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
 import { authService } from '@/lib/auth/auth-service'
-import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { useRateLimit } from '@/hooks/use-rate-limit'
+import { useDeviceTracking } from '@/hooks/use-device-tracking'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 import type { SignupData } from '@claimguardian/db'
 
 export function EnhancedSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
   const { signUp, error, clearError } = useAuth()
+  const { device, location, isLoading: isTrackingLoading } = useDeviceTracking()
   const [loading, setLoading] = useState(false)
   const [loadingLocation, setLoadingLocation] = useState(false)
   const [resending, setResending] = useState(false)
@@ -45,13 +46,10 @@ export function EnhancedSignupModal() {
   // Legal document state
   const [acceptedDocuments, setAcceptedDocuments] = useState<string[]>([])
   
-  // Tracking data state
-  const [trackingData, setTrackingData] = useState<{
-    ipAddress?: string
-    userAgent?: string
-    deviceFingerprint?: string
-    geolocation?: any
+  // URL and referrer data
+  const [urlData, setUrlData] = useState<{
     referrer?: string
+    landingPage?: string
     utmParams?: any
   }>({})
   
@@ -61,62 +59,38 @@ export function EnhancedSignupModal() {
   const [validationError, setValidationError] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
 
-  // Capture tracking data on mount
+  // Capture URL data on mount
   useEffect(() => {
     if (activeModal === 'signup') {
-      captureTrackingData()
+      captureUrlData()
       clearError()
       setValidationError('')
       logger.track('enhanced_signup_modal_opened')
     }
   }, [activeModal, clearError])
 
-  const captureTrackingData = async () => {
-    try {
-      setLoadingLocation(true)
-      
-      // Get device info and fingerprint (simplified for now)
-      const deviceInfo = {
-        userAgent: navigator.userAgent,
-        fingerprint: crypto.randomUUID()
-      }
-      
-      // Get location data (simplified for now)
-      const locationData = {
-        ip: 'unknown',
-        geolocation: null
-      }
-      
-      // Get UTM params from URL
-      const urlParams = new URLSearchParams(window.location.search)
-      const utmParams = {
-        source: urlParams.get('utm_source'),
-        medium: urlParams.get('utm_medium'),
-        campaign: urlParams.get('utm_campaign'),
-        term: urlParams.get('utm_term'),
-        content: urlParams.get('utm_content')
-      }
-      
-      setTrackingData({
-        ipAddress: locationData.ip,
-        userAgent: deviceInfo.userAgent,
-        deviceFingerprint: deviceInfo.fingerprint,
-        geolocation: locationData.geolocation,
-        referrer: document.referrer || undefined,
-        utmParams: Object.values(utmParams).some(v => v) ? utmParams : undefined
-      })
-      
-      logger.track('signup_tracking_data_captured', {
-        hasIp: !!locationData.ip,
-        hasFingerprint: !!deviceInfo.fingerprint,
-        hasGeolocation: !!locationData.geolocation,
-        hasUtm: !!utmParams.source
-      })
-    } catch (error) {
-      logger.error('Failed to capture tracking data', {}, error as Error)
-    } finally {
-      setLoadingLocation(false)
+  const captureUrlData = () => {
+    // Get UTM params from URL
+    const urlParams = new URLSearchParams(window.location.search)
+    const utmParams = {
+      source: urlParams.get('utm_source'),
+      medium: urlParams.get('utm_medium'),
+      campaign: urlParams.get('utm_campaign'),
+      term: urlParams.get('utm_term'),
+      content: urlParams.get('utm_content')
     }
+    
+    setUrlData({
+      referrer: document.referrer || undefined,
+      landingPage: window.location.pathname,
+      utmParams: Object.values(utmParams).some(v => v) ? utmParams : undefined
+    })
+    
+    logger.track('signup_url_data_captured', {
+      hasReferrer: !!document.referrer,
+      hasUtm: !!utmParams.source,
+      landingPage: window.location.pathname
+    })
   }
 
   if (activeModal !== 'signup') return null
@@ -166,7 +140,15 @@ export function EnhancedSignupModal() {
       const signupData: SignupData = {
         ...formData,
         acceptedDocuments,
-        ...trackingData
+        // Device and location data
+        deviceFingerprint: device.fingerprint,
+        deviceType: device.type,
+        screenResolution: device.screenResolution,
+        geolocation: location,
+        // URL data
+        referrer: urlData.referrer,
+        landingPage: urlData.landingPage,
+        utmParams: urlData.utmParams
       }
       
       const success = await signUp(signupData)
@@ -278,7 +260,7 @@ export function EnhancedSignupModal() {
             
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
               <p className="text-blue-300 font-medium mb-2">
-                ✉️ We've sent a confirmation email to:
+                ✉️ We&apos;ve sent a confirmation email to:
               </p>
               <p className="text-white font-semibold">
                 {formData.email}
@@ -298,7 +280,7 @@ export function EnhancedSignupModal() {
             
             <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
               <p className="text-xs text-slate-400">
-                Can't find the email? Check your spam folder or click below to resend.
+                Can&apos;t find the email? Check your spam folder or click below to resend.
               </p>
               <button
                 onClick={handleResendEmail}
@@ -366,16 +348,16 @@ export function EnhancedSignupModal() {
             <p className="text-sm text-gray-400 mt-2">Join ClaimGuardian to protect your property</p>
             
             {/* Location indicator */}
-            {loadingLocation ? (
+            {isTrackingLoading ? (
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
                 <Loader2 className="w-3 h-3 animate-spin" />
                 <span>Detecting your location for security...</span>
               </div>
-            ) : trackingData.geolocation && (
+            ) : location && (
               <div className="mt-4 flex items-center justify-center gap-2 text-xs text-slate-500">
                 <Globe className="w-3 h-3" />
-                <span>{trackingData.geolocation.city}, {trackingData.geolocation.region}</span>
-                {trackingData.deviceFingerprint && (
+                <span>{location.city || location.region || location.country || 'Location detected'}</span>
+                {device.fingerprint && (
                   <>
                     <span className="text-slate-600">•</span>
                     <Fingerprint className="w-3 h-3" />
@@ -534,7 +516,7 @@ export function EnhancedSignupModal() {
               <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider">Legal Agreements</h3>
               
               <LegalConsentForm
-                onConsentChange={(hasAllConsents) => {
+                onConsentChange={() => {
                   // This is handled by onSubmit
                 }}
                 onSubmit={async (documentIds) => {

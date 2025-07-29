@@ -156,12 +156,27 @@ export interface SignupData {
   // Legal consents
   acceptedDocuments: string[]; // Array of document IDs
   
-  // Tracking data
+  // Device tracking data
   ipAddress?: string;
   userAgent?: string;
   deviceFingerprint?: string;
-  geolocation?: Geolocation;
+  deviceType?: 'mobile' | 'tablet' | 'desktop';
+  screenResolution?: string;
+  
+  // Location data
+  geolocation?: {
+    country?: string;
+    region?: string;
+    city?: string;
+    postalCode?: string;
+    timezone?: string;
+    latitude?: number;
+    longitude?: number;
+  };
+  
+  // Attribution data
   referrer?: string;
+  landingPage?: string;
   utmParams?: {
     source?: string;
     medium?: string;
@@ -174,6 +189,7 @@ export interface SignupData {
   gdprConsent?: boolean;
   marketingConsent?: boolean;
   dataProcessingConsent?: boolean;
+  aiProcessingConsent?: boolean;
 }
 
 export interface EnhancedProfile {

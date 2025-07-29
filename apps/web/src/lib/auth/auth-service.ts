@@ -40,12 +40,16 @@ interface SignUpData {
   gdprConsent?: boolean
   marketingConsent?: boolean
   dataProcessingConsent?: boolean
+  aiProcessingConsent?: boolean
   // Tracking data
   ipAddress?: string
   userAgent?: string
   deviceFingerprint?: string
+  deviceType?: 'mobile' | 'tablet' | 'desktop'
+  screenResolution?: string
   geolocation?: any
   referrer?: string
+  landingPage?: string
   utmParams?: {
     source?: string
     medium?: string
@@ -150,6 +154,34 @@ class AuthService {
       })
 
       logger.info('User signup successful', { userId: authData.user.id })
+      
+      // Capture comprehensive signup tracking data
+      try {
+        const { captureSignupData } = await import('@/actions/user-tracking')
+        await captureSignupData({
+          userId: authData.user.id,
+          eventType: 'signup_completed',
+          preferences: {
+            gdprConsent: data.gdprConsent || false,
+            marketingConsent: data.marketingConsent || false,
+            dataProcessingConsent: data.dataProcessingConsent || false,
+            aiProcessingConsent: data.dataProcessingConsent || false // Default to data processing consent
+          },
+          deviceInfo: {
+            fingerprint: data.deviceFingerprint,
+            type: data.deviceType,
+            screenResolution: data.screenResolution
+          },
+          location: data.geolocation,
+          utm: data.utmParams,
+          referrer: data.referrer,
+          landingPage: data.landingPage
+        })
+      } catch (trackingError) {
+        // Don't fail signup if tracking fails
+        logger.error('Failed to capture signup tracking data', { userId: authData.user.id }, trackingError as Error)
+      }
+      
       return { data: authData.user }
     } catch (error) {
       console.error('[AUTH DEBUG] Signup process failed', {

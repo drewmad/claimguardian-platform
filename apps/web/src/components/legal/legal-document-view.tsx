@@ -23,36 +23,37 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const loadDocument = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        
+        const doc = await legalService.getDocumentByType(documentType)
+        
+        if (!doc) {
+          setError('Document not found')
+          return
+        }
+        
+        setDocument(doc)
+        
+        logger.track('legal_document_viewed', {
+          documentType,
+          documentId: doc.id,
+          version: doc.version
+        })
+        
+      } catch (err) {
+        logger.error('Failed to load legal document', { documentType }, err instanceof Error ? err : new Error(String(err)))
+        setError('Failed to load document. Please try again.')
+      } finally {
+        setLoading(false)
+      }
+    }
+
     loadDocument()
   }, [documentType])
 
-  const loadDocument = async () => {
-    try {
-      setLoading(true)
-      setError('')
-      
-      const doc = await legalService.getDocumentByType(documentType)
-      
-      if (!doc) {
-        setError('Document not found')
-        return
-      }
-      
-      setDocument(doc)
-      
-      // Track document view
-      logger.track('legal_document_viewed', {
-        documentType,
-        version: doc.version,
-        documentId: doc.id
-      })
-    } catch (err) {
-      logger.error('Failed to load legal document', { documentType }, err as Error)
-      setError('Failed to load document. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
 
   const handlePrint = () => {
     window.print()
