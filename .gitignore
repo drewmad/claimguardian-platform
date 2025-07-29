@@ -234,6 +234,13 @@ UNUSED_FILES_REPORT.md
 REPO_CLEANUP_ANALYSIS.json
 REPOSITORY_FINAL_CLEANUP_PLAN.md
 
+# AI documentation and reports
+AI_AUGMENTATION_REPORT.md
+AI_FEATURE_BACKLOG.csv
+AI_IMPLEMENTATION_EXAMPLES.md
+AI_IMPLEMENTATION_ROADMAP.md
+AI_SPRINT_PLAN.md
+
 # Large agent directories (if they become too large)
 agents/temp/
 agents/output/
