@@ -12,7 +12,6 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
-import { legalService } from '@/lib/legal/legal-service'
 import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
 import { LegalDocumentModal } from './legal-document-modal'

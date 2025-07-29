@@ -65,6 +65,32 @@ class LegalServiceClientFix {
       throw error
     }
   }
+
+  /**
+   * Get legal document content by slug
+   */
+  async getDocumentContent(slug: string): Promise<string> {
+    try {
+      const response = await fetch(`/api/legal/${slug}`)
+      
+      if (!response.ok) {
+        const error = await response.json()
+        throw new Error(error.message || 'Failed to fetch document content')
+      }
+      
+      // Check if response is HTML or JSON
+      const contentType = response.headers.get('content-type')
+      if (contentType?.includes('text/html')) {
+        return await response.text()
+      } else {
+        const { data } = await response.json()
+        return data?.content || ''
+      }
+    } catch (error) {
+      logger.error('Failed to fetch document content', { slug }, error as Error)
+      throw error
+    }
+  }
 }
 
 export const legalServiceClientFix = new LegalServiceClientFix()

@@ -11,7 +11,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { X, FileText, Calendar, Hash, ExternalLink } from 'lucide-react'
+import { X, FileText, Calendar, ExternalLink } from 'lucide-react'
 import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
 import type { LegalDocument } from '@claimguardian/db'
@@ -36,36 +36,70 @@ export function LegalDocumentModal({
   const [error, setError] = useState('')
 
   useEffect(() => {
+    const loadDocumentContent = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        
+        // Try to fetch content from Supabase via our legal service
+        const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
+        setContent(htmlContent)
+        
+        logger.track('legal_document_modal_opened', {
+          documentId: document.id,
+          slug: document.slug,
+          version: document.version
+        })
+        
+      } catch (err) {
+        logger.error('Failed to load document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
+        setError('Failed to load document content.')
+        
+        // Fallback to direct content if available from the document object
+        if (document.content) {
+          setContent(document.content)
+        } else if (document.storage_url) {
+          // If we have a storage URL, try to load from there
+          try {
+            const response = await fetch(document.storage_url)
+            if (response.ok) {
+              const fallbackContent = await response.text()
+              setContent(fallbackContent)
+              setError('') // Clear error if fallback succeeds
+            } else {
+              setContent('Document content is not available at this time.')
+            }
+          } catch {
+            setContent('Document content is not available at this time.')
+          }
+        } else {
+          setContent('Document content is not available.')
+        }
+      } finally {
+        setLoading(false)
+      }
+    }
+
     if (isOpen && document) {
       loadDocumentContent()
     }
   }, [isOpen, document])
 
   const loadDocumentContent = async () => {
+    // This function is now only used for retry button
+    if (!document) return
+    
     try {
       setLoading(true)
       setError('')
       
-      // Try to fetch content from the legal service
-      const response = await fetch(`/api/legal/${document.slug}`)
-      if (response.ok) {
-        const html = await response.text()
-        setContent(html)
-      } else {
-        // Fallback to direct content if available
-        setContent(document.content || 'Document content not available.')
-      }
-      
-      logger.track('legal_document_modal_opened', {
-        documentId: document.id,
-        slug: document.slug,
-        version: document.version
-      })
+      const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
+      setContent(htmlContent)
       
     } catch (err) {
-      logger.error('Failed to load document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
+      logger.error('Failed to reload document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
       setError('Failed to load document content.')
-      setContent(document.content || 'Document content not available.')
+      setContent('Document content is not available.')
     } finally {
       setLoading(false)
     }
