@@ -23,7 +23,7 @@ interface ActivityData {
   activityType: string
   activityName: string
   activityCategory?: string
-  activityValue?: any
+  activityValue?: string | number | boolean | Record<string, unknown>
   pageUrl?: string
   pageTitle?: string
 }
@@ -167,7 +167,7 @@ class UserTracker {
   }
 
   // Track feature usage
-  trackFeatureUse(userId: string, featureName: string, category?: string, value?: any) {
+  trackFeatureUse(userId: string, featureName: string, category?: string, value?: string | number | boolean | Record<string, unknown>) {
     this.logActivity({
       userId,
       sessionId: this.sessionId,
@@ -190,7 +190,7 @@ class UserTracker {
   }
 
   // Track errors
-  trackError(userId: string, errorMessage: string, errorDetails?: any) {
+  trackError(userId: string, errorMessage: string, errorDetails?: string | number | boolean | Record<string, unknown>) {
     this.logActivity({
       userId,
       sessionId: this.sessionId,

@@ -42,8 +42,32 @@ const VALIDATION_SCHEMA = {
     4: ['hasMortgage'],
 };
 
+// --- Types ---
+interface WizardState {
+    step: number
+    ownershipStatus: string
+    selectedProperty: string
+    basicInfo: { propertyName: string; propertyType: string }
+    propertyDetails: { bedrooms: string; bathrooms: string; isHOA: string }
+    insuranceInfo: { hasHomeownersRenters: string; hasFlood: string }
+    financialInfo: { hasMortgage: string; lenderName: string; monthlyPayment: string }
+    errors: Record<string, string>
+    isSaving: boolean
+    isLoading: boolean
+}
+
+type WizardAction = 
+    | { type: 'UPDATE_FIELD'; payload: { section?: string; field: string; value: string } }
+    | { type: 'NEXT_STEP' }
+    | { type: 'PREV_STEP' }
+    | { type: 'SET_ERRORS'; payload: Record<string, string> }
+    | { type: 'SET_SAVING'; payload: boolean }
+    | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'LOAD_STATE'; payload: Partial<WizardState> }
+    | { type: 'RESET' }
+
 // --- Reducer for State Management ---
-const initialState = {
+const initialState: WizardState = {
     step: 1,
     ownershipStatus: '', // 'own' or 'rent'
     selectedProperty: '', // Full address
@@ -56,7 +80,7 @@ const initialState = {
     isLoading: false,
 };
 
-function wizardReducer(state: any, action: any) {
+function wizardReducer(state: WizardState, action: WizardAction): WizardState {
     switch (action.type) {
         case 'UPDATE_FIELD':
             const { section, field, value } = action.payload;
@@ -79,17 +103,17 @@ function wizardReducer(state: any, action: any) {
         case 'RESET':
             return initialState;
         default:
-            throw new Error(`Unhandled action type: ${action.type}`);
+            throw new Error(`Unhandled action type: ${(action as { type: string }).type}`);
     }
 }
 
 // --- Custom Hooks ---
-const useFormValidation = (state: any) => {
+const useFormValidation = (state: WizardState) => {
     const validateStep = (step: number) => {
         const requiredFields = VALIDATION_SCHEMA[step as keyof typeof VALIDATION_SCHEMA];
         if (!requiredFields) return {};
 
-        const errors: any = {};
+        const errors: Record<string, string> = {};
         requiredFields.forEach(field => {
             // This handles nested and top-level fields
             if (field in state && !state[field]) {
@@ -105,7 +129,7 @@ const useFormValidation = (state: any) => {
     return { validateStep };
 };
 
-const useAutoSave = (state: any, dispatch: any) => {
+const useAutoSave = (state: WizardState, dispatch: React.Dispatch<WizardAction>) => {
     useEffect(() => {
         const handler = setTimeout(() => {
             if (state.step > 1 || state.ownershipStatus) { // Don't save initial blank state
@@ -216,7 +240,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     <header className={`flex items-center justify-between p-6 border-b ${COLORS.border} flex-shrink-0`}>
                         <div>
                             <h1 className={`text-xl font-bold ${COLORS.textPrimary}`}>Add New Property</h1>
-                            <p className={COLORS.textSecondary}>Create your primary asset: "My Home"</p>
+                            <p className={COLORS.textSecondary}>Create your primary asset: &quot;My Home&quot;</p>
                         </div>
                         <div className="flex items-center gap-4">
                              <div className={`text-sm ${COLORS.textSecondary} transition-opacity duration-500 ${state.isSaving ? 'opacity-100' : 'opacity-0'}`}>
@@ -329,7 +353,7 @@ const ButtonGroup: React.FC<ButtonGroupProps> = ({ options, selectedValue, onCha
 );
 
 interface StepProps {
-    state: any;
+    state: WizardState;
     onChange: (section: string | null, field: string, value: string) => void;
 }
 
@@ -408,7 +432,7 @@ const Step3: React.FC<StepProps> = ({ state, onChange }) => (
 
 const Step4: React.FC<StepProps> = ({ state, onChange }) => (
     <div className="space-y-8">
-        <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>Let's cover the financials.</h2>
+        <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>Let&apos;s cover the financials.</h2>
         <div>
             <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Do you have a mortgage or loan on the property?</label>
             <ButtonGroup
@@ -441,7 +465,7 @@ const ReviewItem: React.FC<ReviewItemProps> = ({ label, value }) => (
 );
 
 interface Step5Props {
-    state: any;
+    state: WizardState;
 }
 
 const Step5: React.FC<Step5Props> = ({ state }) => (

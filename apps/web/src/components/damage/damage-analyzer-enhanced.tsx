@@ -5,7 +5,6 @@ import { Shield, AlertCircle, CheckCircle, FileText, DollarSign, AlertTriangle }
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
 import { Badge } from '@/components/ui/badge'
-import { Textarea } from '@/components/ui/textarea'
 import { useSupabase } from '@/lib/supabase/client'
 import { usePolicyData, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
 import { toast } from 'sonner'
@@ -17,7 +16,7 @@ interface DamageAnalyzerEnhancedProps {
   damageDescription: string
   estimatedValue: number
   images?: string[]
-  onAnalysisComplete?: (analysis: any) => void
+  onAnalysisComplete?: (analysis: CoverageAnalysis) => void
 }
 
 interface CoverageAnalysis {

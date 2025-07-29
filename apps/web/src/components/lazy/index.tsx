@@ -17,7 +17,7 @@ interface AIChatInterfaceProps {
   systemPrompt: string
   placeholder?: string
   welcomeMessage?: string
-  onSendMessage: (message: string, history: any[]) => Promise<string>
+  onSendMessage: (message: string, history: Array<{ role: string; content: string }>) => Promise<string>
   className?: string
 }
 

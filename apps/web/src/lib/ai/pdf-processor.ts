@@ -43,7 +43,7 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
       let lastY: number | null = null
       
       // Process text items to reconstruct lines
-      textContent.items.forEach((item: any) => {
+      textContent.items.forEach((item: { str?: string; transform?: number[] }) => {
         if ('str' in item) {
           // Check if this is a new line based on Y position
           if (lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
@@ -76,7 +76,7 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
     // Extract metadata
     const metadata = await pdf.getMetadata()
     
-    const info = metadata.info as any
+    const info = metadata.info as { Title?: string; Author?: string; Subject?: string; Keywords?: string; CreationDate?: string; ModDate?: string }
     
     return {
       text: fullText,
@@ -133,7 +133,7 @@ export function extractPolicyData(pdfText: string): {
   standardDeductible?: number
   windDeductible?: string
 } {
-  const data: any = {}
+  const data: Record<string, string | number> = {}
   
   // Common patterns for policy data extraction
   const patterns = {

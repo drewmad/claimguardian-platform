@@ -162,7 +162,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
 
       return () => {
         document.head.removeChild(script)
-        delete (window as any).initGooglePlaces
+        delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
       }
     }
 

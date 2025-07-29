@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, FileText, Loader2, CheckCircle, AlertCircle, X } from 'lucide-react'
+import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react'
 import { Button } from '@claimguardian/ui'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSupabase } from '@/lib/supabase/client'
@@ -30,7 +30,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
     progress: 0,
     message: ''
   })
-  const [uploadedDocument, setUploadedDocument] = useState<any>(null)
+  const [uploadedDocument, setUploadedDocument] = useState<{ id: string; carrier_name?: string; policy_number?: string; effective_date?: string; expiration_date?: string } | null>(null)
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     if (!user || acceptedFiles.length === 0) return
@@ -59,7 +59,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}/${propertyId}/${Date.now()}.${fileExt}`
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('policy-documents')
         .upload(fileName, file)
 
@@ -100,7 +100,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
         message: 'Analyzing policy with AI...'
       })
 
-      const { data: extractData, error: extractError } = await supabase.functions.invoke(
+      const { error: extractError } = await supabase.functions.invoke(
         'extract-policy-data',
         {
           body: {

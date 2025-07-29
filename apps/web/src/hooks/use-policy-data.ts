@@ -19,9 +19,9 @@ interface PolicyDocument {
   hurricane_deductible: string | null
   flood_deductible: number | null
   extraction_status: string
-  special_coverages: any[]
+  special_coverages: Array<{ type: string; limit?: number; deductible?: string }>
   exclusions: string[]
-  endorsements: any[]
+  endorsements: Array<{ name: string; description?: string }>
   created_at: string
 }
 

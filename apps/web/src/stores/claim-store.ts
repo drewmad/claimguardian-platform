@@ -401,7 +401,6 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c => {
             if (c.id === claimId) {
-              const oldPayment = (c.payments || []).find(p => p.id === paymentId)
               const updatedPayments = (c.payments || []).map(p =>
                 p.id === paymentId ? { ...p, ...updates } : p
               )
@@ -440,7 +439,6 @@ export const useClaimStore = create<ClaimState>()(
       
       // Settlement offers
       addSettlementOffer: (claimId, offer) => {
-        const offerWithId: SettlementOffer = { ...offer, id: generateId(), claimId }
         // Store settlement offers in a separate field if needed
         set(state => ({
           claims: state.claims.map(c =>
@@ -451,7 +449,7 @@ export const useClaimStore = create<ClaimState>()(
         }))
       },
       
-      updateSettlementOffer: (claimId, offerId, updates) => {
+      updateSettlementOffer: (claimId) => {
         // Update settlement offer logic
         set(state => ({
           claims: state.claims.map(c =>
@@ -464,7 +462,6 @@ export const useClaimStore = create<ClaimState>()(
       
       // Appeals
       addAppeal: (claimId, appeal) => {
-        const appealWithId: ClaimAppeal = { ...appeal, id: generateId(), claimId }
         // Store appeals in a separate field if needed
         set(state => ({
           claims: state.claims.map(c =>
@@ -475,7 +472,7 @@ export const useClaimStore = create<ClaimState>()(
         }))
       },
       
-      updateAppeal: (claimId, appealId, updates) => {
+      updateAppeal: (claimId) => {
         // Update appeal logic
         set(state => ({
           claims: state.claims.map(c =>

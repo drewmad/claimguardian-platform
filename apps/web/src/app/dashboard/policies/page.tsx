@@ -7,8 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
 import { Badge } from '@/components/ui/badge'
 import { 
-  FileText, Upload, Shield, Calendar, DollarSign, 
-  AlertCircle, CheckCircle, Plus, Eye, Download,
+  FileText, Upload, Shield, DollarSign, 
+  AlertCircle, Plus, Eye, Download,
   Home, Droplets, Wind, AlertTriangle
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
@@ -28,10 +28,7 @@ function PoliciesContent() {
   const { properties } = usePropertyStore()
   const [selectedPropertyId, setSelectedPropertyId] = useState<string>(properties[0]?.id || '')
   const [showUpload, setShowUpload] = useState(false)
-  const { policies, activePolicy, loading, refetch } = usePolicyData(selectedPropertyId)
-
-  const selectedProperty = properties.find(p => p.id === selectedPropertyId)
-  const policyInfo = activePolicy ? getPolicyCoverageInfo(activePolicy) : null
+  const { policies, activePolicy, refetch } = usePolicyData(selectedPropertyId)
 
   const getCoverageIcon = (type: string) => {
     if (type.toLowerCase().includes('flood')) return <Droplets className="w-4 h-4" />
@@ -193,7 +190,7 @@ function PoliciesContent() {
                   <div>
                     <h3 className="text-white font-medium mb-4">Special Coverages</h3>
                     <div className="space-y-2">
-                      {activePolicy.special_coverages.map((coverage: any, idx: number) => (
+                      {activePolicy.special_coverages.map((coverage: { type: string; limit?: number }, idx: number) => (
                         <div key={idx} className="flex items-center justify-between bg-gray-700/50 rounded-lg p-3">
                           <div className="flex items-center gap-2">
                             {getCoverageIcon(coverage.type)}

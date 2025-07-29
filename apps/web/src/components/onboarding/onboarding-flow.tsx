@@ -60,7 +60,7 @@ export function OnboardingFlow() {
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] = useState(ONBOARDING_STEPS)
   const [showPropertyWizard, setShowPropertyWizard] = useState(false)
-  const [preferences, setPreferences] = useState<any>(null)
+  const [preferences, setPreferences] = useState<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean } | null>(null)
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -127,7 +127,7 @@ export function OnboardingFlow() {
   }, [user, router, supabase])
 
 
-  const updatePreferences = async (updates: any) => {
+  const updatePreferences = async (updates: Partial<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean }>) => {
     if (!user) return
 
     try {
@@ -157,7 +157,7 @@ export function OnboardingFlow() {
     setSteps(updatedSteps)
 
     // Update preferences based on step
-    const updates: any = {
+    const updates: Record<string, unknown> = {
       onboarding_current_step: stepId
     }
 
@@ -245,7 +245,7 @@ export function OnboardingFlow() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-white">Welcome to ClaimGuardian</h1>
-            <p className="text-gray-400 mt-2">Let's set up your account in just a few steps</p>
+            <p className="text-gray-400 mt-2">Let&apos;s set up your account in just a few steps</p>
           </div>
           <button
             onClick={skipOnboarding}
@@ -438,7 +438,7 @@ function PropertyStep({
     <div className="space-y-6">
       <div>
         <h2 className="text-2xl font-bold text-white mb-2">Add Your Property</h2>
-        <p className="text-gray-400">Let's set up your primary residence</p>
+        <p className="text-gray-400">Let&apos;s set up your primary residence</p>
       </div>
 
       <div className="bg-gray-700/50 rounded-lg p-6 text-center">
@@ -463,7 +463,7 @@ function PropertyStep({
           onClick={onComplete}
           className="text-gray-400 hover:text-white"
         >
-          I'll do this later
+          I&apos;ll do this later
         </button>
       </div>
     </div>
@@ -484,7 +484,7 @@ function InsuranceStep({ onComplete }: { onComplete: () => void }) {
           Upload your policy documents
         </h3>
         <p className="text-gray-400 mb-6">
-          We'll extract key information and help you understand your coverage
+          We&apos;ll extract key information and help you understand your coverage
         </p>
         <Button
           onClick={() => {

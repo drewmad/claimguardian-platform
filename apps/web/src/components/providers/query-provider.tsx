@@ -17,7 +17,7 @@ export function QueryProvider({ children }: { children: React.ReactNode }) {
             retry: (failureCount, error) => {
               // Don't retry on 4xx errors
               if (error && typeof error === 'object' && 'status' in error) {
-                const status = (error as any).status
+                const status = (error as { status?: number }).status
                 if (status && status >= 400 && status < 500) {
                   return false
                 }
