@@ -115,13 +115,21 @@ const useFormValidation = (state: WizardState) => {
 
         const errors: Record<string, string> = {};
         requiredFields.forEach(field => {
-            // This handles nested and top-level fields
-            if (field in state && !state[field]) {
+            // This handles nested and top-level fields with explicit checks
+            if (field === 'ownershipStatus' && !state.ownershipStatus) {
+                errors[field] = 'This field is required.';
+            } else if (field === 'selectedProperty' && !state.selectedProperty) {
                 errors[field] = 'This field is required.';
             } else if (field === 'propertyType' && !state.basicInfo.propertyType) {
-                 errors[field] = 'Please select a property type.';
+                errors[field] = 'Please select a property type.';
             } else if (field === 'isHOA' && !state.propertyDetails.isHOA) {
-                 errors[field] = 'Please select an option.';
+                errors[field] = 'Please select an option.';
+            } else if (field === 'hasHomeownersRenters' && !state.insuranceInfo.hasHomeownersRenters) {
+                errors[field] = 'This field is required.';
+            } else if (field === 'hasFlood' && !state.insuranceInfo.hasFlood) {
+                errors[field] = 'This field is required.';
+            } else if (field === 'hasMortgage' && !state.financialInfo.hasMortgage) {
+                errors[field] = 'This field is required.';
             }
         });
         return errors;
@@ -176,7 +184,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     const handleBack = () => dispatch({ type: 'PREV_STEP' });
     
     const handleFieldChange = (section: string | null, field: string, value: string) => {
-        dispatch({ type: 'UPDATE_FIELD', payload: { section, field, value } });
+        dispatch({ type: 'UPDATE_FIELD', payload: { section: section || undefined, field, value } });
     };
 
     const handleSubmit = async () => {
