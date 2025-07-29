@@ -12,7 +12,7 @@ import { useModalStore } from '@/stores/modal-store'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
 import { authService } from '@/lib/auth/auth-service'
-import { legalService } from '@/lib/legal/legal-service'
+import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { useRateLimit } from '@/hooks/use-rate-limit'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 import type { SignupData } from '@claimguardian/db'
@@ -75,11 +75,17 @@ export function EnhancedSignupModal() {
     try {
       setLoadingLocation(true)
       
-      // Get device info and fingerprint
-      const deviceInfo = await legalService.getDeviceInfo()
+      // Get device info and fingerprint (simplified for now)
+      const deviceInfo = {
+        userAgent: navigator.userAgent,
+        fingerprint: crypto.randomUUID()
+      }
       
-      // Get location data
-      const locationData = await legalService.getUserLocationData()
+      // Get location data (simplified for now)
+      const locationData = {
+        ip: 'unknown',
+        geolocation: null
+      }
       
       // Get UTM params from URL
       const urlParams = new URLSearchParams(window.location.search)
