@@ -127,7 +127,14 @@ export function OnboardingFlow() {
   }, [user, router, supabase])
 
 
-  const updatePreferences = async (updates: Partial<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean }>) => {
+  const updatePreferences = async (updates: Partial<{ 
+    email_notifications?: boolean
+    sms_notifications?: boolean
+    marketing_emails?: boolean
+    dark_mode?: boolean
+    onboarding_completed?: boolean
+    onboarding_current_step?: string
+  }>) => {
     if (!user) return
 
     try {
