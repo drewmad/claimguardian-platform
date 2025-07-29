@@ -15,6 +15,7 @@ import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide
 import { legalService } from '@/lib/legal/legal-service'
 import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
+import { LegalDocumentModal } from './legal-document-modal'
 import type { LegalDocument } from '@claimguardian/db'
 
 interface LegalConsentFormProps {
@@ -44,6 +45,8 @@ export function LegalConsentForm({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
+  const [selectedDocument, setSelectedDocument] = useState<LegalDocument | null>(null)
+  const [isModalOpen, setIsModalOpen] = useState(false)
 
   const loadDocuments = useCallback(async () => {
     try {
@@ -138,13 +141,25 @@ export function LegalConsentForm({
   }
 
   const openDocument = (doc: LegalDocument) => {
-    window.open(doc.storage_url, '_blank', 'noopener,noreferrer')
+    setSelectedDocument(doc)
+    setIsModalOpen(true)
     logger.track('legal_document_viewed', {
       documentId: doc.id,
       slug: doc.slug,
       version: doc.version,
       userId
     })
+  }
+
+  const closeModal = () => {
+    setIsModalOpen(false)
+    setSelectedDocument(null)
+  }
+
+  const handleAcceptFromModal = () => {
+    if (selectedDocument) {
+      handleDocumentToggle(selectedDocument.id, true)
+    }
   }
 
   if (loading) {
@@ -254,6 +269,17 @@ export function LegalConsentForm({
            mode === 'signup' ? 'Accept and Create Account' : 'Accept Updated Terms'}
         </button>
       )}
+
+      {/* Document Modal */}
+      {selectedDocument && (
+        <LegalDocumentModal
+          document={selectedDocument}
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onAccept={handleAcceptFromModal}
+          showAcceptButton={!acceptedDocs[selectedDocument.id]}
+        />
+      )}
     </form>
   )
 }
@@ -274,7 +300,11 @@ function LegalDocumentItem({
   disabled = false
 }: LegalDocumentItemProps) {
   return (
-    <div className="border border-slate-600 rounded-lg p-4">
+    <div className={`border rounded-lg p-4 transition-colors ${
+      accepted 
+        ? 'border-green-500/30 bg-green-500/5' 
+        : 'border-slate-600 hover:border-slate-500'
+    }`}>
       <div className="flex items-start gap-3">
         <input
           type="checkbox"
@@ -288,24 +318,34 @@ function LegalDocumentItem({
         <div className="flex-1 min-w-0">
           <label 
             htmlFor={`consent-${document.id}`}
-            className="block text-sm cursor-pointer"
+            className="block cursor-pointer"
           >
-            <span className="text-slate-300">I have read and agree to the </span>
-            <button
-              type="button"
-              onClick={onView}
-              className="text-blue-400 hover:text-blue-300 underline inline-flex items-center gap-1"
-            >
-              {document.title}
-              <ExternalLink className="w-3 h-3" />
-            </button>
-            <span className="text-slate-400"> ({document.version})</span>
+            <div className="text-sm mb-2">
+              <span className="text-slate-300">I have read and agree to the </span>
+              <button
+                type="button"
+                onClick={onView}
+                className="text-blue-400 hover:text-blue-300 underline inline-flex items-center gap-1 font-medium"
+              >
+                {document.title}
+                <ExternalLink className="w-3 h-3" />
+              </button>
+              <span className="text-slate-400"> ({document.version})</span>
+            </div>
           </label>
           
-          <div className="flex items-center gap-4 mt-2 text-xs text-slate-500">
-            <span>Version: {document.version}</span>
-            <span>Effective: {new Date(document.effective_date).toLocaleDateString()}</span>
-            <span className="font-mono">Hash: {document.sha256_hash.substring(0, 8)}...</span>
+          <div className="flex items-center gap-4 text-xs text-slate-500">
+            <span className="flex items-center gap-1">
+              <FileText className="w-3 h-3" />
+              Version {document.version}
+            </span>
+            <span>Effective {new Date(document.effective_date).toLocaleDateString()}</span>
+            {accepted && (
+              <span className="text-green-400 flex items-center gap-1">
+                <CheckCircle className="w-3 h-3" />
+                Accepted
+              </span>
+            )}
           </div>
         </div>
       </div>
