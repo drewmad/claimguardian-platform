@@ -41,7 +41,7 @@ import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { toast } from 'sonner'
 import { useAIKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { useRealTimeStatus, useFallbackStatus } from '@/lib/real-time-status'
-import { useAIErrorRecovery, useNetworkStatus } from '@/lib/error-recovery'
+import { useErrorRecovery, useNetworkStatus } from '@/lib/error-recovery'
 import { compressImage, useRequestCache, useLazyLoad, performanceMonitor, useBatchProcessor } from '@/lib/performance-utils'
 import { LazyImageUploadAnalyzer as ImageUploadAnalyzer, LazyReportGenerator as ReportGenerator } from '@/components/lazy'
 
@@ -124,7 +124,7 @@ function DamageAnalyzerContent() {
   
   // Enhanced hooks
   const { isOnline } = useNetworkStatus()
-  const { executeAIOperation, isRetrying, retryState } = useAIErrorRecovery()
+  const { executeWithRetry, isRetrying, retryState } = useErrorRecovery()
   const { cachedRequest } = useRequestCache()
   const { elementRef: lazyRef, isVisible: isLazyVisible } = useLazyLoad()
   
@@ -278,9 +278,8 @@ Analyze this image and provide a detailed damage assessment in the following JSO
       for (let i = 0; i < files.length; i++) {
         setCurrentImageIndex(i + 1)
         
-        const analysisResult = await executeAIOperation(
-          () => processImageWithRetry(files[i]),
-          `Image ${i + 1} analysis`
+        const analysisResult = await executeWithRetry(
+          () => processImageWithRetry(files[i])
         )
 
         if (analysisResult) {

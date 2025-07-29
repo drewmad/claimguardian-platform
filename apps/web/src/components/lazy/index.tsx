@@ -1,7 +1,49 @@
 import dynamic from 'next/dynamic'
 import { ComponentType } from 'react'
+import React from 'react'
 
-import { ImageUploadAnalyzerProps } from '@/components/ai/image-upload-analyzer'
+// Define props interfaces locally since they're not exported from components
+interface ImageUploadAnalyzerProps {
+  onAnalyze: (images: File[]) => Promise<void>
+  maxFiles?: number
+  maxSize?: number
+  acceptedFormats?: string[]
+  title?: string
+  description?: string
+  className?: string
+}
+
+interface AIChatInterfaceProps {
+  systemPrompt: string
+  placeholder?: string
+  welcomeMessage?: string
+  onSendMessage: (message: string, history: any[]) => Promise<string>
+  className?: string
+}
+
+interface CameraCaptureProps {
+  onClose: () => void
+  onCapture: (file: File) => void
+}
+
+interface ReportSection {
+  title: string
+  content: string | React.ReactNode
+  type?: 'text' | 'table' | 'list' | 'custom'
+}
+
+interface ReportGeneratorProps {
+  title: string
+  subtitle?: string
+  sections: ReportSection[]
+  metadata?: {
+    generatedBy?: string
+    date?: Date
+    referenceNumber?: string
+    status?: string
+  }
+  className?: string
+}
 
 // Loading components for different types
 const LoadingCard = () => (
@@ -12,11 +54,7 @@ const LoadingChat = () => (
   <div className="animate-pulse bg-gray-800 rounded-lg h-96 w-full" />
 )
 
-import { AIChatInterfaceProps } from '@/components/ai/ai-chat-interface'
-import { CameraCaptureProps } from '@/components/ai/camera-capture'
-import { ReportGeneratorProps } from '@/components/reports/report-generator'
 import { DropzoneOptions } from 'react-dropzone'
-import { MapProps } from '@/components/maps/map'
 
 // AI Components
 export const LazyImageUploadAnalyzer = dynamic<ImageUploadAnalyzerProps>(
@@ -48,8 +86,8 @@ export const LazyDropzone = dynamic<DropzoneOptions>(
   { loading: () => <LoadingCard />, ssr: false }
 )
 
-// Map Components
-export const LazyMap = dynamic<MapProps>(
-  () => import('@/components/maps/map').then(mod => ({ default: mod.Map })),
-  { loading: () => <LoadingCard />, ssr: false }
-)
+// Map Components - Disabled until map component is implemented
+// export const LazyMap = dynamic<MapProps>(
+//   () => import('@/components/maps/map').then(mod => ({ default: mod.Map })),
+//   { loading: () => <LoadingCard />, ssr: false }
+// )

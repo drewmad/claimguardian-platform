@@ -226,9 +226,9 @@ describe('InputSanitizer', () => {
 
       const result = inputSanitizer.sanitizeFormData(formData)
 
-      expect(result.user.name).not.toContain('<script>')
-      expect(result.user.email).toBe('test@example.com')
-      expect(result.preferences.notifications).toBe(true)
+      expect((result.user as any).name).not.toContain('<script>')
+      expect((result.user as any).email).toBe('test@example.com')
+      expect((result.preferences as any).notifications).toBe(true)
     })
 
     it('should handle arrays', () => {
@@ -239,8 +239,8 @@ describe('InputSanitizer', () => {
 
       const result = inputSanitizer.sanitizeFormData(formData)
 
-      expect(result.tags[0]).not.toContain('<script>')
-      expect(result.tags[1]).toBe('tag2')
+      expect((result.tags as string[])[0]).not.toContain('<script>')
+      expect((result.tags as string[])[1]).toBe('tag2')
       expect(result.numbers).toEqual([1, 2, 3])
     })
   })

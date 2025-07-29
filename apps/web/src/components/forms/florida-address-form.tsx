@@ -70,6 +70,55 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
   const [counties, setCounties] = useState<CountyOption[]>([])
   const [validationMessage, setValidationMessage] = useState('')
   
+  // Infer county from city name
+  const inferCountyFromCity = useCallback(async (cityName: string): Promise<string | null> => {
+    const cityCountyMap: Record<string, string> = {
+      'Port Charlotte': 'Charlotte County',
+      'Punta Gorda': 'Charlotte County',
+      'Miami': 'Miami-Dade County',
+      'Jacksonville': 'Duval County',
+      'Tampa': 'Hillsborough County',
+      'Orlando': 'Orange County',
+      'St. Petersburg': 'Pinellas County',
+      'Hialeah': 'Miami-Dade County',
+      'Tallahassee': 'Leon County',
+      'Fort Lauderdale': 'Broward County',
+      'Cape Coral': 'Lee County',
+      'Pembroke Pines': 'Broward County',
+      'Hollywood': 'Broward County',
+      'Gainesville': 'Alachua County',
+      'Coral Springs': 'Broward County',
+      'Clearwater': 'Pinellas County',
+      'Miami Beach': 'Miami-Dade County',
+      'Pompano Beach': 'Broward County',
+      'West Palm Beach': 'Palm Beach County',
+      'Lakeland': 'Polk County',
+      'Davie': 'Broward County',
+      'Miami Gardens': 'Miami-Dade County',
+      'Boca Raton': 'Palm Beach County',
+      'Sunrise': 'Broward County',
+      'Brandon': 'Hillsborough County',
+      'Palm Bay': 'Brevard County',
+      'Deerfield Beach': 'Broward County',
+      'Melbourne': 'Brevard County',
+      'Boynton Beach': 'Palm Beach County',
+      'Lauderhill': 'Broward County',
+      'Weston': 'Broward County',
+      'Kissimmee': 'Osceola County',
+      'Homestead': 'Miami-Dade County',
+      'Delray Beach': 'Palm Beach County',
+      'Tamarac': 'Broward County',
+      'Daytona Beach': 'Volusia County',
+      'North Miami': 'Miami-Dade County',
+      'Wellington': 'Palm Beach County',
+      'Jupiter': 'Palm Beach County',
+      'North Port': 'Sarasota County',
+      'Ocala': 'Marion County'
+    }
+    
+    return cityCountyMap[cityName] || null
+  }, [])
+  
   // Load Florida counties on mount
   useEffect(() => {
     const loadCounties = async () => {
@@ -113,7 +162,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
 
       return () => {
         document.head.removeChild(script)
-        delete (window as Window).initGooglePlaces
+        delete (window as any).initGooglePlaces
       }
     }
 
@@ -199,55 +248,6 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
       }
     }
   }, [isGoogleLoaded, onChange, autocomplete, inferCountyFromCity])
-
-  // Infer county from city name
-  const inferCountyFromCity = useCallback(async (cityName: string): Promise<string | null> => {
-    const cityCountyMap: Record<string, string> = {
-      'Port Charlotte': 'Charlotte County',
-      'Punta Gorda': 'Charlotte County',
-      'Miami': 'Miami-Dade County',
-      'Jacksonville': 'Duval County',
-      'Tampa': 'Hillsborough County',
-      'Orlando': 'Orange County',
-      'St. Petersburg': 'Pinellas County',
-      'Hialeah': 'Miami-Dade County',
-      'Tallahassee': 'Leon County',
-      'Fort Lauderdale': 'Broward County',
-      'Cape Coral': 'Lee County',
-      'Pembroke Pines': 'Broward County',
-      'Hollywood': 'Broward County',
-      'Gainesville': 'Alachua County',
-      'Coral Springs': 'Broward County',
-      'Clearwater': 'Pinellas County',
-      'Miami Beach': 'Miami-Dade County',
-      'Pompano Beach': 'Broward County',
-      'West Palm Beach': 'Palm Beach County',
-      'Lakeland': 'Polk County',
-      'Davie': 'Broward County',
-      'Miami Gardens': 'Miami-Dade County',
-      'Boca Raton': 'Palm Beach County',
-      'Sunrise': 'Broward County',
-      'Brandon': 'Hillsborough County',
-      'Palm Bay': 'Brevard County',
-      'Deerfield Beach': 'Broward County',
-      'Melbourne': 'Brevard County',
-      'Boynton Beach': 'Palm Beach County',
-      'Lauderhill': 'Broward County',
-      'Weston': 'Broward County',
-      'Kissimmee': 'Osceola County',
-      'Homestead': 'Miami-Dade County',
-      'Delray Beach': 'Palm Beach County',
-      'Tamarac': 'Broward County',
-      'Daytona Beach': 'Volusia County',
-      'North Miami': 'Miami-Dade County',
-      'Wellington': 'Palm Beach County',
-      'Jupiter': 'Palm Beach County',
-      'North Port': 'Sarasota County',
-      'Ocala': 'Marion County'
-    }
-    
-    return cityCountyMap[cityName] || null
-  }, [])
 
   // Validate ZIP code and auto-populate fields
   const handleZipChange = useCallback(async (zipCode: string) => {

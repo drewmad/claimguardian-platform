@@ -172,7 +172,7 @@ export async function updatePolicy(policyId: string, updates: Partial<CreatePoli
       .eq('id', policyId)
       .single()
     
-    if (!policy || (policy.properties as { user_id: string })?.user_id !== user.id) {
+    if (!policy || (policy.properties as any)?.user_id !== user.id) {
       return { data: null, error: 'Policy not found or access denied' }
     }
     
@@ -254,7 +254,7 @@ export async function deactivatePolicy(policyId: string) {
       .eq('id', policyId)
       .single()
     
-    if (!policy || (policy.properties as { user_id: string })?.user_id !== user.id) {
+    if (!policy || (policy.properties as any)?.user_id !== user.id) {
       return { data: null, error: 'Policy not found or access denied' }
     }
     

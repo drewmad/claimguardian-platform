@@ -116,11 +116,7 @@ function PolicyChatContent() {
       
       return response
     } catch (error) {
-      await aiErrorHelpers.policyChat.log(error as Error, 'AI Response', user?.id, selectedModel, {
-        messageLength: message.length,
-        documentsCount: uploadedDocuments.length,
-        compareMode
-      })
+      await aiErrorHelpers.policyChat.log(error as Error, 'AI Response')
       toast.error('Failed to get AI response')
       throw error
     }

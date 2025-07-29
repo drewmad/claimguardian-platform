@@ -37,27 +37,20 @@ interface DisplayProperty {
   isPrimary: boolean
 }
 
-interface Property {
+interface PropertyRecord {
   id: string;
-  name: string | null;
-  address: {
-    street1: string;
-    street2?: string;
-    city: string;
-    state: string;
-    zip: string;
-  } | null;
-  type: string | null;
+  user_id: string;
+  name: string;
+  address: string;
+  type: string;
+  year_built: number;
+  square_feet: number;
   value: number | null;
-  square_feet: number | null;
-  year_built: number | null;
-  details: {
-    bedrooms?: number;
-    bathrooms?: number;
-    lot_size?: number;
-  } | null;
   insurability_score: number | null;
   is_primary: boolean | null;
+  details: Record<string, unknown>;
+  created_at: string;
+  updated_at: string;
 }
 
 function PropertyOverviewContent() {
@@ -76,23 +69,17 @@ function PropertyOverviewContent() {
         
         if (propertiesData.length > 0) {
           // Transform database data to display format with full address
-          const transformedData = propertiesData.map((prop: Property) => ({
+          const transformedData = propertiesData.map((prop: PropertyRecord) => ({
             id: prop.id,
             name: prop.name || 'Unnamed Property',
-            address: prop.address ? [
-              prop.address.street1,
-              prop.address.street2,
-              prop.address.city,
-              prop.address.state,
-              prop.address.zip
-            ].filter(Boolean).join(', ') : 'Address not set',
+            address: prop.address || 'Address not set',
             type: prop.type || 'Single Family Home',
             value: prop.value || 0,
             sqft: prop.square_feet || 0,
             yearBuilt: prop.year_built || new Date().getFullYear(),
-            bedrooms: prop.details?.bedrooms || 0,
-            bathrooms: prop.details?.bathrooms || 0,
-            lotSize: prop.details?.lot_size || 0,
+            bedrooms: (prop.details?.bedrooms as number) || 0,
+            bathrooms: (prop.details?.bathrooms as number) || 0,
+            lotSize: (prop.details?.lot_size as number) || 0,
             insurabilityScore: prop.insurability_score || 0,
             isPrimary: prop.is_primary || false
           }))
@@ -156,23 +143,17 @@ function PropertyOverviewContent() {
             const propertiesData = result.data?.data || []
             
             if (propertiesData.length > 0) {
-              const transformedData = propertiesData.map((prop: Property) => ({
+              const transformedData = propertiesData.map((prop: PropertyRecord) => ({
                 id: prop.id,
                 name: prop.name || 'Unnamed Property',
-                address: prop.address ? [
-                  prop.address.street1,
-                  prop.address.street2,
-                  prop.address.city,
-                  prop.address.state,
-                  prop.address.zip
-                ].filter(Boolean).join(', ') : 'Address not set',
+                address: prop.address || 'Address not set',
                 type: prop.type || 'Single Family Home',
                 value: prop.value || 0,
                 sqft: prop.square_feet || 0,
                 yearBuilt: prop.year_built || new Date().getFullYear(),
-                bedrooms: prop.details?.bedrooms || 0,
-                bathrooms: prop.details?.bathrooms || 0,
-                lotSize: prop.details?.lot_size || 0,
+                bedrooms: (prop.details?.bedrooms as number) || 0,
+                bathrooms: (prop.details?.bathrooms as number) || 0,
+                lotSize: (prop.details?.lot_size as number) || 0,
                 insurabilityScore: prop.insurability_score || 0,
                 isPrimary: prop.is_primary || false
               }))

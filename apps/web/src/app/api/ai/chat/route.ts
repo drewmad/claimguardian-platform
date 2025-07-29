@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate model selection
-        if (!['openai', 'gemini'].includes(model)) {
+        if (!['openai', 'gemini'].includes(model as string)) {
           return NextResponse.json(
             { error: 'Invalid model selection' },
             { status: 400 }
@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
         }
 
         const aiClient = new AIClient()
-        const response = await aiClient.chat(validMessages, model)
+        const response = await aiClient.chat(validMessages, model as 'openai' | 'gemini')
 
         return NextResponse.json({ response })
       } catch (error) {

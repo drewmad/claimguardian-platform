@@ -67,6 +67,9 @@ interface PropertyRecord {
   type: string
   year_built: number
   square_feet: number
+  value: number | null
+  insurability_score: number | null
+  is_primary: boolean | null
   details: Record<string, unknown>
   created_at: string
   updated_at: string

@@ -24,12 +24,12 @@ export async function POST(request: NextRequest) {
         }
 
         // Validate model selection
-        if (!['openai', 'gemini'].includes(model)) {
+        if (!['openai', 'gemini'].includes(model as string)) {
           throw new Error('Invalid model selection')
         }
 
         // Sanitize prompt
-        const sanitizedPrompt = inputSanitizer.sanitizeText(prompt, 5000)
+        const sanitizedPrompt = inputSanitizer.sanitizeText(prompt as string, 5000)
         if (!sanitizedPrompt) {
           throw new Error('Invalid prompt provided')
         }
@@ -43,7 +43,7 @@ export async function POST(request: NextRequest) {
         const response = await aiClient.analyzeImage({ 
           image, 
           prompt: sanitizedPrompt, 
-          model 
+          model: model as 'openai' | 'gemini'
         })
 
         return { response }
