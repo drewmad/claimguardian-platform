@@ -76,16 +76,18 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
     // Extract metadata
     const metadata = await pdf.getMetadata()
     
+    const info = metadata.info as any
+    
     return {
       text: fullText,
       pageCount: pdf.numPages,
-      metadata: metadata.info ? {
-        title: metadata.info.Title as string,
-        author: metadata.info.Author as string,
-        subject: metadata.info.Subject as string,
-        keywords: metadata.info.Keywords as string,
-        creationDate: metadata.info.CreationDate ? new Date(metadata.info.CreationDate as string) : undefined,
-        modificationDate: metadata.info.ModDate ? new Date(metadata.info.ModDate as string) : undefined
+      metadata: info ? {
+        title: info.Title as string,
+        author: info.Author as string,
+        subject: info.Subject as string,
+        keywords: info.Keywords as string,
+        creationDate: info.CreationDate ? new Date(info.CreationDate as string) : undefined,
+        modificationDate: info.ModDate ? new Date(info.ModDate as string) : undefined
       } : undefined
     }
   } catch (error) {
@@ -140,7 +142,7 @@ export function extractPolicyData(pdfText: string): {
     effectiveDate: /effective\s*date:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i,
     expirationDate: /expiration\s*date:\s*(\d{1,2}\/\d{1,2}\/\d{4})/i,
     premium: /(?:total|annual)\s*premium:\s*\$?([\d,]+(?:\.\d{2})?)/i,
-    coverageDwelling: /coverage\s*a.*?dwelling.*?\$?([\d,]+)/is,
+    coverageDwelling: /coverage\s*a.*?dwelling.*?\$?([\d,]+)/i,
     standardDeductible: /(?:all\s*other\s*perils|standard)\s*deductible:\s*\$?([\d,]+)/i,
     windDeductible: /(?:hurricane|wind(?:storm)?)\s*deductible:\s*(\d+%|\$[\d,]+)/i
   }

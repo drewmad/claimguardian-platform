@@ -31,7 +31,7 @@ const navigationItems = [
   { id: 'home', label: 'Dashboard', icon: Home, href: '/dashboard' },
   { id: 'property', label: 'My Home', icon: Building, href: '/dashboard/property' },
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
-  { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
+  { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/policies' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
   { id: 'maintenance', label: 'Maintenance Hub', icon: Calendar, href: '/dashboard/maintenance' },
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
