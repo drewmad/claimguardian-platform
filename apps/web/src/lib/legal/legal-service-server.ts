@@ -59,10 +59,18 @@ class LegalServiceServer {
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
       const supabase = await createClient()
-      const { data, error } = await supabase.rpc('needs_reaccept', { uid: userId })
+      
+      // For now, return all active documents that require acceptance
+      // In the future, this should check user's acceptance history
+      const { data, error } = await supabase
+        .from('legal_documents')
+        .select('*')
+        .eq('is_active', true)
+        .eq('requires_acceptance', true)
+        .order('type')
 
       if (error) {
-        logger.error('Failed to fetch documents needing acceptance', {}, error instanceof Error ? error : new Error(String(error)))
+        logger.error('Failed to fetch documents needing acceptance', { userId }, error)
         throw error
       }
 
