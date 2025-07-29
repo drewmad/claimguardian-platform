@@ -535,26 +535,61 @@ Refinement: After tasks, subagents suggest updates to standards based on learnin
 - Management: Use `/agents` command for create/edit/delete; auto-delegates based on descriptions.
 - Agent OS Setup: Run installation scripts from Agent OS repo; customize standards/.
 
+### Centralized Error Log System
+ClaimGuardian implements a comprehensive error tracking and learning system:
+
+#### Error Handling Workflow
+1. **Error Logging**: Use `/log_error <error_details>` to log errors in `.claude/errors/error_log.md`
+2. **Error Analysis**: Use `/analyze_error <error_details>` for root cause analysis and agent learnings
+3. **Subagent Integration**: Run `python subagent_error_system.py <agent_name> <task>` to start subagents with error context
+4. **Learning Retrieval**: Subagents automatically load relevant learnings at startup
+
+#### Error Log Structure
+- **Centralized File**: `.claude/errors/error_log.md` stores all errors with timestamps, stack traces, and analysis
+- **Agent-Based Learnings**: Each error includes subagent insights, fix recipes, and optimizations
+- **Pattern Recognition**: System tracks error patterns for proactive prevention
+
+#### Available Subagents
+- `ui-developer`: Frontend React/TypeScript components
+- `api-developer`: Backend API and server actions
+- `database-admin`: Supabase schema and migrations
+- `ai-developer`: AI features and Edge Functions
+- `test-engineer`: Testing and quality assurance
+
+#### Usage Examples
+```bash
+# Start subagent with error context
+python subagent_error_system.py ui-developer "Fix Claims component rendering issue"
+
+# Log an error manually
+/log_error TypeError: Cannot read property 'map' of undefined at ClaimsList.tsx:45
+
+# Analyze error with context
+/analyze_error TypeError in ClaimsList during claims loading - API returned null
+```
+
 ### Hooks Integration
 Triggers for automation:
 - Pre-commit: Invoke plan-orchestrator subagent to validate/optimize changes.
 - Post-merge: Spawn data-import for schema sync.
+- Error Detection: Auto-log errors during development and testing.
 
 Setup: `claude-code hooks install`  # Adds to .git/hooks
 
 ### Local Docs as Dynamic Memory
-- Subagents use Read tool to query sections of this file, standards/, and learnings.md for context.
-- Learnings appended to learnings.md via Write tool; queried on init for adaptation.
+- Subagents use Read tool to query sections of this file, standards/, and `.claude/errors/error_log.md` for context.
+- Error learnings cached and filtered by agent type for relevant context.
+- Learnings appended to error log via Write tool; queried on init for adaptation.
 
 ### Sub-Agents with Parallelism
 - Native delegation: Automatic based on task match; explicit via "Use [name] subagent".
 - Parallelism: Chain subagents for non-conflicting tasks.
-- Conflict Avoidance: Prompts include checks via Grep/Glob.
+- Conflict Avoidance: Prompts include checks via Grep/Glob and error log consultation.
 
 ### Learning Layer
-- Record: Subagents use Write to append {task, mistake, learning} to learnings.md.
-- Retrieve: Use Read to query learnings.md at start; adapt behavior.
-- Refinement: Suggest updates to standards/ based on learnings.
+- Record: Subagents use Write to append {task, mistake, learning} to error log.
+- Retrieve: Use Read to query error log at start; adapt behavior based on previous failures.
+- Refinement: Suggest updates to standards/ based on error patterns and learnings.
 
 ## Important Instruction Reminders
 Do what has been asked; nothing more, nothing less.
