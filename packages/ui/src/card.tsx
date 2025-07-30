@@ -1,35 +1,20 @@
-/**
- * @fileMetadata
- * @purpose Provides a flexible card component with header, title, description, content, and footer sub-components.
- * @owner frontend-team
- * @dependencies ["react", "./utils"]
- * @exports ["Card", "CardHeader", "CardFooter", "CardTitle", "CardDescription", "CardContent"]
- * @lastModifiedBy Drew Madison
- * @lastModifiedDate 2025-07-03T23:07:33-04:00
- * @complexity medium
- * @tags ["component", "ui", "card", "layout"]
- * @status active
- * @notes Used for grouping related content and actions.
- */
-'use client'
-
-import * as React from 'react'
+// packages/ui/src/card.tsx
+import React from 'react'
 import { cn } from './utils'
 
-export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {}
-
-const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ className, ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        'bg-panel backdrop-blur-2xl border border-border rounded-2xl shadow-2xl text-text-primary',
-        className
-      )}
-      {...props}
-    />
-  )
-)
+const Card = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div
+    ref={ref}
+    className={cn(
+      'rounded-lg border bg-card text-card-foreground shadow-sm',
+      className
+    )}
+    {...props}
+  />
+))
 Card.displayName = 'Card'
 
 const CardHeader = React.forwardRef<

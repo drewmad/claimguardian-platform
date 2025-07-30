@@ -1,6 +1,10 @@
 {
   "name": "@claimguardian/ui",
   "version": "0.1.0",
+  "exports": {
+    ".": "./dist/index.js",
+    "./card": "./dist/card.js"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "type": "module",
