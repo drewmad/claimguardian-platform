@@ -1,0 +1,23 @@
+#!/bin/bash
+
+echo "Applying tracking functions fix to production database..."
+echo ""
+echo "This script will:"
+echo "1. Create user_profiles table"
+echo "2. Create user_preferences table"
+echo "3. Create consent_audit_log table"
+echo "4. Create capture_signup_data function"
+echo "5. Set up Row Level Security"
+echo ""
+echo "Please run this SQL in your Supabase SQL Editor:"
+echo "================================================"
+echo ""
+cat ./scripts/apply-tracking-functions.sql
+echo ""
+echo "================================================"
+echo ""
+echo "Or use the Supabase Dashboard:"
+echo "1. Go to https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/new"
+echo "2. Copy and paste the SQL above"
+echo "3. Click 'Run'"
+echo ""
