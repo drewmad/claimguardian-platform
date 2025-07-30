@@ -31,6 +31,14 @@ function VerifyEmailContent() {
 
     const verifyEmail = async () => {
       try {
+        // Check for error parameter first
+        const error = searchParams.get('error')
+        if (error === 'invalid_link') {
+          setStatus('invalid')
+          setErrorMessage('Invalid verification link')
+          return
+        }
+
         // Get the token from URL
         const token = searchParams.get('token')
         const type = searchParams.get('type')
