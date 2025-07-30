@@ -348,3 +348,22 @@ supabase/functions/*/dist/
 # ==============================================================================
 .supbase/
 cron.yaml.backup
+
+# Local database schemas and backups
+*.sql
+!/supabase/schema.sql
+!/supabase/seed.sql
+!/supabase/storage-setup.sql
+/supabase/migrations.backup.*/
+/supabase/schema_backup_*.sql
+/supabase/current_production_schema.sql
+/supabase/production_schema.sql
+
+# Local documentation and reports
+*.md
+!README.md
+!CONTRIBUTING.md
+!/docs/**/*.md
+!/legal/**/*.md
+!/packages/**/README.md
+!/supabase/migrations/README.md
