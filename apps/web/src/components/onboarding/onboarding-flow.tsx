@@ -80,7 +80,11 @@ interface OnboardingData {
   completedAt?: string
 }
 
-export function OnboardingFlow() {
+interface OnboardingFlowProps {
+  onComplete?: () => void
+}
+
+export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
   const { user } = useAuth()
   const router = useRouter()
   const { supabase } = useSupabase()
@@ -252,7 +256,14 @@ export function OnboardingFlow() {
       await completeOnboarding(user.id, finalData)
       
       toast.success('Welcome to ClaimGuardian! Your account is all set up.')
-      // Don't redirect here - let QuickStartStep handle navigation
+      
+      // If we're in modal mode (onComplete provided), close the modal
+      // Otherwise let QuickStartStep handle navigation
+      if (onComplete && currentStep === steps.length - 1) {
+        setTimeout(() => {
+          onComplete()
+        }, 1500) // Give time for success message
+      }
     } catch (error) {
       console.error('Failed to complete onboarding:', error)
       toast.error('Failed to save setup. Please try again.')
@@ -263,18 +274,34 @@ export function OnboardingFlow() {
     if (!user) return
     
     try {
-      const skippedData = {
-        ...onboardingData,
-        onboardingComplete: true,
-        completedAt: new Date().toISOString()
+      // Mark onboarding as skipped in user preferences
+      const { error } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: user.id,
+          onboarding_completed: true,
+          onboarding_skipped_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        })
+      
+      if (error) {
+        console.error('Failed to skip onboarding:', error)
       }
       
-      await completeOnboarding(user.id, skippedData)
-      router.push('/dashboard')
+      // Call onComplete callback if provided, otherwise redirect
+      if (onComplete) {
+        onComplete()
+      } else {
+        router.push('/dashboard')
+      }
     } catch (error) {
       console.error('Failed to skip onboarding:', error)
-      // Still redirect even if save fails
-      router.push('/dashboard')
+      // Still handle completion even if save fails
+      if (onComplete) {
+        onComplete()
+      } else {
+        router.push('/dashboard')
+      }
     }
   }
 
@@ -307,6 +334,7 @@ export function OnboardingFlow() {
           <QuickStartStep
             data={onboardingData}
             onComplete={() => completeStep('quick-start')}
+            onFlowComplete={onComplete}
           />
         )
         
@@ -317,15 +345,15 @@ export function OnboardingFlow() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+      <div className="bg-gray-900 rounded-2xl p-12 flex items-center justify-center">
         <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="max-w-4xl mx-auto p-6">
+    <div className="bg-gray-900 rounded-2xl shadow-2xl overflow-hidden">
+      <div className="p-8 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
@@ -1248,10 +1276,12 @@ function InsuranceStatusStep({
 
 function QuickStartStep({
   data,
-  onComplete
+  onComplete,
+  onFlowComplete
 }: {
   data: OnboardingData
   onComplete: () => void
+  onFlowComplete?: () => void
 }) {
   const router = useRouter()
 
@@ -1334,12 +1364,20 @@ function QuickStartStep({
 
   const handleActionClick = (action: string) => {
     onComplete() // Mark onboarding as complete
-    router.push(action)
+    if (onFlowComplete) {
+      onFlowComplete() // Close the modal if in modal mode
+    } else {
+      router.push(action)
+    }
   }
 
   const handleSkipToDashboard = () => {
-    onComplete()
-    router.push('/dashboard')
+    onComplete() // Mark onboarding as complete
+    if (onFlowComplete) {
+      onFlowComplete() // Close the modal if in modal mode
+    } else {
+      router.push('/dashboard')
+    }
   }
 
   return (

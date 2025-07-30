@@ -18,6 +18,7 @@ function DashboardContent() {
   const router = useRouter()
   const { supabase } = useSupabase()
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [onboardingKey, setOnboardingKey] = useState(0) // Force re-render
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -60,14 +61,13 @@ function DashboardContent() {
     )
   }
 
-  if (showOnboarding) {
-    return <OnboardingFlow />
-  }
+  // Onboarding will be rendered as an overlay if needed
 
   return (
-    <DashboardLayout>
-      <div className="p-6">
-        <div className="max-w-7xl mx-auto space-y-6">
+    <>
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto space-y-6">
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {user?.user_metadata?.firstName || 'Property Owner'}</h1>
             <p className="text-gray-400">Your complete property protection platform</p>
@@ -244,6 +244,26 @@ function DashboardContent() {
         </div>
       </div>
     </DashboardLayout>
+    
+    {/* Onboarding Modal Overlay */}
+    {showOnboarding && (
+      <div className="fixed inset-0 z-50 overflow-y-auto">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
+        <div className="relative min-h-screen flex items-center justify-center p-4">
+          <div className="relative w-full max-w-4xl">
+            <OnboardingFlow 
+              key={onboardingKey}
+              onComplete={() => {
+                setShowOnboarding(false)
+                // Force a full page refresh to ensure dashboard loads properly
+                window.location.reload()
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   )
 }
 
