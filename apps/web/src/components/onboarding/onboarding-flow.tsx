@@ -592,10 +592,10 @@ function UserProfileStep({
             addressVerified: true,
             propertyLatitude: lat,
             propertyLongitude: lng,
-            propertyPlaceId: place.place_id
+            propertyPlaceId: (place as any).place_id
           })
           
-          console.log('Address coordinates:', { lat, lng, placeId: place.place_id })
+          console.log('Address coordinates:', { lat, lng, placeId: (place as any).place_id })
         }
       })
     } catch (error) {
