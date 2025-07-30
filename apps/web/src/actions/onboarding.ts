@@ -19,6 +19,9 @@ export interface OnboardingData {
   userType: 'renter' | 'homeowner' | 'landlord' | 'property-professional' | null
   propertyAddress?: string
   addressVerified?: boolean
+  propertyLatitude?: number
+  propertyLongitude?: number
+  propertyPlaceId?: string
   professionalRole?: string
   landlordUnits?: string
   
@@ -64,6 +67,9 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
     if (data.userType) updateData.user_type = data.userType
     if (data.propertyAddress) updateData.property_address = data.propertyAddress
     if (data.addressVerified !== undefined) updateData.address_verified = data.addressVerified
+    if (data.propertyLatitude !== undefined) updateData.property_latitude = data.propertyLatitude
+    if (data.propertyLongitude !== undefined) updateData.property_longitude = data.propertyLongitude
+    if (data.propertyPlaceId) updateData.property_place_id = data.propertyPlaceId
     if (data.professionalRole) updateData.professional_role = data.professionalRole
     if (data.landlordUnits) updateData.landlord_units = data.landlordUnits
     
@@ -119,6 +125,9 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       user_type: finalData.userType,
       property_address: finalData.propertyAddress,
       address_verified: finalData.addressVerified || false,
+      property_latitude: finalData.propertyLatitude,
+      property_longitude: finalData.propertyLongitude,
+      property_place_id: finalData.propertyPlaceId,
       professional_role: finalData.professionalRole,
       landlord_units: finalData.landlordUnits,
       
@@ -162,7 +171,12 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       const propertyData = {
         user_id: userId,
         name: finalData.userType === 'homeowner' ? 'My Home' : 'Rental Property',
-        address: { street: finalData.propertyAddress },
+        address: { 
+          street: finalData.propertyAddress,
+          place_id: finalData.propertyPlaceId 
+        },
+        latitude: finalData.propertyLatitude,
+        longitude: finalData.propertyLongitude,
         type: finalData.userType === 'homeowner' ? 'single_family' : 'rental',
         year_built: new Date().getFullYear() - 20, // Default to 20 years old
         square_feet: 2000, // Default square footage
@@ -186,9 +200,11 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
         updated_at: new Date().toISOString()
       }
       
-      const { error: propertyError } = await supabase
+      const { data: newProperty, error: propertyError } = await supabase
         .from('properties')
         .insert(propertyData)
+        .select()
+        .single()
       
       if (propertyError) {
         logger.error('Failed to create property during onboarding', { userId, propertyError })
@@ -196,6 +212,44 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
         // User can add property manually later
       } else {
         logger.info('Property created during onboarding', { userId, address: finalData.propertyAddress })
+        
+        // Trigger property enrichment if property was created successfully
+        if (newProperty && finalData.propertyLatitude && finalData.propertyLongitude) {
+          try {
+            // Use Supabase client to invoke the Edge Function
+            const { data: enrichmentResult, error: enrichmentError } = await supabase.functions.invoke(
+              'enrich-property-data',
+              {
+                body: {
+                  propertyId: newProperty.id,
+                  latitude: finalData.propertyLatitude,
+                  longitude: finalData.propertyLongitude,
+                  address: finalData.propertyAddress,
+                  placeId: finalData.propertyPlaceId
+                }
+              }
+            )
+            
+            if (enrichmentError) {
+              logger.error('Property enrichment failed', { 
+                propertyId: newProperty.id, 
+                error: enrichmentError
+              })
+            } else if (enrichmentResult) {
+              logger.info('Property enriched successfully', { 
+                propertyId: newProperty.id,
+                version: enrichmentResult.version,
+                cost: enrichmentResult.cost 
+              })
+            }
+          } catch (enrichmentError) {
+            // Don't fail onboarding if enrichment fails
+            logger.error('Error enriching property', { 
+              propertyId: newProperty.id, 
+              error: enrichmentError 
+            })
+          }
+        }
       }
     }
     

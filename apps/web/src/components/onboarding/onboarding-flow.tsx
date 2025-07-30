@@ -55,6 +55,9 @@ interface OnboardingData {
   userType: UserType
   propertyAddress?: string
   addressVerified?: boolean
+  propertyLatitude?: number
+  propertyLongitude?: number
+  propertyPlaceId?: string
   professionalRole?: string
   landlordUnits?: string
   
@@ -577,14 +580,22 @@ function UserProfileStep({
 
       autocompleteRef.current.addListener('place_changed', () => {
         const place = autocompleteRef.current?.getPlace()
-        if (place?.formatted_address) {
+        if (place?.formatted_address && place.geometry?.location) {
+          const lat = place.geometry.location.lat()
+          const lng = place.geometry.location.lng()
+          
           setPropertyAddress(place.formatted_address)
           setAddressVerified(true)
           onUpdate({
             ...data,
             propertyAddress: place.formatted_address,
-            addressVerified: true
+            addressVerified: true,
+            propertyLatitude: lat,
+            propertyLongitude: lng,
+            propertyPlaceId: place.place_id
           })
+          
+          console.log('Address coordinates:', { lat, lng, placeId: place.place_id })
         }
       })
     } catch (error) {
