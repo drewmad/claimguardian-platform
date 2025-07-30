@@ -34,6 +34,8 @@ export interface OnboardingData {
   hasFloodInsurance?: boolean | null
   hasOtherInsurance?: boolean | null
   insuranceProvider?: string
+  otherInsuranceType?: string
+  otherInsuranceDescription?: string
   
   // Legacy field for compatibility
   hasInsurance?: boolean | null
@@ -78,6 +80,8 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
     if (data.hasOtherInsurance !== undefined) updateData.has_other_insurance = data.hasOtherInsurance
     if (data.hasInsurance !== undefined) updateData.has_insurance = data.hasInsurance
     if (data.insuranceProvider) updateData.insurance_provider = data.insuranceProvider
+    if (data.otherInsuranceType) updateData.other_insurance_type = data.otherInsuranceType
+    if (data.otherInsuranceDescription) updateData.other_insurance_description = data.otherInsuranceDescription
     
     // Completion tracking
     if (data.profileComplete !== undefined) updateData.profile_completed = data.profileComplete
@@ -131,6 +135,8 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       has_other_insurance: finalData.hasOtherInsurance,
       has_insurance: finalData.hasInsurance,
       insurance_provider: finalData.insuranceProvider,
+      other_insurance_type: finalData.otherInsuranceType,
+      other_insurance_description: finalData.otherInsuranceDescription,
       
       // Completion tracking
       profile_completed: true,
@@ -147,6 +153,50 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
     if (error) {
       logger.error('Failed to complete onboarding', { userId, error })
       return { success: false, error: error.message }
+    }
+    
+    // Create property record for homeowners and landlords
+    if ((finalData.userType === 'homeowner' || finalData.userType === 'landlord') && 
+        finalData.propertyAddress && finalData.addressVerified) {
+      
+      const propertyData = {
+        user_id: userId,
+        name: finalData.userType === 'homeowner' ? 'My Home' : 'Rental Property',
+        address: { street: finalData.propertyAddress },
+        type: finalData.userType === 'homeowner' ? 'single_family' : 'rental',
+        year_built: new Date().getFullYear() - 20, // Default to 20 years old
+        square_feet: 2000, // Default square footage
+        details: {
+          bedrooms: finalData.propertyBedrooms || 3,
+          bathrooms: finalData.propertyBathrooms || 2,
+          stories: finalData.propertyStories || 1,
+          rooms_per_floor: finalData.roomsPerFloor || { 1: 4 },
+          features: finalData.propertyStructures || [],
+          insurance: {
+            has_property: finalData.hasPropertyInsurance,
+            has_flood: finalData.hasFloodInsurance,
+            has_other: finalData.hasOtherInsurance,
+            provider: finalData.insuranceProvider,
+            other_type: finalData.otherInsuranceType,
+            other_description: finalData.otherInsuranceDescription
+          }
+        },
+        is_primary: finalData.userType === 'homeowner',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      
+      const { error: propertyError } = await supabase
+        .from('properties')
+        .insert(propertyData)
+      
+      if (propertyError) {
+        logger.error('Failed to create property during onboarding', { userId, propertyError })
+        // Don't fail the entire onboarding if property creation fails
+        // User can add property manually later
+      } else {
+        logger.info('Property created during onboarding', { userId, address: finalData.propertyAddress })
+      }
     }
     
     // Track onboarding completion analytics

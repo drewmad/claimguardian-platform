@@ -70,6 +70,8 @@ interface OnboardingData {
   hasFloodInsurance?: boolean
   hasOtherInsurance?: boolean
   insuranceProvider?: string
+  otherInsuranceType?: string
+  otherInsuranceDescription?: string
   
   // Completion tracking
   profileComplete: boolean
@@ -427,6 +429,7 @@ function UserProfileStep({
   const [propertyBedrooms, setPropertyBedrooms] = useState(data.propertyBedrooms || 1)
   const [propertyBathrooms, setPropertyBathrooms] = useState(data.propertyBathrooms || 1)
   const [propertyStructures, setPropertyStructures] = useState<string[]>(data.propertyStructures || [])
+  const [roomsPerFloor, setRoomsPerFloor] = useState<Record<number, number>>(data.roomsPerFloor || { 1: 4 })
   
   // Google Maps state
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
@@ -567,16 +570,7 @@ function UserProfileStep({
     }
   }, [isGoogleLoaded, selectedType, data, onUpdate])
 
-  const handleAddressVerify = async () => {
-    if (propertyAddress.trim()) {
-      setAddressVerified(true)
-      onUpdate({ 
-        ...data, 
-        propertyAddress,
-        addressVerified: true
-      })
-    }
-  }
+  // Remove manual verification - only Google autocomplete can verify
 
   const handleRoleSelect = (role: string) => {
     setProfessionalRole(role)
@@ -625,8 +619,25 @@ function UserProfileStep({
 
   const needsPropertyDetails = selectedType && !isProfessional && addressVerified
   const commonStructures = [
-    'Central Air/Heat', 'Pool', 'Garage', 'Deck/Patio', 
-    'Fence', 'Security System', 'Solar Panels', 'Generator'
+    // Climate Control
+    'Central Air/Heat', 'Window AC Units', 'Heat Pump', 'Radiant Floor Heating',
+    // Outdoor Features
+    'Pool', 'Hot Tub/Spa', 'Deck/Patio', 'Outdoor Kitchen', 'Fire Pit', 
+    'Pergola/Gazebo', 'Shed/Storage Building', 'Greenhouse',
+    // Parking & Access
+    'Attached Garage', 'Detached Garage', 'Carport', 'Circular Driveway', 
+    'RV/Boat Parking', 'Workshop',
+    // Security & Safety
+    'Security System', 'Security Cameras', 'Smart Doorbell', 'Gate/Gated Entry',
+    'Fence', 'Storm Shutters', 'Impact Windows', 'Safe Room',
+    // Utilities & Energy
+    'Solar Panels', 'Generator', 'Well Water', 'Septic System', 
+    'Water Softener', 'Sump Pump', 'French Drain',
+    // Interior Features
+    'Fireplace', 'Wet Bar', 'Home Theater', 'Elevator', 
+    'Central Vacuum', 'Intercom System', 'Smart Home System',
+    // Roofing & Structure
+    'Metal Roof', 'Tile Roof', 'New Roof (< 5 years)', 'Skylights'
   ]
 
   const handleContinue = () => {
@@ -682,24 +693,26 @@ function UserProfileStep({
                 <label className="block text-lg font-semibold text-text-primary mb-3">
                   Property Address
                 </label>
-                <div className="flex gap-2">
+                <div className="relative">
                   <input
                     ref={addressInputRef}
                     type="text"
                     value={propertyAddress}
                     onChange={(e) => handleAddressChange(e.target.value)}
-                    placeholder={isGoogleLoaded ? "Start typing your address..." : "Enter your address manually..."}
-                    className="flex-1 px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    placeholder={isGoogleLoaded ? "Start typing and select from dropdown..." : "Loading address verification..."}
+                    className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-border focus:outline-none transition-all duration-200"
                     disabled={addressVerified}
                   />
-                  <Button
-                    onClick={handleAddressVerify}
-                    disabled={!propertyAddress.trim() || addressVerified}
-                    className="px-6"
-                  >
-                    {addressVerified ? <CheckCircle className="w-4 h-4 mr-2" /> : <MapPin className="w-4 h-4 mr-2" />}
-                    {addressVerified ? 'Verified' : 'Verify'}
-                  </Button>
+                  {!isGoogleLoaded && (
+                    <p className="text-warning text-xs mt-2">
+                      Address verification is loading...
+                    </p>
+                  )}
+                  {isGoogleLoaded && !addressVerified && propertyAddress && (
+                    <p className="text-warning text-xs mt-2">
+                      Please select an address from the dropdown to verify
+                    </p>
+                  )}
                 </div>
                 {addressVerified && (
                   <p className="text-success text-sm mt-3 flex items-center gap-2 font-medium">
@@ -786,7 +799,7 @@ function UserProfileStep({
                 <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
                 
                 {/* Property basics */}
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div>
                     <label className="block text-sm font-semibold text-text-primary mb-3">
                       Stories
@@ -819,8 +832,8 @@ function UserProfileStep({
                       }}
                       className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
                     >
-                      {[1, 2, 3, 4, 5, 6].map(num => (
-                        <option key={num} value={num}>{num}+</option>
+                      {[1, 2, 3, 4, 5, 6, 7, 8].map(num => (
+                        <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
                   </div>
@@ -832,48 +845,73 @@ function UserProfileStep({
                     <select
                       value={propertyBathrooms}
                       onChange={(e) => {
-                        const bathrooms = parseInt(e.target.value)
+                        const bathrooms = parseFloat(e.target.value)
                         setPropertyBathrooms(bathrooms)
                         handlePropertyDetailsUpdate()
                       }}
                       className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
                     >
-                      {[1, 2, 3, 4, 5, 6].map(num => (
-                        <option key={num} value={num}>{num}+</option>
+                      <option value={1}>1</option>
+                      {[1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6].map(num => (
+                        <option key={num} value={num}>{num}</option>
                       ))}
                     </select>
                   </div>
-                  <div>
-                    <label className="block text-sm font-semibold text-text-primary mb-3">
-                      Year Built
-                    </label>
-                    <input
-                      type="number"
-                      placeholder="e.g., 1995"
-                      className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                    />
-                  </div>
                 </div>
+
+                {/* Rooms per floor */}
+                {propertyStories > 0 && (
+                  <div className="mb-6">
+                    <label className="block text-lg font-semibold text-text-primary mb-4">
+                      Rooms per floor
+                    </label>
+                    <div className="space-y-3">
+                      {Array.from({ length: propertyStories }, (_, i) => i + 1).map((floor) => (
+                        <div key={floor} className="flex items-center gap-4">
+                          <span className="text-text-secondary w-24">
+                            {floor === 1 ? '1st Floor' : floor === 2 ? '2nd Floor' : floor === 3 ? '3rd Floor' : `${floor}th Floor`}
+                          </span>
+                          <select
+                            value={roomsPerFloor[floor] || 4}
+                            onChange={(e) => {
+                              const rooms = parseInt(e.target.value)
+                              setRoomsPerFloor(prev => ({ ...prev, [floor]: rooms }))
+                              onUpdate({
+                                ...data,
+                                roomsPerFloor: { ...roomsPerFloor, [floor]: rooms }
+                              })
+                            }}
+                            className="flex-1 px-4 py-2 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                          >
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(num => (
+                              <option key={num} value={num}>{num} rooms</option>
+                            ))}
+                          </select>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 
                 {/* Property structures */}
                 <div>
                   <label className="block text-lg font-semibold text-text-primary mb-4">
                     Property Features (select all that apply)
                   </label>
-                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 max-h-96 overflow-y-auto p-1">
                     {commonStructures.map((structure) => (
                       <button
                         key={structure}
                         onClick={() => toggleStructure(structure)}
-                        className={`p-3 rounded-lg border text-sm transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
+                        className={`p-2.5 rounded-lg border text-xs transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
                           propertyStructures.includes(structure)
                             ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
                             : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
                         }`}
                       >
-                        <div className="flex items-center justify-between">
-                          <span>{structure}</span>
-                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                        <div className="flex items-center justify-between gap-2">
+                          <span className="text-left">{structure}</span>
+                          <div className={`w-3.5 h-3.5 rounded border-2 flex items-center justify-center transition-all duration-200 flex-shrink-0 ${
                             propertyStructures.includes(structure)
                               ? 'border-accent bg-accent shadow-lg'
                               : 'border-border'
@@ -933,6 +971,7 @@ function InsuranceStatusStep({
   const [hasFloodInsurance, setHasFloodInsurance] = useState<boolean | null>(data.hasFloodInsurance || null)
   const [hasOtherInsurance, setHasOtherInsurance] = useState<boolean | null>(data.hasOtherInsurance || null)
   const [insuranceProvider, setInsuranceProvider] = useState(data.insuranceProvider || '')
+  const [otherInsuranceType, setOtherInsuranceType] = useState(data.otherInsuranceType || '')
   const [currentStep, setCurrentStep] = useState<number>(0)
 
   const commonProviders = [
@@ -961,10 +1000,25 @@ function InsuranceStatusStep({
 
   const handleOtherInsuranceChange = (status: boolean) => {
     setHasOtherInsurance(status)
+    if (!status) {
+      setOtherInsuranceType('')
+    }
     onUpdate({ 
       ...data, 
-      hasOtherInsurance: status
+      hasOtherInsurance: status,
+      otherInsuranceType: status ? otherInsuranceType : ''
     })
+  }
+
+  const handleOtherInsuranceTypeChange = (type: string) => {
+    setOtherInsuranceType(type)
+    onUpdate({
+      ...data,
+      otherInsuranceType: type
+    })
+    if (currentStep < getSteps().length - 1) {
+      setCurrentStep(currentStep + 1)
+    }
   }
 
   const handleProviderChange = (provider: string) => {
@@ -1105,7 +1159,7 @@ function InsuranceStatusStep({
         </div>
 
         {/* Insurance Provider Input */}
-        {hasPropertyInsurance && (
+        {hasPropertyInsurance && currentStep === 0 && (
           <div className="pt-4">
             <label className="block text-lg font-semibold text-text-primary mb-3">
               Insurance Provider (Optional)
@@ -1117,6 +1171,44 @@ function InsuranceStatusStep({
               placeholder="e.g., State Farm, Allstate..."
               className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
             />
+          </div>
+        )}
+
+        {/* Other Insurance Type Dropdown */}
+        {hasOtherInsurance && currentStep === 2 && (
+          <div className="pt-4 space-y-4">
+            <label className="block text-lg font-semibold text-text-primary mb-3">
+              What type of property-related insurance?
+            </label>
+            <select
+              value={otherInsuranceType}
+              onChange={(e) => handleOtherInsuranceTypeChange(e.target.value)}
+              className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+            >
+              <option value="">Select insurance type...</option>
+              <option value="windstorm">Windstorm Insurance</option>
+              <option value="earthquake">Earthquake Insurance</option>
+              <option value="sinkhole">Sinkhole Insurance</option>
+              <option value="ordinance-law">Ordinance or Law Coverage</option>
+              <option value="umbrella">Umbrella Policy</option>
+              <option value="equipment-breakdown">Equipment Breakdown Coverage</option>
+              <option value="service-line">Service Line Coverage</option>
+              <option value="identity-theft">Identity Theft Protection</option>
+              <option value="water-backup">Water Backup Coverage</option>
+              <option value="cyber">Cyber Insurance</option>
+              <option value="vacant-property">Vacant Property Insurance</option>
+              <option value="loss-assessment">Loss Assessment Coverage</option>
+              <option value="other">Other (please specify)</option>
+            </select>
+            {otherInsuranceType === 'other' && (
+              <textarea
+                className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                rows={2}
+                placeholder="Please describe your insurance type..."
+                value={data.otherInsuranceDescription || ''}
+                onChange={(e) => onUpdate({ ...data, otherInsuranceDescription: e.target.value })}
+              />
+            )}
           </div>
         )}
       </div>
