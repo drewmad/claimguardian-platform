@@ -27,6 +27,17 @@ interface AITool {
 
 const AI_TOOLS: AITool[] = [
   {
+    id: 'ar-damage-documenter',
+    title: 'AR Damage Documenter',
+    description: 'Professional documentation in minutes! WebXR measurement tools with AI validation and 3D visualization',
+    icon: Camera,
+    color: 'cyan',
+    href: '/ai-tools/ar-damage-documenter',
+    status: 'beta',
+    category: 'analysis',
+    features: ['WebXR Measurement Tools', 'AI Measurement Validation', '3D Damage Visualization', 'Professional Report Generation', 'Mobile AR Integration']
+  },
+  {
     id: 'damage-analyzer',
     title: 'Damage Analyzer',
     description: 'AI-powered damage assessment from photos with instant severity ratings and repair recommendations',
@@ -38,15 +49,26 @@ const AI_TOOLS: AITool[] = [
     features: ['Photo & Video Analysis', 'Severity Assessment', 'Cost Estimation', 'Safety Warnings']
   },
   {
+    id: 'proactive-claim-optimizer',
+    title: 'Proactive Claim Optimizer',
+    description: 'It caught issues I never would have noticed! Pre-submission review with claim strength scoring',
+    icon: Shield,
+    color: 'emerald',
+    href: '/ai-tools/proactive-claim-optimizer',
+    status: 'beta',
+    category: 'assistance',
+    features: ['Pre-submission Claim Review', 'Missing Documentation Detector', 'Claim Strength Scoring', 'Optimization Recommendations', 'Success Probability Assessment']
+  },
+  {
     id: 'policy-advisor',
-    title: 'Policy Advisor',
-    description: 'Get instant answers about your insurance policy, coverage details, and claim procedures',
+    title: 'Policy Advisor + Clarity',
+    description: 'Get instant answers about your insurance policy with integrated explanations and plain English translations',
     icon: Shield,
     color: 'blue',
     href: '/ai-augmented/policy-chat',
     status: 'active',
     category: 'assistance',
-    features: ['Policy Q&A', 'Document Upload', 'Coverage Analysis', 'Multi-Model Support']
+    features: ['Policy Q&A', 'Document Upload', 'Coverage Analysis', 'Plain English Explanations', 'Multi-Model Support']
   },
   {
     id: 'inventory-scanner',
@@ -116,14 +138,36 @@ const AI_TOOLS: AITool[] = [
   },
   {
     id: 'evidence-organizer',
-    title: 'Evidence Organizer',
-    description: 'Organize and categorize all claim evidence with AI-powered tagging and search',
+    title: 'Evidence Organizer + Auto-categorization',
+    description: 'Smart organization with AI-powered auto-categorization, tagging, and advanced search capabilities',
     icon: FolderOpen,
     color: 'teal',
     href: '/ai-tools/evidence-organizer',
-    status: 'coming-soon',
+    status: 'beta',
     category: 'documentation',
-    features: ['Smart Categorization', 'Evidence Timeline', 'Document Search', 'Chain of Custody']
+    features: ['Smart Auto-categorization', 'AI Document Recognition', 'Evidence Timeline', 'Semantic Search', 'Chain of Custody']
+  },
+  {
+    id: 'community-intelligence',
+    title: 'Community Intelligence System',
+    description: 'I know what others in my situation received! Aggregate insights from Florida claims with privacy-preserving analytics',
+    icon: Calculator,
+    color: 'violet',
+    href: '/ai-tools/community-intelligence',
+    status: 'beta',
+    category: 'analysis',
+    features: ['Privacy-preserving Analytics', 'Trend Detection', 'Anonymous Outcome Sharing', 'Market Data Integration', 'Comparative Analysis Dashboard']
+  },
+  {
+    id: 'communication-helper',
+    title: 'Communication Helper + Negotiation',
+    description: 'AI-powered assistance for writing emails and messages with integrated negotiation guidance and tactics',
+    icon: MessageSquare,
+    color: 'pink',
+    href: '/ai-tools/communication-helper',
+    status: 'beta',
+    category: 'communication',
+    features: ['Email Templates', 'Negotiation Integration', 'Tone Adjustment', 'Follow-up Reminders', 'Response Analysis']
   }
 ]
 
