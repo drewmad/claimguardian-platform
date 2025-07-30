@@ -22,7 +22,7 @@ import { Badge } from '@/components/ui/badge'
 import Link from 'next/link'
 import { getDisasterHubData } from '@/actions/disasters'
 import { updateUserChecklist, getChecklistProgress } from '@/actions/checklist'
-import Map, { Source, Layer, Marker, Popup } from 'react-map-gl'
+import MapGL, { Source, Layer, Marker, Popup } from 'react-map-gl/mapbox'
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // --- DATA TYPES ---
@@ -86,7 +86,7 @@ const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 const InteractiveMap = ({ properties, alerts }: { properties: Property[], alerts: Alert[] }) => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
 
-  const geoJsonData = {
+  const geoJsonData: any = {
     type: 'FeatureCollection',
     features: alerts.map(alert => ({
       type: 'Feature',
@@ -110,7 +110,7 @@ const InteractiveMap = ({ properties, alerts }: { properties: Property[], alerts
         </CardTitle>
       </CardHeader>
       <CardContent className="flex-grow m-4 rounded-lg overflow-hidden">
-        <Map
+        <MapGL
           initialViewState={initialViewState}
           mapboxAccessToken={MAPBOX_TOKEN}
           mapStyle="mapbox://styles/mapbox/dark-v11"
@@ -144,7 +144,7 @@ const InteractiveMap = ({ properties, alerts }: { properties: Property[], alerts
               </div>
             </Popup>
           )}
-        </Map>
+        </MapGL>
       </CardContent>
     </Card>
   )
@@ -248,7 +248,7 @@ const PreparednessChecklist = () => {
               <span className={`flex-grow ${item.completed ? 'text-text-secondary line-through' : 'text-text-primary'}`}>
                 {item.text}
               </span>
-              {item.link && (
+              {'link' in item && item.link && (
                 <Link href={item.link} className="text-accent hover:underline text-sm">
                   Go
                 </Link>
