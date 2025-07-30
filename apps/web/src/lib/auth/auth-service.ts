@@ -136,10 +136,7 @@ class AuthService {
           status: error.status,
           code: error.code,
           name: error.name,
-          stack: error.stack,
-          __typename: error.__typename,
-          hint: error.hint,
-          details: error.details
+          stack: error.stack
         })
         
         // Check if this is a network/server error
@@ -545,9 +542,6 @@ class AuthService {
       name: error.name,
       url: typeof window !== 'undefined' ? window.location.href : 'server',
       timestamp: new Date().toISOString(),
-      __typename: error.__typename,
-      hint: error.hint,
-      details: error.details,
       rawError: JSON.stringify(error)
     }
     

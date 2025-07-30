@@ -54,15 +54,15 @@ function VerifyEmailContent() {
 
         // Exchange the token for a session
         const supabase = createClient()
-        const { data, error } = await supabase.auth.verifyOtp({
+        const { data, error: verifyError } = await supabase.auth.verifyOtp({
           token_hash: token,
           type: type as 'signup' | 'recovery' | 'invite'
         })
 
-        if (error) {
+        if (verifyError) {
           setStatus('error')
-          setErrorMessage(error.message || 'Verification failed')
-          logger.error('Email verification failed', {}, error)
+          setErrorMessage(verifyError.message || 'Verification failed')
+          logger.error('Email verification failed', {}, verifyError)
           return
         }
 
