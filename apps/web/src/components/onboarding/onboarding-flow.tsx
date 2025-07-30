@@ -619,8 +619,8 @@ function UserProfileStep({
     selectedType === 'property-professional' 
       ? professionalRole
       : selectedType === 'landlord'
-        ? (propertyAddress && landlordUnits)
-        : propertyAddress
+        ? (addressVerified && landlordUnits)
+        : addressVerified
   )
 
   const needsPropertyDetails = selectedType && !isProfessional && addressVerified
@@ -688,18 +688,16 @@ function UserProfileStep({
                 onChange={(e) => handleAddressChange(e.target.value)}
                 placeholder={isGoogleLoaded ? "Start typing your address..." : "Loading address autocomplete..."}
                 className="flex-1 px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                disabled={!isGoogleLoaded}
+                disabled={!isGoogleLoaded || addressVerified}
               />
-              {!addressVerified && (
-                <Button
-                  onClick={handleAddressVerify}
-                  disabled={!propertyAddress.trim()}
-                  className="px-6"
-                >
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Verify
-                </Button>
-              )}
+              <Button
+                onClick={handleAddressVerify}
+                disabled={!propertyAddress.trim() || addressVerified}
+                className="px-6"
+              >
+                {addressVerified ? <CheckCircle className="w-4 h-4 mr-2" /> : <MapPin className="w-4 h-4 mr-2" />}
+                {addressVerified ? 'Verified' : 'Verify'}
+              </Button>
             </div>
             {addressVerified && (
               <p className="text-success text-sm mt-3 flex items-center gap-2 font-medium">
@@ -782,11 +780,11 @@ function UserProfileStep({
 
         {/* Property Details (for homeowners/landlords with verified address) */}
         {needsPropertyDetails && (
-          <div className="border-t border-border pt-8">
+          <div className="border-t border-border pt-8 mt-8">
             <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
             
             {/* Property basics */}
-            <div className="grid grid-cols-3 gap-4 mb-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
               <div>
                 <label className="block text-sm font-semibold text-text-primary mb-3">
                   Stories
@@ -843,6 +841,16 @@ function UserProfileStep({
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-3">
+                  Year Built
+                </label>
+                <input
+                  type="number"
+                  placeholder="e.g., 1995"
+                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                />
+              </div>
             </div>
             
             {/* Property structures */}
@@ -850,7 +858,7 @@ function UserProfileStep({
               <label className="block text-lg font-semibold text-text-primary mb-4">
                 Property Features (select all that apply)
               </label>
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                 {commonStructures.map((structure) => (
                   <button
                     key={structure}
@@ -1091,6 +1099,22 @@ function InsuranceStatusStep({
             </button>
           </div>
         </div>
+
+        {/* Insurance Provider Input */}
+        {hasPropertyInsurance && (
+          <div className="pt-4">
+            <label className="block text-lg font-semibold text-text-primary mb-3">
+              Insurance Provider (Optional)
+            </label>
+            <input
+              type="text"
+              value={insuranceProvider}
+              onChange={(e) => handleProviderChange(e.target.value)}
+              placeholder="e.g., State Farm, Allstate..."
+              className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex justify-between pt-8">
