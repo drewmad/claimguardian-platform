@@ -636,281 +636,285 @@ function UserProfileStep({
   }
 
   return (
-    <div className="space-y-8">
-      <div className="text-center">
-        <h2 className="text-3xl font-bold text-text-primary mb-3">Welcome to ClaimGuardian</h2>
-        <p className="text-text-secondary text-lg">Let's personalize your experience</p>
-      </div>
-
-      <div className="space-y-6">
-        {/* User Type Selection */}
-        <div>
-          <label className="block text-lg font-semibold text-text-primary mb-4">
-            I am a...
-          </label>
-          <div className="grid grid-cols-2 gap-4">
-            {userTypes.map((type) => (
-              <button
-                key={type.value}
-                onClick={() => handleTypeSelect(type.value)}
-                className={`p-6 rounded-xl border-2 transition-all duration-300 text-center aspect-square flex flex-col items-center justify-center backdrop-blur-sm hover:scale-105 hover:shadow-xl ${
-                  selectedType === type.value
-                    ? 'border-accent-border bg-accent/20 shadow-lg'
-                    : 'border-border hover:border-accent-border bg-panel/30'
-                }`}
-              >
-                <span className="text-5xl mb-3">{type.icon}</span>
-                <h3 className="text-xl font-bold text-text-primary mb-2">{type.label}</h3>
-                <p className="text-sm text-text-secondary text-center mb-3">{type.description}</p>
-                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                  selectedType === type.value
-                    ? 'border-accent bg-accent shadow-lg' 
-                    : 'border-border'
-                }`}>
-                  {selectedType === type.value && <div className="w-2 h-2 bg-text-primary rounded-full" />}
-                </div>
-              </button>
-            ))}
+    <Card>
+      <CardContent className="p-8">
+        <div className="space-y-8">
+          <div className="text-center">
+            <h2 className="text-3xl font-bold text-text-primary mb-3">Welcome to ClaimGuardian</h2>
+            <p className="text-text-secondary text-lg">Let's personalize your experience</p>
           </div>
-        </div>
 
-        {/* Property Address (for non-professionals) */}
-        {selectedType && !isProfessional && (
-          <div>
-            <label className="block text-lg font-semibold text-text-primary mb-3">
-              Property Address
-            </label>
-            <div className="flex gap-2">
-              <input
-                ref={addressInputRef}
-                type="text"
-                value={propertyAddress}
-                onChange={(e) => handleAddressChange(e.target.value)}
-                placeholder={isGoogleLoaded ? "Start typing your address..." : "Loading address autocomplete..."}
-                className="flex-1 px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                disabled={!isGoogleLoaded || addressVerified}
-              />
-              <Button
-                onClick={handleAddressVerify}
-                disabled={!propertyAddress.trim() || addressVerified}
-                className="px-6"
-              >
-                {addressVerified ? <CheckCircle className="w-4 h-4 mr-2" /> : <MapPin className="w-4 h-4 mr-2" />}
-                {addressVerified ? 'Verified' : 'Verify'}
-              </Button>
-            </div>
-            {addressVerified && (
-              <p className="text-success text-sm mt-3 flex items-center gap-2 font-medium">
-                <CheckCircle className="w-5 h-5" />
-                Address verified
-              </p>
-            )}
-          </div>
-        )}
-
-        {/* Professional Role (for professionals only) */}
-        {selectedType && isProfessional && (
-          <div>
-            <label className="block text-lg font-semibold text-text-primary mb-4">
-              My Role
-            </label>
-            <div className="grid grid-cols-1 gap-2">
-              {professionalRoles.map((role) => (
-                <button
-                  key={role}
-                  onClick={() => handleRoleSelect(role)}
-                  className={`p-4 rounded-lg border text-left transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
-                    professionalRole === role
-                      ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
-                      : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>{role}</span>
-                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
-                      professionalRole === role
-                        ? 'border-accent bg-accent shadow-lg'
-                        : 'border-border'
-                    }`}>
-                      {professionalRole === role && (
-                        <div className="w-2 h-2 bg-text-primary rounded-full" />
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Landlord Units (for landlords only) */}
-        {selectedType && isLandlord && (
-          <div>
-            <label className="block text-lg font-semibold text-text-primary mb-4">
-              How many units do you manage?
-            </label>
-            <div className="grid grid-cols-2 gap-3">
-              {landlordUnitRanges.map((range) => (
-                <button
-                  key={range}
-                  onClick={() => handleUnitsSelect(range)}
-                  className={`p-4 rounded-lg border text-center transition-all duration-300 backdrop-blur-sm hover:scale-105 ${
-                    landlordUnits === range
-                      ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
-                      : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
-                  }`}
-                >
-                  <div className="flex flex-col items-center">
-                    <span className="font-semibold">{range}</span>
-                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mt-2 transition-all duration-200 ${
-                      landlordUnits === range
-                        ? 'border-accent bg-accent shadow-lg'
-                        : 'border-border'
-                    }`}>
-                      {landlordUnits === range && (
-                        <div className="w-1.5 h-1.5 bg-text-primary rounded-full" />
-                      )}
-                    </div>
-                  </div>
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Property Details (for homeowners/landlords with verified address) */}
-        {needsPropertyDetails && (
-          <div className="border-t border-border pt-8 mt-8">
-            <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
-            
-            {/* Property basics */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              <div>
-                <label className="block text-sm font-semibold text-text-primary mb-3">
-                  Stories
-                </label>
-                <select
-                  value={propertyStories}
-                  onChange={(e) => {
-                    const stories = parseInt(e.target.value)
-                    setPropertyStories(stories)
-                    handlePropertyDetailsUpdate()
-                  }}
-                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                >
-                  {[1, 2, 3, 4].map(num => (
-                    <option key={num} value={num}>{num}</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-text-primary mb-3">
-                  Bedrooms
-                </label>
-                <select
-                  value={propertyBedrooms}
-                  onChange={(e) => {
-                    const bedrooms = parseInt(e.target.value)
-                    setPropertyBedrooms(bedrooms)
-                    handlePropertyDetailsUpdate()
-                  }}
-                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                >
-                  {[1, 2, 3, 4, 5, 6].map(num => (
-                    <option key={num} value={num}>{num}+</option>
-                  ))}
-                </select>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-semibold text-text-primary mb-3">
-                  Bathrooms
-                </label>
-                <select
-                  value={propertyBathrooms}
-                  onChange={(e) => {
-                    const bathrooms = parseInt(e.target.value)
-                    setPropertyBathrooms(bathrooms)
-                    handlePropertyDetailsUpdate()
-                  }}
-                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                >
-                  {[1, 2, 3, 4, 5, 6].map(num => (
-                    <option key={num} value={num}>{num}+</option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-text-primary mb-3">
-                  Year Built
-                </label>
-                <input
-                  type="number"
-                  placeholder="e.g., 1995"
-                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
-                />
-              </div>
-            </div>
-            
-            {/* Property structures */}
+          <div className="space-y-6">
+            {/* User Type Selection */}
             <div>
               <label className="block text-lg font-semibold text-text-primary mb-4">
-                Property Features (select all that apply)
+                I am a...
               </label>
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
-                {commonStructures.map((structure) => (
+              <div className="grid grid-cols-2 gap-4">
+                {userTypes.map((type) => (
                   <button
-                    key={structure}
-                    onClick={() => toggleStructure(structure)}
-                    className={`p-3 rounded-lg border text-sm transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
-                      propertyStructures.includes(structure)
-                        ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
-                        : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                    key={type.value}
+                    onClick={() => handleTypeSelect(type.value)}
+                    className={`p-6 rounded-xl border-2 transition-all duration-300 text-center aspect-square flex flex-col items-center justify-center backdrop-blur-sm hover:scale-105 hover:shadow-xl ${
+                      selectedType === type.value
+                        ? 'border-accent-border bg-accent/20 shadow-lg'
+                        : 'border-border hover:border-accent-border bg-panel/30'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <span>{structure}</span>
-                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
-                        propertyStructures.includes(structure)
-                          ? 'border-accent bg-accent shadow-lg'
-                          : 'border-border'
-                      }`}>
-                        {propertyStructures.includes(structure) && (
-                          <div className="w-1.5 h-1.5 bg-text-primary rounded" />
-                        )}
-                      </div>
+                    <span className="text-5xl mb-3">{type.icon}</span>
+                    <h3 className="text-xl font-bold text-text-primary mb-2">{type.label}</h3>
+                    <p className="text-sm text-text-secondary text-center mb-3">{type.description}</p>
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                      selectedType === type.value
+                        ? 'border-accent bg-accent shadow-lg' 
+                        : 'border-border'
+                    }`}>
+                      {selectedType === type.value && <div className="w-2 h-2 bg-text-primary rounded-full" />}
                     </div>
                   </button>
                 ))}
               </div>
             </div>
-          </div>
-        )}
-      </div>
 
-      <div className="flex justify-between pt-8">
-        {onBack ? (
-          <Button
-            onClick={onBack}
-            variant="outline"
-          >
-            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
-            Back
-          </Button>
-        ) : (
-          <div></div>
-        )}
-        <Button
-          onClick={handleContinue}
-          disabled={!canProceed}
-          size="lg"
-        >
-          Continue
-          <ArrowRight className="w-5 h-5 ml-2" />
-        </Button>
-      </div>
-    </div>
+            {/* Property Address (for non-professionals) */}
+            {selectedType && !isProfessional && (
+              <div>
+                <label className="block text-lg font-semibold text-text-primary mb-3">
+                  Property Address
+                </label>
+                <div className="flex gap-2">
+                  <input
+                    ref={addressInputRef}
+                    type="text"
+                    value={propertyAddress}
+                    onChange={(e) => handleAddressChange(e.target.value)}
+                    placeholder={isGoogleLoaded ? "Start typing your address..." : "Enter your address manually..."}
+                    className="flex-1 px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    disabled={addressVerified}
+                  />
+                  <Button
+                    onClick={handleAddressVerify}
+                    disabled={!propertyAddress.trim() || addressVerified}
+                    className="px-6"
+                  >
+                    {addressVerified ? <CheckCircle className="w-4 h-4 mr-2" /> : <MapPin className="w-4 h-4 mr-2" />}
+                    {addressVerified ? 'Verified' : 'Verify'}
+                  </Button>
+                </div>
+                {addressVerified && (
+                  <p className="text-success text-sm mt-3 flex items-center gap-2 font-medium">
+                    <CheckCircle className="w-5 h-5" />
+                    Address verified
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Professional Role (for professionals only) */}
+            {selectedType && isProfessional && (
+              <div>
+                <label className="block text-lg font-semibold text-text-primary mb-4">
+                  My Role
+                </label>
+                <div className="grid grid-cols-1 gap-2">
+                  {professionalRoles.map((role) => (
+                    <button
+                      key={role}
+                      onClick={() => handleRoleSelect(role)}
+                      className={`p-4 rounded-lg border text-left transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
+                        professionalRole === role
+                          ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                          : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                      }`}
+                    >
+                      <div className="flex items-center justify-between">
+                        <span>{role}</span>
+                        <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                          professionalRole === role
+                            ? 'border-accent bg-accent shadow-lg'
+                            : 'border-border'
+                        }`}>
+                          {professionalRole === role && (
+                            <div className="w-2 h-2 bg-text-primary rounded-full" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Landlord Units (for landlords only) */}
+            {selectedType && isLandlord && (
+              <div>
+                <label className="block text-lg font-semibold text-text-primary mb-4">
+                  How many units do you manage?
+                </label>
+                <div className="grid grid-cols-2 gap-3">
+                  {landlordUnitRanges.map((range) => (
+                    <button
+                      key={range}
+                      onClick={() => handleUnitsSelect(range)}
+                      className={`p-4 rounded-lg border text-center transition-all duration-300 backdrop-blur-sm hover:scale-105 ${
+                        landlordUnits === range
+                          ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                          : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                      }`}
+                    >
+                      <div className="flex flex-col items-center">
+                        <span className="font-semibold">{range}</span>
+                        <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mt-2 transition-all duration-200 ${
+                          landlordUnits === range
+                            ? 'border-accent bg-accent shadow-lg'
+                            : 'border-border'
+                        }`}>
+                          {landlordUnits === range && (
+                            <div className="w-1.5 h-1.5 bg-text-primary rounded-full" />
+                          )}
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Property Details (for homeowners/landlords with verified address) */}
+            {needsPropertyDetails && (
+              <div className="border-t border-border pt-8 mt-8">
+                <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
+                
+                {/* Property basics */}
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-text-primary mb-3">
+                      Stories
+                    </label>
+                    <select
+                      value={propertyStories}
+                      onChange={(e) => {
+                        const stories = parseInt(e.target.value)
+                        setPropertyStories(stories)
+                        handlePropertyDetailsUpdate()
+                      }}
+                      className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    >
+                      {[1, 2, 3, 4].map(num => (
+                        <option key={num} value={num}>{num}</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-text-primary mb-3">
+                      Bedrooms
+                    </label>
+                    <select
+                      value={propertyBedrooms}
+                      onChange={(e) => {
+                        const bedrooms = parseInt(e.target.value)
+                        setPropertyBedrooms(bedrooms)
+                        handlePropertyDetailsUpdate()
+                      }}
+                      className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    >
+                      {[1, 2, 3, 4, 5, 6].map(num => (
+                        <option key={num} value={num}>{num}+</option>
+                      ))}
+                    </select>
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-semibold text-text-primary mb-3">
+                      Bathrooms
+                    </label>
+                    <select
+                      value={propertyBathrooms}
+                      onChange={(e) => {
+                        const bathrooms = parseInt(e.target.value)
+                        setPropertyBathrooms(bathrooms)
+                        handlePropertyDetailsUpdate()
+                      }}
+                      className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    >
+                      {[1, 2, 3, 4, 5, 6].map(num => (
+                        <option key={num} value={num}>{num}+</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-semibold text-text-primary mb-3">
+                      Year Built
+                    </label>
+                    <input
+                      type="number"
+                      placeholder="e.g., 1995"
+                      className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                    />
+                  </div>
+                </div>
+                
+                {/* Property structures */}
+                <div>
+                  <label className="block text-lg font-semibold text-text-primary mb-4">
+                    Property Features (select all that apply)
+                  </label>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                    {commonStructures.map((structure) => (
+                      <button
+                        key={structure}
+                        onClick={() => toggleStructure(structure)}
+                        className={`p-3 rounded-lg border text-sm transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
+                          propertyStructures.includes(structure)
+                            ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                            : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span>{structure}</span>
+                          <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                            propertyStructures.includes(structure)
+                              ? 'border-accent bg-accent shadow-lg'
+                              : 'border-border'
+                          }`}>
+                            {propertyStructures.includes(structure) && (
+                              <div className="w-1.5 h-1.5 bg-text-primary rounded" />
+                            )}
+                          </div>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          <div className="flex justify-between pt-8">
+            {onBack ? (
+              <Button
+                onClick={onBack}
+                variant="outline"
+              >
+                <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+                Back
+              </Button>
+            ) : (
+              <div></div>
+            )}
+            <Button
+              onClick={handleContinue}
+              disabled={!canProceed}
+              size="lg"
+            >
+              Continue
+              <ArrowRight className="w-5 h-5 ml-2" />
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
