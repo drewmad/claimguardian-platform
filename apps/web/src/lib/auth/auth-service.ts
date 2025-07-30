@@ -42,6 +42,7 @@ interface SignUpData {
   dataProcessingConsent?: boolean
   aiProcessingConsent?: boolean
   // Tracking data
+  sessionId?: string
   ipAddress?: string
   userAgent?: string
   deviceFingerprint?: string
@@ -174,37 +175,75 @@ class AuthService {
       
       // Capture comprehensive signup tracking data
       try {
-        const { captureSignupData } = await import('@/actions/user-tracking')
+        const { trackSignupConsents } = await import('@/actions/track-legal-acceptance')
         
-        // Wrap in try-catch to not fail signup if tracking fails
+        // Track legal consents (non-blocking)
         try {
+          await trackSignupConsents({
+            userId: authData.user.id,
+            consents: {
+              gdpr: data.gdprConsent || false,
+              dataProcessing: data.dataProcessingConsent || false,
+              marketing: data.marketingConsent || false
+            },
+            metadata: {
+              ipAddress: data.ipAddress,
+              userAgent: data.userAgent,
+              deviceFingerprint: data.deviceFingerprint,
+              sessionId: data.sessionId
+            }
+          })
+        } catch (consentError) {
+          console.warn('[AUTH DEBUG] Consent tracking failed (non-critical):', consentError)
+        }
+
+        // Try legacy tracking if available
+        try {
+          const { captureSignupData } = await import('@/actions/user-tracking')
           await captureSignupData({
             userId: authData.user.id,
             eventType: 'signup_completed',
             preferences: {
               gdprConsent: data.gdprConsent || false,
-            marketingConsent: data.marketingConsent || false,
-            dataProcessingConsent: data.dataProcessingConsent || false,
-            aiProcessingConsent: data.dataProcessingConsent || false // Default to data processing consent
-          },
-          deviceInfo: {
-            fingerprint: data.deviceFingerprint,
-            type: data.deviceType,
-            screenResolution: data.screenResolution
-          },
-          location: data.geolocation,
-          utm: data.utmParams,
-          referrer: data.referrer,
-          landingPage: data.landingPage
-        })
-        } catch (innerError) {
-          // Don't fail signup if tracking fails
-          console.warn('[AUTH DEBUG] Tracking capture failed (non-critical):', innerError)
-          logger.error('Failed to capture signup tracking data', { userId: authData.user.id }, innerError as Error)
+              marketingConsent: data.marketingConsent || false,
+              dataProcessingConsent: data.dataProcessingConsent || false,
+              aiProcessingConsent: data.dataProcessingConsent || false
+            },
+            deviceInfo: {
+              fingerprint: data.deviceFingerprint,
+              type: data.deviceType,
+              screenResolution: data.screenResolution
+            },
+            location: data.geolocation,
+            utm: data.utmParams,
+            referrer: data.referrer,
+            landingPage: data.landingPage
+          })
+        } catch (legacyError) {
+          console.warn('[AUTH DEBUG] Legacy tracking failed (non-critical):', legacyError)
+        }
+
+        // Start async data enrichment (completely non-blocking)
+        try {
+          const { enrichUserData } = await import('@/actions/enrich-user-data')
+          
+          // Fire and forget - don't wait for completion
+          enrichUserData({
+            userId: authData.user.id,
+            sessionId: data.sessionId,
+            userAgent: data.userAgent,
+            ipAddress: data.ipAddress,
+            deviceFingerprint: data.deviceFingerprint,
+            referrer: data.referrer,
+            landingPage: data.landingPage
+          }).catch(enrichError => {
+            console.warn('[AUTH DEBUG] Data enrichment failed (non-critical):', enrichError)
+          })
+        } catch (importError) {
+          console.warn('[AUTH DEBUG] Failed to load enrichment module:', importError)
         }
       } catch (trackingError) {
-        // Don't fail signup if tracking module fails to load
-        console.warn('[AUTH DEBUG] Failed to load tracking module:', trackingError)
+        console.warn('[AUTH DEBUG] Failed to load tracking modules:', trackingError)
       }
       
       return { data: authData.user }

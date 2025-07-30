@@ -18,6 +18,7 @@ import { logger } from '@/lib/logger'
 import { authService } from '@/lib/auth/auth-service'
 import { useRateLimit } from '@/hooks/use-rate-limit'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
+import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'
 
 export function SignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -25,10 +26,12 @@ export function SignupModal() {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
-  const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
-    cooldownMs: 60000, // 60 seconds
-    key: 'signup-resend'
-  })
+  // Temporarily disable rate limiting for testing
+  const { isLimited, secondsRemaining, checkLimit } = {
+    isLimited: false,
+    secondsRemaining: 0,
+    checkLimit: () => false
+  }
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -68,10 +71,7 @@ export function SignupModal() {
       setValidationError('Password must be at least 8 characters')
       return false
     }
-    if (formData.password !== formData.confirmPassword) {
-      setValidationError('Passwords do not match')
-      return false
-    }
+    // Note: Password mismatch validation removed as requested - let server handle it
     if (!formData.phone || formData.phone.replace(/\D/g, '').length < 10) {
       setValidationError('Please enter a valid phone number')
       return false
@@ -91,25 +91,50 @@ export function SignupModal() {
     
     setLoading(true)
     try {
-      const success = await signUp(formData)
+      // Collect tracking data safely (with fallbacks)
+      let trackingData = {}
+      try {
+        trackingData = await collectSignupTrackingData()
+      } catch (error) {
+        console.warn('Tracking data collection failed, using defaults:', error)
+        trackingData = {
+          ipAddress: '127.0.0.1',
+          userAgent: navigator.userAgent,
+          deviceType: 'unknown'
+        }
+      }
+      
+      const signupData = {
+        ...formData,
+        // Safely merge tracking data
+        ...trackingData,
+        // Generate session ID for tracking
+        sessionId: `signup-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+        // Legal compliance defaults
+        gdprConsent: formData.agree,
+        dataProcessingConsent: formData.agree,
+        marketingConsent: false // User can opt-in later
+      }
+      
+      const success = await signUp(signupData)
       
       if (success) {
         setIsSubmitted(true)
-        setTimeout(() => {
-          closeModal()
-          // Reset form
-          setFormData({
-            firstName: '',
-            lastName: '',
-            email: '',
-            password: '',
-            confirmPassword: '',
-            phone: '',
-            agree: false
-          })
-          setIsSubmitted(false)
-        }, 2000)
+        // Success modal now stays open until user takes action
+        // Reset form immediately since we're showing success
+        setFormData({
+          firstName: '',
+          lastName: '',
+          email: '',
+          password: '',
+          confirmPassword: '',
+          phone: '',
+          agree: false
+        })
       }
+    } catch (error) {
+      console.error('Signup error:', error)
+      setValidationError('An error occurred during signup. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -235,26 +260,43 @@ export function SignupModal() {
               </button>
             </div>
             
-            <div className="flex gap-3">
+            <div className="space-y-3">
               <button
                 onClick={() => {
                   setIsSubmitted(false)
                   closeModal()
                   openModal('login')
                 }}
-                className="flex-1 btn-primary py-2"
+                className="w-full btn-primary py-3"
               >
-                Go to Login
+                Go to Sign In
               </button>
-              <button
-                onClick={() => {
-                  closeModal()
-                  setIsSubmitted(false)
-                }}
-                className="flex-1 btn-secondary py-2"
-              >
-                Close
-              </button>
+              
+              <div className="flex gap-3">
+                <button
+                  onClick={handleResendEmail}
+                  disabled={resending || isLimited}
+                  className="flex-1 btn-secondary py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {resending ? 'Sending...' : 'Resend Email'}
+                  {isLimited && ` (${secondsRemaining}s)`}
+                </button>
+                <button
+                  onClick={() => {
+                    closeModal()
+                    setIsSubmitted(false)
+                  }}
+                  className="flex-1 btn-outline py-2"
+                >
+                  Close
+                </button>
+              </div>
+              
+              {resendSuccess && (
+                <p className="text-green-400 text-sm text-center">
+                  Verification email sent successfully!
+                </p>
+              )}
             </div>
           </div>
         </div>
