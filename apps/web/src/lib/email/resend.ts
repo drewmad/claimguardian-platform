@@ -59,11 +59,11 @@ export async function sendEmail({
       from: FROM_EMAIL,
       to: Array.isArray(to) ? to : [to],
       subject,
-      html,
-      text,
+      html: html || '',
+      text: text || '',
       replyTo: replyTo,
       tags: emailTags
-    })
+    } as any)
 
     if (error) {
       logger.error('Failed to send email', { error, to, subject })
