@@ -16,34 +16,6 @@ import { toast } from 'sonner'
 import { PropertyWizard } from '@/components/property/property-wizard'
 import { saveOnboardingProgress, completeOnboarding, trackOnboardingStep } from '@/actions/onboarding'
 
-// Declare Google Maps types for TypeScript
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        places: {
-          Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
-            addListener: (event: string, callback: () => void) => void
-            getPlace: () => {
-              address_components?: Array<{
-                types: string[]
-                long_name: string
-                short_name: string
-              }>
-              formatted_address?: string
-              geometry?: { location: { lat: () => number, lng: () => number } }
-            }
-          }
-        }
-        event: {
-          clearInstanceListeners: (instance: any) => void
-        }
-      }
-    }
-    initGooglePlaces: () => void
-  }
-}
-
 interface OnboardingStep {
   id: string
   title: string
@@ -117,9 +89,9 @@ export function OnboardingFlow() {
   const [preferences, setPreferences] = useState<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean } | null>(null)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     userType: null,
-    hasPropertyInsurance: null,
-    hasFloodInsurance: null,
-    hasOtherInsurance: null,
+    hasPropertyInsurance: undefined,
+    hasFloodInsurance: undefined,
+    hasOtherInsurance: undefined,
     profileComplete: false,
     insuranceComplete: false,
     onboardingComplete: false

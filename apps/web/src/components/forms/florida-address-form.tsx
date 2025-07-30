@@ -37,32 +37,6 @@ interface CountyOption {
   fips_code: string
 }
 
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        places: {
-          Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
-            addListener: (event: string, callback: () => void) => void
-            getPlace: () => { 
-              address_components?: Array<{ 
-                types: string[]
-                long_name: string
-                short_name: string 
-              }>
-              formatted_address?: string
-            }
-          }
-        }
-        event: {
-          clearInstanceListeners: (instance: unknown) => void
-        }
-      }
-    }
-    initGooglePlaces: () => void
-  }
-}
-
 export function FloridaAddressForm({ value, onChange, disabled, className }: FloridaAddressFormProps) {
   const street1Ref = useRef<HTMLInputElement>(null)
   const [autocomplete, setAutocomplete] = useState<unknown>(null)
