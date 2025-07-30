@@ -13,6 +13,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { sendWelcomeEmail, sendPropertyEnrichmentEmail } from './email'
 
 export interface OnboardingData {
   // Step 1: User Profile
@@ -260,6 +261,15 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       hasInsurance: finalData.hasInsurance,
       hasProperty: !!finalData.propertyAddress
     })
+    
+    // Send welcome email
+    try {
+      await sendWelcomeEmail(userId)
+      logger.info('Welcome email sent', { userId })
+    } catch (emailError) {
+      // Don't fail onboarding if email fails
+      logger.error('Failed to send welcome email', { userId }, emailError as Error)
+    }
     
     return { success: true }
     

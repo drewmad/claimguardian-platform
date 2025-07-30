@@ -152,6 +152,42 @@ serve(async (req) => {
       reason: 'Property enrichment from onboarding'
     })
 
+    // Send enrichment complete email notification
+    try {
+      // Get property owner details
+      const { data: property } = await supabase
+        .from('properties')
+        .select('user_id')
+        .eq('id', propertyId)
+        .single()
+
+      if (property?.user_id) {
+        // Call webhook to send email (Edge Functions can't directly import server actions)
+        await fetch(`${SUPABASE_URL}/functions/v1/send-email`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            type: 'property_enrichment',
+            userId: property.user_id,
+            propertyId: propertyId,
+            propertyAddress: address,
+            enrichmentData: {
+              floodZone: enrichmentData.flood_zone,
+              elevation: enrichmentData.elevation_meters,
+              hurricaneZone: enrichmentData.hurricane_evacuation_zone,
+              protectionClass: enrichmentData.fire_protection?.protection_class || 10
+            }
+          })
+        })
+      }
+    } catch (emailError) {
+      console.error('Failed to send enrichment email:', emailError)
+      // Don't fail the enrichment if email fails
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true, 
