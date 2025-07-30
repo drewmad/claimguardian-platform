@@ -149,66 +149,92 @@ ALTER FUNCTION "public"."audit_and_version"() OWNER TO "postgres";
 
 
 CREATE OR REPLACE FUNCTION "public"."capture_signup_data"("p_user_id" "uuid", "p_tracking_data" "jsonb") RETURNS "void"
-    LANGUAGE "plpgsql"
+    LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
 BEGIN
-    -- Insert or update user profile with signup tracking data
-    INSERT INTO user_profiles (
-        user_id,
-        signup_ip_address,
-        signup_user_agent,
-        signup_device_fingerprint,
-        signup_referrer,
-        signup_landing_page,
-        signup_utm_source,
-        signup_utm_medium,
-        signup_utm_campaign,
-        signup_country,
-        signup_region,
-        signup_city,
-        signup_postal_code,
-        signup_timezone,
-        signup_latitude,
-        signup_longitude,
-        signup_timestamp
-    ) VALUES (
-        p_user_id,
-        p_tracking_data->>'ip_address',
-        p_tracking_data->>'user_agent',
-        p_tracking_data->>'device_fingerprint',
-        p_tracking_data->>'referrer',
-        p_tracking_data->>'landing_page',
-        p_tracking_data->>'utm_source',
-        p_tracking_data->>'utm_medium',
-        p_tracking_data->>'utm_campaign',
-        p_tracking_data->>'country',
-        p_tracking_data->>'region',
-        p_tracking_data->>'city',
-        p_tracking_data->>'postal_code',
-        p_tracking_data->>'timezone',
-        (p_tracking_data->>'latitude')::FLOAT,
-        (p_tracking_data->>'longitude')::FLOAT,
-        NOW()
-    )
-    ON CONFLICT (user_id) DO UPDATE
-    SET 
-        signup_ip_address = EXCLUDED.signup_ip_address,
-        signup_user_agent = EXCLUDED.signup_user_agent,
-        signup_device_fingerprint = EXCLUDED.signup_device_fingerprint,
-        signup_referrer = EXCLUDED.signup_referrer,
-        signup_landing_page = EXCLUDED.signup_landing_page,
-        signup_utm_source = EXCLUDED.signup_utm_source,
-        signup_utm_medium = EXCLUDED.signup_utm_medium,
-        signup_utm_campaign = EXCLUDED.signup_utm_campaign,
-        signup_country = EXCLUDED.signup_country,
-        signup_region = EXCLUDED.signup_region,
-        signup_city = EXCLUDED.signup_city,
-        signup_postal_code = EXCLUDED.signup_postal_code,
-        signup_timezone = EXCLUDED.signup_timezone,
-        signup_latitude = EXCLUDED.signup_latitude,
-        signup_longitude = EXCLUDED.signup_longitude,
-        signup_timestamp = EXCLUDED.signup_timestamp,
-        updated_at = NOW();
+  -- Insert or update user profile with signup tracking data
+  INSERT INTO public.user_profiles (
+    user_id,
+    signup_completed_at,
+    signup_ip_address,
+    signup_user_agent,
+    signup_device_fingerprint,
+    signup_referrer,
+    signup_landing_page,
+    signup_utm_source,
+    signup_utm_medium,
+    signup_utm_campaign,
+    signup_country_code,
+    signup_region,
+    signup_city,
+    signup_postal_code,
+    signup_timezone,
+    email_verified_at,
+    updated_at
+  ) VALUES (
+    p_user_id,
+    now(),
+    p_tracking_data->>'ip_address',
+    p_tracking_data->>'user_agent',
+    p_tracking_data->>'device_fingerprint',
+    p_tracking_data->>'referrer',
+    p_tracking_data->>'landing_page',
+    p_tracking_data->>'utm_source',
+    p_tracking_data->>'utm_medium',
+    p_tracking_data->>'utm_campaign',
+    p_tracking_data->>'country',
+    p_tracking_data->>'region',
+    p_tracking_data->>'city',
+    p_tracking_data->>'postal_code',
+    p_tracking_data->>'timezone',
+    now(),
+    now()
+  )
+  ON CONFLICT (user_id) DO UPDATE SET
+    signup_completed_at = COALESCE(user_profiles.signup_completed_at, now()),
+    signup_ip_address = COALESCE(user_profiles.signup_ip_address, EXCLUDED.signup_ip_address),
+    signup_user_agent = COALESCE(user_profiles.signup_user_agent, EXCLUDED.signup_user_agent),
+    signup_device_fingerprint = COALESCE(user_profiles.signup_device_fingerprint, EXCLUDED.signup_device_fingerprint),
+    signup_referrer = COALESCE(user_profiles.signup_referrer, EXCLUDED.signup_referrer),
+    signup_landing_page = COALESCE(user_profiles.signup_landing_page, EXCLUDED.signup_landing_page),
+    signup_utm_source = COALESCE(user_profiles.signup_utm_source, EXCLUDED.signup_utm_source),
+    signup_utm_medium = COALESCE(user_profiles.signup_utm_medium, EXCLUDED.signup_utm_medium),
+    signup_utm_campaign = COALESCE(user_profiles.signup_utm_campaign, EXCLUDED.signup_utm_campaign),
+    signup_country_code = COALESCE(user_profiles.signup_country_code, EXCLUDED.signup_country_code),
+    signup_region = COALESCE(user_profiles.signup_region, EXCLUDED.signup_region),
+    signup_city = COALESCE(user_profiles.signup_city, EXCLUDED.signup_city),
+    signup_postal_code = COALESCE(user_profiles.signup_postal_code, EXCLUDED.signup_postal_code),
+    signup_timezone = COALESCE(user_profiles.signup_timezone, EXCLUDED.signup_timezone),
+    email_verified_at = COALESCE(user_profiles.email_verified_at, now()),
+    updated_at = now();
+  
+  -- Also create marketing attribution record if not exists
+  INSERT INTO public.marketing_attribution (
+    user_id,
+    first_touch_source,
+    first_touch_medium,
+    first_touch_campaign,
+    first_touch_date,
+    first_touch_landing_page,
+    conversion_source,
+    conversion_medium,
+    conversion_campaign,
+    conversion_date,
+    conversion_landing_page
+  ) VALUES (
+    p_user_id,
+    p_tracking_data->>'utm_source',
+    p_tracking_data->>'utm_medium',
+    p_tracking_data->>'utm_campaign',
+    now(),
+    p_tracking_data->>'landing_page',
+    p_tracking_data->>'utm_source',
+    p_tracking_data->>'utm_medium',
+    p_tracking_data->>'utm_campaign',
+    now(),
+    p_tracking_data->>'landing_page'
+  )
+  ON CONFLICT (user_id) DO NOTHING;
 END;
 $$;
 
@@ -261,25 +287,13 @@ ALTER FUNCTION "public"."get_user_consent_status"("p_user_id" "uuid") OWNER TO "
 
 
 CREATE OR REPLACE FUNCTION "public"."handle_new_user"() RETURNS "trigger"
-    LANGUAGE "plpgsql"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
     AS $$
 BEGIN
-    -- Insert into profiles table
-    INSERT INTO profiles (id, email, created_at, updated_at)
-    VALUES (NEW.id, NEW.email, NOW(), NOW())
-    ON CONFLICT (id) DO NOTHING;
-    
-    -- Insert into user_profiles table
-    INSERT INTO user_profiles (user_id, created_at, updated_at)
-    VALUES (NEW.id, NOW(), NOW())
-    ON CONFLICT (user_id) DO NOTHING;
-    
-    -- Insert into user_preferences table
-    INSERT INTO user_preferences (user_id, created_at, updated_at)
-    VALUES (NEW.id, NOW(), NOW())
-    ON CONFLICT (user_id) DO NOTHING;
-    
-    RETURN NEW;
+    INSERT INTO public.profiles (id, full_name, avatar_url)
+    VALUES (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url');
+    RETURN new;
 END;
 $$;
 
@@ -469,6 +483,25 @@ $$;
 ALTER FUNCTION "public"."log_user_activity"("p_user_id" "uuid", "p_session_id" "text", "p_activity_type" "text", "p_activity_name" "text", "p_activity_category" "text", "p_activity_value" "jsonb", "p_page_url" "text", "p_page_title" "text") OWNER TO "postgres";
 
 
+CREATE OR REPLACE FUNCTION "public"."record_legal_acceptance"("p_user_id" "uuid", "p_legal_id" "uuid", "p_ip_address" "text" DEFAULT NULL::"text", "p_user_agent" "text" DEFAULT NULL::"text", "p_signature_data" "jsonb" DEFAULT NULL::"jsonb") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    SET "search_path" TO 'public'
+    AS $$
+BEGIN
+  INSERT INTO user_legal_acceptance (user_id, legal_id, ip_address, user_agent, signature_data)
+  VALUES (p_user_id, p_legal_id, p_ip_address::inet, p_user_agent, p_signature_data)
+  ON CONFLICT (user_id, legal_id) DO UPDATE SET
+    accepted_at = now(),
+    ip_address = EXCLUDED.ip_address,
+    user_agent = EXCLUDED.user_agent,
+    signature_data = EXCLUDED.signature_data;
+END;
+$$;
+
+
+ALTER FUNCTION "public"."record_legal_acceptance"("p_user_id" "uuid", "p_legal_id" "uuid", "p_ip_address" "text", "p_user_agent" "text", "p_signature_data" "jsonb") OWNER TO "postgres";
+
+
 CREATE OR REPLACE FUNCTION "public"."record_user_consent"("p_user_id" "uuid", "p_document_id" "uuid", "p_action" "public"."consent_action_type", "p_ip_address" "inet", "p_user_agent" "text" DEFAULT NULL::"text", "p_device_fingerprint" character varying DEFAULT NULL::character varying, "p_metadata" "jsonb" DEFAULT '{}'::"jsonb") RETURNS "uuid"
     LANGUAGE "plpgsql" SECURITY DEFINER
     AS $$
@@ -624,13 +657,77 @@ CREATE OR REPLACE FUNCTION "public"."update_updated_at_column"() RETURNS "trigge
     LANGUAGE "plpgsql"
     AS $$
 BEGIN
-    NEW.updated_at = NOW();
-    RETURN NEW;
+  NEW.updated_at = now();
+  RETURN NEW;
 END;
 $$;
 
 
 ALTER FUNCTION "public"."update_updated_at_column"() OWNER TO "postgres";
+
+
+CREATE OR REPLACE FUNCTION "public"."update_user_preference"("p_user_id" "uuid", "p_preference_name" "text", "p_preference_value" boolean, "p_ip_address" "text") RETURNS "void"
+    LANGUAGE "plpgsql" SECURITY DEFINER
+    AS $_$
+DECLARE
+  v_old_value boolean;
+  v_consent_type text;
+BEGIN
+  -- Map preference names to consent types
+  CASE p_preference_name
+    WHEN 'gdpr_consent' THEN v_consent_type := 'gdpr_consent';
+    WHEN 'marketing_emails' THEN v_consent_type := 'marketing_consent';
+    WHEN 'data_processing_consent' THEN v_consent_type := 'data_processing_consent';
+    WHEN 'ai_processing_consent' THEN v_consent_type := 'ai_processing_consent';
+    ELSE v_consent_type := p_preference_name;
+  END CASE;
+  
+  -- Get old value
+  EXECUTE format('SELECT %I FROM public.user_preferences WHERE user_id = $1', p_preference_name)
+  INTO v_old_value
+  USING p_user_id;
+  
+  -- Update preference
+  EXECUTE format('UPDATE public.user_preferences SET %I = $1, %I = $2, updated_at = now() WHERE user_id = $3',
+    p_preference_name,
+    CASE 
+      WHEN p_preference_name LIKE '%_consent' THEN p_preference_name || '_date'
+      ELSE 'updated_at'
+    END
+  )
+  USING p_preference_value, 
+    CASE WHEN p_preference_value THEN now() ELSE NULL END,
+    p_user_id;
+  
+  -- Log consent change if value changed
+  IF v_old_value IS DISTINCT FROM p_preference_value THEN
+    INSERT INTO public.consent_audit_log (
+      user_id,
+      consent_type,
+      action,
+      old_value,
+      new_value,
+      ip_address,
+      method
+    ) VALUES (
+      p_user_id,
+      v_consent_type,
+      CASE 
+        WHEN p_preference_value THEN 'granted'
+        WHEN NOT p_preference_value AND v_old_value THEN 'withdrawn'
+        ELSE 'updated'
+      END,
+      to_jsonb(v_old_value),
+      to_jsonb(p_preference_value),
+      p_ip_address,
+      'user_settings'
+    );
+  END IF;
+END;
+$_$;
+
+
+ALTER FUNCTION "public"."update_user_preference"("p_user_id" "uuid", "p_preference_name" "text", "p_preference_value" boolean, "p_ip_address" "text") OWNER TO "postgres";
 
 SET default_tablespace = '';
 
@@ -1025,6 +1122,35 @@ CREATE TABLE IF NOT EXISTS "public"."login_activity" (
 ALTER TABLE "public"."login_activity" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."marketing_attribution" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "user_id" "uuid",
+    "first_touch_source" "text",
+    "first_touch_medium" "text",
+    "first_touch_campaign" "text",
+    "first_touch_date" timestamp with time zone,
+    "first_touch_landing_page" "text",
+    "last_touch_source" "text",
+    "last_touch_medium" "text",
+    "last_touch_campaign" "text",
+    "last_touch_date" timestamp with time zone,
+    "last_touch_landing_page" "text",
+    "conversion_source" "text",
+    "conversion_medium" "text",
+    "conversion_campaign" "text",
+    "conversion_date" timestamp with time zone,
+    "conversion_landing_page" "text",
+    "multi_touch_points" "jsonb" DEFAULT '[]'::"jsonb",
+    "total_touches" integer DEFAULT 0,
+    "days_to_conversion" integer,
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"()
+);
+
+
+ALTER TABLE "public"."marketing_attribution" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."personal_property" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "user_id" "uuid",
@@ -1104,31 +1230,12 @@ ALTER TABLE "public"."policies_history" OWNER TO "postgres";
 
 
 CREATE TABLE IF NOT EXISTS "public"."profiles" (
-    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
-    "user_id" "uuid" NOT NULL,
-    "email" character varying(255),
-    "full_name" character varying(255),
-    "first_name" character varying(100),
-    "last_name" character varying(100),
-    "phone" character varying(20),
-    "avatar_url" "text",
-    "signup_ip_address" "inet",
-    "signup_user_agent" "text",
-    "signup_device_fingerprint" character varying(255),
-    "signup_geolocation" "jsonb",
-    "signup_referrer" "text",
-    "signup_utm_params" "jsonb",
-    "signup_timestamp" timestamp with time zone,
-    "gdpr_consent" boolean DEFAULT false,
-    "marketing_consent" boolean DEFAULT false,
-    "data_processing_consent" boolean DEFAULT false,
-    "last_consent_update" timestamp with time zone,
-    "consent_ip_history" "jsonb" DEFAULT '[]'::"jsonb",
-    "created_at" timestamp with time zone DEFAULT "now"(),
+    "id" "uuid" NOT NULL,
     "updated_at" timestamp with time zone DEFAULT "now"(),
-    "deleted_at" timestamp with time zone,
-    "is_active" boolean DEFAULT true,
-    "metadata" "jsonb" DEFAULT '{}'::"jsonb"
+    "username" "text",
+    "full_name" "text",
+    "avatar_url" "text",
+    "website" "text"
 );
 
 
@@ -1282,6 +1389,20 @@ CREATE TABLE IF NOT EXISTS "public"."user_devices" (
 ALTER TABLE "public"."user_devices" OWNER TO "postgres";
 
 
+CREATE TABLE IF NOT EXISTS "public"."user_legal_acceptance" (
+    "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
+    "user_id" "uuid" NOT NULL,
+    "legal_id" "uuid" NOT NULL,
+    "accepted_at" timestamp with time zone DEFAULT "now"() NOT NULL,
+    "ip_address" "inet",
+    "user_agent" "text",
+    "signature_data" "jsonb"
+);
+
+
+ALTER TABLE "public"."user_legal_acceptance" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."user_preferences" (
     "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
     "user_id" "uuid",
@@ -1299,7 +1420,16 @@ CREATE TABLE IF NOT EXISTS "public"."user_preferences" (
     "ai_features_enabled" boolean DEFAULT true,
     "preferred_ai_model" "text" DEFAULT 'openai'::"text",
     "created_at" timestamp with time zone DEFAULT "now"(),
-    "updated_at" timestamp with time zone DEFAULT "now"()
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    "landlord_units" "text",
+    "property_stories" integer,
+    "property_bedrooms" integer,
+    "property_bathrooms" integer,
+    "rooms_per_floor" "text",
+    "property_structures" "text",
+    "has_property_insurance" boolean DEFAULT false,
+    "has_flood_insurance" boolean DEFAULT false,
+    "has_other_insurance" boolean DEFAULT false
 );
 
 
@@ -1325,7 +1455,32 @@ CREATE TABLE IF NOT EXISTS "public"."user_profiles" (
     "signup_timezone" "text",
     "signup_latitude" double precision,
     "signup_longitude" double precision,
-    "signup_timestamp" timestamp with time zone
+    "signup_timestamp" timestamp with time zone,
+    "signup_completed_at" timestamp with time zone,
+    "signup_source" "text",
+    "signup_device_type" "text",
+    "signup_utm_term" "text",
+    "signup_utm_content" "text",
+    "signup_country_code" "text",
+    "account_status" "text" DEFAULT 'active'::"text",
+    "account_type" "text" DEFAULT 'free'::"text",
+    "risk_score" numeric DEFAULT 0,
+    "trust_level" "text" DEFAULT 'new'::"text",
+    "last_login_at" timestamp with time zone,
+    "last_login_ip" "text",
+    "login_count" integer DEFAULT 0,
+    "failed_login_count" integer DEFAULT 0,
+    "last_failed_login_at" timestamp with time zone,
+    "password_changed_at" timestamp with time zone,
+    "email_verified_at" timestamp with time zone,
+    "phone_verified_at" timestamp with time zone,
+    "two_factor_enabled" boolean DEFAULT false,
+    "two_factor_method" "text",
+    "preferences" "jsonb" DEFAULT '{}'::"jsonb",
+    "tags" "text"[] DEFAULT '{}'::"text"[],
+    "notes" "text",
+    "internal_notes" "text",
+    "metadata" "jsonb" DEFAULT '{}'::"jsonb"
 );
 
 
@@ -1434,8 +1589,18 @@ ALTER TABLE ONLY "public"."legal_documents"
 
 
 
+ALTER TABLE ONLY "public"."legal_documents"
+    ADD CONSTRAINT "legal_documents_slug_key" UNIQUE ("slug");
+
+
+
 ALTER TABLE ONLY "public"."login_activity"
     ADD CONSTRAINT "login_activity_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."marketing_attribution"
+    ADD CONSTRAINT "marketing_attribution_pkey" PRIMARY KEY ("id");
 
 
 
@@ -1456,11 +1621,6 @@ ALTER TABLE ONLY "public"."policies"
 
 ALTER TABLE ONLY "public"."profiles"
     ADD CONSTRAINT "profiles_pkey" PRIMARY KEY ("id");
-
-
-
-ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_user_id_key" UNIQUE ("user_id");
 
 
 
@@ -1506,6 +1666,16 @@ ALTER TABLE ONLY "public"."user_consents"
 
 ALTER TABLE ONLY "public"."user_devices"
     ADD CONSTRAINT "user_devices_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."user_legal_acceptance"
+    ADD CONSTRAINT "user_legal_acceptance_pkey" PRIMARY KEY ("id");
+
+
+
+ALTER TABLE ONLY "public"."user_legal_acceptance"
+    ADD CONSTRAINT "user_legal_acceptance_user_id_legal_id_key" UNIQUE ("user_id", "legal_id");
 
 
 
@@ -1595,6 +1765,10 @@ CREATE INDEX "idx_consent_audit_user" ON "public"."consent_audit_log" USING "btr
 
 
 
+CREATE INDEX "idx_consent_audit_user_id" ON "public"."consent_audit_log" USING "btree" ("user_id");
+
+
+
 CREATE INDEX "idx_legal_documents_active" ON "public"."legal_documents" USING "btree" ("is_active") WHERE ("is_active" = true);
 
 
@@ -1639,6 +1813,10 @@ CREATE INDEX "idx_login_activity_user_id" ON "public"."login_activity" USING "bt
 
 
 
+CREATE INDEX "idx_marketing_attribution_user_id" ON "public"."marketing_attribution" USING "btree" ("user_id");
+
+
+
 CREATE INDEX "idx_personal_property_category" ON "public"."personal_property" USING "btree" ("category");
 
 
@@ -1664,34 +1842,6 @@ CREATE INDEX "idx_policies_property_id" ON "public"."policies" USING "btree" ("p
 
 
 CREATE INDEX "idx_policies_user_id" ON "public"."policies" USING "btree" ("user_id");
-
-
-
-CREATE INDEX "idx_profiles_active" ON "public"."profiles" USING "btree" ("is_active") WHERE ("is_active" = true);
-
-
-
-CREATE INDEX "idx_profiles_created_at" ON "public"."profiles" USING "btree" ("created_at");
-
-
-
-CREATE INDEX "idx_profiles_device_fingerprint" ON "public"."profiles" USING "btree" ("signup_device_fingerprint");
-
-
-
-CREATE INDEX "idx_profiles_email" ON "public"."profiles" USING "btree" ("email");
-
-
-
-CREATE INDEX "idx_profiles_id" ON "public"."profiles" USING "btree" ("id");
-
-
-
-CREATE INDEX "idx_profiles_signup_ip" ON "public"."profiles" USING "btree" ("signup_ip_address");
-
-
-
-CREATE INDEX "idx_profiles_user_id" ON "public"."profiles" USING "btree" ("user_id");
 
 
 
@@ -1771,7 +1921,23 @@ CREATE INDEX "idx_user_devices_user" ON "public"."user_devices" USING "btree" ("
 
 
 
+CREATE INDEX "idx_user_devices_user_id" ON "public"."user_devices" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_user_legal_acceptance_legal_id" ON "public"."user_legal_acceptance" USING "btree" ("legal_id");
+
+
+
+CREATE INDEX "idx_user_legal_acceptance_user_id" ON "public"."user_legal_acceptance" USING "btree" ("user_id");
+
+
+
 CREATE INDEX "idx_user_preferences_user_id" ON "public"."user_preferences" USING "btree" ("user_id");
+
+
+
+CREATE INDEX "idx_user_profiles_signup_completed" ON "public"."user_profiles" USING "btree" ("signup_completed_at");
 
 
 
@@ -1871,6 +2037,10 @@ CREATE OR REPLACE TRIGGER "update_legal_documents_updated_at" BEFORE UPDATE ON "
 
 
 
+CREATE OR REPLACE TRIGGER "update_marketing_attribution_updated_at" BEFORE UPDATE ON "public"."marketing_attribution" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+
+
+
 CREATE OR REPLACE TRIGGER "update_personal_property_timestamp" BEFORE UPDATE ON "public"."personal_property" FOR EACH ROW EXECUTE FUNCTION "public"."update_timestamp_column"();
 
 
@@ -1879,15 +2049,19 @@ CREATE OR REPLACE TRIGGER "update_policies_timestamp" BEFORE UPDATE ON "public".
 
 
 
-CREATE OR REPLACE TRIGGER "update_profiles_updated_at" BEFORE UPDATE ON "public"."profiles" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
-
-
-
 CREATE OR REPLACE TRIGGER "update_properties_timestamp" BEFORE UPDATE ON "public"."properties" FOR EACH ROW EXECUTE FUNCTION "public"."update_timestamp_column"();
 
 
 
 CREATE OR REPLACE TRIGGER "update_property_systems_timestamp" BEFORE UPDATE ON "public"."property_systems" FOR EACH ROW EXECUTE FUNCTION "public"."update_timestamp_column"();
+
+
+
+CREATE OR REPLACE TRIGGER "update_user_preferences_updated_at" BEFORE UPDATE ON "public"."user_preferences" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
+
+
+
+CREATE OR REPLACE TRIGGER "update_user_profiles_updated_at" BEFORE UPDATE ON "public"."user_profiles" FOR EACH ROW EXECUTE FUNCTION "public"."update_updated_at_column"();
 
 
 
@@ -1926,6 +2100,11 @@ ALTER TABLE ONLY "public"."login_activity"
 
 
 
+ALTER TABLE ONLY "public"."marketing_attribution"
+    ADD CONSTRAINT "marketing_attribution_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."personal_property"
     ADD CONSTRAINT "personal_property_property_id_fkey" FOREIGN KEY ("property_id") REFERENCES "public"."properties"("id") ON DELETE CASCADE;
 
@@ -1947,7 +2126,7 @@ ALTER TABLE ONLY "public"."policies"
 
 
 ALTER TABLE ONLY "public"."profiles"
-    ADD CONSTRAINT "profiles_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+    ADD CONSTRAINT "profiles_id_fkey" FOREIGN KEY ("id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
 
 
@@ -1986,6 +2165,16 @@ ALTER TABLE ONLY "public"."user_devices"
 
 
 
+ALTER TABLE ONLY "public"."user_legal_acceptance"
+    ADD CONSTRAINT "user_legal_acceptance_legal_id_fkey" FOREIGN KEY ("legal_id") REFERENCES "public"."legal_documents"("id") ON DELETE CASCADE;
+
+
+
+ALTER TABLE ONLY "public"."user_legal_acceptance"
+    ADD CONSTRAINT "user_legal_acceptance_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
+
+
+
 ALTER TABLE ONLY "public"."user_preferences"
     ADD CONSTRAINT "user_preferences_user_id_fkey" FOREIGN KEY ("user_id") REFERENCES "auth"."users"("id") ON DELETE CASCADE;
 
@@ -2010,13 +2199,17 @@ CREATE POLICY "Anyone can view active legal documents" ON "public"."legal_docume
 
 
 
+CREATE POLICY "Legal documents are publicly readable" ON "public"."legal_documents" FOR SELECT USING (("is_active" = true));
+
+
+
 CREATE POLICY "Only admins can manage legal documents" ON "public"."legal_documents" USING ((EXISTS ( SELECT 1
    FROM "auth"."users"
   WHERE (("users"."id" = "auth"."uid"()) AND (("users"."raw_app_meta_data" ->> 'role'::"text") = 'admin'::"text")))));
 
 
 
-CREATE POLICY "Profiles are viewable by owner" ON "public"."profiles" FOR SELECT USING (("auth"."uid"() = "id"));
+CREATE POLICY "Public profiles are viewable by everyone." ON "public"."profiles" FOR SELECT USING (true);
 
 
 
@@ -2032,7 +2225,15 @@ CREATE POLICY "Users can create own consent records" ON "public"."user_consents"
 
 
 
+CREATE POLICY "Users can insert own legal acceptances" ON "public"."user_legal_acceptance" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
 CREATE POLICY "Users can insert own preferences" ON "public"."user_preferences" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Users can insert own profile" ON "public"."user_profiles" FOR INSERT WITH CHECK (("auth"."uid"() = "user_id"));
 
 
 
@@ -2044,7 +2245,15 @@ CREATE POLICY "Users can insert their own preferences" ON "public"."user_prefere
 
 
 
-CREATE POLICY "Users can update own devices" ON "public"."user_devices" FOR UPDATE USING (("auth"."uid"() = "user_id")) WITH CHECK (("auth"."uid"() = "user_id"));
+CREATE POLICY "Users can insert their own profile." ON "public"."profiles" FOR INSERT WITH CHECK (("auth"."uid"() = "id"));
+
+
+
+CREATE POLICY "Users can read own legal acceptances" ON "public"."user_legal_acceptance" FOR SELECT USING (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Users can update own devices" ON "public"."user_devices" FOR UPDATE USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -2052,15 +2261,19 @@ CREATE POLICY "Users can update own preferences" ON "public"."user_preferences" 
 
 
 
-CREATE POLICY "Users can update own profile" ON "public"."profiles" FOR UPDATE USING (("auth"."uid"() = "id"));
-
-
-
 CREATE POLICY "Users can update own profile" ON "public"."user_profiles" FOR UPDATE USING (("auth"."uid"() = "user_id"));
 
 
 
+CREATE POLICY "Users can update own profile." ON "public"."profiles" FOR UPDATE USING (("auth"."uid"() = "id"));
+
+
+
 CREATE POLICY "Users can update their own preferences" ON "public"."user_preferences" FOR UPDATE USING (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Users can view own attribution" ON "public"."marketing_attribution" FOR SELECT USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -2092,15 +2305,15 @@ CREATE POLICY "Users can view own preferences" ON "public"."user_preferences" FO
 
 
 
-CREATE POLICY "Users can view own profile" ON "public"."profiles" FOR SELECT USING (("auth"."uid"() = "user_id"));
-
-
-
 CREATE POLICY "Users can view own profile" ON "public"."user_profiles" FOR SELECT USING (("auth"."uid"() = "user_id"));
 
 
 
 CREATE POLICY "Users can view own sessions" ON "public"."user_sessions" FOR SELECT USING (("auth"."uid"() = "user_id"));
+
+
+
+CREATE POLICY "Users can view own tracking data" ON "public"."user_tracking" FOR SELECT USING (("auth"."uid"() = "user_id"));
 
 
 
@@ -2146,6 +2359,9 @@ ALTER TABLE "public"."legal_documents" ENABLE ROW LEVEL SECURITY;
 ALTER TABLE "public"."login_activity" ENABLE ROW LEVEL SECURITY;
 
 
+ALTER TABLE "public"."marketing_attribution" ENABLE ROW LEVEL SECURITY;
+
+
 ALTER TABLE "public"."personal_property" ENABLE ROW LEVEL SECURITY;
 
 
@@ -2188,6 +2404,9 @@ ALTER TABLE "public"."user_consents" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."user_devices" ENABLE ROW LEVEL SECURITY;
+
+
+ALTER TABLE "public"."user_legal_acceptance" ENABLE ROW LEVEL SECURITY;
 
 
 ALTER TABLE "public"."user_preferences" ENABLE ROW LEVEL SECURITY;
@@ -2251,6 +2470,12 @@ GRANT ALL ON FUNCTION "public"."log_user_activity"("p_user_id" "uuid", "p_sessio
 
 
 
+GRANT ALL ON FUNCTION "public"."record_legal_acceptance"("p_user_id" "uuid", "p_legal_id" "uuid", "p_ip_address" "text", "p_user_agent" "text", "p_signature_data" "jsonb") TO "anon";
+GRANT ALL ON FUNCTION "public"."record_legal_acceptance"("p_user_id" "uuid", "p_legal_id" "uuid", "p_ip_address" "text", "p_user_agent" "text", "p_signature_data" "jsonb") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."record_legal_acceptance"("p_user_id" "uuid", "p_legal_id" "uuid", "p_ip_address" "text", "p_user_agent" "text", "p_signature_data" "jsonb") TO "service_role";
+
+
+
 GRANT ALL ON FUNCTION "public"."record_user_consent"("p_user_id" "uuid", "p_document_id" "uuid", "p_action" "public"."consent_action_type", "p_ip_address" "inet", "p_user_agent" "text", "p_device_fingerprint" character varying, "p_metadata" "jsonb") TO "anon";
 GRANT ALL ON FUNCTION "public"."record_user_consent"("p_user_id" "uuid", "p_document_id" "uuid", "p_action" "public"."consent_action_type", "p_ip_address" "inet", "p_user_agent" "text", "p_device_fingerprint" character varying, "p_metadata" "jsonb") TO "authenticated";
 GRANT ALL ON FUNCTION "public"."record_user_consent"("p_user_id" "uuid", "p_document_id" "uuid", "p_action" "public"."consent_action_type", "p_ip_address" "inet", "p_user_agent" "text", "p_device_fingerprint" character varying, "p_metadata" "jsonb") TO "service_role";
@@ -2272,6 +2497,12 @@ GRANT ALL ON FUNCTION "public"."update_timestamp_column"() TO "service_role";
 GRANT ALL ON FUNCTION "public"."update_updated_at_column"() TO "anon";
 GRANT ALL ON FUNCTION "public"."update_updated_at_column"() TO "authenticated";
 GRANT ALL ON FUNCTION "public"."update_updated_at_column"() TO "service_role";
+
+
+
+GRANT ALL ON FUNCTION "public"."update_user_preference"("p_user_id" "uuid", "p_preference_name" "text", "p_preference_value" boolean, "p_ip_address" "text") TO "anon";
+GRANT ALL ON FUNCTION "public"."update_user_preference"("p_user_id" "uuid", "p_preference_name" "text", "p_preference_value" boolean, "p_ip_address" "text") TO "authenticated";
+GRANT ALL ON FUNCTION "public"."update_user_preference"("p_user_id" "uuid", "p_preference_name" "text", "p_preference_value" boolean, "p_ip_address" "text") TO "service_role";
 
 
 
@@ -2317,9 +2548,9 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public".
 
 
 
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."consent_audit_log" TO "anon";
+GRANT ALL ON TABLE "public"."consent_audit_log" TO "anon";
 GRANT ALL ON TABLE "public"."consent_audit_log" TO "authenticated";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."consent_audit_log" TO "service_role";
+GRANT ALL ON TABLE "public"."consent_audit_log" TO "service_role";
 
 
 
@@ -2335,9 +2566,15 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public".
 
 
 
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."login_activity" TO "anon";
+GRANT ALL ON TABLE "public"."login_activity" TO "anon";
 GRANT ALL ON TABLE "public"."login_activity" TO "authenticated";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."login_activity" TO "service_role";
+GRANT ALL ON TABLE "public"."login_activity" TO "service_role";
+
+
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."marketing_attribution" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."marketing_attribution" TO "authenticated";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."marketing_attribution" TO "service_role";
 
 
 
@@ -2353,9 +2590,9 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public".
 
 
 
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."profiles" TO "anon";
+GRANT ALL ON TABLE "public"."profiles" TO "anon";
 GRANT ALL ON TABLE "public"."profiles" TO "authenticated";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."profiles" TO "service_role";
+GRANT ALL ON TABLE "public"."profiles" TO "service_role";
 
 
 
@@ -2389,15 +2626,21 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public".
 
 
 
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_preferences" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_legal_acceptance" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_legal_acceptance" TO "authenticated";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_legal_acceptance" TO "service_role";
+
+
+
+GRANT ALL ON TABLE "public"."user_preferences" TO "anon";
 GRANT ALL ON TABLE "public"."user_preferences" TO "authenticated";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_preferences" TO "service_role";
+GRANT ALL ON TABLE "public"."user_preferences" TO "service_role";
 
 
 
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_profiles" TO "anon";
+GRANT ALL ON TABLE "public"."user_profiles" TO "anon";
 GRANT ALL ON TABLE "public"."user_profiles" TO "authenticated";
-GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."user_profiles" TO "service_role";
+GRANT ALL ON TABLE "public"."user_profiles" TO "service_role";
 
 
 

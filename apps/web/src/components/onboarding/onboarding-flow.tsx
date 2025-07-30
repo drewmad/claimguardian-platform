@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/lib/supabase/client'
@@ -15,6 +15,34 @@ import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
 import { PropertyWizard } from '@/components/property/property-wizard'
 import { saveOnboardingProgress, completeOnboarding, trackOnboardingStep } from '@/actions/onboarding'
+
+// Declare Google Maps types for TypeScript
+declare global {
+  interface Window {
+    google: {
+      maps: {
+        places: {
+          Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
+            addListener: (event: string, callback: () => void) => void
+            getPlace: () => {
+              address_components?: Array<{
+                types: string[]
+                long_name: string
+                short_name: string
+              }>
+              formatted_address?: string
+              geometry?: { location: { lat: () => number, lng: () => number } }
+            }
+          }
+        }
+        event: {
+          clearInstanceListeners: (instance: any) => void
+        }
+      }
+    }
+    initGooglePlaces: () => void
+  }
+}
 
 interface OnboardingStep {
   id: string
@@ -48,7 +76,7 @@ const ONBOARDING_STEPS: OnboardingStep[] = [
   }
 ]
 
-type UserType = 'renter' | 'homeowner' | 'landlord' | 'real-estate-professional' | 'insurance-professional' | null
+type UserType = 'renter' | 'homeowner' | 'landlord' | 'property-professional' | null
 
 interface OnboardingData {
   // Step 1: User Profile
@@ -56,9 +84,19 @@ interface OnboardingData {
   propertyAddress?: string
   addressVerified?: boolean
   professionalRole?: string
+  landlordUnits?: string
+  
+  // Property Details
+  propertyStories?: number
+  propertyBedrooms?: number
+  propertyBathrooms?: number
+  roomsPerFloor?: { [floor: number]: number }
+  propertyStructures?: string[]
   
   // Step 2: Insurance Status
-  hasInsurance: boolean | null
+  hasPropertyInsurance?: boolean
+  hasFloodInsurance?: boolean
+  hasOtherInsurance?: boolean
   insuranceProvider?: string
   
   // Completion tracking
@@ -79,7 +117,9 @@ export function OnboardingFlow() {
   const [preferences, setPreferences] = useState<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean } | null>(null)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     userType: null,
-    hasInsurance: null,
+    hasPropertyInsurance: null,
+    hasFloodInsurance: null,
+    hasOtherInsurance: null,
     profileComplete: false,
     insuranceComplete: false,
     onboardingComplete: false
@@ -273,7 +313,8 @@ export function OnboardingFlow() {
           <UserProfileStep 
             data={onboardingData}
             onUpdate={setOnboardingData}
-            onComplete={() => completeStep('user-profile')} 
+            onComplete={() => completeStep('user-profile')}
+            onBack={currentStep > 0 ? () => setCurrentStep(currentStep - 1) : undefined}
           />
         )
         
@@ -282,7 +323,8 @@ export function OnboardingFlow() {
           <InsuranceStatusStep 
             data={onboardingData}
             onUpdate={setOnboardingData}
-            onComplete={() => completeStep('insurance-status')} 
+            onComplete={() => completeStep('insurance-status')}
+            onBack={() => setCurrentStep(currentStep - 1)}
           />
         )
         
@@ -308,17 +350,17 @@ export function OnboardingFlow() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900">
+    <div className="min-h-screen bg-background">
       <div className="max-w-4xl mx-auto p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-white">Welcome to ClaimGuardian</h1>
-            <p className="text-gray-400 mt-2">Let&apos;s set up your account in just a few steps</p>
+            <h1 className="text-3xl font-bold text-text-primary">Welcome to ClaimGuardian</h1>
+            <p className="text-text-secondary mt-2">Let&apos;s set up your account in just a few steps</p>
           </div>
           <button
             onClick={skipOnboarding}
-            className="text-gray-400 hover:text-white flex items-center gap-2"
+            className="text-text-secondary hover:text-text-primary flex items-center gap-2 transition-colors duration-200"
           >
             Skip for now
             <X className="w-4 h-4" />
@@ -332,26 +374,26 @@ export function OnboardingFlow() {
               <div key={step.id} className="flex items-center">
                 <div
                   className={`
-                    w-10 h-10 rounded-full flex items-center justify-center
+                    w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm border-2 transition-all duration-300
                     ${step.completed 
-                      ? 'bg-green-500 text-white' 
+                      ? 'bg-success border-success text-text-primary shadow-lg' 
                       : index === currentStep 
-                        ? 'bg-cyan-500 text-white' 
-                        : 'bg-gray-700 text-gray-400'
+                        ? 'bg-accent border-accent-border text-text-primary shadow-lg' 
+                        : 'bg-panel border-border text-text-secondary'
                     }
                   `}
                 >
                   {step.completed ? (
-                    <CheckCircle className="w-5 h-5" />
+                    <CheckCircle className="w-6 h-6" />
                   ) : (
-                    <step.icon className="w-5 h-5" />
+                    <step.icon className="w-6 h-6" />
                   )}
                 </div>
                 {index < steps.length - 1 && (
                   <div 
                     className={`
-                      w-full h-1 mx-2
-                      ${step.completed ? 'bg-green-500' : 'bg-gray-700'}
+                      w-full h-1 mx-4 rounded-full transition-all duration-300
+                      ${step.completed ? 'bg-success' : 'bg-border'}
                     `}
                   />
                 )}
@@ -360,7 +402,7 @@ export function OnboardingFlow() {
           </div>
           <div className="flex justify-between text-sm">
             {steps.map((step) => (
-              <span key={step.id} className="text-gray-400">
+              <span key={step.id} className="text-text-secondary font-medium">
                 {step.title}
               </span>
             ))}
@@ -368,7 +410,7 @@ export function OnboardingFlow() {
         </div>
 
         {/* Content */}
-        <Card className="bg-gray-800 border-gray-700">
+        <Card>
           <CardContent className="p-8">
             {renderStepContent()}
           </CardContent>
@@ -392,47 +434,77 @@ export function OnboardingFlow() {
 function UserProfileStep({ 
   data, 
   onUpdate, 
-  onComplete 
+  onComplete,
+  onBack 
 }: { 
   data: OnboardingData
   onUpdate: (data: OnboardingData) => void
-  onComplete: () => void 
+  onComplete: () => void
+  onBack?: () => void 
 }) {
   const [selectedType, setSelectedType] = useState<UserType>(data.userType)
   const [propertyAddress, setPropertyAddress] = useState(data.propertyAddress || '')
   const [addressVerified, setAddressVerified] = useState(data.addressVerified || false)
+  const addressInputRef = useRef<HTMLInputElement>(null)
+  const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [professionalRole, setProfessionalRole] = useState(data.professionalRole || '')
+  const [landlordUnits, setLandlordUnits] = useState(data.landlordUnits || '')
+  
+  // Property details state
+  const [propertyStories, setPropertyStories] = useState(data.propertyStories || 1)
+  const [propertyBedrooms, setPropertyBedrooms] = useState(data.propertyBedrooms || 1)
+  const [propertyBathrooms, setPropertyBathrooms] = useState(data.propertyBathrooms || 1)
+  const [propertyStructures, setPropertyStructures] = useState<string[]>(data.propertyStructures || [])
+  
+  // Google Maps state
+  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
 
   const userTypes = [
-    { value: 'renter', label: 'Renter', icon: '🏠' },
-    { value: 'homeowner', label: 'Homeowner', icon: '🏡' },
-    { value: 'landlord', label: 'Landlord', icon: '🏘️' },
-    { value: 'real-estate-professional', label: 'Real Estate Professional', icon: '💼' },
-    { value: 'insurance-professional', label: 'Insurance Professional', icon: '💼' }
+    { value: 'renter', label: 'Renter', icon: '🏠', description: 'I rent my home' },
+    { value: 'homeowner', label: 'Homeowner', icon: '🏡', description: 'I own my home' },
+    { value: 'landlord', label: 'Landlord', icon: '🏘️', description: 'I rent properties to others' },
+    { value: 'property-professional', label: 'Property Professional', icon: '💼', description: 'I work in real estate/property' }
   ] as const
 
   const professionalRoles = [
-    'Agent/Broker',
-    'Claims Adjuster',
+    'Real Estate Agent',
+    'Property Manager',
+    'Insurance Agent',
+    'Public Adjuster',
+    'Contractor',
     'Attorney',
     'Other'
   ]
 
+  const landlordUnitRanges = [
+    '1-2 units',
+    '3-5 units', 
+    '6-10 units',
+    '11-25 units',
+    '26-50 units',
+    '50+ units'
+  ]
+
   const handleTypeSelect = (type: UserType) => {
     setSelectedType(type)
-    // Clear address/role when switching types
-    if (type === 'real-estate-professional' || type === 'insurance-professional') {
+    // Clear fields when switching types
+    if (type === 'property-professional') {
       setPropertyAddress('')
       setAddressVerified(false)
+      setLandlordUnits('')
+    } else if (type === 'landlord') {
+      setProfessionalRole('')
     } else {
       setProfessionalRole('')
+      setLandlordUnits('')
     }
     
     onUpdate({ 
       ...data, 
       userType: type,
-      propertyAddress: type !== 'real-estate-professional' && type !== 'insurance-professional' ? propertyAddress : undefined,
-      professionalRole: (type === 'real-estate-professional' || type === 'insurance-professional') ? professionalRole : undefined
+      propertyAddress: type !== 'property-professional' ? propertyAddress : undefined,
+      professionalRole: type === 'property-professional' ? professionalRole : undefined,
+      landlordUnits: type === 'landlord' ? landlordUnits : undefined
     })
   }
 
@@ -446,8 +518,80 @@ function UserProfileStep({
     })
   }
 
+  // Load Google Places API
+  useEffect(() => {
+    const loadGooglePlaces = () => {
+      if (window.google?.maps?.places) {
+        setIsGoogleLoaded(true)
+        return
+      }
+
+      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+      if (!apiKey) {
+        console.warn('Google Maps API key not configured')
+        return
+      }
+
+      const script = document.createElement('script')
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGooglePlaces`
+      script.async = true
+      script.defer = true
+      window.initGooglePlaces = () => {
+        setIsGoogleLoaded(true)
+      }
+
+      document.head.appendChild(script)
+      return () => {
+        if (document.head.contains(script)) {
+          document.head.removeChild(script)
+        }
+        delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
+      }
+    }
+
+    if (selectedType && !isProfessional) {
+      loadGooglePlaces()
+    }
+  }, [selectedType, isProfessional])
+
+  // Initialize Google Places Autocomplete
+  useEffect(() => {
+    if (!isGoogleLoaded || !addressInputRef.current || autocompleteRef.current) return
+
+    try {
+      autocompleteRef.current = new window.google.maps.places.Autocomplete(
+        addressInputRef.current,
+        {
+          componentRestrictions: { country: 'us' },
+          fields: ['address_components', 'formatted_address', 'geometry'],
+          types: ['address']
+        }
+      )
+
+      autocompleteRef.current.addListener('place_changed', () => {
+        const place = autocompleteRef.current?.getPlace()
+        if (place?.formatted_address) {
+          setPropertyAddress(place.formatted_address)
+          setAddressVerified(true)
+          onUpdate({
+            ...data,
+            propertyAddress: place.formatted_address,
+            addressVerified: true
+          })
+        }
+      })
+    } catch (error) {
+      console.warn('Google Places API not available:', error)
+    }
+
+    return () => {
+      if (autocompleteRef.current) {
+        window.google?.maps?.event?.clearInstanceListeners?.(autocompleteRef.current)
+      }
+    }
+  }, [isGoogleLoaded, selectedType, data, onUpdate])
+
   const handleAddressVerify = async () => {
-    // TODO: Implement Google Places API verification
     if (propertyAddress.trim()) {
       setAddressVerified(true)
       onUpdate({ 
@@ -466,11 +610,48 @@ function UserProfileStep({
     })
   }
 
+  const handleUnitsSelect = (units: string) => {
+    setLandlordUnits(units)
+    onUpdate({ 
+      ...data, 
+      landlordUnits: units
+    })
+  }
+
+  const handlePropertyDetailsUpdate = () => {
+    onUpdate({
+      ...data,
+      propertyStories,
+      propertyBedrooms,
+      propertyBathrooms,
+      propertyStructures
+    })
+  }
+
+  const toggleStructure = (structure: string) => {
+    const newStructures = propertyStructures.includes(structure)
+      ? propertyStructures.filter(s => s !== structure)
+      : [...propertyStructures, structure]
+    setPropertyStructures(newStructures)
+    onUpdate({
+      ...data,
+      propertyStructures: newStructures
+    })
+  }
+
   const canProceed = selectedType && (
-    (selectedType === 'real-estate-professional' || selectedType === 'insurance-professional') 
+    selectedType === 'property-professional' 
       ? professionalRole
-      : propertyAddress
+      : selectedType === 'landlord'
+        ? (propertyAddress && landlordUnits)
+        : propertyAddress
   )
+
+  const needsPropertyDetails = selectedType && !isProfessional && addressVerified
+  const commonStructures = [
+    'Central Air/Heat', 'Pool', 'Garage', 'Deck/Patio', 
+    'Fence', 'Security System', 'Solar Panels', 'Generator'
+  ]
 
   const handleContinue = () => {
     if (!canProceed) return
@@ -478,44 +659,42 @@ function UserProfileStep({
     onComplete()
   }
 
-  const isProfessional = selectedType === 'real-estate-professional' || selectedType === 'insurance-professional'
+  const isProfessional = selectedType === 'property-professional'
+  const isLandlord = selectedType === 'landlord'
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Welcome to ClaimGuardian</h2>
-        <p className="text-gray-400">Let's personalize your experience</p>
+        <h2 className="text-3xl font-bold text-text-primary mb-3">Welcome to ClaimGuardian</h2>
+        <p className="text-text-secondary text-lg">Let's personalize your experience</p>
       </div>
 
       <div className="space-y-6">
         {/* User Type Selection */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-3">
+          <label className="block text-lg font-semibold text-text-primary mb-4">
             I am a...
           </label>
-          <div className="grid grid-cols-1 gap-3">
+          <div className="grid grid-cols-2 gap-4">
             {userTypes.map((type) => (
               <button
                 key={type.value}
                 onClick={() => handleTypeSelect(type.value)}
-                className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
+                className={`p-6 rounded-xl border-2 transition-all duration-300 text-center aspect-square flex flex-col items-center justify-center backdrop-blur-sm hover:scale-105 hover:shadow-xl ${
                   selectedType === type.value
-                    ? 'border-cyan-500 bg-cyan-500/10'
-                    : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
+                    ? 'border-accent-border bg-accent/20 shadow-lg'
+                    : 'border-border hover:border-accent-border bg-panel/30'
                 }`}
               >
-                <div className="flex items-center gap-4">
-                  <span className="text-2xl">{type.icon}</span>
-                  <div className="flex-1">
-                    <h3 className="text-lg font-semibold text-white">{type.label}</h3>
-                  </div>
-                  <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                    selectedType === type.value
-                      ? 'border-cyan-500 bg-cyan-500' 
-                      : 'border-gray-500'
-                  }`}>
-                    {selectedType === type.value && <div className="w-2 h-2 bg-white rounded-full" />}
-                  </div>
+                <span className="text-5xl mb-3">{type.icon}</span>
+                <h3 className="text-xl font-bold text-text-primary mb-2">{type.label}</h3>
+                <p className="text-sm text-text-secondary text-center mb-3">{type.description}</p>
+                <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
+                  selectedType === type.value
+                    ? 'border-accent bg-accent shadow-lg' 
+                    : 'border-border'
+                }`}>
+                  {selectedType === type.value && <div className="w-2 h-2 bg-text-primary rounded-full" />}
                 </div>
               </button>
             ))}
@@ -525,29 +704,33 @@ function UserProfileStep({
         {/* Property Address (for non-professionals) */}
         {selectedType && !isProfessional && (
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
+            <label className="block text-lg font-semibold text-text-primary mb-3">
               Property Address
             </label>
             <div className="flex gap-2">
               <input
+                ref={addressInputRef}
                 type="text"
                 value={propertyAddress}
                 onChange={(e) => handleAddressChange(e.target.value)}
-                placeholder="Start typing your address..."
-                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:outline-none"
+                placeholder={isGoogleLoaded ? "Start typing your address..." : "Loading address autocomplete..."}
+                className="flex-1 px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                disabled={!isGoogleLoaded}
               />
-              <Button
-                onClick={handleAddressVerify}
-                disabled={!propertyAddress.trim()}
-                className="bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 px-6"
-              >
-                <MapPin className="w-4 h-4 mr-2" />
-                Verify
-              </Button>
+              {!addressVerified && (
+                <Button
+                  onClick={handleAddressVerify}
+                  disabled={!propertyAddress.trim()}
+                  className="px-6"
+                >
+                  <MapPin className="w-4 h-4 mr-2" />
+                  Verify
+                </Button>
+              )}
             </div>
             {addressVerified && (
-              <p className="text-green-400 text-sm mt-2 flex items-center gap-1">
-                <CheckCircle className="w-4 h-4" />
+              <p className="text-success text-sm mt-3 flex items-center gap-2 font-medium">
+                <CheckCircle className="w-5 h-5" />
                 Address verified
               </p>
             )}
@@ -557,7 +740,7 @@ function UserProfileStep({
         {/* Professional Role (for professionals only) */}
         {selectedType && isProfessional && (
           <div>
-            <label className="block text-sm font-medium text-gray-300 mb-3">
+            <label className="block text-lg font-semibold text-text-primary mb-4">
               My Role
             </label>
             <div className="grid grid-cols-1 gap-2">
@@ -565,21 +748,21 @@ function UserProfileStep({
                 <button
                   key={role}
                   onClick={() => handleRoleSelect(role)}
-                  className={`p-3 rounded-lg border text-left transition-all duration-200 ${
+                  className={`p-4 rounded-lg border text-left transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
                     professionalRole === role
-                      ? 'border-cyan-400 bg-cyan-400/10 text-cyan-300'
-                      : 'border-gray-600 hover:border-gray-500 text-gray-300'
+                      ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                      : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
                   }`}
                 >
                   <div className="flex items-center justify-between">
                     <span>{role}</span>
-                    <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${
+                    <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                       professionalRole === role
-                        ? 'border-cyan-400 bg-cyan-400'
-                        : 'border-gray-500'
+                        ? 'border-accent bg-accent shadow-lg'
+                        : 'border-border'
                     }`}>
                       {professionalRole === role && (
-                        <div className="w-1.5 h-1.5 bg-white rounded-full" />
+                        <div className="w-2 h-2 bg-text-primary rounded-full" />
                       )}
                     </div>
                   </div>
@@ -588,17 +771,162 @@ function UserProfileStep({
             </div>
           </div>
         )}
+
+        {/* Landlord Units (for landlords only) */}
+        {selectedType && isLandlord && (
+          <div>
+            <label className="block text-lg font-semibold text-text-primary mb-4">
+              How many units do you manage?
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              {landlordUnitRanges.map((range) => (
+                <button
+                  key={range}
+                  onClick={() => handleUnitsSelect(range)}
+                  className={`p-4 rounded-lg border text-center transition-all duration-300 backdrop-blur-sm hover:scale-105 ${
+                    landlordUnits === range
+                      ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                      : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                  }`}
+                >
+                  <div className="flex flex-col items-center">
+                    <span className="font-semibold">{range}</span>
+                    <div className={`w-4 h-4 rounded-full border-2 flex items-center justify-center mt-2 transition-all duration-200 ${
+                      landlordUnits === range
+                        ? 'border-accent bg-accent shadow-lg'
+                        : 'border-border'
+                    }`}>
+                      {landlordUnits === range && (
+                        <div className="w-1.5 h-1.5 bg-text-primary rounded-full" />
+                      )}
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Property Details (for homeowners/landlords with verified address) */}
+        {needsPropertyDetails && (
+          <div className="border-t border-border pt-8">
+            <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
+            
+            {/* Property basics */}
+            <div className="grid grid-cols-3 gap-4 mb-6">
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-3">
+                  Stories
+                </label>
+                <select
+                  value={propertyStories}
+                  onChange={(e) => {
+                    const stories = parseInt(e.target.value)
+                    setPropertyStories(stories)
+                    handlePropertyDetailsUpdate()
+                  }}
+                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                >
+                  {[1, 2, 3, 4].map(num => (
+                    <option key={num} value={num}>{num}</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-3">
+                  Bedrooms
+                </label>
+                <select
+                  value={propertyBedrooms}
+                  onChange={(e) => {
+                    const bedrooms = parseInt(e.target.value)
+                    setPropertyBedrooms(bedrooms)
+                    handlePropertyDetailsUpdate()
+                  }}
+                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                >
+                  {[1, 2, 3, 4, 5, 6].map(num => (
+                    <option key={num} value={num}>{num}+</option>
+                  ))}
+                </select>
+              </div>
+              
+              <div>
+                <label className="block text-sm font-semibold text-text-primary mb-3">
+                  Bathrooms
+                </label>
+                <select
+                  value={propertyBathrooms}
+                  onChange={(e) => {
+                    const bathrooms = parseInt(e.target.value)
+                    setPropertyBathrooms(bathrooms)
+                    handlePropertyDetailsUpdate()
+                  }}
+                  className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary focus:border-accent-border focus:outline-none transition-all duration-200"
+                >
+                  {[1, 2, 3, 4, 5, 6].map(num => (
+                    <option key={num} value={num}>{num}+</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            
+            {/* Property structures */}
+            <div>
+              <label className="block text-lg font-semibold text-text-primary mb-4">
+                Property Features (select all that apply)
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {commonStructures.map((structure) => (
+                  <button
+                    key={structure}
+                    onClick={() => toggleStructure(structure)}
+                    className={`p-3 rounded-lg border text-sm transition-all duration-300 backdrop-blur-sm hover:scale-[1.02] ${
+                      propertyStructures.includes(structure)
+                        ? 'border-accent-border bg-accent/20 text-text-primary shadow-lg'
+                        : 'border-border hover:border-accent-border text-text-primary bg-panel/30'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span>{structure}</span>
+                      <div className={`w-4 h-4 rounded border-2 flex items-center justify-center transition-all duration-200 ${
+                        propertyStructures.includes(structure)
+                          ? 'border-accent bg-accent shadow-lg'
+                          : 'border-border'
+                      }`}>
+                        {propertyStructures.includes(structure) && (
+                          <div className="w-1.5 h-1.5 bg-text-primary rounded" />
+                        )}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
 
-      <div className="flex justify-between pt-4">
-        <div></div>
+      <div className="flex justify-between pt-8">
+        {onBack ? (
+          <Button
+            onClick={onBack}
+            variant="outline"
+          >
+            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+            Back
+          </Button>
+        ) : (
+          <div></div>
+        )}
         <Button
           onClick={handleContinue}
           disabled={!canProceed}
-          className="bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          size="lg"
         >
           Continue
-          <ArrowRight className="w-4 h-4 ml-2" />
+          <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
     </div>
@@ -608,14 +936,19 @@ function UserProfileStep({
 function InsuranceStatusStep({ 
   data,
   onUpdate,
-  onComplete 
+  onComplete,
+  onBack 
 }: { 
   data: OnboardingData
   onUpdate: (data: OnboardingData) => void
   onComplete: () => void
+  onBack?: () => void
 }) {
-  const [hasInsurance, setHasInsurance] = useState<boolean | null>(data.hasInsurance)
+  const [hasPropertyInsurance, setHasPropertyInsurance] = useState<boolean | null>(data.hasPropertyInsurance || null)
+  const [hasFloodInsurance, setHasFloodInsurance] = useState<boolean | null>(data.hasFloodInsurance || null)
+  const [hasOtherInsurance, setHasOtherInsurance] = useState<boolean | null>(data.hasOtherInsurance || null)
   const [insuranceProvider, setInsuranceProvider] = useState(data.insuranceProvider || '')
+  const [currentStep, setCurrentStep] = useState<number>(0)
 
   const commonProviders = [
     'State Farm',
@@ -625,15 +958,27 @@ function InsuranceStatusStep({
     'Other'
   ]
 
-  const handleInsuranceStatusChange = (status: boolean) => {
-    setHasInsurance(status)
-    if (!status) {
-      setInsuranceProvider('')
-    }
+  const handlePropertyInsuranceChange = (status: boolean) => {
+    setHasPropertyInsurance(status)
     onUpdate({ 
       ...data, 
-      hasInsurance: status,
-      insuranceProvider: status ? insuranceProvider : undefined
+      hasPropertyInsurance: status
+    })
+  }
+
+  const handleFloodInsuranceChange = (status: boolean) => {
+    setHasFloodInsurance(status)
+    onUpdate({ 
+      ...data, 
+      hasFloodInsurance: status
+    })
+  }
+
+  const handleOtherInsuranceChange = (status: boolean) => {
+    setHasOtherInsurance(status)
+    onUpdate({ 
+      ...data, 
+      hasOtherInsurance: status
     })
   }
 
@@ -646,146 +991,162 @@ function InsuranceStatusStep({
   }
 
   const handleContinue = () => {
-    onUpdate({ ...data, insuranceComplete: true })
-    onComplete()
-  }
-
-  const getInsuranceType = () => {
-    switch (data.userType) {
-      case 'renter': return 'renters'
-      case 'homeowner': return 'homeowners'
-      case 'landlord': return 'landlord'
-      default: return 'property'
+    if (currentStep < getSteps().length - 1) {
+      setCurrentStep(currentStep + 1)
+    } else {
+      onUpdate({ ...data, insuranceComplete: true })
+      onComplete()
     }
   }
 
+  const handleBack = () => {
+    if (currentStep > 0) {
+      setCurrentStep(currentStep - 1)
+    }
+  }
+
+  const getSteps = () => {
+    const steps = []
+    
+    if (data.userType === 'homeowner' || data.userType === 'landlord') {
+      steps.push('property', 'flood', 'other')
+    } else {
+      steps.push('renters')
+    }
+    
+    return steps
+  }
+
+  const getCurrentStepData = () => {
+    const steps = getSteps()
+    const stepType = steps[currentStep]
+    
+    switch (stepType) {
+      case 'property':
+        return {
+          title: 'Property Insurance',
+          subtitle: 'Do you have property/homeowners insurance?',
+          value: hasPropertyInsurance,
+          onChange: handlePropertyInsuranceChange
+        }
+      case 'flood':
+        return {
+          title: 'Flood Insurance',
+          subtitle: 'Do you have flood insurance?',
+          value: hasFloodInsurance,
+          onChange: handleFloodInsuranceChange
+        }
+      case 'other':
+        return {
+          title: 'Other Insurance',
+          subtitle: 'Do you have any other property-related insurance?',
+          value: hasOtherInsurance,
+          onChange: handleOtherInsuranceChange
+        }
+      case 'renters':
+        return {
+          title: 'Renters Insurance',
+          subtitle: 'Do you have renters insurance?',
+          value: hasPropertyInsurance,
+          onChange: handlePropertyInsuranceChange
+        }
+      default:
+        return null
+    }
+  }
+
+  const canProceed = () => {
+    const stepData = getCurrentStepData()
+    return stepData && stepData.value !== null
+  }
+
+  const stepData = getCurrentStepData()
+  const steps = getSteps()
+  
+  if (!stepData) return null
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">Insurance Coverage</h2>
-        <p className="text-gray-400">Help us understand your protection needs</p>
+        <h2 className="text-3xl font-bold text-text-primary mb-3">Insurance Coverage</h2>
+        <p className="text-text-secondary text-lg">Step {currentStep + 1} of {steps.length}</p>
       </div>
 
       <div className="space-y-6">
-        {/* Insurance Status */}
+        {/* Current Insurance Step */}
         <div>
-          <label className="block text-sm font-medium text-gray-300 mb-4">
-            Do you currently have insurance?
+          <label className="block text-xl font-semibold text-text-primary mb-6 text-center">
+            {stepData.subtitle}
           </label>
-          <div className="space-y-3">
+          <div className="grid grid-cols-2 gap-4">
             <button
-              onClick={() => handleInsuranceStatusChange(true)}
-              className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                hasInsurance === true
-                  ? 'border-green-500 bg-green-500/10'
-                  : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
+              onClick={() => stepData.onChange(true)}
+              className={`p-8 rounded-xl border-2 transition-all duration-300 text-center backdrop-blur-sm hover:scale-105 hover:shadow-xl ${
+                stepData.value === true
+                  ? 'border-success bg-success/20 shadow-lg'
+                  : 'border-border hover:border-accent-border bg-panel/30'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <span className="text-2xl">✓</span>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white">Yes, I'm covered</h3>
-                  <p className="text-gray-400 text-sm">I have {getInsuranceType()} insurance</p>
-                </div>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  hasInsurance === true
-                    ? 'border-green-500 bg-green-500' 
-                    : 'border-gray-500'
-                }`}>
-                  {hasInsurance === true && <div className="w-2 h-2 bg-white rounded-full" />}
-                </div>
+              <span className="text-6xl mb-4 block">✓</span>
+              <h3 className="text-xl font-bold text-text-primary mb-3">Yes</h3>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mx-auto transition-all duration-200 ${
+                stepData.value === true
+                  ? 'border-success bg-success shadow-lg' 
+                  : 'border-border'
+              }`}>
+                {stepData.value === true && <div className="w-2.5 h-2.5 bg-text-primary rounded-full" />}
               </div>
             </button>
 
             <button
-              onClick={() => handleInsuranceStatusChange(false)}
-              className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left ${
-                hasInsurance === false
-                  ? 'border-yellow-500 bg-yellow-500/10'
-                  : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
+              onClick={() => stepData.onChange(false)}
+              className={`p-8 rounded-xl border-2 transition-all duration-300 text-center backdrop-blur-sm hover:scale-105 hover:shadow-xl ${
+                stepData.value === false
+                  ? 'border-error bg-error/20 shadow-lg'
+                  : 'border-border hover:border-accent-border bg-panel/30'
               }`}
             >
-              <div className="flex items-center gap-4">
-                <span className="text-2xl">!</span>
-                <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white">No, I need coverage</h3>
-                  <p className="text-gray-400 text-sm">I don't have insurance yet</p>
-                </div>
-                <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                  hasInsurance === false
-                    ? 'border-yellow-500 bg-yellow-500' 
-                    : 'border-gray-500'
-                }`}>
-                  {hasInsurance === false && <div className="w-2 h-2 bg-white rounded-full" />}
-                </div>
+              <span className="text-6xl mb-4 block">✗</span>
+              <h3 className="text-xl font-bold text-text-primary mb-3">No</h3>
+              <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mx-auto transition-all duration-200 ${
+                stepData.value === false
+                  ? 'border-error bg-error shadow-lg' 
+                  : 'border-border'
+              }`}>
+                {stepData.value === false && <div className="w-2.5 h-2.5 bg-text-primary rounded-full" />}
               </div>
             </button>
           </div>
         </div>
-
-        {/* Insurance Provider (if has insurance) */}
-        {hasInsurance === true && (
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Insurance Provider (Optional)
-            </label>
-            <div className="flex gap-2">
-              <select
-                value={insuranceProvider}
-                onChange={(e) => handleProviderChange(e.target.value)}
-                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:border-cyan-400 focus:outline-none"
-              >
-                <option value="">Select or type provider name</option>
-                {commonProviders.map((provider) => (
-                  <option key={provider} value={provider}>{provider}</option>
-                ))}
-              </select>
-            </div>
-            <p className="text-gray-400 text-xs mt-2">
-              We'll help you maximize your coverage benefits
-            </p>
-          </div>
-        )}
-
-        {/* Helpful message based on selection */}
-        {hasInsurance === false && (
-          <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <span className="text-blue-400 text-lg">💡</span>
-              <div>
-                <h4 className="font-medium text-blue-400 mb-1">We'll help you find the right coverage</h4>
-                <p className="text-blue-300/80 text-sm">
-                  ClaimGuardian can help you find affordable {getInsuranceType()} insurance that fits your needs.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {hasInsurance === true && (
-          <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <span className="text-green-400 text-lg">🎉</span>
-              <div>
-                <h4 className="font-medium text-green-400 mb-1">Great! We'll help you maximize your coverage</h4>
-                <p className="text-green-300/80 text-sm">
-                  We'll help you understand your policy and ensure you're getting the most from your coverage.
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
       </div>
 
-      <div className="flex justify-between pt-4">
-        <div></div>
+      <div className="flex justify-between pt-8">
+        {currentStep > 0 ? (
+          <Button
+            onClick={handleBack}
+            variant="outline"
+          >
+            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+            Back
+          </Button>
+        ) : onBack ? (
+          <Button
+            onClick={onBack}
+            variant="outline"
+          >
+            <ArrowRight className="w-4 h-4 mr-2 rotate-180" />
+            Back to Profile
+          </Button>
+        ) : (
+          <div></div>
+        )}
         <Button
           onClick={handleContinue}
-          disabled={hasInsurance === null}
-          className="bg-cyan-500 hover:bg-cyan-600 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={!canProceed()}
+          size="lg"
         >
-          Continue
-          <ArrowRight className="w-4 h-4 ml-2" />
+          {currentStep < steps.length - 1 ? 'Next' : 'Continue'}
+          <ArrowRight className="w-5 h-5 ml-2" />
         </Button>
       </div>
     </div>
@@ -890,44 +1251,44 @@ function QuickStartStep({
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-white mb-2">You're all set!</h2>
-        <p className="text-gray-400">Here's what you can do right now</p>
+        <h2 className="text-3xl font-bold text-text-primary mb-3">You're all set!</h2>
+        <p className="text-text-secondary text-lg">Here's what you can do right now</p>
       </div>
 
       <div className="space-y-4">
         {quickActions.map((action, index) => {
-          const priorityColor = action.priority === 'high' ? 'border-cyan-500/30 bg-cyan-500/5' : 'border-gray-600'
+          const priorityColor = action.priority === 'high' ? 'border-accent/30 bg-accent/10' : 'border-border bg-panel/30'
           
           return (
             <button
               key={index}
               onClick={() => handleActionClick(action.action)}
-              className={`w-full p-4 rounded-lg border-2 transition-all duration-200 text-left hover:border-cyan-400 ${priorityColor}`}
+              className={`w-full p-6 rounded-xl border-2 transition-all duration-300 text-left hover:border-accent-border backdrop-blur-sm hover:scale-[1.02] hover:shadow-xl ${priorityColor}`}
             >
               <div className="flex items-start gap-4">
-                <span className="text-2xl">{action.icon}</span>
+                <span className="text-3xl">{action.icon}</span>
                 <div className="flex-1">
-                  <h3 className="text-lg font-semibold text-white mb-1">{action.title}</h3>
-                  <p className="text-gray-400 text-sm">{action.description}</p>
+                  <h3 className="text-xl font-bold text-text-primary mb-2">{action.title}</h3>
+                  <p className="text-text-secondary text-sm">{action.description}</p>
                   {action.priority === 'high' && (
-                    <span className="inline-block mt-2 px-2 py-1 bg-cyan-500/20 text-cyan-400 text-xs rounded-full">
+                    <span className="inline-block mt-3 px-3 py-1 bg-accent/20 text-accent text-xs rounded-full font-medium">
                       Recommended
                     </span>
                   )}
                 </div>
-                <ArrowRight className="w-5 h-5 text-gray-400 group-hover:text-cyan-400" />
+                <ArrowRight className="w-6 h-6 text-text-secondary group-hover:text-accent transition-colors duration-200" />
               </div>
             </button>
           )
         })}
       </div>
 
-      <div className="bg-green-500/10 border border-green-500/20 rounded-lg p-4 text-center">
-        <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
-        <h3 className="font-semibold text-green-400 mb-1">Setup Complete!</h3>
-        <p className="text-green-300/80 text-sm">
+      <div className="bg-success/10 border border-success/20 rounded-xl p-6 text-center backdrop-blur-sm">
+        <CheckCircle className="w-10 h-10 text-success mx-auto mb-3" />
+        <h3 className="font-bold text-success mb-2 text-lg">Setup Complete!</h3>
+        <p className="text-success/80 text-sm">
           Your ClaimGuardian account is ready to help protect what matters most to you.
         </p>
       </div>
@@ -935,7 +1296,7 @@ function QuickStartStep({
       <div className="flex justify-center pt-4">
         <button
           onClick={handleSkipToDashboard}
-          className="text-gray-400 hover:text-white underline"
+          className="text-text-secondary hover:text-text-primary underline transition-colors duration-200 font-medium"
         >
           Skip and explore on my own
         </button>

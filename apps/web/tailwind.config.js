@@ -10,13 +10,26 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Custom colors for dark theme
+        // Centralized Color Palette for Glass Morphism Design
+        background: '#0f172a', // slate-900
+        panel: 'rgba(30, 41, 59, 0.5)', // slate-800 with 50% opacity
+        border: '#475569', // slate-600
+        'text-primary': '#ffffff',
+        'text-secondary': '#94a3b8', // slate-400
+        accent: {
+          DEFAULT: '#4f46e5', // indigo-600
+          hover: '#6366f1', // indigo-500
+          border: '#6366f1', // indigo-500
+        },
+        success: '#16a34a', // green-600
+        error: '#f43f5e', // red-500
+        
+        // Legacy colors (keeping for compatibility)
         bgPrimary: '#121212',
         bgSecondary: '#1E1E1E', 
         bgTertiary: '#2A2A2A',
         textPrimary: '#FFFFFF',
         textSecondary: '#E0E0E0',
-        border: '#424242',
         'neon-lime': '#39FF14',
         'accent-blue': '#0095FF',
         'danger-red': '#D50000',

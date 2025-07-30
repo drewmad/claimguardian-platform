@@ -33,7 +33,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased bg-slate-950 text-slate-100`}>
+      <body className={`${inter.className} antialiased bg-background text-text-primary`}>
         <ErrorBoundary>
           <QueryProvider>
             <AuthProvider>

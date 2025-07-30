@@ -18,19 +18,22 @@ import { cva, type VariantProps } from 'class-variance-authority'
 import { cn } from './utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
   {
     variants: {
       variant: {
-        default: 'bg-blue-600 text-white hover:bg-blue-700',
-        secondary: 'bg-slate-700 text-white hover:bg-slate-600',
-        ghost: 'hover:bg-slate-100 hover:text-slate-900',
-        link: 'text-blue-600 underline-offset-4 hover:underline'
+        default: 'bg-accent text-text-primary hover:bg-accent-hover shadow-lg border border-accent-border',
+        secondary: 'bg-panel text-text-primary hover:bg-panel/80 border border-border',
+        outline: 'border border-border bg-transparent text-text-primary hover:bg-panel',
+        ghost: 'hover:bg-panel text-text-primary',
+        link: 'text-accent underline-offset-4 hover:underline',
+        success: 'bg-success text-text-primary hover:bg-success/90 shadow-lg',
+        error: 'bg-error text-text-primary hover:bg-error/90 shadow-lg'
       },
       size: {
         default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-md px-3',
-        lg: 'h-11 rounded-md px-8',
+        sm: 'h-9 rounded-lg px-3',
+        lg: 'h-11 rounded-lg px-8',
         icon: 'h-10 w-10'
       }
     },
