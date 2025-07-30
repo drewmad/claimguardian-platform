@@ -81,7 +81,13 @@ class AuthService {
         hasFirstName: !!data.firstName,
         hasLastName: !!data.lastName,
         hasPhone: !!data.phone,
-        timestamp: new Date().toISOString()
+        hasAcceptedDocuments: !!data.acceptedDocuments?.length,
+        hasGdprConsent: !!data.gdprConsent,
+        hasMarketingConsent: !!data.marketingConsent,
+        hasDataProcessingConsent: !!data.dataProcessingConsent,
+        timestamp: new Date().toISOString(),
+        env: process.env.NODE_ENV,
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
       })
       
       const { data: authData, error } = await this.supabase.auth.signUp({
@@ -130,8 +136,22 @@ class AuthService {
           status: error.status,
           code: error.code,
           name: error.name,
-          stack: error.stack
+          stack: error.stack,
+          __typename: error.__typename,
+          hint: error.hint,
+          details: error.details
         })
+        
+        // Check if this is a network/server error
+        if (error.status === 500 || error.status === 503) {
+          console.error('[AUTH DEBUG] Server error detected. Possible causes:')
+          console.error('1. Supabase service is down')
+          console.error('2. Network connectivity issues')
+          console.error('3. Invalid Supabase URL or API key')
+          console.error('4. Database migrations not applied')
+          console.error('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+        }
+        
         throw this.handleAuthError(error)
       }
 
@@ -524,13 +544,20 @@ class AuthService {
       code: error.code,
       name: error.name,
       url: typeof window !== 'undefined' ? window.location.href : 'server',
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      __typename: error.__typename,
+      hint: error.hint,
+      details: error.details,
+      rawError: JSON.stringify(error)
     }
     
     logger.error('Supabase auth error', errorDetails)
 
     // Always log auth errors for debugging
     console.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
+    
+    // Log the raw error object
+    console.error('[ClaimGuardian Auth Error] Raw error:', error)
     
     // If there's additional error info, log it
     if (error.stack) {

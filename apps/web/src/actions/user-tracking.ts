@@ -147,60 +147,115 @@ export async function captureSignupData(data: SignupTrackingData) {
       longitude: data.location?.longitude
     }
     
-    // Call the database function to capture all signup data
-    const { error: captureError } = await supabase
-      .rpc('capture_signup_data', {
-        p_user_id: data.userId,
-        p_tracking_data: trackingData
-      })
-    
-    if (captureError) {
-      logger.error('Failed to capture signup data', { userId: data.userId }, captureError)
-      throw captureError
+    // Try to call the database function, but don't fail if it doesn't exist
+    try {
+      const { error: captureError } = await supabase
+        .rpc('capture_signup_data', {
+          p_user_id: data.userId,
+          p_tracking_data: trackingData
+        })
+      
+      if (captureError) {
+        console.error('[USER TRACKING] RPC function error:', captureError)
+        // If RPC doesn't exist, fall back to direct insert
+        if (captureError.message?.includes('function') || captureError.code === 'PGRST202') {
+          console.log('[USER TRACKING] Falling back to direct user_profiles update')
+          
+          // Update user profile directly
+          const { error: profileError } = await supabase
+            .from('user_profiles')
+            .upsert({
+              user_id: data.userId,
+              signup_ip_address: trackingData.ip_address,
+              signup_user_agent: trackingData.user_agent,
+              signup_device_fingerprint: trackingData.device_fingerprint,
+              signup_referrer: trackingData.referrer,
+              signup_landing_page: trackingData.landing_page,
+              signup_utm_source: trackingData.utm_source,
+              signup_utm_medium: trackingData.utm_medium,
+              signup_utm_campaign: trackingData.utm_campaign,
+              signup_country: trackingData.country,
+              signup_region: trackingData.region,
+              signup_city: trackingData.city,
+              signup_postal_code: trackingData.postal_code,
+              signup_timezone: trackingData.timezone,
+              signup_latitude: trackingData.latitude,
+              signup_longitude: trackingData.longitude,
+              signup_timestamp: new Date().toISOString()
+            })
+          
+          if (profileError) {
+            console.error('[USER TRACKING] Profile update error:', profileError)
+            // Don't throw - this is not critical for signup
+          }
+        } else {
+          // For other RPC errors, log but don't throw
+          logger.error('Failed to capture signup data via RPC', { userId: data.userId }, captureError)
+        }
+      }
+    } catch (rpcError) {
+      console.error('[USER TRACKING] Unexpected RPC error:', rpcError)
+      // Don't throw - continue with signup
     }
     
     // Create user preferences record with consent data
-    const { error: prefsError } = await supabase
-      .from('user_preferences')
-      .upsert({
-        user_id: data.userId,
-        gdpr_consent: data.preferences.gdprConsent,
-        gdpr_consent_date: data.preferences.gdprConsent ? new Date().toISOString() : null,
-        marketing_emails: data.preferences.marketingConsent,
-        data_processing_consent: data.preferences.dataProcessingConsent,
-        data_processing_consent_date: data.preferences.dataProcessingConsent ? new Date().toISOString() : null,
-        ai_processing_consent: data.preferences.aiProcessingConsent,
-        ai_processing_consent_date: data.preferences.aiProcessingConsent ? new Date().toISOString() : null,
-        timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
-      })
-    
-    if (prefsError) {
-      logger.error('Failed to create user preferences', { userId: data.userId }, prefsError)
-      // Don't throw - preferences are not critical for signup
+    try {
+      const { error: prefsError } = await supabase
+        .from('user_preferences')
+        .upsert({
+          user_id: data.userId,
+          gdpr_consent: data.preferences.gdprConsent,
+          gdpr_consent_date: data.preferences.gdprConsent ? new Date().toISOString() : null,
+          marketing_emails: data.preferences.marketingConsent,
+          data_processing_consent: data.preferences.dataProcessingConsent,
+          data_processing_consent_date: data.preferences.dataProcessingConsent ? new Date().toISOString() : null,
+          ai_processing_consent: data.preferences.aiProcessingConsent,
+          ai_processing_consent_date: data.preferences.aiProcessingConsent ? new Date().toISOString() : null,
+          timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+        })
+      
+      if (prefsError) {
+        console.error('[USER TRACKING] Preferences error:', prefsError)
+        logger.error('Failed to create user preferences', { userId: data.userId }, prefsError)
+        // Don't throw - preferences are not critical for signup
+      }
+    } catch (prefsError) {
+      console.error('[USER TRACKING] Unexpected preferences error:', prefsError)
+      // Don't throw - continue with signup
     }
     
     // Log consent changes in audit log
-    const consentTypes = [
-      { type: 'gdpr_consent', value: data.preferences.gdprConsent },
-      { type: 'marketing_consent', value: data.preferences.marketingConsent },
-      { type: 'data_processing_consent', value: data.preferences.dataProcessingConsent },
-      { type: 'ai_processing_consent', value: data.preferences.aiProcessingConsent }
-    ]
-    
-    for (const consent of consentTypes) {
-      if (consent.value) {
-        await supabase
-          .from('consent_audit_log')
-          .insert({
-            user_id: data.userId,
-            consent_type: consent.type,
-            action: 'granted',
-            new_value: true,
-            ip_address: ipAddress,
-            user_agent: userAgent,
-            method: 'signup_form'
-          })
+    try {
+      const consentTypes = [
+        { type: 'gdpr_consent', value: data.preferences.gdprConsent },
+        { type: 'marketing_consent', value: data.preferences.marketingConsent },
+        { type: 'data_processing_consent', value: data.preferences.dataProcessingConsent },
+        { type: 'ai_processing_consent', value: data.preferences.aiProcessingConsent }
+      ]
+      
+      for (const consent of consentTypes) {
+        if (consent.value) {
+          const { error: auditError } = await supabase
+            .from('consent_audit_log')
+            .insert({
+              user_id: data.userId,
+              consent_type: consent.type,
+              action: 'granted',
+              new_value: true,
+              ip_address: ipAddress,
+              user_agent: userAgent,
+              method: 'signup_form'
+            })
+          
+          if (auditError) {
+            console.error('[USER TRACKING] Consent audit error:', auditError)
+            // Don't throw - audit logging is not critical
+          }
+        }
       }
+    } catch (auditError) {
+      console.error('[USER TRACKING] Unexpected audit error:', auditError)
+      // Don't throw - continue with signup
     }
     
     logger.info('Signup data captured successfully', { userId: data.userId })
