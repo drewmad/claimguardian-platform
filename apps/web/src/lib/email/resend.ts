@@ -61,7 +61,7 @@ export async function sendEmail({
       subject,
       html,
       text,
-      reply_to: replyTo,
+      replyTo: replyTo,
       tags: emailTags
     })
 
@@ -110,7 +110,7 @@ export async function sendBulkEmails(
       subject: recipient.subject,
       html: recipient.html,
       text: recipient.text,
-      reply_to: REPLY_TO_EMAIL,
+      replyTo: REPLY_TO_EMAIL,
       tags: [
         { name: 'app', value: 'claimguardian' },
         { name: 'environment', value: process.env.NODE_ENV || 'development' },
@@ -119,7 +119,7 @@ export async function sendBulkEmails(
       ]
     }))
 
-    const { data, error } = await resend.batch.send(emails)
+    const { data, error } = await resend.batch.send(emails as any)
 
     if (error) {
       logger.error('Failed to send bulk emails', { error, count: recipients.length })
