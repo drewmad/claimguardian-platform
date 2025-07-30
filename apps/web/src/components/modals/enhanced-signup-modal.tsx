@@ -161,7 +161,7 @@ export function EnhancedSignupModal() {
         setTimeout(() => {
           closeModal()
           resetForm()
-        }, 2000)
+        }, 10000)
       }
     } finally {
       setLoading(false)

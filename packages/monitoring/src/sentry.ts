@@ -73,7 +73,7 @@ export function withErrorBoundary<P extends object>(
   fallback?: React.ComponentType<{ error: Error; resetError: () => void }>
 ) {
   return Sentry.withErrorBoundary(Component, {
-    fallback: fallback || ErrorFallback,
+    fallback: (fallback as any) || (ErrorFallback as any),
     showDialog: false
   })
 }
@@ -139,14 +139,13 @@ export async function withTransaction<T>(
   operation: string,
   callback: () => Promise<T>
 ): Promise<T> {
-  const transaction = Sentry.startTransaction({ name, op: operation })
-  Sentry.getCurrentHub().getScope().setSpan(transaction)
-  
   const startTime = Date.now()
   
   try {
-    const result = await callback()
-    transaction.setStatus('ok')
+    // Use modern Sentry span API
+    const result = await Sentry.startSpan({ name, op: operation }, async () => {
+      return await callback()
+    })
     
     recordMetric('transaction-success', Date.now() - startTime, {
       name,
@@ -155,17 +154,14 @@ export async function withTransaction<T>(
     
     return result
   } catch (error) {
-    transaction.setStatus('internal_error')
-    
     recordMetric('transaction-error', Date.now() - startTime, {
       name,
       operation,
-      error: error instanceof Error ? error.message : 'unknown'
+      errorName: error instanceof Error ? error.name : 'unknown'
     })
     
+    Sentry.captureException(error)
     throw error
-  } finally {
-    transaction.finish()
   }
 }
 

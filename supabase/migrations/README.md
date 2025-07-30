@@ -1,6 +1,6 @@
-# Active Migrations
+# Migrations Archived
 
-This directory contains only active migrations.
-For historical migrations, see /archives/migrations/
+This project uses a single schema.sql file approach.
+All migrations have been archived to avoid Supabase CLI conflicts.
 
-Current approach: Single schema.sql file as source of truth
+See supabase/schema.sql for the current database schema.

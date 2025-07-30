@@ -6,6 +6,20 @@ interface AnalyticsEvent {
   sessionId?: string
 }
 
+// Extended Window interface for Next.js router
+declare global {
+  interface Window {
+    next?: {
+      router?: {
+        events: {
+          on: (event: string, callback: (url: string) => void) => void
+          off: (event: string, callback: (url: string) => void) => void
+        }
+      }
+    }
+  }
+}
+
 interface PageViewEvent {
   path: string
   title?: string
@@ -46,10 +60,19 @@ class Analytics {
     this.trackPageView(window.location.pathname, document.title)
 
     // Listen for route changes (Next.js specific)
-    if (typeof window !== 'undefined' && window.next?.router) {
-      window.next.router.events.on('routeChangeComplete', (url: string) => {
-        this.trackPageView(url, document.title)
-      })
+    if (typeof window !== 'undefined') {
+      try {
+        // Try to access Next.js router if available
+        const router = window.next?.router
+        if (router?.events) {
+          router.events.on('routeChangeComplete', (url: string) => {
+            this.trackPageView(url, document.title)
+          })
+        }
+      } catch (error) {
+        // Router not available, skip route tracking
+        console.debug('Next.js router not available for analytics tracking')
+      }
     }
   }
 

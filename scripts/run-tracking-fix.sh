@@ -1,18 +1,18 @@
 #!/bin/bash
 
-echo "Applying tracking functions fix to production database..."
+echo "🔧 Fixing user_tracking table and functions..."
 echo ""
 echo "This script will:"
-echo "1. Create user_profiles table"
-echo "2. Create user_preferences table"
-echo "3. Create consent_audit_log table"
-echo "4. Create capture_signup_data function"
-echo "5. Set up Row Level Security"
+echo "1. Add missing 'event_type' column to user_tracking table"
+echo "2. Add missing 'event_data' column for storing event metadata"
+echo "3. Add other missing columns (device_fingerprint, page_url, etc.)"
+echo "4. Update tracking functions to work with current schema"
+echo "5. Create proper indexes for performance"
 echo ""
 echo "Please run this SQL in your Supabase SQL Editor:"
 echo "================================================"
 echo ""
-cat ./scripts/apply-tracking-functions.sql
+cat ./scripts/fix-user-tracking-table.sql
 echo ""
 echo "================================================"
 echo ""
@@ -21,3 +21,4 @@ echo "1. Go to https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql/n
 echo "2. Copy and paste the SQL above"
 echo "3. Click 'Run'"
 echo ""
+echo "This fix addresses the 'column event_type does not exist' error."

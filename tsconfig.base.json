@@ -16,6 +16,5 @@
     "skipLibCheck": true,
     "strict": true
   },
-  "include": ["apps/web/src/types/globals.d.ts"],
   "exclude": ["node_modules"]
 }

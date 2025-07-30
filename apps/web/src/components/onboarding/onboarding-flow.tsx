@@ -430,6 +430,10 @@ function UserProfileStep({
   
   // Google Maps state
   const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
+  
+  // Computed values - declare early to avoid hoisting issues
+  const isProfessional = selectedType === 'property-professional'
+  const isLandlord = selectedType === 'landlord'
 
   const userTypes = [
     { value: 'renter', label: 'Renter', icon: '🏠', description: 'I rent my home' },
@@ -630,9 +634,6 @@ function UserProfileStep({
     onUpdate({ ...data, profileComplete: true })
     onComplete()
   }
-
-  const isProfessional = selectedType === 'property-professional'
-  const isLandlord = selectedType === 'landlord'
 
   return (
     <div className="space-y-8">
@@ -1187,8 +1188,7 @@ function QuickStartStep({
             priority: 'medium' as const
           }
         ]
-      case 'real-estate-professional':
-      case 'insurance-professional':
+      case 'property-professional':
         return [
           {
             title: 'Add First Client',

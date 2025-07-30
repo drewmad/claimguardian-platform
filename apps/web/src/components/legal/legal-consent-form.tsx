@@ -305,14 +305,22 @@ function LegalDocumentItem({
         : 'border-slate-600 hover:border-slate-500'
     }`}>
       <div className="flex items-start gap-3">
-        <input
-          type="checkbox"
-          id={`consent-${document.id}`}
-          checked={accepted}
-          onChange={(e) => onToggle(e.target.checked)}
-          disabled={disabled}
-          className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
-        />
+        <div className="relative">
+          <input
+            type="checkbox"
+            id={`consent-${document.id}`}
+            checked={accepted}
+            onChange={(e) => onToggle(e.target.checked)}
+            disabled={disabled}
+            className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
+          />
+          {/* Larger clickable area around checkbox */}
+          <label 
+            htmlFor={`consent-${document.id}`}
+            className="absolute inset-0 w-8 h-8 -m-1.5 cursor-pointer rounded-full"
+            title="Click to toggle consent"
+          />
+        </div>
         
         <div className="flex-1 min-w-0">
           <label 

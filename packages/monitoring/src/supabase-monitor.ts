@@ -23,40 +23,127 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
       startTime: Date.now()
     }
 
-    // Wrap query methods
+    // Wrap query methods with type safety
     const methods = ['select', 'insert', 'update', 'upsert', 'delete'] as const
     
     methods.forEach(method => {
-      const original = queryBuilder[method].bind(queryBuilder)
+      if (queryBuilder[method]) {
+        const original = (queryBuilder as any)[method].bind(queryBuilder)
+        
+        ;(queryBuilder as any)[method] = function(...args: any[]) {
+          queryInfo.operation = method
+          queryInfo.startTime = Date.now()
+          
+          const result = original(...args)
+          
+          // Monitor the promise
+          if (result && typeof result.then === 'function') {
+            return result
+              .then((response: any) => {
+                const duration = Date.now() - queryInfo.startTime
+                
+                recordDatabaseQuery({
+                  queryName: `${queryInfo.table}.${queryInfo.operation}`,
+                  duration,
+                  rowCount: response.data?.length,
+                  timestamp: Date.now()
+                })
+                
+                return response
+              })
+              .catch((error: any) => {
+                const duration = Date.now() - queryInfo.startTime
+                
+                recordDatabaseQuery({
+                  queryName: `${queryInfo.table}.${queryInfo.operation}`,
+                  duration,
+                  error: error.message,
+                  timestamp: Date.now()
+                })
+                
+                throw error
+              })
+          }
+          
+          return result
+        }
+      }
+    })
+
+    return queryBuilder
+  }
+
+  // Monitor RPC calls
+  const originalRpcTyped = originalRpc as any
+  ;(client as any).rpc = function(fn: string, args?: any, options?: any) {
+    const startTime = Date.now()
+    
+    const queryBuilder = originalRpcTyped(fn, args, options)
+    
+    // Wrap the execute methods for query builders
+    if (queryBuilder && typeof queryBuilder.then === 'function') {
+      const originalThen = queryBuilder.then.bind(queryBuilder)
+      queryBuilder.then = function(onFulfilled?: any, onRejected?: any) {
+        return originalThen(
+          (response: any) => {
+            recordAPICall({
+              endpoint: `/rpc/${fn}`,
+              method: 'POST',
+              statusCode: 200,
+              duration: Date.now() - startTime,
+              timestamp: Date.now()
+            })
+            return onFulfilled ? onFulfilled(response) : response
+          },
+          (error: any) => {
+            recordAPICall({
+              endpoint: `/rpc/${fn}`,
+              method: 'POST',
+              statusCode: error.status || 500,
+              duration: Date.now() - startTime,
+              timestamp: Date.now()
+            })
+            return onRejected ? onRejected(error) : Promise.reject(error)
+          }
+        )
+      }
+    }
+    
+    return queryBuilder
+  }
+
+  // Monitor auth operations with correct method names
+  const authMethods = ['signInWithPassword', 'signUp', 'signOut', 'resetPasswordForEmail'] as const
+  
+  authMethods.forEach(method => {
+    if (originalAuth[method]) {
+      const original = (originalAuth as any)[method].bind(originalAuth)
       
-      queryBuilder[method] = function(...args: any[]) {
-        queryInfo.operation = method
-        queryInfo.startTime = Date.now()
+      ;(originalAuth as any)[method] = function(...args: any[]) {
+        const startTime = Date.now()
         
         const result = original(...args)
         
-        // Monitor the promise
+        // Handle both sync and async results
         if (result && typeof result.then === 'function') {
           return result
             .then((response: any) => {
-              const duration = Date.now() - queryInfo.startTime
-              
-              recordDatabaseQuery({
-                queryName: `${queryInfo.table}.${queryInfo.operation}`,
-                duration,
-                rowCount: response.data?.length,
+              recordAPICall({
+                endpoint: `/auth/${method}`,
+                method: 'POST',
+                statusCode: 200,
+                duration: Date.now() - startTime,
                 timestamp: Date.now()
               })
               
               return response
             })
             .catch((error: any) => {
-              const duration = Date.now() - queryInfo.startTime
-              
-              recordDatabaseQuery({
-                queryName: `${queryInfo.table}.${queryInfo.operation}`,
-                duration,
-                error: error.message,
+              recordAPICall({
+                endpoint: `/auth/${method}`,
+                method: 'POST',
+                statusCode: error.status || 500,
+                duration: Date.now() - startTime,
                 timestamp: Date.now()
               })
               
@@ -66,72 +153,6 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
         
         return result
       }
-    })
-
-    return queryBuilder
-  }
-
-  // Monitor RPC calls
-  client.rpc = function(fn: string, args?: any, options?: any) {
-    const startTime = Date.now()
-    
-    return originalRpc(fn, args, options)
-      .then((response: any) => {
-        recordAPICall({
-          endpoint: `/rpc/${fn}`,
-          method: 'POST',
-          statusCode: 200,
-          duration: Date.now() - startTime,
-          timestamp: Date.now()
-        })
-        
-        return response
-      })
-      .catch((error: any) => {
-        recordAPICall({
-          endpoint: `/rpc/${fn}`,
-          method: 'POST',
-          statusCode: error.status || 500,
-          duration: Date.now() - startTime,
-          timestamp: Date.now()
-        })
-        
-        throw error
-      })
-  }
-
-  // Monitor auth operations
-  const authMethods = ['signIn', 'signUp', 'signOut', 'resetPasswordForEmail'] as const
-  
-  authMethods.forEach(method => {
-    const original = originalAuth[method].bind(originalAuth)
-    
-    ;(originalAuth as any)[method] = function(...args: any[]) {
-      const startTime = Date.now()
-      
-      return original(...args)
-        .then((response: any) => {
-          recordAPICall({
-            endpoint: `/auth/${method}`,
-            method: 'POST',
-            statusCode: 200,
-            duration: Date.now() - startTime,
-            timestamp: Date.now()
-          })
-          
-          return response
-        })
-        .catch((error: any) => {
-          recordAPICall({
-            endpoint: `/auth/${method}`,
-            method: 'POST',
-            statusCode: error.status || 500,
-            duration: Date.now() - startTime,
-            timestamp: Date.now()
-          })
-          
-          throw error
-        })
     }
   })
 
