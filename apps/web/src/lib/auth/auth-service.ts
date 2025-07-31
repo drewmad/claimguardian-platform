@@ -24,7 +24,7 @@ export class AuthError extends AppError {
   }
 }
 
-interface AuthResponse<T = unknown> {
+export interface AuthResponse<T = unknown> {
   data?: T
   error?: AuthError
 }
@@ -48,7 +48,13 @@ interface SignUpData {
   deviceFingerprint?: string
   deviceType?: 'mobile' | 'tablet' | 'desktop'
   screenResolution?: string
-  geolocation?: any
+  geolocation?: {
+    lat?: number
+    lng?: number
+    city?: string
+    region?: string
+    country?: string
+  }
   referrer?: string
   landingPage?: string
   utmParams?: {
@@ -266,6 +272,70 @@ class AuthService {
       return {
         error: new AuthError(
           'An unexpected error occurred during signup',
+          'AUTH_UNKNOWN_ERROR',
+          error as Error
+        )
+      }
+    }
+  }
+
+  /**
+   * Sign in an existing user
+   */
+  async signIn(data: SignInData): Promise<AuthResponse<User>> {
+    try {
+      logger.info('Attempting user signin', { email: data.email })
+      
+      const { data: authData, error } = await this.supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password
+      })
+
+      if (error) {
+        throw this.handleAuthError(error)
+      }
+
+      if (!authData.user) {
+        throw new AuthError(
+          'Signin successful but no user data returned',
+          'AUTH_INVALID_RESPONSE'
+        )
+      }
+
+      logger.info('User signin successful', { userId: authData.user.id })
+      
+      // Track login activity
+      try {
+        await loginActivityService.logLoginAttempt(
+          authData.user.id,
+          true
+        )
+      } catch (trackingError) {
+        console.warn('Failed to track login activity:', trackingError)
+      }
+      
+      return { data: authData.user }
+    } catch (error) {
+      logger.error('Signin failed', {}, error instanceof Error ? error : new Error(String(error)))
+      
+      // Track failed login attempt
+      try {
+        await loginActivityService.logLoginAttempt(
+          '', // No userId for failed login
+          false,
+          error instanceof Error ? error.message : 'Unknown error'
+        )
+      } catch (trackingError) {
+        console.warn('Failed to track failed login:', trackingError)
+      }
+      
+      if (error instanceof AuthError) {
+        return { error }
+      }
+      
+      return {
+        error: new AuthError(
+          'An unexpected error occurred during signin',
           'AUTH_UNKNOWN_ERROR',
           error as Error
         )

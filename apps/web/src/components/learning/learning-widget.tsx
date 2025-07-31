@@ -29,8 +29,8 @@ export function LearningWidget() {
   const [stats, setStats] = useState<{
     totalIssues: number
     bySeverity: Record<string, number>
-    byCategory: Array<{ name: string; count: number }>
-    recentTrends: { increasing: boolean; percentage: number }
+    byCategory: Record<string, number>
+    recentTrends: string
   } | null>(null)
 
   const handleSearch = async () => {

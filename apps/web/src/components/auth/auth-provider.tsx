@@ -13,7 +13,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
 import { createClient } from '@/lib/supabase/client'
-import { authService, AuthError } from '@/lib/auth/auth-service'
+import { authService, AuthError, AuthResponse } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { sessionManager } from '@/lib/auth/session-manager'
 
@@ -22,7 +22,7 @@ interface AuthContextType {
   loading: boolean
   error: AuthError | null
   sessionWarning: boolean
-  signIn: (email: string, password: string, rememberMe?: boolean) => Promise<void>
+  signIn: (email: string, password: string) => Promise<boolean>
   signUp: (data: SignUpData) => Promise<boolean>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<void>
@@ -55,11 +55,11 @@ interface SignUpData {
   }
   referrer?: string
   utmParams?: {
-    utm_source?: string
-    utm_medium?: string
-    utm_campaign?: string
-    utm_term?: string
-    utm_content?: string
+    source?: string
+    medium?: string
+    campaign?: string
+    term?: string
+    content?: string
   }
 }
 
@@ -262,57 +262,36 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [supabase.auth, user?.id]) // Add dependencies to prevent re-initialization
 
   // Sign in handler
-  const handleSignIn = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
+  const handleSignIn = useCallback(async (email: string, password: string) => {
     try {
       setLoading(true)
       setError(null)
       
-      logger.info('Starting sign in process', { email })
-      
-      const { data, error } = await authService.signIn({ email, password, rememberMe })
+      const { data: userData, error } = await authService.signIn({ email, password })
       
       if (error) {
-        logger.error('Sign in error received', { 
-          errorCode: error.code, 
-          errorMessage: error.message 
-        })
-        console.error('[AuthProvider] Sign in error details:', {
-          code: error.code,
-          message: error.message,
-          fullError: error
-        })
         setError(error)
-        setLoading(false)
-        return
+        return false
       }
 
-      if (data) {
-        logger.track('signin_success', { userId: data.id, rememberMe })
-        // Use window.location to avoid router dependency issues
-        window.location.href = '/dashboard'
+      if (userData) {
+        logger.track('signin_success', { userId: userData.id })
+        return true
       }
+      
+      return false
     } catch (err) {
-      // Log full error details
-      const errorDetails = {
-        message: err instanceof Error ? err.message : 'Unknown error',
-        name: err instanceof Error ? err.name : 'UnknownError',
-        stack: err instanceof Error ? err.stack : undefined,
-        error: err
-      }
-      
-      logger.error('Unexpected signin error', errorDetails, err as Error)
-      console.error('[AuthProvider] Sign in failed with unexpected error:', errorDetails)
-      
+      logger.error('Unexpected signin error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
       setError(new AuthError(
-        err instanceof Error ? err.message : 'An unexpected error occurred',
+        'An unexpected error occurred',
         'AUTH_UNKNOWN_ERROR',
         err as Error
       ))
+      return false
     } finally {
-      // Always clear loading state
       setLoading(false)
     }
-  }, [])
+  }, [user?.id])
 
   // Sign up handler
   const handleSignUp = useCallback(async (data: SignUpData) => {

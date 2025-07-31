@@ -65,7 +65,7 @@ export function useDeviceTracking(): TrackingInfo {
           timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
           language: navigator.language,
           platform: navigator.platform,
-          memory: (navigator as any).deviceMemory,
+          memory: 'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory : undefined,
           cores: navigator.hardwareConcurrency
         }
         

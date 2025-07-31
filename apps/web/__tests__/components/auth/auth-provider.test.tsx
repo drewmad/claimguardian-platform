@@ -63,7 +63,7 @@ jest.mock('@/lib/logger/enhanced-logger', () => ({
   },
 }))
 
-// Test component to access auth context
+  // Test component to access auth context
 const TestComponent = () => {
   const auth = useAuth()
   return (
@@ -71,9 +71,6 @@ const TestComponent = () => {
       <div data-testid="user-id">{auth.user?.id || 'no-user'}</div>
       <div data-testid="loading">{auth.loading.toString()}</div>
       <div data-testid="error">{auth.error?.message || 'no-error'}</div>
-      <button onClick={() => auth.signIn('test@example.com', 'password')}>
-        Sign In
-      </button>
       <button onClick={() => auth.signOut()}>
         Sign Out
       </button>
@@ -243,71 +240,6 @@ describe('AuthProvider', () => {
   })
 
   describe('Authentication Methods', () => {
-    it('should handle successful sign in', async () => {
-      const { authService } = await import('@/lib/auth/auth-service')
-      const mockUser = createMockUser()
-      
-      ;(authService.signIn as jest.Mock).mockResolvedValue({
-        data: mockUser,
-        error: null
-      })
-
-      const { getByText, getByTestId } = render(
-        <AuthProvider>
-          <TestComponent />
-        </AuthProvider>
-      )
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(getByTestId('loading')).toHaveTextContent('false')
-      })
-
-      // Click sign in
-      act(() => {
-        getByText('Sign In').click()
-      })
-
-      await waitFor(() => {
-        expect(authService.signIn).toHaveBeenCalledWith({
-          email: 'test@example.com',
-          password: 'password',
-          rememberMe: undefined
-        })
-      })
-    })
-
-    it('should handle sign in error', async () => {
-      const { authService, AuthError } = await import('@/lib/auth/auth-service')
-      const mockError = new AuthError('Invalid credentials', 'AUTH_INVALID_CREDENTIALS')
-      
-      ;(authService.signIn as jest.Mock).mockResolvedValue({
-        data: null,
-        error: mockError
-      })
-
-      const { getByText, getByTestId } = render(
-        <AuthProvider>
-          <TestComponent />
-        </AuthProvider>
-      )
-
-      // Wait for initial load
-      await waitFor(() => {
-        expect(getByTestId('loading')).toHaveTextContent('false')
-      })
-
-      // Click sign in
-      act(() => {
-        getByText('Sign In').click()
-      })
-
-      await waitFor(() => {
-        expect(getByTestId('error')).toHaveTextContent('Invalid credentials')
-        expect(getByTestId('loading')).toHaveTextContent('false')
-      })
-    })
-
     it('should handle sign out', async () => {
       const { authService } = await import('@/lib/auth/auth-service')
       

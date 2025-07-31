@@ -9,22 +9,19 @@
  * @status active
  * @notes Handles user authentication with email/password and redirects to dashboard.
  */
+
 import React from 'react';
 import { Button, Input, Label, Card } from '@claimguardian/ui';
-import { Shield, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Shield, ArrowLeft } from 'lucide-react';
 import { signIn } from '@/actions/auth';
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
-export default function SignInPage({
+export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: { message: string };
+  searchParams: Promise<{ message?: string }>;
 }) {
-  const router = useRouter();
-
-  const handleBackToHome = () => {
-    router.push('/');
-  };
+  const params = await searchParams;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
@@ -41,9 +38,9 @@ export default function SignInPage({
           </div>
 
           {/* Error Message */}
-          {searchParams?.message && (
+          {params?.message && (
             <div className="mb-6 p-4 bg-red-900/50 border border-red-700 rounded-lg">
-              <p className="text-red-300 text-sm">{searchParams.message}</p>
+              <p className="text-red-300 text-sm">{params.message}</p>
             </div>
           )}
 
@@ -93,26 +90,24 @@ export default function SignInPage({
           <div className="mt-6 text-center">
             <p className="text-slate-400">
               Don&apos;t have an account?{' '}
-              <Button
-                variant="link"
-                onClick={handleBackToHome}
-                className="text-blue-400 hover:text-blue-300 p-0"
+              <Link
+                href="/"
+                className="text-blue-400 hover:text-blue-300"
               >
                 Sign up here
-              </Button>
+              </Link>
             </p>
           </div>
 
           {/* Back to Home */}
           <div className="mt-6 text-center">
-            <Button
-              variant="ghost"
-              onClick={handleBackToHome}
-              className="text-slate-400 hover:text-slate-300"
+            <Link
+              href="/"
+              className="inline-flex items-center text-slate-400 hover:text-slate-300"
             >
               <ArrowLeft className="h-4 w-4 mr-2" />
               Back to Home
-            </Button>
+            </Link>
           </div>
         </div>
       </Card>

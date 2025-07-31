@@ -19,7 +19,7 @@ declare global {
           }
         }
         event: {
-          clearInstanceListeners: (instance: any) => void
+          clearInstanceListeners: (instance: object) => void
         }
       }
     }

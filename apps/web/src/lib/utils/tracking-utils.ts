@@ -148,7 +148,7 @@ function generateDeviceFingerprint(): string {
     screen.width + 'x' + screen.height,
     new Date().getTimezoneOffset(),
     navigator.hardwareConcurrency || 0,
-    (navigator as any).deviceMemory || 0,
+    'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory || 0 : 0,
     canvasData.slice(-50) // Last 50 chars of canvas data
   ].join('|')
   

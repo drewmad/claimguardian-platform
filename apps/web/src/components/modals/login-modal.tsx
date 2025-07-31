@@ -47,7 +47,7 @@ export function LoginModal() {
     
     setLoading(true)
     try {
-      await signIn(email, password, rememberMe)
+      await signIn(email, password)
       
       // The auth provider will handle the redirect on success
       // We'll only reach here if there's an error

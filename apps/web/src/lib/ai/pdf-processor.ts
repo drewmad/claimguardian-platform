@@ -43,10 +43,10 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
       let lastY: number | null = null
       
       // Process text items to reconstruct lines
-      textContent.items.forEach((item: any) => {
+      textContent.items.forEach((item) => {
         if (item && typeof item === 'object' && 'str' in item && item.str) {
           // Check if this is a new line based on Y position
-          if (item.transform && lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
+          if ('transform' in item && item.transform && lastY !== null && Math.abs(item.transform[5] - lastY) > 5) {
             if (currentLine.trim()) {
               pageLines.push(currentLine.trim())
             }
@@ -54,7 +54,7 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
           } else {
             currentLine += ' ' + item.str
           }
-          if (item.transform) {
+          if ('transform' in item && item.transform) {
             lastY = item.transform[5]
           }
         }

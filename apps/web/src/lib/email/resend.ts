@@ -63,7 +63,7 @@ export async function sendEmail({
       text: text || '',
       replyTo: replyTo,
       tags: emailTags
-    } as any)
+    })
 
     if (error) {
       logger.error('Failed to send email', { error, to, subject })
@@ -108,8 +108,9 @@ export async function sendBulkEmails(
       from: FROM_EMAIL,
       to: recipient.to,
       subject: recipient.subject,
-      html: recipient.html,
-      text: recipient.text,
+      html: recipient.html || '',
+      text: recipient.text || '',
+      react: undefined, // Explicitly set react to undefined when using html/text
       replyTo: REPLY_TO_EMAIL,
       tags: [
         { name: 'app', value: 'claimguardian' },
@@ -119,7 +120,7 @@ export async function sendBulkEmails(
       ]
     }))
 
-    const { data, error } = await resend.batch.send(emails as any)
+    const { data, error } = await resend.batch.send(emails)
 
     if (error) {
       logger.error('Failed to send bulk emails', { error, count: recipients.length })

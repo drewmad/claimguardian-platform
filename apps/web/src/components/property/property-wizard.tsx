@@ -85,7 +85,7 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
         case 'UPDATE_FIELD':
             const { section, field, value } = action.payload;
             if (section) {
-                return { ...state, [section]: { ...(state as any)[section], [field]: value } };
+                return { ...state, [section]: { ...(state[section as keyof typeof state] as Record<string, unknown>), [field]: value } };
             }
             return { ...state, [field]: value };
         case 'NEXT_STEP':
@@ -201,16 +201,8 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     details: {
                         bedrooms: parseInt(state.propertyDetails.bedrooms) || 0,
                         bathrooms: parseFloat(state.propertyDetails.bathrooms) || 0,
-                        lot_size: 0, // Default value
-                        // Store additional wizard data as arbitrary properties
-                        ownershipStatus: state.ownershipStatus,
-                        isHOA: state.propertyDetails.isHOA,
-                        hasInsurance: state.insuranceInfo.hasHomeownersRenters,
-                        hasFloodInsurance: state.insuranceInfo.hasFlood,
-                        hasMortgage: state.financialInfo.hasMortgage,
-                        lenderName: state.financialInfo.lenderName,
-                        monthlyPayment: parseFloat(state.financialInfo.monthlyPayment) || 0
-                    } as any
+                        lot_size: 0 // Default value
+                    }
                 }
             });
             

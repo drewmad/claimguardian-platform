@@ -7,7 +7,7 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
@@ -68,11 +68,7 @@ export default function PropertiesPage() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchProperties()
-  }, [])
-
-  async function fetchProperties() {
+  const fetchProperties = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) return
@@ -113,7 +109,11 @@ export default function PropertiesPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    fetchProperties()
+  }, [fetchProperties])
 
   if (loading) {
     return (
@@ -286,7 +286,6 @@ export default function PropertiesPage() {
                 latitude={selectedProperty.latitude}
                 longitude={selectedProperty.longitude}
                 address={selectedProperty.address?.street}
-                placeId={selectedProperty.address?.place_id}
               />
             </div>
           )}

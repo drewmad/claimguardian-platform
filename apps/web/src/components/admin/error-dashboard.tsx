@@ -6,7 +6,7 @@
  */
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { AlertCircle, AlertTriangle, Bug, CheckCircle, Clock, Info, RefreshCw, XCircle } from 'lucide-react'

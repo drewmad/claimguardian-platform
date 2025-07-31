@@ -49,7 +49,13 @@ export function EnhancedSignupModal() {
   const [urlData, setUrlData] = useState<{
     referrer?: string
     landingPage?: string
-    utmParams?: any
+    utmParams?: {
+    source?: string;
+    medium?: string;
+    campaign?: string;
+    term?: string;
+    content?: string;
+  };
   }>({})
   
   const [showPassword, setShowPassword] = useState(false)
@@ -72,11 +78,11 @@ export function EnhancedSignupModal() {
     // Get UTM params from URL
     const urlParams = new URLSearchParams(window.location.search)
     const utmParams = {
-      source: urlParams.get('utm_source'),
-      medium: urlParams.get('utm_medium'),
-      campaign: urlParams.get('utm_campaign'),
-      term: urlParams.get('utm_term'),
-      content: urlParams.get('utm_content')
+      source: urlParams.get('utm_source') || undefined,
+      medium: urlParams.get('utm_medium') || undefined,
+      campaign: urlParams.get('utm_campaign') || undefined,
+      term: urlParams.get('utm_term') || undefined,
+      content: urlParams.get('utm_content') || undefined
     }
     
     setUrlData({

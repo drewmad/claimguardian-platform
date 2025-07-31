@@ -53,8 +53,8 @@ class LegalService {
 
       // Filter documents that need update
       const docsNeedingUpdate = consentStatus
-        ?.filter((status: any) => status.needs_update)
-        .map((status: any) => status.document_type) || []
+        ?.filter((status: { needs_update: boolean }) => status.needs_update)
+        .map((status: { document_type: string }) => status.document_type) || []
 
       if (docsNeedingUpdate.length === 0) return []
 

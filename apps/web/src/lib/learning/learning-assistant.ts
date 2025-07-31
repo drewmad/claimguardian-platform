@@ -93,7 +93,11 @@ export class LearningAssistant {
         return []
       }
 
-      return (patterns || []).map((p: any) => ({
+      return (patterns || []).map((p: {
+        pattern_name: string
+        auto_fix_available: boolean
+        auto_fix_script?: string
+      }) => ({
         patternName: p.pattern_name,
         autoFixAvailable: p.auto_fix_available,
         autoFixScript: p.auto_fix_script,
@@ -214,7 +218,16 @@ export class LearningAssistant {
   }
 
   private async enhanceResults(
-    results: any[]
+    results: Array<{
+      id: string
+      title: string
+      problem: string
+      solution: string
+      similarity?: number
+      severity?: string
+      created_at: string
+      category_id?: string
+    }>
   ): Promise<LearningSuggestion[]> {
     // Get additional data for each result
     const enhanced = await Promise.all(results.map(async (result) => {
@@ -234,9 +247,9 @@ export class LearningAssistant {
       return {
         id: result.id,
         title: result.title,
-        problem: result.problem_description,
+        problem: result.problem,
         solution: result.solution,
-        confidence: result.similarity,
+        confidence: result.similarity || 0,
         category: (learning?.category as any)?.name || 'general',
         tags: tags?.map((t: any) => t.tag?.name).filter(Boolean) || []
       }
@@ -257,7 +270,7 @@ export class LearningAssistant {
     }
   }
 
-  private groupBySeverity(data: any[]) {
+  private groupBySeverity(data: Array<{ severity?: string }>) {
     const groups = { low: 0, medium: 0, high: 0, critical: 0 }
     data.forEach(item => {
       const severity = item.severity as keyof typeof groups
@@ -268,7 +281,7 @@ export class LearningAssistant {
     return groups
   }
 
-  private async groupByCategory(data: any[]) {
+  private async groupByCategory(data: Array<{ category_id?: string }>) {
     const categoryMap = new Map<string, number>()
     
     // Get category names
@@ -288,7 +301,7 @@ export class LearningAssistant {
     return Object.fromEntries(categoryMap)
   }
 
-  private calculateTrends(data: any[]) {
+  private calculateTrends(data: Array<{ created_at: string }>) {
     // Group by week
     const weeklyData = new Map<string, number>()
     

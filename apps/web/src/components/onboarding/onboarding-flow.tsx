@@ -5,10 +5,15 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/lib/supabase/client'
 import { 
-  Shield, CheckCircle, ArrowRight, 
-  Sparkles, X, Loader2,
-  UserCheck
+  UserCheck,
+  Shield,
+  Sparkles,
+  X,
+  CheckCircle,
+  ArrowRight
 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
+import type { GooglePlaceResult } from '@/lib/services/types'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { toast } from 'sonner'
@@ -127,7 +132,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
           return
         }
 
-        setPreferences(prefs)
+        
 
         // Update step completion status
         const updatedSteps = [...ONBOARDING_STEPS]
@@ -571,7 +576,7 @@ function UserProfileStep({
         addressInputRef.current,
         {
           componentRestrictions: { country: 'us' },
-          fields: ['address_components', 'formatted_address', 'geometry'],
+          fields: ['address_components', 'formatted_address', 'geometry', 'place_id'],
           types: ['address']
         }
       )

@@ -49,14 +49,48 @@ interface PropertyEnrichmentData {
   flood_risk_score?: number
   
   // Visual Documentation
-  street_view_data?: Record<string, unknown>
-  aerial_view_data?: Record<string, unknown>
+  street_view_data?: {
+    front?: string
+    left?: string
+    right?: string
+    rear?: string
+    available?: boolean
+  }
+  aerial_view_data?: {
+    url?: string
+    zoom?: number
+    available?: boolean
+  }
   imagery_captured_at?: string
   
   // Emergency Services
-  fire_protection?: Record<string, unknown>
-  medical_services?: Record<string, unknown>
-  police_services?: Record<string, unknown>
+  fire_protection?: {
+    protection_class?: string | number
+    department_name?: string
+    distance_miles?: number
+    response_time_minutes?: number
+    nearest_station?: {
+      name: string
+      distance_meters: number
+    }
+  }
+  medical_services?: {
+    nearest_hospital?: {
+      name: string
+      distance_meters: number
+    }
+    distance_miles?: number
+    trauma_level?: string
+  }
+  police_services?: {
+    department_name?: string
+    distance_miles?: number
+    response_time_minutes?: number
+    nearest_station?: {
+      name: string
+      distance_meters: number
+    }
+  }
   
   // Risk Assessment
   distance_to_coast_meters?: number
@@ -65,12 +99,24 @@ interface PropertyEnrichmentData {
   wind_zone?: string
   
   // Insurance Factors
-  insurance_risk_factors?: Record<string, unknown>
+  insurance_risk_factors?: {
+    overall_score?: number
+    flood_risk?: number
+    wind_risk?: number
+    fire_risk?: number
+    crime_risk?: number
+    fire_score?: number
+    flood_score?: number
+    wind_score?: number
+  }
   insurance_territory_code?: string
   
   // Metadata
   source_apis?: Record<string, unknown>
-  api_costs?: Record<string, unknown>
+  api_costs?: {
+    total?: number
+    [key: string]: number | undefined
+  }
   enriched_at: string
   expires_at?: string
 }
@@ -244,7 +290,7 @@ export function PropertyEnrichmentStatus({
                   <MapPin className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Protection Class</p>
                   <p className="text-lg font-semibold">
-                    {(enrichmentData.fire_protection as any)?.protection_class || 'N/A'}/10
+                    {enrichmentData.fire_protection?.protection_class || 'N/A'}/10
                   </p>
                 </div>
               </div>
@@ -337,22 +383,22 @@ export function PropertyEnrichmentStatus({
                   <div>
                     <h4 className="font-medium mb-2">Emergency Services</h4>
                     <div className="space-y-1 text-sm">
-                      {(enrichmentData.fire_protection as any)?.nearest_station && (
+                      {enrichmentData.fire_protection?.nearest_station && (
                         <div>
-                          <span className="text-gray-600">Fire Station:</span> {(enrichmentData.fire_protection as any).nearest_station.name} 
-                          ({((enrichmentData.fire_protection as any).nearest_station.distance_meters / 1000).toFixed(1)} km)
+                          <span className="text-gray-600">Fire Station:</span> {enrichmentData.fire_protection.nearest_station.name} 
+                          ({(enrichmentData.fire_protection.nearest_station.distance_meters / 1000).toFixed(1)} km)
                         </div>
                       )}
-                      {(enrichmentData.medical_services as any)?.nearest_hospital && (
+                      {enrichmentData.medical_services?.nearest_hospital && (
                         <div>
-                          <span className="text-gray-600">Hospital:</span> {(enrichmentData.medical_services as any).nearest_hospital.name}
-                          ({((enrichmentData.medical_services as any).nearest_hospital.distance_meters / 1000).toFixed(1)} km)
+                          <span className="text-gray-600">Hospital:</span> {enrichmentData.medical_services.nearest_hospital.name}
+                          ({(enrichmentData.medical_services.nearest_hospital.distance_meters / 1000).toFixed(1)} km)
                         </div>
                       )}
-                      {(enrichmentData.police_services as any)?.nearest_station && (
+                      {enrichmentData.police_services?.nearest_station && (
                         <div>
-                          <span className="text-gray-600">Police:</span> {(enrichmentData.police_services as any).nearest_station.name}
-                          ({((enrichmentData.police_services as any).nearest_station.distance_meters / 1000).toFixed(1)} km)
+                          <span className="text-gray-600">Police:</span> {enrichmentData.police_services.nearest_station.name}
+                          ({(enrichmentData.police_services.nearest_station.distance_meters / 1000).toFixed(1)} km)
                         </div>
                       )}
                     </div>
@@ -362,16 +408,16 @@ export function PropertyEnrichmentStatus({
                     <h4 className="font-medium mb-2">Insurance Factors</h4>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>
-                        <span className="text-gray-600">Fire Score:</span> {(enrichmentData.insurance_risk_factors as any)?.fire_score}/10
+                        <span className="text-gray-600">Fire Score:</span> {enrichmentData.insurance_risk_factors?.fire_score}/10
                       </div>
                       <div>
-                        <span className="text-gray-600">Flood Score:</span> {(enrichmentData.insurance_risk_factors as any)?.flood_score}/10
+                        <span className="text-gray-600">Flood Score:</span> {enrichmentData.insurance_risk_factors?.flood_score}/10
                       </div>
                       <div>
-                        <span className="text-gray-600">Wind Score:</span> {(enrichmentData.insurance_risk_factors as any)?.wind_score}/10
+                        <span className="text-gray-600">Wind Score:</span> {enrichmentData.insurance_risk_factors?.wind_score}/10
                       </div>
                       <div>
-                        <span className="text-gray-600">Overall Score:</span> {(enrichmentData.insurance_risk_factors as any)?.overall_score}/10
+                        <span className="text-gray-600">Overall Score:</span> {enrichmentData.insurance_risk_factors?.overall_score}/10
                       </div>
                     </div>
                     <div className="mt-2">
@@ -381,7 +427,7 @@ export function PropertyEnrichmentStatus({
 
                   <div className="text-xs text-gray-500">
                     <p>Data enriched on: {new Date(enrichmentData.enriched_at).toLocaleDateString()}</p>
-                    <p>Total API cost: ${(enrichmentData.api_costs as any)?.total || 0}</p>
+                    <p>Total API cost: ${enrichmentData.api_costs?.total || 0}</p>
                   </div>
                 </div>
               )}
@@ -397,7 +443,7 @@ export function PropertyEnrichmentStatus({
                         <div key={direction} className="text-center">
                           <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
                             <Image 
-                              src={(data as any).url} 
+                              src={typeof data === 'string' ? data : ''} 
                               alt={`Street view ${direction}`}
                               fill
                               className="object-cover"
