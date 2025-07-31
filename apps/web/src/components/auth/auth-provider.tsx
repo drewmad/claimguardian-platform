@@ -16,7 +16,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { handleAuthError, validateSession } from '@/lib/supabase/auth-helpers'
 
 import { SessionMonitor } from './session-monitor'
@@ -74,7 +74,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<AuthError | null>(null)
   const [sessionWarning, setSessionWarning] = useState(false)
-  const supabase = createClient()
+  const supabase = createBrowserSupabaseClient()
   
   // Use secure debug logging only in development
   useEffect(() => {
