@@ -14,7 +14,8 @@ import {
   Shield, FileText, DollarSign,
   CheckCircle, TrendingUp, Phone, Download,
   Plus, ChevronRight, Home, Car, Heart, Umbrella,
-  AlertTriangle, Info, Building, Users, FileCheck, Package
+  AlertTriangle, Info, Building, Users, FileCheck, Package,
+  type LucideIcon
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -47,7 +48,7 @@ interface Coverage {
   limit: number
   used: number
   deductible: number
-  icon: React.ComponentType<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  icon: LucideIcon
 }
 
 function InsuranceDashboardContent() {
@@ -108,7 +109,7 @@ function InsuranceDashboardContent() {
       limit: 450000,
       used: 0,
       deductible: 2500,
-      icon: Home as React.ComponentType<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+      icon: Home
     },
     {
       type: 'Personal Property',

@@ -15,7 +15,8 @@ import {
   Wrench, DollarSign, FileText, User, ChevronRight,
   Filter, Download, Bell, BarChart,
   Home, Shield, Edit,
-  Wind, Droplets, Zap, Settings
+  Wind, Droplets, Zap, Settings,
+  type LucideIcon
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -51,7 +52,7 @@ interface MaintenanceTask {
 interface MaintenanceCategory {
   id: string
   name: string
-  icon: React.ComponentType<any> // eslint-disable-line @typescript-eslint/no-explicit-any
+  icon: LucideIcon
   color: string
   taskCount: number
 }
