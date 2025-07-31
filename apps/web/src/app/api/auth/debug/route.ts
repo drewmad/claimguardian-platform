@@ -8,7 +8,7 @@
 import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/client'
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     // Check environment variables (without exposing sensitive data)
     const hasSupabaseUrl = !!process.env.NEXT_PUBLIC_SUPABASE_URL
@@ -41,23 +41,30 @@ export async function GET() {
       console.error('Client creation error:', clientError)
     }
     
+    // Get request info
+    const url = new URL(request.url)
+    const domain = url.hostname
+    
     return NextResponse.json({
       status: 'debug',
       timestamp: new Date().toISOString(),
+      domain,
       environment: {
         nodeEnv: process.env.NODE_ENV,
         hasSupabaseUrl,
         hasSupabaseAnonKey,
         supabaseUrl: supabaseUrl.substring(0, 30) + '...',
-        isProduction: process.env.NODE_ENV === 'production'
+        supabaseHost: supabaseUrl ? new URL(supabaseUrl).hostname : 'NOT_SET',
+        isProduction: process.env.NODE_ENV === 'production',
+        vercelUrl: process.env.VERCEL_URL || 'NOT_SET'
       },
       client: {
         created: clientCreated,
         sessionCheck,
         healthCheck
       },
-      browser: {
-        userAgent: 'Server-side check'
+      cookies: {
+        headers: request.headers.get('cookie') ? 'present' : 'none'
       }
     })
   } catch (error) {
