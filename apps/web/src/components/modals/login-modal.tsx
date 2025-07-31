@@ -201,9 +201,30 @@ export function LoginModal() {
                   </button>
                 </div>
               ) : (
-                <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-red-400 text-sm">{error.message}</p>
+                <div>
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-red-400 text-sm">{error.message}</p>
+                  </div>
+                  {error.message.includes('refresh_token_not_found') || 
+                   error.message.includes('Invalid Refresh Token') ? (
+                    <div className="mt-2">
+                      <p className="text-xs text-red-300 mb-2">
+                        This may be due to expired session cookies. Try clearing your cookies:
+                      </p>
+                      <a 
+                        href="/api/auth/clear-cookies" 
+                        onClick={(e) => {
+                          e.preventDefault()
+                          window.location.href = '/api/auth/clear-cookies'
+                          setTimeout(() => window.location.reload(), 100)
+                        }}
+                        className="text-xs text-blue-400 hover:text-blue-300 underline"
+                      >
+                        Clear authentication cookies
+                      </a>
+                    </div>
+                  ) : null}
                 </div>
               )}
             </div>

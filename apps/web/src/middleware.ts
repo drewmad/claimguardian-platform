@@ -20,12 +20,21 @@ export async function middleware(request: NextRequest) {
     // Clear invalid auth cookies on refresh token errors
     if (error.message.includes('refresh_token_not_found') || 
         error.message.includes('Invalid Refresh Token')) {
-      // Clear the auth cookies to force re-authentication
-      response.cookies.delete('sb-auth-token')
-      response.cookies.delete('sb-refresh-token')
-      response.cookies.delete(`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`)
+      // Clear ALL auth-related cookies to force re-authentication
+      const cookies = request.cookies.getAll()
+      cookies.forEach(cookie => {
+        if (cookie.name.includes('sb-') || cookie.name.includes('auth')) {
+          response.cookies.set(cookie.name, '', {
+            path: '/',
+            expires: new Date(0),
+            maxAge: 0,
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+          })
+        }
+      })
       
-      console.log('[MIDDLEWARE] Cleared invalid auth cookies due to refresh token error')
+      console.log('[MIDDLEWARE] Cleared all auth cookies due to refresh token error')
     }
   }
   
@@ -43,10 +52,20 @@ export async function middleware(request: NextRequest) {
       })
       
       // Clear cookies if user validation fails
-      if (userError?.message?.includes('refresh_token_not_found')) {
-        response.cookies.delete('sb-auth-token')
-        response.cookies.delete('sb-refresh-token')
-        response.cookies.delete(`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`)
+      if (userError?.message?.includes('refresh_token_not_found') || 
+          userError?.message?.includes('Invalid Refresh Token')) {
+        const cookies = request.cookies.getAll()
+        cookies.forEach(cookie => {
+          if (cookie.name.includes('sb-') || cookie.name.includes('auth')) {
+            response.cookies.set(cookie.name, '', {
+              path: '/',
+              expires: new Date(0),
+              maxAge: 0,
+              sameSite: 'lax',
+              secure: process.env.NODE_ENV === 'production'
+            })
+          }
+        })
       }
     }
   }

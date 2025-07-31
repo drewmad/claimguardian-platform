@@ -6,7 +6,7 @@ export async function GET() {
     const supabase = await createClient()
     
     // Test 1: Check if we can connect to Supabase
-    const { data: healthCheck, error: healthError } = await supabase
+    await supabase
       .from('_test_connection')
       .select('*')
       .limit(1)

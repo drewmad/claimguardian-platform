@@ -48,12 +48,7 @@ export function ErrorDashboard() {
   const [filter, setFilter] = useState<'all' | 'unresolved' | 'critical'>('unresolved')
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchErrors()
-    fetchSummary()
-  }, [filter])
-
-  const fetchErrors = async () => {
+  const fetchErrors = useCallback(async () => {
     setLoading(true)
     try {
       let query = supabase
@@ -77,9 +72,9 @@ export function ErrorDashboard() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase, filter])
 
-  const fetchSummary = async () => {
+  const fetchSummary = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('error_summary')
@@ -92,7 +87,12 @@ export function ErrorDashboard() {
     } catch (error) {
       console.error('Failed to fetch error summary:', error)
     }
-  }
+  }, [supabase])
+
+  useEffect(() => {
+    fetchErrors()
+    fetchSummary()
+  }, [filter, fetchErrors, fetchSummary])
 
   const resolveError = async (errorId: string) => {
     try {
