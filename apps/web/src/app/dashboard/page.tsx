@@ -12,6 +12,7 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/lib/supabase/client'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
+import { LearningWidget } from '@/components/learning/learning-widget'
 
 function DashboardContent() {
   const { user } = useAuth()
@@ -243,6 +244,9 @@ function DashboardContent() {
           </div>
         </div>
       </div>
+      
+      {/* Learning Assistant Widget */}
+      <LearningWidget />
     </DashboardLayout>
     
     {/* Onboarding Modal Overlay */}

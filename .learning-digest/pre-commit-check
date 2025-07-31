@@ -1,0 +1,18 @@
+#!/bin/bash
+# Auto-generated pre-commit hook to check for known issues
+
+echo "🔍 Checking for known issues from learnings..."
+
+# Check for common patterns
+PATTERNS=(
+  "export.*from.*['"]\./schema['"]"
+  "SignUpData"
+  "logger\.warn\([^,]+,[^,]+,[^)]+\)"
+)
+
+for pattern in "${PATTERNS[@]}"; do
+  if git diff --cached --name-only | xargs grep -l "$pattern" 2>/dev/null; then
+    echo "⚠️  Warning: Found pattern that previously caused issues: $pattern"
+    echo "   Check .learning-digest/quick-reference.md for solutions"
+  fi
+done
