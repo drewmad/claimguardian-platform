@@ -93,7 +93,7 @@ export class LearningAssistant {
         return []
       }
 
-      return (patterns || []).map(p => ({
+      return (patterns || []).map((p: any) => ({
         patternName: p.pattern_name,
         autoFixAvailable: p.auto_fix_available,
         autoFixScript: p.auto_fix_script,
@@ -240,8 +240,8 @@ export class LearningAssistant {
         problem: result.problem_description,
         solution: result.solution,
         confidence: result.similarity,
-        category: learning?.category?.name || 'general',
-        tags: tags?.map(t => t.tag?.name).filter(Boolean) || []
+        category: (learning?.category as any)?.name || 'general',
+        tags: tags?.map((t: any) => t.tag?.name).filter(Boolean) || []
       }
     }))
 
@@ -263,8 +263,9 @@ export class LearningAssistant {
   private groupBySeverity(data: any[]) {
     const groups = { low: 0, medium: 0, high: 0, critical: 0 }
     data.forEach(item => {
-      if (item.severity && groups[item.severity] !== undefined) {
-        groups[item.severity]++
+      const severity = item.severity as keyof typeof groups
+      if (severity && groups[severity] !== undefined) {
+        groups[severity]++
       }
     })
     return groups

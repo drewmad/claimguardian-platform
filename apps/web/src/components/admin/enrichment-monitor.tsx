@@ -8,7 +8,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card } from '@claimguardian/ui'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { 
@@ -138,7 +139,7 @@ export function EnrichmentMonitor() {
         <h2 className="text-2xl font-bold">Property Enrichment Monitor</h2>
         <div className="flex gap-2">
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleRefresh}
             disabled={refreshing}
@@ -147,7 +148,7 @@ export function EnrichmentMonitor() {
             Refresh
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={exportData}
           >
@@ -279,7 +280,7 @@ export function EnrichmentMonitor() {
                       <Badge 
                         variant={
                           issue.issue === 'missing' ? 'destructive' : 
-                          issue.issue === 'expired' ? 'warning' : 
+                          issue.issue === 'expired' ? 'outline' : 
                           'secondary'
                         }
                       >

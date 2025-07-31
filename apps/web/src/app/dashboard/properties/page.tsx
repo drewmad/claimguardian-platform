@@ -8,7 +8,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card } from '@claimguardian/ui'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
 import { Badge } from '@/components/ui/badge'
 import { 
@@ -216,7 +217,7 @@ export default function PropertiesPage() {
                             </div>
                             <div>
                               <span className="font-medium">Updated:</span> {
-                                new Date(property.enrichment.enriched_at).toLocaleDateString()
+                                property.enrichment.enriched_at ? new Date(property.enrichment.enriched_at).toLocaleDateString() : 'N/A'
                               }
                             </div>
                           </div>
@@ -231,7 +232,7 @@ export default function PropertiesPage() {
                     
                     <div className="flex gap-2 pt-2">
                       <Button
-                        variant="outline"
+                        variant="secondary"
                         size="sm"
                         className="flex-1"
                         onClick={(e) => {
@@ -244,7 +245,7 @@ export default function PropertiesPage() {
                       </Button>
                       <Link href={`/dashboard/claims/new?property=${property.id}`}>
                         <Button
-                          variant="outline"
+                          variant="secondary"
                           size="sm"
                           onClick={(e) => e.stopPropagation()}
                         >

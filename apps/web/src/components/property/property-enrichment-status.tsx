@@ -8,7 +8,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card } from '@claimguardian/ui'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { 
@@ -180,7 +181,7 @@ export function PropertyEnrichmentStatus({
             <div className="flex items-center gap-2">
               {isEnriched ? (
                 <>
-                  <Badge variant={isExpired ? 'warning' : 'success'}>
+                  <Badge variant={isExpired ? 'outline' : 'default'}>
                     {isExpired ? 'Data Expired' : 'Enriched'}
                   </Badge>
                   <Badge variant="outline">v{enrichmentData.version}</Badge>
@@ -252,7 +253,7 @@ export function PropertyEnrichmentStatus({
               {/* Action Buttons */}
               <div className="flex gap-2">
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setShowDetails(!showDetails)}
                 >
@@ -270,7 +271,7 @@ export function PropertyEnrichmentStatus({
                 </Button>
                 
                 <Button
-                  variant="outline"
+                  variant="secondary"
                   size="sm"
                   onClick={() => setShowImages(!showImages)}
                 >
@@ -280,7 +281,7 @@ export function PropertyEnrichmentStatus({
                 
                 {isExpired && (
                   <Button
-                    variant="outline"
+                    variant="secondary"
                     size="sm"
                     onClick={handleEnrich}
                     disabled={enriching}

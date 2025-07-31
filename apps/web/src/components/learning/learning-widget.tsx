@@ -13,6 +13,7 @@ import { learningAssistant } from '@/lib/learning/learning-assistant'
 import { Button } from '@claimguardian/ui'
 
 interface LearningResult {
+  id?: string
   title: string
   problem: string
   solution: string
