@@ -83,6 +83,7 @@ export function useDeviceTracking(): TrackingInfo {
     }
     
     captureDeviceInfo()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   
   const generateDeviceFingerprint = async (): Promise<string> => {

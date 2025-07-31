@@ -100,7 +100,7 @@ export function SessionMonitor({
     window.addEventListener('focus', handleFocus)
 
     // Monitor auth state changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
       if (event === 'SIGNED_OUT') {
         // Clear timers on sign out
         if (timeoutRef.current) clearTimeout(timeoutRef.current)

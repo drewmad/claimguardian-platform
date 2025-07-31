@@ -80,6 +80,7 @@ export function usePolicyData(propertyId?: string): UsePolicyDataReturn {
 
   useEffect(() => {
     fetchPolicies()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user, propertyId])
 
   // Find the active policy (not expired)

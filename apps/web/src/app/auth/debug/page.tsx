@@ -13,8 +13,8 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function AuthDebugPage() {
   const auth = useAuth()
-  const [debugInfo, setDebugInfo] = useState<any>({})
-  const [apiDebug, setApiDebug] = useState<any>(null)
+  const [debugInfo, setDebugInfo] = useState<Record<string, unknown>>({})
+  const [apiDebug, setApiDebug] = useState<Record<string, unknown> | null>(null)
   
   useEffect(() => {
     const checkAuth = async () => {
@@ -64,7 +64,7 @@ export default function AuthDebugPage() {
         const response = await fetch('/api/auth/debug')
         const data = await response.json()
         setApiDebug(data)
-      } catch (error) {
+      } catch {
         setApiDebug({ error: 'Failed to fetch API debug info' })
       }
     }

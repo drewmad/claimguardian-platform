@@ -8,10 +8,11 @@
 import { SupabaseClient } from '@supabase/supabase-js'
 import { authLogger } from '@/lib/logger'
 
-export async function handleAuthError(error: any, supabase: SupabaseClient) {
-  if (error?.message?.includes('refresh_token_not_found') || 
-      error?.message?.includes('Invalid Refresh Token')) {
-    authLogger.warn('Refresh token error detected, signing out user', { error: error.message })
+export async function handleAuthError(error: unknown, supabase: SupabaseClient) {
+  const errorMessage = error instanceof Error ? error.message : String(error)
+  if (errorMessage.includes('refresh_token_not_found') || 
+      errorMessage.includes('Invalid Refresh Token')) {
+    authLogger.warn('Refresh token error detected, signing out user', { error: errorMessage })
     
     try {
       // Sign out to clear invalid session

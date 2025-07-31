@@ -18,7 +18,6 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import type { GooglePlaceResult } from '@/lib/services/types'
 import { useSupabase } from '@/lib/supabase/client'
 
 interface OnboardingStep {
@@ -596,10 +595,10 @@ function UserProfileStep({
             addressVerified: true,
             propertyLatitude: lat,
             propertyLongitude: lng,
-            propertyPlaceId: (place as any).place_id
+            propertyPlaceId: (place as google.maps.places.PlaceResult).place_id
           })
           
-          console.log('Address coordinates:', { lat, lng, placeId: (place as any).place_id })
+          console.log('Address coordinates:', { lat, lng, placeId: (place as google.maps.places.PlaceResult).place_id })
         }
       })
     } catch (error) {

@@ -61,7 +61,7 @@ export default function EvidenceOrganizerPage() {
   const [searchQuery, setSearchQuery] = useState('')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [isUploading, setIsUploading] = useState(false)
+  const [, setIsUploading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [aiEnabled, setAiEnabled] = useState(true)
   const { user } = useAuth()

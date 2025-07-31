@@ -250,8 +250,8 @@ export class LearningAssistant {
         problem: result.problem,
         solution: result.solution,
         confidence: result.similarity || 0,
-        category: (learning?.category as any)?.name || 'general',
-        tags: tags?.map((t: any) => t.tag?.name).filter(Boolean) || []
+        category: (learning?.category as Record<string, unknown>)?.name || 'general',
+        tags: tags?.map((t: { tag?: { name?: string } }) => t.tag?.name).filter(Boolean) || []
       }
     }))
 
