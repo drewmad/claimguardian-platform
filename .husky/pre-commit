@@ -11,8 +11,9 @@ fi
 # 2. Run dependency check
 echo "📦 Validating dependencies..."
 pnpm deps:check || {
-  echo "⚠️  Dependency check failed, attempting fix..."
-  pnpm install --no-frozen-lockfile
+  echo "❌ Dependency check failed. Your pnpm-lock.yaml is out of sync."
+  echo "   Please run 'pnpm install' and then commit your changes."
+  exit 1
 }
 
 # 3. Auto-fix lint issues (but don't block on failures)
