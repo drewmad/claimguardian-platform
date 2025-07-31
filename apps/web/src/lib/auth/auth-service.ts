@@ -90,54 +90,30 @@ class AuthService {
    * Sign up a new user with compliance-grade consent tracking
    */
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
-    let consentToken: string | undefined
-    
     try {
       logger.info('Attempting user signup', { email: data.email })
       
-      // COMPLIANCE REQUIREMENT: Record consent BEFORE creating account
-      console.log('[AUTH DEBUG] Step 1: Recording consent before signup')
+      // SIMPLIFIED FLORIDA COMPLIANCE: Basic validation only
+      console.log('[AUTH DEBUG] Step 1: Validating basic consent requirements')
       
-      const { recordSignupConsent, validateConsent } = await import('@/actions/compliance-consent')
-      
-      // Record consent first
-      const consentResult = await recordSignupConsent({
-        email: data.email,
-        gdprConsent: data.gdprConsent || false,
-        dataProcessingConsent: data.dataProcessingConsent || false,
-        marketingConsent: data.marketingConsent || false,
-        termsAccepted: data.acceptedDocuments?.includes('terms') || false,
-        privacyAccepted: data.acceptedDocuments?.includes('privacy') || false,
-        ageVerified: data.over18 || false,
-        deviceFingerprint: data.deviceFingerprint
-      })
-      
-      if (!consentResult.success || !consentResult.consentToken) {
-        console.error('[AUTH DEBUG] Consent recording failed:', consentResult)
+      // Basic consent validation - just check required agreements
+      if (!data.acceptedDocuments?.includes('terms') || !data.acceptedDocuments?.includes('privacy')) {
+        console.error('[AUTH DEBUG] Missing required document acceptance')
         throw new AuthError(
-          consentResult.errorMessage || 'Consent must be recorded before signup',
+          'You must accept the Terms of Service and Privacy Policy to create an account',
           'AUTH_CONSENT_REQUIRED'
         )
       }
       
-      consentToken = consentResult.consentToken
-      console.log('[AUTH DEBUG] Consent recorded successfully:', {
-        consentToken,
-        timestamp: new Date().toISOString()
-      })
-      
-      // Validate consent before proceeding
-      const validation = await validateConsent(data.email, consentToken)
-      
-      if (!validation.isValid || !validation.hasRequiredConsents) {
-        console.error('[AUTH DEBUG] Consent validation failed:', validation)
+      if (!data.over18) {
+        console.error('[AUTH DEBUG] Age verification failed')
         throw new AuthError(
-          validation.errorMessage || 'Invalid or incomplete consent',
-          'AUTH_CONSENT_INVALID'
+          'You must be 18 or older to create an account',
+          'AUTH_AGE_REQUIRED'
         )
       }
       
-      console.log('[AUTH DEBUG] Step 2: Creating user account with validated consent')
+      console.log('[AUTH DEBUG] Step 2: Creating user account - basic requirements met')
       
       const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
@@ -147,21 +123,12 @@ class AuthService {
             firstName: data.firstName,
             lastName: data.lastName,
             phone: data.phone,
-            // Legal compliance
+            // Simplified compliance - just store what we need
             acceptedDocuments: data.acceptedDocuments,
-            gdprConsent: data.gdprConsent,
-            marketingConsent: data.marketingConsent,
-            dataProcessingConsent: data.dataProcessingConsent,
-            // Tracking data
-            signup_ip_address: data.ipAddress,
-            signup_user_agent: data.userAgent,
-            signup_device_fingerprint: data.deviceFingerprint,
-            signup_geolocation: data.geolocation,
-            signup_referrer: data.referrer,
-            signup_utm_params: data.utmParams,
-            signup_timestamp: new Date().toISOString(),
-            // Link to consent record
-            consent_token: consentToken
+            termsAccepted: true,
+            privacyAccepted: true,
+            ageVerified: data.over18,
+            signup_timestamp: new Date().toISOString()
           },
           emailRedirectTo: getAuthCallbackURL('/auth/verify')
         }
@@ -223,101 +190,21 @@ class AuthService {
 
       logger.info('User signup successful', { userId: authData.user.id })
       
-      // COMPLIANCE: Link consent record to user
-      if (consentToken) {
-        try {
-          const { linkConsentToUser } = await import('@/actions/compliance-consent')
-          const linked = await linkConsentToUser(consentToken, authData.user.id)
-          if (!linked) {
-            logger.error('Failed to link consent to user', { 
-              userId: authData.user.id,
-              consentToken 
-            })
-          } else {
-            logger.info('Consent linked to user successfully', { 
-              userId: authData.user.id,
-              consentToken 
-            })
-          }
-        } catch (linkError) {
-          logger.error('Error linking consent to user', { 
-            userId: authData.user.id 
-          }, linkError as Error)
-        }
-      }
+      // SIMPLIFIED: Basic compliance data is already stored in user metadata
+      logger.info('User created with basic compliance data', { 
+        userId: authData.user.id,
+        termsAccepted: true,
+        privacyAccepted: true,
+        ageVerified: data.over18
+      })
       
-      // Capture comprehensive signup tracking data
-      try {
-        const { trackSignupConsents } = await import('@/actions/track-legal-acceptance')
-        
-        // Track legal consents (non-blocking)
-        try {
-          await trackSignupConsents({
-            userId: authData.user.id,
-            consents: {
-              gdpr: data.gdprConsent || false,
-              dataProcessing: data.dataProcessingConsent || false,
-              marketing: data.marketingConsent || false
-            },
-            metadata: {
-              ipAddress: data.ipAddress,
-              userAgent: data.userAgent,
-              deviceFingerprint: data.deviceFingerprint,
-              sessionId: data.sessionId
-            }
-          })
-        } catch (consentError) {
-          console.warn('[AUTH DEBUG] Consent tracking failed (non-critical):', consentError)
-        }
+      // Simple success logging
+      console.log('[AUTH DEBUG] User signup completed successfully', {
+        userId: authData.user.id,
+        email: authData.user.email,
+        emailConfirmationSent: !authData.user?.email_confirmed_at
+      })
 
-        // Try legacy tracking if available
-        try {
-          const { captureSignupData } = await import('@/actions/user-tracking')
-          await captureSignupData({
-            userId: authData.user.id,
-            eventType: 'signup_completed',
-            preferences: {
-              gdprConsent: data.gdprConsent || false,
-              marketingConsent: data.marketingConsent || false,
-              dataProcessingConsent: data.dataProcessingConsent || false,
-              aiProcessingConsent: data.dataProcessingConsent || false
-            },
-            deviceInfo: {
-              fingerprint: data.deviceFingerprint,
-              type: data.deviceType,
-              screenResolution: data.screenResolution
-            },
-            location: data.geolocation,
-            utm: data.utmParams,
-            referrer: data.referrer,
-            landingPage: data.landingPage
-          })
-        } catch (legacyError) {
-          console.warn('[AUTH DEBUG] Legacy tracking failed (non-critical):', legacyError)
-        }
-
-        // Start async data enrichment (completely non-blocking)
-        try {
-          const { enrichUserData } = await import('@/actions/enrich-user-data')
-          
-          // Fire and forget - don't wait for completion
-          enrichUserData({
-            userId: authData.user.id,
-            sessionId: data.sessionId,
-            userAgent: data.userAgent,
-            ipAddress: data.ipAddress,
-            deviceFingerprint: data.deviceFingerprint,
-            referrer: data.referrer,
-            landingPage: data.landingPage
-          }).catch(enrichError => {
-            console.warn('[AUTH DEBUG] Data enrichment failed (non-critical):', enrichError)
-          })
-        } catch (importError) {
-          console.warn('[AUTH DEBUG] Failed to load enrichment module:', importError)
-        }
-      } catch (trackingError) {
-        console.warn('[AUTH DEBUG] Failed to load tracking modules:', trackingError)
-      }
       
       return { data: authData.user }
     } catch (error) {

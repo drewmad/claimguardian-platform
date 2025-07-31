@@ -20,6 +20,7 @@ export type ErrorCode =
   | 'AUTH_UNKNOWN_ERROR'
   | 'AUTH_CONSENT_REQUIRED'
   | 'AUTH_CONSENT_INVALID'
+  | 'AUTH_AGE_REQUIRED'
   
   // Validation errors
   | 'VALIDATION_ERROR'
