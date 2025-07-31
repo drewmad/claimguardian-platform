@@ -11,7 +11,7 @@
 'use client'
 
 import { Home, Building, Shield, Banknote, CheckSquare, ChevronLeft, ChevronRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
-import React, { useReducer, useEffect } from 'react'
+import React, { useReducer, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { createProperty } from '@/actions/properties'
@@ -358,18 +358,112 @@ interface StepProps {
     onChange: (section: string | null, field: string, value: string) => void;
 }
 
-const Step1: React.FC<StepProps> = ({ state, onChange }) => (
-    <div className="space-y-8">
-        <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>First, where is the property located?</h2>
-        <ButtonGroup
-            options={[{label: 'I Own It', value: 'own'}, {label: 'I Rent It', value: 'rent'}]}
-            selectedValue={state.ownershipStatus}
-            onChange={(value) => onChange(null, 'ownershipStatus', value)}
-        />
-        {state.errors.ownershipStatus && <p className={COLORS.error}>{state.errors.ownershipStatus}</p>}
-        
-        <Input label="Street Address" placeholder="e.g., 123 Main St, Anytown, USA" value={state.selectedProperty} onChange={(e) => onChange(null, 'selectedProperty', e.target.value)} />
-        {state.errors.selectedProperty && <p className={COLORS.error}>{state.errors.selectedProperty}</p>}
+const Step1: React.FC<StepProps> = ({ state, onChange }) => {
+    const addressInputRef = useRef<HTMLInputElement>(null)
+    const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
+    const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+
+    // Load Google Places API
+    useEffect(() => {
+        const loadGooglePlaces = () => {
+            if (window.google?.maps?.places) {
+                setIsGoogleLoaded(true)
+                return
+            }
+
+            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+            if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+                console.warn('Google Maps API key not configured. Address autocomplete will not be available.')
+                return
+            }
+
+            const script = document.createElement('script')
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGooglePlaces`
+            script.async = true
+            script.defer = true
+
+            window.initGooglePlaces = () => {
+                setIsGoogleLoaded(true)
+            }
+
+            document.head.appendChild(script)
+
+            return () => {
+                document.head.removeChild(script)
+                delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
+            }
+        }
+
+        loadGooglePlaces()
+    }, [])
+
+    // Initialize autocomplete when Google is loaded
+    useEffect(() => {
+        if (!isGoogleLoaded || !addressInputRef.current || autocomplete) return
+
+        const autocompleteInstance = new window.google.maps.places.Autocomplete(
+            addressInputRef.current,
+            {
+                types: ['address'],
+                componentRestrictions: { country: 'us' },
+                fields: ['address_components', 'formatted_address', 'geometry']
+            }
+        )
+
+        autocompleteInstance.addListener('place_changed', () => {
+            const place = autocompleteInstance.getPlace()
+            
+            if (place.formatted_address) {
+                onChange(null, 'selectedProperty', place.formatted_address)
+            }
+        })
+
+        setAutocomplete(autocompleteInstance)
+
+        return () => {
+            if (autocompleteInstance) {
+                window.google.maps.event.clearInstanceListeners(autocompleteInstance)
+            }
+        }
+    }, [isGoogleLoaded, onChange, autocomplete])
+
+    return (
+        <div className="space-y-8">
+            <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>First, where is the property located?</h2>
+            <ButtonGroup
+                options={[{label: 'I Own It', value: 'own'}, {label: 'I Rent It', value: 'rent'}]}
+                selectedValue={state.ownershipStatus}
+                onChange={(value) => onChange(null, 'ownershipStatus', value)}
+            />
+            {state.errors.ownershipStatus && <p className={COLORS.error}>{state.errors.ownershipStatus}</p>}
+            
+            <div>
+                <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Street Address</label>
+                <input
+                    ref={addressInputRef}
+                    type="text"
+                    value={state.selectedProperty}
+                    onChange={(e) => onChange(null, 'selectedProperty', e.target.value)}
+                    placeholder="Start typing your address..."
+                    className={`w-full p-3 ${COLORS.panel} border ${COLORS.border} rounded-lg focus:ring-2 focus:ring-indigo-400 ${COLORS.textPrimary} placeholder-slate-500`}
+                />
+                {isGoogleLoaded && (
+                    <p className="text-xs text-green-400 mt-1">
+                        ✓ Address autocomplete enabled
+                    </p>
+                )}
+                {!isGoogleLoaded && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY_HERE' && (
+                    <p className="text-xs text-yellow-400 mt-1">
+                        Loading address autocomplete...
+                    </p>
+                )}
+                {(!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') && (
+                    <p className="text-xs text-gray-400 mt-1">
+                        ℹ️ Address autocomplete not available (API key not configured)
+                    </p>
+                )}
+            </div>
+            {state.errors.selectedProperty && <p className={COLORS.error}>{state.errors.selectedProperty}</p>}
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <Input label="Property Nickname" placeholder="e.g., Beach House, Downtown Condo" value={state.basicInfo.propertyName} onChange={(e) => onChange('basicInfo', 'propertyName', e.target.value)} />
@@ -382,9 +476,10 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => (
                 <option value="multi-family">Multi-Family</option>
             </Select>
         </div>
-        {state.errors.propertyType && <p className={COLORS.error}>{state.errors.propertyType}</p>}
-    </div>
-);
+            {state.errors.propertyType && <p className={COLORS.error}>{state.errors.propertyType}</p>}
+        </div>
+    )
+}
 
 const Step2: React.FC<StepProps> = ({ state, onChange }) => (
     <div className="space-y-8">
