@@ -1,7 +1,7 @@
 import pRetry from 'p-retry'
 
 import { GeminiProvider } from './providers/gemini.provider'
-import { OpenAIProvider } from './providers/openai.provider'
+import { OpenAIProvider } from './providers/openai'
 import type { ClaimAssistantContext, AIResponse } from './types'
 import { BaseAIProvider } from './providers/base.provider'
 
@@ -75,9 +75,8 @@ export class ClaimAssistant {
           const guidance = this.parseGuidanceResponse(response.text)
           
           return {
-            success: true,
-            data: JSON.stringify(guidance),
-            provider: response.provider
+            ...response,
+            text: JSON.stringify(guidance)
           }
         },
         {
@@ -174,7 +173,7 @@ Format your response as a structured guide that's easy to follow.`
     const prompt = this.buildDocumentPrompt(templateType, context)
 
     try {
-      const response = await pRetry(
+      return await pRetry(
         async () => provider.generateText({ 
           prompt, 
           userId: context.userId as string, 
@@ -182,12 +181,6 @@ Format your response as a structured guide that's easy to follow.`
         }),
         { retries: 2 }
       )
-      
-      return {
-        success: true,
-        data: response.text,
-        provider: response.provider
-      }
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Failed to generate document')
     }
