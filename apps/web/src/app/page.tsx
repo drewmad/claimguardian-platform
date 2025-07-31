@@ -48,7 +48,7 @@ export default function HomePage() {
 
       <Footer />
 
-      {/* Modals */}
+      {/* Application Modals - Enhanced for better user experience */}
       <LoginModal />
       <SignupModal />
       <ForgotPasswordModal />
