@@ -40,6 +40,7 @@ export function SignupModal() {
     confirmPassword: '',
     phone: '',
     agree: false,
+    over18: false,
     // Track which documents are accepted
     acceptedDocuments: [] as string[]
   })
@@ -80,6 +81,10 @@ export function SignupModal() {
     }
     if (!formData.agree) {
       setValidationError('You must agree to the terms')
+      return false
+    }
+    if (!formData.over18) {
+      setValidationError('You must be 18 or older to create an account')
       return false
     }
     return true
@@ -137,6 +142,7 @@ export function SignupModal() {
           confirmPassword: '',
           phone: '',
           agree: false,
+          over18: false,
           acceptedDocuments: []
         })
       }
@@ -482,6 +488,28 @@ export function SignupModal() {
             showSubmitButton={false}
             mode="signup"
           />
+
+          {/* Age Verification */}
+          <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input
+                type="checkbox"
+                name="over18"
+                checked={formData.over18}
+                onChange={handleChange}
+                className="mt-1 w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
+                required
+              />
+              <div className="flex-1">
+                <span className="text-sm text-slate-300 font-medium">
+                  I confirm that I am 18 years of age or older
+                </span>
+                <p className="text-xs text-slate-400 mt-1">
+                  You must be at least 18 years old to use ClaimGuardian services
+                </p>
+              </div>
+            </label>
+          </div>
 
           {(error || validationError) && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">

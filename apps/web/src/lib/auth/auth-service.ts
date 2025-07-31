@@ -41,6 +41,7 @@ interface SignUpData {
   marketingConsent?: boolean
   dataProcessingConsent?: boolean
   aiProcessingConsent?: boolean
+  over18?: boolean
   // Tracking data
   sessionId?: string
   ipAddress?: string
@@ -107,6 +108,7 @@ class AuthService {
         marketingConsent: data.marketingConsent || false,
         termsAccepted: data.acceptedDocuments?.includes('terms') || false,
         privacyAccepted: data.acceptedDocuments?.includes('privacy') || false,
+        ageVerified: data.over18 || false,
         deviceFingerprint: data.deviceFingerprint
       })
       

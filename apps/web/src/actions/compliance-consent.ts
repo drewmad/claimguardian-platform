@@ -23,6 +23,7 @@ interface ConsentData {
   marketingConsent: boolean
   termsAccepted: boolean
   privacyAccepted: boolean
+  ageVerified: boolean
   deviceFingerprint?: string
 }
 
@@ -55,13 +56,14 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
     const userAgent = headersList.get('user-agent') || 'unknown'
     
     // Validate all required consents
-    if (!data.gdprConsent || !data.dataProcessingConsent || !data.termsAccepted || !data.privacyAccepted) {
+    if (!data.gdprConsent || !data.dataProcessingConsent || !data.termsAccepted || !data.privacyAccepted || !data.ageVerified) {
       logger.warn('Signup attempted without required consents', { 
         email: data.email,
         gdprConsent: data.gdprConsent,
         dataProcessingConsent: data.dataProcessingConsent,
         termsAccepted: data.termsAccepted,
-        privacyAccepted: data.privacyAccepted
+        privacyAccepted: data.privacyAccepted,
+        ageVerified: data.ageVerified
       })
       
       return {
@@ -78,6 +80,7 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       p_marketing_consent: data.marketingConsent,
       p_terms_accepted: data.termsAccepted,
       p_privacy_accepted: data.privacyAccepted,
+      p_age_verified: data.ageVerified,
       p_ip_address: ipAddress,
       p_user_agent: userAgent,
       p_device_fingerprint: data.deviceFingerprint
@@ -109,7 +112,8 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       dataProcessingConsent: data.dataProcessingConsent,
       marketingConsent: data.marketingConsent,
       termsAccepted: data.termsAccepted,
-      privacyAccepted: data.privacyAccepted
+      privacyAccepted: data.privacyAccepted,
+      ageVerified: data.ageVerified
     })
     
     return {
