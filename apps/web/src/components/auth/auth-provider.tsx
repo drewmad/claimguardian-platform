@@ -96,12 +96,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.info('Initializing authentication')
         logger.info('Authentication provider initializing')
         
-        // Get initial session
+        // Get initial session and validate with server
         const { data: { session }, error: sessionError } = await supabase.auth.getSession()
         
         if (sessionError) {
           logger.error('Failed to get initial session', {}, sessionError)
           throw sessionError
+        }
+        
+        // Validate session with getUser() for security
+        if (session) {
+          const { data: { user }, error: userError } = await supabase.auth.getUser()
+          if (userError || !user) {
+            logger.warn('Session validation failed', { error: userError })
+            // Clear invalid session
+            await supabase.auth.signOut()
+            if (mounted) {
+              setUser(null)
+              setLoading(false)
+              setError(null)
+            }
+            return
+          }
         }
 
         if (mounted) {

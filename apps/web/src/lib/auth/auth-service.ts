@@ -287,9 +287,29 @@ class AuthService {
     try {
       logger.info('Attempting user signin', { email: data.email })
       
+      // Enhanced debugging
+      console.log('[AUTH DEBUG] SignIn attempt:', {
+        email: data.email,
+        hasPassword: !!data.password,
+        passwordLength: data.password?.length,
+        timestamp: new Date().toISOString(),
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
+      })
+      
       const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password
+      })
+      
+      console.log('[AUTH DEBUG] SignIn response:', {
+        hasUser: !!authData?.user,
+        hasSession: !!authData?.session,
+        error: error ? {
+          message: error.message,
+          status: error.status,
+          code: error.code
+        } : null,
+        timestamp: new Date().toISOString()
       })
 
       if (error) {

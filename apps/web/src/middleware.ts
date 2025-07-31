@@ -18,6 +18,21 @@ export async function middleware(request: NextRequest) {
     })
   }
   
+  // Validate session with getUser() for protected routes
+  let validatedUser = null
+  if (session) {
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (!userError && user) {
+      validatedUser = user
+    } else {
+      console.warn('[MIDDLEWARE] Session validation failed:', {
+        error: userError?.message,
+        path: request.nextUrl.pathname,
+        timestamp: new Date().toISOString()
+      })
+    }
+  }
+  
   // Get client IP
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
     request.headers.get('x-real-ip') ||
@@ -71,7 +86,7 @@ export async function middleware(request: NextRequest) {
                           request.nextUrl.pathname.startsWith('/dashboard') ||
                           request.nextUrl.pathname.startsWith('/account')
   
-  if (isProtectedRoute && !session) {
+  if (isProtectedRoute && !validatedUser) {
     // Only log security events in production, avoid exposing internal paths
     if (process.env.NODE_ENV === 'production') {
       // Use structured logging for security monitoring
