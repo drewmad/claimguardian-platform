@@ -25,6 +25,7 @@ interface ConsentData {
   termsAccepted: boolean
   privacyAccepted: boolean
   ageVerified: boolean
+  aiProcessingConsent?: boolean
   deviceFingerprint?: string
 }
 
