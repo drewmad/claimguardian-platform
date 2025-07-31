@@ -17,7 +17,7 @@ import { toast } from 'sonner'
 
 import { COLORS } from '@/lib/constants'
 import { useModalStore } from '@/stores/modal-store'
-import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client'
+// import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 // Animation hook reused
@@ -187,18 +187,8 @@ export function Pricing() {
           ? plans.essential.priceIds.annual 
           : plans.essential.priceIds.monthly
 
-        const { sessionId, error } = await createCheckoutSession(priceId, 'Guardian Essential')
-        
-        if (error) {
-          throw new Error(error)
-        }
-
-        if (sessionId) {
-          const { error: redirectError } = await redirectToCheckout(sessionId)
-          if (redirectError) {
-            throw new Error(redirectError)
-          }
-        }
+        // Stripe checkout temporarily disabled
+        toast.error('Payment processing is currently being updated. Please try again later.')
       } catch (error) {
         console.error('Error starting checkout:', error)
         toast.error('Failed to start checkout process')

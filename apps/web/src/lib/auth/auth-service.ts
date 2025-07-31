@@ -87,50 +87,21 @@ class AuthService {
   }
 
   /**
-   * Sign up a new user with compliance-grade consent tracking
+   * Sign up a new user - BASIC AUTH ONLY
    */
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
     try {
-      logger.info('Attempting user signup', { email: data.email })
+      console.log('[AUTH DEBUG] Basic signup - no validation')
       
-      // SIMPLIFIED FLORIDA COMPLIANCE: Basic validation only
-      console.log('[AUTH DEBUG] Step 1: Validating basic consent requirements')
-      
-      // Basic consent validation - just check required agreements
-      if (!data.acceptedDocuments?.includes('terms') || !data.acceptedDocuments?.includes('privacy')) {
-        console.error('[AUTH DEBUG] Missing required document acceptance')
-        throw new AuthError(
-          'You must accept the Terms of Service and Privacy Policy to create an account',
-          'AUTH_CONSENT_REQUIRED'
-        )
-      }
-      
-      if (!data.over18) {
-        console.error('[AUTH DEBUG] Age verification failed')
-        throw new AuthError(
-          'You must be 18 or older to create an account',
-          'AUTH_AGE_REQUIRED'
-        )
-      }
-      
-      console.log('[AUTH DEBUG] Step 2: Creating user account - basic requirements met')
-      
+      // ULTRA SIMPLE: Just create the user account with minimal data
       const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
         password: data.password,
         options: {
           data: {
-            firstName: data.firstName,
-            lastName: data.lastName,
-            phone: data.phone,
-            // Simplified compliance - just store what we need
-            acceptedDocuments: data.acceptedDocuments,
-            termsAccepted: true,
-            privacyAccepted: true,
-            ageVerified: data.over18,
-            signup_timestamp: new Date().toISOString()
-          },
-          emailRedirectTo: getAuthCallbackURL('/auth/verify')
+            firstName: data.firstName || '',
+            lastName: data.lastName || ''
+          }
         }
       })
 

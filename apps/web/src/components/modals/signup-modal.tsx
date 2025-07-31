@@ -61,29 +61,12 @@ export function SignupModal() {
   if (activeModal !== 'signup') return null
 
   const validateForm = () => {
-    if (!formData.firstName || !formData.lastName) {
-      setValidationError('Please enter your full name')
-      return false
-    }
     if (!formData.email || !formData.email.includes('@')) {
       setValidationError('Please enter a valid email address')
       return false
     }
-    if (!formData.password || formData.password.length < 8) {
-      setValidationError('Password must be at least 8 characters')
-      return false
-    }
-    // Note: Password mismatch validation removed as requested - let server handle it
-    if (!formData.phone || formData.phone.replace(/\D/g, '').length < 10) {
-      setValidationError('Please enter a valid phone number')
-      return false
-    }
-    if (!formData.agree) {
-      setValidationError('You must agree to the terms')
-      return false
-    }
-    if (!formData.over18) {
-      setValidationError('You must be 18 or older to create an account')
+    if (!formData.password || formData.password.length < 6) {
+      setValidationError('Password must be at least 6 characters')
       return false
     }
     return true
@@ -97,35 +80,12 @@ export function SignupModal() {
     
     setLoading(true)
     try {
-      // Collect client-side tracking data safely (IP will be detected server-side)
-      let trackingData = {}
-      try {
-        trackingData = await collectSignupTrackingData()
-      } catch (error) {
-        console.warn('Tracking data collection failed, using safe defaults:', error)
-        // Resilient fallback - no external API calls
-        trackingData = {
-          userAgent: navigator?.userAgent || 'unknown',
-          deviceType: 'unknown',
-          screenResolution: screen ? `${screen.width}x${screen.height}` : 'unknown'
-        }
-      }
-      
+      // ULTRA SIMPLE: Just the basic data needed
       const signupData = {
-        ...formData,
-        // Safely merge tracking data
-        ...trackingData,
-        // Generate session ID for tracking
-        sessionId: `signup-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        // Legal compliance - map single checkbox to all required consents
-        gdprConsent: formData.agree,
-        dataProcessingConsent: formData.agree,
-        marketingConsent: false, // User can opt-in later
-        // CRITICAL: Always include acceptedDocuments when agree is true
-        acceptedDocuments: formData.agree ? ['terms', 'privacy'] : [],
-        // Also set the individual flags for the new consent system
-        termsAccepted: formData.agree,
-        privacyAccepted: formData.agree
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName
       }
       
       const success = await signUp(signupData)
@@ -351,7 +311,6 @@ export function SignupModal() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
                 placeholder="John"
-                required
               />
             </div>
             <div className="group">
@@ -363,7 +322,6 @@ export function SignupModal() {
                 onChange={handleChange}
                 className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
                 placeholder="Doe"
-                required
               />
             </div>
           </div>
@@ -401,118 +359,6 @@ export function SignupModal() {
                 {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </button>
             </div>
-            {formData.password && (
-              <div className="mt-3 space-y-2">
-                <div className="h-1.5 bg-slate-700 rounded-full overflow-hidden">
-                  <div 
-                    className={`h-full transition-all duration-500 rounded-full ${
-                      passwordStrength >= 4 ? 'bg-gradient-to-r from-green-500 to-emerald-500' : 
-                      passwordStrength >= 2 ? 'bg-gradient-to-r from-yellow-500 to-amber-500' : 
-                      'bg-gradient-to-r from-red-500 to-pink-500'
-                    }`}
-                    style={{ width: `${(passwordStrength / 5) * 100}%` }}
-                  />
-                </div>
-                <div className="flex items-center justify-between">
-                  <p className="text-xs text-slate-400">
-                    Strength: <span className={`font-medium ${
-                      passwordStrength >= 4 ? 'text-green-400' : 
-                      passwordStrength >= 2 ? 'text-yellow-400' : 'text-red-400'
-                    }`}>{passwordStrength >= 4 ? 'Strong' : passwordStrength >= 2 ? 'Medium' : 'Weak'}</span>
-                  </p>
-                  <div className="flex gap-1">
-                    {[...Array(5)].map((_, i) => (
-                      <Check 
-                        key={i} 
-                        className={`w-3 h-3 transition-colors ${
-                          i < passwordStrength ? 'text-blue-400' : 'text-slate-600'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className="group">
-            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors">Confirm Password</label>
-            <div className="relative">
-              <input
-                type={showConfirmPassword ? 'text' : 'password'}
-                name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent pr-10 transition-all duration-200 hover:bg-slate-700/70"
-                placeholder="••••••••"
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-white transition-colors"
-              >
-                {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-              </button>
-            </div>
-          </div>
-
-          <div className="group">
-            <label className="block text-sm font-medium mb-2 text-gray-300 group-focus-within:text-blue-400 transition-colors">Phone Number</label>
-            <input
-              type="tel"
-              name="phone"
-              value={formatPhoneNumber(formData.phone)}
-              onChange={(e) => {
-                const digits = e.target.value.replace(/\D/g, '')
-                handleChange({ ...e, target: { ...e.target, name: 'phone', value: digits } })
-              }}
-              className="w-full px-4 py-3 bg-slate-700/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 hover:bg-slate-700/70"
-              placeholder="(555) 123-4567"
-              required
-            />
-          </div>
-
-          {/* Consolidated Legal Agreement */}
-          <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
-            <label className="flex items-start gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                name="agree"
-                checked={formData.agree}
-                onChange={(e) => {
-                  const checked = e.target.checked
-                  setFormData(prev => ({ 
-                    ...prev, 
-                    agree: checked,
-                    over18: checked, // Auto-check age when agreeing
-                    acceptedDocuments: checked ? ['terms', 'privacy'] : []
-                  }))
-                }}
-                className="mt-1 w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
-                required
-              />
-              <div className="flex-1">
-                <span className="text-sm text-slate-300 font-medium">
-                  By checking this box, I confirm that:
-                </span>
-                <ul className="text-xs text-slate-400 mt-2 space-y-1 list-disc list-inside">
-                  <li>I am 18 years of age or older</li>
-                  <li>I have read and agree to the{' '}
-                    <a href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300 underline">
-                      Terms of Service
-                    </a>
-                  </li>
-                  <li>I have read and agree to the{' '}
-                    <a href="/legal/privacy-policy" target="_blank" className="text-blue-400 hover:text-blue-300 underline">
-                      Privacy Policy
-                    </a>
-                  </li>
-                  <li>I consent to data processing as described in our privacy policy</li>
-                  <li>I understand cookies are used as described in our privacy policy</li>
-                </ul>
-              </div>
-            </label>
           </div>
 
           {(error || validationError) && (
