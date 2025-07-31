@@ -35,30 +35,72 @@ function VerifyEmailContent() {
       try {
         // Check for error parameter first
         const error = searchParams.get('error')
-        if (error === 'invalid_link') {
-          setStatus('invalid')
-          setErrorMessage('Invalid verification link')
-          return
-        }
-
-        // Get the token from URL
-        const token = searchParams.get('token')
-        const type = searchParams.get('type')
+        const errorDescription = searchParams.get('error_description')
+        const errorCode = searchParams.get('error_code')
         
-        if (!token || !type) {
-          setStatus('invalid')
-          setErrorMessage('Invalid verification link')
-          logger.error('Invalid verification link', { token: !!token, type })
+        if (error) {
+          setStatus('error')
+          if (error === 'invalid_request' && errorCode === '403') {
+            setErrorMessage('Email link has expired or is invalid. Please request a new one.')
+          } else if (error === 'access_denied') {
+            setErrorMessage('Email confirmation was cancelled or denied.')
+          } else {
+            setErrorMessage(errorDescription || 'Invalid verification link')
+          }
+          logger.error('Email verification error from Supabase', { error, errorDescription, errorCode })
           return
         }
 
-        logger.info('Attempting email verification', { type })
-
-        // Exchange the token for a session
+        // Handle different Supabase URL formats
+        // Format 1: Direct token parameters (older format)
+        const token = searchParams.get('token')
+        const type = searchParams.get('type') || 'signup'
+        
+        // Format 2: Hash fragment parameters (newer format)
+        const hash = window.location.hash
+        let tokenHash = token
+        let verificationType = type
+        
+        if (hash) {
+          const hashParams = new URLSearchParams(hash.substring(1))
+          tokenHash = hashParams.get('token') || token
+          verificationType = hashParams.get('type') || type
+        }
+        
+        // Create Supabase client
         const supabase = createClient()
+        
+        if (!tokenHash) {
+          // If no token found, this might be a successful redirect after verification
+          // Check if user is already authenticated
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user && user.email_confirmed_at) {
+            setStatus('success')
+            logger.track('email_already_verified', { userId: user.id })
+            
+            // Start countdown for auto-redirect
+            timer = setInterval(() => {
+              setCountdown(prev => {
+                if (prev <= 1) {
+                  clearInterval(timer!)
+                  router.push('/dashboard')
+                }
+                return prev - 1
+              })
+            }, 1000)
+            return
+          }
+          
+          setStatus('invalid')
+          setErrorMessage('No verification token found')
+          logger.error('No verification token in URL')
+          return
+        }
+
+        logger.info('Attempting email verification', { type: verificationType, hasToken: !!tokenHash })
         const { data, error: verifyError } = await supabase.auth.verifyOtp({
-          token_hash: token,
-          type: type as 'signup' | 'recovery' | 'invite'
+          token_hash: tokenHash,
+          type: verificationType as 'signup' | 'recovery' | 'invite'
         })
 
         if (verifyError) {
