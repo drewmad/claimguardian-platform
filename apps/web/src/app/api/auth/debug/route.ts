@@ -6,7 +6,21 @@
  */
 
 import { NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/client'
+import { createClient } from '@/lib/supabase/server'
+import { cookies } from 'next/headers'
+
+async function getAuthCookies() {
+  const cookieStore = await cookies()
+  const allCookies = cookieStore.getAll()
+  
+  return allCookies
+    .filter(cookie => cookie.name.includes('sb-') || cookie.name.includes('auth'))
+    .map(cookie => ({
+      name: cookie.name,
+      hasValue: !!cookie.value,
+      length: cookie.value?.length || 0
+    }))
+}
 
 export async function GET(request: Request) {
   try {
@@ -21,7 +35,7 @@ export async function GET(request: Request) {
     let healthCheck = null
     
     try {
-      const supabase = createClient()
+      const supabase = await createClient()
       clientCreated = true
       
       // Try to get session
@@ -68,7 +82,8 @@ export async function GET(request: Request) {
         healthCheck
       },
       cookies: {
-        headers: request.headers.get('cookie') ? 'present' : 'none'
+        headers: request.headers.get('cookie') ? 'present' : 'none',
+        authCookies: await getAuthCookies()
       }
     })
   } catch (error) {
