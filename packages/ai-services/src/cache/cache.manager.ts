@@ -163,7 +163,7 @@ export class CacheManager {
   
   protected generateCacheKey(request: AIRequest | ChatRequest): string {
     // Normalize request for consistent cache keys
-    const normalized: any = {
+    const normalized: Record<string, unknown> = {
       feature: request.feature,
       temperature: Math.round((request.temperature || 0.7) * 10) / 10,
       maxTokens: request.maxTokens || 2048
@@ -212,7 +212,7 @@ export class CacheManager {
     
     try {
       await this.redis.hincrby('cache:stats', stat, 1);
-    } catch (error) {
+    } catch (_error) {
       // Ignore stat tracking errors
     }
   }

@@ -3,6 +3,7 @@ import pRetry from 'p-retry'
 import { GeminiProvider } from './providers/gemini'
 import { OpenAIProvider } from './providers/openai'
 import type { ClaimAssistantContext, AIResponse } from './types'
+import { BaseProvider } from './providers/base.provider'
 
 interface ClaimStep {
   id: string
@@ -22,7 +23,7 @@ interface ClaimGuidance {
 }
 
 export class ClaimAssistant {
-  private providers: Map<string, any> = new Map()
+  private providers: Map<string, BaseProvider> = new Map()
 
   constructor() {
     // Initialize providers
@@ -37,7 +38,7 @@ export class ClaimAssistant {
     }
   }
 
-  private selectProvider(): any {
+  private selectProvider(): BaseProvider | undefined {
     // Prefer Gemini for cost efficiency, fallback to OpenAI
     return this.providers.get('gemini') || this.providers.get('openai')
   }
@@ -164,7 +165,7 @@ Format your response as a structured guide that's easy to follow.`
 
   async generateDocument(
     templateType: 'demand-letter' | 'appeal' | 'complaint',
-    context: Record<string, any>
+    context: Record<string, unknown>
   ): Promise<AIResponse<string>> {
     const provider = this.selectProvider()
     if (!provider) {
@@ -191,15 +192,15 @@ Format your response as a structured guide that's easy to follow.`
 
   private buildDocumentPrompt(
     templateType: string,
-    context: Record<string, any>
+    context: Record<string, unknown>
   ): string {
-    const templates = {
+    const templates: Record<string, string> = {
       'demand-letter': `Generate a professional demand letter for an insurance claim with the following details:
 - Claim number: ${context.claimNumber}
 - Policy number: ${context.policyNumber}
 - Date of loss: ${context.dateOfLoss}
 - Description of damage: ${context.damageDescription}
-- Amount claimed: $${context.amountClaimed}
+- Amount claimed: ${context.amountClaimed}
 
 Include all necessary legal language and formatting for Florida insurance claims.`,
       
@@ -218,7 +219,7 @@ Make it professional and compelling, citing relevant Florida insurance statutes.
 Follow the official complaint format required by Florida regulators.`
     }
 
-    return (templates as any)[templateType] || 'Generate a professional insurance document.'
+    return (templates as Record<string, string>)[templateType] || 'Generate a professional insurance document.'
   }
 
   getAvailableProviders(): string[] {

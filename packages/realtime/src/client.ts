@@ -1,4 +1,4 @@
-import { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js'
+import { SupabaseClient, RealtimeChannel, REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js'
 import { EventEmitter } from 'eventemitter3'
 
 import type { 
@@ -6,7 +6,8 @@ import type {
   ChannelConfig, 
   RealtimeSubscription,
   PresenceState,
-  BroadcastMessage 
+  BroadcastMessage,
+  ChangeType
 } from './types'
 
 export class RealtimeClient extends EventEmitter {
@@ -28,7 +29,7 @@ export class RealtimeClient extends EventEmitter {
   /**
    * Subscribe to database changes
    */
-  subscribeToTable<T = any>(
+  subscribeToTable<T = unknown>(
     table: string,
     config?: Partial<ChannelConfig>
   ): RealtimeSubscription {
@@ -47,7 +48,7 @@ export class RealtimeClient extends EventEmitter {
         { event: '*', schema: 'public', table },
         (payload) => {
           const event: RealtimeEvent<T> = {
-            type: payload.eventType as any,
+            type: payload.eventType as ChangeType,
             table: payload.table,
             schema: payload.schema,
             old: payload.old as T,
@@ -105,7 +106,7 @@ export class RealtimeClient extends EventEmitter {
   /**
    * Subscribe to specific record changes
    */
-  subscribeToRecord<T = any>(
+  subscribeToRecord<T = unknown>(
     table: string,
     id: string,
     config?: Partial<ChannelConfig>
@@ -121,14 +122,14 @@ export class RealtimeClient extends EventEmitter {
       .on(
         'postgres_changes',
         { 
-          event: '*', 
+          event: '*' as REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL, 
           schema: 'public', 
           table,
           filter: `id=eq.${id}`
         },
         (payload) => {
           const event: RealtimeEvent<T> = {
-            type: payload.eventType as any,
+            type: payload.eventType as ChangeType,
             table: payload.table,
             schema: payload.schema,
             old: payload.old as T,
@@ -167,7 +168,7 @@ export class RealtimeClient extends EventEmitter {
    */
   createPresenceChannel(
     name: string,
-    initialState?: any
+    initialState?: Record<string, unknown>
   ): RealtimeChannel {
     const channel = this.supabase.channel(name, {
       config: {
@@ -226,7 +227,7 @@ export class RealtimeClient extends EventEmitter {
   async broadcast(
     channelName: string,
     event: string,
-    payload: any
+    payload: unknown
   ): Promise<void> {
     const channel = this.channels.get(`broadcast:${channelName}`)
     
@@ -246,7 +247,7 @@ export class RealtimeClient extends EventEmitter {
    */
   async updatePresence(
     channelName: string,
-    state: any
+    state: Record<string, unknown>
   ): Promise<void> {
     const channel = this.channels.get(`presence:${channelName}`)
     

@@ -2,6 +2,7 @@
   "name": "@claimguardian/monitoring",
   "version": "1.0.0",
   "description": "Performance monitoring and analytics for ClaimGuardian",
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {

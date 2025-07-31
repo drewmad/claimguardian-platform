@@ -2,6 +2,7 @@
   "name": "@claimguardian/realtime",
   "version": "1.0.0",
   "description": "Real-time features and subscriptions for ClaimGuardian",
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {

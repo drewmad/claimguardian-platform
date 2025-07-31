@@ -20,7 +20,7 @@ interface CategorizedDocument {
   fileSize: number;
   category: DocumentCategory;
   confidence: number;
-  extractedData?: Record<string, any>;
+  extractedData?: Record<string, unknown>;
   suggestedName?: string;
   tags: string[];
   uploadedAt: Date;
@@ -31,7 +31,7 @@ interface CategoryAnalysis {
   category: DocumentCategory;
   confidence: number;
   reasoning: string;
-  extractedInfo: Record<string, any>;
+  extractedInfo: Record<string, unknown>;
 }
 
 export class DocumentCategorizerService {
@@ -139,8 +139,6 @@ export class DocumentCategorizerService {
     },
     userId: string
   ): Promise<CategorizedDocument> {
-    const startTime = Date.now();
-    
     // 1. Analyze document content
     const analysis = await this.analyzeDocument(file, userId);
     
@@ -216,7 +214,7 @@ export class DocumentCategorizerService {
   
   async getMissingRequiredDocuments(
     claimId: string,
-    userId: string
+    _userId: string
   ): Promise<DocumentCategory[]> {
     // Get all documents for this claim
     const { data: existingDocs } = await this.supabase
@@ -311,7 +309,7 @@ export class DocumentCategorizerService {
         reasoning: `Detected as ${parsed.documentType} based on content analysis`,
         extractedInfo: parsed.keyInfo || {}
       };
-    } catch (error) {
+    } catch (_error) {
       // Fallback analysis based on filename
       return this.analyzeByFilename(fileName);
     }
@@ -331,7 +329,7 @@ export class DocumentCategorizerService {
         reasoning: parsed.reasoning || 'Based on document analysis',
         extractedInfo: parsed.keyInfo || {}
       };
-    } catch (error) {
+    } catch (_error) {
       return {
         category: this.DOCUMENT_CATEGORIES.find(c => c.id === 'other')!,
         confidence: 0.3,
@@ -389,11 +387,11 @@ export class DocumentCategorizerService {
   }
   
   private async extractDocumentData(
-    file: any,
+    file: { url: string },
     category: DocumentCategory,
     analysis: CategoryAnalysis,
     userId: string
-  ): Promise<Record<string, any>> {
+  ): Promise<Record<string, unknown>> {
     // For certain categories, extract specific information
     if (category.id === 'policy') {
       return await this.extractPolicyData(file, analysis, userId);
@@ -407,10 +405,10 @@ export class DocumentCategorizerService {
   }
   
   private async extractPolicyData(
-    file: any,
+    _file: { url: string },
     analysis: CategoryAnalysis,
     userId: string
-  ): Promise<Record<string, any>> {
+  ): Promise<Record<string, unknown>> {
     const request: AIRequest = {
       prompt: `Extract key information from this insurance policy document:
         ${JSON.stringify(analysis.extractedInfo)}
@@ -439,10 +437,10 @@ export class DocumentCategorizerService {
   }
   
   private async extractEstimateData(
-    file: any,
+    _file: { url: string },
     analysis: CategoryAnalysis,
-    userId: string
-  ): Promise<Record<string, any>> {
+    _userId: string
+  ): Promise<Record<string, unknown>> {
     return {
       ...analysis.extractedInfo,
       requiresReview: true,
@@ -451,10 +449,10 @@ export class DocumentCategorizerService {
   }
   
   private async extractDamagePhotoData(
-    file: any,
+    _file: { url: string },
     analysis: CategoryAnalysis,
-    userId: string
-  ): Promise<Record<string, any>> {
+    _userId: string
+  ): Promise<Record<string, unknown>> {
     return {
       ...analysis.extractedInfo,
       damageVisible: true,
@@ -464,9 +462,9 @@ export class DocumentCategorizerService {
   
   private async generateFileName(
     category: DocumentCategory,
-    extractedData: Record<string, any>,
+    extractedData: Record<string, unknown>,
     originalName: string,
-    userId: string
+    _userId: string
   ): Promise<string> {
     const date = new Date().toISOString().split('T')[0];
     const timestamp = Date.now().toString().slice(-4);
@@ -489,7 +487,7 @@ export class DocumentCategorizerService {
   
   private generateTags(
     analysis: CategoryAnalysis,
-    extractedData: Record<string, any>
+    extractedData: Record<string, unknown>
   ): string[] {
     const tags: string[] = [];
     
@@ -507,7 +505,7 @@ export class DocumentCategorizerService {
     
     // Add data-specific tags
     if (extractedData.damageType) {
-      tags.push(extractedData.damageType.toLowerCase());
+      tags.push(String(extractedData.damageType).toLowerCase());
     }
     if (extractedData.isComplete === false) {
       tags.push('incomplete');

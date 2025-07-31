@@ -6,10 +6,8 @@ import type {
   RealtimeEvent, 
   PresenceState, 
   ClaimUpdate,
-  PropertyUpdate,
   DocumentUpdate,
   NotificationEvent,
-  CollaborationEvent,
   TypingIndicator
 } from './types'
 
@@ -29,7 +27,7 @@ function getRealtimeClient(supabase: SupabaseClient, userId?: string): RealtimeC
 /**
  * Subscribe to real-time table changes
  */
-export function useRealtimeTable<T = any>(
+export function useRealtimeTable<T = unknown>(
   supabase: SupabaseClient,
   table: string,
   options?: {
@@ -102,7 +100,7 @@ export function useRealtimeTable<T = any>(
 /**
  * Subscribe to specific record changes
  */
-export function useRealtimeRecord<T = any>(
+export function useRealtimeRecord<T = unknown>(
   supabase: SupabaseClient,
   table: string,
   id: string | null,
@@ -177,7 +175,7 @@ export function useDocumentProcessing(
   documentId: string | null
 ) {
   const [processingStatus, setProcessingStatus] = useState<string>('pending')
-  const [extractedData, setExtractedData] = useState<any>(null)
+  const [extractedData, setExtractedData] = useState<Record<string, unknown> | null>(null)
 
   useRealtimeRecord<DocumentUpdate>(
     supabase,
@@ -287,11 +285,11 @@ export function usePresence(
 
     return () => {
       client.off(`presence:${channelName}:sync`, handleSync)
-      client.unsubscribe(channelName)
+      client.unsubscribe(channel.name)
     }
   }, [supabase, channelName, userId, userInfo.email, userInfo.name])
 
-  const updateStatus = useCallback(async (status: any) => {
+  const updateStatus = useCallback(async (status: Record<string, unknown>) => {
     if (clientRef.current) {
       await clientRef.current.updatePresence(channelName, {
         user_id: userId,
@@ -313,7 +311,7 @@ export function useBroadcast(
   supabase: SupabaseClient,
   channelName: string
 ) {
-  const [messages, setMessages] = useState<Array<{ event: string; payload: any; timestamp: string }>>([])
+  const [messages, setMessages] = useState<Array<{ event: string; payload: unknown; timestamp: string }>>([])
   const clientRef = useRef<RealtimeClient>()
 
   useEffect(() => {
@@ -322,7 +320,7 @@ export function useBroadcast(
 
     client.createBroadcastChannel(channelName)
 
-    const handleMessage = (event: string) => (payload: any) => {
+    const handleMessage = (event: string) => (payload: unknown) => {
       setMessages(prev => [...prev, {
         event,
         payload,
@@ -339,7 +337,7 @@ export function useBroadcast(
     }
   }, [supabase, channelName])
 
-  const broadcast = useCallback(async (event: string, payload: any) => {
+  const broadcast = useCallback(async (event: string, payload: unknown) => {
     if (clientRef.current) {
       await clientRef.current.broadcast(channelName, event, payload)
     }

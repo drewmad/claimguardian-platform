@@ -2,6 +2,7 @@
   "name": "@claimguardian/ai-services",
   "version": "1.0.0",
   "description": "Unified AI services for ClaimGuardian",
+  "type": "module",
   "main": "./src/index.ts",
   "types": "./src/index.ts",
   "scripts": {
