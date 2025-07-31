@@ -16,7 +16,7 @@ import { createClient } from '@/lib/supabase/server'
 
 interface LegalAcceptanceData {
   userId: string
-  documentType: 'terms' | 'privacy' | 'gdpr' | 'marketing' | 'data-processing'
+  documentType: 'terms' | 'privacy' | 'gdpr' | 'marketing' | 'data_processing'
   accepted: boolean
   ipAddress?: string
   userAgent?: string
@@ -119,7 +119,7 @@ export async function trackSignupConsents(data: {
   // Track data processing consent
   promises.push(trackLegalAcceptance({
     userId: data.userId,
-    documentType: 'data-processing',
+    documentType: 'data_processing',
     accepted: data.consents.dataProcessing,
     ...data.metadata,
     consentMethod: 'checkbox'
