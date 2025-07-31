@@ -53,7 +53,7 @@ const InfoRow = ({ label, value, verbatim = false }: InfoRowProps) => (
           {value !== undefined && value !== null ? JSON.stringify(value, null, 2) : 'null'}
         </pre>
       ) : (
-        <span className="text-gray-100 break-all">{value ?? 'null'}</span>
+        <span className="text-gray-100 break-all">{String(value ?? 'null')}</span>
       )}
     </div>
   </div>

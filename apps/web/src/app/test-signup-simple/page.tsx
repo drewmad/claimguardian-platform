@@ -77,10 +77,10 @@ const InfoRow = ({ label, value, verbatim = false }: InfoRowProps) => (
     <div className="col-span-2">
       {verbatim ? (
         <pre className="bg-slate-900 p-2 rounded text-xs whitespace-pre-wrap break-all">
-          {value ?? 'null'}
+          {String(value ?? 'null')}
         </pre>
       ) : (
-        <span className="text-gray-100 break-all">{value ?? 'null'}</span>
+        <span className="text-gray-100 break-all">{String(value ?? 'null')}</span>
       )}
     </div>
   </div>

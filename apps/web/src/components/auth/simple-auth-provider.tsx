@@ -36,7 +36,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
     const checkUser = async () => {
       try {
         const { data } = await simpleAuthService.getCurrentUser()
-        setUser(data)
+        setUser(data || null)
       } catch (err) {
         console.error('Error checking user session:', err)
       } finally {
@@ -71,7 +71,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
         setError(error)
         return false
       }
-      setUser(user)
+      setUser(user || null)
       router.push('/dashboard')
       return true
     } catch (err) {

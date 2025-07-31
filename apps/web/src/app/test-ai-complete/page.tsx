@@ -415,7 +415,7 @@ export default function TestAICompletePage() {
                           {test.error && (
                             <p className="text-sm text-red-400 mt-1">Error: {test.error}</p>
                           )}
-                          {test.result && (
+                          {test.result != null && (
                             <pre className="text-xs text-gray-500 mt-1">
                               {renderDetails(test.result)}
                             </pre>

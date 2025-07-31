@@ -41,19 +41,19 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
     }
   }, [facingMode])
 
-  const stopCamera = () => {
+  const stopCamera = useCallback(() => {
     if (stream) {
       stream.getTracks().forEach(track => track.stop())
       setStream(null)
     }
-  }
+  }, [stream])
 
   useEffect(() => {
     startCamera()
     return () => {
       stopCamera()
     }
-  }, [startCamera])
+  }, [startCamera, stopCamera])
 
   const captureImage = () => {
     if (!videoRef.current || !canvasRef.current) return

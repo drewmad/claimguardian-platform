@@ -177,7 +177,7 @@ export default function TestSystemPage() {
         status: response.ok ? 'passed' : 'failed',
         result: { status: response.status }
       })
-    } catch (error) {
+    } catch {
       updateTest('ui-1', { 
         status: 'failed', 
         error: 'Failed to load dashboard'
@@ -192,7 +192,7 @@ export default function TestSystemPage() {
         status: response.ok ? 'passed' : 'failed',
         result: { status: response.status }
       })
-    } catch (error) {
+    } catch {
       updateTest('ui-2', { 
         status: 'failed', 
         error: 'Failed to load AI tools'
@@ -207,7 +207,7 @@ export default function TestSystemPage() {
         status: response.ok ? 'passed' : 'failed',
         result: { status: response.status }
       })
-    } catch (error) {
+    } catch {
       updateTest('ui-3', { 
         status: 'failed', 
         error: 'Failed to load claims wizard'
@@ -234,7 +234,7 @@ export default function TestSystemPage() {
           }))
         }
       })
-    } catch (error) {
+    } catch {
       updateTest('data-1', { 
         status: 'failed', 
         error: 'Failed to check tables'
@@ -250,7 +250,7 @@ export default function TestSystemPage() {
         status: 'passed',
         result: { rlsActive: !!error }
       })
-    } catch (error) {
+    } catch {
       updateTest('data-2', { 
         status: 'failed', 
         error: 'Failed to check RLS'
@@ -266,7 +266,7 @@ export default function TestSystemPage() {
         status: response.ok ? 'passed' : 'failed',
         result: data
       })
-    } catch (error) {
+    } catch {
       updateTest('api-1', { 
         status: 'failed', 
         error: 'Health endpoint not accessible'
@@ -282,7 +282,7 @@ export default function TestSystemPage() {
         status: response.ok ? 'passed' : 'failed',
         result: data
       })
-    } catch (error) {
+    } catch {
       updateTest('api-2', { 
         status: 'failed', 
         error: 'AI endpoints not accessible'
@@ -305,7 +305,7 @@ export default function TestSystemPage() {
         status: response.status === 403 ? 'passed' : 'failed',
         result: { blockedBot: response.status === 403 }
       })
-    } catch (error) {
+    } catch {
       updateTest('security-1', { 
         status: 'failed', 
         error: 'Failed to test bot protection'
@@ -330,7 +330,7 @@ export default function TestSystemPage() {
         status: rateLimited ? 'passed' : 'failed',
         result: { rateLimitTriggered: rateLimited }
       })
-    } catch (error) {
+    } catch {
       updateTest('security-2', { 
         status: 'failed', 
         error: 'Failed to test rate limiting'
@@ -346,7 +346,7 @@ export default function TestSystemPage() {
         status: csp ? 'passed' : 'failed',
         result: { hasCSP: !!csp }
       })
-    } catch (error) {
+    } catch {
       updateTest('security-3', { 
         status: 'failed', 
         error: 'Failed to check headers'
@@ -454,7 +454,7 @@ export default function TestSystemPage() {
                           {test.error && (
                             <p className="text-sm text-red-400 mt-1">Error: {test.error}</p>
                           )}
-                          {test.result && (
+                          {test.result != null && (
                             <pre className="text-xs text-gray-500 mt-1">
                               {JSON.stringify(test.result, null, 2)}
                             </pre>

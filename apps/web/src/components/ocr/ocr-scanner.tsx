@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { Camera, FileText, Loader2, Upload, X, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
@@ -11,7 +12,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ocrService, DocumentType, OCRResult, ReceiptData } from '@/lib/services/ocr-service'
+import { ocrService, DocumentType, OCRResult, ReceiptData, OCRHistoryEntry } from '@/lib/services/ocr-service'
 import { CameraCapture } from '@/components/camera/camera-capture'
 
 interface OCRScannerProps {
@@ -28,7 +29,7 @@ export function OCRScanner({
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<OCRResult | null>(null)
   const [usage, setUsage] = useState<{ used: number; limit: number; remaining: number }>({ used: 0, limit: 0, remaining: 0 })
-  const [history, setHistory] = useState<any[]>([])
+  const [history, setHistory] = useState<OCRHistoryEntry[]>([])
   const [showCamera, setShowCamera] = useState(false)
   const [previewUrl, setPreviewUrl] = useState<string | null>(null)
 
@@ -118,7 +119,7 @@ export function OCRScanner({
     setPreviewUrl(null)
   }
 
-  const renderStructuredData = (data: any) => {
+  const renderStructuredData = (data: unknown) => {
     if (!data) return null
 
     switch (documentType) {
@@ -297,9 +298,11 @@ export function OCRScanner({
 
               {previewUrl && (
                 <div className="relative">
-                  <img
+                  <Image
                     src={previewUrl}
                     alt="Scanned document"
+                    width={600}
+                    height={400}
                     className="w-full max-h-64 object-contain rounded border"
                   />
                 </div>

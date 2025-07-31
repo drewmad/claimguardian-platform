@@ -3,6 +3,7 @@
 import { useState, useRef, useCallback } from 'react'
 import { Camera, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import Image from 'next/image'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -88,9 +89,11 @@ export function MobileImageUpload({
           animate={{ opacity: 1, scale: 1 }}
           className="relative rounded-xl overflow-hidden bg-gray-800"
         >
-          <img
+          <Image
             src={preview}
             alt="Preview"
+            width={400}
+            height={256}
             className="w-full h-64 object-cover"
           />
           <Button

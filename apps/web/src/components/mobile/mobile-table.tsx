@@ -83,12 +83,12 @@ export function MobileTableCell({
 }
 
 // Responsive table that transforms to cards on mobile
-interface ResponsiveTableProps {
+interface ResponsiveTableProps<T = Record<string, unknown>> {
   headers: string[]
-  data: any[]
-  renderCell: (item: any, key: string) => ReactNode
-  onRowClick?: (item: any) => void
-  keyField: string
+  data: T[]
+  renderCell: (item: T, key: string) => ReactNode
+  onRowClick?: (item: T) => void
+  keyField: keyof T
 }
 
 export function ResponsiveTable({
@@ -119,7 +119,7 @@ export function ResponsiveTable({
           <tbody className="divide-y divide-gray-700">
             {data.map((item) => (
               <tr
-                key={item[keyField]}
+                key={String(item[keyField])}
                 onClick={() => onRowClick?.(item)}
                 className={cn(
                   "transition-colors",
@@ -146,7 +146,7 @@ export function ResponsiveTable({
       <MobileTable className="md:hidden">
         {data.map((item) => (
           <MobileTableRow
-            key={item[keyField]}
+            key={String(item[keyField])}
             onClick={() => onRowClick?.(item)}
           >
             <div className="space-y-2">

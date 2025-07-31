@@ -5,11 +5,24 @@ export type DocumentType = 'receipt' | 'invoice' | 'estimate' | 'report' | 'lett
 export interface OCRResult {
   success: boolean
   text?: string
-  structuredData?: any
+  structuredData?: unknown
   confidence?: number
   language?: string
   processingTime?: number
   error?: string
+}
+
+export interface OCRHistoryEntry {
+  id: string
+  created_at: string
+  user_id: string
+  document_type: DocumentType
+  result_text?: string
+  structured_data?: unknown
+  confidence?: number
+  processing_time?: number
+  file_name?: string
+  success?: boolean
 }
 
 export interface ReceiptData {
@@ -66,6 +79,12 @@ export interface EstimateData {
   total?: number
   validUntil?: string
   notes?: string
+}
+
+export interface OCROptions {
+  documentType?: DocumentType
+  language?: string
+  extractStructuredData?: boolean
 }
 
 class OCRService {
@@ -194,7 +213,7 @@ class OCRService {
     }).format(amount)
   }
 
-  async getOCRHistory(limit = 10): Promise<any[]> {
+  async getOCRHistory(limit = 10): Promise<OCRHistoryEntry[]> {
     const { data, error } = await this.supabase
       .from('ocr_history')
       .select('*')

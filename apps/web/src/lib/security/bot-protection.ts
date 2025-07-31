@@ -256,7 +256,7 @@ export class BotProtection {
   /**
    * Validate honeypot fields (should be empty)
    */
-  static validateHoneypot(formData: Record<string, any>, formType: keyof typeof HONEYPOT_FIELDS): boolean {
+  static validateHoneypot(formData: Record<string, unknown>, formType: keyof typeof HONEYPOT_FIELDS): boolean {
     const honeypotField = HONEYPOT_FIELDS[formType]
     
     if (formData[honeypotField]) {
