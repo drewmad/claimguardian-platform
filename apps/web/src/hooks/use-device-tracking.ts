@@ -6,6 +6,7 @@
  */
 
 import { useState, useEffect } from 'react'
+
 import { logger } from '@/lib/logger'
 
 interface DeviceInfo {

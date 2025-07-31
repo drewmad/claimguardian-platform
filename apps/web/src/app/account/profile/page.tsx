@@ -10,17 +10,19 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { 
   User, Shield, Mail, Save, Trash2, 
   AlertCircle, CheckCircle, Lock, Activity, Key
 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { profileService, type UserProfile } from '@/lib/auth/profile-service'
-import { useModalStore } from '@/stores/modal-store'
 import { logger } from '@/lib/logger'
-import Link from 'next/link'
+import { useModalStore } from '@/stores/modal-store'
+
 
 type ActiveTab = 'profile' | 'security' | 'email' | 'danger'
 

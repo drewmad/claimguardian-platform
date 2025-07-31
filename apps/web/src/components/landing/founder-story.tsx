@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import Image from 'next/image'
+import { useState, useEffect, useRef } from 'react'
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {

@@ -1,5 +1,6 @@
-import { useEffect, useState, useCallback, useRef } from 'react'
 import { SupabaseClient } from '@supabase/supabase-js'
+import { useEffect, useState, useCallback, useRef } from 'react'
+
 import { RealtimeClient } from './client'
 import type { 
   RealtimeEvent, 

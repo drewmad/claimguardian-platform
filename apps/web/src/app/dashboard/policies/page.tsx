@@ -1,17 +1,20 @@
 'use client'
 
-import React, { useState } from 'react'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
-import { Badge } from '@/components/ui/badge'
+import { format } from 'date-fns'
 import { 
   FileText, Upload, Shield, DollarSign, 
   AlertCircle, Plus, Eye, Download,
   Home, Droplets, Wind, AlertTriangle
 } from 'lucide-react'
 import dynamic from 'next/dynamic'
+import React, { useState } from 'react'
+
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
 
 const PolicyUpload = dynamic(
   () => import('@/components/policy/policy-upload').then(mod => ({ default: mod.PolicyUpload })),
@@ -22,7 +25,7 @@ const PolicyUpload = dynamic(
 )
 import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-policy-data'
 import { usePropertyStore } from '@/stores/property-store'
-import { format } from 'date-fns'
+
 
 function PoliciesContent() {
   const { properties } = usePropertyStore()

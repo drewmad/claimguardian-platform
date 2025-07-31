@@ -1,6 +1,8 @@
 import OpenAI from 'openai'
-import { AIProvider } from './base'
+
 import type { AIResponse } from '../types'
+
+import { AIProvider } from './base'
 
 export class OpenAIProvider extends AIProvider {
   private client: OpenAI | null = null

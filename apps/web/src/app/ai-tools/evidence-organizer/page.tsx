@@ -1,17 +1,18 @@
 'use client'
 
+import { FolderOpen, Upload, Search, FileText, Video, File, Download, Trash2, Eye, Grid, List, Check, Image as ImageIcon, Sparkles, Calendar, Hash, Clock } from 'lucide-react'
+import Image from 'next/image'
 import { useState } from 'react'
+import { useDropzone } from 'react-dropzone'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { FolderOpen, Upload, Search, FileText, Video, File, Download, Trash2, Eye, Grid, List, Check, Image as ImageIcon, Sparkles, Calendar, Hash, Clock } from 'lucide-react'
-import { useAuth } from '@/components/auth/auth-provider'
-import { toast } from 'sonner'
-import { useDropzone } from 'react-dropzone'
-import Image from 'next/image'
 import { EnhancedAIService } from '@/lib/ai/enhanced-ai-service'
 
 interface Evidence {

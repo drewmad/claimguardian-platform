@@ -10,11 +10,12 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { Shield, AlertCircle, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
-import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
+import { useState } from 'react'
+
 import { authService } from '@/lib/auth/auth-service'
+import { securityQuestionsService, type UserSecurityAnswer } from '@/lib/auth/security-questions-service'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
 

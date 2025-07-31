@@ -10,9 +10,10 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+
 import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/server'
 
 export async function POST(request: NextRequest) {
   try {

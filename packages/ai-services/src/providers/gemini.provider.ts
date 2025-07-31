@@ -1,5 +1,5 @@
 import { GoogleGenerativeAI, GenerativeModel } from '@google/generative-ai';
-import { BaseAIProvider } from './base.provider';
+
 import {
   AIRequest,
   AIResponse,
@@ -12,6 +12,8 @@ import {
   AIServiceError,
   InvalidResponseError
 } from '../types/index';
+
+import { BaseAIProvider } from './base.provider';
 
 export class GeminiProvider extends BaseAIProvider {
   private client: GoogleGenerativeAI;

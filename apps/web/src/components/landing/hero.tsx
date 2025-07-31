@@ -10,10 +10,11 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { useModalStore } from '@/stores/modal-store'
 import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight, Building } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+
 import { COLORS } from '@/lib/constants'
+import { useModalStore } from '@/stores/modal-store'
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {

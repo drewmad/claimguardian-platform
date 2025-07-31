@@ -1,5 +1,6 @@
-import { CacheManager } from './cache.manager';
 import { AIRequest, AIResponse, ChatRequest } from '../types/index';
+
+import { CacheManager } from './cache.manager';
 
 interface SemanticCacheEntry {
   embedding: number[];

@@ -11,22 +11,22 @@
  */
 'use client'
 
-import { Hero } from '@/components/landing/hero'
-import { WhoWeServe } from '@/components/landing/who-we-serve'
-import { WhoWeFightFor } from '@/components/landing/who-we-fight-for'
-import { HowItWorks } from '@/components/landing/how-it-works'
-import { Features } from '@/components/landing/features'
-import { FounderStory } from '@/components/landing/founder-story'
-import { Pricing } from '@/components/landing/pricing'
-import { Testimonials } from '@/components/landing/testimonials'
 import { FAQ } from '@/components/landing/faq'
+import { Features } from '@/components/landing/features'
+import { Footer } from '@/components/landing/footer'
+import { FounderStory } from '@/components/landing/founder-story'
 import { GetStarted } from '@/components/landing/get-started'
 import { Header } from '@/components/landing/header'
-import { Footer } from '@/components/landing/footer'
+import { Hero } from '@/components/landing/hero'
+import { HowItWorks } from '@/components/landing/how-it-works'
+import { Pricing } from '@/components/landing/pricing'
+import { Testimonials } from '@/components/landing/testimonials'
+import { WhoWeFightFor } from '@/components/landing/who-we-fight-for'
+import { WhoWeServe } from '@/components/landing/who-we-serve'
+import { ContentModal } from '@/components/modals/content-modal'
+import { ForgotPasswordModal } from '@/components/modals/forgot-password-modal'
 import { LoginModal } from '@/components/modals/login-modal'
 import { SignupModal } from '@/components/modals/signup-modal'
-import { ForgotPasswordModal } from '@/components/modals/forgot-password-modal'
-import { ContentModal } from '@/components/modals/content-modal'
 
 export default function HomePage() {
   return (

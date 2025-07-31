@@ -1,8 +1,9 @@
 'use client'
 
 import { Loader2, Camera, FileText, Sparkles } from 'lucide-react'
-import { Progress } from '@/components/ui/progress'
+
 import { Card, CardContent } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
 import { Skeleton } from '@/components/ui/skeleton'
 
 export interface LoadingStateProps {

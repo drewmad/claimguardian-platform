@@ -10,11 +10,13 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import type { LegalDocument } from '@claimguardian/db'
 import { X, FileText, Calendar, ExternalLink } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
 import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
-import type { LegalDocument } from '@claimguardian/db'
+
 
 interface LegalDocumentModalProps {
   document: LegalDocument

@@ -10,7 +10,6 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { 
   Calendar, Plus, Clock, CheckCircle, AlertCircle, XCircle,
   Wrench, DollarSign, FileText, User, ChevronRight,
@@ -18,11 +17,13 @@ import {
   Home, Shield, Edit,
   Wind, Droplets, Zap, Settings
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type TaskStatus = 'scheduled' | 'in_progress' | 'completed' | 'overdue' | 'cancelled'
 type TaskPriority = 'low' | 'medium' | 'high' | 'urgent'

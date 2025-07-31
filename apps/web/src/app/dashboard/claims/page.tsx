@@ -10,19 +10,21 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { 
   FileText, Plus, Clock, CheckCircle, AlertCircle, XCircle,
   DollarSign, Phone, Mail, Download, Upload,
   MessageSquare, Camera, TrendingUp, ChevronRight,
   Shield, Paperclip
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { useRouter } from 'next/navigation'
+
 
 type ClaimStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'denied' | 'paid'
 

@@ -5,8 +5,8 @@
  * @status active
  */
 
-import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js'
 import { createServerClient, createBrowserClient, type CookieOptions } from '@supabase/ssr'
+import { createClient as createSupabaseClient, SupabaseClient } from '@supabase/supabase-js'
 
 interface ClientConfig {
   supabaseUrl?: string

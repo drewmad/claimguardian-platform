@@ -10,18 +10,19 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { 
   Users, Plus, Star, Phone,
   CheckCircle, DollarSign, FileText, MessageSquare,
   Filter, Search, ChevronRight, Shield, Award, TrendingUp,
   ExternalLink, Share2, Heart
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { useRouter } from 'next/navigation'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 type ContractorCategory = 'all' | 'hvac' | 'plumbing' | 'electrical' | 'roofing' | 'general' | 'landscaping' | 'cleaning'
 type ContractorStatus = 'active' | 'pending' | 'inactive'

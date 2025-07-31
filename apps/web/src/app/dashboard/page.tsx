@@ -1,18 +1,19 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
 import { 
   Shield, Building, TrendingUp, Wrench, CheckCircle, 
   AlertCircle, CloudRain, Wind, Droplets, Activity,
   FileCheck, Camera, FileText, UserPlus, ChevronRight
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import React, { useEffect, useState } from 'react'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { useAuth } from '@/components/auth/auth-provider'
-import { useRouter } from 'next/navigation'
-import { useSupabase } from '@/lib/supabase/client'
-import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { LearningWidget } from '@/components/learning/learning-widget'
+import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
+import { useSupabase } from '@/lib/supabase/client'
 
 function DashboardContent() {
   const { user } = useAuth()

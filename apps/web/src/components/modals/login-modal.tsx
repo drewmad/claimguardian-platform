@@ -10,13 +10,14 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
 import { X, AlertCircle, Mail, Shield, Lock } from 'lucide-react'
-import { useModalStore } from '@/stores/modal-store'
+import { useState, useEffect } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from '@/lib/logger'
-import { authService } from '@/lib/auth/auth-service'
 import { useRateLimit } from '@/hooks/use-rate-limit'
+import { authService } from '@/lib/auth/auth-service'
+import { logger } from '@/lib/logger'
+import { useModalStore } from '@/stores/modal-store'
 
 export function LoginModal() {
   const { activeModal, closeModal, openModal } = useModalStore()

@@ -1,8 +1,9 @@
 'use client'
 
-import React, { useRef, useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
 import { X, Camera, RotateCcw } from 'lucide-react'
+import React, { useRef, useEffect, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 
 interface CameraCaptureProps {
   onClose: () => void

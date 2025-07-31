@@ -10,9 +10,10 @@
  */
 'use client'
 
-import React, { useReducer, useEffect } from 'react'
 import { Home, Building, Shield, Banknote, CheckSquare, ChevronLeft, ChevronRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import React, { useReducer, useEffect } from 'react'
 import { toast } from 'sonner'
+
 import { createProperty } from '@/actions/properties'
 
 // --- Constants & Configuration ---

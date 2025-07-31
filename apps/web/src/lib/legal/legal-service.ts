@@ -5,7 +5,6 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/client'
 import type {
   LegalDocument,
   UserConsent,
@@ -14,7 +13,9 @@ import type {
   ConsentActionType,
   Geolocation
 } from '@claimguardian/db'
+
 import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 class LegalService {
   private supabase = createClient()

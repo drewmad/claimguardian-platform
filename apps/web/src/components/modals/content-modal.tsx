@@ -11,6 +11,7 @@
 'use client'
 
 import { X } from 'lucide-react'
+
 import { useModalStore } from '@/stores/modal-store'
 
 interface Section {

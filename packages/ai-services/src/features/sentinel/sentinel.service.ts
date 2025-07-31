@@ -1,6 +1,7 @@
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
 import { AIOrchestrator } from '../../orchestrator/orchestrator';
 import { AIRequest } from '../../types/index';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 interface ClaimDeadline {
   id: string;

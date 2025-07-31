@@ -10,11 +10,12 @@
  * @notes Handles user authentication with email/password and redirects to dashboard.
  */
 
-import React from 'react';
 import { Button, Input, Label, Card } from '@claimguardian/ui';
 import { Shield, ArrowLeft } from 'lucide-react';
-import { signIn } from '@/actions/auth';
 import Link from 'next/link';
+import React from 'react';
+
+import { signIn } from '@/actions/auth';
 
 export default async function SignInPage({
   searchParams,

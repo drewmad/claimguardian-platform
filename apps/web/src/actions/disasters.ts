@@ -1,8 +1,9 @@
 // apps/web/src/actions/disasters.ts
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
 import { unstable_noStore as noStore } from 'next/cache'
+
+import { createClient } from '@/lib/supabase/server'
 
 export async function getDisasterHubData() {
   noStore() // Ensure data is always fresh

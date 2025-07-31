@@ -1,5 +1,6 @@
 import { SupabaseClient, RealtimeChannel } from '@supabase/supabase-js'
 import { EventEmitter } from 'eventemitter3'
+
 import type { 
   RealtimeEvent, 
   ChannelConfig, 

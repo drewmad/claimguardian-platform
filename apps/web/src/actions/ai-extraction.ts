@@ -11,10 +11,12 @@
 
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { aiDocumentExtractionService, ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
-import { logger } from '@/lib/logger'
 import { revalidatePath } from 'next/cache'
+
+import { logger } from '@/lib/logger'
+import { aiDocumentExtractionService, ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
+import { createClient } from '@/lib/supabase/server'
+
 
 export interface ProcessExtractionParams {
   documentId: string

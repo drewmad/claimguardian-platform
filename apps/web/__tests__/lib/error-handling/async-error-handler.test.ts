@@ -7,8 +7,9 @@
  * @status active
  */
 
-import { AsyncErrorHandler } from '@/lib/error-handling/async-error-handler'
 import { mockConsole, delay } from '../../utils/test-utils'
+
+import { AsyncErrorHandler } from '@/lib/error-handling/async-error-handler'
 
 // Mock the logger
 jest.mock('@/lib/logger', () => ({

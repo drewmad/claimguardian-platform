@@ -1,13 +1,16 @@
 'use client'
 
-import { useState, useCallback } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { Button } from '@/components/ui/button'
-import { Card } from '@/components/ui/card'
 import { Upload, X, Loader2, Image as ImageIcon, AlertCircle, Camera } from 'lucide-react'
 import Image from 'next/image'
-import { cn } from '@/lib/utils'
+import { useState, useCallback } from 'react'
+import { useDropzone } from 'react-dropzone'
+
 import { CameraCapture } from './camera-capture'
+
+import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
+import { cn } from '@/lib/utils'
+
 
 interface ImageUploadAnalyzerProps {
   onAnalyze: (images: File[]) => Promise<void>

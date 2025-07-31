@@ -1,6 +1,6 @@
+import type { Asset, InventoryItem, HomeSystem, Structure, RenovationProject, MaintenanceTask, Warranty, PropertyDocument } from '@claimguardian/db'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Asset, InventoryItem, HomeSystem, Structure, RenovationProject, MaintenanceTask, Warranty, PropertyDocument } from '@claimguardian/db'
 
 interface PropertyState {
   // Properties

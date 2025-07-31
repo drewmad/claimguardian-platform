@@ -10,6 +10,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+
 import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
 

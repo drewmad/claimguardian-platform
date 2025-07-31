@@ -10,13 +10,15 @@
  */
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { formatDistanceToNow } from 'date-fns'
 import { Shield, Monitor, Globe, Clock, AlertTriangle, CheckCircle, XCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { loginActivityService, type LoginActivity, type LoginActivityStats } from '@/lib/auth/login-activity-service'
 import { logger } from '@/lib/logger'
-import { formatDistanceToNow } from 'date-fns'
+
 
 export default function LoginActivityPage() {
   const router = useRouter()

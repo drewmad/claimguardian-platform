@@ -5,8 +5,8 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 export interface LearningQuery {
   query: string

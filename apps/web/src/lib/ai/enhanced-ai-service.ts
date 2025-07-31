@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/client'
 import { AIClientService } from './client-service'
+
+import { createClient } from '@/lib/supabase/client'
 
 interface CacheEntry {
   key: string

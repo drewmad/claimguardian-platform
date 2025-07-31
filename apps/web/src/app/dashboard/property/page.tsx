@@ -10,16 +10,17 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { MapPin, Shield, Plus, ChevronRight, Loader2 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { toast } from 'sonner'
+
+import { getProperties } from '@/actions/properties'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent } from '@/components/ui/card'
-import { getProperties } from '@/actions/properties'
-import { toast } from 'sonner'
-import { PropertyAvatar } from '@/components/ui/property-image'
 import { PropertyWizard } from '@/components/property/property-wizard'
+import { Card, CardContent } from '@/components/ui/card'
+import { PropertyAvatar } from '@/components/ui/property-image'
 
 
 interface DisplayProperty {

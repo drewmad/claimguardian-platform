@@ -10,16 +10,17 @@
  */
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { MapPin, Plus, ChevronRight, Building } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { PropertyWizard } from '@/components/property/property-wizard'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
-import { PropertyWizard } from '@/components/property/property-wizard'
-import { useProperties } from '@/hooks/queries/use-properties'
 import { Skeleton } from '@/components/ui/skeleton'
+import { useProperties } from '@/hooks/queries/use-properties'
 
 function PropertyOverviewContent() {
   const router = useRouter()

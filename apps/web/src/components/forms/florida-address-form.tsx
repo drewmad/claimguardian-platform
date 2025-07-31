@@ -11,9 +11,10 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+
+import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographic'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographic'
 
 interface AddressComponents {
   street1: string

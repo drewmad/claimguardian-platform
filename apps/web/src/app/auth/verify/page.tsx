@@ -10,12 +10,14 @@
  */
 'use client'
 
-import { useEffect, useState, Suspense } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
-import { logger } from '@/lib/logger'
 import { CheckCircle, XCircle, Loader2, Home, LogIn } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState, Suspense } from 'react'
+
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
+
 
 type VerificationStatus = 'verifying' | 'success' | 'error' | 'invalid'
 

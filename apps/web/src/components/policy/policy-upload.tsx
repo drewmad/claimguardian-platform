@@ -1,14 +1,16 @@
 'use client'
 
+import { Button } from '@claimguardian/ui'
+import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react'
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react'
-import { Button } from '@claimguardian/ui'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { useSupabase } from '@/lib/supabase/client'
-import { useAuth } from '@/components/auth/auth-provider'
 import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { processPDF } from '@/lib/ai/pdf-processor'
+import { useSupabase } from '@/lib/supabase/client'
+
 
 interface PolicyUploadProps {
   propertyId: string

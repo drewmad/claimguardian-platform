@@ -7,6 +7,7 @@
 'use server'
 
 import { headers } from 'next/headers'
+
 import { legalServiceServer } from '@/lib/legal/legal-service-server'
 import { logger } from '@/lib/logger'
 

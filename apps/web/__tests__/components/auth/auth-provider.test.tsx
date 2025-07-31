@@ -7,9 +7,9 @@
  * @status active
  */
 
-import React from 'react'
 import { act, waitFor } from '@testing-library/react'
-import { AuthProvider, useAuth } from '@/components/auth/auth-provider'
+import React from 'react'
+
 import { 
   render, 
   createMockUser, 
@@ -17,6 +17,9 @@ import {
   createMockSupabaseResponse,
   mockConsole
 } from '../../utils/test-utils'
+
+import { AuthProvider, useAuth } from '@/components/auth/auth-provider'
+
 
 // Mock the auth service
 jest.mock('@/lib/auth/auth-service', () => ({

@@ -1,5 +1,6 @@
-import { createClient } from '@/lib/supabase/client'
 import { UAParser } from 'ua-parser-js'
+
+import { createClient } from '@/lib/supabase/client'
 
 interface TrackingData {
   userId: string

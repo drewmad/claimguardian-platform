@@ -7,10 +7,7 @@
 
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { 
   AlertCircle, 
@@ -23,10 +20,14 @@ import {
   ChevronDown,
   ChevronUp
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { enrichPropertyData } from '@/actions/property-enrichment'
-import { toast } from 'sonner'
 import Image from 'next/image'
+import { useEffect, useState, useCallback } from 'react'
+import { toast } from 'sonner'
+
+import { enrichPropertyData } from '@/actions/property-enrichment'
+import { Badge } from '@/components/ui/badge'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
 
 interface PropertyEnrichmentData {
   id: string

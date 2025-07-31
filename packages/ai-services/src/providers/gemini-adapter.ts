@@ -1,12 +1,15 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { AIProvider } from './base';
+
 import type { AIResponse } from '../types';
-import { GeminiProvider as NewGeminiProvider } from './gemini.provider';
 import { 
   AIRequest as NewAIRequest,
   AIResponse as NewAIResponse,
   ImageAnalysisRequest as NewImageAnalysisRequest 
 } from '../types/index';
+
+import { AIProvider } from './base';
+import { GeminiProvider as NewGeminiProvider } from './gemini.provider';
+
 
 /**
  * Adapter class that maintains backward compatibility while using the new provider

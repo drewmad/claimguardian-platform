@@ -10,15 +10,16 @@
  */
 'use client'
 
-import { useState, useEffect, ReactNode } from 'react'
-import { useRouter, usePathname } from 'next/navigation'
-import Link from 'next/link'
 import { 
   Home, Building, Package, Shield, FileText, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
   Bell, Search, Menu, LogOut,
   Bot, Camera, FileSearch, Sparkles
 } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter, usePathname } from 'next/navigation'
+import { useState, useEffect, ReactNode } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { SettingsModal } from '@/components/modals/settings-modal'
 import { useSettingsModal } from '@/hooks/use-settings-modal'

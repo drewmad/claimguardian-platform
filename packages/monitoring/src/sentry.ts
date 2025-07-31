@@ -1,4 +1,5 @@
 import * as Sentry from '@sentry/nextjs'
+
 import { recordMetric } from './metrics'
 
 export interface SentryConfig {

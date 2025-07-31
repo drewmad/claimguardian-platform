@@ -7,8 +7,6 @@
 
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger'
 import { sendEmail, sendEmailWithRateLimit } from '@/lib/email/resend'
 import {
   getWelcomeEmail,
@@ -17,6 +15,8 @@ import {
   getClaimUpdateEmail,
   getPropertyEnrichmentEmail
 } from '@/lib/email/templates'
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/server'
 
 /**
  * Send welcome email to new users

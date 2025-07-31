@@ -11,6 +11,7 @@
 'use client'
 
 import { Mail, X } from 'lucide-react'
+
 import { COLORS } from '@/lib/constants'
 
 export function Footer() {

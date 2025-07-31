@@ -10,12 +10,13 @@
  */
 'use client'
 
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 import { User } from '@supabase/supabase-js'
-import { createClient } from '@/lib/supabase/client'
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+
 import { authService, AuthError, AuthResponse } from '@/lib/auth/auth-service'
-import { logger } from '@/lib/logger'
 import { sessionManager } from '@/lib/auth/session-manager'
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 interface AuthContextType {
   user: User | null

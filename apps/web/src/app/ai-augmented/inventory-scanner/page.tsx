@@ -1,16 +1,19 @@
 'use client'
 
-import { useState } from 'react'
 import dynamic from 'next/dynamic'
+import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 const BarcodeScanner = dynamic(
   () => import('@/components/ui/barcode-scanner').then(mod => mod.BarcodeScanner),
@@ -29,11 +32,11 @@ import {
   FileSpreadsheet,
   Scan
 } from 'lucide-react'
+
 import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
-import { useAuth } from '@/components/auth/auth-provider'
-import { toast } from 'sonner'
+
 
 interface InventoryItem {
   id: string

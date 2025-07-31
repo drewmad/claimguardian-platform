@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+
 import { Usage, CostEntry, UserCosts } from '../types/index';
 
 export class CostTracker {

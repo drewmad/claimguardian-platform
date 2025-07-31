@@ -7,13 +7,14 @@
  * @status active
  */
 
+import { NextRequest } from 'next/server'
+
 import {
   rateLimiter,
   createRateLimitResponse,
   withRateLimit,
   RateLimiter,
 } from '@/lib/security/rate-limiter'
-import { NextRequest } from 'next/server'
 
 // Mock the logger
 jest.mock('@/lib/logger', () => ({

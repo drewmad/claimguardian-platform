@@ -6,16 +6,18 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
-import { X, Eye, EyeOff, AlertCircle, Shield, Check, Loader2, Globe, Fingerprint, Lock, Bell, Brain } from 'lucide-react'
-import { useModalStore } from '@/stores/modal-store'
-import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from '@/lib/logger'
-import { authService } from '@/lib/auth/auth-service'
-import { useRateLimit } from '@/hooks/use-rate-limit'
-import { useDeviceTracking } from '@/hooks/use-device-tracking'
-import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 import type { SignupData } from '@claimguardian/db'
+import { X, Eye, EyeOff, AlertCircle, Shield, Check, Loader2, Globe, Fingerprint, Lock, Bell, Brain } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+import { useAuth } from '@/components/auth/auth-provider'
+import { LegalConsentForm } from '@/components/legal/legal-consent-form'
+import { useDeviceTracking } from '@/hooks/use-device-tracking'
+import { useRateLimit } from '@/hooks/use-rate-limit'
+import { authService } from '@/lib/auth/auth-service'
+import { logger } from '@/lib/logger'
+import { useModalStore } from '@/stores/modal-store'
+
 
 export function EnhancedSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()

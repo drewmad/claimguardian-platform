@@ -10,8 +10,9 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import { Check } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+
 import { COLORS } from '@/lib/constants'
 import { useModalStore } from '@/stores/modal-store'
 

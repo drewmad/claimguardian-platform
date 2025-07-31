@@ -7,10 +7,7 @@
 
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { 
   BarChart3, 
@@ -22,9 +19,13 @@ import {
   TrendingUp,
   DollarSign
 } from 'lucide-react'
-import { getUserEnrichmentStats, checkEnrichmentHealth } from '@/actions/property-verification'
-import { createClient } from '@/lib/supabase/client'
+import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
+
+import { getUserEnrichmentStats, checkEnrichmentHealth } from '@/actions/property-verification'
+import { Badge } from '@/components/ui/badge'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
 
 interface EnrichmentStats {
   totalProperties: number

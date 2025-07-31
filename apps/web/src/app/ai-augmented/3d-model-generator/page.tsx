@@ -10,18 +10,19 @@
  */
 'use client'
 
-import { useState, useRef } from 'react'
 import { 
   Upload, Camera, RotateCcw, Download, Eye, Grid, 
   Play, Pause, Settings, Info, CheckCircle,
   X, Move3D, Zap, Sparkles, Target, Layers,
   Volume2, VolumeX, Maximize, ZoomIn, ZoomOut
 } from 'lucide-react'
+import { useState, useRef } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 
 type ProcessingStage = 'upload' | 'analyzing' | 'reconstructing' | 'optimizing' | 'complete'

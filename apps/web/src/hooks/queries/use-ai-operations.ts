@@ -1,6 +1,7 @@
 import { useMutation } from '@tanstack/react-query'
-import { AIClientService } from '@/lib/ai/client-service'
 import { toast } from 'sonner'
+
+import { AIClientService } from '@/lib/ai/client-service'
 
 const aiClient = new AIClientService()
 

@@ -6,8 +6,9 @@
  */
 'use server'
 
-import { headers } from 'next/headers'
 import { createServiceRoleClient } from '@claimguardian/db'
+import { headers } from 'next/headers'
+
 import { logger } from '@/lib/logger'
 
 interface TrackingData {

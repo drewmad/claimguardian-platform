@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+
 import { 
   uploadPolicyDocument,
   getPolicyDocuments,
@@ -6,7 +8,6 @@ import {
   getDocumentDownloadUrl,
   createDocumentRecord,
 } from '@/actions/documents'
-import { toast } from 'sonner'
 
 // Query keys factory
 export const documentKeys = {

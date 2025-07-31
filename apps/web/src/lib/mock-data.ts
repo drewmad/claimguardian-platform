@@ -9,6 +9,7 @@
  * @status active
  */
 import { Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
+
 import { COLORS } from './constants';
 
 export const INITIAL_ASSETS = [

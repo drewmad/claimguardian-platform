@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import { Star } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {

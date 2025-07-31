@@ -11,17 +11,20 @@
 
 'use client'
 
+import { Brain, FileText, CheckCircle, XCircle, Clock, Loader2, Edit3, Save, X } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { toast } from 'sonner'
+
+import { processDocumentExtraction, getExtractionResults } from '@/actions/ai-extraction'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Brain, FileText, CheckCircle, XCircle, Clock, Loader2, Edit3, Save, X } from 'lucide-react'
-import { cn } from '@/lib/utils'
-import { toast } from 'sonner'
-import { processDocumentExtraction, getExtractionResults } from '@/actions/ai-extraction'
-import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
 import { insuranceTypes } from '@/data/florida-insurance-carriers'
+import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
+import { cn } from '@/lib/utils'
+
+
 
 interface DocumentExtractionReviewProps {
   documentId: string

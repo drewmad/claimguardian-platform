@@ -9,13 +9,14 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/client'
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
+
+import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
-import { loginActivityService } from '@/lib/auth/login-activity-service'
-import { getAuthCallbackURL } from '@/lib/utils/site-url'
+import { createClient } from '@/lib/supabase/client'
 import { userTracker } from '@/lib/tracking/user-tracker'
+import { getAuthCallbackURL } from '@/lib/utils/site-url'
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {

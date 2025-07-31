@@ -12,6 +12,7 @@
 'use client'
 
 import { useEffect } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { createClient } from '@/lib/supabase/client'
 

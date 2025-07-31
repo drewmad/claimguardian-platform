@@ -1,17 +1,19 @@
 'use client'
 
+import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff } from 'lucide-react'
+import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import Link from 'next/link'
-import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff } from 'lucide-react'
-import { useAuth } from '@/components/auth/auth-provider'
-import { AIClientService } from '@/lib/ai/client-service'
-import { toast } from 'sonner'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePreload } from '@/hooks/use-preload'
+import { AIClientService } from '@/lib/ai/client-service'
+
 
 interface AITool {
   id: string

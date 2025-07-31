@@ -9,10 +9,11 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/server'
 import { createServiceRoleClient } from '@claimguardian/db'
-import { logger } from '@/lib/logger'
 import type { LegalDocument, UserConsent } from '@claimguardian/db'
+
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/server'
 
 // Define AcceptanceRequest interface
 interface AcceptanceRequest {

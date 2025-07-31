@@ -11,12 +11,14 @@
  */
 'use client'
 
-import React, { useEffect } from 'react';
-import { useAuth } from './auth-provider';
 import { useRouter } from 'next/navigation';
+import React, { useEffect } from 'react';
+
 import { AuthLoading } from './auth-loading';
-import { logger } from '@/lib/logger';
+import { useAuth } from './auth-provider';
 import { ClientOnlyAuth } from './client-only-auth';
+
+import { logger } from '@/lib/logger';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

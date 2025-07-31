@@ -7,11 +7,8 @@
 
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
-import { Badge } from '@/components/ui/badge'
 import { 
   Plus, 
   Home, 
@@ -22,10 +19,14 @@ import {
   MoreVertical,
   Shield
 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
-import { PropertyEnrichmentStatus } from '@/components/property/property-enrichment-status'
-import { toast } from 'sonner'
 import Link from 'next/link'
+import { useEffect, useState, useCallback } from 'react'
+import { toast } from 'sonner'
+
+import { PropertyEnrichmentStatus } from '@/components/property/property-enrichment-status'
+import { Badge } from '@/components/ui/badge'
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
 
 interface Property {
   id: string

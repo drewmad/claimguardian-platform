@@ -2,6 +2,7 @@
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { useMemo } from 'react'
+
 import { authLogger } from '@/lib/logger'
 
 let browserClient: ReturnType<typeof createBrowserSupabaseClient> | undefined

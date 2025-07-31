@@ -10,12 +10,16 @@
  */
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import type { LegalDocument } from '@claimguardian/db'
 import { ExternalLink, FileText, Shield, AlertCircle, CheckCircle } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+
+import { LegalDocumentModal } from './legal-document-modal'
+
 import { legalServiceClientFix } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
-import { LegalDocumentModal } from './legal-document-modal'
-import type { LegalDocument } from '@claimguardian/db'
+
+
 
 interface LegalConsentFormProps {
   userId?: string

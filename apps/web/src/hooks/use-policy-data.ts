@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { useSupabase } from '@/lib/supabase/client'
+
 import { useAuth } from '@/components/auth/auth-provider'
+import { useSupabase } from '@/lib/supabase/client'
 
 interface PolicyDocument {
   id: string

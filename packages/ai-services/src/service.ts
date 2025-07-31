@@ -1,9 +1,9 @@
-import { AIOrchestrator } from './orchestrator/orchestrator';
-import { GeminiProvider } from './providers/gemini.provider';
-import { SemanticCache } from './cache/semantic-cache';
 import { CacheManager } from './cache/cache.manager';
+import { SemanticCache } from './cache/semantic-cache';
 import { CostTracker } from './monitoring/cost-tracker';
 import { AIMonitoringDashboard } from './monitoring/dashboard';
+import { AIOrchestrator } from './orchestrator/orchestrator';
+import { GeminiProvider } from './providers/gemini.provider';
 
 // Singleton instance
 let aiServiceInstance: AIService | null = null;

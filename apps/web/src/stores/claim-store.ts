@@ -1,6 +1,6 @@
+import type { Database } from '@claimguardian/db'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
-import type { Database } from '@claimguardian/db'
 
 // Database types
 type DbClaim = Database['public']['Tables']['claims']['Row']

@@ -1,4 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
+
 import { 
   getPolicies, 
   getPolicy, 
@@ -7,7 +9,6 @@ import {
   getActivePolicies 
 } from '@/actions/policies'
 import type { CreatePolicyInput } from '@/types/database-enhancements'
-import { toast } from 'sonner'
 
 // Query keys factory
 export const policyKeys = {

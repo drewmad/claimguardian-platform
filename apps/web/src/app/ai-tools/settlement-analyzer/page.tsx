@@ -1,20 +1,22 @@
 'use client'
 
+import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Textarea } from '@/components/ui/textarea'
 import { Progress } from '@/components/ui/progress'
-import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
+import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
-import { useAuth } from '@/components/auth/auth-provider'
-import { toast } from 'sonner'
+
 
 interface SettlementAnalysis {
   fairnessScore: number

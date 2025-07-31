@@ -9,9 +9,10 @@
 
 'use client'
 
-import React, { Component, ReactNode, ErrorInfo } from 'react'
-import { logger } from '@/lib/logger'
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
+import React, { Component, ReactNode, ErrorInfo } from 'react'
+
+import { logger } from '@/lib/logger'
 
 interface Props {
   children: ReactNode

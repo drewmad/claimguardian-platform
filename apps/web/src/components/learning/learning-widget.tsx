@@ -7,10 +7,12 @@
 
 'use client'
 
-import React, { useState } from 'react'
-import { Brain, Search, Lightbulb, AlertCircle, ChevronRight } from 'lucide-react'
-import { learningAssistant } from '@/lib/learning/learning-assistant'
 import { Button } from '@claimguardian/ui'
+import { Brain, Search, Lightbulb, AlertCircle, ChevronRight } from 'lucide-react'
+import React, { useState } from 'react'
+
+import { learningAssistant } from '@/lib/learning/learning-assistant'
+
 
 interface LearningResult {
   id?: string

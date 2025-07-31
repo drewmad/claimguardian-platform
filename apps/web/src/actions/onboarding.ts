@@ -11,9 +11,10 @@
 
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger'
 import { sendWelcomeEmail } from './email'
+
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/server'
 
 export interface OnboardingData {
   // Step 1: User Profile

@@ -1,14 +1,17 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Shield, AlertCircle, CheckCircle, FileText, DollarSign, AlertTriangle } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@claimguardian/ui'
-import { Badge } from '@/components/ui/badge'
-import { useSupabase } from '@/lib/supabase/client'
-import { usePolicyData, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
+import { Shield, AlertCircle, CheckCircle, FileText, DollarSign, AlertTriangle } from 'lucide-react'
+import React, { useState } from 'react'
 import { toast } from 'sonner'
+
 import { PolicyUpload } from '@/components/policy/policy-upload'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { usePolicyData, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
+import { useSupabase } from '@/lib/supabase/client'
+
+
 
 interface DamageAnalyzerEnhancedProps {
   propertyId: string

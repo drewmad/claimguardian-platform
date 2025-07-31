@@ -3,6 +3,7 @@
  */
 
 import { LegalDocument, LegalDocumentType } from '@claimguardian/db'
+
 import { logger } from '@/lib/logger'
 
 class LegalServiceClientFix {

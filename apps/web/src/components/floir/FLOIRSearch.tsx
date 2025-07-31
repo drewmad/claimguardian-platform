@@ -1,12 +1,14 @@
 'use client'
 
-import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { Input } from '@claimguardian/ui'
-import { createClient } from '@/lib/supabase/client'
 import { Search, ExternalLink, Loader2, FileText, AlertTriangle } from 'lucide-react'
+import { useState } from 'react'
+
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
+
 
 interface SearchResult {
   id: string

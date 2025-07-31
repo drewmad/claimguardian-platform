@@ -13,11 +13,13 @@
  */
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+
 import './globals.css'
-import { AuthProvider } from '@/components/auth/auth-provider'
-import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
-import { QueryProvider } from '@/components/providers/query-provider'
 import { Toaster } from 'sonner'
+
+import { AuthProvider } from '@/components/auth/auth-provider'
+import { QueryProvider } from '@/components/providers/query-provider'
+import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
 
 const inter = Inter({ subsets: ['latin'] })
 

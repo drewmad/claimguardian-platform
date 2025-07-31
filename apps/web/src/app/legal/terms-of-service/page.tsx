@@ -6,6 +6,7 @@
  */
 
 import { Metadata } from 'next'
+
 import { LegalDocumentView } from '@/components/legal/legal-document-view'
 
 export const metadata: Metadata = {

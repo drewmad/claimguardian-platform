@@ -10,19 +10,22 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
 import { 
   AlertTriangle, Shield, Zap, Heart, MapPin, ExternalLink, 
   CheckCircle
 } from 'lucide-react'
+import Link from 'next/link'
+import { useState, useEffect } from 'react'
+import MapGL, { Source, Layer, Marker, Popup } from 'react-map-gl/mapbox'
+
+import { updateUserChecklist, getChecklistProgress } from '@/actions/checklist'
+import { getDisasterHubData } from '@/actions/disasters'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import Link from 'next/link'
-import { getDisasterHubData } from '@/actions/disasters'
-import { updateUserChecklist, getChecklistProgress } from '@/actions/checklist'
-import MapGL, { Source, Layer, Marker, Popup } from 'react-map-gl/mapbox'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+
+
 import 'mapbox-gl/dist/mapbox-gl.css'
 
 // --- DATA TYPES ---

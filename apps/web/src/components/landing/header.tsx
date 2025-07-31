@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { useModalStore } from '@/stores/modal-store'
 import { COLORS } from '@/lib/constants'
+import { useModalStore } from '@/stores/modal-store'
 
 const HeaderShieldIcon = () => (
   <svg width="28" height="32" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">

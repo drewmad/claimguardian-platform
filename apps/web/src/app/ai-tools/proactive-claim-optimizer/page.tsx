@@ -1,17 +1,19 @@
 'use client'
 
+import { Shield, CheckCircle, AlertTriangle, XCircle, FileText, TrendingUp, Search, Sparkles, ChevronRight, FileCheck, AlertCircle } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { Shield, CheckCircle, AlertTriangle, XCircle, FileText, TrendingUp, Search, Sparkles, ChevronRight, FileCheck, AlertCircle } from 'lucide-react'
-import { toast } from 'sonner'
-import Link from 'next/link'
-import { useAuth } from '@/components/auth/auth-provider'
+
 
 interface OptimizationItem {
   id: string

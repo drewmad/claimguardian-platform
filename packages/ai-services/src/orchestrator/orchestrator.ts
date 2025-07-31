@@ -1,7 +1,7 @@
-import { BaseAIProvider } from '../providers/base.provider';
 import { CacheManager } from '../cache/cache.manager';
 import { SemanticCache } from '../cache/semantic-cache';
 import { CostTracker } from '../monitoring/cost-tracker';
+import { BaseAIProvider } from '../providers/base.provider';
 import {
   AIRequest,
   AIResponse,

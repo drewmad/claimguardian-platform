@@ -7,8 +7,9 @@
  * @status active
  */
 
-import { logger } from '@/lib/logger'
 import { mockConsole } from '../../utils/test-utils'
+
+import { logger } from '@/lib/logger'
 
 describe('Logger', () => {
   let console: ReturnType<typeof mockConsole>

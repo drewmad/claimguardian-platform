@@ -1,13 +1,15 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
 import { X, User, Shield, Bell, Palette, Globe, Key, Save, Trash2, AlertCircle, CheckCircle, Moon, Sun, Monitor, Volume2, VolumeX, Mail, Phone, Lock, Eye, EyeOff, Smartphone, Settings as SettingsIcon, Wrench, FileText } from 'lucide-react'
+import { useState, useEffect, useCallback } from 'react'
+import { toast } from 'sonner'
+
 import { useAuth } from '@/components/auth/auth-provider'
-import { profileService, UserProfile } from '@/lib/auth/profile-service'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { toast } from 'sonner'
+import { profileService, UserProfile } from '@/lib/auth/profile-service'
+
 
 interface SettingsModalProps {
   isOpen: boolean

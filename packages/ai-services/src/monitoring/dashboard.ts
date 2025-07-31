@@ -1,4 +1,3 @@
-import { CostTracker } from './cost-tracker';
 import { CacheManager } from '../cache/cache.manager';
 import {
   DashboardData,
@@ -7,6 +6,8 @@ import {
   CacheStats,
   HealthMetrics
 } from '../types/index';
+
+import { CostTracker } from './cost-tracker';
 
 interface MetricValue {
   value: number;

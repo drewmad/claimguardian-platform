@@ -1,17 +1,8 @@
 'use client'
 
-import { useState } from 'react'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Calculator, TrendingUp, Users, Shield, BarChart3, Eye, EyeOff, Filter, Calendar, Info } from 'lucide-react'
-import { toast } from 'sonner'
 import Link from 'next/link'
+import { useState } from 'react'
 import {
   LineChart,
   Line,
@@ -24,6 +15,17 @@ import {
   Pie,
   Cell
 } from 'recharts'
+import { toast } from 'sonner'
+
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Progress } from '@/components/ui/progress'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 
 interface ClaimInsight {
   id: string

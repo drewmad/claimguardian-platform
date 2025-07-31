@@ -1,8 +1,9 @@
 // apps/web/src/actions/checklist.ts
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+
+import { createClient } from '@/lib/supabase/server'
 
 export async function updateUserChecklist({ itemId, completed }: { itemId: string, completed: boolean }) {
   const supabase = await createClient()

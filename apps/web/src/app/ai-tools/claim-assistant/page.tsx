@@ -1,18 +1,20 @@
 'use client'
 
+import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
-import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle } from 'lucide-react'
 import { AIClientService } from '@/lib/ai/client-service'
-import { useAuth } from '@/components/auth/auth-provider'
-import { toast } from 'sonner'
-import Link from 'next/link'
+
 
 interface ClaimStep {
   id: string

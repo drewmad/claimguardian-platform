@@ -1,9 +1,5 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
-import { useAuth } from '@/components/auth/auth-provider'
-import { useRouter } from 'next/navigation'
-import { useSupabase } from '@/lib/supabase/client'
 import { 
   UserCheck,
   Shield,
@@ -13,12 +9,17 @@ import {
   ArrowRight
 } from 'lucide-react'
 import { Loader2 } from 'lucide-react'
-import type { GooglePlaceResult } from '@/lib/services/types'
+import { useRouter } from 'next/navigation'
+import React, { useState, useEffect, useRef } from 'react'
+import { toast } from 'sonner'
+
+import { saveOnboardingProgress, completeOnboarding, trackOnboardingStep } from '@/actions/onboarding'
+import { useAuth } from '@/components/auth/auth-provider'
+import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { toast } from 'sonner'
-import { PropertyWizard } from '@/components/property/property-wizard'
-import { saveOnboardingProgress, completeOnboarding, trackOnboardingStep } from '@/actions/onboarding'
+import type { GooglePlaceResult } from '@/lib/services/types'
+import { useSupabase } from '@/lib/supabase/client'
 
 interface OnboardingStep {
   id: string

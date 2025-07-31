@@ -9,9 +9,10 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/client'
-import { logger } from '@/lib/logger'
 import { authService } from './auth-service'
+
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 export interface UserProfile {
   id: string

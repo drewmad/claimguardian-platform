@@ -9,9 +9,10 @@
  * @status active
  */
 
-import { createClient } from '@/lib/supabase/client'
-import { logger } from '@/lib/logger'
 import type { StorageFile } from './types'
+
+import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/client'
 
 export interface FileUploadResult {
   success: boolean

@@ -6,12 +6,14 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import type { LegalDocument, LegalDocumentType } from '@claimguardian/db'
 import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Printer } from 'lucide-react'
 import Link from 'next/link'
+import { useState, useEffect } from 'react'
+
 import { legalService } from '@/lib/legal/legal-service'
 import { logger } from '@/lib/logger'
-import type { LegalDocument, LegalDocumentType } from '@claimguardian/db'
+
 
 interface LegalDocumentViewProps {
   documentType: LegalDocumentType

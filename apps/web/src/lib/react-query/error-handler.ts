@@ -1,4 +1,5 @@
 import { toast } from 'sonner'
+
 import { logger } from '@/lib/logger'
 
 export function queryErrorHandler(error: Error) {

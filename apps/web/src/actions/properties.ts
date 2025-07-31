@@ -10,14 +10,15 @@
  */
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
 import { 
   PaginationParams, 
   PaginatedResponse,
   normalizePaginationParams,
   createPaginationMeta 
 } from '@claimguardian/utils'
+import { revalidatePath } from 'next/cache'
+
+import { createClient } from '@/lib/supabase/server'
 import { updatePropertySchema } from '@/lib/validation/schemas'
 
 interface PropertyData {

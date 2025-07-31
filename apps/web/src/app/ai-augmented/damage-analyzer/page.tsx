@@ -1,16 +1,5 @@
 'use client'
 
-import { useState, useRef, useEffect, useMemo } from 'react'
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Button } from '@/components/ui/button'
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Progress } from '@/components/ui/progress'
-import { Textarea } from '@/components/ui/textarea'
-import { AIBreadcrumb } from '@/components/ui/breadcrumb'
-import { ImageAnalysisLoading, SkeletonCard } from '@/components/ui/loading-states'
 import { 
   Camera,
   AlertTriangle,
@@ -33,17 +22,31 @@ import {
   Wifi,
   WifiOff
 } from 'lucide-react'
+import { useState, useRef, useEffect, useMemo } from 'react'
+import { toast } from 'sonner'
+
+import { useAuth } from '@/components/auth/auth-provider'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { LazyImageUploadAnalyzer as ImageUploadAnalyzer, LazyReportGenerator as ReportGenerator } from '@/components/lazy'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
+import { AIBreadcrumb } from '@/components/ui/breadcrumb'
+import { Button } from '@/components/ui/button'
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'
+import { ImageAnalysisLoading, SkeletonCard } from '@/components/ui/loading-states'
+import { Progress } from '@/components/ui/progress'
+import { Textarea } from '@/components/ui/textarea'
+import { useAuthDebug } from '@/hooks/use-auth-debug'
+import { useAIKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
 import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
-import { useSupabase } from '@/lib/supabase/client'
-import { useAuth } from '@/components/auth/auth-provider'
-import { useAuthDebug } from '@/hooks/use-auth-debug'
-import { toast } from 'sonner'
-import { useAIKeyboardShortcuts } from '@/hooks/use-keyboard-shortcuts'
-import { useRealTimeStatus, useFallbackStatus } from '@/lib/real-time-status'
 import { useErrorRecovery, useNetworkStatus } from '@/lib/error-recovery'
 import { compressImage, useRequestCache, useLazyLoad, performanceMonitor, useBatchProcessor } from '@/lib/performance-utils'
-import { LazyImageUploadAnalyzer as ImageUploadAnalyzer, LazyReportGenerator as ReportGenerator } from '@/components/lazy'
+import { useRealTimeStatus, useFallbackStatus } from '@/lib/real-time-status'
+import { useSupabase } from '@/lib/supabase/client'
+
+
 
 interface DamageItem {
   id: string

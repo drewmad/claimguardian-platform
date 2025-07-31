@@ -10,19 +10,21 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { 
   Wrench, Plus, Thermometer, Zap, Droplets, Flame,
   Shield, AlertTriangle, Calendar,
   TrendingUp, FileText, Settings, ChevronRight,
   Home, Activity, DollarSign, BarChart
 } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { useRouter } from 'next/navigation'
+
 
 type SystemType = 'hvac' | 'plumbing' | 'electrical' | 'roofing' | 'water_heater' | 'appliances'
 type SystemStatus = 'good' | 'fair' | 'needs_attention' | 'critical'

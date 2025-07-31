@@ -1,5 +1,6 @@
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
+
 import { authLogger } from '@/lib/logger'
 
 export async function createClient() {

@@ -10,11 +10,13 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
+import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
-import { Eye, EyeOff, AlertCircle, CheckCircle } from 'lucide-react'
+
 
 export default function ResetPasswordPage() {
   const router = useRouter()

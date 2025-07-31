@@ -9,8 +9,9 @@
  * @status active
  */
 
-import { logger } from '@/lib/logger'
 import type { GooglePlaceResult } from './types'
+
+import { logger } from '@/lib/logger'
 
 interface PropertyDataResponse {
   estimatedValue?: number

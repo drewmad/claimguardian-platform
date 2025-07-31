@@ -1,9 +1,11 @@
 'use client'
 
-import { useEffect } from 'react'
 import { AlertCircle, RefreshCw, Home } from 'lucide-react'
-import { logger } from '@/lib/logger'
 import Link from 'next/link'
+import { useEffect } from 'react'
+
+import { logger } from '@/lib/logger'
+
 
 export default function Error({
   error,

@@ -10,8 +10,9 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import { Clock, DollarSign, ShieldCheck } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
+
 import { COLORS } from '@/lib/constants'
 
 // Animation hook reused

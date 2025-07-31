@@ -10,14 +10,15 @@
  */
 'use client'
 
-import { useState, useEffect } from 'react'
 import { X, Eye, EyeOff, AlertCircle, Shield, Check } from 'lucide-react'
-import { useModalStore } from '@/stores/modal-store'
+import { useState, useEffect } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from '@/lib/logger'
-import { authService } from '@/lib/auth/auth-service'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
+import { authService } from '@/lib/auth/auth-service'
+import { logger } from '@/lib/logger'
 import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'
+import { useModalStore } from '@/stores/modal-store'
 
 export function SignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()

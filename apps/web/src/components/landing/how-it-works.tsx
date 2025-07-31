@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
 import { Upload, BrainCircuit, FileText, DollarSign } from 'lucide-react'
+import { useState, useEffect, useRef } from 'react'
 // Animation hook reused from hero
 const useInView = (options: IntersectionObserverInit) => {
   const ref = useRef<HTMLDivElement>(null)

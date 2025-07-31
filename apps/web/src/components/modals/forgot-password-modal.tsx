@@ -10,10 +10,11 @@
  */
 'use client'
 
-import { useState } from 'react'
 import { X } from 'lucide-react'
-import { useModalStore } from '@/stores/modal-store'
+import { useState } from 'react'
+
 import { createClient } from '@/lib/supabase/client'
+import { useModalStore } from '@/stores/modal-store'
 
 export function ForgotPasswordModal() {
   const { activeModal, closeModal, openModal } = useModalStore()

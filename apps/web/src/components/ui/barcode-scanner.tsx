@@ -1,11 +1,13 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
 import { BrowserMultiFormatReader } from '@zxing/library'
+import { X, Scan } from 'lucide-react'
+import { useEffect, useRef, useState } from 'react'
+import { toast } from 'sonner'
+
 import { Button } from './button'
 import { Card } from './card'
-import { X, Scan } from 'lucide-react'
-import { toast } from 'sonner'
+
 
 interface BarcodeScannerProps {
   onScan: (code: string, format: string) => void

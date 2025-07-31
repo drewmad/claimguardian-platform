@@ -6,12 +6,14 @@
  */
 'use client'
 
-import React, { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { AlertCircle, AlertTriangle, Bug, CheckCircle, Clock, Info, RefreshCw, XCircle } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
 import { formatDistanceToNow } from 'date-fns'
+import { AlertCircle, AlertTriangle, Bug, CheckCircle, Clock, Info, RefreshCw, XCircle } from 'lucide-react'
+import React, { useEffect, useState, useCallback } from 'react'
+
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { createClient } from '@/lib/supabase/client'
+
 
 interface ErrorLog {
   id: string

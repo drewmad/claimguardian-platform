@@ -10,14 +10,16 @@
  */
 'use client'
 
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { ArrowLeft, Shield, FileText } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useEffect, useState } from 'react'
+
+import { recordLegalAcceptances } from '@/actions/legal'
 import { useAuth } from '@/components/auth/auth-provider'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
-import { recordLegalAcceptances } from '@/actions/legal'
 import { logger } from '@/lib/logger'
-import Link from 'next/link'
+
 
 export default function LegalUpdatePage() {
   const router = useRouter()

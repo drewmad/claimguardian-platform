@@ -7,8 +7,8 @@
 
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
+import { createClient } from '@/lib/supabase/server'
 
 export interface PropertyEnrichmentResult {
   success: boolean

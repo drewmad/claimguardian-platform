@@ -7,9 +7,9 @@
  * @status active
  */
 
-import React, { ReactElement } from 'react'
-import { render, RenderOptions } from '@testing-library/react'
 import { jest } from '@jest/globals'
+import { render, RenderOptions } from '@testing-library/react'
+import React, { ReactElement } from 'react'
 
 // Mock AuthProvider for testing
 const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {

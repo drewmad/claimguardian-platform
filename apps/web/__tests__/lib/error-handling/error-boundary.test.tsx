@@ -7,10 +7,13 @@
  * @status active
  */
 
-import React from 'react'
 import { render, screen } from '@testing-library/react'
-import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
+import React from 'react'
+
 import { throwError, mockConsole } from '../../utils/test-utils'
+
+import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
+
 
 // Mock the logger
 jest.mock('@/lib/logger', () => ({
