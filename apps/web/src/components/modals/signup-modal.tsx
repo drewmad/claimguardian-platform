@@ -14,7 +14,6 @@ import { X, Eye, EyeOff, AlertCircle, Shield, Check } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'

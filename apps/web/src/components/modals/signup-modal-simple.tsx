@@ -6,7 +6,7 @@
  */
 'use client'
 
-import { X, Eye, EyeOff, AlertCircle, Shield, Check, CheckCircle, Loader2 } from 'lucide-react'
+import { X, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
@@ -153,7 +153,7 @@ export function SignupModalSimple() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Check Your Email!</h2>
           <p className="text-slate-400 mb-6">
-            We've sent a verification link to <strong className="text-white">{formData.email}</strong>
+            We&apos;ve sent a verification link to <strong className="text-white">{formData.email}</strong>
           </p>
           <p className="text-sm text-slate-500 mb-6">
             Please check your inbox and click the link to verify your account.

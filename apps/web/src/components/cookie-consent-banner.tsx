@@ -71,7 +71,7 @@ export function CookieConsentBanner() {
     }
   }
 
-  const handleSavePreferences = (preferences: any) => {
+  const handleSavePreferences = (preferences: { necessary: boolean; analytics: boolean; marketing: boolean; functional: boolean }) => {
     localStorage.setItem('cookie-consent', 'custom')
     localStorage.setItem('cookie-preferences', JSON.stringify(preferences))
     localStorage.setItem('cookie-consent-date', new Date().toISOString())
