@@ -8,6 +8,9 @@
 import { redirect } from 'next/navigation'
 import { getServerSession } from '@/lib/supabase/server-auth'
 
+// Force dynamic rendering for auth pages since they use cookies
+export const dynamic = 'force-dynamic'
+
 export default async function AuthLayout({
   children,
 }: {

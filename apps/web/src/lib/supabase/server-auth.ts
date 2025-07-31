@@ -37,7 +37,7 @@ export async function createAuthClient() {
                 sameSite: 'lax' as const,
                 httpOnly: true
               })
-            } catch (error) {
+            } catch {
               // Cookie setting can fail in Server Components
               // This is expected behavior when called from non-route handlers
               authLogger.debug('Cookie set called from Server Component', { name })
@@ -51,7 +51,7 @@ export async function createAuthClient() {
                 ...options,
                 maxAge: 0
               })
-            } catch (error) {
+            } catch {
               authLogger.debug('Cookie remove called from Server Component', { name })
             }
           },

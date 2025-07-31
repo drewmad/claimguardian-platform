@@ -10,7 +10,7 @@ import { User } from '@supabase/supabase-js'
 import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 
-import { authService, AuthError, AuthResponse } from '@/lib/auth/auth-service'
+import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
@@ -322,6 +322,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       sessionManager.stopMonitoring()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase.auth, syncWithServerState, router])
 
   // Manual session refresh

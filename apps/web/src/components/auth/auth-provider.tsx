@@ -13,7 +13,7 @@
 import { User } from '@supabase/supabase-js'
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
 
-import { authService, AuthError, AuthResponse } from '@/lib/auth/auth-service'
+import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
@@ -288,6 +288,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
       sessionManager.stopMonitoring()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [supabase.auth, user?.id]) // Add dependencies to prevent re-initialization
 
   // Sign in handler
