@@ -332,6 +332,9 @@ function LegalDocumentItem({
             className="block cursor-pointer"
           >
             <div className="text-sm mb-2">
+              {document.requires_acceptance && (
+                <span className="text-xs font-semibold text-red-400 uppercase mr-2">REQUIRED</span>
+              )}
               <span className="text-slate-300">I have read and agree to the </span>
               <button
                 type="button"

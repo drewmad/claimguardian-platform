@@ -46,6 +46,7 @@ export function EnhancedSignupModal() {
   
   // Legal document state
   const [acceptedDocuments, setAcceptedDocuments] = useState<string[]>([])
+  const [hasAllRequiredConsents, setHasAllRequiredConsents] = useState(false)
   
   // URL and referrer data
   const [urlData, setUrlData] = useState<{
@@ -123,8 +124,8 @@ export function EnhancedSignupModal() {
       setValidationError('Please enter a valid phone number')
       return false
     }
-    if (acceptedDocuments.length === 0) {
-      setValidationError('You must accept all required legal documents')
+    if (!hasAllRequiredConsents) {
+      setValidationError('You must accept all required legal documents (Terms of Service, Privacy Policy, and AI Use Agreement)')
       return false
     }
     if (!formData.gdprConsent) {
@@ -532,9 +533,15 @@ export function EnhancedSignupModal() {
               </div>
               
               <div className="bg-slate-700/30 rounded-lg p-4 border border-slate-600/50">
+                {!hasAllRequiredConsents && (
+                  <div className="mb-3 text-xs text-amber-400 flex items-center gap-1">
+                    <AlertCircle className="w-3 h-3" />
+                    <span>All documents marked "REQUIRED" must be accepted</span>
+                  </div>
+                )}
                 <LegalConsentForm
-                  onConsentChange={() => {
-                    // This is handled by onSubmit
+                  onConsentChange={(allAccepted) => {
+                    setHasAllRequiredConsents(allAccepted)
                   }}
                   onSubmit={async (documentIds) => {
                     setAcceptedDocuments(documentIds)
@@ -626,7 +633,7 @@ export function EnhancedSignupModal() {
 
             <button
               type="submit"
-              disabled={loading}
+              disabled={loading || !hasAllRequiredConsents}
               className="w-full relative py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl"
             >
               {loading ? (
@@ -637,6 +644,8 @@ export function EnhancedSignupModal() {
                   </svg>
                   Creating Account...
                 </span>
+              ) : !hasAllRequiredConsents ? (
+                'Accept Required Agreements to Continue'
               ) : (
                 'Create Account'
               )}
