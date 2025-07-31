@@ -18,8 +18,10 @@ import {
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { ClaimTimeline, TimelineEvent } from '@/components/claims/claim-timeline'
 import { EvidenceManager } from '@/components/claims/evidence-manager'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -62,6 +64,7 @@ export default function ClaimDetailPage() {
   const params = useParams()
   const router = useRouter()
   const claimId = params.id as string
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
 
   // Mock claim data
   const [claim] = useState<ClaimDetails>({
@@ -125,6 +128,23 @@ export default function ClaimDetailPage() {
     ]
   })
 
+  // Convert claim timeline to TimelineEvent format
+  useState(() => {
+    const events: TimelineEvent[] = claim.timeline.map((item, index) => ({
+      id: `timeline-${index}`,
+      claimId: claimId,
+      date: item.date,
+      type: item.type === 'status' ? 'status_change' : 
+            item.type === 'document' ? 'document_upload' :
+            item.type === 'communication' ? 'communication' :
+            item.type === 'payment' ? 'payment' : 'other',
+      category: 'insurance',
+      title: item.event,
+      description: item.description
+    }))
+    setTimelineEvents(events)
+  })
+
   const getStatusColor = (status: string) => {
     switch(status) {
       case 'draft': return 'bg-gray-600'
@@ -137,15 +157,6 @@ export default function ClaimDetailPage() {
     }
   }
 
-  const getTimelineIcon = (type: string) => {
-    switch(type) {
-      case 'status': return CheckCircle
-      case 'document': return FileText
-      case 'communication': return MessageSquare
-      case 'payment': return DollarSign
-      default: return AlertCircle
-    }
-  }
 
   return (
     <ProtectedRoute>
@@ -362,46 +373,15 @@ export default function ClaimDetailPage() {
             </TabsContent>
 
             <TabsContent value="timeline" className="space-y-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardHeader>
-                  <CardTitle>Claim Timeline</CardTitle>
-                  <CardDescription>Track the progress of your claim</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    {claim.timeline.map((event, index) => {
-                      const Icon = getTimelineIcon(event.type)
-                      return (
-                        <div key={index} className="flex gap-4">
-                          <div className="relative">
-                            <div className={`w-10 h-10 rounded-full flex items-center justify-center ${
-                              event.type === 'status' ? 'bg-blue-600' :
-                              event.type === 'document' ? 'bg-green-600' :
-                              event.type === 'communication' ? 'bg-purple-600' :
-                              'bg-yellow-600'
-                            }`}>
-                              <Icon className="w-5 h-5 text-white" />
-                            </div>
-                            {index < claim.timeline.length - 1 && (
-                              <div className="absolute top-10 left-5 w-px h-full bg-gray-700" />
-                            )}
-                          </div>
-                          
-                          <div className="flex-1 pb-8">
-                            <div className="flex items-center gap-3 mb-1">
-                              <h4 className="font-medium text-white">{event.event}</h4>
-                              <span className="text-sm text-gray-400">
-                                {new Date(event.date).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <p className="text-gray-400">{event.description}</p>
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
+              <ClaimTimeline 
+                claimId={claimId}
+                events={timelineEvents}
+                allowAddEvent={true}
+                onEventAdd={(event) => {
+                  setTimelineEvents(prev => [event, ...prev])
+                  toast.success('Timeline event added')
+                }}
+              />
             </TabsContent>
 
             <TabsContent value="communications">
