@@ -358,33 +358,24 @@ class LegalService {
   }
 
   /**
-   * Get user's IP and geolocation
+   * Get user's IP and geolocation (server-side safe)
+   * External API calls removed for security and resilience
    */
   async getUserLocationData(): Promise<{
     ip: string
     geolocation?: Geolocation
   }> {
     try {
-      // Use a geolocation API service
-      const response = await fetch('https://ipapi.co/json/')
-      const data = await response.json()
+      // Server-side IP detection from headers (more secure and reliable)
+      // This should be called from server actions that have access to headers
+      logger.info('Client-side geolocation API disabled for security')
       
       return {
-        ip: data.ip,
-        geolocation: {
-          country: data.country_name,
-          country_code: data.country_code,
-          region: data.region,
-          city: data.city,
-          postal_code: data.postal,
-          lat: data.latitude,
-          lon: data.longitude,
-          timezone: data.timezone
-        }
+        ip: 'client-detected', // Will be replaced server-side
+        geolocation: undefined // Server-side will populate if needed
       }
     } catch {
-      logger.warn('Failed to get location data', {})
-      // Fallback to just IP
+      logger.warn('Failed to prepare location data', {})
       return {
         ip: 'unknown'
       }

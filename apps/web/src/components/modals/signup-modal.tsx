@@ -97,16 +97,17 @@ export function SignupModal() {
     
     setLoading(true)
     try {
-      // Collect tracking data safely (with fallbacks)
+      // Collect client-side tracking data safely (IP will be detected server-side)
       let trackingData = {}
       try {
         trackingData = await collectSignupTrackingData()
       } catch (error) {
-        console.warn('Tracking data collection failed, using defaults:', error)
+        console.warn('Tracking data collection failed, using safe defaults:', error)
+        // Resilient fallback - no external API calls
         trackingData = {
-          ipAddress: '127.0.0.1',
-          userAgent: navigator.userAgent,
-          deviceType: 'unknown'
+          userAgent: navigator?.userAgent || 'unknown',
+          deviceType: 'unknown',
+          screenResolution: screen ? `${screen.width}x${screen.height}` : 'unknown'
         }
       }
       

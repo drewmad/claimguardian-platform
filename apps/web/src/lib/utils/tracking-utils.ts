@@ -96,14 +96,8 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
     // Device Fingerprint (basic)
     trackingData.deviceFingerprint = generateDeviceFingerprint()
     
-    // IP Address (fetch from external service)
-    try {
-      const ipResponse = await fetch('https://api.ipify.org?format=json')
-      const ipData = await ipResponse.json()
-      trackingData.ipAddress = ipData.ip
-    } catch (error) {
-      console.warn('Failed to fetch IP address:', error)
-    }
+    // IP Address will be determined server-side for security
+    // Client-side IP detection removed to avoid external API dependencies
     
     // Geolocation (with user permission)
     if (navigator.geolocation) {
@@ -164,20 +158,12 @@ function generateDeviceFingerprint(): string {
 }
 
 /**
- * Gets approximate geolocation (for privacy-conscious tracking)
+ * Gets approximate geolocation (server-side only for privacy and security)
+ * Client-side version returns null to avoid external API dependencies
  */
 export async function getApproximateLocation(): Promise<{ country?: string; region?: string; city?: string } | null> {
-  try {
-    const response = await fetch('https://ipapi.co/json/')
-    const data = await response.json()
-    
-    return {
-      country: data.country_name,
-      region: data.region,
-      city: data.city
-    }
-  } catch (error) {
-    console.warn('Failed to get approximate location:', error)
-    return null
-  }
+  // External geolocation API calls removed for security
+  // Geolocation will be handled server-side if needed
+  console.debug('Client-side geolocation disabled for security - use server-side detection')
+  return null
 }

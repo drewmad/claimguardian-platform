@@ -15,6 +15,7 @@ import { headers } from 'next/headers'
 
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
+import { getClientIPAddress } from '@/lib/utils/server-ip-detection'
 
 interface ConsentData {
   email: string
@@ -49,10 +50,8 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
     const supabase = await createClient()
     const headersList = await headers()
     
-    // Get IP and user agent for audit trail
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
-                     'unknown'
+    // Get IP and user agent for audit trail using resilient detection
+    const ipAddress = await getClientIPAddress()
     const userAgent = headersList.get('user-agent') || 'unknown'
     
     // Validate all required consents
