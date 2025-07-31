@@ -4,32 +4,28 @@ import {
   AlertCircle,
   Calendar,
   Camera,
-  CheckCircle,
-  ChevronRight,
   Download,
   Eye,
   FileText,
-  Filter,
   Grid,
   List,
-  Loader2,
   Plus,
   Search,
   Trash2,
   Upload,
   X
 } from 'lucide-react'
+import Image from 'next/image'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
@@ -162,7 +158,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
         setUploadProgress((i + 0.5) / files.length * 100)
 
         // Upload to Supabase Storage
-        const { data: uploadData, error: uploadError } = await supabase.storage
+        const { error: uploadError } = await supabase.storage
           .from('claim-evidence')
           .upload(fileName, file)
 
@@ -257,10 +253,11 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
           <Card key={item.id} className="bg-gray-800 border-gray-700 overflow-hidden">
             <div className="relative aspect-video bg-gray-900">
               {item.fileType.startsWith('image/') ? (
-                <img 
+                <Image 
                   src={item.fileUrl} 
                   alt={item.fileName}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
@@ -556,7 +553,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
             />
           </div>
           
-          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as any)}>
+          <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as EvidenceCategory | 'all')}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Categories" />
             </SelectTrigger>
@@ -642,9 +639,11 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
             
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-200px)]">
               {selectedFile.fileType.startsWith('image/') ? (
-                <img
+                <Image
                   src={selectedFile.fileUrl}
                   alt={selectedFile.fileName}
+                  width={800}
+                  height={600}
                   className="w-full h-auto"
                 />
               ) : (

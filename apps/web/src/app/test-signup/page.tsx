@@ -10,7 +10,7 @@ interface TestResult {
   step: string
   success: boolean
   message: string
-  details?: any
+  details?: unknown
 }
 
 export default function TestSignupPage() {

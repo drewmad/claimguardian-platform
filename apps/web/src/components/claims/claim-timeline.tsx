@@ -12,16 +12,14 @@ import {
   MessageSquare,
   Phone,
   Plus,
-  Shield,
-  User,
-  XCircle
+  User
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -138,8 +136,8 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
         claimId,
         date: newEvent.date!,
         time: newEvent.time,
-        type: newEvent.type as any,
-        category: newEvent.category as any,
+        type: newEvent.type as TimelineEvent['type'],
+        category: newEvent.category as TimelineEvent['category'],
         title: newEvent.title!,
         description: newEvent.description!,
         metadata: newEvent.metadata,
@@ -201,11 +199,6 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
     }
   }
 
-  const formatEventTime = (event: TimelineEvent) => {
-    const date = new Date(event.date)
-    const timeStr = event.time ? ` at ${event.time}` : ''
-    return `${date.toLocaleDateString()}${timeStr}`
-  }
 
   return (
     <div className="space-y-6">
@@ -234,7 +227,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                     <Label htmlFor="event-type">Event Type</Label>
                     <Select
                       value={newEvent.type}
-                      onValueChange={(value) => setNewEvent({ ...newEvent, type: value as any })}
+                      onValueChange={(value) => setNewEvent({ ...newEvent, type: value as TimelineEvent['type'] })}
                     >
                       <SelectTrigger id="event-type">
                         <SelectValue />
@@ -251,7 +244,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                     <Label htmlFor="event-category">Category</Label>
                     <Select
                       value={newEvent.category}
-                      onValueChange={(value) => setNewEvent({ ...newEvent, category: value as any })}
+                      onValueChange={(value) => setNewEvent({ ...newEvent, category: value as TimelineEvent['category'] })}
                     >
                       <SelectTrigger id="event-category">
                         <SelectValue />
@@ -356,7 +349,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                           ...newEvent,
                           metadata: {
                             ...newEvent.metadata,
-                            contactMethod: value as any
+                            contactMethod: value as TimelineEvent['metadata']['contactMethod']
                           }
                         })}
                       >

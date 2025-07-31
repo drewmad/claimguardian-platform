@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+import { botProtection } from '@/lib/security/bot-protection'
 import { createClient } from '@/lib/supabase/middleware'
 
 // Helper to clear all auth cookies
@@ -107,6 +108,32 @@ export async function middleware(request: NextRequest) {
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return response
+  }
+  
+  // Bot protection check
+  const botCheck = botProtection.checkRequest(request)
+  
+  // Block obvious bots
+  if (botCheck.shouldBlock) {
+    console.log('[MIDDLEWARE] Bot blocked:', {
+      confidence: botCheck.confidence,
+      reasons: botCheck.reasons,
+      path: pathname,
+      userAgent: request.headers.get('user-agent')
+    })
+    
+    return new NextResponse('Access Denied', { 
+      status: 403,
+      headers: {
+        'Content-Type': 'text/plain',
+      }
+    })
+  }
+  
+  // Add bot detection headers for client-side handling
+  if (botCheck.shouldChallenge) {
+    response.headers.set('X-Bot-Challenge', 'true')
+    response.headers.set('X-Bot-Confidence', botCheck.confidence.toString())
   }
   
   // Create Supabase client for middleware

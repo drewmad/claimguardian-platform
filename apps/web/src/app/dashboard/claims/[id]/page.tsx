@@ -1,15 +1,9 @@
 'use client'
 
 import {
-  AlertCircle,
   ArrowLeft,
-  Calendar,
-  CheckCircle,
-  Clock,
   DollarSign,
   Download,
-  FileText,
-  Home,
   Mail,
   MessageSquare,
   Phone,
@@ -18,7 +12,6 @@ import {
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
-import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ClaimTimeline, TimelineEvent } from '@/components/claims/claim-timeline'
@@ -379,7 +372,6 @@ export default function ClaimDetailPage() {
                 allowAddEvent={true}
                 onEventAdd={(event) => {
                   setTimelineEvents(prev => [event, ...prev])
-                  toast.success('Timeline event added')
                 }}
               />
             </TabsContent>

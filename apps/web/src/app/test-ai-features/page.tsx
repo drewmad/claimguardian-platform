@@ -1,9 +1,10 @@
 'use client'
 
 import { AlertCircle, Camera, CheckCircle, FileText, Loader2, XCircle } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -13,7 +14,11 @@ interface TestResult {
   name: string
   status: 'pending' | 'running' | 'success' | 'error'
   message?: string
-  details?: any
+  details?: {
+    hasOpenAIKey?: boolean
+    hasGeminiKey?: boolean
+    hasAnyKey?: boolean
+  } | Error | unknown
 }
 
 export default function TestAIFeaturesPage() {
@@ -35,7 +40,7 @@ export default function TestAIFeaturesPage() {
     ))
   }
 
-  const runTests = async () => {
+  const runTests = useCallback(async () => {
     // Test 1: Check API Keys
     updateTest(0, { status: 'running' })
     try {
@@ -103,7 +108,7 @@ export default function TestAIFeaturesPage() {
     updateTest(3, { status: 'running' })
     try {
       // Try a simple chat request
-      const keyStatus = tests[0].details as any
+      const keyStatus = tests[0].details as { hasAnyKey?: boolean; hasOpenAI?: boolean }
       if (keyStatus?.hasAnyKey) {
         const response = await aiClient.chat([
           { role: 'system', content: 'You are a helpful assistant.' },
@@ -153,11 +158,11 @@ export default function TestAIFeaturesPage() {
     }
 
     setAllTestsComplete(true)
-  }
+  }, [updateTest, aiClient, tests])
 
   useEffect(() => {
     runTests()
-  }, [])
+  }, [runTests])
 
   const successCount = tests.filter(t => t.status === 'success').length
   const errorCount = tests.filter(t => t.status === 'error').length

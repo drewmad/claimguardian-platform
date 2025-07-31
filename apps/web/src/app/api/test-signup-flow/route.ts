@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
-export async function POST(request: NextRequest) {
+export async function POST() {
   try {
     const supabase = await createClient()
     
@@ -104,7 +104,7 @@ export async function POST(request: NextRequest) {
     console.log('User created:', signUpData.user.id)
     
     // Step 5: Link consent to user
-    const { data: linkResult, error: linkError } = await supabase.rpc('link_consent_to_user', {
+    const { error: linkError } = await supabase.rpc('link_consent_to_user', {
       p_user_id: signUpData.user.id,
       p_email: testEmail,
       p_consent_token: consentToken

@@ -7,16 +7,10 @@ import {
   Calendar,
   Camera,
   CheckCircle,
-  ChevronRight,
   DollarSign,
-  FileText,
   Home,
   Loader2,
-  MapPin,
-  Phone,
-  Shield,
-  Upload,
-  X
+  Shield
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState } from 'react'
@@ -232,7 +226,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
       const supabase = createBrowserSupabaseClient()
       
       // Save claim draft
-      const { data, error } = await supabase
+      const { error } = await supabase
         .from('claims')
         .upsert({
           user_id: user!.id,

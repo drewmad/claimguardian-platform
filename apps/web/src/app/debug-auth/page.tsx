@@ -1,7 +1,7 @@
 'use client'
 
 import { AlertCircle, CheckCircle, Clock, Info, Loader2, RefreshCw, Shield, Trash2 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -17,7 +17,12 @@ interface DebugInfo {
   }
   authStatus: {
     hasSession: boolean
-    sessionDetails?: any
+    sessionDetails?: {
+      userId: string
+      email: string
+      expiresAt: string
+      provider: string
+    }
     error?: string
   }
   cookies: {
@@ -49,7 +54,7 @@ export default function DebugAuthPage() {
   const [clearing, setClearing] = useState(false)
   const supabase = createBrowserSupabaseClient()
 
-  const gatherDebugInfo = async () => {
+  const gatherDebugInfo = useCallback(async () => {
     setLoading(true)
     
     try {
@@ -147,7 +152,7 @@ export default function DebugAuthPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [supabase])
 
   const clearAllAuthData = async () => {
     setClearing(true)
@@ -203,7 +208,7 @@ export default function DebugAuthPage() {
 
   useEffect(() => {
     gatherDebugInfo()
-  }, [])
+  }, [gatherDebugInfo])
 
   if (loading) {
     return (
@@ -325,7 +330,7 @@ export default function DebugAuthPage() {
                       <li>Wait until the reset time shown above</li>
                       <li>Use a different email address</li>
                       <li>Try from a different network/IP</li>
-                      <li>Click "Clear All Auth Data" and try again</li>
+                      <li>Click &quot;Clear All Auth Data&quot; and try again</li>
                     </ul>
                   </div>
                 )}

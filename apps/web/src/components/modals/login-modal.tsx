@@ -28,6 +28,7 @@ export function LoginModal() {
   const [loading, setLoading] = useState(false)
   const [resending, setResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
+  const [honeypot, setHoneypot] = useState('') // Bot trap field
   const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
     cooldownMs: 60000, // 60 seconds
     key: 'login-resend'
@@ -45,6 +46,20 @@ export function LoginModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Check honeypot field - if filled, it's likely a bot
+    if (honeypot) {
+      logger.warn('Honeypot triggered on login', {
+        email,
+        honeypotValue: honeypot
+      })
+      // Silently fail to not alert the bot
+      setLoading(true)
+      setTimeout(() => {
+        setLoading(false)
+      }, 2000)
+      return
+    }
     
     setLoading(true)
     try {
@@ -143,6 +158,24 @@ export function LoginModal() {
               required
             />
           </div>
+
+          {/* Honeypot field - hidden from users, visible to bots */}
+          <input
+            type="text"
+            name="website_url"
+            value={honeypot}
+            onChange={(e) => setHoneypot(e.target.value)}
+            tabIndex={-1}
+            autoComplete="off"
+            style={{
+              position: 'absolute',
+              left: '-9999px',
+              width: '1px',
+              height: '1px',
+              overflow: 'hidden'
+            }}
+            aria-hidden="true"
+          />
 
           <div className="flex items-center justify-between">
             <label className="flex items-center">
