@@ -12,8 +12,8 @@ import { useState } from 'react'
 import { useAuth } from '@/components/auth/auth-provider'
 
 interface SignOutButtonProps {
-  variant?: 'default' | 'ghost' | 'outline'
-  size?: 'sm' | 'md' | 'lg'
+  variant?: 'default' | 'ghost' | 'secondary' | 'link'
+  size?: 'sm' | 'default' | 'lg' | 'icon'
   showIcon?: boolean
   className?: string
 }

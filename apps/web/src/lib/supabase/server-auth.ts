@@ -133,7 +133,7 @@ export async function refreshServerSession() {
     const { data: { session }, error } = await supabase.auth.refreshSession()
     
     if (error || !session) {
-      authLogger.error('Failed to refresh server session', {}, error)
+      authLogger.error('Failed to refresh server session', {}, error || undefined)
       return null
     }
     

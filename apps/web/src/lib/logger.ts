@@ -172,6 +172,8 @@ export const logger = new Logger()
 
 // Convenience functions for common modules
 export const authLogger = {
+  debug: (message: string, context?: Omit<LogContext, 'module'>) => 
+    logger.debug(message, { ...context, module: 'auth' }),
   info: (message: string, context?: Omit<LogContext, 'module'>) => 
     logger.info(message, { ...context, module: 'auth' }),
   warn: (message: string, context?: Omit<LogContext, 'module'>) => 

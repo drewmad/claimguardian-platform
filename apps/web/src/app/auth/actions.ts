@@ -53,7 +53,7 @@ export async function refreshSessionAction(): Promise<boolean> {
     const { data: { session }, error } = await supabase.auth.refreshSession()
     
     if (error || !session) {
-      authLogger.error('Session refresh failed', {}, error)
+      authLogger.error('Session refresh failed', {}, error || undefined)
       return false
     }
     
