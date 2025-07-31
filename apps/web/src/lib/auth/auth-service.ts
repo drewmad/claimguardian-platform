@@ -280,18 +280,31 @@ class AuthService {
     try {
       logger.info('Attempting user signin', { email: data.email, rememberMe: data.rememberMe })
       
-      // Debug logging for production
-      if (process.env.NODE_ENV === 'production' || process.env.NEXT_PUBLIC_DEBUG_AUTH === 'true') {
-        console.log('[ClaimGuardian Auth] Sign in attempt:', {
-          email: data.email,
-          url: typeof window !== 'undefined' ? window.location.href : 'server',
-          timestamp: new Date().toISOString()
-        })
-      }
+      // Enhanced debug logging
+      console.log('[ClaimGuardian Auth] Sign in attempt:', {
+        email: data.email,
+        url: typeof window !== 'undefined' ? window.location.href : 'server',
+        timestamp: new Date().toISOString(),
+        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+      })
       
       const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
+      })
+
+      // Debug logging for response
+      console.log('[ClaimGuardian Auth] Sign in response:', {
+        hasData: !!authData,
+        hasUser: !!authData?.user,
+        hasSession: !!authData?.session,
+        error: error ? {
+          message: error.message,
+          status: error.status,
+          code: error.code,
+          name: error.name
+        } : null
       })
 
       if (error) {

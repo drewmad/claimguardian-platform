@@ -264,6 +264,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           errorCode: error.code, 
           errorMessage: error.message 
         })
+        console.error('[AuthProvider] Sign in error details:', {
+          code: error.code,
+          message: error.message,
+          fullError: error
+        })
         setError(error)
         setLoading(false)
         return

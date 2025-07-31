@@ -22,6 +22,13 @@ function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   
+  console.log('[Supabase Factory] Config check:', {
+    hasUrl: !!supabaseUrl,
+    url: supabaseUrl,
+    hasAnonKey: !!supabaseAnonKey,
+    anonKeyLength: supabaseAnonKey?.length
+  })
+  
   if (!supabaseUrl || !supabaseAnonKey) {
     throw new Error('Missing required Supabase environment variables')
   }
