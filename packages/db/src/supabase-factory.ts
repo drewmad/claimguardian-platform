@@ -18,8 +18,8 @@ interface ClientConfig {
  * Get configuration from environment
  */
 function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & { supabaseServiceRoleKey?: string } {
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tmlrvecuwgppbaynesji.supabase.co'
+  const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
   
   if (!supabaseUrl || !supabaseAnonKey) {
@@ -29,7 +29,7 @@ function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & {
       hasAnonKey: !!supabaseAnonKey,
       anonKeyLength: supabaseAnonKey?.length
     })
-    throw new Error('Missing required Supabase environment variables')
+    throw new Error('Missing required Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel.')
   }
   
   return {

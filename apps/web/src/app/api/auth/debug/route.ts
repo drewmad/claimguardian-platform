@@ -39,6 +39,10 @@ export async function GET(request: Request) {
       }
     } catch (clientError) {
       console.error('Client creation error:', clientError)
+      sessionCheck = {
+        hasSession: false,
+        error: clientError instanceof Error ? clientError.message : 'Unknown error'
+      }
     }
     
     // Get request info
