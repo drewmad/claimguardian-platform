@@ -73,7 +73,17 @@ interface SignInData {
 }
 
 class AuthService {
-  private supabase = createClient()
+  private supabase: ReturnType<typeof createClient>
+
+  constructor() {
+    try {
+      this.supabase = createClient()
+      console.log('[AUTH SERVICE] Supabase client created successfully')
+    } catch (error) {
+      console.error('[AUTH SERVICE] Failed to create Supabase client:', error)
+      throw error
+    }
+  }
 
   /**
    * Sign up a new user
