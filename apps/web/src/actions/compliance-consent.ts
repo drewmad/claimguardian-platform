@@ -112,33 +112,33 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       }
     }
     
-    // Add detailed logging for debugging
-    logger.info('RPC function raw result', {
+    // Handle both array and direct object responses from RPC function
+    const resultData = Array.isArray(result) ? result[0] : result
+    
+    logger.info('RPC function processed result', {
       email: data.email,
-      result: result,
-      resultType: typeof result,
-      resultLength: Array.isArray(result) ? result.length : 'not array',
-      firstItem: result?.[0],
-      hasSuccess: result?.[0]?.success,
-      hasToken: !!result?.[0]?.consent_token,
-      errorMessage: result?.[0]?.error_message
+      resultData: resultData,
+      wasArray: Array.isArray(result),
+      hasSuccess: resultData?.success,
+      hasToken: !!resultData?.consent_token,
+      errorMessage: resultData?.error_message
     })
     
-    if (!result?.[0]?.success || !result?.[0]?.consent_token) {
+    if (!resultData?.success || !resultData?.consent_token) {
       logger.error('Consent recording returned invalid response', { 
         email: data.email,
-        result,
-        detailedResult: JSON.stringify(result, null, 2)
+        resultData,
+        detailedResult: JSON.stringify(resultData, null, 2)
       })
       return {
         success: false,
-        errorMessage: result?.[0]?.error_message || 'Failed to record consent'
+        errorMessage: resultData?.error_message || 'Failed to record consent'
       }
     }
     
     logger.info('Consent recorded successfully', {
       email: data.email,
-      consentToken: result[0].consent_token,
+      consentToken: resultData.consent_token,
       gdprConsent: data.gdprConsent,
       dataProcessingConsent: data.dataProcessingConsent,
       marketingConsent: data.marketingConsent,
@@ -149,7 +149,7 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
     
     return {
       success: true,
-      consentToken: result[0].consent_token
+      consentToken: resultData.consent_token
     }
   } catch (error) {
     logger.error('Unexpected error recording consent', { email: data.email }, error as Error)
