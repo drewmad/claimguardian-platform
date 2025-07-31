@@ -269,7 +269,6 @@ export function OCRScanner({
               </Button>
               <CameraCapture
                 onCapture={handleCameraCapture}
-                onClose={() => setShowCamera(false)}
               />
             </div>
           )}

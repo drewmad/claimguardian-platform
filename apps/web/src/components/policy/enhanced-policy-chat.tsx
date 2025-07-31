@@ -83,12 +83,12 @@ export function EnhancedPolicyChat({ userId, messages, onSendMessage }: Enhanced
     try {
       // Convert messages to the format expected by the Edge Function
       const formattedMessages = messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' : 'assistant' as const,
+        role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
         content: msg.content
       }))
 
       formattedMessages.push({
-        role: 'user',
+        role: 'user' as const,
         content: message
       })
 
@@ -137,13 +137,13 @@ export function EnhancedPolicyChat({ userId, messages, onSendMessage }: Enhanced
                   disabled={uploading}
                 />
                 <Button
-                  as="span"
                   size="sm"
                   variant="outline"
                   disabled={uploading}
                   className="cursor-pointer"
+                  asChild
                 >
-                  {uploading ? 'Uploading...' : 'Select File'}
+                  <span>{uploading ? 'Uploading...' : 'Select File'}</span>
                 </Button>
               </label>
             </div>

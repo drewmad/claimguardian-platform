@@ -32,7 +32,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get the host from headers
-    const headersList = headers()
+    const headersList = await headers()
     const host = headersList.get('host') || 'localhost:3000'
     const protocol = process.env.NODE_ENV === 'production' ? 'https' : 'http'
     const origin = `${protocol}://${host}`

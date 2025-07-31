@@ -7,7 +7,8 @@ import { constructWebhookEvent } from '@/lib/stripe/server'
 
 export async function POST(request: NextRequest) {
   const body = await request.text()
-  const signature = headers().get('stripe-signature') as string
+  const headersList = await headers()
+  const signature = headersList.get('stripe-signature') as string
 
   let event: Stripe.Event
 
@@ -63,7 +64,7 @@ export async function POST(request: NextRequest) {
           .from('profiles')
           .update({
             subscription_status: subscription.status,
-            subscription_current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            subscription_current_period_end: new Date((subscription as any).current_period_end * 1000).toISOString(),
           })
           .eq('stripe_subscription_id', subscription.id)
 
