@@ -88,6 +88,13 @@ export async function getServerSession() {
     
     if (userError || !user) {
       authLogger.warn('Session validation failed', { error: userError?.message })
+      
+      // If user doesn't exist, clear the invalid session
+      if (userError?.message?.includes('User from sub claim in JWT does not exist')) {
+        authLogger.info('Clearing invalid session - user no longer exists')
+        await supabase.auth.signOut()
+      }
+      
       return null
     }
     

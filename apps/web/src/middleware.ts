@@ -153,8 +153,11 @@ export async function middleware(request: NextRequest) {
         
         // Clear cookies on validation failure
         if (userError.message?.includes('refresh_token') || 
-            userError.message?.includes('Invalid')) {
+            userError.message?.includes('Invalid') ||
+            userError.message?.includes('User from sub claim in JWT does not exist')) {
           clearAuthCookies(request, response)
+          // Sign out to clear server-side session
+          await supabase.auth.signOut()
         }
       }
     }
