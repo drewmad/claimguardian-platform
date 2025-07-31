@@ -30,21 +30,21 @@
     "lockfile:fix": "pnpm install --no-frozen-lockfile"
   },
   "devDependencies": {
-    "lint-staged": "^15.3.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^14.0.0",
+    "@testing-library/react-hooks": "^8.0.1",
     "@turbo/gen": "^2.5.4",
     "@types/node": "^24.0.10",
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7",
+    "@vitest/ui": "^2.1.8",
     "eslint": "^9.30.1",
     "husky": "^9.1.7",
+    "lint-staged": "^15.3.0",
+    "msw": "^2.7.0",
     "prettier": "^3.6.2",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
-    "@testing-library/react-hooks": "^8.0.1",
-    "@vitest/ui": "^2.1.8",
-    "msw": "^2.7.0",
     "vitest": "^2.1.8"
   },
   "workspaces": [
@@ -52,8 +52,8 @@
     "packages/*"
   ],
   "dependencies": {
-    "@supabase/ssr": "^0.1.0",
-    "@supabase/supabase-js": "^2.50.3",
+    "@supabase/ssr": "^0.6.1",
+    "@supabase/supabase-js": "^2.53.0",
     "csv-parser": "^3.2.0",
     "dotenv": "^17.2.1"
   },

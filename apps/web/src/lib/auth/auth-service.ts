@@ -280,34 +280,36 @@ class AuthService {
     try {
       logger.info('Attempting user signin', { email: data.email, rememberMe: data.rememberMe })
       
-      // Enhanced debug logging
-      console.log('[ClaimGuardian Auth] Sign in attempt:', {
+      // Only log debug info if there's an error
+      const debugInfo = {
         email: data.email,
         url: typeof window !== 'undefined' ? window.location.href : 'server',
         timestamp: new Date().toISOString(),
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
         hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      })
+      }
       
       const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password,
       })
 
-      // Debug logging for response
-      console.log('[ClaimGuardian Auth] Sign in response:', {
-        hasData: !!authData,
-        hasUser: !!authData?.user,
-        hasSession: !!authData?.session,
-        error: error ? {
-          message: error.message,
-          status: error.status,
-          code: error.code,
-          name: error.name
-        } : null
-      })
-
       if (error) {
+        // Log comprehensive error details
+        console.error('[ClaimGuardian Auth] Sign in failed:', {
+          ...debugInfo,
+          response: {
+            hasData: !!authData,
+            hasUser: !!authData?.user,
+            hasSession: !!authData?.session,
+            error: {
+              message: error.message,
+              status: error.status,
+              code: error.code,
+              name: error.name
+            }
+          }
+        })
         // Try to log failed login attempt, but don't let it break auth
         try {
           await loginActivityService.logLoginAttempt(
