@@ -39,7 +39,9 @@ export function SignupModal() {
     password: '',
     confirmPassword: '',
     phone: '',
-    agree: false
+    agree: false,
+    // Track which documents are accepted
+    acceptedDocuments: [] as string[]
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
@@ -110,10 +112,15 @@ export function SignupModal() {
         ...trackingData,
         // Generate session ID for tracking
         sessionId: `signup-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-        // Legal compliance defaults
+        // Legal compliance - map single checkbox to all required consents
         gdprConsent: formData.agree,
         dataProcessingConsent: formData.agree,
-        marketingConsent: false // User can opt-in later
+        marketingConsent: false, // User can opt-in later
+        // CRITICAL: Always include acceptedDocuments when agree is true
+        acceptedDocuments: formData.agree ? ['terms', 'privacy'] : [],
+        // Also set the individual flags for the new consent system
+        termsAccepted: formData.agree,
+        privacyAccepted: formData.agree
       }
       
       const success = await signUp(signupData)
@@ -462,6 +469,14 @@ export function SignupModal() {
           <LegalConsentForm
             onConsentChange={(hasAllConsents) => {
               setFormData(prev => ({ ...prev, agree: hasAllConsents }))
+            }}
+            onSubmit={async (acceptedDocumentIds) => {
+              // Map document IDs to expected slugs
+              // For now, if user accepts all docs, we assume they accepted terms and privacy
+              setFormData(prev => ({ 
+                ...prev, 
+                acceptedDocuments: hasAllConsents ? ['terms', 'privacy'] : []
+              }))
             }}
             showSubmitButton={false}
             mode="signup"
