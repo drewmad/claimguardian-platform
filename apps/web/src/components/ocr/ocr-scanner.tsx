@@ -1,7 +1,8 @@
+
 'use client'
 
-import { useState, useCallback } from 'react'
-import { Camera, FileText, Loader2, Upload, X, Check, AlertCircle } from 'lucide-react'
+import { useState } from 'react'
+import { Camera, FileText, Loader2, Upload, X, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -106,13 +107,8 @@ export function OCRScanner({
     }
   }
 
-  const handleCameraCapture = async (imageData: string) => {
+  const handleCameraCapture = async (file: File) => {
     setShowCamera(false)
-    
-    // Convert base64 to file
-    const response = await fetch(imageData)
-    const blob = await response.blob()
-    const file = new File([blob], 'camera-capture.jpg', { type: 'image/jpeg' })
     
     processFile(file)
   }
@@ -269,6 +265,7 @@ export function OCRScanner({
               </Button>
               <CameraCapture
                 onCapture={handleCameraCapture}
+                onClose={() => setShowCamera(false)}
               />
             </div>
           )}

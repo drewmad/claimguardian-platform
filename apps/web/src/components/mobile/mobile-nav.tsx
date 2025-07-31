@@ -129,9 +129,7 @@ export function MobileNav() {
       </nav>
 
       {/* iOS-style Dynamic Island Notifications */}
-      
-        {/* Notification component would go here */}
-      
+      {/* Notification component would go here */}
     </>
   )
 }
@@ -160,36 +158,6 @@ export function MobileHeader({ title, showBack = false }: { title: string; showB
     </header>
   )
 }
-                        "flex items-center justify-between p-4 rounded-lg",
-                        "transition-all duration-200 active:scale-95",
-                        isActive 
-                          ? "bg-blue-500/10 text-blue-500" 
-                          : "text-gray-300 active:bg-gray-800"
-                      )}
-                    >
-                      <div className="flex items-center gap-3">
-                        <Icon className="w-5 h-5" />
-                        <span className="font-medium">{item.label}</span>
-                      </div>
-                      <ChevronRight className="w-4 h-4 text-gray-500" />
-                    </Link>
-                  )
-                })}
-              </div>
-            </SheetContent>
-          </Sheet>
-        </div>
-      </nav>
-
-      {/* iOS-style Dynamic Island Notifications */}
-      <AnimatePresence>
-        {/* Notification component would go here */}
-      </AnimatePresence>
-    </>
-  )
-}
-
-export function MobileHeader({ title, showBack = false }: { title: string; showBack?: boolean }) {
   return (
     <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 h-14 safe-area-top">

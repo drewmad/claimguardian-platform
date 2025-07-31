@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 interface MobileConfig {
   breakpoint?: number
@@ -24,7 +24,7 @@ const DEFAULT_CONFIG: MobileConfig = {
 export function useMobile(config: MobileConfig = DEFAULT_CONFIG) {
   const { breakpoint = 768, checkOrientation = true } = config
 
-  const getDeviceInfo = (): MobileState => {
+  const getDeviceInfo = useCallback((): MobileState => {
     if (typeof window === 'undefined') {
       return {
         isMobile: false,
@@ -60,7 +60,7 @@ export function useMobile(config: MobileConfig = DEFAULT_CONFIG) {
       height,
       deviceType
     }
-  }
+  }, [breakpoint, checkOrientation])
 
   const [state, setState] = useState<MobileState>(getDeviceInfo)
 
@@ -80,7 +80,7 @@ export function useMobile(config: MobileConfig = DEFAULT_CONFIG) {
       window.removeEventListener('resize', handleResize)
       window.removeEventListener('orientationchange', handleResize)
     }
-  }, [breakpoint, checkOrientation])
+  }, [getDeviceInfo])
 
   return state
 }

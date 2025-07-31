@@ -2,12 +2,6 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 export type DocumentType = 'receipt' | 'invoice' | 'estimate' | 'report' | 'letter' | 'general'
 
-export interface OCROptions {
-  documentType?: DocumentType
-  extractStructuredData?: boolean
-  language?: 'en' | 'es'
-}
-
 export interface OCRResult {
   success: boolean
   text?: string
@@ -84,7 +78,7 @@ class OCRService {
     try {
       // Upload file to temporary storage
       const fileName = `ocr-temp/${Date.now()}-${file.name}`
-      const { data: uploadData, error: uploadError } = await this.supabase.storage
+      const { error: uploadError } = await this.supabase.storage
         .from('temp-documents')
         .upload(fileName, file, {
           cacheControl: '3600',
@@ -262,3 +256,4 @@ class OCRService {
 }
 
 export const ocrService = new OCRService()
+

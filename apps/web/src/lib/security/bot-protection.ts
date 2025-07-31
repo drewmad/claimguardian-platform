@@ -44,7 +44,6 @@ const BOT_USER_AGENTS = [
   'mechanize',
   'selenium',
   'phantomjs',
-  'headless',
   
   // Security scanners
   'nikto',
@@ -163,7 +162,7 @@ export class BotProtection {
     }
     
     // Check for headless browser indicators
-    if (this.isHeadlessBrowser(userAgent, headers)) {
+    if (this.isHeadlessBrowser(userAgent)) {
       reasons.push('Headless browser detected')
       confidence += 40
     }
@@ -240,7 +239,7 @@ export class BotProtection {
   /**
    * Detect headless browsers
    */
-  private isHeadlessBrowser(userAgent: string, headers: Headers): boolean {
+  private isHeadlessBrowser(userAgent: string): boolean {
     // Check for headless indicators in user agent
     if (userAgent.includes('headless') || 
         userAgent.includes('phantomjs') ||
@@ -296,3 +295,4 @@ if (typeof window === 'undefined') {
     botProtection.cleanup()
   }, 60000) // Every minute
 }
+

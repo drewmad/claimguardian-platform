@@ -24,11 +24,11 @@ interface EnhancedPolicyChatProps {
   onSendMessage: (message: string) => Promise<void>
 }
 
-export function EnhancedPolicyChat({ userId, messages, onSendMessage }: EnhancedPolicyChatProps) {
+export function EnhancedPolicyChat({ userId, onSendMessage }: EnhancedPolicyChatProps) {
   const [uploadedPolicy, setUploadedPolicy] = useState<{ url: string; name: string } | null>(null)
   const [uploading, setUploading] = useState(false)
   const supabase = createBrowserSupabaseClient()
-  const aiClient = new AIClientService()
+  
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -79,39 +79,7 @@ export function EnhancedPolicyChat({ userId, messages, onSendMessage }: Enhanced
     setUploadedPolicy(null)
   }, [])
 
-  const handleSendMessageWithPolicy = useCallback(async (message: string) => {
-    try {
-      // Convert messages to the format expected by the Edge Function
-      const formattedMessages = messages.map(msg => ({
-        role: msg.role === 'user' ? 'user' as const : 'assistant' as const,
-        content: msg.content
-      }))
-
-      formattedMessages.push({
-        role: 'user' as const,
-        content: message
-      })
-
-      const response = await aiClient.chatWithPolicy({
-        messages: formattedMessages,
-        policyDocument: uploadedPolicy ? {
-          fileUrl: uploadedPolicy.url,
-          type: 'application/pdf'
-        } : undefined
-      })
-
-      // Add the response to the chat
-      await onSendMessage(response.response)
-
-      // If there are citations, you could display them separately
-      if (response.citations && response.citations.length > 0) {
-        console.log('Policy citations:', response.citations)
-      }
-    } catch (error) {
-      console.error('Chat error:', error)
-      toast.error('Failed to send message')
-    }
-  }, [messages, uploadedPolicy, aiClient, onSendMessage])
+  
 
   return (
     <div className="space-y-4">
