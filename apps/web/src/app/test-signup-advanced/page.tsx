@@ -2,7 +2,7 @@
 
 import { useState, useEffect, ReactNode } from 'react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import type { SupabaseClient, AuthError, User } from '@supabase/supabase-js'
+import type { SupabaseClient, User } from '@supabase/supabase-js'
 
 // --- Type Definitions ---
 
@@ -15,7 +15,7 @@ interface PanelProps {
 
 interface InfoRowProps {
   label: string;
-  value: any;
+  value: unknown;
   verbatim?: boolean;
 }
 
@@ -69,14 +69,14 @@ export default function TestSignupAdvancedDashboard() {
   // Form State
   const [email, setEmail] = useState(`test-advanced-${Date.now()}@claimguardian.test`);
   const [password, setPassword] = useState('password123');
-  const [firstName, setFirstName] = useState('Advanced');
-  const [lastName, setLastName] = useState('User');
+  const [firstName] = useState('Advanced');
+  const [lastName] = useState('User');
 
   // Panel States
-  const [panel1State, setPanel1State] = useState<any>(null);
-  const [panel2State, setPanel2State] = useState<any>(null);
-  const [panel3State, setPanel3State] = useState<any>(null);
-  const [panel4State, setPanel4State] = useState<any>(null);
+  const [panel1State, setPanel1State] = useState<Record<string, unknown> | null>(null);
+  const [panel2State, setPanel2State] = useState<Record<string, unknown> | null>(null);
+  const [panel3State, setPanel3State] = useState<Record<string, unknown> | null>(null);
+  const [panel4State, setPanel4State] = useState<Record<string, unknown> | null>(null);
 
   const [panel1Status, setPanel1Status] = useState<PanelProps['status']>('pending');
   const [panel2Status, setPanel2Status] = useState<PanelProps['status']>('pending');
@@ -87,8 +87,8 @@ export default function TestSignupAdvancedDashboard() {
     try {
       const client = createBrowserSupabaseClient();
       setSupabase(client);
-    } catch (error: any) {
-      setInitError(error.message);
+    } catch (error) {
+      setInitError(error instanceof Error ? error.message : String(error));
     }
   }, []);
 
@@ -136,11 +136,11 @@ export default function TestSignupAdvancedDashboard() {
       if (error) throw error;
       
       consentToken = data.consent_token;
-      setPanel2State((prev: any) => ({ ...prev, response: { consent_token: consentToken } }));
+      setPanel2State((prev) => ({ ...prev, response: { consent_token: consentToken } }));
       setPanel2Status('success');
-    } catch (error: any) {
+    } catch (error) {
       setPanel2Status('error');
-      setPanel2State((prev: any) => ({ ...prev, error: error.message }));
+      setPanel2State((prev) => ({ ...prev, error: error instanceof Error ? error.message : String(error) }));
       setLoading(false);
       return;
     }
@@ -168,11 +168,11 @@ export default function TestSignupAdvancedDashboard() {
       if (!data.user) throw new Error('Signup successful but no user object returned.');
 
       newUser = data.user;
-      setPanel3State((prev: any) => ({ ...prev, response: data }));
+      setPanel3State((prev) => ({ ...prev, response: data }));
       setPanel3Status('success');
-    } catch (error: any) {
+    } catch (error) {
       setPanel3Status('error');
-      setPanel3State((prev: any) => ({ ...prev, error: error.message }));
+      setPanel3State((prev) => ({ ...prev, error: error instanceof Error ? error.message : String(error) }));
       setLoading(false);
       return;
     }
@@ -180,7 +180,7 @@ export default function TestSignupAdvancedDashboard() {
     // --- Panel 4: Post-Signup Linking & Verification ---
     try {
       setPanel4Status('running');
-      const finalState: any = {};
+      const finalState: Record<string, unknown> = {};
 
       // Action 1: Link consent
       const linkPayload = { p_user_id: newUser.id, p_consent_token: consentToken };
@@ -200,9 +200,9 @@ export default function TestSignupAdvancedDashboard() {
 
       setPanel4State(finalState);
       setPanel4Status('success');
-    } catch (error: any) {
+    } catch (error) {
       setPanel4Status('error');
-      setPanel4State((prev: any) => ({ ...prev, error: error.message }));
+      setPanel4State((prev) => ({ ...prev, error: error instanceof Error ? error.message : String(error) }));
     } finally {
       setLoading(false);
     }

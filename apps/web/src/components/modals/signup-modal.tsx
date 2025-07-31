@@ -172,7 +172,7 @@ export function SignupModal() {
             
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
               <p className="text-blue-300 font-medium mb-2">
-                ✉️ We've sent a confirmation email to:
+                ✉️ We&apos;ve sent a confirmation email to:
               </p>
               <p className="text-white font-semibold">
                 {formData.email}
@@ -192,7 +192,7 @@ export function SignupModal() {
             
             <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
               <p className="text-xs text-slate-400">
-                Can't find the email? Check your spam folder or click below to resend.
+                Can&apos;t find the email? Check your spam folder or click below to resend.
               </p>
               <button
                 onClick={handleResendEmail}

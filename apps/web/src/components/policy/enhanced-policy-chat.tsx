@@ -6,7 +6,7 @@ import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-import { AIClientService } from '@/lib/ai/client-service'
+// import { AIClientService } from '@/lib/ai/client-service' // TODO: Remove if not needed
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 interface ChatMessage {
@@ -24,7 +24,7 @@ interface EnhancedPolicyChatProps {
   onSendMessage: (message: string) => Promise<void>
 }
 
-export function EnhancedPolicyChat({ userId, onSendMessage }: EnhancedPolicyChatProps) {
+export function EnhancedPolicyChat({ userId }: EnhancedPolicyChatProps) {
   const [uploadedPolicy, setUploadedPolicy] = useState<{ url: string; name: string } | null>(null)
   const [uploading, setUploading] = useState(false)
   const supabase = createBrowserSupabaseClient()

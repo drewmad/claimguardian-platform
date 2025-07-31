@@ -18,7 +18,7 @@ interface TestCase {
   description: string
   category: 'api' | 'chat' | 'vision' | 'edge' | 'policy'
   status: 'pending' | 'running' | 'passed' | 'failed' | 'skipped'
-  result?: any
+  result?: unknown
   error?: string
 }
 
@@ -303,7 +303,7 @@ export default function TestAICompletePage() {
 
     setIsRunning(false)
     addOutput('\n✅ All tests completed!')
-  }, [aiClient, supabase.storage])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     runTests()

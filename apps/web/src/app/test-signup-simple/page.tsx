@@ -14,7 +14,7 @@ interface PanelProps {
 
 interface InfoRowProps {
   label: string;
-  value: any;
+  value: unknown;
   verbatim?: boolean;
 }
 
@@ -31,7 +31,7 @@ interface ClientInfoState {
   signupPayload: object;
   browserUa: string;
   networkStatus: string;
-  signUpResponse?: { data: any; error: AuthError | null };
+  signUpResponse?: { data: unknown; error: AuthError | null };
 }
 
 interface NetworkInfoState {
@@ -40,7 +40,7 @@ interface NetworkInfoState {
   roundTripTime: string;
   requestHeaders: object;
   requestBody: object;
-  responseBody: any;
+  responseBody: unknown;
   statusCode: number;
   curlReplay: string;
 }
@@ -129,9 +129,9 @@ export default function TestSignupDebugDashboard() {
       setSupabase(client);
       console.log('[Debug Dashboard] Supabase client created successfully.');
 
-    } catch (error: any) {
+    } catch (error) {
       console.error('[Debug Dashboard] Error during initialization:', error);
-      setInitError(error.message);
+      setInitError(error instanceof Error ? error.message : String(error));
     }
   }, []);
 
@@ -172,15 +172,15 @@ ${headersString} \
     }
 
     // --- 1. Client Layer Info ---
-    const anonKey = (supabase.auth as any).supabaseKey
-    const supabaseUrl = (supabase as any).supabaseUrl
+    const anonKey = (supabase.auth as unknown as { supabaseKey: string }).supabaseKey
+    const supabaseUrl = (supabase as unknown as { supabaseUrl: string }).supabaseUrl
     
     const clientData: ClientInfoState = {
       timestamp: new Date().toISOString(),
       appBuildSha: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? 'N/A (local)',
       supabaseUrl: supabaseUrl,
       anonKeySnippet: `${anonKey?.slice(0, 8)}...`,
-      supabaseJsVersion: (supabase as any).realtime?.client.version ?? 'N/A',
+      supabaseJsVersion: (supabase as unknown as { realtime?: { client: { version: string } } }).realtime?.client.version ?? 'N/A',
       signupPayload: { ...signupPayload, password: '*** MASKED ***' },
       browserUa: navigator.userAgent,
       networkStatus: navigator.onLine ? 'online' : 'offline',
@@ -194,9 +194,9 @@ ${headersString} \
         if (rlsError) throw rlsError
         setRlsInfo(rlsData.data[0])
         console.log('[Debug Dashboard] Panel 4 data captured.');
-    } catch (err: any) {
+    } catch (err) {
         console.error('[Debug Dashboard] RLS Audit Error:', err);
-        setRlsInfo({ error: err.message })
+        setRlsInfo({ error: err instanceof Error ? err.message : String(err) })
     }
 
     // --- 2. Network Request ---
@@ -207,7 +207,7 @@ ${headersString} \
     const requestHeaders = {
       'apikey': anonKey,
       'Authorization': `Bearer ${anonKey}`,
-      'x-client-info': `supabase-js/${(supabase as any).realtime?.client.version ?? 'N/A'}`,
+      'x-client-info': `supabase-js/${(supabase as unknown as { realtime?: { client: { version: string } } }).realtime?.client.version ?? 'N/A'}`,
       'Content-Type': 'application/json'
     }
 
@@ -227,8 +227,8 @@ ${headersString} \
     console.log('[Debug Dashboard] Panel 2 data captured.');
 
     // --- 3. Logs Snapshot ---
-    const projectId = (supabase as any).projectId
-    const requestId = (error as any)?.code
+    const projectId = (supabase as unknown as { projectId: string }).projectId
+    const requestId = (error as unknown as { code?: string })?.code
     const logLink = `https://app.supabase.com/project/${projectId}/logs/edge-logs`
     setLogsInfo({
       requestId: requestId ?? 'Not found in response',

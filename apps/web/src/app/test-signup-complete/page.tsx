@@ -133,7 +133,7 @@ export default function TestSignupComplete() {
           
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">
-              Password (optional - defaults to 'password123'):
+              Password (optional - defaults to &apos;password123&apos;):
             </label>
             <input
               type="password"

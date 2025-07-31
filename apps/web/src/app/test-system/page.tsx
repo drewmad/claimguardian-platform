@@ -8,7 +8,7 @@ import { useEffect, useState } from 'react'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
@@ -18,7 +18,7 @@ interface TestCase {
   description: string
   category: 'auth' | 'ui' | 'data' | 'api' | 'security'
   status: 'pending' | 'running' | 'passed' | 'failed' | 'skipped'
-  result?: any
+  result?: unknown
   error?: string
 }
 
@@ -358,7 +358,7 @@ export default function TestSystemPage() {
 
   useEffect(() => {
     runTests()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   const filteredTests = currentCategory === 'all' 
     ? tests 

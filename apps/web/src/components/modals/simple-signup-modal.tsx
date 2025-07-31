@@ -11,35 +11,25 @@ import { useModalStore } from '@/stores/modal-store'
 
 export function SimpleSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
-  const { signUp, error, clearError } = useAuth()
+  const { signUp, error } = useAuth()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    firstName: '',
-    lastName: '',
-    termsAccepted: false
+    password: ''
   })
 
   if (activeModal !== 'signup') return null
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
-    if (!formData.termsAccepted) {
-      alert('Please accept the terms of service')
-      return
-    }
 
     setLoading(true)
     try {
       const success = await signUp({
         email: formData.email,
-        password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName
+        password: formData.password
       })
       
       if (success) {
@@ -85,29 +75,6 @@ export function SimpleSignupModal() {
         <h2 className="text-xl font-bold mb-6">Create Account</h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label htmlFor="firstName">First Name</Label>
-              <Input
-                id="firstName"
-                type="text"
-                value={formData.firstName}
-                onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                required
-              />
-            </div>
-            <div>
-              <Label htmlFor="lastName">Last Name</Label>
-              <Input
-                id="lastName"
-                type="text"
-                value={formData.lastName}
-                onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                required
-              />
-            </div>
-          </div>
-
           <div>
             <Label htmlFor="email">Email</Label>
             <Input
@@ -116,6 +83,7 @@ export function SimpleSignupModal() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               required
+              autoFocus
             />
           </div>
 
@@ -127,22 +95,9 @@ export function SimpleSignupModal() {
               value={formData.password}
               onChange={(e) => setFormData({ ...formData, password: e.target.value })}
               required
-              minLength={8}
+              minLength={6}
             />
-            <p className="text-xs text-gray-500 mt-1">Minimum 8 characters</p>
-          </div>
-
-          <div className="flex items-center space-x-2">
-            <input
-              id="terms"
-              type="checkbox"
-              checked={formData.termsAccepted}
-              onChange={(e) => setFormData({ ...formData, termsAccepted: e.target.checked })}
-              className="rounded border-gray-300"
-            />
-            <Label htmlFor="terms" className="text-sm">
-              I agree to the Terms of Service and Privacy Policy
-            </Label>
+            <p className="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
           </div>
 
           {error && (

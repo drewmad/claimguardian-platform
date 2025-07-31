@@ -25,8 +25,8 @@ import { WhoWeFightFor } from '@/components/landing/who-we-fight-for'
 import { WhoWeServe } from '@/components/landing/who-we-serve'
 import { ContentModal } from '@/components/modals/content-modal'
 import { ForgotPasswordModal } from '@/components/modals/forgot-password-modal'
-import { LoginModal } from '@/components/modals/login-modal'
-import { SignupModal } from '@/components/modals/signup-modal'
+import { SimpleLoginModal } from '@/components/modals/simple-login-modal'
+import { SimpleSignupModal } from '@/components/modals/simple-signup-modal'
 
 export default function HomePage() {
   return (
@@ -48,9 +48,9 @@ export default function HomePage() {
 
       <Footer />
 
-      {/* Application Modals - Enhanced for better user experience */}
-      <LoginModal />
-      <SignupModal />
+      {/* Application Modals - Simplified for better user experience */}
+      <SimpleLoginModal />
+      <SimpleSignupModal />
       <ForgotPasswordModal />
       <ContentModal />
     </div>

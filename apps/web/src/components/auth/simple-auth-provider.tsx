@@ -50,7 +50,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
   const signUp = async (data: SignUpData): Promise<boolean> => {
     setError(null)
     try {
-      const { data: user, error } = await simpleAuthService.signUp(data)
+      const { error } = await simpleAuthService.signUp(data)
       if (error) {
         setError(error)
         return false

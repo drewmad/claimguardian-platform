@@ -245,7 +245,7 @@ export function OCRScanner({
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>OCR Limit Reached</AlertTitle>
                   <AlertDescription>
-                    You've used all your OCR scans for this month. Upgrade your plan for more scans.
+                    You&apos;ve used all your OCR scans for this month. Upgrade your plan for more scans.
                   </AlertDescription>
                 </Alert>
               )}
