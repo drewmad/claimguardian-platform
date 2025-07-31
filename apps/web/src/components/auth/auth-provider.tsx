@@ -17,6 +17,7 @@ import { authService, AuthError, AuthResponse } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
+import { handleAuthError, validateSession } from '@/lib/supabase/auth-helpers'
 
 interface AuthContextType {
   user: User | null
@@ -101,23 +102,27 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         
         if (sessionError) {
           logger.error('Failed to get initial session', {}, sessionError)
-          throw sessionError
+          // Handle refresh token errors
+          await handleAuthError(sessionError, supabase)
+          if (mounted) {
+            setUser(null)
+            setLoading(false)
+            setError(null)
+          }
+          return
         }
         
-        // Validate session with getUser() for security
-        if (session) {
-          const { data: { user }, error: userError } = await supabase.auth.getUser()
-          if (userError || !user) {
-            logger.warn('Session validation failed', { error: userError })
-            // Clear invalid session
-            await supabase.auth.signOut()
-            if (mounted) {
-              setUser(null)
-              setLoading(false)
-              setError(null)
-            }
-            return
+        // Validate session for security
+        const validatedUser = await validateSession(supabase)
+        
+        if (!validatedUser && session) {
+          logger.warn('Session validation failed, invalid session cleared')
+          if (mounted) {
+            setUser(null)
+            setLoading(false)
+            setError(null)
           }
+          return
         }
 
         if (mounted) {
@@ -207,6 +212,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           logger.info('Auth state changed', { event, userId: session?.user?.id })
           
           if (!mounted) return
+          
+          // Handle token errors in auth state changes
+          if (event === 'TOKEN_REFRESHED' && session === null) {
+            logger.error('Token refresh failed - session is null')
+            await handleAuthError({ message: 'refresh_token_not_found' }, supabase)
+            return
+          }
           
           // Update user state
           setUser(session?.user ?? null)

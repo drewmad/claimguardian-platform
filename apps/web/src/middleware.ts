@@ -16,11 +16,22 @@ export async function middleware(request: NextRequest) {
       path: request.nextUrl.pathname,
       timestamp: new Date().toISOString()
     })
+    
+    // Clear invalid auth cookies on refresh token errors
+    if (error.message.includes('refresh_token_not_found') || 
+        error.message.includes('Invalid Refresh Token')) {
+      // Clear the auth cookies to force re-authentication
+      response.cookies.delete('sb-auth-token')
+      response.cookies.delete('sb-refresh-token')
+      response.cookies.delete(`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`)
+      
+      console.log('[MIDDLEWARE] Cleared invalid auth cookies due to refresh token error')
+    }
   }
   
   // Validate session with getUser() for protected routes
   let validatedUser = null
-  if (session) {
+  if (session && !error) {
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (!userError && user) {
       validatedUser = user
@@ -30,6 +41,13 @@ export async function middleware(request: NextRequest) {
         path: request.nextUrl.pathname,
         timestamp: new Date().toISOString()
       })
+      
+      // Clear cookies if user validation fails
+      if (userError?.message?.includes('refresh_token_not_found')) {
+        response.cookies.delete('sb-auth-token')
+        response.cookies.delete('sb-refresh-token')
+        response.cookies.delete(`sb-${process.env.NEXT_PUBLIC_SUPABASE_URL?.split('//')[1]?.split('.')[0]}-auth-token`)
+      }
     }
   }
   
