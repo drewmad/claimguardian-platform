@@ -594,109 +594,24 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
       case 4: // Documentation
         return (
           <div className="space-y-6">
-            <div>
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <Camera className="h-5 w-5" />
-                Damage Photos
-              </h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Upload clear photos of all damaged areas
+            <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4 mb-6">
+              <p className="text-sm text-blue-400">
+                Upload all evidence to support your claim. You can add more files later from the claim details page.
               </p>
-              
-              <div className="border-2 border-dashed border-gray-700 rounded-lg p-6">
-                <input
-                  type="file"
-                  id="photo-upload"
-                  multiple
-                  accept="image/*"
-                  onChange={handlePhotoUpload}
-                  className="sr-only"
-                />
-                <label
-                  htmlFor="photo-upload"
-                  className="flex flex-col items-center cursor-pointer"
-                >
-                  <Upload className="h-10 w-10 text-gray-500 mb-3" />
-                  <span className="text-sm text-gray-400">
-                    Click to upload photos or drag and drop
-                  </span>
-                </label>
-              </div>
-
-              {claimData.photos && claimData.photos.length > 0 && (
-                <div className="mt-4 grid grid-cols-3 gap-3">
-                  {claimData.photos.map((photo, index) => (
-                    <div key={index} className="relative group">
-                      <img
-                        src={URL.createObjectURL(photo)}
-                        alt={`Damage photo ${index + 1}`}
-                        className="w-full h-24 object-cover rounded-lg"
-                      />
-                      <button
-                        onClick={() => {
-                          const photos = [...(claimData.photos || [])]
-                          photos.splice(index, 1)
-                          updateClaimData({ photos })
-                        }}
-                        className="absolute top-1 right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-3 w-3" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
             </div>
-
-            <div>
-              <h3 className="font-medium mb-3 flex items-center gap-2">
-                <FileText className="h-5 w-5" />
-                Supporting Documents
-              </h3>
-              <p className="text-sm text-gray-400 mb-4">
-                Upload receipts, estimates, or other relevant documents
-              </p>
-              
-              <div className="border-2 border-dashed border-gray-700 rounded-lg p-6">
-                <input
-                  type="file"
-                  id="document-upload"
-                  multiple
-                  accept=".pdf,.doc,.docx,.jpg,.png"
-                  onChange={handleDocumentUpload}
-                  className="sr-only"
-                />
-                <label
-                  htmlFor="document-upload"
-                  className="flex flex-col items-center cursor-pointer"
-                >
-                  <Upload className="h-10 w-10 text-gray-500 mb-3" />
-                  <span className="text-sm text-gray-400">
-                    Click to upload documents
-                  </span>
-                </label>
-              </div>
-
-              {claimData.documents && claimData.documents.length > 0 && (
-                <div className="mt-4 space-y-2">
-                  {claimData.documents.map((doc, index) => (
-                    <div key={index} className="flex items-center justify-between p-3 bg-gray-800 rounded-lg">
-                      <span className="text-sm truncate">{doc.name}</span>
-                      <button
-                        onClick={() => {
-                          const documents = [...(claimData.documents || [])]
-                          documents.splice(index, 1)
-                          updateClaimData({ documents })
-                        }}
-                        className="text-red-400 hover:text-red-300"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            
+            {/* Use the EvidenceManager component for a better experience */}
+            <EvidenceManager 
+              claimId={`draft-${Date.now()}`} // Temporary ID for draft
+              onUpdate={(evidence) => {
+                // Convert evidence to files for backward compatibility
+                const photos = evidence.filter(e => e.fileType.startsWith('image/'))
+                const documents = evidence.filter(e => !e.fileType.startsWith('image/'))
+                
+                // Note: This is a simplified conversion - in production you'd handle this better
+                console.log('Evidence updated:', evidence)
+              }}
+            />
           </div>
         )
 

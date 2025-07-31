@@ -344,7 +344,10 @@ function ClaimsDashboardContent() {
 
                       <div className="flex items-center justify-between">
                         <div className="flex gap-4">
-                          <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-white">
+                          <button 
+                            onClick={() => router.push(`/dashboard/claims/${claim.id}/evidence`)}
+                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white"
+                          >
                             <FileText className="w-4 h-4" />
                             {claim.documents} Documents
                           </button>
@@ -353,7 +356,10 @@ function ClaimsDashboardContent() {
                             {claim.messages} Messages
                           </button>
                         </div>
-                        <button className="flex items-center gap-1 text-blue-400 hover:text-blue-300">
+                        <button 
+                          onClick={() => router.push(`/dashboard/claims/${claim.id}`)}
+                          className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
+                        >
                           View Details
                           <ChevronRight className="w-4 h-4" />
                         </button>

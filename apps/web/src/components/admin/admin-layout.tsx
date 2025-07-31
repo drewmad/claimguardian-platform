@@ -6,7 +6,7 @@
  */
 'use client'
 
-import { AlertTriangle, Database, FileText, Home, Shield, Users } from 'lucide-react'
+import { AlertTriangle, Bug, Database, FileText, Home, Shield, Users } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -21,6 +21,7 @@ export function AdminLayout({ children }: AdminLayoutProps) {
     { href: '/admin', icon: Home, label: 'Overview' },
     { href: '/admin/errors', icon: AlertTriangle, label: 'Error Logs' },
     { href: '/admin/compliance', icon: Shield, label: 'Compliance' },
+    { href: '/debug-auth', icon: Bug, label: 'Debug Auth' },
     { href: '/admin/users', icon: Users, label: 'Users' },
     { href: '/admin/database', icon: Database, label: 'Database' },
     { href: '/admin/legal', icon: FileText, label: 'Legal Docs' },
