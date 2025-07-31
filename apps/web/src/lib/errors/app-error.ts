@@ -18,6 +18,8 @@ export type ErrorCode =
   | 'AUTH_INVALID_TOKEN'
   | 'AUTH_INVALID_RESPONSE'
   | 'AUTH_UNKNOWN_ERROR'
+  | 'AUTH_CONSENT_REQUIRED'
+  | 'AUTH_CONSENT_INVALID'
   
   // Validation errors
   | 'VALIDATION_ERROR'
