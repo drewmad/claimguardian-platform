@@ -112,10 +112,23 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       }
     }
     
+    // Add detailed logging for debugging
+    logger.info('RPC function raw result', {
+      email: data.email,
+      result: result,
+      resultType: typeof result,
+      resultLength: Array.isArray(result) ? result.length : 'not array',
+      firstItem: result?.[0],
+      hasSuccess: result?.[0]?.success,
+      hasToken: !!result?.[0]?.consent_token,
+      errorMessage: result?.[0]?.error_message
+    })
+    
     if (!result?.[0]?.success || !result?.[0]?.consent_token) {
       logger.error('Consent recording returned invalid response', { 
         email: data.email,
-        result 
+        result,
+        detailedResult: JSON.stringify(result, null, 2)
       })
       return {
         success: false,
