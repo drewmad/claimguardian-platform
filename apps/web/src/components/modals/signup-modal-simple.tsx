@@ -6,7 +6,7 @@
  */
 'use client'
 
-import { X, Eye, EyeOff, AlertCircle, Shield, Check, Loader2 } from 'lucide-react'
+import { X, Eye, EyeOff, AlertCircle, Shield, Check, CheckCircle, Loader2 } from 'lucide-react'
 import { useState } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'

@@ -136,7 +136,8 @@ export function SignupModal() {
           password: '',
           confirmPassword: '',
           phone: '',
-          agree: false
+          agree: false,
+          acceptedDocuments: []
         })
       }
     } catch (error) {
@@ -475,7 +476,7 @@ export function SignupModal() {
               // For now, if user accepts all docs, we assume they accepted terms and privacy
               setFormData(prev => ({ 
                 ...prev, 
-                acceptedDocuments: hasAllConsents ? ['terms', 'privacy'] : []
+                acceptedDocuments: formData.agree ? ['terms', 'privacy'] : []
               }))
             }}
             showSubmitButton={false}
