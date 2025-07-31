@@ -111,6 +111,13 @@ export default function TestSignupSimple() {
           <p>This tests direct Supabase client signup without the auth service layer.</p>
           <p>Check the browser console for detailed logs.</p>
         </div>
+        <div className="mt-4 p-3 bg-gray-800 border border-gray-700 rounded-md">
+          <p className="text-sm text-yellow-300">
+            <span className="font-bold">Supabase Role Used:</span> The sign-up operation below is performed by the client using the{' '}
+            <code className="px-1 py-0.5 bg-gray-700 rounded text-yellow-100 font-mono text-xs">anon</code> role. This role is granted by the public-facing{' '}
+            <code className="px-1 py-0.5 bg-gray-700 rounded text-yellow-100 font-mono text-xs">SUPABASE_ANON_KEY</code> and has permission to create new users in the `auth.users` table.
+          </p>
+        </div>
       </div>
     </div>
   )
