@@ -29,7 +29,8 @@
     "pre-commit:test": "bash .husky/pre-commit",
     "lockfile:check": "node scripts/sync-lockfile.js --check",
     "lockfile:sync": "node scripts/sync-lockfile.js --fix",
-    "lockfile:fix": "pnpm install --no-frozen-lockfile"
+    "lockfile:fix": "pnpm install --no-frozen-lockfile",
+    "legal:version": "node scripts/legal/version-docs.mjs"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
