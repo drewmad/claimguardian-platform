@@ -55,7 +55,14 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
 
     // Also update user preferences using security definer function
     try {
-      const updateParams: any = {
+      interface UpdateConsentParams {
+        p_user_id: string
+        p_gdpr_consent?: boolean
+        p_data_processing_consent?: boolean
+        p_marketing_consent?: boolean
+      }
+      
+      const updateParams: UpdateConsentParams = {
         p_user_id: data.userId
       }
       

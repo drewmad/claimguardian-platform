@@ -86,26 +86,56 @@ class AuthService {
   }
 
   /**
-   * Sign up a new user
+   * Sign up a new user with compliance-grade consent tracking
    */
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
+    let consentToken: string | undefined
+    
     try {
       logger.info('Attempting user signup', { email: data.email })
       
-      // Enhanced logging for debugging
-      console.log('[AUTH DEBUG] Starting signup process', {
+      // COMPLIANCE REQUIREMENT: Record consent BEFORE creating account
+      console.log('[AUTH DEBUG] Step 1: Recording consent before signup')
+      
+      const { recordSignupConsent, validateConsent, linkConsentToUser } = await import('@/actions/compliance-consent')
+      
+      // Record consent first
+      const consentResult = await recordSignupConsent({
         email: data.email,
-        hasFirstName: !!data.firstName,
-        hasLastName: !!data.lastName,
-        hasPhone: !!data.phone,
-        hasAcceptedDocuments: !!data.acceptedDocuments?.length,
-        hasGdprConsent: !!data.gdprConsent,
-        hasMarketingConsent: !!data.marketingConsent,
-        hasDataProcessingConsent: !!data.dataProcessingConsent,
-        timestamp: new Date().toISOString(),
-        env: process.env.NODE_ENV,
-        supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
+        gdprConsent: data.gdprConsent || false,
+        dataProcessingConsent: data.dataProcessingConsent || false,
+        marketingConsent: data.marketingConsent || false,
+        termsAccepted: data.acceptedDocuments?.includes('terms') || false,
+        privacyAccepted: data.acceptedDocuments?.includes('privacy') || false,
+        deviceFingerprint: data.deviceFingerprint
       })
+      
+      if (!consentResult.success || !consentResult.consentToken) {
+        console.error('[AUTH DEBUG] Consent recording failed:', consentResult)
+        throw new AuthError(
+          consentResult.errorMessage || 'Consent must be recorded before signup',
+          'AUTH_CONSENT_REQUIRED'
+        )
+      }
+      
+      consentToken = consentResult.consentToken
+      console.log('[AUTH DEBUG] Consent recorded successfully:', {
+        consentToken,
+        timestamp: new Date().toISOString()
+      })
+      
+      // Validate consent before proceeding
+      const validation = await validateConsent(data.email, consentToken)
+      
+      if (!validation.isValid || !validation.hasRequiredConsents) {
+        console.error('[AUTH DEBUG] Consent validation failed:', validation)
+        throw new AuthError(
+          validation.errorMessage || 'Invalid or incomplete consent',
+          'AUTH_CONSENT_INVALID'
+        )
+      }
+      
+      console.log('[AUTH DEBUG] Step 2: Creating user account with validated consent')
       
       const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
@@ -127,7 +157,9 @@ class AuthService {
             signup_geolocation: data.geolocation,
             signup_referrer: data.referrer,
             signup_utm_params: data.utmParams,
-            signup_timestamp: new Date().toISOString()
+            signup_timestamp: new Date().toISOString(),
+            // Link to consent record
+            consent_token: consentToken
           },
           emailRedirectTo: getAuthCallbackURL('/auth/verify')
         }
@@ -188,6 +220,29 @@ class AuthService {
       })
 
       logger.info('User signup successful', { userId: authData.user.id })
+      
+      // COMPLIANCE: Link consent record to user
+      if (consentToken) {
+        try {
+          const { linkConsentToUser } = await import('@/actions/compliance-consent')
+          const linked = await linkConsentToUser(consentToken, authData.user.id)
+          if (!linked) {
+            logger.error('Failed to link consent to user', { 
+              userId: authData.user.id,
+              consentToken 
+            })
+          } else {
+            logger.info('Consent linked to user successfully', { 
+              userId: authData.user.id,
+              consentToken 
+            })
+          }
+        } catch (linkError) {
+          logger.error('Error linking consent to user', { 
+            userId: authData.user.id 
+          }, linkError as Error)
+        }
+      }
       
       // Capture comprehensive signup tracking data
       try {
