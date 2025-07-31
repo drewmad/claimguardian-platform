@@ -1,9 +1,9 @@
 import pRetry from 'p-retry'
 
-import { GeminiProvider } from './providers/gemini'
-import { OpenAIProvider } from './providers/openai'
+import { GeminiProvider } from './providers/gemini.provider'
+import { OpenAIProvider } from './providers/openai.provider'
 import type { ClaimAssistantContext, AIResponse } from './types'
-import { BaseProvider } from './providers/base.provider'
+import { BaseAIProvider } from './providers/base.provider'
 
 interface ClaimStep {
   id: string
@@ -23,12 +23,12 @@ interface ClaimGuidance {
 }
 
 export class ClaimAssistant {
-  private providers: Map<string, BaseProvider> = new Map()
+  private providers: Map<string, BaseAIProvider> = new Map()
 
   constructor() {
     // Initialize providers
-    const gemini = new GeminiProvider()
-    const openai = new OpenAIProvider()
+    const gemini = new GeminiProvider({ apiKey: process.env.GEMINI_API_KEY! })
+    const openai = new OpenAIProvider({ apiKey: process.env.OPENAI_API_KEY! })
 
     if (gemini.isAvailable()) {
       this.providers.set('gemini', gemini)
@@ -38,7 +38,7 @@ export class ClaimAssistant {
     }
   }
 
-  private selectProvider(): BaseProvider | undefined {
+  private selectProvider(): BaseAIProvider | undefined {
     // Prefer Gemini for cost efficiency, fallback to OpenAI
     return this.providers.get('gemini') || this.providers.get('openai')
   }
@@ -46,13 +46,10 @@ export class ClaimAssistant {
   async getClaimGuidance(
     context: ClaimAssistantContext,
     userQuestion?: string
-  ): Promise<AIResponse<ClaimGuidance>> {
+  ): Promise<AIResponse> {
     const provider = this.selectProvider()
     if (!provider) {
-      return {
-        success: false,
-        error: 'No AI providers available'
-      }
+      throw new Error('No AI providers available')
     }
 
     const prompt = this.buildGuidancePrompt(context, userQuestion)
@@ -60,22 +57,18 @@ export class ClaimAssistant {
     try {
       const result = await pRetry(
         async () => {
-          const response = await provider.generateText(prompt, {
+          const response = await provider.generateText({
+            prompt,
             userId: context.userId,
-            propertyId: context.propertyId,
-            claimId: context.claimId
+            feature: 'document-categorizer'
           })
 
-          if (!response.success) {
-            throw new Error(response.error)
-          }
-
           // Parse the response into structured guidance
-          const guidance = this.parseGuidanceResponse(response.data)
+          const guidance = this.parseGuidanceResponse(response.text)
           
           return {
             ...response,
-            data: guidance
+            text: JSON.stringify(guidance)
           }
         },
         {
@@ -88,10 +81,7 @@ export class ClaimAssistant {
 
       return result
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to generate guidance'
-      }
+      throw new Error(error instanceof Error ? error.message : 'Failed to generate guidance')
     }
   }
 
@@ -166,27 +156,21 @@ Format your response as a structured guide that's easy to follow.`
   async generateDocument(
     templateType: 'demand-letter' | 'appeal' | 'complaint',
     context: Record<string, unknown>
-  ): Promise<AIResponse<string>> {
+  ): Promise<AIResponse> {
     const provider = this.selectProvider()
     if (!provider) {
-      return {
-        success: false,
-        error: 'No AI providers available'
-      }
+      throw new Error('No AI providers available')
     }
 
     const prompt = this.buildDocumentPrompt(templateType, context)
 
     try {
       return await pRetry(
-        async () => provider.generateText(prompt, context),
+        async () => provider.generateText({ prompt, userId: context.userId as string, feature: 'document-categorizer' }),
         { retries: 2 }
       )
     } catch (error) {
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Failed to generate document'
-      }
+      throw new Error(error instanceof Error ? error.message : 'Failed to generate document')
     }
   }
 

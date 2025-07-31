@@ -48,38 +48,39 @@ export function useRealtimeTable<T = unknown>(
     clientRef.current = client
 
     const subscription = client.subscribeToTable<T>(table, {
-      onInsert: (record) => {
+      onInsert: (record: unknown) => {
         setEvents(prev => [...prev, {
           type: 'INSERT',
           table,
           schema: 'public',
           old: null,
-          new: record,
+          new: record as T,
           timestamp: new Date().toISOString()
-        }])
-        options?.onInsert?.(record)
+        } as RealtimeEvent<T>])
+        options?.onInsert?.(record as T)
       },
-      onUpdate: (data) => {
+      onUpdate: (data: unknown) => {
+        const typedData = data as { old: T; new: T }
         setEvents(prev => [...prev, {
           type: 'UPDATE',
           table,
           schema: 'public',
-          old: data.old,
-          new: data.new,
+          old: typedData.old,
+          new: typedData.new,
           timestamp: new Date().toISOString()
-        }])
-        options?.onUpdate?.(data)
+        } as RealtimeEvent<T>])
+        options?.onUpdate?.(typedData)
       },
-      onDelete: (record) => {
+      onDelete: (record: unknown) => {
         setEvents(prev => [...prev, {
           type: 'DELETE',
           table,
           schema: 'public',
-          old: record,
+          old: record as T,
           new: null,
           timestamp: new Date().toISOString()
-        }])
-        options?.onDelete?.(record)
+        } as RealtimeEvent<T>])
+        options?.onDelete?.(record as T)
       },
       onConnect: () => setIsConnected(true),
       onDisconnect: () => setIsConnected(false)
@@ -88,7 +89,7 @@ export function useRealtimeTable<T = unknown>(
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, table, options?.enabled])
+  }, [supabase, table, options?.enabled, options])
 
   const clearEvents = useCallback(() => {
     setEvents([])
@@ -121,21 +122,22 @@ export function useRealtimeRecord<T = unknown>(
     clientRef.current = client
 
     const subscription = client.subscribeToRecord<T>(table, id, {
-      onUpdate: (data) => {
-        setRecord(data.new)
-        options?.onUpdate?.(data)
+      onUpdate: (data: unknown) => {
+        const typedData = data as { old: T; new: T }
+        setRecord(typedData.new)
+        options?.onUpdate?.(typedData)
       },
-      onDelete: (record) => {
+      onDelete: (record: unknown) => {
         setIsDeleted(true)
         setRecord(null)
-        options?.onDelete?.(record)
+        options?.onDelete?.(record as T)
       }
     })
 
     return () => {
       subscription.unsubscribe()
     }
-  }, [supabase, table, id, options?.enabled])
+  }, [supabase, table, id, options?.enabled, options])
 
   return { record, isDeleted }
 }
@@ -285,7 +287,7 @@ export function usePresence(
 
     return () => {
       client.off(`presence:${channelName}:sync`, handleSync)
-      client.unsubscribe(channel.name)
+      client.unsubscribe(channelName)
     }
   }, [supabase, channelName, userId, userInfo.email, userInfo.name])
 
