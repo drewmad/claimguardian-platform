@@ -18,6 +18,7 @@ import './globals.css'
 import { Toaster } from 'sonner'
 
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { CookieConsentSimple } from '@/components/cookie-consent-simple'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
 
@@ -41,6 +42,7 @@ export default function RootLayout({
             <AuthProvider>
               {children}
               <Toaster position="top-right" richColors />
+              <CookieConsentSimple />
             </AuthProvider>
           </QueryProvider>
         </ErrorBoundary>

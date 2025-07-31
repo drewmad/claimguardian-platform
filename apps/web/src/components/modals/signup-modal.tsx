@@ -473,40 +473,44 @@ export function SignupModal() {
             />
           </div>
 
-          <LegalConsentForm
-            onConsentChange={(hasAllConsents) => {
-              setFormData(prev => ({ ...prev, agree: hasAllConsents }))
-            }}
-            onSubmit={async (acceptedDocumentIds) => {
-              // Map document IDs to expected slugs
-              // For now, if user accepts all docs, we assume they accepted terms and privacy
-              setFormData(prev => ({ 
-                ...prev, 
-                acceptedDocuments: formData.agree ? ['terms', 'privacy'] : []
-              }))
-            }}
-            showSubmitButton={false}
-            mode="signup"
-          />
-
-          {/* Age Verification */}
-          <div className="mt-4 p-4 bg-amber-500/10 border border-amber-500/20 rounded-lg">
+          {/* Consolidated Legal Agreement */}
+          <div className="mt-4 p-4 bg-blue-500/10 border border-blue-500/20 rounded-lg">
             <label className="flex items-start gap-3 cursor-pointer">
               <input
                 type="checkbox"
-                name="over18"
-                checked={formData.over18}
-                onChange={handleChange}
+                name="agree"
+                checked={formData.agree}
+                onChange={(e) => {
+                  const checked = e.target.checked
+                  setFormData(prev => ({ 
+                    ...prev, 
+                    agree: checked,
+                    over18: checked, // Auto-check age when agreeing
+                    acceptedDocuments: checked ? ['terms', 'privacy'] : []
+                  }))
+                }}
                 className="mt-1 w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500"
                 required
               />
               <div className="flex-1">
                 <span className="text-sm text-slate-300 font-medium">
-                  I confirm that I am 18 years of age or older
+                  By checking this box, I confirm that:
                 </span>
-                <p className="text-xs text-slate-400 mt-1">
-                  You must be at least 18 years old to use ClaimGuardian services
-                </p>
+                <ul className="text-xs text-slate-400 mt-2 space-y-1 list-disc list-inside">
+                  <li>I am 18 years of age or older</li>
+                  <li>I have read and agree to the{' '}
+                    <a href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300 underline">
+                      Terms of Service
+                    </a>
+                  </li>
+                  <li>I have read and agree to the{' '}
+                    <a href="/legal/privacy-policy" target="_blank" className="text-blue-400 hover:text-blue-300 underline">
+                      Privacy Policy
+                    </a>
+                  </li>
+                  <li>I consent to data processing as described in our privacy policy</li>
+                  <li>I understand cookies are used as described in our privacy policy</li>
+                </ul>
               </div>
             </label>
           </div>
