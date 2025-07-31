@@ -27,15 +27,23 @@ export class ClaimAssistant {
 
   constructor() {
     // Initialize providers
-    const gemini = new GeminiProvider({ apiKey: process.env.GEMINI_API_KEY! })
-    const openai = new OpenAIProvider({ apiKey: process.env.OPENAI_API_KEY! })
+    if (process.env.GEMINI_API_KEY) {
+      const gemini = new GeminiProvider({ apiKey: process.env.GEMINI_API_KEY })
+      if (this.isAvailable(gemini)) {
+        this.providers.set('gemini', gemini)
+      }
+    }
+    
+    if (process.env.OPENAI_API_KEY) {
+      const openai = new OpenAIProvider({ apiKey: process.env.OPENAI_API_KEY })
+      if (this.isAvailable(openai)) {
+        this.providers.set('openai', openai)
+      }
+    }
+  }
 
-    if (gemini.isAvailable()) {
-      this.providers.set('gemini', gemini)
-    }
-    if (openai.isAvailable()) {
-      this.providers.set('openai', openai)
-    }
+  private isAvailable(provider: BaseAIProvider): boolean {
+    return provider.getAvailableModels().length > 0
   }
 
   private selectProvider(): BaseAIProvider | undefined {
@@ -67,8 +75,9 @@ export class ClaimAssistant {
           const guidance = this.parseGuidanceResponse(response.text)
           
           return {
-            ...response,
-            text: JSON.stringify(guidance)
+            success: true,
+            data: JSON.stringify(guidance),
+            provider: response.provider
           }
         },
         {
@@ -165,10 +174,20 @@ Format your response as a structured guide that's easy to follow.`
     const prompt = this.buildDocumentPrompt(templateType, context)
 
     try {
-      return await pRetry(
-        async () => provider.generateText({ prompt, userId: context.userId as string, feature: 'document-categorizer' }),
+      const response = await pRetry(
+        async () => provider.generateText({ 
+          prompt, 
+          userId: context.userId as string, 
+          feature: 'document-categorizer' 
+        }),
         { retries: 2 }
       )
+      
+      return {
+        success: true,
+        data: response.text,
+        provider: response.provider
+      }
     } catch (error) {
       throw new Error(error instanceof Error ? error.message : 'Failed to generate document')
     }

@@ -62,6 +62,8 @@ export interface ImageAnalysisRequest {
   prompt: string;
   userId: string;
   feature: AIFeature;
+  maxTokens?: number;
+  temperature?: number;
 }
 
 export interface ImageAnalysisResponse extends AIResponse {
