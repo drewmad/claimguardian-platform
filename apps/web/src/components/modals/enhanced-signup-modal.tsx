@@ -536,7 +536,7 @@ export function EnhancedSignupModal() {
                 {!hasAllRequiredConsents && (
                   <div className="mb-3 text-xs text-amber-400 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    <span>All documents marked "REQUIRED" must be accepted</span>
+                    <span>All documents marked &quot;REQUIRED&quot; must be accepted</span>
                   </div>
                 )}
                 <LegalConsentForm
