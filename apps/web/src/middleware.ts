@@ -33,30 +33,63 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
+  response.headers.set('X-DNS-Prefetch-Control', 'on')
+  response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
+  response.headers.set('X-Permitted-Cross-Domain-Policies', 'none')
   
-  // Content Security Policy
+  // Content Security Policy with comprehensive directives
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+  const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : ''
+  
   const cspDirectives = [
     "default-src 'self'",
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
-    "style-src 'self' 'unsafe-inline'",
-    "img-src 'self' data: blob: https:",
-    "font-src 'self' data:",
-    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    // Scripts: Allow self, inline (for Next.js), and specific CDNs
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com",
+    // Styles: Allow self and inline (for styled components)
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    // Images: Allow various sources for property images and AI analysis
+    "img-src 'self' data: blob: https: http://localhost:*",
+    // Fonts: Allow self and Google Fonts
+    "font-src 'self' data: https://fonts.gstatic.com",
+    // Connect: Allow API calls to Supabase, AI services, and analytics
+    `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://api.openai.com https://generativelanguage.googleapis.com https://*.google-analytics.com https://*.googleapis.com`,
+    // Media: Allow video/audio from self and blob URLs
+    "media-src 'self' blob: data:",
+    // Objects: Restrict plugins
+    "object-src 'none'",
+    // Frame ancestors: Prevent clickjacking
     "frame-ancestors 'none'",
+    // Base URI: Restrict base tag
     "base-uri 'self'",
-    "form-action 'self'"
-  ]
+    // Form action: Only allow self
+    "form-action 'self'",
+    // Upgrade insecure requests in production
+    process.env.NODE_ENV === 'production' ? "upgrade-insecure-requests" : "",
+    // Worker sources for PWA support
+    "worker-src 'self' blob:",
+    // Manifest for PWA
+    "manifest-src 'self'",
+    // Frame sources (if needed for embeds)
+    "frame-src 'self' https://www.google.com https://maps.google.com"
+  ].filter(Boolean)
   
   response.headers.set('Content-Security-Policy', cspDirectives.join('; '))
+  
+  // Report-Only CSP for monitoring violations without blocking
+  if (process.env.NODE_ENV === 'production') {
+    const reportUri = process.env.CSP_REPORT_URI || '/api/csp-report'
+    const reportOnlyDirectives = [...cspDirectives, `report-uri ${reportUri}`]
+    response.headers.set('Content-Security-Policy-Report-Only', reportOnlyDirectives.join('; '))
+  }
   
   // Permissions Policy based on route
   if (pathname.includes('/damage-analyzer') || 
       pathname.includes('/ai-tools') ||
       pathname.includes('/evidence-organizer') ||
       pathname.includes('/3d-model-generator')) {
-    response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
+    response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()')
   } else {
-    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
+    response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=(), magnetometer=()')
   }
 }
 
@@ -124,6 +157,70 @@ export async function middleware(request: NextRequest) {
           clearAuthCookies(request, response)
         }
       }
+    }
+    
+    // Audit logging for security and compliance
+    try {
+      // Get IP address and user agent
+      const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+                 request.headers.get('x-real-ip') ||
+                 request.headers.get('cf-connecting-ip') ||
+                 'unknown'
+      
+      const userAgent = request.headers.get('user-agent') || 'unknown'
+      
+      // Build metadata for logging
+      const metadata = {
+        method: request.method,
+        path: pathname,
+        query: Object.fromEntries(request.nextUrl.searchParams),
+        referer: request.headers.get('referer'),
+        timestamp: new Date().toISOString()
+      }
+      
+      // Log authenticated requests to audit_logs
+      if (validatedUser) {
+        await supabase.from('audit_logs').insert({
+          user_id: validatedUser.id,
+          action: `${request.method} ${pathname}`,
+          resource_type: 'http_request',
+          resource_id: pathname,
+          ip_address: ip,
+          user_agent: userAgent,
+          metadata
+        })
+      }
+      
+      // Log security-sensitive events to security_logs
+      const securityPaths = ['/auth/', '/api/', '/admin/']
+      const shouldLogSecurity = securityPaths.some(path => pathname.startsWith(path))
+      
+      if (shouldLogSecurity || (request.method !== 'GET' && request.method !== 'HEAD')) {
+        const severity = pathname.startsWith('/admin/') ? 'warning' : 'info'
+        const eventType = pathname.startsWith('/auth/') ? 'auth_attempt' : 
+                         pathname.startsWith('/api/') ? 'api_call' : 
+                         'admin_access'
+        
+        await supabase.from('security_logs').insert({
+          event_type: eventType,
+          severity: severity,
+          user_id: validatedUser?.id || null,
+          action: `${request.method} ${pathname}`,
+          ip_address: ip,
+          user_agent: userAgent,
+          metadata: {
+            ...metadata,
+            authenticated: !!validatedUser,
+            user_email: validatedUser?.email
+          }
+        })
+      }
+    } catch (error) {
+      // Don't block requests if logging fails
+      console.warn('[MIDDLEWARE] Audit logging failed:', {
+        error: error instanceof Error ? error.message : 'Unknown error',
+        path: pathname
+      })
     }
     
     // Log access attempts for security monitoring

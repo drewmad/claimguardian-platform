@@ -43,6 +43,8 @@ export function SignInForm({ message }: SignInFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
+    console.log('[SIGNIN FORM] Submit started', { email, hasPassword: !!password })
+    
     // Clear any existing errors
     setFormError(null)
     clearError()
@@ -56,17 +58,21 @@ export function SignInForm({ message }: SignInFormProps) {
     setIsLoading(true)
     
     try {
+      console.log('[SIGNIN FORM] Calling signIn...')
       const success = await signIn(email, password)
+      console.log('[SIGNIN FORM] SignIn result:', { success })
       
       if (success) {
+        console.log('[SIGNIN FORM] Sign in successful, refreshing router...')
         // Successful sign in - router will handle navigation via auth provider
         router.refresh()
       } else {
+        console.log('[SIGNIN FORM] Sign in failed, auth error:', authError)
         // Error will be set by auth provider
         setIsLoading(false)
       }
     } catch (error) {
-      console.error('Sign in error:', error)
+      console.error('[SIGNIN FORM] Unexpected error:', error)
       setFormError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }

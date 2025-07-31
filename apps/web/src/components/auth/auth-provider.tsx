@@ -19,6 +19,8 @@ import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
 import { handleAuthError, validateSession } from '@/lib/supabase/auth-helpers'
 
+import { SessionMonitor } from './session-monitor'
+
 interface AuthContextType {
   user: User | null
   loading: boolean
@@ -464,7 +466,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <AuthContext.Provider value={value}>
-      {children}
+      {user ? (
+        <SessionMonitor inactivityTimeout={480} warningTime={5}>
+          {children}
+        </SessionMonitor>
+      ) : (
+        children
+      )}
     </AuthContext.Provider>
   )
 }
