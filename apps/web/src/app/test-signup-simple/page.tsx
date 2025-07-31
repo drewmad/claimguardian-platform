@@ -1,123 +1,306 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, ReactNode } from 'react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
+import type { SupabaseClient, AuthError } from '@supabase/supabase-js'
 
-export default function TestSignupSimple() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+// --- Type Definitions ---
+
+interface PanelProps {
+  title: string;
+  children: ReactNode;
+  className?: string;
+}
+
+interface InfoRowProps {
+  label: string;
+  value: any;
+  verbatim?: boolean;
+}
+
+interface CurlCommandProps {
+  curl: string;
+}
+
+interface ClientInfoState {
+  timestamp: string;
+  appBuildSha: string;
+  supabaseUrl: string;
+  anonKeySnippet: string;
+  supabaseJsVersion: string;
+  signupPayload: object;
+  browserUa: string;
+  networkStatus: string;
+  signUpResponse?: { data: any; error: AuthError | null };
+}
+
+interface NetworkInfoState {
+  method: string;
+  url: string;
+  roundTripTime: string;
+  requestHeaders: object;
+  requestBody: object;
+  responseBody: any;
+  statusCode: number;
+  curlReplay: string;
+}
+
+interface LogsInfoState {
+  requestId: string;
+  logflareLink: string;
+}
+
+interface RlsInfoState {
+  error?: string;
+  jwt_role?: string;
+  db_user?: string;
+  can_insert_auth_users?: boolean;
+  rls_active_auth_users?: boolean;
+  insert_policy_auth_users?: string;
+}
+
+
+// --- Helper Components ---
+
+const Panel = ({ title, children, className = '' }: PanelProps) => (
+  <div className={`bg-slate-800 rounded-lg p-4 flex flex-col ${className}`}>
+    <h2 className="text-lg font-bold text-white mb-3 border-b border-slate-700 pb-2">{title}</h2>
+    <div className="flex-grow overflow-y-auto text-xs text-gray-300 space-y-2 pretty-scrollbar">
+      {children}
+    </div>
+  </div>
+)
+
+const InfoRow = ({ label, value, verbatim = false }: InfoRowProps) => (
+  <div className="grid grid-cols-3 gap-2 items-start">
+    <strong className="text-gray-400 font-medium col-span-1">{label}:</strong>
+    <div className="col-span-2">
+      {verbatim ? (
+        <pre className="bg-slate-900 p-2 rounded text-xs whitespace-pre-wrap break-all">
+          {value ?? 'null'}
+        </pre>
+      ) : (
+        <span className="text-gray-100 break-all">{value ?? 'null'}</span>
+      )}
+    </div>
+  </div>
+)
+
+const CurlCommand = ({ curl }: CurlCommandProps) => (
+  <div>
+    <strong className="text-gray-400 font-medium">cURL Replay:</strong>
+    <pre className="bg-slate-900 p-2 rounded text-xs whitespace-pre-wrap break-all mt-1 text-green-300">
+      {curl}
+    </pre>
+  </div>
+)
+
+// --- Main Component ---
+
+export default function TestSignupDebugDashboard() {
+  const [supabase] = useState(() => createBrowserSupabaseClient())
   const [loading, setLoading] = useState(false)
-  const [result, setResult] = useState('')
-  const supabase = createBrowserSupabaseClient()
+  const [email, setEmail] = useState(`test-user-${Date.now()}@claimguardian.test`)
+  const [password, setPassword] = useState('password123')
+
+  // State for each panel
+  const [clientInfo, setClientInfo] = useState<ClientInfoState | null>(null)
+  const [networkInfo, setNetworkInfo] = useState<NetworkInfoState | null>(null)
+  const [logsInfo, setLogsInfo] = useState<LogsInfoState | null>(null)
+  const [rlsInfo, setRlsInfo] = useState<RlsInfoState | null>(null)
+
+  const resetState = () => {
+    setClientInfo(null)
+    setNetworkInfo(null)
+    setLogsInfo(null)
+    setRlsInfo(null)
+  }
+
+  const getCurlCommand = (url: string, headers: object, body: object): string => {
+    const headersString = Object.entries(headers)
+      .map(([key, value]) => `  -H '${key}: ${value}'`)
+      .join(' \
+')
+
+    return `curl -v -X POST '${url}' \
+${headersString} \
+  -d '${JSON.stringify(body, null, 2)}'`
+  }
 
   const testSignup = async () => {
     setLoading(true)
-    setResult('')
-    
-    try {
-      console.log('[TEST SIGNUP] Starting signup test...')
-      console.log('[TEST SIGNUP] Email:', email)
-      console.log('[TEST SIGNUP] Password length:', password.length)
-      
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            firstName: 'Test',
-            lastName: 'User'
-          }
-        }
-      })
-      
-      console.log('[TEST SIGNUP] Supabase response:', {
-        hasUser: !!data?.user,
-        userId: data?.user?.id,
-        userEmail: data?.user?.email,
-        hasSession: !!data?.session,
-        error: error ? {
-          message: error.message,
-          status: error.status,
-          code: error.code
-        } : null
-      })
-      
-      if (error) {
-        setResult(`ERROR: ${error.message} (Status: ${error.status})`)
-      } else if (data.user) {
-        setResult(`SUCCESS: User created with ID ${data.user.id}. Email: ${data.user.email}`)
-      } else {
-        setResult('UNKNOWN: No error but no user data returned')
-      }
-    } catch (err) {
-      console.error('[TEST SIGNUP] Unexpected error:', err)
-      setResult(`CATCH ERROR: ${err instanceof Error ? err.message : String(err)}`)
-    } finally {
-      setLoading(false)
+    resetState()
+
+    const startTime = performance.now()
+    const signupPayload = {
+      email,
+      password,
+      options: { data: { full_name: 'Test User Simple' } },
     }
+
+    // --- 1. Client Layer Info ---
+    // Note: Accessing private properties for debug purposes. This is not for production code.
+    const anonKey = (supabase.auth as any).supabaseKey
+    const supabaseUrl = (supabase as any).supabaseUrl
+    const projectId = (supabase as any).projectId
+    
+    const clientData: ClientInfoState = {
+      timestamp: new Date().toISOString(),
+      appBuildSha: process.env.NEXT_PUBLIC_VERCEL_GIT_COMMIT_SHA ?? 'N/A (local)',
+      supabaseUrl: supabaseUrl,
+      anonKeySnippet: `${anonKey?.slice(0, 8)}...`,
+      supabaseJsVersion: (supabase as any).realtime?.client.version ?? 'N/A',
+      signupPayload: { ...signupPayload, password: '*** MASKED ***' },
+      browserUa: navigator.userAgent,
+      networkStatus: navigator.onLine ? 'online' : 'offline',
+    }
+    setClientInfo(clientData)
+
+    // --- 4. RLS Audit (Run immediately to check pre-request state) ---
+    try {
+        const { data: rlsData, error: rlsError } = await supabase.functions.invoke('debug-rls-audit')
+        if (rlsError) throw rlsError
+        setRlsInfo(rlsData.data[0])
+    } catch (err: any) {
+        setRlsInfo({ error: err.message })
+    }
+
+    // --- 2. Network Request ---
+    const { data, error } = await supabase.auth.signUp(signupPayload)
+    const endTime = performance.now()
+
+    const requestUrl = `${supabaseUrl}/auth/v1/signup`
+    const requestHeaders = {
+      'apikey': anonKey,
+      'Authorization': `Bearer ${anonKey}`,
+      'x-client-info': `supabase-js/${(supabase as any).realtime?.client.version ?? 'N/A'}`,
+      'Content-Type': 'application/json'
+    }
+
+    setClientInfo(prev => ({ ...prev!, signUpResponse: { data, error } }))
+
+    const networkData: NetworkInfoState = {
+      method: 'POST',
+      url: requestUrl,
+      roundTripTime: (endTime - startTime).toFixed(2),
+      requestHeaders,
+      requestBody: { ...signupPayload, password: '*** MASKED ***' },
+      responseBody: error ?? data,
+      statusCode: error?.status ?? 200,
+      curlReplay: getCurlCommand(requestUrl, requestHeaders, { ...signupPayload, password: '*** MASKED ***' }),
+    }
+    setNetworkInfo(networkData)
+
+    // --- 3. Logs Snapshot ---
+    const requestId = (error as any)?.code
+    const logLink = `https://app.supabase.com/project/${projectId}/logs/edge-logs`
+    setLogsInfo({
+      requestId: requestId ?? 'Not found in response',
+      logflareLink: requestId ? `${logLink}?q=request_id%3D%22${requestId}%22` : logLink,
+    })
+
+    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-8">
-      <div className="max-w-md mx-auto bg-slate-800 rounded-lg p-6">
-        <h1 className="text-2xl font-bold mb-6 text-white">Test Signup Simple</h1>
-        
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Email:
-            </label>
+    <div className="min-h-screen bg-slate-900 p-4 flex flex-col">
+      <div className="max-w-7xl mx-auto w-full">
+        <div className="bg-slate-800 rounded-lg p-4 mb-4">
+          <h1 className="text-2xl font-bold text-white">Complete Debug Dashboard: Simple Signup</h1>
+          <div className="flex gap-4 mt-4">
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
+              className="flex-grow px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
               placeholder="test@example.com"
             />
-          </div>
-          
-          <div>
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Password:
-            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
+              className="w-1/3 px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
               placeholder="password123"
             />
+            <button
+              onClick={testSignup}
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-2 px-4 rounded"
+            >
+              {loading ? 'Testing...' : 'Run Signup Test'}
+            </button>
           </div>
-          
-          <button
-            onClick={testSignup}
-            disabled={loading || !email || !password}
-            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-2 px-4 rounded"
-          >
-            {loading ? 'Testing...' : 'Test Signup'}
-          </button>
         </div>
-        
-        {result && (
-          <div className="mt-6 p-4 bg-slate-700 rounded">
-            <h3 className="font-semibold text-white mb-2">Result:</h3>
-            <p className={`text-sm ${result.startsWith('SUCCESS') ? 'text-green-400' : 'text-red-400'}`}>
-              {result}
-            </p>
-          </div>
-        )}
-        
-        <div className="mt-6 text-xs text-gray-400">
-          <p>This tests direct Supabase client signup without the auth service layer.</p>
-          <p>Check the browser console for detailed logs.</p>
-        </div>
-        <div className="mt-4 p-3 bg-gray-800 border border-gray-700 rounded-md">
-          <p className="text-sm text-yellow-300">
-            <span className="font-bold">Supabase Role Used:</span> The sign-up operation below is performed by the client using the{' '}
-            <code className="px-1 py-0.5 bg-gray-700 rounded text-yellow-100 font-mono text-xs">anon</code> role. This role is granted by the public-facing{' '}
-            <code className="px-1 py-0.5 bg-gray-700 rounded text-yellow-100 font-mono text-xs">SUPABASE_ANON_KEY</code> and has permission to create new users in the `auth.users` table.
-          </p>
-        </div>
+      </div>
+
+      <div className="flex-grow max-w-7xl mx-auto w-full grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        <Panel title="1. Browser → Supabase Client">
+          {clientInfo && (
+            <>
+              <InfoRow label="Timestamp" value={clientInfo.timestamp} />
+              <InfoRow label="App Build SHA" value={clientInfo.appBuildSha} />
+              <InfoRow label="Supabase URL" value={clientInfo.supabaseUrl} />
+              <InfoRow label="Anon Key Snippet" value={clientInfo.anonKeySnippet} />
+              <InfoRow label="supabase-js" value={clientInfo.supabaseJsVersion} />
+              <InfoRow label="Browser UA" value={clientInfo.browserUa} />
+              <InfoRow label="Network Status" value={clientInfo.networkStatus} />
+              <InfoRow label="Sign-up Payload" value={JSON.stringify(clientInfo.signupPayload, null, 2)} verbatim />
+              <InfoRow label="signUp() Response" value={JSON.stringify(clientInfo.signUpResponse, null, 2)} verbatim />
+            </>
+          )}
+        </Panel>
+
+        <Panel title="2. Network Request (HAR-style)">
+          {networkInfo && (
+            <>
+              <InfoRow label="Method / URL" value={`${networkInfo.method} ${networkInfo.url}`} />
+              <InfoRow label="Status Code" value={networkInfo.statusCode} />
+              <InfoRow label="Round-trip (ms)" value={networkInfo.roundTripTime} />
+              <InfoRow label="Request Headers" value={JSON.stringify(networkInfo.requestHeaders, null, 2)} verbatim />
+              <InfoRow label="Request Body" value={JSON.stringify(networkInfo.requestBody, null, 2)} verbatim />
+              <InfoRow label="Response Body" value={JSON.stringify(networkInfo.responseBody, null, 2)} verbatim />
+              <CurlCommand curl={networkInfo.curlReplay} />
+            </>
+          )}
+        </Panel>
+
+        <Panel title="3. Supabase Edge Logs Snapshot">
+          {logsInfo && (
+            <>
+              <InfoRow label="Request ID" value={logsInfo.requestId} />
+              <div className="space-y-2">
+                <p>Live log streaming from the client is not feasible. Use the link below to view logs for this request.</p>
+                <a
+                  href={logsInfo.logflareLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-blue-400 hover:underline break-all"
+                >
+                  View Logs in Supabase Dashboard
+                </a>
+                <p className="text-gray-400">You may need to refresh the log view for 20-30 seconds after the request is made.</p>
+              </div>
+            </>
+          )}
+        </Panel>
+
+        <Panel title="4. DB Privilege / RLS Audit">
+          {rlsInfo ? (
+            rlsInfo.error ? (
+              <InfoRow label="Error" value={rlsInfo.error} verbatim />
+            ) : (
+              <>
+                <InfoRow label="JWT Role" value={rlsInfo.jwt_role} />
+                <InfoRow label="DB User" value={rlsInfo.db_user} />
+                <InfoRow label="Can INSERT auth.users" value={String(rlsInfo.can_insert_auth_users)} />
+                <InfoRow label="RLS Active on auth.users" value={String(rlsInfo.rls_active_auth_users)} />
+                <InfoRow label="INSERT Policy" value={rlsInfo.insert_policy_auth_users} />
+              </>
+            )
+          ) : (
+             <p>Awaiting test run...</p>
+          )}
+        </Panel>
       </div>
     </div>
   )
