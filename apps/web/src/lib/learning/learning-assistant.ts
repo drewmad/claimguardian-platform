@@ -66,7 +66,7 @@ export class LearningAssistant {
       }
 
       // Enhance results with context
-      const suggestions = await this.enhanceResults(textResults || [], query)
+      const suggestions = await this.enhanceResults(textResults || [])
       
       // Cache results
       this.cache.set(cacheKey, suggestions)
@@ -114,8 +114,7 @@ export class LearningAssistant {
     solution,
     category = 'general',
     tags = [],
-    severity = 'medium',
-    context
+    severity = 'medium'
   }: {
     title: string
     problem: string
@@ -123,7 +122,6 @@ export class LearningAssistant {
     category?: string
     tags?: string[]
     severity?: 'low' | 'medium' | 'high' | 'critical'
-    context?: any
   }): Promise<{ success: boolean; id?: string }> {
     try {
       const { data, error } = await this.supabase.rpc('add_learning', {
@@ -216,8 +214,7 @@ export class LearningAssistant {
   }
 
   private async enhanceResults(
-    results: any[], 
-    query: LearningQuery
+    results: any[]
   ): Promise<LearningSuggestion[]> {
     // Get additional data for each result
     const enhanced = await Promise.all(results.map(async (result) => {

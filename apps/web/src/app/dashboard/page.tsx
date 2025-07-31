@@ -19,7 +19,7 @@ function DashboardContent() {
   const router = useRouter()
   const { supabase } = useSupabase()
   const [showOnboarding, setShowOnboarding] = useState(false)
-  const [onboardingKey, setOnboardingKey] = useState(0) // Force re-render
+  const [onboardingKey] = useState(0) // Force re-render
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {

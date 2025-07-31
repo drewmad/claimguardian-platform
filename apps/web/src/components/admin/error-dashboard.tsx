@@ -20,7 +20,7 @@ interface ErrorLog {
   error_code?: string
   error_message: string
   error_stack?: string
-  context?: any
+  context?: Record<string, unknown>
   severity: string
   url?: string
   user_agent?: string

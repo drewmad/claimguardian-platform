@@ -122,7 +122,7 @@ interface ClaimState {
   updateSettlementOffer: (claimId: string, offerId: string, updates: Partial<SettlementOffer>) => void
   
   // Appeals
-  addAppeal: (claimId: string, appeal: Omit<ClaimAppeal, 'id' | 'claimId'>) => void
+  addAppeal: (claimId: string) => void
   updateAppeal: (claimId: string, appealId: string, updates: Partial<ClaimAppeal>) => void
   
   // Utility functions
@@ -461,7 +461,7 @@ export const useClaimStore = create<ClaimState>()(
       },
       
       // Appeals
-      addAppeal: (claimId, appeal) => {
+      addAppeal: (claimId) => {
         // Store appeals in a separate field if needed
         set(state => ({
           claims: state.claims.map(c =>

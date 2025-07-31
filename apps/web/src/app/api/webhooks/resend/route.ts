@@ -20,7 +20,8 @@ interface ResendWebhookEvent {
     to: string[]
     subject: string
     created_at: string
-    [key: string]: any
+    bounce_type?: string
+    complaint_type?: string
   }
 }
 

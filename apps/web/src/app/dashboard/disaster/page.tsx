@@ -90,7 +90,7 @@ const InteractiveMap = ({ properties, alerts }: { properties: Property[], alerts
     type: 'FeatureCollection' as const,
     features: alerts.map(alert => ({
       type: 'Feature' as const,
-      geometry: alert.affected_geography as any, // Alert geometry can be any valid GeoJSON geometry
+      geometry: alert.affected_geography as GeoJSON.Geometry,
       properties: { id: alert.id, headline: alert.headline }
     }))
   }

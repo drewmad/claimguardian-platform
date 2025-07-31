@@ -156,7 +156,7 @@ export class EnhancedAIService extends AIClientService {
     const supabase = createClient()
     
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('user_ai_context')
         .select('context')
         .eq('user_id', userId)

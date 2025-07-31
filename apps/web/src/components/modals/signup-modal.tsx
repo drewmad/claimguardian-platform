@@ -16,7 +16,6 @@ import { useModalStore } from '@/stores/modal-store'
 import { useAuth } from '@/components/auth/auth-provider'
 import { logger } from '@/lib/logger'
 import { authService } from '@/lib/auth/auth-service'
-import { useRateLimit } from '@/hooks/use-rate-limit'
 import { LegalConsentForm } from '@/components/legal/legal-consent-form'
 import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'
 

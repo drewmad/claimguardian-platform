@@ -124,7 +124,6 @@ export async function verifyPropertyEnrichment(
     if (!enrichment.storm_surge_zone) missingFields.push('Storm Surge Zone')
     
     // Calculate data quality metrics
-    const totalFields = 25 // Approximate number of important fields
     const capturedFieldsCount = Object.values(capturedFields).filter(v => v).length
     const completeness = Math.round((capturedFieldsCount / 6) * 100)
     

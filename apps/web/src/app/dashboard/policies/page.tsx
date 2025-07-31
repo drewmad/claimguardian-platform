@@ -20,7 +20,7 @@ const PolicyUpload = dynamic(
     loading: () => <div className="text-gray-400">Loading upload component...</div>
   }
 )
-import { usePolicyData, formatCoverage, formatDeductible, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
+import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-policy-data'
 import { usePropertyStore } from '@/stores/property-store'
 import { format } from 'date-fns'
 

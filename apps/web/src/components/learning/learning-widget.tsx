@@ -26,7 +26,12 @@ export function LearningWidget() {
   const [query, setQuery] = useState('')
   const [results, setResults] = useState<LearningResult[]>([])
   const [loading, setLoading] = useState(false)
-  const [stats, setStats] = useState<any>(null)
+  const [stats, setStats] = useState<{
+    totalIssues: number
+    bySeverity: Record<string, number>
+    byCategory: Array<{ name: string; count: number }>
+    recentTrends: { increasing: boolean; percentage: number }
+  } | null>(null)
 
   const handleSearch = async () => {
     if (!query.trim()) return

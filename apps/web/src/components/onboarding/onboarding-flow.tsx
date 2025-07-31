@@ -94,7 +94,6 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] = useState(ONBOARDING_STEPS)
   const [showPropertyWizard, setShowPropertyWizard] = useState(false)
-  const [preferences, setPreferences] = useState<{ email_notifications?: boolean; sms_notifications?: boolean; marketing_emails?: boolean; dark_mode?: boolean } | null>(null)
   const [onboardingData, setOnboardingData] = useState<OnboardingData>({
     userType: null,
     hasPropertyInsurance: undefined,

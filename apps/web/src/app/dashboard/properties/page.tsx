@@ -30,14 +30,29 @@ import Link from 'next/link'
 interface Property {
   id: string
   name: string
-  address: any
+  address: {
+    street?: string
+    city?: string
+    state?: string
+    zip?: string
+    unit?: string
+  }
   latitude?: number
   longitude?: number
   type: string
   is_primary: boolean
   created_at: string
   updated_at: string
-  details?: any
+  details?: {
+    square_footage?: number
+    year_built?: number
+    bedrooms?: number
+    bathrooms?: number
+    lot_size?: number
+    construction_type?: string
+    roof_type?: string
+    stories?: number
+  }
   enrichment?: {
     version?: number
     enriched_at?: string

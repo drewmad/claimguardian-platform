@@ -381,7 +381,7 @@ class LegalService {
           timezone: data.timezone
         }
       }
-    } catch (error) {
+    } catch {
       logger.warn('Failed to get location data', {})
       // Fallback to just IP
       return {

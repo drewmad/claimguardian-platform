@@ -13,7 +13,7 @@ import { logger } from '@/lib/logger'
 interface TrackingData {
   userId: string
   eventType: string
-  eventData?: Record<string, any>
+  eventData?: Record<string, unknown>
   sessionId?: string
   deviceInfo?: {
     fingerprint?: string

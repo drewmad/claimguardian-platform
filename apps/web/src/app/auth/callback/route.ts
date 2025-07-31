@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextRequest, NextResponse } from 'next/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export async function GET(request: NextRequest) {
   const { searchParams, origin } = new URL(request.url)
@@ -80,7 +81,7 @@ export async function GET(request: NextRequest) {
 }
 
 // Helper function to track login activity
-async function trackLoginActivity(supabase: any, data: {
+async function trackLoginActivity(supabase: SupabaseClient, data: {
   userId: string | null
   email: string
   success: boolean

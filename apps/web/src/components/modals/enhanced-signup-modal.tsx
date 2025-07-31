@@ -22,7 +22,6 @@ export function EnhancedSignupModal() {
   const { signUp, error, clearError } = useAuth()
   const { device, location, isLoading: isTrackingLoading } = useDeviceTracking()
   const [loading, setLoading] = useState(false)
-  const [loadingLocation, setLoadingLocation] = useState(false)
   const [resending, setResending] = useState(false)
   const [resendSuccess, setResendSuccess] = useState(false)
   const { isLimited, secondsRemaining, checkLimit } = useRateLimit({

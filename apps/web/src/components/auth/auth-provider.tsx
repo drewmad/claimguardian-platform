@@ -46,9 +46,21 @@ interface SignUpData {
   ipAddress?: string
   userAgent?: string
   deviceFingerprint?: string
-  geolocation?: any
+  geolocation?: {
+    lat?: number
+    lng?: number
+    city?: string
+    region?: string
+    country?: string
+  }
   referrer?: string
-  utmParams?: any
+  utmParams?: {
+    utm_source?: string
+    utm_medium?: string
+    utm_campaign?: string
+    utm_term?: string
+    utm_content?: string
+  }
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)

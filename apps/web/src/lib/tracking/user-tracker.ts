@@ -92,7 +92,7 @@ class UserTracker {
       const utmParams = this.extractUTMParams()
 
       // Call the database function to track login
-      const { data: trackingData, error } = await this.supabase
+      const { error } = await this.supabase
         .rpc('track_user_login', {
           p_user_id: data.userId,
           p_session_id: this.sessionId,
