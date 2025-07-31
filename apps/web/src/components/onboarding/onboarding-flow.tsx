@@ -5,10 +5,9 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { useRouter } from 'next/navigation'
 import { useSupabase } from '@/lib/supabase/client'
 import { 
-  Home, Shield, CheckCircle, ArrowRight, 
-  User, FileText, Sparkles, X, Loader2,
-  Building, MapPin, Phone, Camera,
-  UserCheck, Briefcase, Key, Clock
+  Shield, CheckCircle, ArrowRight, 
+  Sparkles, X, Loader2,
+  UserCheck
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -184,34 +183,34 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
   }, [user, router, supabase])
 
 
-  const updatePreferences = async (updates: Partial<{ 
-    email_notifications?: boolean
-    sms_notifications?: boolean
-    marketing_emails?: boolean
-    dark_mode?: boolean
-    onboarding_completed?: boolean
-    onboarding_current_step?: string
-    onboarding_skipped_at?: string
-  }>) => {
-    if (!user) return
+  // const updatePreferences = async (updates: Partial<{ 
+  //   email_notifications?: boolean
+  //   sms_notifications?: boolean
+  //   marketing_emails?: boolean
+  //   dark_mode?: boolean
+  //   onboarding_completed?: boolean
+  //   onboarding_current_step?: string
+  //   onboarding_skipped_at?: string
+  // }>) => {
+  //   if (!user) return
 
-    try {
-      const { error } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: user.id,
-          ...updates,
-          updated_at: new Date().toISOString()
-        })
+  //   try {
+  //     const { error } = await supabase
+  //       .from('user_preferences')
+  //       .upsert({
+  //         user_id: user.id,
+  //         ...updates,
+  //         updated_at: new Date().toISOString()
+  //       })
 
-      if (error) throw error
+  //     if (error) throw error
 
-      setPreferences({ ...preferences, ...updates })
-    } catch (error) {
-      console.error('Error updating preferences:', error)
-      toast.error('Failed to save preferences')
-    }
-  }
+  //     setPreferences({ ...preferences, ...updates })
+  //   } catch (error) {
+  //     console.error('Error updating preferences:', error)
+  //     toast.error('Failed to save preferences')
+  //   }
+  // }
 
   const completeStep = async (stepId: string) => {
     if (!user) return
@@ -592,10 +591,10 @@ function UserProfileStep({
             addressVerified: true,
             propertyLatitude: lat,
             propertyLongitude: lng,
-            propertyPlaceId: (place as any).place_id
+            propertyPlaceId: (place as google.maps.places.PlaceResult).place_id
           })
           
-          console.log('Address coordinates:', { lat, lng, placeId: (place as any).place_id })
+          console.log('Address coordinates:', { lat, lng, placeId: (place as google.maps.places.PlaceResult).place_id })
         }
       })
     } catch (error) {
@@ -691,7 +690,7 @@ function UserProfileStep({
         <div className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-text-primary mb-3">Welcome to ClaimGuardian</h2>
-            <p className="text-text-secondary text-lg">Let's personalize your experience</p>
+            <p className="text-text-secondary text-lg">Let&apos;s personalize your experience</p>
           </div>
 
           <div className="space-y-6">
@@ -1013,13 +1012,13 @@ function InsuranceStatusStep({
   const [otherInsuranceType, setOtherInsuranceType] = useState(data.otherInsuranceType || '')
   const [currentStep, setCurrentStep] = useState<number>(0)
 
-  const commonProviders = [
-    'State Farm',
-    'Allstate',
-    'Progressive',
-    'GEICO',
-    'Other'
-  ]
+  // const commonProviders = [
+  //   'State Farm',
+  //   'Allstate',
+  //   'Progressive',
+  //   'GEICO',
+  //   'Other'
+  // ]
 
   const handlePropertyInsuranceChange = (status: boolean) => {
     setHasPropertyInsurance(status)
@@ -1394,8 +1393,8 @@ function QuickStartStep({
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-text-primary mb-3">You're all set!</h2>
-        <p className="text-text-secondary text-lg">Here's what you can do right now</p>
+        <h2 className="text-3xl font-bold text-text-primary mb-3">You&apos;re all set!</h2>
+        <p className="text-text-secondary text-lg">Here&apos;s what you can do right now</p>
       </div>
 
       <div className="space-y-4">

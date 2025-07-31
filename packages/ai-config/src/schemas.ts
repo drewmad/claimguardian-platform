@@ -134,7 +134,7 @@ export type AIResponse<T> = {
   data?: T
   error?: string
   confidence?: number
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export type AIStreamResponse<T> = {

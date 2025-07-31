@@ -7,13 +7,12 @@
 
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Card } from '@claimguardian/ui'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { 
-  CheckCircle2, 
   AlertCircle, 
   MapPin, 
   Mountain, 
@@ -21,13 +20,13 @@ import {
   Home,
   Eye,
   RefreshCw,
-  Download,
   ChevronDown,
   ChevronUp
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 import { enrichPropertyData } from '@/actions/property-enrichment'
 import { toast } from 'sonner'
+import Image from 'next/image'
 
 interface PropertyEnrichmentData {
   id: string
@@ -41,7 +40,7 @@ interface PropertyEnrichmentData {
   county: string
   state_code: string
   formatted_address: string
-  address_components?: any
+  address_components?: Record<string, unknown>
   
   // Elevation & Risk
   elevation_meters?: number
@@ -50,14 +49,14 @@ interface PropertyEnrichmentData {
   flood_risk_score?: number
   
   // Visual Documentation
-  street_view_data?: any
-  aerial_view_data?: any
+  street_view_data?: Record<string, unknown>
+  aerial_view_data?: Record<string, unknown>
   imagery_captured_at?: string
   
   // Emergency Services
-  fire_protection?: any
-  medical_services?: any
-  police_services?: any
+  fire_protection?: Record<string, unknown>
+  medical_services?: Record<string, unknown>
+  police_services?: Record<string, unknown>
   
   // Risk Assessment
   distance_to_coast_meters?: number
@@ -66,12 +65,12 @@ interface PropertyEnrichmentData {
   wind_zone?: string
   
   // Insurance Factors
-  insurance_risk_factors?: any
+  insurance_risk_factors?: Record<string, unknown>
   insurance_territory_code?: string
   
   // Metadata
-  source_apis?: any
-  api_costs?: any
+  source_apis?: Record<string, unknown>
+  api_costs?: Record<string, unknown>
   enriched_at: string
   expires_at?: string
 }
@@ -98,11 +97,7 @@ export function PropertyEnrichmentStatus({
   const [showImages, setShowImages] = useState(false)
   const supabase = createClient()
 
-  useEffect(() => {
-    fetchEnrichmentData()
-  }, [propertyId])
-
-  async function fetchEnrichmentData() {
+  const fetchEnrichmentData = useCallback(async () => {
     try {
       const { data, error } = await supabase
         .from('property_enrichments')
@@ -121,7 +116,11 @@ export function PropertyEnrichmentStatus({
     } finally {
       setLoading(false)
     }
-  }
+  }, [propertyId, supabase])
+
+  useEffect(() => {
+    fetchEnrichmentData()
+  }, [fetchEnrichmentData])
 
   async function handleEnrich() {
     if (!latitude || !longitude || !address) {
@@ -145,7 +144,7 @@ export function PropertyEnrichmentStatus({
       } else {
         toast.error(result.error || 'Failed to enrich property')
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred while enriching property')
     } finally {
       setEnriching(false)
@@ -392,15 +391,16 @@ export function PropertyEnrichmentStatus({
                 <div className="border-t pt-4">
                   <h4 className="font-medium mb-3">Property Images</h4>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    {Object.entries(enrichmentData.street_view_data).map(([direction, data]: [string, any]) => {
+                    {Object.entries(enrichmentData.street_view_data).map(([direction, data]: [string, { url: string }]) => {
                       if (direction === 'available') return null
                       return (
                         <div key={direction} className="text-center">
-                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                            <img 
+                          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                            <Image 
                               src={data.url} 
                               alt={`Street view ${direction}`}
-                              className="w-full h-full object-cover"
+                              fill
+                              className="object-cover"
                             />
                           </div>
                           <p className="text-xs text-gray-600 mt-1 capitalize">{direction}</p>
@@ -413,13 +413,14 @@ export function PropertyEnrichmentStatus({
                     <div className="mt-4">
                       <p className="text-sm font-medium mb-2">Aerial Views</p>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                        {Object.entries(enrichmentData.aerial_view_data).map(([zoom, url]: [string, any]) => (
+                        {Object.entries(enrichmentData.aerial_view_data).map(([zoom, url]: [string, string]) => (
                           <div key={zoom} className="text-center">
-                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                              <img 
+                            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
+                              <Image 
                                 src={url} 
                                 alt={`Aerial view ${zoom}`}
-                                className="w-full h-full object-cover"
+                                fill
+                                className="object-cover"
                               />
                             </div>
                             <p className="text-xs text-gray-600 mt-1">Zoom: {zoom.replace('zoom_', '')}</p>

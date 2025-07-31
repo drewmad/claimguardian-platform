@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react'
 import { 
   AlertTriangle, Shield, Zap, Heart, MapPin, ExternalLink, 
-  CheckCircle, Radio, Wind, Droplets, Flame, Sun, Loader2
+  CheckCircle
 } from 'lucide-react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -42,7 +42,7 @@ interface Alert {
   severity: string | null;
   sender_name: string | null;
   effective_at: string | null;
-  affected_geography: any;
+  affected_geography: unknown;
 }
 
 // --- UI Components ---
@@ -86,11 +86,11 @@ const MAPBOX_TOKEN = process.env.NEXT_PUBLIC_MAPBOX_TOKEN
 const InteractiveMap = ({ properties, alerts }: { properties: Property[], alerts: Alert[] }) => {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
 
-  const geoJsonData: any = {
-    type: 'FeatureCollection',
+  const geoJsonData = {
+    type: 'FeatureCollection' as const,
     features: alerts.map(alert => ({
-      type: 'Feature',
-      geometry: alert.affected_geography,
+      type: 'Feature' as const,
+      geometry: alert.affected_geography as any, // Alert geometry can be any valid GeoJSON geometry
       properties: { id: alert.id, headline: alert.headline }
     }))
   }
@@ -180,7 +180,7 @@ const PreparednessChecklist = () => {
       const { data, error } = await getChecklistProgress()
       if (error || !data) return
 
-      const progressMap = new Map(data.map((item: any) => [item.item_id, item.completed]))
+      const progressMap = new Map(data.map((item: { item_id: string; completed: boolean }) => [item.item_id, item.completed]))
 
       setChecklist(prev => ({
         prepare: prev.prepare.map(item => ({ ...item, completed: progressMap.get(item.id) ?? item.completed })),

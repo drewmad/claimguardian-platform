@@ -13,7 +13,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
-import { sendWelcomeEmail, sendPropertyEnrichmentEmail } from './email'
+import { sendWelcomeEmail } from './email'
 
 export interface OnboardingData {
   // Step 1: User Profile
@@ -59,7 +59,7 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
     const supabase = await createClient()
     
     // Update user preferences with onboarding data
-    const updateData: Record<string, any> = {
+    const updateData: Record<string, unknown> = {
       user_id: userId,
       updated_at: new Date().toISOString()
     }
