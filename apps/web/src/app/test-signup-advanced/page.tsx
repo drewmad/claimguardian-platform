@@ -180,7 +180,7 @@ export default function TestSignupAdvancedDashboard() {
     // --- Panel 4: Post-Signup Linking & Verification ---
     try {
       setPanel4Status('running');
-      let finalState: any = {};
+      const finalState: any = {};
 
       // Action 1: Link consent
       const linkPayload = { p_user_id: newUser.id, p_consent_token: consentToken };

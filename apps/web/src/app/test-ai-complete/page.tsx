@@ -1,16 +1,14 @@
+
 'use client'
 
-import { AlertCircle, Camera, CheckCircle, FileText, Loader2, MessageSquare, Shield, Upload, XCircle } from 'lucide-react'
+import { AlertCircle, CheckCircle, Loader2, XCircle } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
-import { toast } from 'sonner'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
@@ -129,7 +127,7 @@ export default function TestAICompletePage() {
     setTestOutput(prev => prev + message + '\n')
   }
 
-  const runTests = async () => {
+  const runTests = useCallback(async () => {
     setIsRunning(true)
     setTestOutput('')
     
@@ -250,7 +248,7 @@ export default function TestAICompletePage() {
           { role: 'user', content: 'What is typically covered in a Florida homeowners policy?' }
         ]
       })
-      updateTest('edge-1', { 
+      updateTest('edge-1', {
         status: 'passed', 
         result: response.response.substring(0, 100) + '...'
       })
@@ -274,7 +272,7 @@ export default function TestAICompletePage() {
       // Create a test text file
       const testContent = 'This is a test policy document for ClaimGuardian AI testing.'
       const blob = new Blob([testContent], { type: 'text/plain' })
-      const file = new File([blob], 'test-policy.txt', { type: 'text/plain' })
+      const file = new new File([blob], 'test-policy.txt', { type: 'text/plain' })
       
       const fileName = `test/${Date.now()}-test-policy.txt`
       const { data, error } = await supabase.storage
@@ -305,11 +303,11 @@ export default function TestAICompletePage() {
 
     setIsRunning(false)
     addOutput('\n✅ All tests completed!')
-  }
+  }, [aiClient, supabase.storage])
 
   useEffect(() => {
     runTests()
-  }, [])
+  }, [runTests])
 
   const filteredTests = currentCategory === 'all' 
     ? tests 
