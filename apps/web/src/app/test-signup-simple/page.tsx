@@ -1,6 +1,7 @@
+
 'use client'
 
-import { useState, ReactNode } from 'react'
+import { useState, useEffect, ReactNode } from 'react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import type { SupabaseClient, AuthError } from '@supabase/supabase-js'
 
@@ -98,7 +99,10 @@ const CurlCommand = ({ curl }: CurlCommandProps) => (
 // --- Main Component ---
 
 export default function TestSignupDebugDashboard() {
-  const [supabase] = useState(() => createBrowserSupabaseClient())
+  console.log('[Debug Dashboard] Component rendering started.');
+
+  const [supabase, setSupabase] = useState<SupabaseClient | null>(null);
+  const [initError, setInitError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false)
   const [email, setEmail] = useState(`test-user-${Date.now()}@claimguardian.test`)
   const [password, setPassword] = useState('password123')
@@ -108,6 +112,30 @@ export default function TestSignupDebugDashboard() {
   const [networkInfo, setNetworkInfo] = useState<NetworkInfoState | null>(null)
   const [logsInfo, setLogsInfo] = useState<LogsInfoState | null>(null)
   const [rlsInfo, setRlsInfo] = useState<RlsInfoState | null>(null)
+
+  useEffect(() => {
+    console.log('[Debug Dashboard] useEffect triggered for initialization.');
+    try {
+      // Verify environment variables are available on the client
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (!supabaseUrl || !supabaseAnonKey) {
+        console.error('[Debug Dashboard] Supabase environment variables are missing!');
+        throw new Error('Supabase URL or Anon Key is not configured. Check your .env.local file and ensure variables are prefixed with NEXT_PUBLIC_.');
+      }
+      
+      console.log('[Debug Dashboard] Environment variables found. Creating Supabase client.');
+      const client = createBrowserSupabaseClient();
+      setSupabase(client);
+      console.log('[Debug Dashboard] Supabase client created successfully.');
+
+    } catch (error: any) {
+      console.error('[Debug Dashboard] Error during initialization:', error);
+      setInitError(error.message);
+    }
+  }, []);
+
 
   const resetState = () => {
     setClientInfo(null)
@@ -128,6 +156,12 @@ ${headersString} \
   }
 
   const testSignup = async () => {
+    if (!supabase) {
+      console.error('[Debug Dashboard] testSignup called before Supabase client was initialized.');
+      setInitError('Cannot run test: Supabase client is not available.');
+      return;
+    }
+    console.log('[Debug Dashboard] testSignup function started.');
     setLoading(true)
     resetState()
 
@@ -139,10 +173,8 @@ ${headersString} \
     }
 
     // --- 1. Client Layer Info ---
-    // Note: Accessing private properties for debug purposes. This is not for production code.
     const anonKey = (supabase.auth as any).supabaseKey
     const supabaseUrl = (supabase as any).supabaseUrl
-    const projectId = (supabase as any).projectId
     
     const clientData: ClientInfoState = {
       timestamp: new Date().toISOString(),
@@ -155,13 +187,16 @@ ${headersString} \
       networkStatus: navigator.onLine ? 'online' : 'offline',
     }
     setClientInfo(clientData)
+    console.log('[Debug Dashboard] Panel 1 data captured.');
 
     // --- 4. RLS Audit (Run immediately to check pre-request state) ---
     try {
         const { data: rlsData, error: rlsError } = await supabase.functions.invoke('debug-rls-audit')
         if (rlsError) throw rlsError
         setRlsInfo(rlsData.data[0])
+        console.log('[Debug Dashboard] Panel 4 data captured.');
     } catch (err: any) {
+        console.error('[Debug Dashboard] RLS Audit Error:', err);
         setRlsInfo({ error: err.message })
     }
 
@@ -190,16 +225,32 @@ ${headersString} \
       curlReplay: getCurlCommand(requestUrl, requestHeaders, { ...signupPayload, password: '*** MASKED ***' }),
     }
     setNetworkInfo(networkData)
+    console.log('[Debug Dashboard] Panel 2 data captured.');
 
     // --- 3. Logs Snapshot ---
+    const projectId = (supabase as any).projectId
     const requestId = (error as any)?.code
     const logLink = `https://app.supabase.com/project/${projectId}/logs/edge-logs`
     setLogsInfo({
       requestId: requestId ?? 'Not found in response',
       logflareLink: requestId ? `${logLink}?q=request_id%3D%22${requestId}%22` : logLink,
     })
+    console.log('[Debug Dashboard] Panel 3 data captured.');
 
     setLoading(false)
+    console.log('[Debug Dashboard] testSignup function finished.');
+  }
+
+  if (initError) {
+    return (
+      <div className="min-h-screen bg-red-900 text-white p-8 flex items-center justify-center">
+        <div className="max-w-2xl bg-red-800 p-6 rounded-lg shadow-lg">
+          <h1 className="text-2xl font-bold mb-4">Initialization Error</h1>
+          <p className="mb-4">The debug dashboard could not be loaded. This is often due to missing environment variables.</p>
+          <pre className="bg-gray-900 p-4 rounded text-sm whitespace-pre-wrap">{initError}</pre>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -224,7 +275,7 @@ ${headersString} \
             />
             <button
               onClick={testSignup}
-              disabled={loading}
+              disabled={loading || !supabase}
               className="bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white py-2 px-4 rounded"
             >
               {loading ? 'Testing...' : 'Run Signup Test'}
