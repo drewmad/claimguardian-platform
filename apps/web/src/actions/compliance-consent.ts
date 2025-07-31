@@ -72,28 +72,43 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       }
     }
     
-    // Record consent using RPC function (works for anonymous users)
-    const { data: result, error } = await supabase.rpc('record_signup_consent', {
+    // Prepare parameters with type safety
+    const rpcParams = {
       p_email: data.email,
-      p_gdpr_consent: data.gdprConsent,
+      p_gdpr_consent: Boolean(data.gdprConsent),
       p_ccpa_consent: true, // Default to true
-      p_marketing_consent: data.marketingConsent,
-      p_data_processing_consent: data.dataProcessingConsent,
+      p_marketing_consent: Boolean(data.marketingConsent),
+      p_data_processing_consent: Boolean(data.dataProcessingConsent),
       p_cookie_consent: true, // Default to true
-      p_terms_accepted: data.termsAccepted,
-      p_privacy_accepted: data.privacyAccepted,
-      p_age_confirmed: data.ageVerified,
-      p_ai_tools_consent: data.aiProcessingConsent || true, // Use AI consent or default to true
+      p_terms_accepted: Boolean(data.termsAccepted),
+      p_privacy_accepted: Boolean(data.privacyAccepted),
+      p_age_confirmed: Boolean(data.ageVerified),
+      p_ai_tools_consent: Boolean(data.aiProcessingConsent ?? true),
       p_ip_address: ipAddress,
       p_user_agent: userAgent,
-      p_fingerprint: data.deviceFingerprint
+      p_fingerprint: data.deviceFingerprint || null
+    }
+    
+    logger.info('Calling record_signup_consent with params', { 
+      email: data.email,
+      params: rpcParams 
     })
     
+    // Record consent using RPC function (works for anonymous users)
+    const { data: result, error } = await supabase.rpc('record_signup_consent', rpcParams)
+    
     if (error) {
-      logger.error('Failed to record consent', { email: data.email }, error)
+      logger.error('Failed to record consent', { 
+        email: data.email,
+        errorCode: error.code,
+        errorMessage: error.message,
+        errorDetails: error.details,
+        errorHint: error.hint,
+        params: rpcParams
+      }, error)
       return {
         success: false,
-        errorMessage: 'Failed to record consent. Please try again.'
+        errorMessage: `Failed to record consent: ${error.message}`
       }
     }
     

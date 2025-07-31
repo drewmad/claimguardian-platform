@@ -32,6 +32,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Textarea } from '@/components/ui/textarea'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
+import { EvidenceManager } from './evidence-manager'
+
 interface ClaimData {
   // Step 1: Basic Info
   damageType: string
