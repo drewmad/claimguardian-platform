@@ -1,169 +1,82 @@
----
-title: Terms of Service
-version: v2025-01-09
-effective_date: 2025-01-09
-slug: terms-of-service
----
 
-# Terms of Service
+# Terms of Service for ClaimGuardian
 
-**Effective Date:** January 9, 2025  
-**Version:** v2025-01-09
+**Effective Date:** July 31, 2025
+**Last Updated:** July 31, 2025
 
-## Agreement to Terms
+Welcome to ClaimGuardian. These Terms of Service ("Terms") govern your access to and use of the ClaimGuardian web application, including any content, functionality, and services offered on or through our platform (the "Service"), operated by ClaimGuardian ("Company," "we," "us," or "our").
 
-By accessing or using ClaimGuardian ("Service," "Platform," "we," "us," or "our"), you agree to be bound by these Terms of Service ("Terms"). If you disagree with any part of these terms, you may not access the Service.
+**PLEASE READ THESE TERMS CAREFULLY BEFORE USING THE SERVICE. BY ACCESSING OR USING THE SERVICE, YOU (1) ACKNOWLEDGE THAT YOU HAVE READ, UNDERSTAND, AND AGREE TO BE BOUND BY THESE TERMS; (2) REPRESENT THAT YOU ARE OF LEGAL AGE TO FORM A BINDING CONTRACT; AND (3) AGREE TO COMPLY WITH ALL APPLICABLE LAWS AND REGULATIONS.**
 
-## Description of Service
+**IF YOU DO NOT AGREE TO THESE TERMS, YOU MUST NOT ACCESS OR USE THE SERVICE.**
 
-ClaimGuardian is a comprehensive insurance claim management platform that facilitates:
-- **Claim Processing:** Streamlined submission, tracking, and management of insurance claims
-- **Communication:** Secure messaging between claimants, adjusters, and insurance professionals
-- **Document Management:** Secure storage and sharing of claim-related documentation
-- **Analytics:** Reporting and insights for claim performance and outcomes
+### 1. Description of Service
 
-## User Accounts
+ClaimGuardian is a web-based platform that utilizes data processing, user tracking, and artificial intelligence ("AI") to provide insights and services related to claims management and data analysis. The Service may include data scraping, integration with third-party services like Google Maps and Stripe, and AI-powered tools.
 
-### Account Creation
-- **Eligibility:** You must be at least 18 years old and legally capable of entering contracts
-- **Accuracy:** You must provide accurate, current, and complete information
-- **Security:** You are responsible for maintaining the confidentiality of your account credentials
-- **Authorized Use:** Accounts may not be shared or transferred without our consent
+### 2. Acceptance of Related Documents
 
-### Account Responsibilities
-- **Single Account:** Each user may maintain only one active account
-- **Professional Use:** Accounts must be used for legitimate business purposes only
-- **Compliance:** Users must comply with all applicable laws and regulations
-- **Reporting:** Users must promptly report any unauthorized account access
+Your use of the Service is also governed by our **Privacy Policy** and **AI Disclaimer**, which are incorporated herein by reference. Please review these documents to understand our practices regarding your data and the limitations of our AI services.
 
-## Acceptable Use Policy
+### 3. User Accounts
 
-### Permitted Uses
-- **Professional Activities:** Using the platform for legitimate insurance-related business
-- **Collaboration:** Sharing information with authorized parties for claim processing
-- **Communication:** Engaging in professional correspondence through platform tools
+a. **Registration:** To access certain features, you must create an account. You agree to provide accurate, current, and complete information during the registration process and to update such information to keep it accurate, current, and complete.
 
-### Prohibited Uses
-- **Fraudulent Activity:** Submitting false claims or misleading information
-- **Unauthorized Access:** Attempting to access other users' accounts or data
-- **System Interference:** Disrupting platform operations or security measures
-- **Inappropriate Content:** Uploading illegal, offensive, or copyrighted material
+b. **Account Security:** You are responsible for safeguarding your account password and for any activities or actions under your account. You agree to notify us immediately of any unauthorized use of your account. We are not liable for any loss or damage arising from your failure to comply with this security obligation.
 
-## Intellectual Property
+### 4. User Conduct and Responsibilities
 
-### Our Rights
-- **Platform Ownership:** ClaimGuardian owns all rights to the platform, software, and related materials
-- **Trademark Protection:** Our trademarks, logos, and branding are protected intellectual property
-- **Content License:** We grant you a limited, non-exclusive license to use the platform
+You agree not to misuse the Service. You will not, directly or indirectly:
+- Use the Service for any illegal or unauthorized purpose.
+- Probe, scan, or test the vulnerability of any system or network.
+- Breach or otherwise circumvent any security or authentication measures.
+- Interfere with or disrupt any user, host, or network, for example by sending a virus, overloading, flooding, spamming, or mail-bombing any part of the Services.
+- Scrape the Service in a manner that violates these Terms or places an unreasonable load on our infrastructure.
 
-### Your Rights
-- **User Content:** You retain ownership of content you upload to the platform
-- **Content License:** You grant us a license to use your content for platform operations
-- **Feedback:** Any feedback or suggestions you provide may be used without compensation
+### 5. AI-Powered Services
 
-## Privacy and Data Protection
+Our Service incorporates AI features. Your use of these features is subject to our **AI Disclaimer**. You acknowledge that AI-generated output may be inaccurate, incomplete, or contain errors. You are solely responsible for evaluating the accuracy and appropriateness of any AI-generated content and for your use of it.
 
-### Data Collection
-- **Personal Information:** We collect and process personal data as described in our Privacy Policy
-- **Claim Data:** Information related to insurance claims is processed for service delivery
-- **Usage Analytics:** We collect technical data to improve platform performance
+### 6. Fees and Payment
 
-### Data Security
-- **Protection Measures:** We implement industry-standard security safeguards
-- **Breach Notification:** We will notify users of significant security incidents
-- **Compliance:** We comply with applicable data protection laws (GDPR, CCPA, etc.)
+Certain aspects of the Service may be provided for a fee. You agree to pay all applicable fees for the services you select. All payments will be processed by our third-party payment processor (e.g., Stripe). We do not store or collect your payment card details. That information is provided directly to our third-party payment processors whose use of your personal information is governed by their Privacy Policy.
 
-## Service Availability
+### 7. Intellectual Property Rights
 
-### Platform Access
-- **Availability Target:** We aim for 99.9% uptime, excluding scheduled maintenance
-- **Maintenance Windows:** Planned maintenance will be announced in advance
-- **Service Interruptions:** We may suspend service for security or maintenance purposes
+The Service and its entire contents, features, and functionality (including but not limited to all information, software, text, displays, images, video, and audio, and the design, selection, and arrangement thereof) are owned by the Company, its licensors, or other providers of such material and are protected by United States and international copyright, trademark, patent, trade secret, and other intellectual property or proprietary rights laws.
 
-### Support Services
-- **Business Hours:** Customer support is available during standard business hours
-- **Response Times:** We aim to respond to support requests within 24 hours
-- **Documentation:** Platform documentation and help resources are available online
+You are granted a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your personal, non-commercial use only, subject to these Terms.
 
-## Payment Terms
+### 8. Third-Party Services
 
-### Subscription Fees
-- **Billing Cycles:** Fees are billed monthly or annually as selected
-- **Payment Methods:** We accept major credit cards and ACH transfers
-- **Auto-Renewal:** Subscriptions automatically renew unless cancelled
-- **Price Changes:** We will provide 30 days' notice of fee increases
+The Service may contain links to or integrate with third-party websites or services (e.g., Google Maps) that are not owned or controlled by the Company. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party services.
 
-### Refunds and Cancellations
-- **Cancellation Policy:** You may cancel your subscription at any time
-- **Refund Policy:** Refunds are prorated for unused portions of paid periods
-- **Data Export:** You may export your data before account termination
+### 9. Termination
 
-## Limitation of Liability
+We may terminate or suspend your account and bar access to the Service immediately, without prior notice or liability, under our sole discretion, for any reason whatsoever, including but not limited to a breach of these Terms.
 
-### Service Disclaimers
-- **As-Is Basis:** The platform is provided "as is" without warranties of any kind
-- **No Guarantees:** We do not guarantee specific outcomes or claim results
-- **Third-Party Services:** We are not responsible for third-party service failures
+### 10. Disclaimer of Warranties
 
-### Liability Limits
-- **Maximum Liability:** Our total liability is limited to the amount you paid in the preceding 12 months
-- **Excluded Damages:** We are not liable for indirect, consequential, or punitive damages
-- **Insurance Requirements:** Users must maintain appropriate professional liability insurance
+THE SERVICE IS PROVIDED ON AN "AS IS" AND "AS AVAILABLE" BASIS, WITHOUT ANY WARRANTIES OF ANY KIND, EITHER EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT. NEITHER THE COMPANY NOR ANY PERSON ASSOCIATED WITH THE COMPANY MAKES ANY WARRANTY OR REPRESENTATION WITH RESPECT TO THE COMPLETENESS, SECURITY, RELIABILITY, QUALITY, ACCURACY, OR AVAILABILITY OF THE SERVICE.
 
-## Indemnification
+### 11. Limitation of Liability
 
-You agree to indemnify and hold harmless ClaimGuardian, its employees, and agents from any claims, damages, or expenses arising from:
-- **Your Use:** Your use of the platform or violation of these Terms
-- **Content Submission:** Content you upload or transmit through the platform
-- **Third-Party Claims:** Claims by third parties related to your platform activities
+TO THE FULLEST EXTENT PERMITTED BY LAW, IN NO EVENT WILL THE COMPANY, ITS AFFILIATES, OR THEIR LICENSORS, SERVICE PROVIDERS, EMPLOYEES, AGENTS, OFFICERS, OR DIRECTORS BE LIABLE FOR DAMAGES OF ANY KIND, UNDER ANY LEGAL THEORY, ARISING OUT OF OR IN CONNECTION WITH YOUR USE, OR INABILITY TO USE, THE SERVICE, INCLUDING ANY DIRECT, INDIRECT, SPECIAL, INCIDENTAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES.
 
-## Termination
+### 12. Indemnification
 
-### Termination Rights
-- **User Termination:** You may terminate your account at any time
-- **Our Termination Rights:** We may terminate accounts for Terms violations or non-payment
-- **Immediate Termination:** Accounts may be suspended immediately for serious violations
+You agree to defend, indemnify, and hold harmless the Company, its affiliates, licensors, and service providers from and against any claims, liabilities, damages, judgments, awards, losses, costs, expenses, or fees (including reasonable attorneys' fees) arising out of or relating to your violation of these Terms or your use of the Service.
 
-### Effect of Termination
-- **Data Access:** You will lose access to platform data upon termination
-- **Data Export:** You have 30 days to export your data before deletion
-- **Surviving Provisions:** Certain Terms provisions survive account termination
+### 13. Governing Law and Jurisdiction
 
-## Dispute Resolution
+All matters relating to the Service and these Terms, and any dispute or claim arising therefrom, shall be governed by and construed in accordance with the internal laws of the State of Florida without giving effect to any choice or conflict of law provision.
 
-### Governing Law
-These Terms are governed by the laws of [Jurisdiction], without regard to conflict of law principles.
+Any legal suit, action, or proceeding arising out of, or related to, these Terms or the Service shall be instituted exclusively in the federal courts of the United States or the courts of the State of Florida, in each case located in Miami-Dade County.
 
-### Dispute Process
-1. **Informal Resolution:** Parties must attempt good-faith negotiations for 30 days
-2. **Mediation:** Unresolved disputes will be submitted to binding mediation
-3. **Arbitration:** Final disputes will be resolved through binding arbitration
-4. **Class Action Waiver:** Disputes must be resolved individually, not as class actions
+### 14. Changes to Terms
 
-## Changes to Terms
+We reserve the right to withdraw or amend these Terms in our sole discretion without notice. It is your responsibility to check this page periodically for changes. Your continued use of the Service following the posting of revised Terms means that you accept and agree to the changes.
 
-### Modification Rights
-- **Updates:** We may update these Terms to reflect changes in law or business practices
-- **Notice:** Material changes will be communicated via email and platform notifications
-- **Effective Date:** Changes take effect 30 days after notification
-- **Acceptance:** Continued use constitutes acceptance of updated Terms
+### 15. Contact Information
 
-## Contact Information
-
-### Legal Notices
-For legal questions or formal notices:
-- **Email:** legal@claimguardian.com
-- **Mail:** ClaimGuardian Legal Department, [Address]
-- **Phone:** [Phone Number]
-
-### Customer Support
-For general questions or technical support:
-- **Email:** support@claimguardian.com
-- **Help Center:** [Help Center URL]
-- **Response Time:** We aim to respond within 24 hours
-
----
-
-**Document Integrity:** This document's authenticity is verified using SHA-256 hashing  
-**Legal Review:** These Terms are reviewed annually by qualified legal counsel  
-**Compliance:** These Terms comply with applicable consumer protection laws
+For any questions about these Terms, please contact us at: **support@claimguardian.com**.

@@ -1,130 +1,86 @@
----
-title: Privacy Policy
-version: v2025-01-09
-effective_date: 2025-01-09
-slug: privacy-policy
----
 
-# Privacy Policy
+# Privacy Policy for ClaimGuardian
 
-**Effective Date:** January 9, 2025  
-**Version:** v2025-01-09
+**Effective Date:** July 31, 2025
+**Last Updated:** July 31, 2025
 
-## Introduction
+ClaimGuardian ("Company," "we," "us," or "our") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web application and services (collectively, the "Service").
 
-ClaimGuardian ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our insurance claim management platform.
+Please read this Privacy Policy carefully. By using the Service, you agree to the collection and use of information in accordance with this policy.
 
-## Information We Collect
+### 1. Information We Collect
 
-### Personal Information
-- **Account Information:** Name, email address, phone number, and account credentials
-- **Profile Information:** Professional details, license numbers, and business information
-- **Identity Verification:** Government-issued ID information for verification purposes
+We may collect information about you in a variety of ways. The information we may collect via the Service includes:
 
-### Claim Data
-- **Claim Details:** Policy numbers, claim amounts, dates, and documentation
-- **Supporting Documents:** Photos, receipts, reports, and correspondence
-- **Communication Records:** Messages, calls, and interactions within the platform
+**a. Personal Data:**
+Personally identifiable information, such as your name, email address, and contact information, that you voluntarily give to us when you register for an account or use the Service.
 
-### Technical Information
-- **Device Information:** IP address, browser type, operating system, and device identifiers
-- **Usage Data:** Pages visited, features used, time spent, and user interactions
-- **Location Data:** General geographic location for fraud prevention (when permitted)
+**b. Usage and Derivative Data:**
+Information our servers automatically collect when you access the Service, such as your IP address, browser type, operating system, access times, and the pages you have viewed directly before and after accessing the Service. This also includes data collected through monitoring services like Sentry for error tracking and performance analysis.
 
-## How We Use Your Information
+**c. Financial Data:**
+Financial information, such as data related to your payment method (e.g., valid credit card number, card brand, expiration date) that we may collect when you make a purchase. We store very little, if any, financial information. Otherwise, all financial information is stored by our payment processor (e.g., Stripe), and you are encouraged to review their privacy policy.
 
-### Primary Purposes
-1. **Service Delivery:** Processing claims, managing cases, and facilitating communication
-2. **Account Management:** Creating accounts, authentication, and customer support
-3. **Legal Compliance:** Meeting regulatory requirements and legal obligations
+**d. Data from AI Interactions:**
+We collect the inputs, prompts, and queries you provide to our AI features, as well as the output generated. This data is used to provide, maintain, and improve our AI services.
 
-### Secondary Purposes
-1. **Platform Improvement:** Analyzing usage patterns and enhancing user experience
-2. **Security:** Detecting fraud, preventing abuse, and maintaining platform security
-3. **Communication:** Sending service updates, notifications, and important announcements
+**e. Data from Third-Party Services:**
+We may collect information from third-party services you connect to our platform, such as location data from Google Maps.
 
-## Information Sharing
+**f. Data from Scrapers and Public Sources:**
+Our Service may involve scraping data from public websites or other sources. This data is used to enrich the information and features available within ClaimGuardian. We make efforts to only collect data from publicly accessible sources.
 
-### Authorized Sharing
-- **Insurance Partners:** Claims data shared with relevant insurance companies and adjusters
-- **Service Providers:** Third-party vendors who assist in platform operations
-- **Legal Requirements:** When required by law, court order, or regulatory authority
+### 2. How We Use Your Information
 
-### Consent-Based Sharing
-- **Professional Networks:** With your explicit consent for collaboration purposes
-- **Data Export:** Providing your data in portable formats upon request
+Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the Service to:
+- Create and manage your account.
+- Provide, operate, and maintain the Service.
+- Improve, personalize, and expand the Service.
+- Process your transactions and send you related information.
+- Monitor and analyze usage and trends to improve your experience.
+- Detect, prevent, and address technical issues and security incidents.
+- Respond to your comments, questions, and provide customer service.
+- Comply with legal and regulatory obligations.
 
-## Data Security
+### 3. Disclosure of Your Information
 
-### Protection Measures
-- **Encryption:** All data transmitted and stored using industry-standard encryption
-- **Access Controls:** Role-based access with multi-factor authentication
-- **Monitoring:** Continuous security monitoring and incident response procedures
-- **Compliance:** SOC 2 Type II and other relevant security certifications
+We do not share, sell, rent, or trade your information with third parties for their commercial purposes. We may share information we have collected about you in certain situations:
 
-### Data Retention
-- **Active Accounts:** Data retained while your account remains active
-- **Closed Accounts:** Personal data deleted within 90 days of account closure
-- **Legal Requirements:** Some data may be retained longer to meet legal obligations
+**a. By Law or to Protect Rights:**
+If we believe the release of information about you is necessary to respond to legal process, to investigate or remedy potential violations of our policies, or to protect the rights, property, and safety of others.
 
-## Your Rights
+**b. Third-Party Service Providers:**
+We may share your information with third parties that perform services for us or on our behalf, including payment processing (Stripe), data analysis (Google Analytics), error monitoring (Sentry), cloud hosting (Supabase, Vercel), and customer service.
 
-### Access and Control
-- **Data Access:** Right to access and review your personal information
-- **Data Correction:** Right to correct inaccurate or incomplete information
-- **Data Deletion:** Right to request deletion of your personal data
-- **Data Portability:** Right to receive your data in a machine-readable format
+**c. Business Transfers:**
+We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.
 
-### Privacy Choices
-- **Communication Preferences:** Opt-out of non-essential communications
-- **Data Sharing:** Control over optional data sharing with third parties
-- **Cookies:** Manage cookie preferences through browser settings
+### 4. Data Security
 
-## Cookies and Tracking
+We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.
 
-### Essential Cookies
-- **Authentication:** Maintaining secure login sessions
-- **Functionality:** Remembering user preferences and settings
-- **Security:** Protecting against fraud and unauthorized access
+### 5. Data Retention
 
-### Analytics Cookies
-- **Usage Analytics:** Understanding how users interact with our platform
-- **Performance Monitoring:** Identifying and resolving technical issues
-- **Improvement Insights:** Gathering feedback for platform enhancements
+We will retain your personal information only for as long as is necessary for the purposes set out in this Privacy Policy. We will retain and use your information to the extent necessary to comply with our legal obligations, resolve disputes, and enforce our policies.
 
-## International Data Transfers
+### 6. Your Data Protection Rights
 
-When we transfer your information outside your country of residence, we ensure appropriate safeguards are in place, including:
-- **Adequacy Decisions:** Transfers to countries with adequate privacy protection
-- **Standard Contractual Clauses:** EU-approved contract terms for data protection
-- **Certification Programs:** Participation in recognized privacy frameworks
+Depending on your location, you may have the following rights regarding your personal data:
+- **The right to access** – You have the right to request copies of your personal data.
+- **The right to rectification** – You have the right to request that we correct any information you believe is inaccurate.
+- **The right to erasure** – You have the right to request that we erase your personal data, under certain conditions.
+- **The right to object to processing** – You have the right to object to our processing of your personal data, under certain conditions.
 
-## Children's Privacy
+To exercise these rights, please contact us at the contact information below.
 
-ClaimGuardian is not intended for use by individuals under 18 years of age. We do not knowingly collect personal information from children under 18. If we become aware of such collection, we will delete the information immediately.
+### 7. Children's Privacy
 
-## Changes to This Policy
+Our Service is not intended for use by children under the age of 13. We do not knowingly collect personally identifiable information from children under 13.
 
-We may update this Privacy Policy to reflect changes in our practices or legal requirements. When we make material changes:
-- **Notice:** We will notify you via email and platform notifications
-- **Effective Date:** Changes take effect 30 days after notification
-- **Consent:** Continued use constitutes acceptance of updated terms
+### 8. Changes to This Privacy Policy
 
-## Contact Information
+We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
 
-### Privacy Questions
-For questions about this Privacy Policy or our privacy practices:
-- **Email:** privacy@claimguardian.com
-- **Mail:** ClaimGuardian Privacy Office, [Address]
-- **Phone:** [Phone Number]
+### 9. Contact Us
 
-### Data Protection Officer
-For EU residents or complex privacy matters:
-- **Email:** dpo@claimguardian.com
-- **Response Time:** We aim to respond within 30 days
-
----
-
-**Document Hash:** This document's integrity is verified using SHA-256 hashing  
-**Legal Compliance:** GDPR, CCPA, PIPEDA, and other applicable privacy laws  
-**Review Schedule:** This policy is reviewed annually and updated as needed
+If you have questions or comments about this Privacy Policy, please contact us at: **support@claimguardian.com**.

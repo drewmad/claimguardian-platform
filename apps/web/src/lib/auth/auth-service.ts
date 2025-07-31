@@ -14,7 +14,7 @@ import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { getAuthCallbackURL } from '@/lib/utils/site-url'
 
 export class AuthError extends AppError {
@@ -74,11 +74,11 @@ interface SignInData {
 }
 
 class AuthService {
-  private supabase: ReturnType<typeof createClient>
+  private supabase: ReturnType<typeof createBrowserSupabaseClient>
 
   constructor() {
     try {
-      this.supabase = createClient()
+      this.supabase = createBrowserSupabaseClient()
       console.log('[AUTH SERVICE] Supabase client created successfully')
     } catch (error) {
       console.error('[AUTH SERVICE] Failed to create Supabase client:', error)
