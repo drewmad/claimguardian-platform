@@ -11,8 +11,7 @@ import { useEffect, useState } from 'react'
 
 import { AdminLayout } from '@/components/admin/admin-layout'
 import { Card } from '@claimguardian/ui'
-import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
+import { getComplianceDashboardData } from '@/actions/compliance-dashboard'
 
 interface ComplianceMetrics {
   totalUsers: number
@@ -56,69 +55,21 @@ export default function ComplianceDashboard() {
   const loadComplianceData = async () => {
     try {
       setLoading(true)
-      const supabase = createClient()
+      setError(null)
 
-      // Get total users
-      const { count: totalUsers } = await supabase
-        .from('users')
-        .select('*', { count: 'exact', head: true })
+      // Use server action to fetch compliance data with service role access
+      const { metrics, recentConsents, error: fetchError } = await getComplianceDashboardData()
 
-      // Get consented users
-      const { count: consentedUsers } = await supabase
-        .from('signup_consents')
-        .select('*', { count: 'exact', head: true })
-        .eq('gdpr_consent', true)
+      if (fetchError) {
+        setError(fetchError)
+        return
+      }
 
-      // Get age verified count
-      const { count: ageVerified } = await supabase
-        .from('signup_consents')
-        .select('*', { count: 'exact', head: true })
-        .eq('age_verified', true)
-
-      // Get GDPR consents
-      const { count: gdprConsents } = await supabase
-        .from('signup_consents')
-        .select('*', { count: 'exact', head: true })
-        .eq('gdpr_consent', true)
-
-      // Get recent signups (last 7 days)
-      const sevenDaysAgo = new Date()
-      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-      
-      const { count: recentSignups } = await supabase
-        .from('signup_consents')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', sevenDaysAgo.toISOString())
-
-      // Get recent consent records
-      const { data: consents } = await supabase
-        .from('signup_consents')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(10)
-
-      setMetrics({
-        totalUsers: totalUsers || 0,
-        consentedUsers: consentedUsers || 0,
-        cookieAcceptance: {
-          accepted: 0, // Would need to track this separately
-          rejected: 0,
-          custom: 0
-        },
-        ageVerified: ageVerified || 0,
-        gdprConsents: gdprConsents || 0,
-        recentSignups: recentSignups || 0,
-        dataRequests: {
-          exports: 0,
-          deletions: 0,
-          pending: 0
-        }
-      })
-
-      setRecentConsents(consents || [])
+      setMetrics(metrics)
+      setRecentConsents(recentConsents)
     } catch (err) {
-      logger.error('Failed to load compliance data', {}, err as Error)
-      setError('Failed to load compliance data')
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error occurred'
+      setError(`Failed to load compliance data: ${errorMessage}`)
     } finally {
       setLoading(false)
     }
