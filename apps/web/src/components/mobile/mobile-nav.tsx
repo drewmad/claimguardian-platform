@@ -4,7 +4,7 @@ import { Home, Building, FileText, Shield, Menu, X, ChevronRight, Bot } from 'lu
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -129,7 +129,9 @@ export function MobileNav() {
       </nav>
 
       {/* iOS-style Dynamic Island Notifications */}
-      {/* Notification component would go here */}
+      <AnimatePresence>
+        {/* Notification component would go here */}
+      </AnimatePresence>
     </>
   )
 }
@@ -158,6 +160,7 @@ export function MobileHeader({ title, showBack = false }: { title: string; showB
     </header>
   )
 }
+
   return (
     <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 h-14 safe-area-top">
