@@ -72,12 +72,7 @@ export async function POST(request: NextRequest) {
         
         const { data, error } = await supabase.auth.signInWithPassword({
           email,
-          password,
-          options: {
-            // Set session duration based on rememberMe
-            // Default is 1 week, with rememberMe it's 30 days
-            sessionDuration: rememberMe ? 30 * 24 * 60 * 60 : 7 * 24 * 60 * 60
-          }
+          password
         })
         
         if (error) {

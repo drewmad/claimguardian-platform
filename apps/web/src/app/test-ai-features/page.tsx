@@ -4,7 +4,6 @@ import { AlertCircle, Camera, CheckCircle, FileText, Loader2, XCircle } from 'lu
 import { useCallback, useEffect, useState } from 'react'
 
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
@@ -30,17 +29,17 @@ export default function TestAIFeaturesPage() {
     { name: 'Test Camera Permissions', status: 'pending' },
   ])
   
-  const [currentTest, setCurrentTest] = useState(0)
   const [allTestsComplete, setAllTestsComplete] = useState(false)
-  const aiClient = new AIClientService()
 
-  const updateTest = (index: number, updates: Partial<TestResult>) => {
-    setTests(prev => prev.map((test, i) => 
-      i === index ? { ...test, ...updates } : test
-    ))
-  }
 
   const runTests = useCallback(async () => {
+    const aiClient = new AIClientService()
+    
+    const updateTest = (index: number, updates: Partial<TestResult>) => {
+      setTests(prev => prev.map((test, i) => 
+        i === index ? { ...test, ...updates } : test
+      ))
+    }
     // Test 1: Check API Keys
     updateTest(0, { status: 'running' })
     try {
@@ -108,7 +107,7 @@ export default function TestAIFeaturesPage() {
     updateTest(3, { status: 'running' })
     try {
       // Try a simple chat request
-      const keyStatus = tests[0].details as { hasAnyKey?: boolean; hasOpenAI?: boolean }
+      const keyStatus = tests[0].details as { hasAnyKey?: boolean; hasOpenAIKey?: boolean }
       if (keyStatus?.hasAnyKey) {
         const response = await aiClient.chat([
           { role: 'system', content: 'You are a helpful assistant.' },
@@ -158,7 +157,7 @@ export default function TestAIFeaturesPage() {
     }
 
     setAllTestsComplete(true)
-  }, [updateTest, aiClient, tests])
+  }, [tests])
 
   useEffect(() => {
     runTests()
@@ -205,9 +204,13 @@ export default function TestAIFeaturesPage() {
                       {test.message && (
                         <p className="text-sm text-gray-400 mt-1">{test.message}</p>
                       )}
-                      {test.details && test.status === 'error' && (
+                      {test.details && test.status === 'error' && test.details != null && (
                         <pre className="text-xs text-red-400 mt-2 p-2 bg-gray-900 rounded overflow-x-auto">
-                          {JSON.stringify(test.details, null, 2)}
+                          {typeof test.details === 'string' 
+                            ? test.details 
+                            : test.details instanceof Error 
+                              ? test.details.message 
+                              : JSON.stringify(test.details, null, 2)}
                         </pre>
                       )}
                     </div>

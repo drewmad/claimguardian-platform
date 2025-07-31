@@ -349,7 +349,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                           ...newEvent,
                           metadata: {
                             ...newEvent.metadata,
-                            contactMethod: value as TimelineEvent['metadata']['contactMethod']
+                            contactMethod: value as 'phone' | 'email' | 'in-person' | 'portal'
                           }
                         })}
                       >

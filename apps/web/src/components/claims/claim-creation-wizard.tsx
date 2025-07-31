@@ -13,7 +13,7 @@ import {
   Shield
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useCallback, useState } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 
 import { useAuth } from '@/components/auth/auth-provider'
@@ -314,15 +314,6 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
     }
   }
 
-  const handlePhotoUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    updateClaimData({ photos: [...(claimData.photos || []), ...files] })
-  }, [claimData.photos])
-
-  const handleDocumentUpload = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || [])
-    updateClaimData({ documents: [...(claimData.documents || []), ...files] })
-  }, [claimData.documents])
 
   const renderStepContent = () => {
     switch (currentStep) {
@@ -598,10 +589,6 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
             <EvidenceManager 
               claimId={`draft-${Date.now()}`} // Temporary ID for draft
               onUpdate={(evidence) => {
-                // Convert evidence to files for backward compatibility
-                const photos = evidence.filter(e => e.fileType.startsWith('image/'))
-                const documents = evidence.filter(e => !e.fileType.startsWith('image/'))
-                
                 // Note: This is a simplified conversion - in production you'd handle this better
                 console.log('Evidence updated:', evidence)
               }}

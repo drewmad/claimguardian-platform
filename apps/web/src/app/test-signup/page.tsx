@@ -163,13 +163,17 @@ export default function TestSignupPage() {
                       <div className="flex-1">
                         <h3 className="font-semibold text-white">{result.step}</h3>
                         <p className="text-sm text-gray-300 mt-1">{result.message}</p>
-                        {result.details && (
+                        {result.details && result.details != null && (
                           <details className="mt-2">
                             <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
                               View Details
                             </summary>
                             <pre className="mt-2 text-xs text-gray-400 overflow-x-auto">
-                              {JSON.stringify(result.details, null, 2)}
+                              {typeof result.details === 'string' 
+                                ? result.details 
+                                : result.details instanceof Error 
+                                  ? result.details.message 
+                                  : JSON.stringify(result.details, null, 2)}
                             </pre>
                           </details>
                         )}

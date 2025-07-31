@@ -19,9 +19,9 @@ interface DebugInfo {
     hasSession: boolean
     sessionDetails?: {
       userId: string
-      email: string
+      email: string | undefined
       expiresAt: string
-      provider: string
+      provider: string | undefined
     }
     error?: string
   }
@@ -324,7 +324,7 @@ export default function DebugAuthPage() {
                   <div className="mt-4 p-4 bg-red-900/20 border border-red-800 rounded-lg">
                     <h3 className="font-semibold text-red-400 mb-2">⚠️ Rate Limit Hit</h3>
                     <p className="text-sm text-red-300">
-                      You've hit a rate limit. Options:
+                      You&apos;ve hit a rate limit. Options:
                     </p>
                     <ul className="mt-2 space-y-1 text-sm text-red-300 list-disc list-inside">
                       <li>Wait until the reset time shown above</li>
