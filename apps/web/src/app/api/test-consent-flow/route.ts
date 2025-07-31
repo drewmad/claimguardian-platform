@@ -32,14 +32,17 @@ export async function GET() {
     const { data: recordResult, error: recordError } = await supabase.rpc('record_signup_consent', {
       p_email: testConsents.email,
       p_gdpr_consent: testConsents.gdpr_consent,
-      p_data_processing_consent: testConsents.data_processing_consent,
+      p_ccpa_consent: true,
       p_marketing_consent: testConsents.marketing_consent,
+      p_data_processing_consent: testConsents.data_processing_consent,
+      p_cookie_consent: true,
       p_terms_accepted: testConsents.terms_accepted,
       p_privacy_accepted: testConsents.privacy_accepted,
-      p_age_verified: testConsents.age_verified,
+      p_age_confirmed: testConsents.age_verified,
+      p_ai_tools_consent: true,
       p_ip_address: testConsents.ip_address,
       p_user_agent: testConsents.user_agent,
-      p_device_fingerprint: testConsents.device_fingerprint
+      p_fingerprint: testConsents.device_fingerprint
     })
     
     if (recordError) {

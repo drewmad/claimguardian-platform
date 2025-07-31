@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { createClient } from '@/lib/auth/supabase-client'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 interface DebugInfo {
   timestamp: string
@@ -47,7 +47,7 @@ export default function DebugAuthPage() {
   const [debugInfo, setDebugInfo] = useState<DebugInfo | null>(null)
   const [loading, setLoading] = useState(true)
   const [clearing, setClearing] = useState(false)
-  const supabase = createClient()
+  const supabase = createBrowserSupabaseClient()
 
   const gatherDebugInfo = async () => {
     setLoading(true)

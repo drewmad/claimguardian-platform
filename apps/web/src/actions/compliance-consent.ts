@@ -75,14 +75,17 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
     const { data: result, error } = await supabase.rpc('record_signup_consent', {
       p_email: data.email,
       p_gdpr_consent: data.gdprConsent,
-      p_data_processing_consent: data.dataProcessingConsent,
+      p_ccpa_consent: true, // Default to true
       p_marketing_consent: data.marketingConsent,
+      p_data_processing_consent: data.dataProcessingConsent,
+      p_cookie_consent: true, // Default to true
       p_terms_accepted: data.termsAccepted,
       p_privacy_accepted: data.privacyAccepted,
-      p_age_verified: data.ageVerified,
+      p_age_confirmed: data.ageVerified,
+      p_ai_tools_consent: data.aiProcessingConsent || true, // Use AI consent or default to true
       p_ip_address: ipAddress,
       p_user_agent: userAgent,
-      p_device_fingerprint: data.deviceFingerprint
+      p_fingerprint: data.deviceFingerprint
     })
     
     if (error) {
