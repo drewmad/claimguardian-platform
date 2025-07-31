@@ -36,26 +36,15 @@ export async function enrichDeviceData(data: EnrichmentData) {
     // Parse user agent for device details
     const deviceInfo = parseUserAgent(data.userAgent)
     
-    const { error } = await supabase
-      .from('user_devices')
-      .insert({
-        user_id: data.userId,
-        device_fingerprint: data.deviceFingerprint,
-        device_type: deviceInfo.deviceType,
-        operating_system: deviceInfo.os,
-        browser: deviceInfo.browser,
-        first_seen: new Date().toISOString(),
-        last_seen: new Date().toISOString(),
-        is_trusted: true, // First device is trusted
-        trust_score: 100,
-        metadata: {
-          user_agent: data.userAgent,
-          session_id: data.sessionId,
-          signup_device: true
-        }
-      })
-      .select()
-      .single()
+    // Use security definer function to track device
+    const { error } = await supabase.rpc('track_user_device', {
+      p_user_id: data.userId,
+      p_device_fingerprint: data.deviceFingerprint,
+      p_device_type: deviceInfo.deviceType,
+      p_browser: deviceInfo.browser,
+      p_os: deviceInfo.os,
+      p_ip_address: data.ipAddress
+    })
     
     if (error && error.code !== '23505') { // Ignore duplicate errors
       console.warn('Device enrichment failed:', error)

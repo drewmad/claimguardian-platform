@@ -199,12 +199,11 @@ export async function captureSignupData(data: SignupTrackingData) {
       // Don't throw - continue with signup
     }
     
-    // Create user preferences record with consent data
+    // Create user preferences record with consent data using security definer function
     try {
-      const { error: prefsError } = await supabase
-        .from('user_preferences')
-        .upsert({
-          user_id: data.userId,
+      const { error: prefsError } = await supabase.rpc('create_user_preferences', {
+        p_user_id: data.userId,
+        p_preferences: {
           gdpr_consent: data.preferences.gdprConsent,
           gdpr_consent_date: data.preferences.gdprConsent ? new Date().toISOString() : null,
           marketing_emails: data.preferences.marketingConsent,
@@ -213,10 +212,28 @@ export async function captureSignupData(data: SignupTrackingData) {
           ai_processing_consent: data.preferences.aiProcessingConsent,
           ai_processing_consent_date: data.preferences.aiProcessingConsent ? new Date().toISOString() : null,
           timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
-        })
+        }
+      })
       
       if (prefsError) {
         console.error('[USER TRACKING] Preferences error:', prefsError)
+        // Try direct insert as fallback
+        const { error: directError } = await supabase
+          .from('user_preferences')
+          .upsert({
+            user_id: data.userId,
+            gdpr_consent: data.preferences.gdprConsent,
+            gdpr_consent_date: data.preferences.gdprConsent ? new Date().toISOString() : null,
+            marketing_emails: data.preferences.marketingConsent,
+            data_processing_consent: data.preferences.dataProcessingConsent,
+            data_processing_consent_date: data.preferences.dataProcessingConsent ? new Date().toISOString() : null,
+            ai_processing_consent: data.preferences.aiProcessingConsent,
+            ai_processing_consent_date: data.preferences.aiProcessingConsent ? new Date().toISOString() : null,
+            timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
+          })
+        if (directError) {
+          console.error('[USER TRACKING] Direct preferences insert also failed:', directError)
+        }
         logger.error('Failed to create user preferences', { userId: data.userId }, prefsError)
         // Don't throw - preferences are not critical for signup
       }
