@@ -3,155 +3,199 @@ import type { NextRequest } from 'next/server'
 
 import { createClient } from '@/lib/supabase/middleware'
 
-export async function middleware(request: NextRequest) {
-  const response = NextResponse.next()
-  const supabase = createClient(request, response)
-
-  // Refresh session if it exists
-  const { data: { session }, error } = await supabase.auth.getSession()
+// Helper to clear all auth cookies
+function clearAuthCookies(request: NextRequest, response: NextResponse) {
+  const cookies = request.cookies.getAll()
   
-  if (error) {
-    console.error('[MIDDLEWARE] Session error:', {
-      error: error.message,
-      path: request.nextUrl.pathname,
-      timestamp: new Date().toISOString()
-    })
-    
-    // Clear invalid auth cookies on refresh token errors
-    if (error.message.includes('refresh_token_not_found') || 
-        error.message.includes('Invalid Refresh Token')) {
-      // Clear ALL auth-related cookies to force re-authentication
-      const cookies = request.cookies.getAll()
-      cookies.forEach(cookie => {
-        if (cookie.name.includes('sb-') || cookie.name.includes('auth')) {
-          response.cookies.set(cookie.name, '', {
-            path: '/',
-            expires: new Date(0),
-            maxAge: 0,
-            sameSite: 'lax',
-            secure: process.env.NODE_ENV === 'production'
-          })
-        }
-      })
-      
-      console.log('[MIDDLEWARE] Cleared all auth cookies due to refresh token error')
-    }
-  }
-  
-  // Validate session with getUser() for protected routes
-  let validatedUser = null
-  if (session && !error) {
-    const { data: { user }, error: userError } = await supabase.auth.getUser()
-    if (!userError && user) {
-      validatedUser = user
-    } else {
-      console.warn('[MIDDLEWARE] Session validation failed:', {
-        error: userError?.message,
-        path: request.nextUrl.pathname,
-        timestamp: new Date().toISOString()
-      })
-      
-      // Clear cookies if user validation fails
-      if (userError?.message?.includes('refresh_token_not_found') || 
-          userError?.message?.includes('Invalid Refresh Token')) {
-        const cookies = request.cookies.getAll()
-        cookies.forEach(cookie => {
-          if (cookie.name.includes('sb-') || cookie.name.includes('auth')) {
-            response.cookies.set(cookie.name, '', {
-              path: '/',
-              expires: new Date(0),
-              maxAge: 0,
-              sameSite: 'lax',
-              secure: process.env.NODE_ENV === 'production'
-            })
-          }
-        })
-      }
-    }
-  }
-  
-  // Get client IP
-  const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
-    request.headers.get('x-real-ip') ||
-    'unknown'
-
-  // Enhanced logging for debugging
-  if (request.nextUrl.pathname.startsWith('/dashboard') || 
-      request.nextUrl.pathname.startsWith('/ai-augmented')) {
-    console.log('[MIDDLEWARE] Protected route access:', {
-      path: request.nextUrl.pathname,
-      hasSession: !!session,
-      sessionUser: session?.user?.email || 'none',
-      timestamp: new Date().toISOString()
-    })
-  }
-
-  // Skip audit logging for now - tables may not exist
-  // TODO: Re-enable once audit_logs and security_logs tables are created
-  /*
-  try {
-    const { data: { user } } = await supabase.auth.getUser()
-    
-    if (user) {
-      // Log authenticated requests
-      await supabase.from('audit_logs').insert({
-        user_id: user.id,
-        action: `${request.method} ${request.nextUrl.pathname}`,
-        ip_address: ip,
-        user_agent: metadata.user_agent,
-        metadata,
-        created_at: new Date().toISOString(),
-      })
-    } else if (request.nextUrl.pathname.startsWith('/auth/') || request.nextUrl.pathname.startsWith('/api/')) {
-      // Log auth attempts and API calls even when unauthenticated
-      await supabase.from('security_logs').insert({
-        action: `${request.method} ${request.nextUrl.pathname}`,
-        ip_address: ip,
-        user_agent: metadata.user_agent,
-        metadata,
-        created_at: new Date().toISOString(),
+  cookies.forEach(cookie => {
+    // Clear Supabase auth cookies and any custom auth cookies
+    if (cookie.name.includes('sb-') || 
+        cookie.name.includes('auth') ||
+        cookie.name === 'supabase-auth-token') {
+      response.cookies.set(cookie.name, '', {
+        path: '/',
+        expires: new Date(0),
+        maxAge: 0,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        httpOnly: true
       })
     }
-  } catch (error) {
-    // Don't block requests if logging fails
-    console.warn('Audit logging failed:', error)
-  }
-  */
-
-  // Check protected routes
-  const isProtectedRoute = request.nextUrl.pathname.startsWith('/ai-augmented') || 
-                          request.nextUrl.pathname.startsWith('/dashboard') ||
-                          request.nextUrl.pathname.startsWith('/account')
+  })
   
-  if (isProtectedRoute && !validatedUser) {
-    // Only log security events in production, avoid exposing internal paths
-    if (process.env.NODE_ENV === 'production') {
-      // Use structured logging for security monitoring
-      // This would typically go to your logging service
-      console.warn('Security: Unauthorized route access', {
-        timestamp: new Date().toISOString(),
-        userAgent: request.headers.get('user-agent'),
-        ip: ip
-      })
-    }
-    return NextResponse.redirect(new URL('/', request.url))
-  }
+  console.log('[MIDDLEWARE] Cleared all auth cookies')
+}
 
-  // Add security headers
+// Helper to add security headers
+function addSecurityHeaders(response: NextResponse, pathname: string) {
+  // Base security headers
   response.headers.set('X-Frame-Options', 'DENY')
   response.headers.set('X-Content-Type-Options', 'nosniff')
   response.headers.set('X-XSS-Protection', '1; mode=block')
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
   
-  // Allow camera access for damage analyzer and AI tools
-  if (request.nextUrl.pathname.includes('/damage-analyzer') || 
-      request.nextUrl.pathname.includes('/ai-tools') ||
-      request.nextUrl.pathname.includes('/evidence-organizer')) {
+  // Content Security Policy
+  const cspDirectives = [
+    "default-src 'self'",
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+    "style-src 'self' 'unsafe-inline'",
+    "img-src 'self' data: blob: https:",
+    "font-src 'self' data:",
+    "connect-src 'self' https://*.supabase.co wss://*.supabase.co",
+    "frame-ancestors 'none'",
+    "base-uri 'self'",
+    "form-action 'self'"
+  ]
+  
+  response.headers.set('Content-Security-Policy', cspDirectives.join('; '))
+  
+  // Permissions Policy based on route
+  if (pathname.includes('/damage-analyzer') || 
+      pathname.includes('/ai-tools') ||
+      pathname.includes('/evidence-organizer') ||
+      pathname.includes('/3d-model-generator')) {
     response.headers.set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=()')
   } else {
     response.headers.set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()')
   }
+}
 
+export async function middleware(request: NextRequest) {
+  const response = NextResponse.next()
+  const pathname = request.nextUrl.pathname
+  
+  // Skip middleware for static assets and API routes that don't need auth
+  const publicPaths = [
+    '/_next',
+    '/favicon.ico',
+    '/api/health',
+    '/api/legal/documents'
+  ]
+  
+  if (publicPaths.some(path => pathname.startsWith(path))) {
+    return response
+  }
+  
+  // Create Supabase client for middleware
+  const supabase = createClient(request, response)
+  
+  try {
+    // Get session and validate
+    const { data: { session }, error } = await supabase.auth.getSession()
+    
+    if (error) {
+      console.error('[MIDDLEWARE] Session error:', {
+        error: error.message,
+        path: pathname,
+        timestamp: new Date().toISOString()
+      })
+      
+      // Handle refresh token errors by clearing cookies
+      if (error.message.includes('refresh_token_not_found') || 
+          error.message.includes('Invalid Refresh Token') ||
+          error.message.includes('invalid_grant')) {
+        clearAuthCookies(request, response)
+        
+        // Redirect to signin if on protected route
+        const protectedPaths = ['/dashboard', '/ai-tools', '/ai-augmented', '/account', '/admin']
+        if (protectedPaths.some(path => pathname.startsWith(path))) {
+          return NextResponse.redirect(new URL('/auth/signin?message=Session expired', request.url))
+        }
+      }
+    }
+    
+    // Double-validate session for extra security on protected routes
+    let validatedUser = null
+    if (session && !error) {
+      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      if (!userError && user) {
+        validatedUser = user
+      } else if (userError) {
+        console.warn('[MIDDLEWARE] User validation failed:', {
+          error: userError.message,
+          path: pathname,
+          sessionUser: session.user?.email
+        })
+        
+        // Clear cookies on validation failure
+        if (userError.message?.includes('refresh_token') || 
+            userError.message?.includes('Invalid')) {
+          clearAuthCookies(request, response)
+        }
+      }
+    }
+    
+    // Log access attempts for security monitoring
+    if (process.env.NODE_ENV === 'production' && pathname.startsWith('/admin')) {
+      console.log('[SECURITY] Admin access attempt:', {
+        timestamp: new Date().toISOString(),
+        userId: validatedUser?.id || 'unauthenticated',
+        userEmail: validatedUser?.email || 'unknown',
+        path: pathname,
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0] || 
+            request.headers.get('x-real-ip') || 'unknown',
+        userAgent: request.headers.get('user-agent')
+      })
+    }
+    
+    // Protected routes configuration
+    const protectedRoutes = [
+      { path: '/dashboard', requiresAuth: true },
+      { path: '/ai-tools', requiresAuth: true },
+      { path: '/ai-augmented', requiresAuth: true },
+      { path: '/account', requiresAuth: true },
+      { path: '/admin', requiresAuth: true, requiresAdmin: true }
+    ]
+    
+    // Check if current path is protected
+    const matchedRoute = protectedRoutes.find(route => pathname.startsWith(route.path))
+    
+    if (matchedRoute?.requiresAuth && !validatedUser) {
+      // Store the attempted URL for redirect after login
+      const redirectUrl = new URL('/auth/signin', request.url)
+      redirectUrl.searchParams.set('redirect', pathname)
+      redirectUrl.searchParams.set('message', 'Please sign in to continue')
+      
+      return NextResponse.redirect(redirectUrl)
+    }
+    
+    // Check admin routes (placeholder for future implementation)
+    if (matchedRoute?.requiresAdmin && validatedUser) {
+      // TODO: Check if user has admin role
+      // For now, log the attempt
+      console.warn('[MIDDLEWARE] Admin route accessed:', {
+        userId: validatedUser.id,
+        email: validatedUser.email,
+        path: pathname
+      })
+    }
+    
+    // Auth pages redirect if already authenticated
+    const authPaths = ['/auth/signin', '/auth/signup']
+    if (authPaths.includes(pathname) && validatedUser) {
+      // Get redirect URL from query params or default to dashboard
+      const redirectTo = request.nextUrl.searchParams.get('redirect') || '/dashboard'
+      return NextResponse.redirect(new URL(redirectTo, request.url))
+    }
+    
+  } catch (error) {
+    console.error('[MIDDLEWARE] Unexpected error:', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      path: pathname,
+      timestamp: new Date().toISOString()
+    })
+    
+    // Don't block requests on unexpected errors
+    // Just log and continue
+  }
+  
+  // Add security headers to all responses
+  addSecurityHeaders(response, pathname)
+  
+  // Add request ID for tracking
+  response.headers.set('X-Request-Id', crypto.randomUUID())
+  
   return response
 }
 
@@ -163,7 +207,8 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public folder
+     * - images/videos/fonts with extensions
      */
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico|mp4|mov|webm|woff|woff2|ttf|otf)$).*)',
   ],
 }
