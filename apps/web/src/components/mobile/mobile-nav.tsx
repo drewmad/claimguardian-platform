@@ -4,7 +4,7 @@ import { Home, Building, FileText, Shield, Menu, X, ChevronRight, Bot } from 'lu
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
@@ -34,10 +34,9 @@ const moreNavItems: NavItem[] = [
 export function MobileNav() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  const [activeTab, setActiveTab] = useState(pathname)
-
+  
   useEffect(() => {
-    setActiveTab(pathname)
+    
   }, [pathname])
 
   return (
@@ -108,6 +107,59 @@ export function MobileNav() {
                       href={item.href}
                       onClick={() => setIsOpen(false)}
                       className={cn(
+                        "flex items-center justify-between p-4 rounded-lg",
+                        "transition-all duration-200 active:scale-95",
+                        isActive 
+                          ? "bg-blue-500/10 text-blue-500" 
+                          : "text-gray-300 active:bg-gray-800"
+                      )}
+                    >
+                      <div className="flex items-center gap-3">
+                        <Icon className="w-5 h-5" />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-gray-500" />
+                    </Link>
+                  )
+                })}
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </nav>
+
+      {/* iOS-style Dynamic Island Notifications */}
+      
+        {/* Notification component would go here */}
+      
+    </>
+  )
+}
+
+export function MobileHeader({ title, showBack = false }: { title: string; showBack?: boolean }) {
+  return (
+    <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 md:hidden">
+      <div className="flex items-center justify-between px-4 h-14 safe-area-top">
+        {showBack ? (
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => window.history.back()}
+            className="text-gray-400"
+          >
+            <X className="w-5 h-5" />
+          </Button>
+        ) : (
+          <div className="w-10" />
+        )}
+        
+        <h1 className="text-lg font-semibold text-white">{title}</h1>
+        
+        <div className="w-10" />
+      </div>
+    </header>
+  )
+}
                         "flex items-center justify-between p-4 rounded-lg",
                         "transition-all duration-200 active:scale-95",
                         isActive 

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useCallback } from 'react'
 import { Camera, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion } from 'framer-motion'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
@@ -134,7 +134,7 @@ export function MobileImageUpload({
       />
 
       <div className="p-8 text-center">
-        <AnimatePresence mode="wait">
+        
           {loading ? (
             <motion.div
               key="loading"
@@ -189,7 +189,7 @@ export function MobileImageUpload({
               </div>
             </motion.div>
           )}
-        </AnimatePresence>
+        
       </div>
     </div>
   )

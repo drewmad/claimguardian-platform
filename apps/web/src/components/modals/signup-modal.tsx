@@ -10,13 +10,12 @@
  */
 'use client'
 
-import { X, Eye, EyeOff, AlertCircle, Shield, Check } from 'lucide-react'
+import { X, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
-import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'
 import { useModalStore } from '@/stores/modal-store'
 
 export function SignupModal() {
@@ -44,8 +43,7 @@ export function SignupModal() {
     acceptedDocuments: [] as string[]
   })
   const [showPassword, setShowPassword] = useState(false)
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
-  const [passwordStrength, setPasswordStrength] = useState(0)
+  
   const [validationError, setValidationError] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
 
@@ -121,31 +119,10 @@ export function SignupModal() {
       [name]: type === 'checkbox' ? checked : value
     }))
     
-    if (name === 'password') {
-      setPasswordStrength(calculatePasswordStrength(value))
-    }
+    
   }
 
-  const calculatePasswordStrength = (password: string) => {
-    let score = 0
-    if (password.length > 8) score++
-    if (/[A-Z]/.test(password)) score++
-    if (/[a-z]/.test(password)) score++
-    if (/[0-9]/.test(password)) score++
-    if (/[^A-Za-z0-9]/.test(password)) score++
-    return score
-  }
-
-  const formatPhoneNumber = (value: string) => {
-    const digits = value.replace(/\D/g, '').substring(0, 10)
-    if (digits.length >= 6) {
-      return `(${digits.substring(0, 3)}) ${digits.substring(3, 6)}-${digits.substring(6)}`
-    } else if (digits.length >= 3) {
-      return `(${digits.substring(0, 3)}) ${digits.substring(3)}`
-    } else {
-      return digits
-    }
-  }
+  
 
   const handleResendEmail = async () => {
     if (!checkLimit()) {
@@ -195,7 +172,7 @@ export function SignupModal() {
             
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
               <p className="text-blue-300 font-medium mb-2">
-                ✉️ We&apos;ve sent a confirmation email to:
+                ✉️ We've sent a confirmation email to:
               </p>
               <p className="text-white font-semibold">
                 {formData.email}
@@ -215,7 +192,7 @@ export function SignupModal() {
             
             <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
               <p className="text-xs text-slate-400">
-                Can&apos;t find the email? Check your spam folder or click below to resend.
+                Can't find the email? Check your spam folder or click below to resend.
               </p>
               <button
                 onClick={handleResendEmail}

@@ -272,7 +272,7 @@ export default function TestAICompletePage() {
       // Create a test text file
       const testContent = 'This is a test policy document for ClaimGuardian AI testing.'
       const blob = new Blob([testContent], { type: 'text/plain' })
-      const file = new new File([blob], 'test-policy.txt', { type: 'text/plain' })
+      const file = new File([blob], 'test-policy.txt', { type: 'text/plain' })
       
       const fileName = `test/${Date.now()}-test-policy.txt`
       const { data, error } = await supabase.storage
