@@ -13,6 +13,12 @@ interface TestResult {
   details?: unknown
 }
 
+function renderDetails(details: unknown): string {
+  if (typeof details === 'string') return details
+  if (details instanceof Error) return details.message
+  return JSON.stringify(details, null, 2)
+}
+
 export default function TestSignupPage() {
   const [loading, setLoading] = useState(false)
   const [results, setResults] = useState<TestResult[]>([])
@@ -163,20 +169,16 @@ export default function TestSignupPage() {
                       <div className="flex-1">
                         <h3 className="font-semibold text-white">{result.step}</h3>
                         <p className="text-sm text-gray-300 mt-1">{result.message}</p>
-                        {result.details && result.details != null && (
+                        {result.details ? (
                           <details className="mt-2">
                             <summary className="text-xs text-gray-500 cursor-pointer hover:text-gray-400">
                               View Details
                             </summary>
                             <pre className="mt-2 text-xs text-gray-400 overflow-x-auto">
-                              {typeof result.details === 'string' 
-                                ? result.details 
-                                : result.details instanceof Error 
-                                  ? result.details.message 
-                                  : JSON.stringify(result.details, null, 2)}
+                              {renderDetails(result.details)}
                             </pre>
                           </details>
-                        )}
+                        ) : null}
                       </div>
                     </div>
                   </div>

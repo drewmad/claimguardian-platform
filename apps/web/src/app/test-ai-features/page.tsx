@@ -20,6 +20,12 @@ interface TestResult {
   } | Error | unknown
 }
 
+function renderDetails(details: unknown): string {
+  if (typeof details === 'string') return details
+  if (details instanceof Error) return details.message
+  return JSON.stringify(details, null, 2)
+}
+
 export default function TestAIFeaturesPage() {
   const [tests, setTests] = useState<TestResult[]>([
     { name: 'Check API Keys', status: 'pending' },
@@ -204,15 +210,11 @@ export default function TestAIFeaturesPage() {
                       {test.message && (
                         <p className="text-sm text-gray-400 mt-1">{test.message}</p>
                       )}
-                      {test.details && test.status === 'error' && test.details != null && (
+                      {(test.details && test.status === 'error') ? (
                         <pre className="text-xs text-red-400 mt-2 p-2 bg-gray-900 rounded overflow-x-auto">
-                          {typeof test.details === 'string' 
-                            ? test.details 
-                            : test.details instanceof Error 
-                              ? test.details.message 
-                              : JSON.stringify(test.details, null, 2)}
+                          {renderDetails(test.details)}
                         </pre>
-                      )}
+                      ) : null}
                     </div>
                   </div>
                 </div>
