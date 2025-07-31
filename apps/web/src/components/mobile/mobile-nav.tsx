@@ -161,6 +161,7 @@ export function MobileHeader({ title, showBack = false }: { title: string; showB
   )
 }
 
+
   return (
     <header className="sticky top-0 z-40 bg-gray-900/95 backdrop-blur-md border-b border-gray-800 md:hidden">
       <div className="flex items-center justify-between px-4 h-14 safe-area-top">
