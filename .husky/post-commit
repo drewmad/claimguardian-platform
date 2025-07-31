@@ -1,5 +1,3 @@
-#!/bin/sh
-. "$(dirname "$0")/_/husky.sh"
 
 # Claude Learning Reminder
 if [ -n "$CLAUDE_SESSION" ]; then

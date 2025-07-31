@@ -1,16 +1,21 @@
 // Central environment configuration loader
-const path = require('path');
+import path from 'path';
+import { fileURLToPath } from 'url';
+import dotenv from 'dotenv';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const env = process.env.NODE_ENV || 'development';
 
 try {
-  require('dotenv').config({
+  dotenv.config({
     path: path.join(__dirname, 'environments', `.env.${env}`)
   });
 } catch (error) {
   // Fallback to root .env.local if environment-specific file doesn't exist
-  require('dotenv').config({
+  dotenv.config({
     path: path.join(__dirname, '..', '.env.local')
   });
 }
 
-module.exports = process.env;
+export default process.env;

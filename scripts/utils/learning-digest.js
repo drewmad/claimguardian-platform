@@ -5,9 +5,13 @@
  * Transforms learnings.md into actionable insights and quick references
  */
 
-const fs = require('fs').promises;
-const path = require('path');
-const crypto = require('crypto');
+import { promises as fs } from 'fs';
+import path from 'path';
+import crypto from 'crypto';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 class LearningDigest {
   constructor() {

@@ -42,7 +42,8 @@ const QUICK_QUESTIONS = [
 interface UploadedDocument {
   id: string
   name: string
-  content: string
+  url?: string
+  content?: string
   type: string
   uploadedAt: Date
 }

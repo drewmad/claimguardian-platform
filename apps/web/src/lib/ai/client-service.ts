@@ -17,6 +17,23 @@ interface AIKeysStatus {
   hasAnyKey: boolean
 }
 
+interface PolicyChatRequest {
+  messages: ChatMessage[]
+  policyDocument?: {
+    fileUrl?: string
+    content?: string
+    type?: string
+  }
+}
+
+interface PolicyChatResponse {
+  response: string
+  citations?: Array<{
+    section: string
+    content: string
+  }>
+}
+
 export class AIClientService {
   async checkKeys(): Promise<AIKeysStatus> {
     const response = await fetch('/api/ai/check-keys')
@@ -60,5 +77,36 @@ export class AIClientService {
 
     const data = await response.json()
     return data.response
+  }
+
+  async chatWithPolicy(request: PolicyChatRequest): Promise<PolicyChatResponse> {
+    // Get Supabase URL and anon key from window for client-side
+    const supabaseUrl = typeof window !== 'undefined' 
+      ? window.location.origin.includes('localhost') 
+        ? process.env.NEXT_PUBLIC_SUPABASE_URL 
+        : process.env.NEXT_PUBLIC_SUPABASE_URL
+      : process.env.NEXT_PUBLIC_SUPABASE_URL
+    
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+
+    if (!supabaseUrl || !supabaseAnonKey) {
+      throw new Error('Supabase configuration missing')
+    }
+
+    const response = await fetch(`${supabaseUrl}/functions/v1/policy-chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${supabaseAnonKey}`,
+      },
+      body: JSON.stringify(request),
+    })
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: response.statusText }))
+      throw new Error(errorData.error || `Policy chat API error: ${response.statusText}`)
+    }
+
+    return response.json()
   }
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff } from 'lucide-react'
+import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff, Receipt } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
@@ -82,6 +82,17 @@ const AI_TOOLS: AITool[] = [
     status: 'active',
     category: 'documentation',
     features: ['Auto Item Recognition', 'Value Estimation', 'Room Organization', 'Export Reports']
+  },
+  {
+    id: 'receipt-scanner',
+    title: 'Receipt Scanner (OCR)',
+    description: 'Scan and extract data from receipts, invoices, and estimates with advanced OCR technology',
+    icon: Receipt,
+    color: 'amber',
+    href: '/ai-tools/receipt-scanner',
+    status: 'active',
+    category: 'documentation',
+    features: ['OCR Text Extraction', 'Structured Data Parsing', 'Multi-language Support', 'Expense Tracking', 'Export to Claims']
   },
   {
     id: '3d-model-generator',

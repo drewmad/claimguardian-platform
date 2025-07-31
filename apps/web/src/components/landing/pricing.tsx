@@ -10,11 +10,15 @@
  */
 'use client'
 
-import { Check } from 'lucide-react'
+import { Check, Loader2 } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import { useRouter } from 'next/navigation'
+import { toast } from 'sonner'
 
 import { COLORS } from '@/lib/constants'
 import { useModalStore } from '@/stores/modal-store'
+import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {
@@ -70,7 +74,7 @@ interface PricingPlan {
   recommended?: boolean
 }
 
-const PricingCard: React.FC<{ plan: PricingPlan; onClick: () => void; cycle: 'monthly' | 'annual' }> = ({ plan, onClick, cycle }) => {
+const PricingCard: React.FC<{ plan: PricingPlan & { priceIds?: { monthly: string; annual: string } }; onClick: () => void; cycle: 'monthly' | 'annual'; isProcessing?: boolean }> = ({ plan, onClick, cycle, isProcessing }) => {
   const isAnnual = cycle === 'annual' && plan.price.annual
   const displayPrice = isAnnual ? plan.price.annual : plan.price.monthly
   const displayPer = isAnnual ? plan.per.annual : plan.per.monthly
@@ -94,16 +98,32 @@ const PricingCard: React.FC<{ plan: PricingPlan; onClick: () => void; cycle: 'mo
           </ul>
         </div>
       )}
-      <button onClick={onClick} className={`w-full font-bold py-3 rounded-lg mt-auto ${plan.ctaClass}`}>{plan.ctaText}</button>
+      <button 
+        onClick={onClick} 
+        className={`w-full font-bold py-3 rounded-lg mt-auto ${plan.ctaClass} disabled:opacity-50`}
+        disabled={isProcessing}
+      >
+        {isProcessing ? (
+          <>
+            <Loader2 className="w-4 h-4 mr-2 animate-spin inline" />
+            Processing...
+          </>
+        ) : (
+          plan.ctaText
+        )}
+      </button>
     </div>
   )
 }
 
 export function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
+  const [processingPlan, setProcessingPlan] = useState<string | null>(null)
   const { openModal } = useModalStore()
+  const router = useRouter()
+  const supabase = createBrowserSupabaseClient()
   
-  const plans: Record<string, PricingPlan> = {
+  const plans: Record<string, PricingPlan & { priceIds?: { monthly: string; annual: string } }> = {
     free: { 
       name: 'Guardian Free', 
       price: {}, 
@@ -123,7 +143,11 @@ export function Pricing() {
       features: ['Everything in Free, plus:', 'More AI Damage Scans per month', 'Advanced Policy Analysis & Q&A', 'Settlement Analyzer', 'More AI-Augmented Documents per month', 'Priority Email Support', '10GB Evidence Storage'], 
       comingSoon: ['Export Reports (PDF/CSV)', 'Data Export (JSON/CSV)', 'Weather Alerts', 'Document Templates', 'OCR Receipt Scanning', 'Calendar Integration', 'Spanish Language Support', '3D Model Generation'], 
       ctaText: 'Go Essential', 
-      ctaClass: 'bg-primary text-black hover:opacity-90' 
+      ctaClass: 'bg-primary text-black hover:opacity-90',
+      priceIds: {
+        monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIAL_MONTHLY || '',
+        annual: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIAL_ANNUAL || ''
+      }
     },
     plus: { 
       name: 'Guardian Plus', 
@@ -142,6 +166,48 @@ export function Pricing() {
       features: ['Everything in Plus, plus:', 'Up to 10 Properties', '5 Team Members', 'Maximum AI Damage Scans', 'Unlimited AI Documents', 'Contractor Marketplace', 'Priority Phone Support', '50GB Evidence Storage', 'Bulk Operations', 'Audit Trail & Version History', 'Integrations (Google Drive, Dropbox)', '3D Model Generation (Unlimited)'], 
       ctaText: 'Join Waitlist', 
       ctaClass: 'bg-gray-800 hover:bg-gray-700' 
+    }
+  }
+  
+  const handlePlanClick = async (planKey: string) => {
+    // Check if user is authenticated
+    const { data: { user } } = await supabase.auth.getUser()
+    
+    if (!user) {
+      // Open signup modal if not authenticated
+      openModal('signup')
+      return
+    }
+
+    // Handle Stripe checkout for paid plans
+    if (planKey === 'essential' && plans.essential.priceIds) {
+      try {
+        setProcessingPlan(planKey)
+        const priceId = billingCycle === 'annual' 
+          ? plans.essential.priceIds.annual 
+          : plans.essential.priceIds.monthly
+
+        const { sessionId, error } = await createCheckoutSession(priceId, 'Guardian Essential')
+        
+        if (error) {
+          throw new Error(error)
+        }
+
+        if (sessionId) {
+          const { error: redirectError } = await redirectToCheckout(sessionId)
+          if (redirectError) {
+            throw new Error(redirectError)
+          }
+        }
+      } catch (error) {
+        console.error('Error starting checkout:', error)
+        toast.error('Failed to start checkout process')
+      } finally {
+        setProcessingPlan(null)
+      }
+    } else {
+      // For free plan, just redirect to dashboard
+      router.push('/dashboard')
     }
   }
   
@@ -165,8 +231,8 @@ export function Pricing() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
-          <PricingCard plan={plans.free} onClick={() => openModal('signup')} cycle={billingCycle} />
-          <PricingCard plan={plans.essential} onClick={() => openModal('signup')} cycle={billingCycle} />
+          <PricingCard plan={plans.free} onClick={() => handlePlanClick('free')} cycle={billingCycle} isProcessing={processingPlan === 'free'} />
+          <PricingCard plan={plans.essential} onClick={() => handlePlanClick('essential')} cycle={billingCycle} isProcessing={processingPlan === 'essential'} />
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-8">

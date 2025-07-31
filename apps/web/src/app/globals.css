@@ -20,6 +20,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Import mobile-specific overrides */
+@import '../styles/mobile-overrides.css';
+
 @layer base {
   html {
     scroll-behavior: smooth;
