@@ -97,7 +97,7 @@ class AuthService {
       // COMPLIANCE REQUIREMENT: Record consent BEFORE creating account
       console.log('[AUTH DEBUG] Step 1: Recording consent before signup')
       
-      const { recordSignupConsent, validateConsent, linkConsentToUser } = await import('@/actions/compliance-consent')
+      const { recordSignupConsent, validateConsent } = await import('@/actions/compliance-consent')
       
       // Record consent first
       const consentResult = await recordSignupConsent({
