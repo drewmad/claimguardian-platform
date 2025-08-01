@@ -103,7 +103,11 @@ export async function middleware(request: NextRequest) {
     '/_next',
     '/favicon.ico',
     '/api/health',
-    '/api/legal/documents'
+    '/api/legal/documents',
+    '/test-signup',
+    '/test-login',
+    '/test-signup-simple',
+    '/simple-signup-demo'
   ]
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
