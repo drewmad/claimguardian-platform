@@ -134,7 +134,7 @@ const AI_TOOLS: AITool[] = [
     icon: FileText,
     color: 'green',
     href: '/ai-tools/claim-assistant',
-    status: 'coming-soon',
+    status: 'active',
     category: 'assistance',
     features: ['Claim Guidance', 'Document Checklist', 'Timeline Tracking', 'Submission Help']
   },
@@ -145,7 +145,7 @@ const AI_TOOLS: AITool[] = [
     icon: FileSearch,
     color: 'indigo',
     href: '/ai-tools/document-generator',
-    status: 'coming-soon',
+    status: 'active',
     category: 'documentation',
     features: ['Letter Templates', 'Legal Citations', 'Auto-Formatting', 'Export Options']
   },
@@ -156,7 +156,7 @@ const AI_TOOLS: AITool[] = [
     icon: MessageSquare,
     color: 'pink',
     href: '/ai-tools/communication-helper',
-    status: 'coming-soon',
+    status: 'active',
     category: 'communication',
     features: ['Email Templates', 'Tone Adjustment', 'Follow-up Reminders', 'Response Analysis']
   },
