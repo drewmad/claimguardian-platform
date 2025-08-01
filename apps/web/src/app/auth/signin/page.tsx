@@ -1,16 +1,16 @@
 /**
  * @fileMetadata
- * @purpose Sign-in page with client-side authentication to fix spinning issue
+ * @purpose Sign-in page with simplified authentication flow
  * @owner frontend-team
- * @dependencies ["react", "./sign-in-form"]
+ * @dependencies ["react", "./simple-sign-in-form"]
  * @exports ["SignInPage"]
  * @complexity low
  * @tags ["auth", "signin", "client"]
  * @status active
- * @notes Uses client-side form to prevent server action conflicts
+ * @notes Uses simplified form with direct Supabase auth
  */
 
-import { SignInForm } from './sign-in-form'
+import { SimpleSignInForm } from './simple-sign-in-form'
 
 export default async function SignInPage({
   searchParams,
@@ -19,5 +19,5 @@ export default async function SignInPage({
 }) {
   const params = await searchParams
 
-  return <SignInForm message={params?.message} />
+  return <SimpleSignInForm message={params?.message} />
 }

@@ -10,15 +10,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Card } from '@/components/ui/card'
 
-export default function SimpleSignUpPage() {
+interface SimpleSignInFormProps {
+  message?: string
+}
+
+export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [fullName, setFullName] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-  const [success, setSuccess] = useState(false)
+  const [error, setError] = useState<string | null>(message || null)
   const supabase = createBrowserSupabaseClient()
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -28,77 +29,35 @@ export default function SimpleSignUpPage() {
     setError(null)
     
     // Basic validation
-    if (!email || !password || !fullName) {
-      setError('Please fill in all required fields')
-      return
-    }
-    
-    if (password !== confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-    
-    if (password.length < 6) {
-      setError('Password must be at least 6 characters')
+    if (!email || !password) {
+      setError('Please enter both email and password')
       return
     }
     
     setIsLoading(true)
     
     try {
-      const { data, error: signUpError } = await supabase.auth.signUp({
+      const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
-        options: {
-          data: {
-            full_name: fullName,
-          }
-        }
       })
       
-      if (signUpError) {
-        setError(signUpError.message)
+      if (signInError) {
+        setError(signInError.message)
         setIsLoading(false)
         return
       }
       
       if (data?.user) {
-        // Successful sign up
-        setSuccess(true)
-        setIsLoading(false)
-        
-        // Redirect after a short delay
-        setTimeout(() => {
-          router.push('/auth/signin?message=Account created successfully. Please sign in.')
-        }, 2000)
+        // Successful sign in - redirect to dashboard
+        router.push('/dashboard')
+        router.refresh()
       }
     } catch (error) {
-      console.error('Sign up error:', error)
+      console.error('Sign in error:', error)
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
-  }
-
-  if (success) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md bg-slate-900/50 backdrop-blur-sm border-slate-700">
-          <div className="p-8 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
-                <svg className="w-8 h-8 text-green-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                </svg>
-              </div>
-            </div>
-            <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
-            <p className="text-slate-400">
-              Your account has been created successfully. Redirecting to sign in...
-            </p>
-          </div>
-        </Card>
-      </div>
-    )
   }
 
   return (
@@ -111,8 +70,8 @@ export default function SimpleSignUpPage() {
               <Shield className="h-8 w-8 text-blue-400" />
               <span className="text-2xl font-bold text-white">ClaimGuardian</span>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Create Account</h1>
-            <p className="text-slate-400">Sign up to get started</p>
+            <h1 className="text-2xl font-bold text-white mb-2">Sign In</h1>
+            <p className="text-slate-400">Sign in to your account</p>
           </div>
 
           {/* Error Message */}
@@ -123,26 +82,8 @@ export default function SimpleSignUpPage() {
             </div>
           )}
 
-          {/* Sign Up Form */}
+          {/* Sign In Form */}
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div>
-              <Label htmlFor="fullName" className="text-slate-300">
-                Full Name
-              </Label>
-              <Input
-                id="fullName"
-                name="fullName"
-                type="text"
-                required
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="mt-1 bg-slate-800 border-slate-600 text-white placeholder-slate-400"
-                placeholder="John Doe"
-                autoComplete="name"
-                disabled={isLoading}
-              />
-            </div>
-
             <div>
               <Label htmlFor="email" className="text-slate-300">
                 Email
@@ -174,28 +115,7 @@ export default function SimpleSignUpPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
                 placeholder="••••••••"
-                autoComplete="new-password"
-                disabled={isLoading}
-              />
-              <p className="mt-1 text-xs text-slate-400">
-                Must be at least 6 characters
-              </p>
-            </div>
-
-            <div>
-              <Label htmlFor="confirmPassword" className="text-slate-300">
-                Confirm Password
-              </Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className="bg-slate-800 border-slate-600 text-white placeholder-slate-400"
-                placeholder="••••••••"
-                autoComplete="new-password"
+                autoComplete="current-password"
                 disabled={isLoading}
               />
             </div>
@@ -208,23 +128,23 @@ export default function SimpleSignUpPage() {
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
+                  Signing in...
                 </>
               ) : (
-                'Create Account'
+                'Sign In'
               )}
             </Button>
           </form>
 
-          {/* Sign In Link */}
+          {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Already have an account?{' '}
+              Don&apos;t have an account?{' '}
               <Link
-                href="/auth/signin"
+                href="/test-signup-simple"
                 className="text-blue-400 hover:text-blue-300 font-medium"
               >
-                Sign In
+                Sign Up
               </Link>
             </p>
           </div>
