@@ -141,7 +141,7 @@ export function AdvancedSignupForm() {
         
         // Redirect after delay
         setTimeout(() => {
-          router.push('/dashboard?welcome=true')
+          router.push('/onboarding')
         }, 2000)
       }
     } catch (error) {
