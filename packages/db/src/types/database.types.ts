@@ -555,8 +555,6 @@ export type Database = {
           url: string | null
           user_agent: string | null
           user_id: string | null
-          status: Database["public"]["Enums"]["error_log_status"] | null
-          notes: string | null
         }
         Insert: {
           context?: Json | null
@@ -576,8 +574,6 @@ export type Database = {
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
-          status?: Database["public"]["Enums"]["error_log_status"] | null
-          notes?: string | null
         }
         Update: {
           context?: Json | null
@@ -597,8 +593,6 @@ export type Database = {
           url?: string | null
           user_agent?: string | null
           user_id?: string | null
-          status?: Database["public"]["Enums"]["error_log_status"] | null
-          notes?: string | null
         }
         Relationships: []
       }
@@ -1756,6 +1750,7 @@ export type Database = {
           gdpr_consent: boolean
           id: string
           ip_address: string | null
+          marketing_accepted: boolean
           marketing_consent: boolean
           privacy_accepted: boolean
           terms_accepted: boolean
@@ -1774,6 +1769,7 @@ export type Database = {
           gdpr_consent?: boolean
           id?: string
           ip_address?: string | null
+          marketing_accepted?: boolean
           marketing_consent?: boolean
           privacy_accepted?: boolean
           terms_accepted?: boolean
@@ -1792,6 +1788,7 @@ export type Database = {
           gdpr_consent?: boolean
           id?: string
           ip_address?: string | null
+          marketing_accepted?: boolean
           marketing_consent?: boolean
           privacy_accepted?: boolean
           terms_accepted?: boolean
@@ -7375,7 +7372,6 @@ export type Database = {
         | "updated"
         | "rejected"
       damage_severity: "minor" | "moderate" | "major" | "severe" | "total_loss"
-      error_log_status: "new" | "acknowledged" | "resolved" | "ignored"
       item_category:
         | "ELECTRONICS"
         | "FURNITURE"
