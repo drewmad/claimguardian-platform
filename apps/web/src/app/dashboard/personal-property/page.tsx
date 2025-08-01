@@ -175,6 +175,9 @@ function PersonalPropertyContent() {
   const [currentTab, setCurrentTab] = useState('overview')
   const [isScanning, setIsScanning] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
+  const [isSelectionMode, setIsSelectionMode] = useState(false)
+  const [showBatchActions, setShowBatchActions] = useState(false)
   
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -246,6 +249,63 @@ function PersonalPropertyContent() {
       case 'poor': return 'text-red-400'
       default: return 'text-gray-400'
     }
+  }
+
+  // Selection handlers
+  const toggleItemSelection = (itemId: string) => {
+    const newSelection = new Set(selectedItems)
+    if (newSelection.has(itemId)) {
+      newSelection.delete(itemId)
+    } else {
+      newSelection.add(itemId)
+    }
+    setSelectedItems(newSelection)
+    setShowBatchActions(newSelection.size > 0)
+  }
+
+  const selectAllItems = () => {
+    const allItemIds = new Set(filteredItems.map(item => item.id))
+    setSelectedItems(allItemIds)
+    setShowBatchActions(true)
+  }
+
+  const clearSelection = () => {
+    setSelectedItems(new Set())
+    setShowBatchActions(false)
+    setIsSelectionMode(false)
+  }
+
+  const handleBatchDelete = () => {
+    if (window.confirm(`Are you sure you want to delete ${selectedItems.size} items?`)) {
+      setItems(items.filter(item => !selectedItems.has(item.id)))
+      clearSelection()
+      toast.success(`${selectedItems.size} items deleted`)
+    }
+  }
+
+  const handleBatchExport = () => {
+    const exportItems = items.filter(item => selectedItems.has(item.id))
+    const data = {
+      exportDate: new Date().toISOString(),
+      itemCount: exportItems.length,
+      totalValue: exportItems.reduce((sum, item) => sum + item.currentValue, 0),
+      items: exportItems
+    }
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
+    const url = URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = `personal-property-export-${Date.now()}.json`
+    a.click()
+    toast.success(`Exported ${selectedItems.size} items`)
+  }
+
+  const handleBatchUpdateRoom = (newRoom: string) => {
+    setItems(items.map(item => 
+      selectedItems.has(item.id) ? { ...item, room: newRoom } : item
+    ))
+    toast.success(`Updated room for ${selectedItems.size} items`)
+    clearSelection()
   }
 
   return (
@@ -363,6 +423,7 @@ function PersonalPropertyContent() {
               <TabsTrigger value="items">Items</TabsTrigger>
               <TabsTrigger value="rooms">By Room</TabsTrigger>
               <TabsTrigger value="categories">By Category</TabsTrigger>
+              <TabsTrigger value="gallery">Gallery</TabsTrigger>
               <TabsTrigger value="analytics">Analytics</TabsTrigger>
             </TabsList>
 
@@ -488,6 +549,73 @@ function PersonalPropertyContent() {
 
             {/* Items Tab */}
             <TabsContent value="items" className="space-y-6">
+              {/* Batch Actions Bar */}
+              {showBatchActions && (
+                <Card className="bg-blue-900/20 border-blue-600/30">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <p className="text-white font-medium">
+                          {selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
+                        </p>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={selectAllItems}
+                          className="text-blue-400 hover:text-blue-300"
+                        >
+                          Select All ({filteredItems.length})
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={clearSelection}
+                          className="text-gray-400 hover:text-white"
+                        >
+                          Clear Selection
+                        </Button>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleBatchExport}
+                          className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          Export
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                        >
+                          <Tag className="h-4 w-4 mr-2" />
+                          Add Tags
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                        >
+                          <MapPin className="h-4 w-4 mr-2" />
+                          Move to Room
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={handleBatchDelete}
+                          className="bg-red-600/20 hover:bg-red-600/30 border-red-600/30 text-red-400"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
               {/* Enhanced Filters and Search */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardContent className="p-4">
@@ -553,6 +681,23 @@ function PersonalPropertyContent() {
                     </div>
 
                     <Button
+                      variant={isSelectionMode ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => {
+                        setIsSelectionMode(!isSelectionMode)
+                        if (isSelectionMode) {
+                          clearSelection()
+                        }
+                      }}
+                      className={isSelectionMode
+                        ? 'bg-blue-600 hover:bg-blue-700'
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}
+                    >
+                      <CheckCircle className="h-4 w-4 mr-2" />
+                      {isSelectionMode ? 'Done' : 'Select'}
+                    </Button>
+
+                    <Button
                       variant="outline"
                       size="sm"
                       className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
@@ -583,12 +728,31 @@ function PersonalPropertyContent() {
                     return (
                       <Card 
                         key={item.id} 
-                        className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer"
+                        className={`bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer relative ${
+                          isSelectionMode && selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''
+                        }`}
                         onClick={() => {
-                          setSelectedItem(item)
-                          setShowDetailModal(true)
+                          if (isSelectionMode) {
+                            toggleItemSelection(item.id)
+                          } else {
+                            setSelectedItem(item)
+                            setShowDetailModal(true)
+                          }
                         }}
                       >
+                        {/* Selection Checkbox */}
+                        {isSelectionMode && (
+                          <div className="absolute top-2 left-2 z-10">
+                            <input
+                              type="checkbox"
+                              checked={selectedItems.has(item.id)}
+                              onChange={() => toggleItemSelection(item.id)}
+                              onClick={(e) => e.stopPropagation()}
+                              className="h-5 w-5 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500"
+                            />
+                          </div>
+                        )}
+                        
                         <CardContent className="p-4">
                           {/* Item Header */}
                           <div className="flex items-start justify-between mb-3">
@@ -719,13 +883,29 @@ function PersonalPropertyContent() {
                         return (
                           <div 
                             key={item.id} 
-                            className="p-4 hover:bg-gray-700/50 transition-all cursor-pointer"
+                            className={`p-4 hover:bg-gray-700/50 transition-all cursor-pointer ${
+                              isSelectionMode && selectedItems.has(item.id) ? 'bg-blue-900/20' : ''
+                            }`}
                             onClick={() => {
-                              setSelectedItem(item)
-                              setShowDetailModal(true)
+                              if (isSelectionMode) {
+                                toggleItemSelection(item.id)
+                              } else {
+                                setSelectedItem(item)
+                                setShowDetailModal(true)
+                              }
                             }}
                           >
                             <div className="flex items-center gap-4">
+                              {/* Selection Checkbox */}
+                              {isSelectionMode && (
+                                <input
+                                  type="checkbox"
+                                  checked={selectedItems.has(item.id)}
+                                  onChange={() => toggleItemSelection(item.id)}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="h-5 w-5 rounded bg-gray-700 border-gray-600 text-blue-600 focus:ring-blue-500"
+                                />
+                              )}
                               <div className={`p-2 bg-${categoryColor}-600/20 rounded-lg`}>
                                 <Icon className={`h-5 w-5 text-${categoryColor}-400`} />
                               </div>
@@ -872,6 +1052,132 @@ function PersonalPropertyContent() {
                     </Card>
                   )
                 })}
+              </div>
+            </TabsContent>
+
+            {/* Gallery Tab */}
+            <TabsContent value="gallery" className="space-y-6">
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <div className="flex items-center justify-between">
+                    <CardTitle className="text-white">Photo Gallery</CardTitle>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                      >
+                        <Filter className="h-4 w-4 mr-2" />
+                        Filter
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+                      >
+                        <Download className="h-4 w-4 mr-2" />
+                        Download All
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                    {items.filter(item => item.images.length > 0).map(item => (
+                      <div key={item.id} className="space-y-2">
+                        {item.images.map((image, idx) => (
+                          <div
+                            key={`${item.id}-${idx}`}
+                            className="relative group cursor-pointer"
+                            onClick={() => {
+                              setSelectedItem(item)
+                              setShowDetailModal(true)
+                            }}
+                          >
+                            <div className="aspect-square bg-gray-700 rounded-lg overflow-hidden">
+                              <div className="w-full h-full flex items-center justify-center">
+                                <Camera className="h-12 w-12 text-gray-500" />
+                              </div>
+                            </div>
+                            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg flex flex-col items-center justify-center p-2">
+                              <p className="text-white text-sm font-medium text-center line-clamp-2">{item.name}</p>
+                              <p className="text-gray-300 text-xs">{item.room}</p>
+                              <p className="text-green-400 text-sm font-semibold mt-1">${item.currentValue.toLocaleString()}</p>
+                            </div>
+                            {item.insured && (
+                              <div className="absolute top-2 right-2">
+                                <Shield className="h-4 w-4 text-green-400 drop-shadow-lg" />
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    ))}
+                  </div>
+                  
+                  {items.filter(item => item.images.length > 0).length === 0 && (
+                    <div className="text-center py-12">
+                      <Camera className="h-16 w-16 text-gray-600 mx-auto mb-4" />
+                      <p className="text-gray-400 text-lg">No photos uploaded yet</p>
+                      <p className="text-gray-500 text-sm mt-2">Add photos to your items to see them here</p>
+                      <Button
+                        onClick={() => {
+                          setCurrentTab('items')
+                          toast.info('Select an item and add photos')
+                        }}
+                        className="mt-4 bg-blue-600 hover:bg-blue-700"
+                      >
+                        <Plus className="h-4 w-4 mr-2" />
+                        Add Photos to Items
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Photo Statistics */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-white">
+                          {items.reduce((sum, item) => sum + item.images.length, 0)}
+                        </p>
+                        <p className="text-sm text-gray-400">Total Photos</p>
+                      </div>
+                      <Camera className="h-8 w-8 text-blue-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-white">
+                          {items.filter(item => item.images.length > 0).length}
+                        </p>
+                        <p className="text-sm text-gray-400">Items with Photos</p>
+                      </div>
+                      <CheckCircle className="h-8 w-8 text-green-400" />
+                    </div>
+                  </CardContent>
+                </Card>
+                
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-2xl font-bold text-white">
+                          {items.filter(item => item.images.length === 0).length}
+                        </p>
+                        <p className="text-sm text-gray-400">Need Photos</p>
+                      </div>
+                      <AlertCircle className="h-8 w-8 text-orange-400" />
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </TabsContent>
 
@@ -1140,6 +1446,252 @@ function PersonalPropertyContent() {
                 </Button>
               </div>
             </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
+      {/* Add Item Modal */}
+      {showAddModal && (
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 max-w-3xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold text-white">Add New Item</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-6 mt-4">
+              {/* Quick Category Selection */}
+              <div>
+                <Label className="text-gray-400 mb-2">Quick Select Category</Label>
+                <div className="grid grid-cols-4 gap-2">
+                  {CATEGORIES.slice(0, 8).map(category => {
+                    const Icon = category.icon
+                    return (
+                      <button
+                        key={category.id}
+                        onClick={() => setSelectedCategory(category.id)}
+                        className={`p-3 rounded-lg border transition-all ${
+                          selectedCategory === category.id
+                            ? 'bg-blue-600/20 border-blue-500 text-blue-400'
+                            : 'bg-gray-700 border-gray-600 hover:bg-gray-600 text-gray-300'
+                        }`}
+                      >
+                        <Icon className="h-5 w-5 mx-auto mb-1" />
+                        <p className="text-xs">{category.name}</p>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* Basic Information */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="itemName" className="text-gray-400">Item Name *</Label>
+                  <Input
+                    id="itemName"
+                    placeholder="e.g., Samsung 65 inch TV"
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="brand" className="text-gray-400">Brand</Label>
+                  <Input
+                    id="brand"
+                    placeholder="e.g., Samsung"
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="model" className="text-gray-400">Model</Label>
+                  <Input
+                    id="model"
+                    placeholder="e.g., QN65Q80B"
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="serialNumber" className="text-gray-400">Serial Number</Label>
+                  <Input
+                    id="serialNumber"
+                    placeholder="e.g., SN123456789"
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Location and Condition */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label htmlFor="room" className="text-gray-400">Room *</Label>
+                  <Select>
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue placeholder="Select room" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {mockRooms.map(room => (
+                        <SelectItem key={room.id} value={room.name}>{room.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="condition" className="text-gray-400">Condition</Label>
+                  <Select defaultValue="excellent">
+                    <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">New</SelectItem>
+                      <SelectItem value="excellent">Excellent</SelectItem>
+                      <SelectItem value="good">Good</SelectItem>
+                      <SelectItem value="fair">Fair</SelectItem>
+                      <SelectItem value="poor">Poor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </div>
+
+              {/* Value Information */}
+              <div className="grid grid-cols-3 gap-4">
+                <div>
+                  <Label htmlFor="purchasePrice" className="text-gray-400">Purchase Price *</Label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="purchasePrice"
+                      type="number"
+                      placeholder="0.00"
+                      className="pl-10 bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="currentValue" className="text-gray-400">Current Value</Label>
+                  <div className="relative">
+                    <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+                    <Input
+                      id="currentValue"
+                      type="number"
+                      placeholder="0.00"
+                      className="pl-10 bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <Label htmlFor="purchaseDate" className="text-gray-400">Purchase Date</Label>
+                  <Input
+                    id="purchaseDate"
+                    type="date"
+                    className="bg-gray-700 border-gray-600 text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Warranty Information */}
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <Shield className="h-4 w-4 text-yellow-400" />
+                  Warranty Information
+                </h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="warrantyExpires" className="text-gray-400">Warranty Expires</Label>
+                    <Input
+                      id="warrantyExpires"
+                      type="date"
+                      className="bg-gray-700 border-gray-600 text-white"
+                    />
+                  </div>
+                  <div className="flex items-end">
+                    <Label className="flex items-center gap-2 cursor-pointer">
+                      <input type="checkbox" className="rounded bg-gray-700 border-gray-600" />
+                      <span className="text-gray-300">Insured Item</span>
+                    </Label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Photos Section */}
+              <div className="bg-gray-700/50 rounded-lg p-4">
+                <h4 className="text-white font-medium mb-3 flex items-center gap-2">
+                  <Camera className="h-4 w-4 text-blue-400" />
+                  Photos & Documents
+                </h4>
+                <div className="grid grid-cols-3 gap-3">
+                  <button className="aspect-square bg-gray-600 rounded-lg hover:bg-gray-500 transition-all flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-500">
+                    <Camera className="h-8 w-8 text-gray-400" />
+                    <span className="text-xs text-gray-400">Take Photo</span>
+                  </button>
+                  <button className="aspect-square bg-gray-600 rounded-lg hover:bg-gray-500 transition-all flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-500">
+                    <Upload className="h-8 w-8 text-gray-400" />
+                    <span className="text-xs text-gray-400">Upload</span>
+                  </button>
+                  <button className="aspect-square bg-gray-600 rounded-lg hover:bg-gray-500 transition-all flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-500">
+                    <FileText className="h-8 w-8 text-gray-400" />
+                    <span className="text-xs text-gray-400">Receipt</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Tags and Notes */}
+              <div>
+                <Label htmlFor="tags" className="text-gray-400">Tags</Label>
+                <Input
+                  id="tags"
+                  placeholder="Enter tags separated by commas (e.g., electronics, warranty, gift)"
+                  className="bg-gray-700 border-gray-600 text-white"
+                />
+              </div>
+
+              <div>
+                <Label htmlFor="notes" className="text-gray-400">Notes</Label>
+                <Textarea
+                  id="notes"
+                  placeholder="Additional notes about this item..."
+                  className="bg-gray-700 border-gray-600 text-white"
+                  rows={3}
+                />
+              </div>
+
+              {/* Barcode Scanner */}
+              <div className="flex items-center gap-3 p-3 bg-blue-900/20 rounded-lg">
+                <Info className="h-5 w-5 text-blue-400" />
+                <div className="flex-1">
+                  <p className="text-sm text-blue-300">Quick Add with Barcode</p>
+                  <p className="text-xs text-gray-400">Scan product barcode to auto-fill item details</p>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={startBarcodeScanning}
+                  className="bg-blue-600/20 hover:bg-blue-600/30 border-blue-600/30 text-blue-400"
+                >
+                  <ScanLine className="h-4 w-4 mr-2" />
+                  Scan Barcode
+                </Button>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowAddModal(false)}
+                className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  // Add item logic here
+                  toast.success('Item added successfully!')
+                  setShowAddModal(false)
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Plus className="h-4 w-4 mr-2" />
+                Add Item
+              </Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       )}
