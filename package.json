@@ -30,7 +30,10 @@
     "lockfile:check": "node scripts/sync-lockfile.js --check",
     "lockfile:sync": "node scripts/sync-lockfile.js --fix",
     "lockfile:fix": "pnpm install --no-frozen-lockfile",
-    "legal:version": "node scripts/legal/version-docs.mjs"
+    "legal:version": "node scripts/legal/version-docs.mjs",
+    "db:generate-types": "cd apps/web && pnpm db:types",
+    "db:generate-types:local": "cd apps/web && pnpm db:types:local",
+    "db:sync": "cd apps/web && pnpm db:types && git add packages/db/src/types/database.types.ts && git commit -m 'chore(db): Update generated types' || echo 'No type changes'"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

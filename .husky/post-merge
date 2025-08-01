@@ -1,0 +1,17 @@
+#!/bin/sh
+. "$(dirname "$0")/_/husky.sh"
+
+# Check if schema.sql or migrations changed
+if git diff HEAD^ HEAD --name-only | grep -E "(schema\.sql|migrations/.*\.sql)"; then
+  echo "📊 Database schema changed - regenerating types..."
+  cd apps/web && pnpm db:types
+  
+  # If types changed, commit them
+  if git diff --exit-code packages/db/src/types/database.types.ts; then
+    echo "✅ Database types are up to date"
+  else
+    echo "🔄 Committing updated database types..."
+    git add packages/db/src/types/database.types.ts
+    git commit -m "chore(db): Auto-generate types after schema change"
+  fi
+fi
