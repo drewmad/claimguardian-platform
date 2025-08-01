@@ -31,3 +31,128 @@ jobs:
     schedule: "0 6 * * *"
     command: "supabase db query 'REFRESH MATERIALIZED VIEW CONCURRENTLY public.parcels;'"
     description: "Daily refresh of parcels materialized view"
+    
+  # =====================================================
+  # ML OPERATIONS AUTOMATED SCHEDULES
+  # =====================================================
+  
+  # Environmental Data Sync - Every 6 hours
+  environmental_data_sync:
+    schedule: "0 */6 * * *"
+    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/environmental-data-sync -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'"
+    description: "Sync environmental hazard data and sensor readings every 6 hours"
+    
+  # Property AI Enrichment - Daily at 02:00 UTC
+  property_ai_enrichment:
+    schedule: "0 2 * * *"
+    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/property-ai-enrichment -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}' -d '{\"mode\":\"batch\",\"limit\":1000}'"
+    description: "Daily batch AI enrichment of property data"
+    
+  # Model Performance Metrics Aggregation - Every hour
+  ml_metrics_aggregation:
+    schedule: "0 * * * *"
+    command: |
+      supabase db query "
+        INSERT INTO ml_performance_metrics (model_deployment_id, metric_timestamp, metric_window, prediction_count, accuracy, precision, recall, f1_score)
+        SELECT 
+          deployment_id,
+          date_trunc('hour', now()) as metric_timestamp,
+          '1hour' as metric_window,
+          COUNT(*) as prediction_count,
+          AVG(CASE WHEN prediction_correct THEN 1 ELSE 0 END) as accuracy,
+          AVG(precision) as precision,
+          AVG(recall) as recall,
+          AVG(f1_score) as f1_score
+        FROM ml_predictions
+        WHERE created_at >= date_trunc('hour', now()) - interval '1 hour'
+          AND created_at < date_trunc('hour', now())
+        GROUP BY deployment_id
+        ON CONFLICT (model_deployment_id, metric_timestamp, metric_window) 
+        DO UPDATE SET 
+          prediction_count = EXCLUDED.prediction_count,
+          accuracy = EXCLUDED.accuracy;"
+    description: "Hourly aggregation of ML model performance metrics"
+    
+  # Model Drift Detection - Every 4 hours
+  model_drift_detection:
+    schedule: "0 */4 * * *"
+    command: |
+      supabase db query "
+        SELECT 
+          deployment_id,
+          check_model_drift(deployment_id, 24) as drift_report
+        FROM ml_model_deployments
+        WHERE status = 'active';"
+    description: "Check for model drift every 4 hours on active deployments"
+    
+  # Federated Learning Round Scheduler - Daily at 00:00 UTC
+  federated_learning_scheduler:
+    schedule: "0 0 * * *"
+    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/federated-learning -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}' -d '{\"action\":\"start_round\",\"data\":{\"modelFamily\":\"property_risk\",\"aggregationStrategy\":\"fedavg\"}}'"
+    description: "Daily federated learning round for property risk model"
+    
+  # Florida Parcel Monitor - Every 30 minutes
+  florida_parcel_monitor:
+    schedule: "*/30 * * * *"
+    command: "curl -X POST https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/florida-parcel-monitor -H 'Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}'"
+    description: "Monitor Florida parcel data import status and health"
+    
+  # AI Processing Queue Worker - Every 5 minutes
+  ai_processing_queue:
+    schedule: "*/5 * * * *"
+    command: |
+      supabase db query "
+        UPDATE ai_processing_queue 
+        SET status = 'processing', started_at = now()
+        WHERE id IN (
+          SELECT id FROM ai_processing_queue
+          WHERE status = 'pending'
+          ORDER BY priority DESC, created_at ASC
+          LIMIT 10
+        )
+        RETURNING id, entity_type, entity_id, processing_type;"
+    description: "Process pending AI tasks from the queue"
+    
+  # Stream Processor Health Check - Every 15 minutes
+  stream_processor_health:
+    schedule: "*/15 * * * *"
+    command: |
+      supabase db query "
+        UPDATE ai_stream_processors
+        SET status = 'failed'
+        WHERE status = 'running'
+          AND last_checkpoint < now() - interval '30 minutes';"
+    description: "Health check for streaming processors"
+    
+  # Model Deployment Auto-Scaling - Every 10 minutes
+  model_autoscaling:
+    schedule: "*/10 * * * *"
+    command: |
+      supabase db query "
+        WITH traffic_stats AS (
+          SELECT 
+            model_deployment_id,
+            COUNT(*) / 10.0 as requests_per_minute,
+            AVG(inference_latency_p95) as avg_p95_latency
+          FROM ml_performance_metrics
+          WHERE metric_timestamp >= now() - interval '10 minutes'
+            AND metric_window = '1min'
+          GROUP BY model_deployment_id
+        )
+        UPDATE ml_model_deployments d
+        SET deployment_config = jsonb_set(
+          deployment_config,
+          '{scaling,desired_instances}',
+          to_jsonb(GREATEST(
+            2,
+            LEAST(
+              10,
+              CEIL(ts.requests_per_minute / 100)::int
+            )
+          ))
+        )
+        FROM traffic_stats ts
+        WHERE d.id = ts.model_deployment_id
+          AND d.status = 'active'
+          AND (ts.requests_per_minute > 200 OR ts.avg_p95_latency > 100);"
+    description: "Auto-scale model deployments based on traffic"

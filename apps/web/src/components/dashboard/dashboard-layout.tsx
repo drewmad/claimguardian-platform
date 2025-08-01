@@ -14,7 +14,7 @@ import {
   Home, Building, Package, Shield, FileText, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
   Bell, Search, Menu, LogOut,
-  Bot, Camera, FileSearch, Sparkles
+  Bot, Camera, FileSearch, Sparkles, Brain
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -37,7 +37,8 @@ const navigationItems = [
   { id: 'maintenance', label: 'Maintenance Hub', icon: Calendar, href: '/dashboard/maintenance' },
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
-  { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' }
+  { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' },
+  { id: 'ml-operations', label: 'ML Operations', icon: Brain, href: '/dashboard/ml-operations' }
 ]
 
 const aiFeatures = [
