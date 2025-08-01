@@ -69,7 +69,7 @@ export async function GET() {
         readTest: {
           success: !readError,
           error: readError?.message,
-          recordFound: readData?.length > 0
+          recordFound: (readData?.length || 0) > 0
         },
         cleanup: cleanupResult
       },
