@@ -88,9 +88,9 @@ export function AccountWizard() {
 
         setSuccess(true)
         
-        // Redirect after success message
+        // Redirect to onboarding after success message
         setTimeout(() => {
-          router.push('/dashboard')
+          router.push('/onboarding')
         }, 2000)
       }
     } catch (err) {

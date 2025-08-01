@@ -137,20 +137,29 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrint}
-              className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-all"
+              className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-all border border-slate-600 hover:border-slate-500"
               title="Print document"
             >
-              <Printer className="w-5 h-5" />
+              <Printer className="w-4 h-4" />
+              <span className="text-sm font-medium">Print</span>
             </button>
             {document.storage_url && (
               <button
                 onClick={handleDownload}
-                className="p-2 text-slate-400 hover:text-white hover:bg-slate-700 rounded-lg transition-all"
+                className="flex items-center gap-2 px-4 py-2 text-slate-300 hover:text-white hover:bg-slate-700 rounded-lg transition-all border border-slate-600 hover:border-slate-500"
                 title="Download PDF"
               >
-                <Download className="w-5 h-5" />
+                <Download className="w-4 h-4" />
+                <span className="text-sm font-medium">Download PDF</span>
               </button>
             )}
+            <Link
+              href="/auth/signup"
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
+            >
+              <Shield className="w-4 h-4" />
+              <span className="text-sm">Create Account</span>
+            </Link>
           </div>
         </div>
       </div>
@@ -169,6 +178,30 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
           className="bg-slate-800/50 rounded-lg p-8 border border-slate-700"
           dangerouslySetInnerHTML={{ __html: formatContent(document.content) }}
         />
+      </div>
+
+      {/* Call to Action Section */}
+      <div className="mt-8 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-lg p-6">
+        <div className="flex items-center justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-white mb-2">Ready to Get Started?</h3>
+            <p className="text-slate-300">Join thousands of Florida property owners protecting their assets with ClaimGuardian.</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/contact"
+              className="px-4 py-2 text-slate-300 hover:text-white border border-slate-600 hover:border-slate-500 rounded-lg transition-all"
+            >
+              Have Questions?
+            </Link>
+            <Link
+              href="/auth/signup-advanced"
+              className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
+            >
+              Create Free Account
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}

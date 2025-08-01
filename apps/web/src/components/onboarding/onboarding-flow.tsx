@@ -132,6 +132,18 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
           return
         }
 
+        // Initialize user preferences if they don't exist
+        if (!prefs) {
+          await supabase
+            .from('user_preferences')
+            .insert({
+              user_id: user.id,
+              onboarding_completed: false,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            })
+        }
+
         
 
         // Update step completion status
