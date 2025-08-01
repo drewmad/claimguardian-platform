@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Shield, ArrowLeft, Loader2, AlertCircle, Check, FileText, Brain, Lock, ChevronRight } from 'lucide-react'
+import { Shield, ArrowLeft, Loader2, AlertCircle, Check, FileText, Lock, ChevronRight, Info, Cookie } from 'lucide-react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,17 +16,27 @@ import { AgeVerification } from '@/components/compliance/age-verification'
 interface ConsentState {
   termsAccepted: boolean
   privacyAccepted: boolean
-  aiDisclaimerAccepted: boolean
   dataProcessingAccepted: boolean
+  cookiesAccepted: boolean
   ageVerified: boolean
 }
+
+const consentNameToText: { [key: string]: string } = {
+  terms_of_service: 'Terms of Service',
+  privacy_policy: 'Privacy Policy',
+  data_processing: 'Data Processing consent',
+  age_verification: 'Age Verification',
+  cookies: 'Cookie Policy'
+};
+
 
 export function AdvancedSignupForm() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [fullName, setFullName] = useState('')
+  const [firstName, setFirstName] = useState('')
+  const [lastName, setLastName] = useState('')
   const [phone, setPhone] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -35,8 +45,8 @@ export function AdvancedSignupForm() {
   const [consents, setConsents] = useState<ConsentState>({
     termsAccepted: false,
     privacyAccepted: false,
-    aiDisclaimerAccepted: false,
     dataProcessingAccepted: false,
+    cookiesAccepted: false,
     ageVerified: false
   })
   
@@ -45,14 +55,15 @@ export function AdvancedSignupForm() {
   const supabase = createBrowserSupabaseClient()
   
   const validateConsents = async () => {
-    // Call RPC function to validate consents
-    const { data, error } = await supabase.rpc('validate_signup_consent', {
+    const payload = {
       p_terms_accepted: consents.termsAccepted,
       p_privacy_accepted: consents.privacyAccepted,
-      p_ai_disclaimer_accepted: consents.aiDisclaimerAccepted,
       p_age_verified: consents.ageVerified,
-      p_data_processing: consents.dataProcessingAccepted
-    })
+      p_data_processing: consents.dataProcessingAccepted,
+      // Assuming ai_disclaimer is no longer needed and cookies are not validated server-side yet
+    };
+    
+    const { data, error } = await supabase.rpc('validate_signup_consent', payload)
     
     if (error) {
       console.error('Consent validation error:', error)
@@ -67,46 +78,44 @@ export function AdvancedSignupForm() {
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
-    // Clear errors
     setError(null)
     setConsentErrors([])
     
-    // Basic validation
-    if (!email || !password || !fullName || !phone) {
-      setError('Please fill in all required fields')
+    if (!email || !password || !firstName || !lastName || !phone) {
+      setError('Please fill in all required fields.')
       return
     }
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match')
+      setError('Passwords do not match.')
       return
     }
     
     if (password.length < 8) {
-      setError('Password must be at least 8 characters')
+      setError('Password must be at least 8 characters.')
       return
     }
     
-    // Validate consents
     const consentValidation = await validateConsents()
     if (!consentValidation.valid) {
+      const missingConsents = consentValidation.missing.map(c => consentNameToText[c] || c).join(', ')
+      setError(`Please review and accept the following: ${missingConsents}.`)
       setConsentErrors(consentValidation.missing)
-      setError('Please accept all required agreements')
       return
     }
     
     setIsLoading(true)
     
     try {
-      // Create user account
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email,
         password,
         options: {
           data: {
-            full_name: fullName,
-            phone: phone
+            first_name: firstName,
+            last_name: lastName,
+            phone: phone,
+            full_name: `${firstName} ${lastName}`
           }
         }
       })
@@ -118,62 +127,76 @@ export function AdvancedSignupForm() {
       }
       
       if (signUpData?.user) {
-        // Link consents to user
         const { error: consentError } = await supabase.rpc('link_consent_to_user', {
           p_user_id: signUpData.user.id,
           p_consents: {
             terms_of_service: consents.termsAccepted,
             privacy_policy: consents.privacyAccepted,
-            ai_disclaimer: consents.aiDisclaimerAccepted,
             data_processing: consents.dataProcessingAccepted,
-            age_verification: consents.ageVerified
+            age_verification: consents.ageVerified,
+            cookies: consents.cookiesAccepted,
+            // AI disclaimer removed
           },
-          p_ip_address: null, // Would be captured server-side in production
+          p_ip_address: null,
           p_user_agent: navigator.userAgent
         })
         
         if (consentError) {
+          // Log error but don't block user flow
           console.error('Error linking consents:', consentError)
         }
         
         setSuccess(true)
         setIsLoading(false)
         
-        // Redirect after delay
         setTimeout(() => {
           router.push('/onboarding')
         }, 2000)
+      } else {
+        setError('There was an issue creating your account. Please try again.')
+        setIsLoading(false)
       }
-    } catch (error) {
-      console.error('Sign up error:', error)
+    } catch (err) {
+      console.error('Sign up error:', err)
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }
   }
   
   const formatPhone = (value: string) => {
-    // Remove all non-digits
     const digits = value.replace(/\D/g, '')
-    
-    // Format as (XXX) XXX-XXXX
-    if (digits.length <= 3) return digits
+    if (digits.length <= 3) return `(${digits}`
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
   }
-  
+
+  const ConsentItem = ({ id, checked, onCheckedChange, error, children }: { id: string, checked: boolean, onCheckedChange: (checked: boolean) => void, error?: boolean, children: React.ReactNode }) => (
+    <div 
+      onClick={() => onCheckedChange(!checked)}
+      className={`p-4 rounded-lg border cursor-pointer transition-all ${
+        error ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50 hover:bg-slate-800'
+      }`}
+    >
+      <div className="flex items-start space-x-3">
+        <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} className="mt-1" />
+        <div className="flex-1">
+          {children}
+        </div>
+      </div>
+    </div>
+  );
+
   if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
         <Card className="w-full max-w-md bg-slate-900/50 backdrop-blur-sm border-slate-700">
           <div className="p-8 text-center">
-            <div className="mb-4">
-              <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
-                <Check className="w-8 h-8 text-green-500" />
-              </div>
+            <div className="w-16 h-16 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Check className="w-8 h-8 text-green-500" />
             </div>
             <h2 className="text-2xl font-bold text-white mb-2">Account Created!</h2>
             <p className="text-slate-400">
-              Welcome to ClaimGuardian. Redirecting to your dashboard...
+              Welcome to ClaimGuardian. Redirecting to set up your profile...
             </p>
           </div>
         </Card>
@@ -182,281 +205,104 @@ export function AdvancedSignupForm() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 flex items-center justify-center p-4">
-      <Card className="w-full max-w-2xl bg-slate-900/50 backdrop-blur-sm border-slate-700">
-        <div className="p-8">
-          {/* Header */}
-          <div className="text-center mb-8">
-            <div className="flex items-center justify-center space-x-2 mb-4">
-              <Shield className="h-8 w-8 text-blue-400" />
-              <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-4">
+      <div className="absolute top-8 left-8 flex items-center space-x-2">
+        <Shield className="h-8 w-8 text-blue-400" />
+        <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+      </div>
+      <div className="flex items-center justify-center min-h-screen">
+        <Card className="w-full max-w-2xl bg-slate-900/50 backdrop-blur-sm border-slate-700">
+          <div className="p-8">
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
+              <p className="text-slate-400">Join thousands of Florida property owners protecting their assets</p>
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
-            <p className="text-slate-400">Join thousands of Florida property owners protecting their assets</p>
-          </div>
 
-          {/* Error Message */}
-          {error && (
-            <Alert variant="destructive" className="mb-6">
-              <AlertCircle className="h-4 w-4" />
-              <AlertDescription>{error}</AlertDescription>
-            </Alert>
-          )}
+            {error && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
 
-          {/* Sign Up Form */}
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {/* Personal Information */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-blue-400">1.</span> Personal Information
-              </h3>
-              
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="fullName" className="text-slate-300">
-                    Full Name <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="fullName"
-                    type="text"
-                    required
-                    value={fullName}
-                    onChange={(e) => setFullName(e.target.value)}
-                    className="mt-1 bg-slate-800 border-slate-600 text-white"
-                    placeholder="John Doe"
-                    disabled={isLoading}
-                  />
+                  <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+                  <Input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1" placeholder="John" disabled={isLoading} />
                 </div>
-                
                 <div>
-                  <Label htmlFor="phone" className="text-slate-300">
-                    Phone Number <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="phone"
-                    type="tel"
-                    required
-                    value={phone}
-                    onChange={(e) => setPhone(formatPhone(e.target.value))}
-                    className="mt-1 bg-slate-800 border-slate-600 text-white"
-                    placeholder="(555) 123-4567"
-                    disabled={isLoading}
-                  />
+                  <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
+                  <Input id="lastName" type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-1" placeholder="Doe" disabled={isLoading} />
                 </div>
               </div>
               
               <div>
-                <Label htmlFor="email" className="text-slate-300">
-                  Email Address <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="email"
-                  type="email"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="mt-1 bg-slate-800 border-slate-600 text-white"
-                  placeholder="you@example.com"
-                  disabled={isLoading}
-                />
+                <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
+                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1" placeholder="you@example.com" disabled={isLoading} />
+              </div>
+
+              <div>
+                <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
+                <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="mt-1" placeholder="(555) 123-4567" disabled={isLoading} />
               </div>
               
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="password" className="text-slate-300">
-                    Password <span className="text-red-500">*</span>
-                  </Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-slate-800 border-slate-600 text-white"
-                    placeholder="••••••••"
-                    disabled={isLoading}
-                  />
-                  <p className="mt-1 text-xs text-slate-400">
-                    Must be at least 8 characters
-                  </p>
+                  <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
+                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
+                  <p className="mt-1 text-xs text-slate-400">Must be at least 8 characters</p>
                 </div>
-                
                 <div>
-                  <Label htmlFor="confirmPassword" className="text-slate-300">
-                    Confirm Password <span className="text-red-500">*</span>
+                  <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
+                  <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-slate-800">
+                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                  <Info className="h-5 w-5 text-blue-400" /> Legal Agreements
+                </h3>
+                
+                <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification')} />
+                
+                <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: c}))} error={consentErrors.includes('terms_of_service')}>
+                  <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                    <FileText className="h-4 w-4 text-slate-400" /> I accept the <Link href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Terms of Service</Link> <span className="text-red-500">*</span>
                   </Label>
-                  <Input
-                    id="confirmPassword"
-                    type="password"
-                    required
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    className="bg-slate-800 border-slate-600 text-white"
-                    placeholder="••••••••"
-                    disabled={isLoading}
-                  />
-                </div>
+                </ConsentItem>
+                
+                <ConsentItem id="privacy" checked={consents.privacyAccepted} onCheckedChange={(c) => setConsents(s => ({...s, privacyAccepted: c}))} error={consentErrors.includes('privacy_policy')}>
+                  <Label htmlFor="privacy" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                    <Lock className="h-4 w-4 text-slate-400" /> I accept the <Link href="/legal/privacy-policy" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</Link> <span className="text-red-500">*</span>
+                  </Label>
+                </ConsentItem>
+
+                <ConsentItem id="data-processing" checked={consents.dataProcessingAccepted} onCheckedChange={(c) => setConsents(s => ({...s, dataProcessingAccepted: c}))} error={consentErrors.includes('data_processing')}>
+                  <Label htmlFor="data-processing" className="text-sm font-medium cursor-pointer">I consent to my data being processed as described in the Privacy Policy <span className="text-red-500">*</span></Label>
+                </ConsentItem>
+
+                <ConsentItem id="cookies" checked={consents.cookiesAccepted} onCheckedChange={(c) => setConsents(s => ({...s, cookiesAccepted: c}))} error={consentErrors.includes('cookies')}>
+                  <Label htmlFor="cookies" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                    <Cookie className="h-4 w-4 text-slate-400" /> I accept the use of cookies as described in the <Link href="/legal/privacy-policy#cookies" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Cookie Policy</Link> <span className="text-red-500">*</span>
+                  </Label>
+                </ConsentItem>
               </div>
+
+              <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading}>
+                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Account...</> : <>Create Account <ChevronRight className="ml-2 h-4 w-4" /></>}
+              </Button>
+            </form>
+
+            <div className="mt-6 text-center">
+              <p className="text-slate-400">
+                Already have an account?{' '}
+                <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300 font-medium">Sign In</Link>
+              </p>
             </div>
-
-            {/* Legal Agreements */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                <span className="text-blue-400">2.</span> Legal Agreements
-              </h3>
-              
-              {/* Age Verification */}
-              <AgeVerification
-                value={consents.ageVerified}
-                onChange={(verified) => setConsents({ ...consents, ageVerified: verified })}
-                error={consentErrors.includes('age_verification') ? 'Age verification is required' : undefined}
-              />
-              
-              {/* Terms of Service */}
-              <div className={`p-4 rounded-lg border ${
-                consentErrors.includes('terms_of_service') ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50'
-              }`}>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="terms"
-                    checked={consents.termsAccepted}
-                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, termsAccepted: !!checked })}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                      <FileText className="h-4 w-4 text-slate-400" />
-                      I accept the Terms of Service <span className="text-red-500">*</span>
-                    </Label>
-                    <p className="text-xs text-slate-500 mt-1">
-                      By accepting, you agree to our{' '}
-                      <Link href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300">
-                        Terms of Service
-                      </Link>
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Privacy Policy */}
-              <div className={`p-4 rounded-lg border ${
-                consentErrors.includes('privacy_policy') ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50'
-              }`}>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="privacy"
-                    checked={consents.privacyAccepted}
-                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, privacyAccepted: !!checked })}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="privacy" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                      <Lock className="h-4 w-4 text-slate-400" />
-                      I accept the Privacy Policy <span className="text-red-500">*</span>
-                    </Label>
-                    <p className="text-xs text-slate-500 mt-1">
-                      By accepting, you agree to our{' '}
-                      <Link href="/legal/privacy-policy" target="_blank" className="text-blue-400 hover:text-blue-300">
-                        Privacy Policy
-                      </Link>
-                      {' '}and data processing practices
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* AI Disclaimer */}
-              <div className={`p-4 rounded-lg border ${
-                consentErrors.includes('ai_disclaimer') ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50'
-              }`}>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="ai-disclaimer"
-                    checked={consents.aiDisclaimerAccepted}
-                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, aiDisclaimerAccepted: !!checked })}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="ai-disclaimer" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                      <Brain className="h-4 w-4 text-slate-400" />
-                      I understand the AI Tools Disclaimer <span className="text-red-500">*</span>
-                    </Label>
-                    <p className="text-xs text-slate-500 mt-1">
-                      I understand that ClaimGuardian's AI tools provide guidance only and may contain errors. 
-                      AI-generated content should be reviewed and verified. This is not a replacement for 
-                      professional legal or insurance advice.
-                    </p>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Data Processing (GDPR) */}
-              <div className={`p-4 rounded-lg border ${
-                consentErrors.includes('data_processing') ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50'
-              }`}>
-                <div className="flex items-start space-x-3">
-                  <Checkbox
-                    id="data-processing"
-                    checked={consents.dataProcessingAccepted}
-                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, dataProcessingAccepted: !!checked })}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <Label htmlFor="data-processing" className="text-sm font-medium cursor-pointer">
-                      I consent to data processing <span className="text-red-500">*</span>
-                    </Label>
-                    <p className="text-xs text-slate-500 mt-1">
-                      I consent to ClaimGuardian processing my personal data as described in the Privacy Policy
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <Button
-              type="submit"
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3"
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating account...
-                </>
-              ) : (
-                <>
-                  Create Account
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </>
-              )}
-            </Button>
-          </form>
-
-          {/* Sign In Link */}
-          <div className="mt-6 text-center">
-            <p className="text-slate-400">
-              Already have an account?{' '}
-              <Link
-                href="/auth/signin"
-                className="text-blue-400 hover:text-blue-300 font-medium"
-              >
-                Sign In
-              </Link>
-            </p>
           </div>
-
-          {/* Back to Home */}
-          <div className="mt-4 text-center">
-            <Link
-              href="/"
-              className="inline-flex items-center text-slate-400 hover:text-slate-300"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Home
-            </Link>
-          </div>
-        </div>
-      </Card>
+        </Card>
+      </div>
     </div>
   )
 }

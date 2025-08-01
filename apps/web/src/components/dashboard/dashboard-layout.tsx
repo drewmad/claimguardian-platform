@@ -41,8 +41,7 @@ const navigationItems = [
 ]
 
 const adminFeatures = [
-  { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Settings, href: '/admin' },
-  { id: 'ml-operations', label: 'ML Operations', icon: Brain, href: '/admin/ml-operations' }
+  { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Settings, href: '/admin' }
 ]
 
 const aiFeatures = [
