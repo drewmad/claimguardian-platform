@@ -5,8 +5,11 @@
  * @status active
  */
 
-import { MultiStepSignupForm } from './multi-step-signup-form'
+// import { MultiStepSignupForm } from './multi-step-signup-form'
+import { BasicSignupForm } from './basic-signup-form'
 
 export default function SignupPage() {
-  return <MultiStepSignupForm />
+  // Temporarily using BasicSignupForm to ensure user creation works
+  // TODO: Fix RPC function and re-enable MultiStepSignupForm
+  return <BasicSignupForm />
 }
