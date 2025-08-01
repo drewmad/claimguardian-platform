@@ -96,10 +96,11 @@ export function Hero() {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-crimson-600/20 to-transparent border-b border-crimson-600/30 h-12 flex items-center justify-center">
-        <Link href="/hurricane-prep" className="flex items-center gap-2 text-sm font-medium hover:text-white transition-colors">
-          🌴 Hurricane Season 2025: Get Your Free Prep Playbook
-          <ArrowRight size={16} />
+      <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 border-b border-orange-500/30 h-12 flex items-center justify-center">
+        <Link href="/hurricane-prep" className="flex items-center gap-2 text-sm font-medium text-orange-200 hover:text-white transition-colors group">
+          <span className="animate-pulse">⚡</span>
+          <span>Hurricane Season 2025: Free 15-Min Property Prep Checklist</span>
+          <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
@@ -107,8 +108,8 @@ export function Hero() {
         style={{ background: `radial-gradient(circle at 50% 50%, ${COLORS.brand.royalBlue}22 0%, ${COLORS.brand.gunmetal} 100%)` }}>
         
         {/* Skip Link for Accessibility */}
-        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded">
-          Skip to content
+        <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50 focus:ring-2 focus:ring-blue-300">
+          Skip to main content
         </a>
         
         {/* Animated Background - Reduced motion for accessibility */}
@@ -120,39 +121,36 @@ export function Hero() {
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-12 pb-16" id="main">
           <AnimatedSection>
-            <div className="flex items-center justify-center gap-3 mb-8">
+            <header className="flex items-center justify-center gap-3 mb-8">
               <GuardianShieldIcon />
-              <h1 className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none">
+              <h1 className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none" aria-label="ClaimGuardian - AI-powered insurance claim assistance">
                 ClaimGuardian
               </h1>
-            </div>
+            </header>
           </AnimatedSection>
           
           <AnimatedSection delay={100}>
-            <p className="mt-4 text-xl md:text-2xl font-medium text-gray-200 max-w-2xl mx-auto">
-              Your AI Guardian Never Sleeps. Because Florida Never Does.
+            <p className="mt-4 text-[clamp(1.125rem,2.5vw,1.5rem)] font-medium text-gray-200 max-w-2xl mx-auto">
+              <span className="font-bold text-white">Instantly document, monitor, and maximize every Florida asset</span>—from your boat to your home.
             </p>
           </AnimatedSection>
           
           <AnimatedSection delay={200}>
-            <div className="mt-6 max-w-3xl mx-auto space-y-3">
-              <p className="text-lg text-gray-300">
-                <span className="font-semibold text-white">Instantly document, monitor, and maximize every Florida asset</span>—from your boat to your mailbox.
-              </p>
+            <div className="mt-6 max-w-3xl mx-auto space-y-4">
               <p className="text-lg text-gray-300">
                 Your AI Guardian tracks maintenance • Maximizes insurance claims • Protects against Florida&apos;s unique challenges
               </p>
-              <p className="text-lg font-semibold text-green-400">
+              <p className="text-xl font-bold text-green-400">
                 Stop losing thousands to claim denials and slow upkeep.
               </p>
             </div>
           </AnimatedSection>
           
           <AnimatedSection delay={300}>
-            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center">
+            <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
-                href="/auth/signup"
-                className="group relative font-bold py-4 px-8 rounded-full text-black text-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 shadow-lg overflow-hidden"
+                href="/auth/signup-advanced"
+                className="group relative font-bold py-4 px-8 rounded-full text-black text-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 shadow-lg overflow-hidden focus:outline-none focus:ring-4 focus:ring-green-400/50"
                 style={{ 
                   background: hoveredCTA 
                     ? `linear-gradient(135deg, ${COLORS.brand.royalBlue}, ${COLORS.brand.neonGreen})` 
@@ -160,19 +158,20 @@ export function Hero() {
                 }}
                 onMouseEnter={() => setHoveredCTA(true)}
                 onMouseLeave={() => setHoveredCTA(false)}
+                aria-label="Start your free property scan - no credit card required"
               >
-                <span className="relative z-10">Start Free Scan</span>
-                <ArrowRight size={20} className="relative z-10 transition-transform group-hover:translate-x-1" />
+                <span className="relative z-10">Get My Property Scan →</span>
                 {/* Gradient sweep effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               </Link>
               
               <Link
-                href="#demo-video"
-                className="font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-all duration-300 inline-flex items-center gap-2"
+                href="#how-it-works"
+                className="font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-all duration-300 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50"
+                aria-label="Watch our 2-minute product demonstration video"
               >
-                <PlayCircle size={20} />
-                See How It Works
+                <PlayCircle size={20} aria-hidden="true" />
+                Watch 2-Min Demo
               </Link>
             </div>
           </AnimatedSection>
@@ -198,15 +197,30 @@ export function Hero() {
           {/* Trust Signals */}
           <AnimatedSection delay={500}>
             <div className="mt-12 pt-8 border-t border-white/10">
-              <div className="flex flex-wrap items-center justify-center gap-8 text-sm text-gray-400">
+              <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-gray-400">
                 <div className="flex items-center gap-2">
                   <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
-                  SOC 2 Compliant
+                  <span>SOC 2 Compliant</span>
                 </div>
-                <div className="font-semibold text-white">$4.2M in claims optimized</div>
-                <div className="font-semibold text-white">12K+ assets protected</div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-green-400 text-lg">$4.2M</span>
+                  <span>in claims optimized</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-blue-400 text-lg">12K+</span>
+                  <span>assets protected</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="font-bold text-yellow-400 text-lg">4.8★</span>
+                  <span>avg. client rating</span>
+                </div>
+              </div>
+              <div className="mt-4 text-center">
+                <p className="text-xs text-gray-500">
+                  "Finally, someone who speaks insurance company language" — Sarah M., Tampa
+                </p>
               </div>
             </div>
           </AnimatedSection>

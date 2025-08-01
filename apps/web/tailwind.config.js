@@ -37,6 +37,11 @@ module.exports = {
         crimson: {
           600: '#DC143C',
         },
+        // ClaimGuardian brand palette
+        'brand-gunmetal': '#2B2D42',
+        'brand-royal': '#0038A8', 
+        'brand-neon': '#39FF14',
+        'brand-crimson': '#DC143C',
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s ease-out',
