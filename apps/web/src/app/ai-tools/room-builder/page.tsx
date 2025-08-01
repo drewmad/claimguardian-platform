@@ -57,10 +57,10 @@ const ROOM_TEMPLATES = {
     width: 12,
     height: 10,
     objects: [
-      { type: 'furniture', category: 'bed', x: 1, y: 1, width: 6, height: 4, label: 'Bed' },
-      { type: 'furniture', category: 'dresser', x: 8, y: 1, width: 3, height: 1.5, label: 'Dresser' },
-      { type: 'furniture', category: 'nightstand', x: 0.5, y: 2, width: 1, height: 1, label: 'Nightstand' },
-      { type: 'door', x: 5, y: 9.5, width: 2.5, height: 0.5, label: 'Door' }
+      { type: 'furniture' as const, category: 'bed', x: 1, y: 1, width: 6, height: 4, label: 'Bed' },
+      { type: 'furniture' as const, category: 'dresser', x: 8, y: 1, width: 3, height: 1.5, label: 'Dresser' },
+      { type: 'furniture' as const, category: 'nightstand', x: 0.5, y: 2, width: 1, height: 1, label: 'Nightstand' },
+      { type: 'door' as const, x: 5, y: 9.5, width: 2.5, height: 0.5, label: 'Door' }
     ]
   },
   kitchen: {
@@ -68,10 +68,10 @@ const ROOM_TEMPLATES = {
     width: 10,
     height: 12,
     objects: [
-      { type: 'appliance', category: 'refrigerator', x: 0.5, y: 0.5, width: 2.5, height: 2, label: 'Fridge' },
-      { type: 'appliance', category: 'stove', x: 3.5, y: 0.5, width: 2.5, height: 2, label: 'Stove' },
-      { type: 'fixture', category: 'sink', x: 6.5, y: 0.5, width: 2, height: 1.5, label: 'Sink' },
-      { type: 'furniture', category: 'island', x: 3, y: 5, width: 4, height: 3, label: 'Island' }
+      { type: 'appliance' as const, category: 'refrigerator', x: 0.5, y: 0.5, width: 2.5, height: 2, label: 'Fridge' },
+      { type: 'appliance' as const, category: 'stove', x: 3.5, y: 0.5, width: 2.5, height: 2, label: 'Stove' },
+      { type: 'fixture' as const, category: 'sink', x: 6.5, y: 0.5, width: 2, height: 1.5, label: 'Sink' },
+      { type: 'furniture' as const, category: 'island', x: 3, y: 5, width: 4, height: 3, label: 'Island' }
     ]
   },
   bathroom: {
@@ -79,10 +79,10 @@ const ROOM_TEMPLATES = {
     width: 8,
     height: 6,
     objects: [
-      { type: 'fixture', category: 'toilet', x: 0.5, y: 0.5, width: 1.5, height: 2, label: 'Toilet' },
-      { type: 'fixture', category: 'bathtub', x: 0.5, y: 3, width: 2, height: 4.5, label: 'Tub' },
-      { type: 'fixture', category: 'sink', x: 5, y: 0.5, width: 2, height: 1.5, label: 'Sink' },
-      { type: 'door', x: 3, y: 5.5, width: 2, height: 0.5, label: 'Door' }
+      { type: 'fixture' as const, category: 'toilet', x: 0.5, y: 0.5, width: 1.5, height: 2, label: 'Toilet' },
+      { type: 'fixture' as const, category: 'bathtub', x: 0.5, y: 3, width: 2, height: 4.5, label: 'Tub' },
+      { type: 'fixture' as const, category: 'sink', x: 5, y: 0.5, width: 2, height: 1.5, label: 'Sink' },
+      { type: 'door' as const, x: 3, y: 5.5, width: 2, height: 0.5, label: 'Door' }
     ]
   }
 }
@@ -639,7 +639,7 @@ export default function RoomBuilderPage() {
                       <Label className="text-sm text-gray-400">Zoom:</Label>
                       <Slider
                         value={[scale]}
-                        onValueChange={(value) => setScale(value[0])}
+                        onValueChange={(value: number[]) => setScale(value[0])}
                         min={20}
                         max={100}
                         step={5}

@@ -4,7 +4,7 @@ import {
   Camera, Home, CheckCircle, AlertCircle, ChevronRight,
   ListChecks, Eye, FileText, Download, Share2, Clock,
   MapPin, Calendar, User, Building, Shield, Wrench,
-  Zap, Info, Play, Pause, Skip, ChevronLeft, Flag,
+  Zap, Info, Play, Pause, SkipForward, ChevronLeft, Flag,
   MessageSquare, Volume2, VolumeX, Maximize2, Save,
   RefreshCw, Target, Layers, AlertTriangle, Star
 } from 'lucide-react'
@@ -707,7 +707,7 @@ export default function GuidedPropertyInspectionPage() {
                               variant="outline"
                               className="bg-gray-700 hover:bg-gray-600 border-gray-600"
                             >
-                              <Skip className="h-4 w-4" />
+                              <SkipForward className="h-4 w-4" />
                             </Button>
                           </div>
                         </div>
