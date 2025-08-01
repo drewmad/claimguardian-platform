@@ -72,11 +72,10 @@ export function BasicSignupForm() {
         
         // Try to create/update profile, but don't fail if it doesn't work
         try {
+          // Use the existing profiles table structure
           await supabase.from('profiles').upsert({
             id: data.user.id,
-            first_name: formData.firstName,
-            last_name: formData.lastName,
-            email: formData.email,
+            full_name: `${formData.firstName} ${formData.lastName}`,
             updated_at: new Date().toISOString()
           })
         } catch (profileError) {
