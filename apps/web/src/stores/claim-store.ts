@@ -4,7 +4,7 @@ import { persist } from 'zustand/middleware'
 
 // Database types
 type DbClaim = Database['public']['Tables']['claims']['Row']
-type ClaimStatus = Database['public']['Enums']['claim_status_enum']
+type ClaimStatus = Database['public']['Enums']['claim_status']
 
 // Extended types for the store
 interface ClaimEvidence {
@@ -74,7 +74,6 @@ interface Claim extends DbClaim {
   paidAmount?: number
   estimatedLoss?: number
   claimedAmount?: number
-  closed_date?: string | null
 }
 
 interface ClaimState {
@@ -148,7 +147,7 @@ export const useClaimStore = create<ClaimState>()(
       getClaimsByPropertyId: (propertyId) => get().claims.filter(c => c.property_id === propertyId),
       
       getActiveClaims: () => get().claims.filter(c => 
-        !['closed', 'denied'].includes(c.status)
+        !['closed', 'denied'].includes(c.status || '')
       ),
       
       setSelectedClaim: (id) => set({ selectedClaimId: id }),
