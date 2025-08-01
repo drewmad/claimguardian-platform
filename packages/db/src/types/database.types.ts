@@ -7,231 +7,49 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instanciate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
   public: {
     Tables: {
-      ai_analyses: {
+      ai_analysis: {
         Row: {
           analysis_type: string
-          confidence_score: number | null
-          cost_cents: number | null
           created_at: string | null
-          entity_id: string
-          entity_type: string
-          error_message: string | null
           id: string
-          input_data: Json
-          input_embedding: string | null
-          model_id: string | null
-          output_data: Json
-          output_embedding: string | null
+          input_data: Json | null
           processing_time_ms: number | null
-          retry_count: number | null
+          result_data: Json | null
           status: string | null
           tokens_used: number | null
-          user_id: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
           analysis_type: string
-          confidence_score?: number | null
-          cost_cents?: number | null
           created_at?: string | null
-          entity_id: string
-          entity_type: string
-          error_message?: string | null
           id?: string
-          input_data: Json
-          input_embedding?: string | null
-          model_id?: string | null
-          output_data: Json
-          output_embedding?: string | null
+          input_data?: Json | null
           processing_time_ms?: number | null
-          retry_count?: number | null
+          result_data?: Json | null
           status?: string | null
           tokens_used?: number | null
-          user_id?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
           analysis_type?: string
-          confidence_score?: number | null
-          cost_cents?: number | null
           created_at?: string | null
-          entity_id?: string
-          entity_type?: string
-          error_message?: string | null
           id?: string
-          input_data?: Json
-          input_embedding?: string | null
-          model_id?: string | null
-          output_data?: Json
-          output_embedding?: string | null
+          input_data?: Json | null
           processing_time_ms?: number | null
-          retry_count?: number | null
+          result_data?: Json | null
           status?: string | null
           tokens_used?: number | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_analyses_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_models"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ai_conversations: {
-        Row: {
-          context_embedding: string | null
-          context_id: string | null
-          context_type: string
-          created_at: string | null
-          id: string
-          is_active: boolean | null
-          last_message_at: string | null
-          messages: Json | null
-          title: string | null
-          total_cost_cents: number | null
-          total_messages: number | null
-          total_tokens: number | null
-          updated_at: string | null
-          user_id: string
-        }
-        Insert: {
-          context_embedding?: string | null
-          context_id?: string | null
-          context_type: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_message_at?: string | null
-          messages?: Json | null
-          title?: string | null
-          total_cost_cents?: number | null
-          total_messages?: number | null
-          total_tokens?: number | null
-          updated_at?: string | null
-          user_id: string
-        }
-        Update: {
-          context_embedding?: string | null
-          context_id?: string | null
-          context_type?: string
-          created_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          last_message_at?: string | null
-          messages?: Json | null
-          title?: string | null
-          total_cost_cents?: number | null
-          total_messages?: number | null
-          total_tokens?: number | null
           updated_at?: string | null
           user_id?: string
-        }
-        Relationships: []
-      }
-      ai_feedback: {
-        Row: {
-          additional_info: Json | null
-          analysis_id: string | null
-          comments: string | null
-          corrections: Json | null
-          created_at: string | null
-          id: string
-          rating: number | null
-          resulted_in_model_update: boolean | null
-          user_id: string
-          was_accurate: boolean | null
-          was_helpful: boolean | null
-        }
-        Insert: {
-          additional_info?: Json | null
-          analysis_id?: string | null
-          comments?: string | null
-          corrections?: Json | null
-          created_at?: string | null
-          id?: string
-          rating?: number | null
-          resulted_in_model_update?: boolean | null
-          user_id: string
-          was_accurate?: boolean | null
-          was_helpful?: boolean | null
-        }
-        Update: {
-          additional_info?: Json | null
-          analysis_id?: string | null
-          comments?: string | null
-          corrections?: Json | null
-          created_at?: string | null
-          id?: string
-          rating?: number | null
-          resulted_in_model_update?: boolean | null
-          user_id?: string
-          was_accurate?: boolean | null
-          was_helpful?: boolean | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "ai_feedback_analysis_id_fkey"
-            columns: ["analysis_id"]
-            isOneToOne: false
-            referencedRelation: "ai_analyses"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      ai_models: {
-        Row: {
-          capabilities: Json | null
-          config: Json | null
-          context_window: number | null
-          cost_per_1k_tokens: number | null
-          cost_per_image: number | null
-          created_at: string | null
-          deprecated_at: string | null
-          id: string
-          is_active: boolean | null
-          max_tokens: number | null
-          model_name: string
-          model_type: string
-          model_version: string
-          provider: string
-          updated_at: string | null
-        }
-        Insert: {
-          capabilities?: Json | null
-          config?: Json | null
-          context_window?: number | null
-          cost_per_1k_tokens?: number | null
-          cost_per_image?: number | null
-          created_at?: string | null
-          deprecated_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          max_tokens?: number | null
-          model_name: string
-          model_type: string
-          model_version: string
-          provider: string
-          updated_at?: string | null
-        }
-        Update: {
-          capabilities?: Json | null
-          config?: Json | null
-          context_window?: number | null
-          cost_per_1k_tokens?: number | null
-          cost_per_image?: number | null
-          created_at?: string | null
-          deprecated_at?: string | null
-          id?: string
-          is_active?: boolean | null
-          max_tokens?: number | null
-          model_name?: string
-          model_type?: string
-          model_version?: string
-          provider?: string
-          updated_at?: string | null
         }
         Relationships: []
       }
@@ -240,8 +58,10 @@ export type Database = {
           action: string
           created_at: string | null
           id: string
-          ip_address: string | null
+          ip_address: unknown | null
           metadata: Json | null
+          resource_id: string | null
+          resource_type: string | null
           user_agent: string | null
           user_id: string | null
         }
@@ -249,8 +69,10 @@ export type Database = {
           action: string
           created_at?: string | null
           id?: string
-          ip_address?: string | null
+          ip_address?: unknown | null
           metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
@@ -258,244 +80,133 @@ export type Database = {
           action?: string
           created_at?: string | null
           id?: string
-          ip_address?: string | null
+          ip_address?: unknown | null
           metadata?: Json | null
+          resource_id?: string | null
+          resource_type?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
-      cities: {
-        Row: {
-          active: boolean | null
-          county_id: number | null
-          created_at: string | null
-          id: number
-          name: string
-          state_id: number | null
-        }
-        Insert: {
-          active?: boolean | null
-          county_id?: number | null
-          created_at?: string | null
-          id?: number
-          name: string
-          state_id?: number | null
-        }
-        Update: {
-          active?: boolean | null
-          county_id?: number | null
-          created_at?: string | null
-          id?: number
-          name?: string
-          state_id?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "cities_county_id_fkey"
-            columns: ["county_id"]
-            isOneToOne: false
-            referencedRelation: "counties"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "cities_state_id_fkey"
-            columns: ["state_id"]
-            isOneToOne: false
-            referencedRelation: "states"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_communications: {
-        Row: {
-          attachments: Json | null
-          claim_id: string
-          communication_type: string
-          content: string
-          created_at: string | null
-          direction: string
-          id: string
-          subject: string | null
-          user_id: string
-        }
-        Insert: {
-          attachments?: Json | null
-          claim_id: string
-          communication_type: string
-          content: string
-          created_at?: string | null
-          direction: string
-          id?: string
-          subject?: string | null
-          user_id: string
-        }
-        Update: {
-          attachments?: Json | null
-          claim_id?: string
-          communication_type?: string
-          content?: string
-          created_at?: string | null
-          direction?: string
-          id?: string
-          subject?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_communications_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "claim_communications_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims_overview"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      claim_status_history: {
-        Row: {
-          changed_by: string
-          claim_id: string
-          created_at: string | null
-          id: string
-          new_status: Database["public"]["Enums"]["claim_status_enum"]
-          previous_status:
-            | Database["public"]["Enums"]["claim_status_enum"]
-            | null
-          reason: string | null
-        }
-        Insert: {
-          changed_by: string
-          claim_id: string
-          created_at?: string | null
-          id?: string
-          new_status: Database["public"]["Enums"]["claim_status_enum"]
-          previous_status?:
-            | Database["public"]["Enums"]["claim_status_enum"]
-            | null
-          reason?: string | null
-        }
-        Update: {
-          changed_by?: string
-          claim_id?: string
-          created_at?: string | null
-          id?: string
-          new_status?: Database["public"]["Enums"]["claim_status_enum"]
-          previous_status?:
-            | Database["public"]["Enums"]["claim_status_enum"]
-            | null
-          reason?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "claim_status_history_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "claim_status_history_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims_overview"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       claims: {
         Row: {
+          adjuster_company: string | null
           adjuster_email: string | null
           adjuster_name: string | null
           adjuster_phone: string | null
-          ai_complexity_score: number | null
-          ai_fraud_risk_score: number | null
-          ai_recommended_actions: Json | null
-          ai_settlement_prediction: Json | null
-          claim_embedding: string | null
-          claim_notes: string | null
+          ai_coverage_analysis: Json | null
+          ai_damage_assessment: Json | null
+          ai_recommendations: Json | null
+          approval_date: string | null
+          approved_amount: number | null
           claim_number: string | null
+          closed_date: string | null
           created_at: string | null
-          damage_type: Database["public"]["Enums"]["damage_type_enum"]
+          damage_severity: Database["public"]["Enums"]["damage_severity"] | null
+          damage_type: string
           date_of_loss: string
           date_reported: string | null
           deductible_applied: number | null
           description: string | null
           estimated_value: number | null
+          external_claim_number: string | null
           id: string
+          inspection_date: string | null
           metadata: Json | null
-          policy_id: string
-          property_id: string
+          notes: string | null
+          paid_amount: number | null
+          payment_date: string | null
+          photos: Json | null
+          policy_id: string | null
+          property_id: string | null
           settled_value: number | null
           settlement_date: string | null
-          status: Database["public"]["Enums"]["claim_status_enum"]
+          status: Database["public"]["Enums"]["claim_status"] | null
           supporting_documents: Json | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
+          version: number | null
         }
         Insert: {
+          adjuster_company?: string | null
           adjuster_email?: string | null
           adjuster_name?: string | null
           adjuster_phone?: string | null
-          ai_complexity_score?: number | null
-          ai_fraud_risk_score?: number | null
-          ai_recommended_actions?: Json | null
-          ai_settlement_prediction?: Json | null
-          claim_embedding?: string | null
-          claim_notes?: string | null
+          ai_coverage_analysis?: Json | null
+          ai_damage_assessment?: Json | null
+          ai_recommendations?: Json | null
+          approval_date?: string | null
+          approved_amount?: number | null
           claim_number?: string | null
+          closed_date?: string | null
           created_at?: string | null
-          damage_type: Database["public"]["Enums"]["damage_type_enum"]
+          damage_severity?:
+            | Database["public"]["Enums"]["damage_severity"]
+            | null
+          damage_type: string
           date_of_loss: string
           date_reported?: string | null
           deductible_applied?: number | null
           description?: string | null
           estimated_value?: number | null
+          external_claim_number?: string | null
           id?: string
+          inspection_date?: string | null
           metadata?: Json | null
-          policy_id: string
-          property_id: string
+          notes?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          photos?: Json | null
+          policy_id?: string | null
+          property_id?: string | null
           settled_value?: number | null
           settlement_date?: string | null
-          status?: Database["public"]["Enums"]["claim_status_enum"]
+          status?: Database["public"]["Enums"]["claim_status"] | null
           supporting_documents?: Json | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
+          version?: number | null
         }
         Update: {
+          adjuster_company?: string | null
           adjuster_email?: string | null
           adjuster_name?: string | null
           adjuster_phone?: string | null
-          ai_complexity_score?: number | null
-          ai_fraud_risk_score?: number | null
-          ai_recommended_actions?: Json | null
-          ai_settlement_prediction?: Json | null
-          claim_embedding?: string | null
-          claim_notes?: string | null
+          ai_coverage_analysis?: Json | null
+          ai_damage_assessment?: Json | null
+          ai_recommendations?: Json | null
+          approval_date?: string | null
+          approved_amount?: number | null
           claim_number?: string | null
+          closed_date?: string | null
           created_at?: string | null
-          damage_type?: Database["public"]["Enums"]["damage_type_enum"]
+          damage_severity?:
+            | Database["public"]["Enums"]["damage_severity"]
+            | null
+          damage_type?: string
           date_of_loss?: string
           date_reported?: string | null
           deductible_applied?: number | null
           description?: string | null
           estimated_value?: number | null
+          external_claim_number?: string | null
           id?: string
+          inspection_date?: string | null
           metadata?: Json | null
-          policy_id?: string
-          property_id?: string
+          notes?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          photos?: Json | null
+          policy_id?: string | null
+          property_id?: string | null
           settled_value?: number | null
           settlement_date?: string | null
-          status?: Database["public"]["Enums"]["claim_status_enum"]
+          status?: Database["public"]["Enums"]["claim_status"] | null
           supporting_documents?: Json | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
+          version?: number | null
         }
         Relationships: [
           {
@@ -521,552 +232,469 @@ export type Database = {
           },
         ]
       }
-      contractor_license_raw: {
+      claims_history: {
         Row: {
-          board: string | null
-          bond_ind: boolean | null
-          city: string | null
-          county_name: string | null
-          dba_name: string | null
-          discipline_flag: boolean | null
-          expiry_date: string | null
-          issue_date: string | null
-          liability_ins: boolean | null
-          license_number: string
-          license_type: string | null
-          qualifier_name: string | null
-          rank: string | null
-          status_primary: string | null
-          status_secondary: string | null
-          updated_at: string | null
-          wc_exempt: boolean | null
-        }
-        Insert: {
-          board?: string | null
-          bond_ind?: boolean | null
-          city?: string | null
-          county_name?: string | null
-          dba_name?: string | null
-          discipline_flag?: boolean | null
-          expiry_date?: string | null
-          issue_date?: string | null
-          liability_ins?: boolean | null
-          license_number: string
-          license_type?: string | null
-          qualifier_name?: string | null
-          rank?: string | null
-          status_primary?: string | null
-          status_secondary?: string | null
-          updated_at?: string | null
-          wc_exempt?: boolean | null
-        }
-        Update: {
-          board?: string | null
-          bond_ind?: boolean | null
-          city?: string | null
-          county_name?: string | null
-          dba_name?: string | null
-          discipline_flag?: boolean | null
-          expiry_date?: string | null
-          issue_date?: string | null
-          liability_ins?: boolean | null
-          license_number?: string
-          license_type?: string | null
-          qualifier_name?: string | null
-          rank?: string | null
-          status_primary?: string | null
-          status_secondary?: string | null
-          updated_at?: string | null
-          wc_exempt?: boolean | null
-        }
-        Relationships: []
-      }
-      counties: {
-        Row: {
-          active: boolean | null
-          county_fips: string
-          created_at: string | null
-          fips_code: string
-          id: number
-          name: string
-          state_fips: string
-          state_id: number | null
-        }
-        Insert: {
-          active?: boolean | null
-          county_fips: string
-          created_at?: string | null
-          fips_code: string
-          id?: number
-          name: string
-          state_fips: string
-          state_id?: number | null
-        }
-        Update: {
-          active?: boolean | null
-          county_fips?: string
-          created_at?: string | null
-          fips_code?: string
-          id?: number
-          name?: string
-          state_fips?: string
-          state_id?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "counties_state_id_fkey"
-            columns: ["state_id"]
-            isOneToOne: false
-            referencedRelation: "states"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      crawl_runs: {
-        Row: {
-          completed_at: string | null
-          data_type: Database["public"]["Enums"]["floir_data_type"]
-          duration_seconds: number | null
-          error_count: number | null
-          errors: Json | null
-          id: string
-          metadata: Json | null
-          records_created: number | null
-          records_processed: number | null
-          records_updated: number | null
-          started_at: string | null
-          status: Database["public"]["Enums"]["crawl_status"] | null
-        }
-        Insert: {
-          completed_at?: string | null
-          data_type: Database["public"]["Enums"]["floir_data_type"]
-          duration_seconds?: number | null
-          error_count?: number | null
-          errors?: Json | null
-          id?: string
-          metadata?: Json | null
-          records_created?: number | null
-          records_processed?: number | null
-          records_updated?: number | null
-          started_at?: string | null
-          status?: Database["public"]["Enums"]["crawl_status"] | null
-        }
-        Update: {
-          completed_at?: string | null
-          data_type?: Database["public"]["Enums"]["floir_data_type"]
-          duration_seconds?: number | null
-          error_count?: number | null
-          errors?: Json | null
-          id?: string
-          metadata?: Json | null
-          records_created?: number | null
-          records_processed?: number | null
-          records_updated?: number | null
-          started_at?: string | null
-          status?: Database["public"]["Enums"]["crawl_status"] | null
-        }
-        Relationships: []
-      }
-      damage_ai_detections: {
-        Row: {
-          analysis_id: string | null
-          created_at: string | null
-          damage_id: string
-          damage_types: Json | null
-          detected_objects: Json | null
-          estimated_area_sqft: number | null
-          id: string
-          image_embedding: string | null
-          image_url: string
-          material_types: Json | null
-          model_id: string | null
-          severity_score: number | null
-        }
-        Insert: {
-          analysis_id?: string | null
-          created_at?: string | null
-          damage_id: string
-          damage_types?: Json | null
-          detected_objects?: Json | null
-          estimated_area_sqft?: number | null
-          id?: string
-          image_embedding?: string | null
-          image_url: string
-          material_types?: Json | null
-          model_id?: string | null
-          severity_score?: number | null
-        }
-        Update: {
-          analysis_id?: string | null
-          created_at?: string | null
-          damage_id?: string
-          damage_types?: Json | null
-          detected_objects?: Json | null
-          estimated_area_sqft?: number | null
-          id?: string
-          image_embedding?: string | null
-          image_url?: string
-          material_types?: Json | null
-          model_id?: string | null
-          severity_score?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "damage_ai_detections_analysis_id_fkey"
-            columns: ["analysis_id"]
-            isOneToOne: false
-            referencedRelation: "ai_analyses"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "damage_ai_detections_damage_id_fkey"
-            columns: ["damage_id"]
-            isOneToOne: false
-            referencedRelation: "property_damage"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "damage_ai_detections_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_models"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      debug_user_creation_logs: {
-        Row: {
-          created_at: string
-          error_message: string | null
-          id: string
-          metadata: Json | null
-          step: string
-          success: boolean
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          metadata?: Json | null
-          step: string
-          success: boolean
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          error_message?: string | null
-          id?: string
-          metadata?: Json | null
-          step?: string
-          success?: boolean
-          user_id?: string | null
-        }
-        Relationships: []
-      }
-      document_ai_extractions: {
-        Row: {
-          content_embedding: string | null
-          coverage_items: Json | null
-          created_at: string | null
-          document_id: string | null
-          document_type: string | null
-          exclusions: Json | null
-          extracted_fields: Json | null
-          extraction_confidence: number | null
-          id: string
-          important_dates: Json | null
-          key_points: Json | null
-          key_terms: Json | null
-          model_id: string | null
-          requires_review: boolean | null
-          review_notes: string | null
-          summary: string | null
-          summary_embedding: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          content_embedding?: string | null
-          coverage_items?: Json | null
-          created_at?: string | null
-          document_id?: string | null
-          document_type?: string | null
-          exclusions?: Json | null
-          extracted_fields?: Json | null
-          extraction_confidence?: number | null
-          id?: string
-          important_dates?: Json | null
-          key_points?: Json | null
-          key_terms?: Json | null
-          model_id?: string | null
-          requires_review?: boolean | null
-          review_notes?: string | null
-          summary?: string | null
-          summary_embedding?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          content_embedding?: string | null
-          coverage_items?: Json | null
-          created_at?: string | null
-          document_id?: string | null
-          document_type?: string | null
-          exclusions?: Json | null
-          extracted_fields?: Json | null
-          extraction_confidence?: number | null
-          id?: string
-          important_dates?: Json | null
-          key_points?: Json | null
-          key_terms?: Json | null
-          model_id?: string | null
-          requires_review?: boolean | null
-          review_notes?: string | null
-          summary?: string | null
-          summary_embedding?: string | null
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "document_ai_extractions_document_id_fkey"
-            columns: ["document_id"]
-            isOneToOne: false
-            referencedRelation: "policy_documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "document_ai_extractions_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_models"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      document_extractions: {
-        Row: {
-          applied_at: string | null
-          applied_to_property: boolean | null
-          confidence_score: number | null
-          created_at: string | null
-          document_id: string
-          error_message: string | null
-          extracted_data: Json | null
-          id: string
-          processed_by: string
-          processing_status: Database["public"]["Enums"]["processing_status_enum"]
-          processing_time_ms: number | null
-          property_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          applied_at?: string | null
-          applied_to_property?: boolean | null
-          confidence_score?: number | null
-          created_at?: string | null
-          document_id: string
-          error_message?: string | null
-          extracted_data?: Json | null
-          id?: string
-          processed_by: string
-          processing_status?: Database["public"]["Enums"]["processing_status_enum"]
-          processing_time_ms?: number | null
-          property_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          applied_at?: string | null
-          applied_to_property?: boolean | null
-          confidence_score?: number | null
-          created_at?: string | null
-          document_id?: string
-          error_message?: string | null
-          extracted_data?: Json | null
-          id?: string
-          processed_by?: string
-          processing_status?: Database["public"]["Enums"]["processing_status_enum"]
-          processing_time_ms?: number | null
-          property_id?: string
-          updated_at?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "document_extractions_document_id_fkey"
-            columns: ["document_id"]
-            isOneToOne: true
-            referencedRelation: "policy_documents"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "document_extractions_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties_old"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      fdot_history: {
-        Row: {
+          adjuster_company: string | null
+          adjuster_email: string | null
+          adjuster_name: string | null
+          adjuster_phone: string | null
+          ai_coverage_analysis: Json | null
+          ai_damage_assessment: Json | null
+          ai_recommendations: Json | null
+          approval_date: string | null
+          approved_amount: number | null
           archived_at: string | null
-          co_no: number | null
-          geom: unknown
-          id: number
-          parcel_id: string
-          properties: Json
+          claim_number: string | null
+          closed_date: string | null
+          created_at: string | null
+          damage_severity: Database["public"]["Enums"]["damage_severity"] | null
+          damage_type: string
+          date_of_loss: string
+          date_reported: string | null
+          deductible_applied: number | null
+          description: string | null
+          estimated_value: number | null
+          external_claim_number: string | null
+          id: string
+          inspection_date: string | null
+          metadata: Json | null
+          notes: string | null
+          operation: string | null
+          paid_amount: number | null
+          payment_date: string | null
+          photos: Json | null
+          policy_id: string | null
+          property_id: string | null
+          settled_value: number | null
+          settlement_date: string | null
+          status: Database["public"]["Enums"]["claim_status"] | null
+          supporting_documents: Json | null
+          updated_at: string | null
+          user_id: string | null
           version: number | null
         }
         Insert: {
+          adjuster_company?: string | null
+          adjuster_email?: string | null
+          adjuster_name?: string | null
+          adjuster_phone?: string | null
+          ai_coverage_analysis?: Json | null
+          ai_damage_assessment?: Json | null
+          ai_recommendations?: Json | null
+          approval_date?: string | null
+          approved_amount?: number | null
           archived_at?: string | null
-          co_no?: number | null
-          geom: unknown
-          id?: number
-          parcel_id: string
-          properties: Json
+          claim_number?: string | null
+          closed_date?: string | null
+          created_at?: string | null
+          damage_severity?:
+            | Database["public"]["Enums"]["damage_severity"]
+            | null
+          damage_type: string
+          date_of_loss: string
+          date_reported?: string | null
+          deductible_applied?: number | null
+          description?: string | null
+          estimated_value?: number | null
+          external_claim_number?: string | null
+          id?: string
+          inspection_date?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          operation?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          photos?: Json | null
+          policy_id?: string | null
+          property_id?: string | null
+          settled_value?: number | null
+          settlement_date?: string | null
+          status?: Database["public"]["Enums"]["claim_status"] | null
+          supporting_documents?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
           version?: number | null
         }
         Update: {
+          adjuster_company?: string | null
+          adjuster_email?: string | null
+          adjuster_name?: string | null
+          adjuster_phone?: string | null
+          ai_coverage_analysis?: Json | null
+          ai_damage_assessment?: Json | null
+          ai_recommendations?: Json | null
+          approval_date?: string | null
+          approved_amount?: number | null
           archived_at?: string | null
-          co_no?: number | null
-          geom?: unknown
-          id?: number
-          parcel_id?: string
-          properties?: Json
+          claim_number?: string | null
+          closed_date?: string | null
+          created_at?: string | null
+          damage_severity?:
+            | Database["public"]["Enums"]["damage_severity"]
+            | null
+          damage_type?: string
+          date_of_loss?: string
+          date_reported?: string | null
+          deductible_applied?: number | null
+          description?: string | null
+          estimated_value?: number | null
+          external_claim_number?: string | null
+          id?: string
+          inspection_date?: string | null
+          metadata?: Json | null
+          notes?: string | null
+          operation?: string | null
+          paid_amount?: number | null
+          payment_date?: string | null
+          photos?: Json | null
+          policy_id?: string | null
+          property_id?: string | null
+          settled_value?: number | null
+          settlement_date?: string | null
+          status?: Database["public"]["Enums"]["claim_status"] | null
+          supporting_documents?: Json | null
+          updated_at?: string | null
+          user_id?: string | null
           version?: number | null
         }
         Relationships: []
       }
-      fdot_parcels: {
+      consent_audit_log: {
         Row: {
-          co_no: number
-          dor_uc: string | null
-          geom: unknown
-          jv: number | null
-          parcel_id: string
-          properties: Json
-          updated_at: string | null
-        }
-        Insert: {
-          co_no: number
-          dor_uc?: string | null
-          geom: unknown
-          jv?: number | null
-          parcel_id: string
-          properties: Json
-          updated_at?: string | null
-        }
-        Update: {
-          co_no?: number
-          dor_uc?: string | null
-          geom?: unknown
-          jv?: number | null
-          parcel_id?: string
-          properties?: Json
-          updated_at?: string | null
-        }
-        Relationships: []
-      }
-      fdot_stage: {
-        Row: {
-          feature: Json
-          geom: unknown | null
-          id: number
-        }
-        Insert: {
-          feature: Json
-          geom?: unknown | null
-          id?: number
-        }
-        Update: {
-          feature?: Json
-          geom?: unknown | null
-          id?: number
-        }
-        Relationships: []
-      }
-      floir_data: {
-        Row: {
-          content_hash: string | null
+          action: string
+          consent_type: string | null
           created_at: string | null
-          data_type: Database["public"]["Enums"]["floir_data_type"]
-          embedding: string | null
-          extracted_at: string | null
+          document_type:
+            | Database["public"]["Enums"]["legal_document_type"]
+            | null
+          document_version: string | null
           id: string
-          normalized_data: Json | null
-          pdf_content: string | null
-          primary_key: string
-          raw_data: Json
-          source_url: string | null
-          updated_at: string | null
+          ip_address: unknown | null
+          metadata: Json | null
+          method: string | null
+          new_value: Json | null
+          old_value: Json | null
+          user_agent: string | null
+          user_id: string
         }
         Insert: {
-          content_hash?: string | null
+          action: string
+          consent_type?: string | null
           created_at?: string | null
-          data_type: Database["public"]["Enums"]["floir_data_type"]
-          embedding?: string | null
-          extracted_at?: string | null
+          document_type?:
+            | Database["public"]["Enums"]["legal_document_type"]
+            | null
+          document_version?: string | null
           id?: string
-          normalized_data?: Json | null
-          pdf_content?: string | null
-          primary_key: string
-          raw_data: Json
-          source_url?: string | null
-          updated_at?: string | null
+          ip_address?: unknown | null
+          metadata?: Json | null
+          method?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_agent?: string | null
+          user_id: string
         }
         Update: {
-          content_hash?: string | null
+          action?: string
+          consent_type?: string | null
           created_at?: string | null
-          data_type?: Database["public"]["Enums"]["floir_data_type"]
-          embedding?: string | null
-          extracted_at?: string | null
+          document_type?:
+            | Database["public"]["Enums"]["legal_document_type"]
+            | null
+          document_version?: string | null
           id?: string
-          normalized_data?: Json | null
-          pdf_content?: string | null
-          primary_key?: string
-          raw_data?: Json
-          source_url?: string | null
-          updated_at?: string | null
+          ip_address?: unknown | null
+          metadata?: Json | null
+          method?: string | null
+          new_value?: Json | null
+          old_value?: Json | null
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
-      florida_counties: {
+      coverage_types: {
         Row: {
-          aob_restrictions: Json | null
+          created_at: string | null
+          description: string | null
+          id: string
+          type: string
+          typical_limit: number | null
+          updated_at: string | null
+          version: number | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          type: string
+          typical_limit?: number | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          type?: string
+          typical_limit?: number | null
+          updated_at?: string | null
+          version?: number | null
+        }
+        Relationships: []
+      }
+      disaster_events: {
+        Row: {
+          affected_geography: unknown | null
+          created_at: string | null
+          description: string | null
+          effective_at: string | null
+          event_id: string
+          expires_at: string | null
+          headline: string | null
+          id: string
+          instruction: string | null
+          sender_name: string | null
+          severity: string | null
+          status: string | null
+          type: string | null
+        }
+        Insert: {
+          affected_geography?: unknown | null
+          created_at?: string | null
+          description?: string | null
+          effective_at?: string | null
+          event_id: string
+          expires_at?: string | null
+          headline?: string | null
+          id?: string
+          instruction?: string | null
+          sender_name?: string | null
+          severity?: string | null
+          status?: string | null
+          type?: string | null
+        }
+        Update: {
+          affected_geography?: unknown | null
+          created_at?: string | null
+          description?: string | null
+          effective_at?: string | null
+          event_id?: string
+          expires_at?: string | null
+          headline?: string | null
+          id?: string
+          instruction?: string | null
+          sender_name?: string | null
+          severity?: string | null
+          status?: string | null
+          type?: string | null
+        }
+        Relationships: []
+      }
+      email_logs: {
+        Row: {
+          clicked_at: string | null
+          email_type: string
+          error_message: string | null
+          id: string
+          metadata: Json | null
+          opened_at: string | null
+          recipient: string
+          resend_id: string | null
+          sent_at: string | null
+          status: string
+          subject: string | null
+          user_id: string | null
+        }
+        Insert: {
+          clicked_at?: string | null
+          email_type: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          opened_at?: string | null
+          recipient: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          clicked_at?: string | null
+          email_type?: string
+          error_message?: string | null
+          id?: string
+          metadata?: Json | null
+          opened_at?: string | null
+          recipient?: string
+          resend_id?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      error_logs: {
+        Row: {
+          context: Json | null
+          created_at: string | null
+          error_code: string | null
+          error_message: string
+          error_stack: string | null
+          error_type: string
+          id: string
+          ip_address: unknown | null
+          request_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          session_id: string | null
+          severity: string | null
+          url: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          context?: Json | null
+          created_at?: string | null
+          error_code?: string | null
+          error_message: string
+          error_stack?: string | null
+          error_type: string
+          id?: string
+          ip_address?: unknown | null
+          request_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          severity?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          context?: Json | null
+          created_at?: string | null
+          error_code?: string | null
+          error_message?: string
+          error_stack?: string | null
+          error_type?: string
+          id?: string
+          ip_address?: unknown | null
+          request_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          session_id?: string | null
+          severity?: string | null
+          url?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      file_uploads: {
+        Row: {
+          created_at: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id: string
+          storage_path: string
+          upload_status: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          file_name: string
+          file_size: number
+          file_type: string
+          id?: string
+          storage_path: string
+          upload_status?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          file_name?: string
+          file_size?: number
+          file_type?: string
+          id?: string
+          storage_path?: string
+          upload_status?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      FL_Companies: {
+        Row: {
+          "Company Name * (* group filing)": string | null
+          "Date Closed": string | null
+          "File Log Number": string | null
+          "Filing Type": string | null
+          "Final Action": string | null
+          "Line of Business": string | null
+          "LOB Code": number | null
+          "Sub Type of Insurance": string | null
+          "SubTOI Code": string | null
+          "TOI Code": number | null
+          "Type of Insurance": string | null
+        }
+        Insert: {
+          "Company Name * (* group filing)"?: string | null
+          "Date Closed"?: string | null
+          "File Log Number"?: string | null
+          "Filing Type"?: string | null
+          "Final Action"?: string | null
+          "Line of Business"?: string | null
+          "LOB Code"?: number | null
+          "Sub Type of Insurance"?: string | null
+          "SubTOI Code"?: string | null
+          "TOI Code"?: number | null
+          "Type of Insurance"?: string | null
+        }
+        Update: {
+          "Company Name * (* group filing)"?: string | null
+          "Date Closed"?: string | null
+          "File Log Number"?: string | null
+          "Filing Type"?: string | null
+          "Final Action"?: string | null
+          "Line of Business"?: string | null
+          "LOB Code"?: number | null
+          "Sub Type of Insurance"?: string | null
+          "SubTOI Code"?: string | null
+          "TOI Code"?: number | null
+          "Type of Insurance"?: string | null
+        }
+        Relationships: []
+      }
+      fl_counties: {
+        Row: {
           building_code_version: string | null
           building_dept_address: string | null
           building_dept_email: string | null
           building_dept_name: string | null
           building_dept_phone: string | null
           building_dept_website: string | null
-          citizens_service_center: string | null
-          claim_filing_requirements: Json | null
           coastal_county: boolean | null
-          contractor_license_search_url: string | null
-          contractor_license_verification_phone: string | null
-          county_code: string
           county_name: string
-          county_seat: string
+          county_seat: string | null
           created_at: string | null
           emergency_hotline: string | null
-          emergency_mgmt_email: string | null
-          emergency_mgmt_name: string | null
           emergency_mgmt_phone: string | null
           emergency_mgmt_website: string | null
-          fema_flood_zone_url: string | null
           fema_region: string | null
+          fips5: string
           flood_elevation_requirement: boolean | null
-          flood_zone_maps_url: string | null
           gis_url: string | null
           households: number | null
-          hurricane_evacuation_zone_url: string | null
           id: string
           impact_glass_required: boolean | null
-          last_verified_at: string | null
           median_home_value: number | null
-          notes: string | null
           online_permit_system: boolean | null
-          parcel_data_url: string | null
-          permit_expiration_days: number | null
-          permit_fee_structure: Json | null
           permit_search_url: string | null
           population: number | null
           property_appraiser_email: string | null
@@ -1074,117 +702,35 @@ export type Database = {
           property_appraiser_phone: string | null
           property_appraiser_website: string | null
           property_search_url: string | null
-          region: string
-          reinspection_fee: number | null
-          storm_surge_planning_zone_url: string | null
-          supplemental_claim_deadline_days: number | null
-          tax_collector_email: string | null
-          tax_collector_name: string | null
-          tax_collector_phone: string | null
-          tax_collector_website: string | null
-          time_zone: string
-          unlicensed_contractor_limit: number | null
+          region: string | null
+          time_zone: string | null
           updated_at: string | null
+          version: number | null
           wind_speed_requirement: number | null
-          windstorm_requirements: Json | null
         }
         Insert: {
-          aob_restrictions?: Json | null
           building_code_version?: string | null
           building_dept_address?: string | null
           building_dept_email?: string | null
           building_dept_name?: string | null
           building_dept_phone?: string | null
           building_dept_website?: string | null
-          citizens_service_center?: string | null
-          claim_filing_requirements?: Json | null
           coastal_county?: boolean | null
-          contractor_license_search_url?: string | null
-          contractor_license_verification_phone?: string | null
-          county_code: string
           county_name: string
-          county_seat: string
+          county_seat?: string | null
           created_at?: string | null
           emergency_hotline?: string | null
-          emergency_mgmt_email?: string | null
-          emergency_mgmt_name?: string | null
           emergency_mgmt_phone?: string | null
           emergency_mgmt_website?: string | null
-          fema_flood_zone_url?: string | null
           fema_region?: string | null
+          fips5: string
           flood_elevation_requirement?: boolean | null
-          flood_zone_maps_url?: string | null
           gis_url?: string | null
           households?: number | null
-          hurricane_evacuation_zone_url?: string | null
-          id: string
-          impact_glass_required?: boolean | null
-          last_verified_at?: string | null
-          median_home_value?: number | null
-          notes?: string | null
-          online_permit_system?: boolean | null
-          parcel_data_url?: string | null
-          permit_expiration_days?: number | null
-          permit_fee_structure?: Json | null
-          permit_search_url?: string | null
-          population?: number | null
-          property_appraiser_email?: string | null
-          property_appraiser_name?: string | null
-          property_appraiser_phone?: string | null
-          property_appraiser_website?: string | null
-          property_search_url?: string | null
-          region: string
-          reinspection_fee?: number | null
-          storm_surge_planning_zone_url?: string | null
-          supplemental_claim_deadline_days?: number | null
-          tax_collector_email?: string | null
-          tax_collector_name?: string | null
-          tax_collector_phone?: string | null
-          tax_collector_website?: string | null
-          time_zone: string
-          unlicensed_contractor_limit?: number | null
-          updated_at?: string | null
-          wind_speed_requirement?: number | null
-          windstorm_requirements?: Json | null
-        }
-        Update: {
-          aob_restrictions?: Json | null
-          building_code_version?: string | null
-          building_dept_address?: string | null
-          building_dept_email?: string | null
-          building_dept_name?: string | null
-          building_dept_phone?: string | null
-          building_dept_website?: string | null
-          citizens_service_center?: string | null
-          claim_filing_requirements?: Json | null
-          coastal_county?: boolean | null
-          contractor_license_search_url?: string | null
-          contractor_license_verification_phone?: string | null
-          county_code?: string
-          county_name?: string
-          county_seat?: string
-          created_at?: string | null
-          emergency_hotline?: string | null
-          emergency_mgmt_email?: string | null
-          emergency_mgmt_name?: string | null
-          emergency_mgmt_phone?: string | null
-          emergency_mgmt_website?: string | null
-          fema_flood_zone_url?: string | null
-          fema_region?: string | null
-          flood_elevation_requirement?: boolean | null
-          flood_zone_maps_url?: string | null
-          gis_url?: string | null
-          households?: number | null
-          hurricane_evacuation_zone_url?: string | null
           id?: string
           impact_glass_required?: boolean | null
-          last_verified_at?: string | null
           median_home_value?: number | null
-          notes?: string | null
           online_permit_system?: boolean | null
-          parcel_data_url?: string | null
-          permit_expiration_days?: number | null
-          permit_fee_structure?: Json | null
           permit_search_url?: string | null
           population?: number | null
           property_appraiser_email?: string | null
@@ -1192,2872 +738,1059 @@ export type Database = {
           property_appraiser_phone?: string | null
           property_appraiser_website?: string | null
           property_search_url?: string | null
-          region?: string
-          reinspection_fee?: number | null
-          storm_surge_planning_zone_url?: string | null
-          supplemental_claim_deadline_days?: number | null
-          tax_collector_email?: string | null
-          tax_collector_name?: string | null
-          tax_collector_phone?: string | null
-          tax_collector_website?: string | null
-          time_zone?: string
-          unlicensed_contractor_limit?: number | null
+          region?: string | null
+          time_zone?: string | null
           updated_at?: string | null
+          version?: number | null
           wind_speed_requirement?: number | null
-          windstorm_requirements?: Json | null
-        }
-        Relationships: []
-      }
-      florida_counties2: {
-        Row: {
-          ACT_YR_BLT: number | null
-          ALT_KEY: string | null
-          APP_STAT: string | null
-          ASMNT_YR: number | null
-          ASS_DIF_TR: number | null
-          ASS_TRNSFR: string | null
-          ATV_STRT: string | null
-          AV_CLASS_U: number | null
-          AV_CONSRV_: number | null
-          AV_H2O_REC: number | null
-          AV_HIST_CO: number | null
-          AV_HIST_SI: number | null
-          AV_HMSTD: number | null
-          AV_NON_HMS: number | null
-          AV_NSD: number | null
-          AV_RESD_NO: number | null
-          AV_SD: number | null
-          AV_WRKNG_W: number | null
-          BAS_STRT: string | null
-          CENSUS_BK: string | null
-          CLERK_NO1: string | null
-          CLERK_NO2: string | null
-          CO_APP_STA: string | null
-          CO_NO: number | null
-          CONO_PRV_H: number | null
-          CONST_CLAS: number | null
-          county_fips: number | null
-          county_id: string | null
-          created_at: string | null
-          DEL_VAL: number | null
-          DISTR_CD: string | null
-          DISTR_YR: number | null
-          DOR_UC: string | null
-          DT_LAST_IN: number | null
-          EFF_YR_BLT: number | null
-          FIDU_ADDR1: string | null
-          FIDU_ADDR2: string | null
-          FIDU_CD: number | null
-          FIDU_CITY: string | null
-          FIDU_NAME: string | null
-          FIDU_STATE: string | null
-          FIDU_ZIPCD: number | null
-          FILE_T: string | null
-          geometry_wkt: string | null
-          GRP_NO: number | null
-          id: number
-          IMP_QUAL: number | null
-          JV: number | null
-          JV_CHNG: number | null
-          JV_CHNG_CD: number | null
-          JV_CLASS_U: number | null
-          JV_CONSRV_: number | null
-          JV_H2O_REC: number | null
-          JV_HIST_CO: number | null
-          JV_HIST_SI: number | null
-          JV_HMSTD: number | null
-          JV_NON_HMS: number | null
-          JV_RESD_NO: number | null
-          JV_WRKNG_W: number | null
-          LND_SQFOOT: number | null
-          LND_UNTS_C: number | null
-          LND_VAL: number | null
-          M_PAR_SAL1: string | null
-          M_PAR_SAL2: string | null
-          MKT_AR: string | null
-          MP_ID: string | null
-          NBRHD_CD: string | null
-          NCONST_VAL: number | null
-          NO_BULDNG: number | null
-          NO_LND_UNT: number | null
-          NO_RES_UNT: number | null
-          OR_BOOK1: string | null
-          OR_BOOK2: string | null
-          OR_PAGE1: string | null
-          OR_PAGE2: string | null
-          OWN_ADDR1: string | null
-          OWN_ADDR2: string | null
-          OWN_CITY: string | null
-          OWN_NAME: string | null
-          OWN_STATE: string | null
-          OWN_STATE_: string | null
-          OWN_ZIPCD: number | null
-          PA_UC: string | null
-          PAR_SPLT: number | null
-          PARCEL_ID: string | null
-          PARCEL_ID_: string | null
-          PHY_ADDR1: string | null
-          PHY_ADDR2: string | null
-          PHY_CITY: string | null
-          PHY_ZIPCD: number | null
-          PREV_HMSTD: number | null
-          PUBLIC_LND: string | null
-          QUAL_CD1: string | null
-          QUAL_CD2: string | null
-          RNG: string | null
-          RS_ID: string | null
-          S_CHNG_CD1: string | null
-          S_CHNG_CD2: string | null
-          S_LEGAL: string | null
-          SALE_MO1: number | null
-          SALE_MO2: number | null
-          SALE_PRC1: number | null
-          SALE_PRC2: number | null
-          SALE_YR1: number | null
-          SALE_YR2: number | null
-          SEC: number | null
-          SEQ_NO: number | null
-          Shape_Area: number | null
-          Shape_Length: number | null
-          SPASS_CD: string | null
-          SPC_CIR_CD: number | null
-          SPC_CIR_TX: string | null
-          SPC_CIR_YR: number | null
-          SPEC_FEAT_: number | null
-          STATE_PAR_: string | null
-          TAX_AUTH_C: string | null
-          TOT_LVG_AR: number | null
-          TV_NSD: number | null
-          TV_SD: number | null
-          TWN: string | null
-          updated_at: string | null
-          VI_CD1: string | null
-          VI_CD2: string | null
-          YR_VAL_TRN: number | null
-        }
-        Insert: {
-          ACT_YR_BLT?: number | null
-          ALT_KEY?: string | null
-          APP_STAT?: string | null
-          ASMNT_YR?: number | null
-          ASS_DIF_TR?: number | null
-          ASS_TRNSFR?: string | null
-          ATV_STRT?: string | null
-          AV_CLASS_U?: number | null
-          AV_CONSRV_?: number | null
-          AV_H2O_REC?: number | null
-          AV_HIST_CO?: number | null
-          AV_HIST_SI?: number | null
-          AV_HMSTD?: number | null
-          AV_NON_HMS?: number | null
-          AV_NSD?: number | null
-          AV_RESD_NO?: number | null
-          AV_SD?: number | null
-          AV_WRKNG_W?: number | null
-          BAS_STRT?: string | null
-          CENSUS_BK?: string | null
-          CLERK_NO1?: string | null
-          CLERK_NO2?: string | null
-          CO_APP_STA?: string | null
-          CO_NO?: number | null
-          CONO_PRV_H?: number | null
-          CONST_CLAS?: number | null
-          county_fips?: number | null
-          county_id?: string | null
-          created_at?: string | null
-          DEL_VAL?: number | null
-          DISTR_CD?: string | null
-          DISTR_YR?: number | null
-          DOR_UC?: string | null
-          DT_LAST_IN?: number | null
-          EFF_YR_BLT?: number | null
-          FIDU_ADDR1?: string | null
-          FIDU_ADDR2?: string | null
-          FIDU_CD?: number | null
-          FIDU_CITY?: string | null
-          FIDU_NAME?: string | null
-          FIDU_STATE?: string | null
-          FIDU_ZIPCD?: number | null
-          FILE_T?: string | null
-          geometry_wkt?: string | null
-          GRP_NO?: number | null
-          id?: number
-          IMP_QUAL?: number | null
-          JV?: number | null
-          JV_CHNG?: number | null
-          JV_CHNG_CD?: number | null
-          JV_CLASS_U?: number | null
-          JV_CONSRV_?: number | null
-          JV_H2O_REC?: number | null
-          JV_HIST_CO?: number | null
-          JV_HIST_SI?: number | null
-          JV_HMSTD?: number | null
-          JV_NON_HMS?: number | null
-          JV_RESD_NO?: number | null
-          JV_WRKNG_W?: number | null
-          LND_SQFOOT?: number | null
-          LND_UNTS_C?: number | null
-          LND_VAL?: number | null
-          M_PAR_SAL1?: string | null
-          M_PAR_SAL2?: string | null
-          MKT_AR?: string | null
-          MP_ID?: string | null
-          NBRHD_CD?: string | null
-          NCONST_VAL?: number | null
-          NO_BULDNG?: number | null
-          NO_LND_UNT?: number | null
-          NO_RES_UNT?: number | null
-          OR_BOOK1?: string | null
-          OR_BOOK2?: string | null
-          OR_PAGE1?: string | null
-          OR_PAGE2?: string | null
-          OWN_ADDR1?: string | null
-          OWN_ADDR2?: string | null
-          OWN_CITY?: string | null
-          OWN_NAME?: string | null
-          OWN_STATE?: string | null
-          OWN_STATE_?: string | null
-          OWN_ZIPCD?: number | null
-          PA_UC?: string | null
-          PAR_SPLT?: number | null
-          PARCEL_ID?: string | null
-          PARCEL_ID_?: string | null
-          PHY_ADDR1?: string | null
-          PHY_ADDR2?: string | null
-          PHY_CITY?: string | null
-          PHY_ZIPCD?: number | null
-          PREV_HMSTD?: number | null
-          PUBLIC_LND?: string | null
-          QUAL_CD1?: string | null
-          QUAL_CD2?: string | null
-          RNG?: string | null
-          RS_ID?: string | null
-          S_CHNG_CD1?: string | null
-          S_CHNG_CD2?: string | null
-          S_LEGAL?: string | null
-          SALE_MO1?: number | null
-          SALE_MO2?: number | null
-          SALE_PRC1?: number | null
-          SALE_PRC2?: number | null
-          SALE_YR1?: number | null
-          SALE_YR2?: number | null
-          SEC?: number | null
-          SEQ_NO?: number | null
-          Shape_Area?: number | null
-          Shape_Length?: number | null
-          SPASS_CD?: string | null
-          SPC_CIR_CD?: number | null
-          SPC_CIR_TX?: string | null
-          SPC_CIR_YR?: number | null
-          SPEC_FEAT_?: number | null
-          STATE_PAR_?: string | null
-          TAX_AUTH_C?: string | null
-          TOT_LVG_AR?: number | null
-          TV_NSD?: number | null
-          TV_SD?: number | null
-          TWN?: string | null
-          updated_at?: string | null
-          VI_CD1?: string | null
-          VI_CD2?: string | null
-          YR_VAL_TRN?: number | null
         }
         Update: {
-          ACT_YR_BLT?: number | null
-          ALT_KEY?: string | null
-          APP_STAT?: string | null
-          ASMNT_YR?: number | null
-          ASS_DIF_TR?: number | null
-          ASS_TRNSFR?: string | null
-          ATV_STRT?: string | null
-          AV_CLASS_U?: number | null
-          AV_CONSRV_?: number | null
-          AV_H2O_REC?: number | null
-          AV_HIST_CO?: number | null
-          AV_HIST_SI?: number | null
-          AV_HMSTD?: number | null
-          AV_NON_HMS?: number | null
-          AV_NSD?: number | null
-          AV_RESD_NO?: number | null
-          AV_SD?: number | null
-          AV_WRKNG_W?: number | null
-          BAS_STRT?: string | null
-          CENSUS_BK?: string | null
-          CLERK_NO1?: string | null
-          CLERK_NO2?: string | null
-          CO_APP_STA?: string | null
-          CO_NO?: number | null
-          CONO_PRV_H?: number | null
-          CONST_CLAS?: number | null
-          county_fips?: number | null
-          county_id?: string | null
+          building_code_version?: string | null
+          building_dept_address?: string | null
+          building_dept_email?: string | null
+          building_dept_name?: string | null
+          building_dept_phone?: string | null
+          building_dept_website?: string | null
+          coastal_county?: boolean | null
+          county_name?: string
+          county_seat?: string | null
           created_at?: string | null
-          DEL_VAL?: number | null
-          DISTR_CD?: string | null
-          DISTR_YR?: number | null
-          DOR_UC?: string | null
-          DT_LAST_IN?: number | null
-          EFF_YR_BLT?: number | null
-          FIDU_ADDR1?: string | null
-          FIDU_ADDR2?: string | null
-          FIDU_CD?: number | null
-          FIDU_CITY?: string | null
-          FIDU_NAME?: string | null
-          FIDU_STATE?: string | null
-          FIDU_ZIPCD?: number | null
-          FILE_T?: string | null
-          geometry_wkt?: string | null
-          GRP_NO?: number | null
-          id?: number
-          IMP_QUAL?: number | null
-          JV?: number | null
-          JV_CHNG?: number | null
-          JV_CHNG_CD?: number | null
-          JV_CLASS_U?: number | null
-          JV_CONSRV_?: number | null
-          JV_H2O_REC?: number | null
-          JV_HIST_CO?: number | null
-          JV_HIST_SI?: number | null
-          JV_HMSTD?: number | null
-          JV_NON_HMS?: number | null
-          JV_RESD_NO?: number | null
-          JV_WRKNG_W?: number | null
-          LND_SQFOOT?: number | null
-          LND_UNTS_C?: number | null
-          LND_VAL?: number | null
-          M_PAR_SAL1?: string | null
-          M_PAR_SAL2?: string | null
-          MKT_AR?: string | null
-          MP_ID?: string | null
-          NBRHD_CD?: string | null
-          NCONST_VAL?: number | null
-          NO_BULDNG?: number | null
-          NO_LND_UNT?: number | null
-          NO_RES_UNT?: number | null
-          OR_BOOK1?: string | null
-          OR_BOOK2?: string | null
-          OR_PAGE1?: string | null
-          OR_PAGE2?: string | null
-          OWN_ADDR1?: string | null
-          OWN_ADDR2?: string | null
-          OWN_CITY?: string | null
-          OWN_NAME?: string | null
-          OWN_STATE?: string | null
-          OWN_STATE_?: string | null
-          OWN_ZIPCD?: number | null
-          PA_UC?: string | null
-          PAR_SPLT?: number | null
-          PARCEL_ID?: string | null
-          PARCEL_ID_?: string | null
-          PHY_ADDR1?: string | null
-          PHY_ADDR2?: string | null
-          PHY_CITY?: string | null
-          PHY_ZIPCD?: number | null
-          PREV_HMSTD?: number | null
-          PUBLIC_LND?: string | null
-          QUAL_CD1?: string | null
-          QUAL_CD2?: string | null
-          RNG?: string | null
-          RS_ID?: string | null
-          S_CHNG_CD1?: string | null
-          S_CHNG_CD2?: string | null
-          S_LEGAL?: string | null
-          SALE_MO1?: number | null
-          SALE_MO2?: number | null
-          SALE_PRC1?: number | null
-          SALE_PRC2?: number | null
-          SALE_YR1?: number | null
-          SALE_YR2?: number | null
-          SEC?: number | null
-          SEQ_NO?: number | null
-          Shape_Area?: number | null
-          Shape_Length?: number | null
-          SPASS_CD?: string | null
-          SPC_CIR_CD?: number | null
-          SPC_CIR_TX?: string | null
-          SPC_CIR_YR?: number | null
-          SPEC_FEAT_?: number | null
-          STATE_PAR_?: string | null
-          TAX_AUTH_C?: string | null
-          TOT_LVG_AR?: number | null
-          TV_NSD?: number | null
-          TV_SD?: number | null
-          TWN?: string | null
+          emergency_hotline?: string | null
+          emergency_mgmt_phone?: string | null
+          emergency_mgmt_website?: string | null
+          fema_region?: string | null
+          fips5?: string
+          flood_elevation_requirement?: boolean | null
+          gis_url?: string | null
+          households?: number | null
+          id?: string
+          impact_glass_required?: boolean | null
+          median_home_value?: number | null
+          online_permit_system?: boolean | null
+          permit_search_url?: string | null
+          population?: number | null
+          property_appraiser_email?: string | null
+          property_appraiser_name?: string | null
+          property_appraiser_phone?: string | null
+          property_appraiser_website?: string | null
+          property_search_url?: string | null
+          region?: string | null
+          time_zone?: string | null
           updated_at?: string | null
-          VI_CD1?: string | null
-          VI_CD2?: string | null
-          YR_VAL_TRN?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "florida_counties2_county_id_fkey"
-            columns: ["county_id"]
-            isOneToOne: false
-            referencedRelation: "florida_counties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      florida_parcels: {
-        Row: {
-          act_yr_blt: number | null
-          ACT_YR_BLT: number | null
-          ag_val: number | null
-          ALT_KEY: string | null
-          app_stat: string | null
-          APP_STAT: string | null
-          asmnt_yr: number | null
-          ASMNT_YR: number | null
-          ASS_DIF_TR: number | null
-          ASS_TRNSFR: string | null
-          atv_strt: string | null
-          ATV_STRT: string | null
-          AV_CLASS_U: number | null
-          AV_CONSRV_: number | null
-          AV_H2O_REC: number | null
-          AV_HIST_CO: number | null
-          AV_HIST_SI: number | null
-          AV_HMSTD: number | null
-          AV_NON_HMS: number | null
-          av_nsd: number | null
-          AV_NSD: number | null
-          AV_RESD_NO: number | null
-          av_sd: number | null
-          AV_SD: number | null
-          AV_WRKNG_W: number | null
-          bas_strt: string | null
-          BAS_STRT: string | null
-          bldg_val: number | null
-          blk: string | null
-          cap: number | null
-          cape_shpa: number | null
-          census_bk: string | null
-          CENSUS_BK: string | null
-          clerk_n_2: string | null
-          clerk_no1: string | null
-          CLERK_NO1: string | null
-          clerk_no2: string | null
-          CLERK_NO2: string | null
-          co_app_sta: string | null
-          CO_APP_STA: string | null
-          co_no: number | null
-          CO_NO: number | null
-          CONO_PRV_H: number | null
-          const_clas: string | null
-          CONST_CLAS: number | null
-          const_val: number | null
-          county_fips: number | null
-          county_id: string | null
-          created_at: string | null
-          data_source: string | null
-          DEL_VAL: number | null
-          depth: number | null
-          distr_cd: string | null
-          DISTR_CD: string | null
-          distr_no: string | null
-          distr_yr: number | null
-          DISTR_YR: number | null
-          dor_cd1: string | null
-          dor_cd2: string | null
-          dor_cd3: string | null
-          dor_cd4: string | null
-          dor_uc: string | null
-          DOR_UC: string | null
-          DT_LAST_IN: number | null
-          eff_yr_blt: number | null
-          EFF_YR_BLT: number | null
-          FIDU_ADDR1: string | null
-          FIDU_ADDR2: string | null
-          FIDU_CD: number | null
-          FIDU_CITY: string | null
-          FIDU_NAME: string | null
-          FIDU_STATE: string | null
-          FIDU_ZIPCD: number | null
-          file_t: string | null
-          FILE_T: string | null
-          front: number | null
-          geometry_wkt: string | null
-          grp_no: string | null
-          GRP_NO: number | null
-          half_cd: string | null
-          id: number
-          imp_qual: string | null
-          IMP_QUAL: number | null
-          imp_val: number | null
-          jv: number | null
-          JV: number | null
-          jv_chng: string | null
-          JV_CHNG: number | null
-          JV_CHNG_CD: number | null
-          JV_CLASS_U: number | null
-          JV_CONSRV_: number | null
-          JV_H2O_REC: number | null
-          JV_HIST_CO: number | null
-          JV_HIST_SI: number | null
-          JV_HMSTD: number | null
-          JV_NON_HMS: number | null
-          JV_RESD_NO: number | null
-          JV_WRKNG_W: number | null
-          land_sqfoot: number | null
-          land_val: number | null
-          latitude: number | null
-          LND_SQFOOT: number | null
-          LND_UNTS_C: number | null
-          LND_VAL: number | null
-          longitude: number | null
-          lot: string | null
-          m_par_sal1: string | null
-          M_PAR_SAL1: string | null
-          m_par_sal2: string | null
-          M_PAR_SAL2: string | null
-          mkt_ar: string | null
-          MKT_AR: string | null
-          mp_id: string | null
-          MP_ID: string | null
-          nbrhd_cd: string | null
-          NBRHD_CD: string | null
-          nbrhd_cd1: string | null
-          nbrhd_cd2: string | null
-          nbrhd_cd3: string | null
-          nbrhd_cd4: string | null
-          nconst_val: number | null
-          NCONST_VAL: number | null
-          no_buldng: number | null
-          NO_BULDNG: number | null
-          NO_LND_UNT: number | null
-          no_res_unt: number | null
-          NO_RES_UNT: number | null
-          objectid: number | null
-          or_book1: string | null
-          OR_BOOK1: string | null
-          or_book2: string | null
-          OR_BOOK2: string | null
-          or_book2_: string | null
-          or_page1: string | null
-          OR_PAGE1: string | null
-          or_page2: string | null
-          OR_PAGE2: string | null
-          or_page2_: string | null
-          own_addr1: string | null
-          OWN_ADDR1: string | null
-          own_addr2: string | null
-          OWN_ADDR2: string | null
-          own_city: string | null
-          OWN_CITY: string | null
-          own_name: string | null
-          OWN_NAME: string | null
-          own_state: string | null
-          OWN_STATE: string | null
-          OWN_STATE_: string | null
-          own_state2: string | null
-          own_zipcd: string | null
-          OWN_ZIPCD: number | null
-          own_zipcda: string | null
-          pa_uc: string | null
-          PA_UC: string | null
-          PAR_SPLT: number | null
-          parcel_id: string | null
-          PARCEL_ID: string | null
-          parcel_id_: string | null
-          PARCEL_ID_: string | null
-          phy_addr1: string | null
-          PHY_ADDR1: string | null
-          phy_addr2: string | null
-          PHY_ADDR2: string | null
-          phy_city: string | null
-          PHY_CITY: string | null
-          phy_zipcd: string | null
-          PHY_ZIPCD: number | null
-          pin_1: string | null
-          pin_2: string | null
-          plat_book: string | null
-          PLAT_BOOK: string | null
-          plat_page: string | null
-          PREV_HMSTD: number | null
-          public_lnd: string | null
-          PUBLIC_LND: string | null
-          qual_cd1: string | null
-          QUAL_CD1: string | null
-          qual_cd2: string | null
-          QUAL_CD2: string | null
-          qual_cd2_: string | null
-          rng: string | null
-          RNG: string | null
-          rs_id: string | null
-          RS_ID: string | null
-          s_chng_cd1: string | null
-          S_CHNG_CD1: string | null
-          s_chng_cd2: string | null
-          S_CHNG_CD2: string | null
-          s_legal: string | null
-          S_LEGAL: string | null
-          sale_mo1: string | null
-          SALE_MO1: number | null
-          sale_mo2: string | null
-          SALE_MO2: number | null
-          sale_mo2_: number | null
-          sale_prc1: number | null
-          SALE_PRC1: number | null
-          sale_prc2: number | null
-          SALE_PRC2: number | null
-          sale_prc2_: number | null
-          sale_yr1: number | null
-          SALE_YR1: number | null
-          sale_yr2: number | null
-          SALE_YR2: number | null
-          sale_yr2_: number | null
-          sec: string | null
-          SEC: number | null
-          seq_no: string | null
-          SEQ_NO: number | null
-          Shape_Area: number | null
-          Shape_Length: number | null
-          spass_cd: string | null
-          SPASS_CD: string | null
-          spc_cir_cd: string | null
-          SPC_CIR_CD: number | null
-          spc_cir_tx: string | null
-          SPC_CIR_TX: string | null
-          spc_cir_yr: number | null
-          SPC_CIR_YR: number | null
-          spec_feat_: string | null
-          SPEC_FEAT_: number | null
-          state_par_: string | null
-          STATE_PAR_: string | null
-          sub: string | null
-          tax_auth_c: string | null
-          TAX_AUTH_C: string | null
-          tot_lvg_ar: number | null
-          TOT_LVG_AR: number | null
-          tot_val: number | null
-          tv_nsd: number | null
-          TV_NSD: number | null
-          tv_sd: number | null
-          TV_SD: number | null
-          twn: string | null
-          TWN: string | null
-          twp: string | null
-          updated_at: string | null
-          vi_cd1: string | null
-          VI_CD1: string | null
-          vi_cd2: string | null
-          VI_CD2: string | null
-          vi_cd2_: string | null
-          yr_val_trn: number | null
-          YR_VAL_TRN: number | null
-        }
-        Insert: {
-          act_yr_blt?: number | null
-          ACT_YR_BLT?: number | null
-          ag_val?: number | null
-          ALT_KEY?: string | null
-          app_stat?: string | null
-          APP_STAT?: string | null
-          asmnt_yr?: number | null
-          ASMNT_YR?: number | null
-          ASS_DIF_TR?: number | null
-          ASS_TRNSFR?: string | null
-          atv_strt?: string | null
-          ATV_STRT?: string | null
-          AV_CLASS_U?: number | null
-          AV_CONSRV_?: number | null
-          AV_H2O_REC?: number | null
-          AV_HIST_CO?: number | null
-          AV_HIST_SI?: number | null
-          AV_HMSTD?: number | null
-          AV_NON_HMS?: number | null
-          av_nsd?: number | null
-          AV_NSD?: number | null
-          AV_RESD_NO?: number | null
-          av_sd?: number | null
-          AV_SD?: number | null
-          AV_WRKNG_W?: number | null
-          bas_strt?: string | null
-          BAS_STRT?: string | null
-          bldg_val?: number | null
-          blk?: string | null
-          cap?: number | null
-          cape_shpa?: number | null
-          census_bk?: string | null
-          CENSUS_BK?: string | null
-          clerk_n_2?: string | null
-          clerk_no1?: string | null
-          CLERK_NO1?: string | null
-          clerk_no2?: string | null
-          CLERK_NO2?: string | null
-          co_app_sta?: string | null
-          CO_APP_STA?: string | null
-          co_no?: number | null
-          CO_NO?: number | null
-          CONO_PRV_H?: number | null
-          const_clas?: string | null
-          CONST_CLAS?: number | null
-          const_val?: number | null
-          county_fips?: number | null
-          county_id?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          DEL_VAL?: number | null
-          depth?: number | null
-          distr_cd?: string | null
-          DISTR_CD?: string | null
-          distr_no?: string | null
-          distr_yr?: number | null
-          DISTR_YR?: number | null
-          dor_cd1?: string | null
-          dor_cd2?: string | null
-          dor_cd3?: string | null
-          dor_cd4?: string | null
-          dor_uc?: string | null
-          DOR_UC?: string | null
-          DT_LAST_IN?: number | null
-          eff_yr_blt?: number | null
-          EFF_YR_BLT?: number | null
-          FIDU_ADDR1?: string | null
-          FIDU_ADDR2?: string | null
-          FIDU_CD?: number | null
-          FIDU_CITY?: string | null
-          FIDU_NAME?: string | null
-          FIDU_STATE?: string | null
-          FIDU_ZIPCD?: number | null
-          file_t?: string | null
-          FILE_T?: string | null
-          front?: number | null
-          geometry_wkt?: string | null
-          grp_no?: string | null
-          GRP_NO?: number | null
-          half_cd?: string | null
-          id?: number
-          imp_qual?: string | null
-          IMP_QUAL?: number | null
-          imp_val?: number | null
-          jv?: number | null
-          JV?: number | null
-          jv_chng?: string | null
-          JV_CHNG?: number | null
-          JV_CHNG_CD?: number | null
-          JV_CLASS_U?: number | null
-          JV_CONSRV_?: number | null
-          JV_H2O_REC?: number | null
-          JV_HIST_CO?: number | null
-          JV_HIST_SI?: number | null
-          JV_HMSTD?: number | null
-          JV_NON_HMS?: number | null
-          JV_RESD_NO?: number | null
-          JV_WRKNG_W?: number | null
-          land_sqfoot?: number | null
-          land_val?: number | null
-          latitude?: number | null
-          LND_SQFOOT?: number | null
-          LND_UNTS_C?: number | null
-          LND_VAL?: number | null
-          longitude?: number | null
-          lot?: string | null
-          m_par_sal1?: string | null
-          M_PAR_SAL1?: string | null
-          m_par_sal2?: string | null
-          M_PAR_SAL2?: string | null
-          mkt_ar?: string | null
-          MKT_AR?: string | null
-          mp_id?: string | null
-          MP_ID?: string | null
-          nbrhd_cd?: string | null
-          NBRHD_CD?: string | null
-          nbrhd_cd1?: string | null
-          nbrhd_cd2?: string | null
-          nbrhd_cd3?: string | null
-          nbrhd_cd4?: string | null
-          nconst_val?: number | null
-          NCONST_VAL?: number | null
-          no_buldng?: number | null
-          NO_BULDNG?: number | null
-          NO_LND_UNT?: number | null
-          no_res_unt?: number | null
-          NO_RES_UNT?: number | null
-          objectid?: number | null
-          or_book1?: string | null
-          OR_BOOK1?: string | null
-          or_book2?: string | null
-          OR_BOOK2?: string | null
-          or_book2_?: string | null
-          or_page1?: string | null
-          OR_PAGE1?: string | null
-          or_page2?: string | null
-          OR_PAGE2?: string | null
-          or_page2_?: string | null
-          own_addr1?: string | null
-          OWN_ADDR1?: string | null
-          own_addr2?: string | null
-          OWN_ADDR2?: string | null
-          own_city?: string | null
-          OWN_CITY?: string | null
-          own_name?: string | null
-          OWN_NAME?: string | null
-          own_state?: string | null
-          OWN_STATE?: string | null
-          OWN_STATE_?: string | null
-          own_state2?: string | null
-          own_zipcd?: string | null
-          OWN_ZIPCD?: number | null
-          own_zipcda?: string | null
-          pa_uc?: string | null
-          PA_UC?: string | null
-          PAR_SPLT?: number | null
-          parcel_id?: string | null
-          PARCEL_ID?: string | null
-          parcel_id_?: string | null
-          PARCEL_ID_?: string | null
-          phy_addr1?: string | null
-          PHY_ADDR1?: string | null
-          phy_addr2?: string | null
-          PHY_ADDR2?: string | null
-          phy_city?: string | null
-          PHY_CITY?: string | null
-          phy_zipcd?: string | null
-          PHY_ZIPCD?: number | null
-          pin_1?: string | null
-          pin_2?: string | null
-          plat_book?: string | null
-          PLAT_BOOK?: string | null
-          plat_page?: string | null
-          PREV_HMSTD?: number | null
-          public_lnd?: string | null
-          PUBLIC_LND?: string | null
-          qual_cd1?: string | null
-          QUAL_CD1?: string | null
-          qual_cd2?: string | null
-          QUAL_CD2?: string | null
-          qual_cd2_?: string | null
-          rng?: string | null
-          RNG?: string | null
-          rs_id?: string | null
-          RS_ID?: string | null
-          s_chng_cd1?: string | null
-          S_CHNG_CD1?: string | null
-          s_chng_cd2?: string | null
-          S_CHNG_CD2?: string | null
-          s_legal?: string | null
-          S_LEGAL?: string | null
-          sale_mo1?: string | null
-          SALE_MO1?: number | null
-          sale_mo2?: string | null
-          SALE_MO2?: number | null
-          sale_mo2_?: number | null
-          sale_prc1?: number | null
-          SALE_PRC1?: number | null
-          sale_prc2?: number | null
-          SALE_PRC2?: number | null
-          sale_prc2_?: number | null
-          sale_yr1?: number | null
-          SALE_YR1?: number | null
-          sale_yr2?: number | null
-          SALE_YR2?: number | null
-          sale_yr2_?: number | null
-          sec?: string | null
-          SEC?: number | null
-          seq_no?: string | null
-          SEQ_NO?: number | null
-          Shape_Area?: number | null
-          Shape_Length?: number | null
-          spass_cd?: string | null
-          SPASS_CD?: string | null
-          spc_cir_cd?: string | null
-          SPC_CIR_CD?: number | null
-          spc_cir_tx?: string | null
-          SPC_CIR_TX?: string | null
-          spc_cir_yr?: number | null
-          SPC_CIR_YR?: number | null
-          spec_feat_?: string | null
-          SPEC_FEAT_?: number | null
-          state_par_?: string | null
-          STATE_PAR_?: string | null
-          sub?: string | null
-          tax_auth_c?: string | null
-          TAX_AUTH_C?: string | null
-          tot_lvg_ar?: number | null
-          TOT_LVG_AR?: number | null
-          tot_val?: number | null
-          tv_nsd?: number | null
-          TV_NSD?: number | null
-          tv_sd?: number | null
-          TV_SD?: number | null
-          twn?: string | null
-          TWN?: string | null
-          twp?: string | null
-          updated_at?: string | null
-          vi_cd1?: string | null
-          VI_CD1?: string | null
-          vi_cd2?: string | null
-          VI_CD2?: string | null
-          vi_cd2_?: string | null
-          yr_val_trn?: number | null
-          YR_VAL_TRN?: number | null
-        }
-        Update: {
-          act_yr_blt?: number | null
-          ACT_YR_BLT?: number | null
-          ag_val?: number | null
-          ALT_KEY?: string | null
-          app_stat?: string | null
-          APP_STAT?: string | null
-          asmnt_yr?: number | null
-          ASMNT_YR?: number | null
-          ASS_DIF_TR?: number | null
-          ASS_TRNSFR?: string | null
-          atv_strt?: string | null
-          ATV_STRT?: string | null
-          AV_CLASS_U?: number | null
-          AV_CONSRV_?: number | null
-          AV_H2O_REC?: number | null
-          AV_HIST_CO?: number | null
-          AV_HIST_SI?: number | null
-          AV_HMSTD?: number | null
-          AV_NON_HMS?: number | null
-          av_nsd?: number | null
-          AV_NSD?: number | null
-          AV_RESD_NO?: number | null
-          av_sd?: number | null
-          AV_SD?: number | null
-          AV_WRKNG_W?: number | null
-          bas_strt?: string | null
-          BAS_STRT?: string | null
-          bldg_val?: number | null
-          blk?: string | null
-          cap?: number | null
-          cape_shpa?: number | null
-          census_bk?: string | null
-          CENSUS_BK?: string | null
-          clerk_n_2?: string | null
-          clerk_no1?: string | null
-          CLERK_NO1?: string | null
-          clerk_no2?: string | null
-          CLERK_NO2?: string | null
-          co_app_sta?: string | null
-          CO_APP_STA?: string | null
-          co_no?: number | null
-          CO_NO?: number | null
-          CONO_PRV_H?: number | null
-          const_clas?: string | null
-          CONST_CLAS?: number | null
-          const_val?: number | null
-          county_fips?: number | null
-          county_id?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          DEL_VAL?: number | null
-          depth?: number | null
-          distr_cd?: string | null
-          DISTR_CD?: string | null
-          distr_no?: string | null
-          distr_yr?: number | null
-          DISTR_YR?: number | null
-          dor_cd1?: string | null
-          dor_cd2?: string | null
-          dor_cd3?: string | null
-          dor_cd4?: string | null
-          dor_uc?: string | null
-          DOR_UC?: string | null
-          DT_LAST_IN?: number | null
-          eff_yr_blt?: number | null
-          EFF_YR_BLT?: number | null
-          FIDU_ADDR1?: string | null
-          FIDU_ADDR2?: string | null
-          FIDU_CD?: number | null
-          FIDU_CITY?: string | null
-          FIDU_NAME?: string | null
-          FIDU_STATE?: string | null
-          FIDU_ZIPCD?: number | null
-          file_t?: string | null
-          FILE_T?: string | null
-          front?: number | null
-          geometry_wkt?: string | null
-          grp_no?: string | null
-          GRP_NO?: number | null
-          half_cd?: string | null
-          id?: number
-          imp_qual?: string | null
-          IMP_QUAL?: number | null
-          imp_val?: number | null
-          jv?: number | null
-          JV?: number | null
-          jv_chng?: string | null
-          JV_CHNG?: number | null
-          JV_CHNG_CD?: number | null
-          JV_CLASS_U?: number | null
-          JV_CONSRV_?: number | null
-          JV_H2O_REC?: number | null
-          JV_HIST_CO?: number | null
-          JV_HIST_SI?: number | null
-          JV_HMSTD?: number | null
-          JV_NON_HMS?: number | null
-          JV_RESD_NO?: number | null
-          JV_WRKNG_W?: number | null
-          land_sqfoot?: number | null
-          land_val?: number | null
-          latitude?: number | null
-          LND_SQFOOT?: number | null
-          LND_UNTS_C?: number | null
-          LND_VAL?: number | null
-          longitude?: number | null
-          lot?: string | null
-          m_par_sal1?: string | null
-          M_PAR_SAL1?: string | null
-          m_par_sal2?: string | null
-          M_PAR_SAL2?: string | null
-          mkt_ar?: string | null
-          MKT_AR?: string | null
-          mp_id?: string | null
-          MP_ID?: string | null
-          nbrhd_cd?: string | null
-          NBRHD_CD?: string | null
-          nbrhd_cd1?: string | null
-          nbrhd_cd2?: string | null
-          nbrhd_cd3?: string | null
-          nbrhd_cd4?: string | null
-          nconst_val?: number | null
-          NCONST_VAL?: number | null
-          no_buldng?: number | null
-          NO_BULDNG?: number | null
-          NO_LND_UNT?: number | null
-          no_res_unt?: number | null
-          NO_RES_UNT?: number | null
-          objectid?: number | null
-          or_book1?: string | null
-          OR_BOOK1?: string | null
-          or_book2?: string | null
-          OR_BOOK2?: string | null
-          or_book2_?: string | null
-          or_page1?: string | null
-          OR_PAGE1?: string | null
-          or_page2?: string | null
-          OR_PAGE2?: string | null
-          or_page2_?: string | null
-          own_addr1?: string | null
-          OWN_ADDR1?: string | null
-          own_addr2?: string | null
-          OWN_ADDR2?: string | null
-          own_city?: string | null
-          OWN_CITY?: string | null
-          own_name?: string | null
-          OWN_NAME?: string | null
-          own_state?: string | null
-          OWN_STATE?: string | null
-          OWN_STATE_?: string | null
-          own_state2?: string | null
-          own_zipcd?: string | null
-          OWN_ZIPCD?: number | null
-          own_zipcda?: string | null
-          pa_uc?: string | null
-          PA_UC?: string | null
-          PAR_SPLT?: number | null
-          parcel_id?: string | null
-          PARCEL_ID?: string | null
-          parcel_id_?: string | null
-          PARCEL_ID_?: string | null
-          phy_addr1?: string | null
-          PHY_ADDR1?: string | null
-          phy_addr2?: string | null
-          PHY_ADDR2?: string | null
-          phy_city?: string | null
-          PHY_CITY?: string | null
-          phy_zipcd?: string | null
-          PHY_ZIPCD?: number | null
-          pin_1?: string | null
-          pin_2?: string | null
-          plat_book?: string | null
-          PLAT_BOOK?: string | null
-          plat_page?: string | null
-          PREV_HMSTD?: number | null
-          public_lnd?: string | null
-          PUBLIC_LND?: string | null
-          qual_cd1?: string | null
-          QUAL_CD1?: string | null
-          qual_cd2?: string | null
-          QUAL_CD2?: string | null
-          qual_cd2_?: string | null
-          rng?: string | null
-          RNG?: string | null
-          rs_id?: string | null
-          RS_ID?: string | null
-          s_chng_cd1?: string | null
-          S_CHNG_CD1?: string | null
-          s_chng_cd2?: string | null
-          S_CHNG_CD2?: string | null
-          s_legal?: string | null
-          S_LEGAL?: string | null
-          sale_mo1?: string | null
-          SALE_MO1?: number | null
-          sale_mo2?: string | null
-          SALE_MO2?: number | null
-          sale_mo2_?: number | null
-          sale_prc1?: number | null
-          SALE_PRC1?: number | null
-          sale_prc2?: number | null
-          SALE_PRC2?: number | null
-          sale_prc2_?: number | null
-          sale_yr1?: number | null
-          SALE_YR1?: number | null
-          sale_yr2?: number | null
-          SALE_YR2?: number | null
-          sale_yr2_?: number | null
-          sec?: string | null
-          SEC?: number | null
-          seq_no?: string | null
-          SEQ_NO?: number | null
-          Shape_Area?: number | null
-          Shape_Length?: number | null
-          spass_cd?: string | null
-          SPASS_CD?: string | null
-          spc_cir_cd?: string | null
-          SPC_CIR_CD?: number | null
-          spc_cir_tx?: string | null
-          SPC_CIR_TX?: string | null
-          spc_cir_yr?: number | null
-          SPC_CIR_YR?: number | null
-          spec_feat_?: string | null
-          SPEC_FEAT_?: number | null
-          state_par_?: string | null
-          STATE_PAR_?: string | null
-          sub?: string | null
-          tax_auth_c?: string | null
-          TAX_AUTH_C?: string | null
-          tot_lvg_ar?: number | null
-          TOT_LVG_AR?: number | null
-          tot_val?: number | null
-          tv_nsd?: number | null
-          TV_NSD?: number | null
-          tv_sd?: number | null
-          TV_SD?: number | null
-          twn?: string | null
-          TWN?: string | null
-          twp?: string | null
-          updated_at?: string | null
-          vi_cd1?: string | null
-          VI_CD1?: string | null
-          vi_cd2?: string | null
-          VI_CD2?: string | null
-          vi_cd2_?: string | null
-          yr_val_trn?: number | null
-          YR_VAL_TRN?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "florida_parcels_county_id_fkey"
-            columns: ["county_id"]
-            isOneToOne: false
-            referencedRelation: "florida_counties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      florida_parcels_staging: {
-        Row: {
-          act_yr_blt: string | null
-          ag_val: string | null
-          app_stat: string | null
-          asmnt_yr: string | null
-          atv_strt: string | null
-          av_nsd: string | null
-          av_sd: string | null
-          bas_strt: string | null
-          bldg_val: string | null
-          blk: string | null
-          cap: string | null
-          cape_shpa: string | null
-          census_bk: string | null
-          clerk_n_2: string | null
-          clerk_no1: string | null
-          clerk_no2: string | null
-          co_app_sta: string | null
-          co_no: string | null
-          const_clas: string | null
-          const_val: string | null
-          county_fips: string | null
-          created_at: string | null
-          data_source: string | null
-          depth: string | null
-          distr_cd: string | null
-          distr_no: string | null
-          distr_yr: string | null
-          dor_cd1: string | null
-          dor_cd2: string | null
-          dor_cd3: string | null
-          dor_cd4: string | null
-          dor_uc: string | null
-          eff_yr_blt: string | null
-          file_t: string | null
-          front: string | null
-          grp_no: string | null
-          half_cd: string | null
-          id: string | null
-          imp_qual: string | null
-          imp_val: string | null
-          jv: string | null
-          jv_chng: string | null
-          land_sqfoot: string | null
-          land_val: string | null
-          latitude: string | null
-          longitude: string | null
-          lot: string | null
-          m_par_sal1: string | null
-          m_par_sal2: string | null
-          mkt_ar: string | null
-          mp_id: string | null
-          nbrhd_cd: string | null
-          nbrhd_cd1: string | null
-          nbrhd_cd2: string | null
-          nbrhd_cd3: string | null
-          nbrhd_cd4: string | null
-          nconst_val: string | null
-          no_buldng: string | null
-          no_res_unt: string | null
-          objectid: string | null
-          or_book1: string | null
-          or_book2: string | null
-          or_book2_: string | null
-          or_page1: string | null
-          or_page2: string | null
-          or_page2_: string | null
-          own_addr1: string | null
-          own_addr2: string | null
-          own_city: string | null
-          own_name: string | null
-          own_state: string | null
-          own_state2: string | null
-          own_zipcd: string | null
-          own_zipcda: string | null
-          pa_uc: string | null
-          parcel_id: string | null
-          parcel_id_: string | null
-          phy_addr1: string | null
-          phy_addr2: string | null
-          phy_city: string | null
-          phy_zipcd: string | null
-          pin_1: string | null
-          pin_2: string | null
-          plat_book: string | null
-          plat_page: string | null
-          public_lnd: string | null
-          qual_cd1: string | null
-          qual_cd2: string | null
-          qual_cd2_: string | null
-          rng: string | null
-          rs_id: string | null
-          s_chng_cd1: string | null
-          s_chng_cd2: string | null
-          s_legal: string | null
-          sale_mo1: string | null
-          sale_mo2: string | null
-          sale_mo2_: string | null
-          sale_prc1: string | null
-          sale_prc2: string | null
-          sale_prc2_: string | null
-          sale_yr1: string | null
-          sale_yr2: string | null
-          sale_yr2_: string | null
-          sec: string | null
-          seq_no: string | null
-          spass_cd: string | null
-          spc_cir_cd: string | null
-          spc_cir_tx: string | null
-          spc_cir_yr: string | null
-          spec_feat_: string | null
-          state_par_: string | null
-          sub: string | null
-          tax_auth_c: string | null
-          tot_lvg_ar: string | null
-          tot_val: string | null
-          tv_nsd: string | null
-          tv_sd: string | null
-          twn: string | null
-          twp: string | null
-          updated_at: string | null
-          vi_cd1: string | null
-          vi_cd2: string | null
-          vi_cd2_: string | null
-          yr_val_trn: string | null
-        }
-        Insert: {
-          act_yr_blt?: string | null
-          ag_val?: string | null
-          app_stat?: string | null
-          asmnt_yr?: string | null
-          atv_strt?: string | null
-          av_nsd?: string | null
-          av_sd?: string | null
-          bas_strt?: string | null
-          bldg_val?: string | null
-          blk?: string | null
-          cap?: string | null
-          cape_shpa?: string | null
-          census_bk?: string | null
-          clerk_n_2?: string | null
-          clerk_no1?: string | null
-          clerk_no2?: string | null
-          co_app_sta?: string | null
-          co_no?: string | null
-          const_clas?: string | null
-          const_val?: string | null
-          county_fips?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          depth?: string | null
-          distr_cd?: string | null
-          distr_no?: string | null
-          distr_yr?: string | null
-          dor_cd1?: string | null
-          dor_cd2?: string | null
-          dor_cd3?: string | null
-          dor_cd4?: string | null
-          dor_uc?: string | null
-          eff_yr_blt?: string | null
-          file_t?: string | null
-          front?: string | null
-          grp_no?: string | null
-          half_cd?: string | null
-          id?: string | null
-          imp_qual?: string | null
-          imp_val?: string | null
-          jv?: string | null
-          jv_chng?: string | null
-          land_sqfoot?: string | null
-          land_val?: string | null
-          latitude?: string | null
-          longitude?: string | null
-          lot?: string | null
-          m_par_sal1?: string | null
-          m_par_sal2?: string | null
-          mkt_ar?: string | null
-          mp_id?: string | null
-          nbrhd_cd?: string | null
-          nbrhd_cd1?: string | null
-          nbrhd_cd2?: string | null
-          nbrhd_cd3?: string | null
-          nbrhd_cd4?: string | null
-          nconst_val?: string | null
-          no_buldng?: string | null
-          no_res_unt?: string | null
-          objectid?: string | null
-          or_book1?: string | null
-          or_book2?: string | null
-          or_book2_?: string | null
-          or_page1?: string | null
-          or_page2?: string | null
-          or_page2_?: string | null
-          own_addr1?: string | null
-          own_addr2?: string | null
-          own_city?: string | null
-          own_name?: string | null
-          own_state?: string | null
-          own_state2?: string | null
-          own_zipcd?: string | null
-          own_zipcda?: string | null
-          pa_uc?: string | null
-          parcel_id?: string | null
-          parcel_id_?: string | null
-          phy_addr1?: string | null
-          phy_addr2?: string | null
-          phy_city?: string | null
-          phy_zipcd?: string | null
-          pin_1?: string | null
-          pin_2?: string | null
-          plat_book?: string | null
-          plat_page?: string | null
-          public_lnd?: string | null
-          qual_cd1?: string | null
-          qual_cd2?: string | null
-          qual_cd2_?: string | null
-          rng?: string | null
-          rs_id?: string | null
-          s_chng_cd1?: string | null
-          s_chng_cd2?: string | null
-          s_legal?: string | null
-          sale_mo1?: string | null
-          sale_mo2?: string | null
-          sale_mo2_?: string | null
-          sale_prc1?: string | null
-          sale_prc2?: string | null
-          sale_prc2_?: string | null
-          sale_yr1?: string | null
-          sale_yr2?: string | null
-          sale_yr2_?: string | null
-          sec?: string | null
-          seq_no?: string | null
-          spass_cd?: string | null
-          spc_cir_cd?: string | null
-          spc_cir_tx?: string | null
-          spc_cir_yr?: string | null
-          spec_feat_?: string | null
-          state_par_?: string | null
-          sub?: string | null
-          tax_auth_c?: string | null
-          tot_lvg_ar?: string | null
-          tot_val?: string | null
-          tv_nsd?: string | null
-          tv_sd?: string | null
-          twn?: string | null
-          twp?: string | null
-          updated_at?: string | null
-          vi_cd1?: string | null
-          vi_cd2?: string | null
-          vi_cd2_?: string | null
-          yr_val_trn?: string | null
-        }
-        Update: {
-          act_yr_blt?: string | null
-          ag_val?: string | null
-          app_stat?: string | null
-          asmnt_yr?: string | null
-          atv_strt?: string | null
-          av_nsd?: string | null
-          av_sd?: string | null
-          bas_strt?: string | null
-          bldg_val?: string | null
-          blk?: string | null
-          cap?: string | null
-          cape_shpa?: string | null
-          census_bk?: string | null
-          clerk_n_2?: string | null
-          clerk_no1?: string | null
-          clerk_no2?: string | null
-          co_app_sta?: string | null
-          co_no?: string | null
-          const_clas?: string | null
-          const_val?: string | null
-          county_fips?: string | null
-          created_at?: string | null
-          data_source?: string | null
-          depth?: string | null
-          distr_cd?: string | null
-          distr_no?: string | null
-          distr_yr?: string | null
-          dor_cd1?: string | null
-          dor_cd2?: string | null
-          dor_cd3?: string | null
-          dor_cd4?: string | null
-          dor_uc?: string | null
-          eff_yr_blt?: string | null
-          file_t?: string | null
-          front?: string | null
-          grp_no?: string | null
-          half_cd?: string | null
-          id?: string | null
-          imp_qual?: string | null
-          imp_val?: string | null
-          jv?: string | null
-          jv_chng?: string | null
-          land_sqfoot?: string | null
-          land_val?: string | null
-          latitude?: string | null
-          longitude?: string | null
-          lot?: string | null
-          m_par_sal1?: string | null
-          m_par_sal2?: string | null
-          mkt_ar?: string | null
-          mp_id?: string | null
-          nbrhd_cd?: string | null
-          nbrhd_cd1?: string | null
-          nbrhd_cd2?: string | null
-          nbrhd_cd3?: string | null
-          nbrhd_cd4?: string | null
-          nconst_val?: string | null
-          no_buldng?: string | null
-          no_res_unt?: string | null
-          objectid?: string | null
-          or_book1?: string | null
-          or_book2?: string | null
-          or_book2_?: string | null
-          or_page1?: string | null
-          or_page2?: string | null
-          or_page2_?: string | null
-          own_addr1?: string | null
-          own_addr2?: string | null
-          own_city?: string | null
-          own_name?: string | null
-          own_state?: string | null
-          own_state2?: string | null
-          own_zipcd?: string | null
-          own_zipcda?: string | null
-          pa_uc?: string | null
-          parcel_id?: string | null
-          parcel_id_?: string | null
-          phy_addr1?: string | null
-          phy_addr2?: string | null
-          phy_city?: string | null
-          phy_zipcd?: string | null
-          pin_1?: string | null
-          pin_2?: string | null
-          plat_book?: string | null
-          plat_page?: string | null
-          public_lnd?: string | null
-          qual_cd1?: string | null
-          qual_cd2?: string | null
-          qual_cd2_?: string | null
-          rng?: string | null
-          rs_id?: string | null
-          s_chng_cd1?: string | null
-          s_chng_cd2?: string | null
-          s_legal?: string | null
-          sale_mo1?: string | null
-          sale_mo2?: string | null
-          sale_mo2_?: string | null
-          sale_prc1?: string | null
-          sale_prc2?: string | null
-          sale_prc2_?: string | null
-          sale_yr1?: string | null
-          sale_yr2?: string | null
-          sale_yr2_?: string | null
-          sec?: string | null
-          seq_no?: string | null
-          spass_cd?: string | null
-          spc_cir_cd?: string | null
-          spc_cir_tx?: string | null
-          spc_cir_yr?: string | null
-          spec_feat_?: string | null
-          state_par_?: string | null
-          sub?: string | null
-          tax_auth_c?: string | null
-          tot_lvg_ar?: string | null
-          tot_val?: string | null
-          tv_nsd?: string | null
-          tv_sd?: string | null
-          twn?: string | null
-          twp?: string | null
-          updated_at?: string | null
-          vi_cd1?: string | null
-          vi_cd2?: string | null
-          vi_cd2_?: string | null
-          yr_val_trn?: string | null
+          version?: number | null
+          wind_speed_requirement?: number | null
         }
         Relationships: []
       }
       legal_documents: {
         Row: {
+          change_summary: string | null
+          content: string
           created_at: string | null
+          created_by: string | null
           effective_date: string
           id: string
           is_active: boolean | null
+          metadata: Json | null
+          parent_version_id: string | null
+          requires_acceptance: boolean | null
           sha256_hash: string
           slug: string
-          storage_url: string
+          storage_url: string | null
+          summary: string | null
           title: string
+          type: Database["public"]["Enums"]["legal_document_type"]
           updated_at: string | null
           version: string
         }
         Insert: {
+          change_summary?: string | null
+          content: string
           created_at?: string | null
+          created_by?: string | null
           effective_date: string
           id?: string
           is_active?: boolean | null
+          metadata?: Json | null
+          parent_version_id?: string | null
+          requires_acceptance?: boolean | null
           sha256_hash: string
           slug: string
-          storage_url: string
+          storage_url?: string | null
+          summary?: string | null
           title: string
+          type: Database["public"]["Enums"]["legal_document_type"]
           updated_at?: string | null
           version: string
         }
         Update: {
+          change_summary?: string | null
+          content?: string
           created_at?: string | null
+          created_by?: string | null
           effective_date?: string
           id?: string
           is_active?: boolean | null
+          metadata?: Json | null
+          parent_version_id?: string | null
+          requires_acceptance?: boolean | null
           sha256_hash?: string
           slug?: string
-          storage_url?: string
+          storage_url?: string | null
+          summary?: string | null
           title?: string
+          type?: Database["public"]["Enums"]["legal_document_type"]
           updated_at?: string | null
           version?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "legal_documents_parent_version_id_fkey"
+            columns: ["parent_version_id"]
+            isOneToOne: false
+            referencedRelation: "legal_documents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       login_activity: {
         Row: {
-          browser: string | null
+          attempt_type: string | null
           created_at: string | null
-          device_type: string | null
-          failure_reason: string | null
+          device_fingerprint: string | null
+          email: string | null
+          error_message: string | null
+          geolocation: Json | null
           id: string
-          ip_address: string | null
-          location_city: string | null
-          location_country: string | null
-          location_region: string | null
-          os: string | null
+          ip_address: unknown | null
+          metadata: Json | null
           success: boolean
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
-          browser?: string | null
+          attempt_type?: string | null
           created_at?: string | null
-          device_type?: string | null
-          failure_reason?: string | null
+          device_fingerprint?: string | null
+          email?: string | null
+          error_message?: string | null
+          geolocation?: Json | null
           id?: string
-          ip_address?: string | null
-          location_city?: string | null
-          location_country?: string | null
-          location_region?: string | null
-          os?: string | null
-          success?: boolean
+          ip_address?: unknown | null
+          metadata?: Json | null
+          success: boolean
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
-          browser?: string | null
+          attempt_type?: string | null
           created_at?: string | null
-          device_type?: string | null
-          failure_reason?: string | null
+          device_fingerprint?: string | null
+          email?: string | null
+          error_message?: string | null
+          geolocation?: Json | null
           id?: string
-          ip_address?: string | null
-          location_city?: string | null
-          location_country?: string | null
-          location_region?: string | null
-          os?: string | null
+          ip_address?: unknown | null
+          metadata?: Json | null
           success?: boolean
           user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
-      parcel_import_batches: {
+      marketing_attribution: {
         Row: {
-          completed_at: string | null
-          data_source: Database["public"]["Enums"]["parcel_data_source"]
-          duration_seconds: number | null
-          errors: Json | null
+          conversion_campaign: string | null
+          conversion_date: string | null
+          conversion_landing_page: string | null
+          conversion_medium: string | null
+          conversion_source: string | null
+          created_at: string | null
+          days_to_conversion: number | null
+          first_touch_campaign: string | null
+          first_touch_date: string | null
+          first_touch_landing_page: string | null
+          first_touch_medium: string | null
+          first_touch_source: string | null
           id: string
-          invalid_records: number | null
-          processed_records: number | null
-          started_at: string | null
-          status: Database["public"]["Enums"]["import_status"] | null
-          total_records: number | null
-          valid_records: number | null
-          warnings: Json | null
+          last_touch_campaign: string | null
+          last_touch_date: string | null
+          last_touch_landing_page: string | null
+          last_touch_medium: string | null
+          last_touch_source: string | null
+          multi_touch_points: Json | null
+          total_touches: number | null
+          updated_at: string | null
+          user_id: string | null
         }
         Insert: {
-          completed_at?: string | null
-          data_source: Database["public"]["Enums"]["parcel_data_source"]
-          duration_seconds?: number | null
-          errors?: Json | null
+          conversion_campaign?: string | null
+          conversion_date?: string | null
+          conversion_landing_page?: string | null
+          conversion_medium?: string | null
+          conversion_source?: string | null
+          created_at?: string | null
+          days_to_conversion?: number | null
+          first_touch_campaign?: string | null
+          first_touch_date?: string | null
+          first_touch_landing_page?: string | null
+          first_touch_medium?: string | null
+          first_touch_source?: string | null
           id?: string
-          invalid_records?: number | null
-          processed_records?: number | null
-          started_at?: string | null
-          status?: Database["public"]["Enums"]["import_status"] | null
-          total_records?: number | null
-          valid_records?: number | null
-          warnings?: Json | null
+          last_touch_campaign?: string | null
+          last_touch_date?: string | null
+          last_touch_landing_page?: string | null
+          last_touch_medium?: string | null
+          last_touch_source?: string | null
+          multi_touch_points?: Json | null
+          total_touches?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Update: {
-          completed_at?: string | null
-          data_source?: Database["public"]["Enums"]["parcel_data_source"]
-          duration_seconds?: number | null
-          errors?: Json | null
+          conversion_campaign?: string | null
+          conversion_date?: string | null
+          conversion_landing_page?: string | null
+          conversion_medium?: string | null
+          conversion_source?: string | null
+          created_at?: string | null
+          days_to_conversion?: number | null
+          first_touch_campaign?: string | null
+          first_touch_date?: string | null
+          first_touch_landing_page?: string | null
+          first_touch_medium?: string | null
+          first_touch_source?: string | null
           id?: string
-          invalid_records?: number | null
-          processed_records?: number | null
-          started_at?: string | null
-          status?: Database["public"]["Enums"]["import_status"] | null
-          total_records?: number | null
-          valid_records?: number | null
-          warnings?: Json | null
+          last_touch_campaign?: string | null
+          last_touch_date?: string | null
+          last_touch_landing_page?: string | null
+          last_touch_medium?: string | null
+          last_touch_source?: string | null
+          multi_touch_points?: Json | null
+          total_touches?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
-      parcels: {
+      personal_property: {
         Row: {
-          assessed_value: number | null
+          ai_category_confidence: number | null
+          ai_detected_items: Json | null
+          ai_value_estimate: number | null
+          brand: string | null
+          category: Database["public"]["Enums"]["item_category"] | null
           created_at: string | null
-          geom: unknown | null
+          current_value: number | null
+          description: string | null
+          disposal_reason: string | null
+          disposed_date: string | null
           id: string
-          just_value: number | null
-          living_area_sqft: number | null
-          owner_name: string | null
-          parcel_id: string
-          property_use_code: string | null
-          raw_data_id: number | null
-          situs_address: string | null
-          situs_city: string | null
-          situs_zip: string | null
-          source: string
+          is_active: boolean | null
+          location_details: string | null
+          manual_url: string | null
+          metadata: Json | null
+          model: string | null
+          name: string
+          photo_urls: string[] | null
+          property_id: string | null
+          purchase_date: string | null
+          purchase_price: number | null
+          receipt_url: string | null
+          replacement_cost: number | null
+          room: string | null
+          serial_number: string | null
+          subcategory: string | null
           updated_at: string | null
-          year_built: number | null
+          user_id: string | null
+          version: number | null
+          warranty_info: Json | null
         }
         Insert: {
-          assessed_value?: number | null
+          ai_category_confidence?: number | null
+          ai_detected_items?: Json | null
+          ai_value_estimate?: number | null
+          brand?: string | null
+          category?: Database["public"]["Enums"]["item_category"] | null
           created_at?: string | null
-          geom?: unknown | null
+          current_value?: number | null
+          description?: string | null
+          disposal_reason?: string | null
+          disposed_date?: string | null
           id?: string
-          just_value?: number | null
-          living_area_sqft?: number | null
-          owner_name?: string | null
-          parcel_id: string
-          property_use_code?: string | null
-          raw_data_id?: number | null
-          situs_address?: string | null
-          situs_city?: string | null
-          situs_zip?: string | null
-          source: string
+          is_active?: boolean | null
+          location_details?: string | null
+          manual_url?: string | null
+          metadata?: Json | null
+          model?: string | null
+          name: string
+          photo_urls?: string[] | null
+          property_id?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          receipt_url?: string | null
+          replacement_cost?: number | null
+          room?: string | null
+          serial_number?: string | null
+          subcategory?: string | null
           updated_at?: string | null
-          year_built?: number | null
+          user_id?: string | null
+          version?: number | null
+          warranty_info?: Json | null
         }
         Update: {
-          assessed_value?: number | null
+          ai_category_confidence?: number | null
+          ai_detected_items?: Json | null
+          ai_value_estimate?: number | null
+          brand?: string | null
+          category?: Database["public"]["Enums"]["item_category"] | null
           created_at?: string | null
-          geom?: unknown | null
+          current_value?: number | null
+          description?: string | null
+          disposal_reason?: string | null
+          disposed_date?: string | null
           id?: string
-          just_value?: number | null
-          living_area_sqft?: number | null
-          owner_name?: string | null
-          parcel_id?: string
-          property_use_code?: string | null
-          raw_data_id?: number | null
-          situs_address?: string | null
-          situs_city?: string | null
-          situs_zip?: string | null
-          source?: string
+          is_active?: boolean | null
+          location_details?: string | null
+          manual_url?: string | null
+          metadata?: Json | null
+          model?: string | null
+          name?: string
+          photo_urls?: string[] | null
+          property_id?: string | null
+          purchase_date?: string | null
+          purchase_price?: number | null
+          receipt_url?: string | null
+          replacement_cost?: number | null
+          room?: string | null
+          serial_number?: string | null
+          subcategory?: string | null
           updated_at?: string | null
-          year_built?: number | null
+          user_id?: string | null
+          version?: number | null
+          warranty_info?: Json | null
         }
-        Relationships: []
-      }
-      physical_sites: {
-        Row: {
-          created_at: string | null
-          id: string
-          metadata: Json
-          parcel_id: string
-          updated_at: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          id?: string
-          metadata: Json
-          parcel_id: string
-          updated_at?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          id?: string
-          metadata?: Json
-          parcel_id?: string
-          updated_at?: string | null
-        }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "personal_property_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       policies: {
         Row: {
+          annual_premium: number | null
+          cancellation_date: string | null
+          cancellation_reason: string | null
+          carrier_naic: string | null
           carrier_name: string
-          coverage_details: Json | null
           created_at: string | null
-          created_by: string | null
-          deductible_amount: number | null
+          dwelling_coverage: number | null
           effective_date: string
+          endorsements: Json | null
+          exclusions: Json | null
           expiration_date: string
-          flood_deductible_amount: number | null
+          flood_deductible: number | null
+          hurricane_deductible: string | null
           id: string
-          irfs_filing_id: number | null
           is_active: boolean | null
+          liability_coverage: number | null
+          loss_of_use_coverage: number | null
+          medical_payments_coverage: number | null
+          metadata: Json | null
+          other_structures_coverage: number | null
+          payment_frequency: string | null
+          personal_property_coverage: number | null
           policy_number: string
-          policy_type: Database["public"]["Enums"]["policy_type_enum"]
-          premium_amount: number | null
-          property_id: string
+          policy_type: string | null
+          property_id: string | null
+          special_coverages: Json | null
+          standard_deductible: number | null
           updated_at: string | null
-          wind_deductible_percentage: number | null
+          user_id: string | null
+          version: number | null
         }
         Insert: {
+          annual_premium?: number | null
+          cancellation_date?: string | null
+          cancellation_reason?: string | null
+          carrier_naic?: string | null
           carrier_name: string
-          coverage_details?: Json | null
           created_at?: string | null
-          created_by?: string | null
-          deductible_amount?: number | null
+          dwelling_coverage?: number | null
           effective_date: string
+          endorsements?: Json | null
+          exclusions?: Json | null
           expiration_date: string
-          flood_deductible_amount?: number | null
+          flood_deductible?: number | null
+          hurricane_deductible?: string | null
           id?: string
-          irfs_filing_id?: number | null
           is_active?: boolean | null
+          liability_coverage?: number | null
+          loss_of_use_coverage?: number | null
+          medical_payments_coverage?: number | null
+          metadata?: Json | null
+          other_structures_coverage?: number | null
+          payment_frequency?: string | null
+          personal_property_coverage?: number | null
           policy_number: string
-          policy_type: Database["public"]["Enums"]["policy_type_enum"]
-          premium_amount?: number | null
-          property_id: string
+          policy_type?: string | null
+          property_id?: string | null
+          special_coverages?: Json | null
+          standard_deductible?: number | null
           updated_at?: string | null
-          wind_deductible_percentage?: number | null
+          user_id?: string | null
+          version?: number | null
         }
         Update: {
+          annual_premium?: number | null
+          cancellation_date?: string | null
+          cancellation_reason?: string | null
+          carrier_naic?: string | null
           carrier_name?: string
-          coverage_details?: Json | null
           created_at?: string | null
-          created_by?: string | null
-          deductible_amount?: number | null
+          dwelling_coverage?: number | null
           effective_date?: string
+          endorsements?: Json | null
+          exclusions?: Json | null
           expiration_date?: string
-          flood_deductible_amount?: number | null
+          flood_deductible?: number | null
+          hurricane_deductible?: string | null
           id?: string
-          irfs_filing_id?: number | null
           is_active?: boolean | null
+          liability_coverage?: number | null
+          loss_of_use_coverage?: number | null
+          medical_payments_coverage?: number | null
+          metadata?: Json | null
+          other_structures_coverage?: number | null
+          payment_frequency?: string | null
+          personal_property_coverage?: number | null
           policy_number?: string
-          policy_type?: Database["public"]["Enums"]["policy_type_enum"]
-          premium_amount?: number | null
-          property_id?: string
+          policy_type?: string | null
+          property_id?: string | null
+          special_coverages?: Json | null
+          standard_deductible?: number | null
           updated_at?: string | null
-          wind_deductible_percentage?: number | null
+          user_id?: string | null
+          version?: number | null
         }
         Relationships: [
           {
             foreignKeyName: "policies_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: "properties_old"
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
       }
-      policy_documents: {
+      policies_history: {
         Row: {
-          description: string | null
-          document_type: Database["public"]["Enums"]["document_type_enum"]
-          file_name: string
-          file_path: string
-          file_size: number
-          file_type: string
+          annual_premium: number | null
+          archived_at: string | null
+          cancellation_date: string | null
+          cancellation_reason: string | null
+          carrier_naic: string | null
+          carrier_name: string
+          created_at: string | null
+          dwelling_coverage: number | null
+          effective_date: string
+          endorsements: Json | null
+          exclusions: Json | null
+          expiration_date: string
+          flood_deductible: number | null
+          hurricane_deductible: string | null
           id: string
-          policy_id: string | null
-          property_id: string
-          uploaded_at: string | null
-          uploaded_by: string
+          is_active: boolean | null
+          liability_coverage: number | null
+          loss_of_use_coverage: number | null
+          medical_payments_coverage: number | null
+          metadata: Json | null
+          operation: string | null
+          other_structures_coverage: number | null
+          payment_frequency: string | null
+          personal_property_coverage: number | null
+          policy_number: string
+          policy_type: string | null
+          property_id: string | null
+          special_coverages: Json | null
+          standard_deductible: number | null
+          updated_at: string | null
+          user_id: string | null
+          version: number | null
         }
         Insert: {
-          description?: string | null
-          document_type?: Database["public"]["Enums"]["document_type_enum"]
-          file_name: string
-          file_path: string
-          file_size: number
-          file_type: string
+          annual_premium?: number | null
+          archived_at?: string | null
+          cancellation_date?: string | null
+          cancellation_reason?: string | null
+          carrier_naic?: string | null
+          carrier_name: string
+          created_at?: string | null
+          dwelling_coverage?: number | null
+          effective_date: string
+          endorsements?: Json | null
+          exclusions?: Json | null
+          expiration_date: string
+          flood_deductible?: number | null
+          hurricane_deductible?: string | null
           id?: string
-          policy_id?: string | null
-          property_id: string
-          uploaded_at?: string | null
-          uploaded_by: string
+          is_active?: boolean | null
+          liability_coverage?: number | null
+          loss_of_use_coverage?: number | null
+          medical_payments_coverage?: number | null
+          metadata?: Json | null
+          operation?: string | null
+          other_structures_coverage?: number | null
+          payment_frequency?: string | null
+          personal_property_coverage?: number | null
+          policy_number: string
+          policy_type?: string | null
+          property_id?: string | null
+          special_coverages?: Json | null
+          standard_deductible?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          version?: number | null
         }
         Update: {
-          description?: string | null
-          document_type?: Database["public"]["Enums"]["document_type_enum"]
-          file_name?: string
-          file_path?: string
-          file_size?: number
-          file_type?: string
+          annual_premium?: number | null
+          archived_at?: string | null
+          cancellation_date?: string | null
+          cancellation_reason?: string | null
+          carrier_naic?: string | null
+          carrier_name?: string
+          created_at?: string | null
+          dwelling_coverage?: number | null
+          effective_date?: string
+          endorsements?: Json | null
+          exclusions?: Json | null
+          expiration_date?: string
+          flood_deductible?: number | null
+          hurricane_deductible?: string | null
           id?: string
-          policy_id?: string | null
-          property_id?: string
-          uploaded_at?: string | null
-          uploaded_by?: string
+          is_active?: boolean | null
+          liability_coverage?: number | null
+          loss_of_use_coverage?: number | null
+          medical_payments_coverage?: number | null
+          metadata?: Json | null
+          operation?: string | null
+          other_structures_coverage?: number | null
+          payment_frequency?: string | null
+          personal_property_coverage?: number | null
+          policy_number?: string
+          policy_type?: string | null
+          property_id?: string | null
+          special_coverages?: Json | null
+          standard_deductible?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          version?: number | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "policy_documents_policy_id_fkey"
-            columns: ["policy_id"]
-            isOneToOne: false
-            referencedRelation: "active_policies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "policy_documents_policy_id_fkey"
-            columns: ["policy_id"]
-            isOneToOne: false
-            referencedRelation: "policies"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "policy_documents_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties_old"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          full_name: string | null
+          id: string
+          phone: string | null
+          updated_at: string | null
+          username: string | null
+          website: string | null
+        }
+        Insert: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id: string
+          phone?: string | null
+          updated_at?: string | null
+          username?: string | null
+          website?: string | null
+        }
+        Update: {
+          avatar_url?: string | null
+          full_name?: string | null
+          id?: string
+          phone?: string | null
+          updated_at?: string | null
+          username?: string | null
+          website?: string | null
+        }
+        Relationships: []
       }
       properties: {
         Row: {
           address: string
-          ai_insights: Json | null
-          ai_market_analysis: Json | null
-          ai_risk_factors: Json | null
-          ai_risk_score: number | null
+          bathrooms: number | null
+          bedrooms: number | null
           city: string
-          county: string | null
-          county_id: string | null
-          county_name: string | null
+          construction_type: string | null
+          coordinates: unknown | null
+          county_fips: string | null
           created_at: string | null
           current_value: number | null
-          external_ids: Json | null
+          electrical_year: number | null
+          evacuation_zone: string | null
+          flood_zone: string | null
+          garage_spaces: number | null
+          hvac_year: number | null
           id: string
-          last_ai_analysis_at: string | null
-          latitude: number | null
-          location: unknown | null
-          longitude: number | null
+          legal_description: string | null
           lot_size_acres: number | null
           metadata: Json | null
+          mortgage_balance: number | null
+          name: string
           occupancy_status:
             | Database["public"]["Enums"]["occupancy_status"]
             | null
           parcel_number: string | null
-          property_embedding: string | null
+          plumbing_year: number | null
+          pool: boolean | null
           property_type: Database["public"]["Enums"]["property_type"] | null
           purchase_date: string | null
           purchase_price: number | null
+          roof_type: string | null
+          roof_year: number | null
           square_footage: number | null
-          state: string
+          state: string | null
+          stories: number | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
           version: number | null
+          wind_zone: string | null
           year_built: number | null
           zip_code: string
         }
         Insert: {
           address: string
-          ai_insights?: Json | null
-          ai_market_analysis?: Json | null
-          ai_risk_factors?: Json | null
-          ai_risk_score?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
           city: string
-          county?: string | null
-          county_id?: string | null
-          county_name?: string | null
+          construction_type?: string | null
+          coordinates?: unknown | null
+          county_fips?: string | null
           created_at?: string | null
           current_value?: number | null
-          external_ids?: Json | null
+          electrical_year?: number | null
+          evacuation_zone?: string | null
+          flood_zone?: string | null
+          garage_spaces?: number | null
+          hvac_year?: number | null
           id?: string
-          last_ai_analysis_at?: string | null
-          latitude?: number | null
-          location?: unknown | null
-          longitude?: number | null
+          legal_description?: string | null
           lot_size_acres?: number | null
           metadata?: Json | null
+          mortgage_balance?: number | null
+          name: string
           occupancy_status?:
             | Database["public"]["Enums"]["occupancy_status"]
             | null
           parcel_number?: string | null
-          property_embedding?: string | null
+          plumbing_year?: number | null
+          pool?: boolean | null
           property_type?: Database["public"]["Enums"]["property_type"] | null
           purchase_date?: string | null
           purchase_price?: number | null
+          roof_type?: string | null
+          roof_year?: number | null
           square_footage?: number | null
-          state?: string
+          state?: string | null
+          stories?: number | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
           version?: number | null
+          wind_zone?: string | null
           year_built?: number | null
           zip_code: string
         }
         Update: {
           address?: string
-          ai_insights?: Json | null
-          ai_market_analysis?: Json | null
-          ai_risk_factors?: Json | null
-          ai_risk_score?: number | null
+          bathrooms?: number | null
+          bedrooms?: number | null
           city?: string
-          county?: string | null
-          county_id?: string | null
-          county_name?: string | null
+          construction_type?: string | null
+          coordinates?: unknown | null
+          county_fips?: string | null
           created_at?: string | null
           current_value?: number | null
-          external_ids?: Json | null
+          electrical_year?: number | null
+          evacuation_zone?: string | null
+          flood_zone?: string | null
+          garage_spaces?: number | null
+          hvac_year?: number | null
           id?: string
-          last_ai_analysis_at?: string | null
-          latitude?: number | null
-          location?: unknown | null
-          longitude?: number | null
+          legal_description?: string | null
           lot_size_acres?: number | null
           metadata?: Json | null
+          mortgage_balance?: number | null
+          name?: string
           occupancy_status?:
             | Database["public"]["Enums"]["occupancy_status"]
             | null
           parcel_number?: string | null
-          property_embedding?: string | null
+          plumbing_year?: number | null
+          pool?: boolean | null
           property_type?: Database["public"]["Enums"]["property_type"] | null
           purchase_date?: string | null
           purchase_price?: number | null
+          roof_type?: string | null
+          roof_year?: number | null
           square_footage?: number | null
-          state?: string
+          state?: string | null
+          stories?: number | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
           version?: number | null
+          wind_zone?: string | null
           year_built?: number | null
           zip_code?: string
         }
         Relationships: [
           {
-            foreignKeyName: "properties_county_id_fkey"
-            columns: ["county_id"]
+            foreignKeyName: "properties_county_fips_fkey"
+            columns: ["county_fips"]
             isOneToOne: false
-            referencedRelation: "florida_counties"
-            referencedColumns: ["id"]
+            referencedRelation: "fl_counties"
+            referencedColumns: ["fips5"]
           },
         ]
       }
-      properties_backup_20250724: {
+      properties_history: {
         Row: {
-          address: Json | null
-          city: string | null
-          country: string | null
-          county: string | null
-          created_at: string | null
-          details: Json | null
-          id: string | null
-          insurability_score: number | null
-          insurance_carrier: string | null
-          insurance_policy_number: string | null
-          location: unknown | null
-          name: string | null
-          parcel_id: string | null
-          postal_code: string | null
-          property_type: string | null
-          square_feet: number | null
-          state: string | null
-          street_address: string | null
-          updated_at: string | null
-          user_id: string | null
-          value: number | null
-          year_built: number | null
-        }
-        Insert: {
-          address?: Json | null
-          city?: string | null
-          country?: string | null
-          county?: string | null
-          created_at?: string | null
-          details?: Json | null
-          id?: string | null
-          insurability_score?: number | null
-          insurance_carrier?: string | null
-          insurance_policy_number?: string | null
-          location?: unknown | null
-          name?: string | null
-          parcel_id?: string | null
-          postal_code?: string | null
-          property_type?: string | null
-          square_feet?: number | null
-          state?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          value?: number | null
-          year_built?: number | null
-        }
-        Update: {
-          address?: Json | null
-          city?: string | null
-          country?: string | null
-          county?: string | null
-          created_at?: string | null
-          details?: Json | null
-          id?: string | null
-          insurability_score?: number | null
-          insurance_carrier?: string | null
-          insurance_policy_number?: string | null
-          location?: unknown | null
-          name?: string | null
-          parcel_id?: string | null
-          postal_code?: string | null
-          property_type?: string | null
-          square_feet?: number | null
-          state?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          value?: number | null
-          year_built?: number | null
-        }
-        Relationships: []
-      }
-      properties_old: {
-        Row: {
-          address: Json | null
-          city: string | null
-          country: string | null
-          county: string | null
-          created_at: string | null
-          details: Json | null
-          id: string
-          insurability_score: number | null
-          insurance_carrier: string | null
-          insurance_policy_number: string | null
-          location: unknown | null
-          name: string
-          parcel_id: string | null
-          postal_code: string | null
-          property_type: string | null
-          square_feet: number | null
-          state: string | null
-          street_address: string | null
-          updated_at: string | null
-          user_id: string | null
-          value: number | null
-          year_built: number | null
-        }
-        Insert: {
-          address?: Json | null
-          city?: string | null
-          country?: string | null
-          county?: string | null
-          created_at?: string | null
-          details?: Json | null
-          id?: string
-          insurability_score?: number | null
-          insurance_carrier?: string | null
-          insurance_policy_number?: string | null
-          location?: unknown | null
-          name: string
-          parcel_id?: string | null
-          postal_code?: string | null
-          property_type?: string | null
-          square_feet?: number | null
-          state?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          value?: number | null
-          year_built?: number | null
-        }
-        Update: {
-          address?: Json | null
-          city?: string | null
-          country?: string | null
-          county?: string | null
-          created_at?: string | null
-          details?: Json | null
-          id?: string
-          insurability_score?: number | null
-          insurance_carrier?: string | null
-          insurance_policy_number?: string | null
-          location?: unknown | null
-          name?: string
-          parcel_id?: string | null
-          postal_code?: string | null
-          property_type?: string | null
-          square_feet?: number | null
-          state?: string | null
-          street_address?: string | null
-          updated_at?: string | null
-          user_id?: string | null
-          value?: number | null
-          year_built?: number | null
-        }
-        Relationships: []
-      }
-      property_ai_insights: {
-        Row: {
-          calculations: Json | null
-          confidence_score: number | null
-          created_at: string | null
-          data_sources: Json | null
-          description: string | null
-          expires_at: string | null
-          generated_at: string | null
-          id: string
-          insight_type: string
-          is_active: boolean | null
-          model_id: string | null
-          predictions: Json | null
-          property_id: string
-          recommendations: Json | null
-          title: string
-        }
-        Insert: {
-          calculations?: Json | null
-          confidence_score?: number | null
-          created_at?: string | null
-          data_sources?: Json | null
-          description?: string | null
-          expires_at?: string | null
-          generated_at?: string | null
-          id?: string
-          insight_type: string
-          is_active?: boolean | null
-          model_id?: string | null
-          predictions?: Json | null
-          property_id: string
-          recommendations?: Json | null
-          title: string
-        }
-        Update: {
-          calculations?: Json | null
-          confidence_score?: number | null
-          created_at?: string | null
-          data_sources?: Json | null
-          description?: string | null
-          expires_at?: string | null
-          generated_at?: string | null
-          id?: string
-          insight_type?: string
-          is_active?: boolean | null
-          model_id?: string | null
-          predictions?: Json | null
-          property_id?: string
-          recommendations?: Json | null
-          title?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_ai_insights_model_id_fkey"
-            columns: ["model_id"]
-            isOneToOne: false
-            referencedRelation: "ai_models"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_ai_insights_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_contractors: {
-        Row: {
-          claim_id: string | null
-          company_name: string
-          completion_date: string | null
-          contact_name: string | null
-          contract_amount: number | null
-          contract_url: string | null
-          created_at: string | null
-          damage_id: string | null
-          email: string | null
-          estimate_amount: number | null
-          estimate_date: string | null
-          estimate_url: string | null
-          id: string
-          invoice_urls: Json | null
-          license_number: string | null
-          metadata: Json | null
-          notes: string | null
-          paid_amount: number | null
-          permit_urls: Json | null
-          phone: string | null
-          property_id: string
-          scope_of_work: string | null
-          start_date: string | null
-          updated_at: string | null
-          version: number | null
-          warranty_expiration: string | null
-          work_quality_rating: number | null
-          work_type: string
-        }
-        Insert: {
-          claim_id?: string | null
-          company_name: string
-          completion_date?: string | null
-          contact_name?: string | null
-          contract_amount?: number | null
-          contract_url?: string | null
-          created_at?: string | null
-          damage_id?: string | null
-          email?: string | null
-          estimate_amount?: number | null
-          estimate_date?: string | null
-          estimate_url?: string | null
-          id?: string
-          invoice_urls?: Json | null
-          license_number?: string | null
-          metadata?: Json | null
-          notes?: string | null
-          paid_amount?: number | null
-          permit_urls?: Json | null
-          phone?: string | null
-          property_id: string
-          scope_of_work?: string | null
-          start_date?: string | null
-          updated_at?: string | null
-          version?: number | null
-          warranty_expiration?: string | null
-          work_quality_rating?: number | null
-          work_type: string
-        }
-        Update: {
-          claim_id?: string | null
-          company_name?: string
-          completion_date?: string | null
-          contact_name?: string | null
-          contract_amount?: number | null
-          contract_url?: string | null
-          created_at?: string | null
-          damage_id?: string | null
-          email?: string | null
-          estimate_amount?: number | null
-          estimate_date?: string | null
-          estimate_url?: string | null
-          id?: string
-          invoice_urls?: Json | null
-          license_number?: string | null
-          metadata?: Json | null
-          notes?: string | null
-          paid_amount?: number | null
-          permit_urls?: Json | null
-          phone?: string | null
-          property_id?: string
-          scope_of_work?: string | null
-          start_date?: string | null
-          updated_at?: string | null
-          version?: number | null
-          warranty_expiration?: string | null
-          work_quality_rating?: number | null
-          work_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_contractors_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_contractors_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims_overview"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_contractors_damage_id_fkey"
-            columns: ["damage_id"]
-            isOneToOne: false
-            referencedRelation: "property_damage"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_contractors_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_damage: {
-        Row: {
-          actual_repair_cost: number | null
-          affected_rooms: Json | null
-          affected_systems: Json | null
-          ai_detected_damages: Json | null
-          ai_detected_materials: Json | null
-          ai_repair_estimate_high: number | null
-          ai_repair_estimate_low: number | null
-          ai_severity_score: number | null
-          assessment_date: string
-          assessor_name: string | null
-          assessor_type: string | null
-          claim_id: string | null
-          created_at: string | null
-          damage_description: string | null
-          damage_embedding: string | null
-          damage_severity: Database["public"]["Enums"]["damage_severity"]
-          damage_type: string
-          estimated_repair_cost: number | null
-          id: string
-          location_description: string | null
-          measurements: Json | null
-          metadata: Json | null
-          photo_urls: Json | null
-          property_id: string
-          repair_completed_date: string | null
-          report_url: string | null
-          structure_id: string | null
-          updated_at: string | null
-          version: number | null
-          video_urls: Json | null
-        }
-        Insert: {
-          actual_repair_cost?: number | null
-          affected_rooms?: Json | null
-          affected_systems?: Json | null
-          ai_detected_damages?: Json | null
-          ai_detected_materials?: Json | null
-          ai_repair_estimate_high?: number | null
-          ai_repair_estimate_low?: number | null
-          ai_severity_score?: number | null
-          assessment_date: string
-          assessor_name?: string | null
-          assessor_type?: string | null
-          claim_id?: string | null
-          created_at?: string | null
-          damage_description?: string | null
-          damage_embedding?: string | null
-          damage_severity: Database["public"]["Enums"]["damage_severity"]
-          damage_type: string
-          estimated_repair_cost?: number | null
-          id?: string
-          location_description?: string | null
-          measurements?: Json | null
-          metadata?: Json | null
-          photo_urls?: Json | null
-          property_id: string
-          repair_completed_date?: string | null
-          report_url?: string | null
-          structure_id?: string | null
-          updated_at?: string | null
-          version?: number | null
-          video_urls?: Json | null
-        }
-        Update: {
-          actual_repair_cost?: number | null
-          affected_rooms?: Json | null
-          affected_systems?: Json | null
-          ai_detected_damages?: Json | null
-          ai_detected_materials?: Json | null
-          ai_repair_estimate_high?: number | null
-          ai_repair_estimate_low?: number | null
-          ai_severity_score?: number | null
-          assessment_date?: string
-          assessor_name?: string | null
-          assessor_type?: string | null
-          claim_id?: string | null
-          created_at?: string | null
-          damage_description?: string | null
-          damage_embedding?: string | null
-          damage_severity?: Database["public"]["Enums"]["damage_severity"]
-          damage_type?: string
-          estimated_repair_cost?: number | null
-          id?: string
-          location_description?: string | null
-          measurements?: Json | null
-          metadata?: Json | null
-          photo_urls?: Json | null
-          property_id?: string
-          repair_completed_date?: string | null
-          report_url?: string | null
-          structure_id?: string | null
-          updated_at?: string | null
-          version?: number | null
-          video_urls?: Json | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_damage_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_damage_claim_id_fkey"
-            columns: ["claim_id"]
-            isOneToOne: false
-            referencedRelation: "claims_overview"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_damage_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "property_damage_structure_id_fkey"
-            columns: ["structure_id"]
-            isOneToOne: false
-            referencedRelation: "property_structures"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_insurance: {
-        Row: {
-          carrier_name: string | null
-          created_at: string | null
-          dwelling_coverage: number | null
-          effective_date: string | null
-          expiration_date: string | null
-          id: string
-          is_active: boolean | null
-          policy_number: string | null
-          policy_type: string | null
-          property_id: string
-          updated_at: string | null
-          version: number | null
-        }
-        Insert: {
-          carrier_name?: string | null
-          created_at?: string | null
-          dwelling_coverage?: number | null
-          effective_date?: string | null
-          expiration_date?: string | null
-          id?: string
-          is_active?: boolean | null
-          policy_number?: string | null
-          policy_type?: string | null
-          property_id: string
-          updated_at?: string | null
-          version?: number | null
-        }
-        Update: {
-          carrier_name?: string | null
-          created_at?: string | null
-          dwelling_coverage?: number | null
-          effective_date?: string | null
-          expiration_date?: string | null
-          id?: string
-          is_active?: boolean | null
-          policy_number?: string | null
-          policy_type?: string | null
-          property_id?: string
-          updated_at?: string | null
-          version?: number | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_insurance_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_land: {
-        Row: {
-          assessed_land_value: number | null
-          assessment_year: number | null
-          created_at: string | null
-          elevation_feet: number | null
-          environmental_data: Json | null
-          flood_zone: string | null
-          gis_data: Json | null
-          id: string
-          land_use_code: string | null
-          legal_description: string | null
-          property_id: string
-          updated_at: string | null
-          version: number | null
-          zoning_code: string | null
-          zoning_description: string | null
-        }
-        Insert: {
-          assessed_land_value?: number | null
-          assessment_year?: number | null
-          created_at?: string | null
-          elevation_feet?: number | null
-          environmental_data?: Json | null
-          flood_zone?: string | null
-          gis_data?: Json | null
-          id?: string
-          land_use_code?: string | null
-          legal_description?: string | null
-          property_id: string
-          updated_at?: string | null
-          version?: number | null
-          zoning_code?: string | null
-          zoning_description?: string | null
-        }
-        Update: {
-          assessed_land_value?: number | null
-          assessment_year?: number | null
-          created_at?: string | null
-          elevation_feet?: number | null
-          environmental_data?: Json | null
-          flood_zone?: string | null
-          gis_data?: Json | null
-          id?: string
-          land_use_code?: string | null
-          legal_description?: string | null
-          property_id?: string
-          updated_at?: string | null
-          version?: number | null
-          zoning_code?: string | null
-          zoning_description?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "property_land_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: true
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      property_structures: {
-        Row: {
+          address: string
+          archived_at: string | null
           bathrooms: number | null
           bedrooms: number | null
-          construction_details: Json | null
+          city: string
           construction_type: string | null
+          coordinates: unknown | null
+          county_fips: string | null
           created_at: string | null
-          exterior_walls: string | null
-          features: Json | null
-          foundation_type: string | null
+          current_value: number | null
+          electrical_year: number | null
+          evacuation_zone: string | null
+          flood_zone: string | null
+          garage_spaces: number | null
+          hvac_year: number | null
           id: string
-          last_renovation_date: string | null
-          overall_condition: string | null
-          property_id: string
-          roof_age_years: number | null
-          roof_material: string | null
+          legal_description: string | null
+          lot_size_acres: number | null
+          metadata: Json | null
+          mortgage_balance: number | null
+          name: string
+          occupancy_status:
+            | Database["public"]["Enums"]["occupancy_status"]
+            | null
+          operation: string | null
+          parcel_number: string | null
+          plumbing_year: number | null
+          pool: boolean | null
+          property_type: Database["public"]["Enums"]["property_type"] | null
+          purchase_date: string | null
+          purchase_price: number | null
           roof_type: string | null
+          roof_year: number | null
           square_footage: number | null
+          state: string | null
           stories: number | null
-          structure_name: string | null
-          structure_type: string
           updated_at: string | null
+          user_id: string | null
           version: number | null
+          wind_zone: string | null
+          year_built: number | null
+          zip_code: string
         }
         Insert: {
+          address: string
+          archived_at?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
-          construction_details?: Json | null
+          city: string
           construction_type?: string | null
+          coordinates?: unknown | null
+          county_fips?: string | null
           created_at?: string | null
-          exterior_walls?: string | null
-          features?: Json | null
-          foundation_type?: string | null
+          current_value?: number | null
+          electrical_year?: number | null
+          evacuation_zone?: string | null
+          flood_zone?: string | null
+          garage_spaces?: number | null
+          hvac_year?: number | null
           id?: string
-          last_renovation_date?: string | null
-          overall_condition?: string | null
-          property_id: string
-          roof_age_years?: number | null
-          roof_material?: string | null
+          legal_description?: string | null
+          lot_size_acres?: number | null
+          metadata?: Json | null
+          mortgage_balance?: number | null
+          name: string
+          occupancy_status?:
+            | Database["public"]["Enums"]["occupancy_status"]
+            | null
+          operation?: string | null
+          parcel_number?: string | null
+          plumbing_year?: number | null
+          pool?: boolean | null
+          property_type?: Database["public"]["Enums"]["property_type"] | null
+          purchase_date?: string | null
+          purchase_price?: number | null
           roof_type?: string | null
+          roof_year?: number | null
           square_footage?: number | null
+          state?: string | null
           stories?: number | null
-          structure_name?: string | null
-          structure_type: string
           updated_at?: string | null
+          user_id?: string | null
           version?: number | null
+          wind_zone?: string | null
+          year_built?: number | null
+          zip_code: string
         }
         Update: {
+          address?: string
+          archived_at?: string | null
           bathrooms?: number | null
           bedrooms?: number | null
-          construction_details?: Json | null
+          city?: string
           construction_type?: string | null
+          coordinates?: unknown | null
+          county_fips?: string | null
           created_at?: string | null
-          exterior_walls?: string | null
-          features?: Json | null
-          foundation_type?: string | null
+          current_value?: number | null
+          electrical_year?: number | null
+          evacuation_zone?: string | null
+          flood_zone?: string | null
+          garage_spaces?: number | null
+          hvac_year?: number | null
           id?: string
-          last_renovation_date?: string | null
-          overall_condition?: string | null
-          property_id?: string
-          roof_age_years?: number | null
-          roof_material?: string | null
+          legal_description?: string | null
+          lot_size_acres?: number | null
+          metadata?: Json | null
+          mortgage_balance?: number | null
+          name?: string
+          occupancy_status?:
+            | Database["public"]["Enums"]["occupancy_status"]
+            | null
+          operation?: string | null
+          parcel_number?: string | null
+          plumbing_year?: number | null
+          pool?: boolean | null
+          property_type?: Database["public"]["Enums"]["property_type"] | null
+          purchase_date?: string | null
+          purchase_price?: number | null
           roof_type?: string | null
+          roof_year?: number | null
           square_footage?: number | null
+          state?: string | null
           stories?: number | null
-          structure_name?: string | null
-          structure_type?: string
           updated_at?: string | null
+          user_id?: string | null
           version?: number | null
+          wind_zone?: string | null
+          year_built?: number | null
+          zip_code?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "property_structures_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       property_systems: {
         Row: {
-          condition_rating: number | null
+          condition: string | null
           created_at: string | null
+          description: string | null
+          estimated_lifespan_years: number | null
           id: string
-          install_date: string | null
-          last_inspection_date: string | null
+          installation_date: string | null
+          installer_name: string | null
+          installer_phone: string | null
           last_service_date: string | null
-          maintenance_history: Json | null
+          manual_url: string | null
           manufacturer: string | null
-          model_number: string | null
+          metadata: Json | null
+          model: string | null
+          name: string
+          next_service_due: string | null
+          property_id: string | null
+          replacement_cost: number | null
           serial_number: string | null
+          service_interval_months: number | null
+          service_phone: string | null
+          service_provider: string | null
+          service_records: Json | null
           specifications: Json | null
-          structure_id: string
-          system_name: string | null
           system_type: string
           updated_at: string | null
           version: number | null
           warranty_expiration: string | null
+          warranty_phone: string | null
+          warranty_provider: string | null
+          warranty_url: string | null
         }
         Insert: {
-          condition_rating?: number | null
+          condition?: string | null
           created_at?: string | null
+          description?: string | null
+          estimated_lifespan_years?: number | null
           id?: string
-          install_date?: string | null
-          last_inspection_date?: string | null
+          installation_date?: string | null
+          installer_name?: string | null
+          installer_phone?: string | null
           last_service_date?: string | null
-          maintenance_history?: Json | null
+          manual_url?: string | null
           manufacturer?: string | null
-          model_number?: string | null
+          metadata?: Json | null
+          model?: string | null
+          name: string
+          next_service_due?: string | null
+          property_id?: string | null
+          replacement_cost?: number | null
           serial_number?: string | null
+          service_interval_months?: number | null
+          service_phone?: string | null
+          service_provider?: string | null
+          service_records?: Json | null
           specifications?: Json | null
-          structure_id: string
-          system_name?: string | null
           system_type: string
           updated_at?: string | null
           version?: number | null
           warranty_expiration?: string | null
+          warranty_phone?: string | null
+          warranty_provider?: string | null
+          warranty_url?: string | null
         }
         Update: {
-          condition_rating?: number | null
+          condition?: string | null
           created_at?: string | null
+          description?: string | null
+          estimated_lifespan_years?: number | null
           id?: string
-          install_date?: string | null
-          last_inspection_date?: string | null
+          installation_date?: string | null
+          installer_name?: string | null
+          installer_phone?: string | null
           last_service_date?: string | null
-          maintenance_history?: Json | null
+          manual_url?: string | null
           manufacturer?: string | null
-          model_number?: string | null
+          metadata?: Json | null
+          model?: string | null
+          name?: string
+          next_service_due?: string | null
+          property_id?: string | null
+          replacement_cost?: number | null
           serial_number?: string | null
+          service_interval_months?: number | null
+          service_phone?: string | null
+          service_provider?: string | null
+          service_records?: Json | null
           specifications?: Json | null
-          structure_id?: string
-          system_name?: string | null
           system_type?: string
           updated_at?: string | null
           version?: number | null
           warranty_expiration?: string | null
+          warranty_phone?: string | null
+          warranty_provider?: string | null
+          warranty_url?: string | null
         }
         Relationships: [
           {
-            foreignKeyName: "property_systems_structure_id_fkey"
-            columns: ["structure_id"]
+            foreignKeyName: "property_systems_property_id_fkey"
+            columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: "property_structures"
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
-      }
-      scraper_logs: {
-        Row: {
-          id: string
-          level: string
-          message: string
-          metadata: Json | null
-          source: string
-          timestamp: string | null
-        }
-        Insert: {
-          id?: string
-          level: string
-          message: string
-          metadata?: Json | null
-          source: string
-          timestamp?: string | null
-        }
-        Update: {
-          id?: string
-          level?: string
-          message?: string
-          metadata?: Json | null
-          source?: string
-          timestamp?: string | null
-        }
-        Relationships: []
-      }
-      scraper_queue: {
-        Row: {
-          completed_at: string | null
-          created_at: string | null
-          error_message: string | null
-          id: string
-          last_object_id: number | null
-          records_processed: number | null
-          source: string
-          started_at: string | null
-          status: string | null
-        }
-        Insert: {
-          completed_at?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          id?: string
-          last_object_id?: number | null
-          records_processed?: number | null
-          source: string
-          started_at?: string | null
-          status?: string | null
-        }
-        Update: {
-          completed_at?: string | null
-          created_at?: string | null
-          error_message?: string | null
-          id?: string
-          last_object_id?: number | null
-          records_processed?: number | null
-          source?: string
-          started_at?: string | null
-          status?: string | null
-        }
-        Relationships: []
-      }
-      scraper_runs: {
-        Row: {
-          last_object_id: number | null
-          last_run_at: string | null
-          notes: string | null
-          source: string
-        }
-        Insert: {
-          last_object_id?: number | null
-          last_run_at?: string | null
-          notes?: string | null
-          source: string
-        }
-        Update: {
-          last_object_id?: number | null
-          last_run_at?: string | null
-          notes?: string | null
-          source?: string
-        }
-        Relationships: []
       }
       security_logs: {
         Row: {
           action: string
           created_at: string | null
+          event_type: string
           id: string
-          ip_address: string | null
+          ip_address: unknown | null
           metadata: Json | null
+          severity: string | null
           user_agent: string | null
           user_id: string | null
         }
         Insert: {
           action: string
           created_at?: string | null
+          event_type: string
           id?: string
-          ip_address?: string | null
+          ip_address?: unknown | null
           metadata?: Json | null
+          severity?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Update: {
           action?: string
           created_at?: string | null
+          event_type?: string
           id?: string
-          ip_address?: string | null
+          ip_address?: unknown | null
           metadata?: Json | null
+          severity?: string | null
           user_agent?: string | null
           user_id?: string | null
         }
         Relationships: []
       }
-      security_questions: {
+      signup_consents: {
         Row: {
-          created_at: string
+          age_verified: boolean
+          consent_timestamp: string
+          consent_token: string
+          created_at: string | null
+          data_processing_consent: boolean
+          device_fingerprint: string | null
+          email: string
+          expires_at: string
+          gdpr_consent: boolean
           id: string
-          question: string
-          updated_at: string
+          ip_address: string | null
+          marketing_consent: boolean
+          privacy_accepted: boolean
+          terms_accepted: boolean
+          user_agent: string | null
+          user_id: string | null
         }
         Insert: {
-          created_at?: string
+          age_verified?: boolean
+          consent_timestamp?: string
+          consent_token?: string
+          created_at?: string | null
+          data_processing_consent?: boolean
+          device_fingerprint?: string | null
+          email: string
+          expires_at?: string
+          gdpr_consent?: boolean
           id?: string
-          question: string
-          updated_at?: string
+          ip_address?: string | null
+          marketing_consent?: boolean
+          privacy_accepted?: boolean
+          terms_accepted?: boolean
+          user_agent?: string | null
+          user_id?: string | null
         }
         Update: {
-          created_at?: string
+          age_verified?: boolean
+          consent_timestamp?: string
+          consent_token?: string
+          created_at?: string | null
+          data_processing_consent?: boolean
+          device_fingerprint?: string | null
+          email?: string
+          expires_at?: string
+          gdpr_consent?: boolean
           id?: string
-          question?: string
-          updated_at?: string
+          ip_address?: string | null
+          marketing_consent?: boolean
+          privacy_accepted?: boolean
+          terms_accepted?: boolean
+          user_agent?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -4085,168 +1818,254 @@ export type Database = {
         }
         Relationships: []
       }
-      states: {
+      tidal_stations: {
         Row: {
-          active: boolean | null
-          code: string
           created_at: string | null
-          fips_code: string
-          id: number
-          name: string
-        }
-        Insert: {
-          active?: boolean | null
-          code: string
-          created_at?: string | null
-          fips_code: string
-          id?: number
-          name: string
-        }
-        Update: {
-          active?: boolean | null
-          code?: string
-          created_at?: string | null
-          fips_code?: string
-          id?: number
-          name?: string
-        }
-        Relationships: []
-      }
-      stg_properties: {
-        Row: {
-          address: string
-          ai_insights: Json | null
-          ai_market_analysis: Json | null
-          ai_risk_factors: Json | null
-          ai_risk_score: number | null
-          city: string
-          county: string | null
-          county_id: string | null
-          county_name: string | null
-          created_at: string | null
-          current_value: number | null
-          external_ids: Json | null
           id: string
-          last_ai_analysis_at: string | null
           latitude: number | null
           location: unknown | null
           longitude: number | null
-          lot_size_acres: number | null
-          metadata: Json | null
-          occupancy_status:
-            | Database["public"]["Enums"]["occupancy_status"]
-            | null
-          parcel_number: string | null
-          property_embedding: string | null
-          property_type: Database["public"]["Enums"]["property_type"] | null
-          purchase_date: string | null
-          purchase_price: number | null
-          square_footage: number | null
-          state: string
+          name: string | null
+          observed_at: string | null
+          state: string | null
+          station_id: string
+          unit: string | null
           updated_at: string | null
-          user_id: string
-          version: number | null
-          year_built: number | null
-          zip_code: string
+          water_level: number | null
         }
         Insert: {
-          address: string
-          ai_insights?: Json | null
-          ai_market_analysis?: Json | null
-          ai_risk_factors?: Json | null
-          ai_risk_score?: number | null
-          city: string
-          county?: string | null
-          county_id?: string | null
-          county_name?: string | null
           created_at?: string | null
-          current_value?: number | null
-          external_ids?: Json | null
           id?: string
-          last_ai_analysis_at?: string | null
           latitude?: number | null
           location?: unknown | null
           longitude?: number | null
-          lot_size_acres?: number | null
-          metadata?: Json | null
-          occupancy_status?:
-            | Database["public"]["Enums"]["occupancy_status"]
-            | null
-          parcel_number?: string | null
-          property_embedding?: string | null
-          property_type?: Database["public"]["Enums"]["property_type"] | null
-          purchase_date?: string | null
-          purchase_price?: number | null
-          square_footage?: number | null
-          state?: string
+          name?: string | null
+          observed_at?: string | null
+          state?: string | null
+          station_id: string
+          unit?: string | null
           updated_at?: string | null
-          user_id: string
-          version?: number | null
-          year_built?: number | null
-          zip_code: string
+          water_level?: number | null
         }
         Update: {
-          address?: string
-          ai_insights?: Json | null
-          ai_market_analysis?: Json | null
-          ai_risk_factors?: Json | null
-          ai_risk_score?: number | null
-          city?: string
-          county?: string | null
-          county_id?: string | null
-          county_name?: string | null
           created_at?: string | null
-          current_value?: number | null
-          external_ids?: Json | null
           id?: string
-          last_ai_analysis_at?: string | null
           latitude?: number | null
           location?: unknown | null
           longitude?: number | null
-          lot_size_acres?: number | null
-          metadata?: Json | null
-          occupancy_status?:
-            | Database["public"]["Enums"]["occupancy_status"]
-            | null
-          parcel_number?: string | null
-          property_embedding?: string | null
-          property_type?: Database["public"]["Enums"]["property_type"] | null
-          purchase_date?: string | null
-          purchase_price?: number | null
-          square_footage?: number | null
-          state?: string
+          name?: string | null
+          observed_at?: string | null
+          state?: string | null
+          station_id?: string
+          unit?: string | null
+          updated_at?: string | null
+          water_level?: number | null
+        }
+        Relationships: []
+      }
+      user_activity_log: {
+        Row: {
+          activity_category: string | null
+          activity_name: string
+          activity_type: string
+          activity_value: Json | null
+          created_at: string | null
+          id: string
+          page_title: string | null
+          page_url: string | null
+          session_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          activity_category?: string | null
+          activity_name: string
+          activity_type: string
+          activity_value?: Json | null
+          created_at?: string | null
+          id?: string
+          page_title?: string | null
+          page_url?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          activity_category?: string | null
+          activity_name?: string
+          activity_type?: string
+          activity_value?: Json | null
+          created_at?: string | null
+          id?: string
+          page_title?: string | null
+          page_url?: string | null
+          session_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      user_checklist_progress: {
+        Row: {
+          completed: boolean
+          created_at: string | null
+          id: string
+          item_id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          created_at?: string | null
+          id?: string
+          item_id: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          created_at?: string | null
+          id?: string
+          item_id?: string
           updated_at?: string | null
           user_id?: string
-          version?: number | null
-          year_built?: number | null
-          zip_code?: string
+        }
+        Relationships: []
+      }
+      user_consents: {
+        Row: {
+          action: Database["public"]["Enums"]["consent_action_type"]
+          consent_flow: string | null
+          consent_method: string
+          consented_at: string | null
+          device_fingerprint: string | null
+          document_id: string
+          geolocation: Json | null
+          id: string
+          ip_address: unknown
+          is_current: boolean | null
+          metadata: Json | null
+          page_url: string | null
+          referrer_url: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          action: Database["public"]["Enums"]["consent_action_type"]
+          consent_flow?: string | null
+          consent_method: string
+          consented_at?: string | null
+          device_fingerprint?: string | null
+          document_id: string
+          geolocation?: Json | null
+          id?: string
+          ip_address: unknown
+          is_current?: boolean | null
+          metadata?: Json | null
+          page_url?: string | null
+          referrer_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          action?: Database["public"]["Enums"]["consent_action_type"]
+          consent_flow?: string | null
+          consent_method?: string
+          consented_at?: string | null
+          device_fingerprint?: string | null
+          document_id?: string
+          geolocation?: Json | null
+          id?: string
+          ip_address?: unknown
+          is_current?: boolean | null
+          metadata?: Json | null
+          page_url?: string | null
+          referrer_url?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_consents_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "legal_documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_devices: {
+        Row: {
+          browser: string | null
+          device_fingerprint: string
+          device_name: string | null
+          device_type: string | null
+          first_seen: string | null
+          id: string
+          is_blocked: boolean | null
+          is_trusted: boolean | null
+          last_seen: string | null
+          metadata: Json | null
+          operating_system: string | null
+          trust_score: number | null
+          user_id: string
+        }
+        Insert: {
+          browser?: string | null
+          device_fingerprint: string
+          device_name?: string | null
+          device_type?: string | null
+          first_seen?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          is_trusted?: boolean | null
+          last_seen?: string | null
+          metadata?: Json | null
+          operating_system?: string | null
+          trust_score?: number | null
+          user_id: string
+        }
+        Update: {
+          browser?: string | null
+          device_fingerprint?: string
+          device_name?: string | null
+          device_type?: string | null
+          first_seen?: string | null
+          id?: string
+          is_blocked?: boolean | null
+          is_trusted?: boolean | null
+          last_seen?: string | null
+          metadata?: Json | null
+          operating_system?: string | null
+          trust_score?: number | null
+          user_id?: string
         }
         Relationships: []
       }
       user_legal_acceptance: {
         Row: {
-          accepted_at: string | null
+          accepted_at: string
+          id: string
           ip_address: unknown | null
           legal_id: string
-          revoked_at: string | null
           signature_data: Json | null
           user_agent: string | null
           user_id: string
         }
         Insert: {
-          accepted_at?: string | null
+          accepted_at?: string
+          id?: string
           ip_address?: unknown | null
           legal_id: string
-          revoked_at?: string | null
           signature_data?: Json | null
           user_agent?: string | null
           user_id: string
         }
         Update: {
-          accepted_at?: string | null
+          accepted_at?: string
+          id?: string
           ip_address?: unknown | null
           legal_id?: string
-          revoked_at?: string | null
           signature_data?: Json | null
           user_agent?: string | null
           user_id?: string
@@ -4261,235 +2080,512 @@ export type Database = {
           },
         ]
       }
-      user_plans: {
+      user_preferences: {
         Row: {
+          address_verified: boolean | null
+          ai_features_enabled: boolean | null
+          ai_processing_consent: boolean | null
+          ai_processing_consent_date: string | null
           created_at: string | null
-          expires_at: string | null
+          data_processing_consent: boolean | null
+          email_notifications: boolean | null
+          gdpr_consent: boolean | null
+          has_flood_insurance: boolean | null
+          has_insurance: boolean | null
+          has_insurance_policy: boolean | null
+          has_other_insurance: boolean | null
+          has_primary_property: boolean | null
+          has_property_insurance: boolean | null
           id: string
-          plan_type: string | null
-          started_at: string | null
-          status: string | null
+          insurance_completed: boolean | null
+          insurance_provider: string | null
+          insurance_setup_completed: boolean | null
+          landlord_units: string | null
+          marketing_consent: boolean | null
+          onboarding_completed: boolean | null
+          onboarding_completed_at: string | null
+          onboarding_current_step: string | null
+          onboarding_skipped_at: string | null
+          preferred_ai_model: string | null
+          preferred_theme: string | null
+          professional_role: string | null
+          profile_completed: boolean | null
+          property_address: string | null
+          property_bathrooms: number | null
+          property_bedrooms: number | null
+          property_setup_completed: boolean | null
+          property_stories: number | null
+          property_structures: string | null
+          push_notifications: boolean | null
+          rooms_per_floor: string | null
+          sms_notifications: boolean | null
           updated_at: string | null
-          user_id: string
+          user_id: string | null
+          user_type: string | null
         }
         Insert: {
+          address_verified?: boolean | null
+          ai_features_enabled?: boolean | null
+          ai_processing_consent?: boolean | null
+          ai_processing_consent_date?: string | null
           created_at?: string | null
-          expires_at?: string | null
+          data_processing_consent?: boolean | null
+          email_notifications?: boolean | null
+          gdpr_consent?: boolean | null
+          has_flood_insurance?: boolean | null
+          has_insurance?: boolean | null
+          has_insurance_policy?: boolean | null
+          has_other_insurance?: boolean | null
+          has_primary_property?: boolean | null
+          has_property_insurance?: boolean | null
           id?: string
-          plan_type?: string | null
-          started_at?: string | null
-          status?: string | null
+          insurance_completed?: boolean | null
+          insurance_provider?: string | null
+          insurance_setup_completed?: boolean | null
+          landlord_units?: string | null
+          marketing_consent?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: string | null
+          onboarding_skipped_at?: string | null
+          preferred_ai_model?: string | null
+          preferred_theme?: string | null
+          professional_role?: string | null
+          profile_completed?: boolean | null
+          property_address?: string | null
+          property_bathrooms?: number | null
+          property_bedrooms?: number | null
+          property_setup_completed?: boolean | null
+          property_stories?: number | null
+          property_structures?: string | null
+          push_notifications?: boolean | null
+          rooms_per_floor?: string | null
+          sms_notifications?: boolean | null
           updated_at?: string | null
-          user_id: string
+          user_id?: string | null
+          user_type?: string | null
         }
         Update: {
+          address_verified?: boolean | null
+          ai_features_enabled?: boolean | null
+          ai_processing_consent?: boolean | null
+          ai_processing_consent_date?: string | null
           created_at?: string | null
-          expires_at?: string | null
+          data_processing_consent?: boolean | null
+          email_notifications?: boolean | null
+          gdpr_consent?: boolean | null
+          has_flood_insurance?: boolean | null
+          has_insurance?: boolean | null
+          has_insurance_policy?: boolean | null
+          has_other_insurance?: boolean | null
+          has_primary_property?: boolean | null
+          has_property_insurance?: boolean | null
           id?: string
-          plan_type?: string | null
-          started_at?: string | null
-          status?: string | null
+          insurance_completed?: boolean | null
+          insurance_provider?: string | null
+          insurance_setup_completed?: boolean | null
+          landlord_units?: string | null
+          marketing_consent?: boolean | null
+          onboarding_completed?: boolean | null
+          onboarding_completed_at?: string | null
+          onboarding_current_step?: string | null
+          onboarding_skipped_at?: string | null
+          preferred_ai_model?: string | null
+          preferred_theme?: string | null
+          professional_role?: string | null
+          profile_completed?: boolean | null
+          property_address?: string | null
+          property_bathrooms?: number | null
+          property_bedrooms?: number | null
+          property_setup_completed?: boolean | null
+          property_stories?: number | null
+          property_structures?: string | null
+          push_notifications?: boolean | null
+          rooms_per_floor?: string | null
+          sms_notifications?: boolean | null
           updated_at?: string | null
-          user_id?: string
+          user_id?: string | null
+          user_type?: string | null
         }
         Relationships: []
       }
       user_profiles: {
         Row: {
-          avatar_url: string | null
-          first_name: string | null
-          id: string
-          is_verified: boolean | null
-          is_x_connected: boolean | null
-          last_name: string | null
-          member_since: string | null
-          phone: string | null
-          role: Database["public"]["Enums"]["user_role_enum"] | null
-          verified_at: string | null
-          x_handle: string | null
+          account_status: string | null
+          account_type: string | null
+          created_at: string | null
+          email_verified_at: string | null
+          failed_login_count: number | null
+          internal_notes: string | null
+          last_failed_login_at: string | null
+          last_login_at: string | null
+          last_login_ip: string | null
+          login_count: number | null
+          metadata: Json | null
+          notes: string | null
+          password_changed_at: string | null
+          phone_verified_at: string | null
+          preferences: Json | null
+          risk_score: number | null
+          signup_city: string | null
+          signup_completed_at: string | null
+          signup_country: string | null
+          signup_country_code: string | null
+          signup_device_fingerprint: string | null
+          signup_device_type: string | null
+          signup_ip_address: string | null
+          signup_landing_page: string | null
+          signup_latitude: number | null
+          signup_longitude: number | null
+          signup_postal_code: string | null
+          signup_referrer: string | null
+          signup_region: string | null
+          signup_source: string | null
+          signup_timestamp: string | null
+          signup_timezone: string | null
+          signup_user_agent: string | null
+          signup_utm_campaign: string | null
+          signup_utm_content: string | null
+          signup_utm_medium: string | null
+          signup_utm_source: string | null
+          signup_utm_term: string | null
+          tags: string[] | null
+          trust_level: string | null
+          two_factor_enabled: boolean | null
+          two_factor_method: string | null
+          updated_at: string | null
+          user_id: string
         }
         Insert: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id?: string
-          is_verified?: boolean | null
-          is_x_connected?: boolean | null
-          last_name?: string | null
-          member_since?: string | null
-          phone?: string | null
-          role?: Database["public"]["Enums"]["user_role_enum"] | null
-          verified_at?: string | null
-          x_handle?: string | null
+          account_status?: string | null
+          account_type?: string | null
+          created_at?: string | null
+          email_verified_at?: string | null
+          failed_login_count?: number | null
+          internal_notes?: string | null
+          last_failed_login_at?: string | null
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          login_count?: number | null
+          metadata?: Json | null
+          notes?: string | null
+          password_changed_at?: string | null
+          phone_verified_at?: string | null
+          preferences?: Json | null
+          risk_score?: number | null
+          signup_city?: string | null
+          signup_completed_at?: string | null
+          signup_country?: string | null
+          signup_country_code?: string | null
+          signup_device_fingerprint?: string | null
+          signup_device_type?: string | null
+          signup_ip_address?: string | null
+          signup_landing_page?: string | null
+          signup_latitude?: number | null
+          signup_longitude?: number | null
+          signup_postal_code?: string | null
+          signup_referrer?: string | null
+          signup_region?: string | null
+          signup_source?: string | null
+          signup_timestamp?: string | null
+          signup_timezone?: string | null
+          signup_user_agent?: string | null
+          signup_utm_campaign?: string | null
+          signup_utm_content?: string | null
+          signup_utm_medium?: string | null
+          signup_utm_source?: string | null
+          signup_utm_term?: string | null
+          tags?: string[] | null
+          trust_level?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_method?: string | null
+          updated_at?: string | null
+          user_id: string
         }
         Update: {
-          avatar_url?: string | null
-          first_name?: string | null
-          id?: string
-          is_verified?: boolean | null
-          is_x_connected?: boolean | null
-          last_name?: string | null
-          member_since?: string | null
-          phone?: string | null
-          role?: Database["public"]["Enums"]["user_role_enum"] | null
-          verified_at?: string | null
-          x_handle?: string | null
+          account_status?: string | null
+          account_type?: string | null
+          created_at?: string | null
+          email_verified_at?: string | null
+          failed_login_count?: number | null
+          internal_notes?: string | null
+          last_failed_login_at?: string | null
+          last_login_at?: string | null
+          last_login_ip?: string | null
+          login_count?: number | null
+          metadata?: Json | null
+          notes?: string | null
+          password_changed_at?: string | null
+          phone_verified_at?: string | null
+          preferences?: Json | null
+          risk_score?: number | null
+          signup_city?: string | null
+          signup_completed_at?: string | null
+          signup_country?: string | null
+          signup_country_code?: string | null
+          signup_device_fingerprint?: string | null
+          signup_device_type?: string | null
+          signup_ip_address?: string | null
+          signup_landing_page?: string | null
+          signup_latitude?: number | null
+          signup_longitude?: number | null
+          signup_postal_code?: string | null
+          signup_referrer?: string | null
+          signup_region?: string | null
+          signup_source?: string | null
+          signup_timestamp?: string | null
+          signup_timezone?: string | null
+          signup_user_agent?: string | null
+          signup_utm_campaign?: string | null
+          signup_utm_content?: string | null
+          signup_utm_medium?: string | null
+          signup_utm_source?: string | null
+          signup_utm_term?: string | null
+          tags?: string[] | null
+          trust_level?: string | null
+          two_factor_enabled?: boolean | null
+          two_factor_method?: string | null
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
-      user_security_answers: {
+      user_sessions: {
         Row: {
-          answer_hash: string
-          created_at: string
+          created_at: string | null
+          device_fingerprint: string | null
+          expires_at: string
+          geolocation: Json | null
           id: string
-          question_id: string
-          updated_at: string
+          ip_address: unknown
+          is_active: boolean | null
+          last_activity: string | null
+          logout_at: string | null
+          logout_reason: string | null
+          metadata: Json | null
+          risk_score: number | null
+          session_token: string
+          user_agent: string | null
           user_id: string
         }
         Insert: {
-          answer_hash: string
-          created_at?: string
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at: string
+          geolocation?: Json | null
           id?: string
-          question_id: string
-          updated_at?: string
+          ip_address: unknown
+          is_active?: boolean | null
+          last_activity?: string | null
+          logout_at?: string | null
+          logout_reason?: string | null
+          metadata?: Json | null
+          risk_score?: number | null
+          session_token: string
+          user_agent?: string | null
           user_id: string
         }
         Update: {
-          answer_hash?: string
-          created_at?: string
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at?: string
+          geolocation?: Json | null
           id?: string
-          question_id?: string
-          updated_at?: string
+          ip_address?: unknown
+          is_active?: boolean | null
+          last_activity?: string | null
+          logout_at?: string | null
+          logout_reason?: string | null
+          metadata?: Json | null
+          risk_score?: number | null
+          session_token?: string
+          user_agent?: string | null
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "user_security_answers_question_id_fkey"
-            columns: ["question_id"]
-            isOneToOne: false
-            referencedRelation: "security_questions"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
-      zip_codes: {
+      user_tracking: {
         Row: {
-          active: boolean | null
-          city_id: number | null
-          county_id: number | null
+          browser_name: string | null
+          browser_version: string | null
           created_at: string | null
-          id: number
-          latitude: number | null
-          longitude: number | null
-          primary_city: string
-          state_id: number | null
-          zip_code: string
+          device_name: string | null
+          device_type: string | null
+          id: string
+          ip_address: unknown | null
+          ip_city: string | null
+          ip_country: string | null
+          ip_region: string | null
+          ip_timezone: string | null
+          is_first_login: boolean | null
+          landing_page: string | null
+          last_activity_at: string | null
+          login_method: string | null
+          os_name: string | null
+          os_version: string | null
+          referrer_domain: string | null
+          referrer_url: string | null
+          session_id: string
+          user_agent: string | null
+          user_id: string | null
+          utm_campaign: string | null
+          utm_content: string | null
+          utm_medium: string | null
+          utm_source: string | null
+          utm_term: string | null
         }
         Insert: {
-          active?: boolean | null
-          city_id?: number | null
-          county_id?: number | null
+          browser_name?: string | null
+          browser_version?: string | null
           created_at?: string | null
-          id?: number
-          latitude?: number | null
-          longitude?: number | null
-          primary_city: string
-          state_id?: number | null
-          zip_code: string
+          device_name?: string | null
+          device_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          ip_city?: string | null
+          ip_country?: string | null
+          ip_region?: string | null
+          ip_timezone?: string | null
+          is_first_login?: boolean | null
+          landing_page?: string | null
+          last_activity_at?: string | null
+          login_method?: string | null
+          os_name?: string | null
+          os_version?: string | null
+          referrer_domain?: string | null
+          referrer_url?: string | null
+          session_id: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
         Update: {
-          active?: boolean | null
-          city_id?: number | null
-          county_id?: number | null
+          browser_name?: string | null
+          browser_version?: string | null
           created_at?: string | null
-          id?: number
-          latitude?: number | null
-          longitude?: number | null
-          primary_city?: string
-          state_id?: number | null
-          zip_code?: string
+          device_name?: string | null
+          device_type?: string | null
+          id?: string
+          ip_address?: unknown | null
+          ip_city?: string | null
+          ip_country?: string | null
+          ip_region?: string | null
+          ip_timezone?: string | null
+          is_first_login?: boolean | null
+          landing_page?: string | null
+          last_activity_at?: string | null
+          login_method?: string | null
+          os_name?: string | null
+          os_version?: string | null
+          referrer_domain?: string | null
+          referrer_url?: string | null
+          session_id?: string
+          user_agent?: string | null
+          user_id?: string | null
+          utm_campaign?: string | null
+          utm_content?: string | null
+          utm_medium?: string | null
+          utm_source?: string | null
+          utm_term?: string | null
         }
-        Relationships: [
-          {
-            foreignKeyName: "zip_codes_city_id_fkey"
-            columns: ["city_id"]
-            isOneToOne: false
-            referencedRelation: "cities"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "zip_codes_county_id_fkey"
-            columns: ["county_id"]
-            isOneToOne: false
-            referencedRelation: "counties"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "zip_codes_state_id_fkey"
-            columns: ["state_id"]
-            isOneToOne: false
-            referencedRelation: "states"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
     }
     Views: {
       active_policies: {
         Row: {
+          address: string | null
+          annual_premium: number | null
+          cancellation_date: string | null
+          cancellation_reason: string | null
+          carrier_naic: string | null
           carrier_name: string | null
           city: string | null
-          coverage_details: Json | null
+          county_name: string | null
           created_at: string | null
-          created_by: string | null
-          deductible_amount: number | null
+          dwelling_coverage: number | null
           effective_date: string | null
+          endorsements: Json | null
+          exclusions: Json | null
           expiration_date: string | null
-          flood_deductible_amount: number | null
+          flood_deductible: number | null
+          hurricane_deductible: string | null
           id: string | null
           is_active: boolean | null
+          liability_coverage: number | null
+          loss_of_use_coverage: number | null
+          medical_payments_coverage: number | null
+          metadata: Json | null
+          other_structures_coverage: number | null
+          payment_frequency: string | null
+          personal_property_coverage: number | null
           policy_number: string | null
-          policy_type: Database["public"]["Enums"]["policy_type_enum"] | null
-          postal_code: string | null
-          premium_amount: number | null
+          policy_type: string | null
           property_id: string | null
-          property_name: string | null
-          state: string | null
-          street_address: string | null
+          special_coverages: Json | null
+          standard_deductible: number | null
           updated_at: string | null
-          wind_deductible_percentage: number | null
+          user_id: string | null
+          version: number | null
+          zip_code: string | null
         }
         Relationships: [
           {
             foreignKeyName: "policies_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
-            referencedRelation: "properties_old"
+            referencedRelation: "properties"
             referencedColumns: ["id"]
           },
         ]
       }
-      claims_overview: {
+      claims_summary: {
         Row: {
+          address: string | null
+          adjuster_company: string | null
+          adjuster_email: string | null
+          adjuster_name: string | null
+          adjuster_phone: string | null
+          ai_coverage_analysis: Json | null
+          ai_damage_assessment: Json | null
+          ai_recommendations: Json | null
+          approval_date: string | null
+          approved_amount: number | null
           carrier_name: string | null
           city: string | null
           claim_number: string | null
+          closed_date: string | null
+          county_name: string | null
           created_at: string | null
-          damage_type: Database["public"]["Enums"]["damage_type_enum"] | null
+          damage_severity: Database["public"]["Enums"]["damage_severity"] | null
+          damage_type: string | null
           date_of_loss: string | null
+          date_reported: string | null
           deductible_applied: number | null
           description: string | null
           estimated_value: number | null
+          external_claim_number: string | null
           id: string | null
+          inspection_date: string | null
+          metadata: Json | null
+          notes: string | null
+          paid_amount: number | null
+          payment_date: string | null
+          photos: Json | null
           policy_id: string | null
           policy_number: string | null
-          policy_type: Database["public"]["Enums"]["policy_type_enum"] | null
           property_id: string | null
-          property_name: string | null
-          state: string | null
-          status: Database["public"]["Enums"]["claim_status_enum"] | null
-          street_address: string | null
+          settled_value: number | null
+          settlement_date: string | null
+          status: Database["public"]["Enums"]["claim_status"] | null
+          supporting_documents: Json | null
           updated_at: string | null
           user_id: string | null
+          version: number | null
         }
         Relationships: [
           {
@@ -4515,33 +2611,15 @@ export type Database = {
           },
         ]
       }
-      florida_parcels_column_analysis: {
+      error_summary: {
         Row: {
-          category: string | null
-          column_name: unknown | null
-          data_type: string | null
-          description: string | null
-          not_null: boolean | null
-          type_category: string | null
-        }
-        Relationships: []
-      }
-      florida_parcels_summary: {
-        Row: {
-          building_count: number | null
-          city: string | null
-          county_name: string | null
-          gis_url: string | null
-          just_value: number | null
-          land_value: number | null
-          last_sale_price: number | null
-          last_sale_year: number | null
-          owner_name: string | null
-          parcel_id: string | null
-          physical_address: string | null
-          property_search_url: string | null
-          total_living_area: number | null
-          year_built: number | null
+          affected_users: number | null
+          error_code: string | null
+          error_count: number | null
+          error_type: string | null
+          first_occurrence: string | null
+          last_occurrence: string | null
+          severity: string | null
         }
         Relationships: []
       }
@@ -4587,72 +2665,222 @@ export type Database = {
         }
         Relationships: []
       }
-      policy_clauses: {
+      raster_columns: {
         Row: {
-          clause_id: string | null
-          clause_text: string | null
-          company_name: string | null
-          file_name: string | null
-          filing_id: number | null
-          filing_type: string | null
-          vec: string | null
+          blocksize_x: number | null
+          blocksize_y: number | null
+          extent: unknown | null
+          nodata_values: number[] | null
+          num_bands: number | null
+          out_db: boolean[] | null
+          pixel_types: string[] | null
+          r_raster_column: unknown | null
+          r_table_catalog: unknown | null
+          r_table_name: unknown | null
+          r_table_schema: unknown | null
+          regular_blocking: boolean | null
+          same_alignment: boolean | null
+          scale_x: number | null
+          scale_y: number | null
+          spatial_index: boolean | null
+          srid: number | null
         }
         Relationships: []
       }
-      profiles: {
+      raster_overviews: {
         Row: {
-          avatar_url: string | null
-          created_at: string | null
-          first_name: string | null
-          id: string | null
-          last_name: string | null
-          phone: string | null
-          updated_at: string | null
-        }
-        Insert: {
-          avatar_url?: string | null
-          created_at?: string | null
-          first_name?: string | null
-          id?: string | null
-          last_name?: string | null
-          phone?: string | null
-          updated_at?: string | null
-        }
-        Update: {
-          avatar_url?: string | null
-          created_at?: string | null
-          first_name?: string | null
-          id?: string | null
-          last_name?: string | null
-          phone?: string | null
-          updated_at?: string | null
+          o_raster_column: unknown | null
+          o_table_catalog: unknown | null
+          o_table_name: unknown | null
+          o_table_schema: unknown | null
+          overview_factor: number | null
+          r_raster_column: unknown | null
+          r_table_catalog: unknown | null
+          r_table_name: unknown | null
+          r_table_schema: unknown | null
         }
         Relationships: []
       }
-      recent_login_activity: {
+      recent_security_events: {
         Row: {
-          browser: string | null
+          action: string | null
           created_at: string | null
-          device_type: string | null
-          failed_attempts: number | null
-          failure_reason: string | null
+          event_type: string | null
           id: string | null
-          ip_address: string | null
-          location_city: string | null
-          location_country: string | null
-          location_region: string | null
-          os: string | null
-          success: boolean | null
-          total_logins: number | null
+          ip_address: unknown | null
+          metadata: Json | null
+          severity: string | null
           user_agent: string | null
+          user_email: string | null
           user_id: string | null
+          user_name: string | null
         }
         Relationships: []
       }
     }
     Functions: {
+      __st_countagg_transfn: {
+        Args: {
+          agg: Database["public"]["CompositeTypes"]["agg_count"]
+          rast: unknown
+          nband?: number
+          exclude_nodata_value?: boolean
+          sample_percent?: number
+        }
+        Returns: Database["public"]["CompositeTypes"]["agg_count"]
+      }
+      _add_overview_constraint: {
+        Args: {
+          ovschema: unknown
+          ovtable: unknown
+          ovcolumn: unknown
+          refschema: unknown
+          reftable: unknown
+          refcolumn: unknown
+          factor: number
+        }
+        Returns: boolean
+      }
+      _add_raster_constraint: {
+        Args: { cn: unknown; sql: string }
+        Returns: boolean
+      }
+      _add_raster_constraint_alignment: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_blocksize: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: boolean
+      }
+      _add_raster_constraint_coverage_tile: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_extent: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_nodata_values: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_num_bands: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_out_db: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_pixel_types: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_scale: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: boolean
+      }
+      _add_raster_constraint_spatially_unique: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _add_raster_constraint_srid: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_overview_constraint: {
+        Args: { ovschema: unknown; ovtable: unknown; ovcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint: {
+        Args: { rastschema: unknown; rasttable: unknown; cn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_alignment: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_blocksize: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: boolean
+      }
+      _drop_raster_constraint_coverage_tile: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_extent: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_nodata_values: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_num_bands: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_out_db: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_pixel_types: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_regular_blocking: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_scale: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: boolean
+      }
+      _drop_raster_constraint_spatially_unique: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _drop_raster_constraint_srid: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _overview_constraint: {
+        Args: {
+          ov: unknown
+          factor: number
+          refschema: unknown
+          reftable: unknown
+          refcolumn: unknown
+        }
+        Returns: boolean
+      }
+      _overview_constraint_info: {
+        Args: { ovschema: unknown; ovtable: unknown; ovcolumn: unknown }
+        Returns: Record<string, unknown>
+      }
       _postgis_deprecate: {
-        Args: { version: string; newname: string; oldname: string }
+        Args: { oldname: string; newname: string; version: string }
         Returns: undefined
       }
       _postgis_index_extent: {
@@ -4668,101 +2896,514 @@ export type Database = {
         Returns: string
       }
       _postgis_selectivity: {
-        Args: { att_name: string; geom: unknown; tbl: unknown; mode?: string }
+        Args: { tbl: unknown; att_name: string; geom: unknown; mode?: string }
         Returns: number
       }
-      _st_3dintersects: {
-        Args: { geom2: unknown; geom1: unknown }
+      _raster_constraint_info_alignment: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
         Returns: boolean
+      }
+      _raster_constraint_info_blocksize: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: number
+      }
+      _raster_constraint_info_coverage_tile: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _raster_constraint_info_extent: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: unknown
+      }
+      _raster_constraint_info_index: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _raster_constraint_info_nodata_values: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: number[]
+      }
+      _raster_constraint_info_num_bands: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: number
+      }
+      _raster_constraint_info_out_db: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean[]
+      }
+      _raster_constraint_info_pixel_types: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: string[]
+      }
+      _raster_constraint_info_regular_blocking: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _raster_constraint_info_scale: {
+        Args: {
+          rastschema: unknown
+          rasttable: unknown
+          rastcolumn: unknown
+          axis: string
+        }
+        Returns: number
+      }
+      _raster_constraint_info_spatially_unique: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: boolean
+      }
+      _raster_constraint_info_srid: {
+        Args: { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+        Returns: number
+      }
+      _raster_constraint_nodata_values: {
+        Args: { rast: unknown }
+        Returns: number[]
+      }
+      _raster_constraint_out_db: {
+        Args: { rast: unknown }
+        Returns: boolean[]
+      }
+      _raster_constraint_pixel_types: {
+        Args: { rast: unknown }
+        Returns: string[]
+      }
+      _st_3dintersects: {
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: boolean
+      }
+      _st_aspect4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_asraster: {
+        Args: {
+          geom: unknown
+          scalex?: number
+          scaley?: number
+          width?: number
+          height?: number
+          pixeltype?: string[]
+          value?: number[]
+          nodataval?: number[]
+          upperleftx?: number
+          upperlefty?: number
+          gridx?: number
+          gridy?: number
+          skewx?: number
+          skewy?: number
+          touched?: boolean
+        }
+        Returns: unknown
       }
       _st_bestsrid: {
         Args: { "": unknown }
         Returns: number
       }
+      _st_clip: {
+        Args: {
+          rast: unknown
+          nband: number[]
+          geom: unknown
+          nodataval?: number[]
+          crop?: boolean
+        }
+        Returns: unknown
+      }
+      _st_colormap: {
+        Args: {
+          rast: unknown
+          nband: number
+          colormap: string
+          method?: string
+        }
+        Returns: unknown
+      }
       _st_contains: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
       }
       _st_containsproperly: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
+      }
+      _st_convertarray4ma: {
+        Args: { value: number[] }
+        Returns: number[]
+      }
+      _st_count: {
+        Args: {
+          rast: unknown
+          nband?: number
+          exclude_nodata_value?: boolean
+          sample_percent?: number
+        }
+        Returns: number
+      }
+      _st_countagg_finalfn: {
+        Args: { agg: Database["public"]["CompositeTypes"]["agg_count"] }
+        Returns: number
+      }
+      _st_countagg_transfn: {
+        Args:
+          | {
+              agg: Database["public"]["CompositeTypes"]["agg_count"]
+              rast: unknown
+              exclude_nodata_value: boolean
+            }
+          | {
+              agg: Database["public"]["CompositeTypes"]["agg_count"]
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+            }
+          | {
+              agg: Database["public"]["CompositeTypes"]["agg_count"]
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              sample_percent: number
+            }
+        Returns: Database["public"]["CompositeTypes"]["agg_count"]
       }
       _st_coveredby: {
         Args:
           | { geog1: unknown; geog2: unknown }
-          | { geom2: unknown; geom1: unknown }
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
       }
       _st_covers: {
         Args:
           | { geog1: unknown; geog2: unknown }
           | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
       }
       _st_crosses: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
-      _st_dwithin: {
+      _st_dfullywithin: {
         Args: {
-          tolerance: number
-          geog1: unknown
-          geog2: unknown
-          use_spheroid?: boolean
+          rast1: unknown
+          nband1: number
+          rast2: unknown
+          nband2: number
+          distance: number
         }
         Returns: boolean
       }
-      _st_equals: {
-        Args: { geom2: unknown; geom1: unknown }
+      _st_dwithin: {
+        Args:
+          | {
+              geog1: unknown
+              geog2: unknown
+              tolerance: number
+              use_spheroid?: boolean
+            }
+          | {
+              rast1: unknown
+              nband1: number
+              rast2: unknown
+              nband2: number
+              distance: number
+            }
         Returns: boolean
       }
-      _st_intersects: {
+      _st_equals: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
+      _st_gdalwarp: {
+        Args: {
+          rast: unknown
+          algorithm?: string
+          maxerr?: number
+          srid?: number
+          scalex?: number
+          scaley?: number
+          gridx?: number
+          gridy?: number
+          skewx?: number
+          skewy?: number
+          width?: number
+          height?: number
+        }
+        Returns: unknown
+      }
+      _st_grayscale4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_hillshade4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_histogram: {
+        Args: {
+          rast: unknown
+          nband?: number
+          exclude_nodata_value?: boolean
+          sample_percent?: number
+          bins?: number
+          width?: number[]
+          right?: boolean
+          min?: number
+          max?: number
+        }
+        Returns: Record<string, unknown>[]
+      }
+      _st_intersects: {
+        Args:
+          | { geom: unknown; rast: unknown; nband?: number }
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+        Returns: boolean
+      }
       _st_linecrossingdirection: {
-        Args: { line2: unknown; line1: unknown }
+        Args: { line1: unknown; line2: unknown }
         Returns: number
       }
       _st_longestline: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
+      _st_mapalgebra: {
+        Args:
+          | {
+              rastbandargset: Database["public"]["CompositeTypes"]["rastbandarg"][]
+              callbackfunc: unknown
+              pixeltype?: string
+              distancex?: number
+              distancey?: number
+              extenttype?: string
+              customextent?: unknown
+              mask?: number[]
+              weighted?: boolean
+            }
+          | {
+              rastbandargset: Database["public"]["CompositeTypes"]["rastbandarg"][]
+              expression: string
+              pixeltype?: string
+              extenttype?: string
+              nodata1expr?: string
+              nodata2expr?: string
+              nodatanodataval?: number
+            }
+        Returns: unknown
+      }
       _st_maxdistance: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: number
+      }
+      _st_neighborhood: {
+        Args: {
+          rast: unknown
+          band: number
+          columnx: number
+          rowy: number
+          distancex: number
+          distancey: number
+          exclude_nodata_value?: boolean
+        }
+        Returns: number[]
       }
       _st_orderingequals: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       _st_overlaps: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
+      }
+      _st_pixelascentroids: {
+        Args: {
+          rast: unknown
+          band?: number
+          columnx?: number
+          rowy?: number
+          exclude_nodata_value?: boolean
+        }
+        Returns: {
+          geom: unknown
+          val: number
+          x: number
+          y: number
+        }[]
+      }
+      _st_pixelaspolygons: {
+        Args: {
+          rast: unknown
+          band?: number
+          columnx?: number
+          rowy?: number
+          exclude_nodata_value?: boolean
+        }
+        Returns: {
+          geom: unknown
+          val: number
+          x: number
+          y: number
+        }[]
       }
       _st_pointoutside: {
         Args: { "": unknown }
         Returns: unknown
       }
+      _st_quantile: {
+        Args: {
+          rast: unknown
+          nband?: number
+          exclude_nodata_value?: boolean
+          sample_percent?: number
+          quantiles?: number[]
+        }
+        Returns: Record<string, unknown>[]
+      }
+      _st_rastertoworldcoord: {
+        Args: { rast: unknown; columnx?: number; rowy?: number }
+        Returns: Record<string, unknown>
+      }
+      _st_reclass: {
+        Args: { rast: unknown }
+        Returns: unknown
+      }
+      _st_roughness4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_samealignment_finalfn: {
+        Args: { agg: Database["public"]["CompositeTypes"]["agg_samealignment"] }
+        Returns: boolean
+      }
+      _st_samealignment_transfn: {
+        Args: {
+          agg: Database["public"]["CompositeTypes"]["agg_samealignment"]
+          rast: unknown
+        }
+        Returns: Database["public"]["CompositeTypes"]["agg_samealignment"]
+      }
+      _st_setvalues: {
+        Args: {
+          rast: unknown
+          nband: number
+          x: number
+          y: number
+          newvalueset: number[]
+          noset?: boolean[]
+          hasnosetvalue?: boolean
+          nosetvalue?: number
+          keepnodata?: boolean
+        }
+        Returns: unknown
+      }
+      _st_slope4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
       _st_sortablehash: {
         Args: { geom: unknown }
         Returns: number
       }
+      _st_summarystats: {
+        Args: {
+          rast: unknown
+          nband?: number
+          exclude_nodata_value?: boolean
+          sample_percent?: number
+        }
+        Returns: Database["public"]["CompositeTypes"]["summarystats"]
+      }
+      _st_summarystats_finalfn: {
+        Args: { "": unknown }
+        Returns: Database["public"]["CompositeTypes"]["summarystats"]
+      }
+      _st_tile: {
+        Args: {
+          rast: unknown
+          width: number
+          height: number
+          nband?: number[]
+          padwithnodata?: boolean
+          nodataval?: number
+        }
+        Returns: unknown[]
+      }
       _st_touches: {
-        Args: { geom1: unknown; geom2: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
         Returns: boolean
+      }
+      _st_tpi4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_tri4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
+      }
+      _st_union_finalfn: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      _st_valuecount: {
+        Args:
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+        Returns: Record<string, unknown>[]
       }
       _st_voronoi: {
         Args: {
-          return_polygons?: boolean
-          tolerance?: number
-          clip?: unknown
           g1: unknown
+          clip?: unknown
+          tolerance?: number
+          return_polygons?: boolean
         }
         Returns: unknown
       }
       _st_within: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+        Returns: boolean
+      }
+      _st_worldtorastercoord: {
+        Args: { rast: unknown; longitude?: number; latitude?: number }
+        Returns: Record<string, unknown>
+      }
+      _updaterastersrid: {
+        Args: {
+          schema_name: unknown
+          table_name: unknown
+          column_name: unknown
+          new_srid: number
+        }
         Returns: boolean
       }
       addauth: {
@@ -4772,33 +3413,104 @@ export type Database = {
       addgeometrycolumn: {
         Args:
           | {
-              new_type: string
-              new_dim: number
-              use_typmod?: boolean
-              table_name: string
-              column_name: string
-              new_srid: number
-            }
-          | {
-              new_type: string
-              use_typmod?: boolean
-              new_dim: number
-              new_srid_in: number
-              column_name: string
-              table_name: string
-              schema_name: string
               catalog_name: string
+              schema_name: string
+              table_name: string
+              column_name: string
+              new_srid_in: number
+              new_type: string
+              new_dim: number
+              use_typmod?: boolean
             }
           | {
-              use_typmod?: boolean
               schema_name: string
               table_name: string
               column_name: string
               new_srid: number
               new_type: string
               new_dim: number
+              use_typmod?: boolean
+            }
+          | {
+              table_name: string
+              column_name: string
+              new_srid: number
+              new_type: string
+              new_dim: number
+              use_typmod?: boolean
             }
         Returns: string
+      }
+      addoverviewconstraints: {
+        Args:
+          | {
+              ovschema: unknown
+              ovtable: unknown
+              ovcolumn: unknown
+              refschema: unknown
+              reftable: unknown
+              refcolumn: unknown
+              ovfactor: number
+            }
+          | {
+              ovtable: unknown
+              ovcolumn: unknown
+              reftable: unknown
+              refcolumn: unknown
+              ovfactor: number
+            }
+        Returns: boolean
+      }
+      addrasterconstraints: {
+        Args:
+          | { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+          | {
+              rastschema: unknown
+              rasttable: unknown
+              rastcolumn: unknown
+              srid?: boolean
+              scale_x?: boolean
+              scale_y?: boolean
+              blocksize_x?: boolean
+              blocksize_y?: boolean
+              same_alignment?: boolean
+              regular_blocking?: boolean
+              num_bands?: boolean
+              pixel_types?: boolean
+              nodata_values?: boolean
+              out_db?: boolean
+              extent?: boolean
+            }
+          | { rasttable: unknown; rastcolumn: unknown }
+          | {
+              rasttable: unknown
+              rastcolumn: unknown
+              srid?: boolean
+              scale_x?: boolean
+              scale_y?: boolean
+              blocksize_x?: boolean
+              blocksize_y?: boolean
+              same_alignment?: boolean
+              regular_blocking?: boolean
+              num_bands?: boolean
+              pixel_types?: boolean
+              nodata_values?: boolean
+              out_db?: boolean
+              extent?: boolean
+            }
+        Returns: boolean
+      }
+      admin_get_user_usage_stats: {
+        Args: { target_user_id: string }
+        Returns: Json
+      }
+      admin_set_user_subscription: {
+        Args: { target_user_id: string; new_tier: string; reason?: string }
+        Returns: Json
+      }
+      admin_set_user_type: {
+        Args: { target_user_id: string; new_user_type: string }
+        Returns: Json
       }
       binary_quantize: {
         Args: { "": string } | { "": unknown }
@@ -4829,7 +3541,7 @@ export type Database = {
         Returns: unknown
       }
       box3d: {
-        Args: { "": unknown } | { "": unknown }
+        Args: { "": unknown } | { "": unknown } | { "": unknown }
         Returns: unknown
       }
       box3d_in: {
@@ -4845,32 +3557,24 @@ export type Database = {
         Returns: unknown
       }
       bytea: {
-        Args: { "": unknown } | { "": unknown }
+        Args: { "": unknown } | { "": unknown } | { "": unknown }
         Returns: string
       }
-      check_florida_parcels_duplicates: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          parcel_id: string
-          last_created: string
-          first_created: string
-          duplicate_count: number
-        }[]
+      capture_signup_data: {
+        Args: { p_user_id: string; p_signup_metadata: Json }
+        Returns: undefined
       }
-      check_florida_parcels_status: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          counties_with_data: number
-          indexes_count: number
-          has_rls: boolean
-          last_updated: string
-          table_status: string
-          total_rows: number
-        }[]
+      check_user_permission: {
+        Args: { permission_name: string }
+        Returns: boolean
       }
-      create_demo_property: {
-        Args: { user_uuid: string }
-        Returns: string
+      cleanup_expired_consents: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      create_user_preferences: {
+        Args: { p_user_id: string; p_preferences?: Json }
+        Returns: undefined
       }
       disablelongtransactions: {
         Args: Record<PropertyKey, never>
@@ -4878,22 +3582,67 @@ export type Database = {
       }
       dropgeometrycolumn: {
         Args:
-          | { column_name: string; table_name: string; schema_name: string }
           | {
-              schema_name: string
-              column_name: string
               catalog_name: string
+              schema_name: string
               table_name: string
+              column_name: string
             }
+          | { schema_name: string; table_name: string; column_name: string }
           | { table_name: string; column_name: string }
         Returns: string
       }
       dropgeometrytable: {
         Args:
+          | { catalog_name: string; schema_name: string; table_name: string }
+          | { schema_name: string; table_name: string }
           | { table_name: string }
-          | { table_name: string; catalog_name: string; schema_name: string }
-          | { table_name: string; schema_name: string }
         Returns: string
+      }
+      dropoverviewconstraints: {
+        Args:
+          | { ovschema: unknown; ovtable: unknown; ovcolumn: unknown }
+          | { ovtable: unknown; ovcolumn: unknown }
+        Returns: boolean
+      }
+      droprasterconstraints: {
+        Args:
+          | { rastschema: unknown; rasttable: unknown; rastcolumn: unknown }
+          | {
+              rastschema: unknown
+              rasttable: unknown
+              rastcolumn: unknown
+              srid?: boolean
+              scale_x?: boolean
+              scale_y?: boolean
+              blocksize_x?: boolean
+              blocksize_y?: boolean
+              same_alignment?: boolean
+              regular_blocking?: boolean
+              num_bands?: boolean
+              pixel_types?: boolean
+              nodata_values?: boolean
+              out_db?: boolean
+              extent?: boolean
+            }
+          | { rasttable: unknown; rastcolumn: unknown }
+          | {
+              rasttable: unknown
+              rastcolumn: unknown
+              srid?: boolean
+              scale_x?: boolean
+              scale_y?: boolean
+              blocksize_x?: boolean
+              blocksize_y?: boolean
+              same_alignment?: boolean
+              regular_blocking?: boolean
+              num_bands?: boolean
+              pixel_types?: boolean
+              nodata_values?: boolean
+              out_db?: boolean
+              extent?: boolean
+            }
+        Returns: boolean
       }
       enablelongtransactions: {
         Args: Record<PropertyKey, never>
@@ -4902,28 +3651,6 @@ export type Database = {
       equals: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
-      }
-      extract_county_from_address: {
-        Args: { p_address: string }
-        Returns: string
-      }
-      fdot_merge_stage: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      fdot_stage_insert_one: {
-        Args: { j: Json }
-        Returns: undefined
-      }
-      find_similar_properties: {
-        Args: { p_property_id: string; p_limit?: number }
-        Returns: {
-          similarity: number
-          address: string
-          property_type: Database["public"]["Enums"]["property_type"]
-          property_id: string
-          square_footage: number
-        }[]
       }
       geography: {
         Args: { "": string } | { "": unknown }
@@ -4990,19 +3717,19 @@ export type Database = {
         Returns: number
       }
       geometry_contained_3d: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_contains: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_contains_3d: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_distance_box: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: number
       }
       geometry_distance_centroid: {
@@ -5014,7 +3741,7 @@ export type Database = {
         Returns: boolean
       }
       geometry_ge: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_gist_compress_2d: {
@@ -5038,7 +3765,7 @@ export type Database = {
         Returns: undefined
       }
       geometry_gt: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_hash: {
@@ -5050,11 +3777,11 @@ export type Database = {
         Returns: unknown
       }
       geometry_le: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_left: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_lt: {
@@ -5066,7 +3793,7 @@ export type Database = {
         Returns: unknown
       }
       geometry_overabove: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_overbelow: {
@@ -5074,15 +3801,15 @@ export type Database = {
         Returns: boolean
       }
       geometry_overlaps: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_overlaps_3d: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_overleft: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_overright: {
@@ -5094,7 +3821,7 @@ export type Database = {
         Returns: unknown
       }
       geometry_right: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_same: {
@@ -5102,7 +3829,7 @@ export type Database = {
         Returns: boolean
       }
       geometry_same_3d: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometry_send: {
@@ -5134,7 +3861,7 @@ export type Database = {
         Returns: unknown
       }
       geometry_within: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       geometrytype: {
@@ -5149,374 +3876,31 @@ export type Database = {
         Args: { "": string }
         Returns: unknown
       }
-      get_active_legal_documents: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          created_at: string | null
-          effective_date: string
-          id: string
-          is_active: boolean | null
-          sha256_hash: string
-          slug: string
-          storage_url: string
-          title: string
-          updated_at: string | null
-          version: string
-        }[]
-      }
-      get_ai_usage_stats: {
-        Args: { p_user_id?: string; p_start_date?: string; p_end_date?: string }
-        Returns: {
-          analyses_by_type: Json
-          models_used: Json
-          total_tokens: number
-          avg_confidence: number
-          total_analyses: number
-          total_cost_cents: number
-        }[]
-      }
-      get_coastal_counties: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          aob_restrictions: Json | null
-          building_code_version: string | null
-          building_dept_address: string | null
-          building_dept_email: string | null
-          building_dept_name: string | null
-          building_dept_phone: string | null
-          building_dept_website: string | null
-          citizens_service_center: string | null
-          claim_filing_requirements: Json | null
-          coastal_county: boolean | null
-          contractor_license_search_url: string | null
-          contractor_license_verification_phone: string | null
-          county_code: string
-          county_name: string
-          county_seat: string
-          created_at: string | null
-          emergency_hotline: string | null
-          emergency_mgmt_email: string | null
-          emergency_mgmt_name: string | null
-          emergency_mgmt_phone: string | null
-          emergency_mgmt_website: string | null
-          fema_flood_zone_url: string | null
-          fema_region: string | null
-          flood_elevation_requirement: boolean | null
-          flood_zone_maps_url: string | null
-          gis_url: string | null
-          households: number | null
-          hurricane_evacuation_zone_url: string | null
-          id: string
-          impact_glass_required: boolean | null
-          last_verified_at: string | null
-          median_home_value: number | null
-          notes: string | null
-          online_permit_system: boolean | null
-          parcel_data_url: string | null
-          permit_expiration_days: number | null
-          permit_fee_structure: Json | null
-          permit_search_url: string | null
-          population: number | null
-          property_appraiser_email: string | null
-          property_appraiser_name: string | null
-          property_appraiser_phone: string | null
-          property_appraiser_website: string | null
-          property_search_url: string | null
-          region: string
-          reinspection_fee: number | null
-          storm_surge_planning_zone_url: string | null
-          supplemental_claim_deadline_days: number | null
-          tax_collector_email: string | null
-          tax_collector_name: string | null
-          tax_collector_phone: string | null
-          tax_collector_website: string | null
-          time_zone: string
-          unlicensed_contractor_limit: number | null
-          updated_at: string | null
-          wind_speed_requirement: number | null
-          windstorm_requirements: Json | null
-        }[]
-      }
-      get_counties_by_region: {
-        Args: { p_region: string }
-        Returns: {
-          aob_restrictions: Json | null
-          building_code_version: string | null
-          building_dept_address: string | null
-          building_dept_email: string | null
-          building_dept_name: string | null
-          building_dept_phone: string | null
-          building_dept_website: string | null
-          citizens_service_center: string | null
-          claim_filing_requirements: Json | null
-          coastal_county: boolean | null
-          contractor_license_search_url: string | null
-          contractor_license_verification_phone: string | null
-          county_code: string
-          county_name: string
-          county_seat: string
-          created_at: string | null
-          emergency_hotline: string | null
-          emergency_mgmt_email: string | null
-          emergency_mgmt_name: string | null
-          emergency_mgmt_phone: string | null
-          emergency_mgmt_website: string | null
-          fema_flood_zone_url: string | null
-          fema_region: string | null
-          flood_elevation_requirement: boolean | null
-          flood_zone_maps_url: string | null
-          gis_url: string | null
-          households: number | null
-          hurricane_evacuation_zone_url: string | null
-          id: string
-          impact_glass_required: boolean | null
-          last_verified_at: string | null
-          median_home_value: number | null
-          notes: string | null
-          online_permit_system: boolean | null
-          parcel_data_url: string | null
-          permit_expiration_days: number | null
-          permit_fee_structure: Json | null
-          permit_search_url: string | null
-          population: number | null
-          property_appraiser_email: string | null
-          property_appraiser_name: string | null
-          property_appraiser_phone: string | null
-          property_appraiser_website: string | null
-          property_search_url: string | null
-          region: string
-          reinspection_fee: number | null
-          storm_surge_planning_zone_url: string | null
-          supplemental_claim_deadline_days: number | null
-          tax_collector_email: string | null
-          tax_collector_name: string | null
-          tax_collector_phone: string | null
-          tax_collector_website: string | null
-          time_zone: string
-          unlicensed_contractor_limit: number | null
-          updated_at: string | null
-          wind_speed_requirement: number | null
-          windstorm_requirements: Json | null
-        }[]
-      }
-      get_county_building_requirements: {
-        Args: { p_county_identifier: string }
-        Returns: {
-          permit_expiration_days: number
-          flood_elevation_requirement: boolean
-          county_name: string
-          building_code_version: string
-          wind_speed_requirement: number
-          coastal_county: boolean
-          impact_glass_required: boolean
-        }[]
-      }
-      get_county_for_property: {
-        Args: { p_property_id: string }
-        Returns: {
-          aob_restrictions: Json | null
-          building_code_version: string | null
-          building_dept_address: string | null
-          building_dept_email: string | null
-          building_dept_name: string | null
-          building_dept_phone: string | null
-          building_dept_website: string | null
-          citizens_service_center: string | null
-          claim_filing_requirements: Json | null
-          coastal_county: boolean | null
-          contractor_license_search_url: string | null
-          contractor_license_verification_phone: string | null
-          county_code: string
-          county_name: string
-          county_seat: string
-          created_at: string | null
-          emergency_hotline: string | null
-          emergency_mgmt_email: string | null
-          emergency_mgmt_name: string | null
-          emergency_mgmt_phone: string | null
-          emergency_mgmt_website: string | null
-          fema_flood_zone_url: string | null
-          fema_region: string | null
-          flood_elevation_requirement: boolean | null
-          flood_zone_maps_url: string | null
-          gis_url: string | null
-          households: number | null
-          hurricane_evacuation_zone_url: string | null
-          id: string
-          impact_glass_required: boolean | null
-          last_verified_at: string | null
-          median_home_value: number | null
-          notes: string | null
-          online_permit_system: boolean | null
-          parcel_data_url: string | null
-          permit_expiration_days: number | null
-          permit_fee_structure: Json | null
-          permit_search_url: string | null
-          population: number | null
-          property_appraiser_email: string | null
-          property_appraiser_name: string | null
-          property_appraiser_phone: string | null
-          property_appraiser_website: string | null
-          property_search_url: string | null
-          region: string
-          reinspection_fee: number | null
-          storm_surge_planning_zone_url: string | null
-          supplemental_claim_deadline_days: number | null
-          tax_collector_email: string | null
-          tax_collector_name: string | null
-          tax_collector_phone: string | null
-          tax_collector_website: string | null
-          time_zone: string
-          unlicensed_contractor_limit: number | null
-          updated_at: string | null
-          wind_speed_requirement: number | null
-          windstorm_requirements: Json | null
-        }[]
-      }
-      get_county_name: {
-        Args: { fips_code: number }
-        Returns: string
-      }
-      get_county_property_appraiser: {
-        Args: { p_county_identifier: string }
-        Returns: {
-          gis_url: string
-          property_search_url: string
-          property_appraiser_website: string
-          county_name: string
-        }[]
-      }
-      get_florida_county: {
-        Args: { p_identifier: string }
-        Returns: {
-          aob_restrictions: Json | null
-          building_code_version: string | null
-          building_dept_address: string | null
-          building_dept_email: string | null
-          building_dept_name: string | null
-          building_dept_phone: string | null
-          building_dept_website: string | null
-          citizens_service_center: string | null
-          claim_filing_requirements: Json | null
-          coastal_county: boolean | null
-          contractor_license_search_url: string | null
-          contractor_license_verification_phone: string | null
-          county_code: string
-          county_name: string
-          county_seat: string
-          created_at: string | null
-          emergency_hotline: string | null
-          emergency_mgmt_email: string | null
-          emergency_mgmt_name: string | null
-          emergency_mgmt_phone: string | null
-          emergency_mgmt_website: string | null
-          fema_flood_zone_url: string | null
-          fema_region: string | null
-          flood_elevation_requirement: boolean | null
-          flood_zone_maps_url: string | null
-          gis_url: string | null
-          households: number | null
-          hurricane_evacuation_zone_url: string | null
-          id: string
-          impact_glass_required: boolean | null
-          last_verified_at: string | null
-          median_home_value: number | null
-          notes: string | null
-          online_permit_system: boolean | null
-          parcel_data_url: string | null
-          permit_expiration_days: number | null
-          permit_fee_structure: Json | null
-          permit_search_url: string | null
-          population: number | null
-          property_appraiser_email: string | null
-          property_appraiser_name: string | null
-          property_appraiser_phone: string | null
-          property_appraiser_website: string | null
-          property_search_url: string | null
-          region: string
-          reinspection_fee: number | null
-          storm_surge_planning_zone_url: string | null
-          supplemental_claim_deadline_days: number | null
-          tax_collector_email: string | null
-          tax_collector_name: string | null
-          tax_collector_phone: string | null
-          tax_collector_website: string | null
-          time_zone: string
-          unlicensed_contractor_limit: number | null
-          updated_at: string | null
-          wind_speed_requirement: number | null
-          windstorm_requirements: Json | null
-        }[]
-      }
-      get_my_claim_details: {
-        Args: { p_claim_id: string }
-        Returns: {
-          user_email: string
-          carrier_name: string
-          user_name: string
-          claim_number: string
-          property_name: string
-        }[]
-      }
-      get_parcel_counts_by_county: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          county_name: string
-          parcel_count: number
-          county_code: string
-        }[]
-      }
-      get_parcel_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
-      }
-      get_parcel_stats_by_county: {
-        Args: { p_county_code?: string }
-        Returns: {
-          total_parcels: number
-          total_just_value: number
-          avg_just_value: number
-          total_land_value: number
-          residential_units: number
-          county_name: string
-        }[]
-      }
-      get_parcel_with_county: {
-        Args: { p_parcel_id: string }
-        Returns: {
-          property_appraiser_url: string
-          parcel_id: string
-          owner_name: string
-          physical_address: string
-          just_value: number
-          land_value: number
-          county_name: string
-          gis_url: string
-        }[]
-      }
-      get_parcels_column_stats: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          example_columns: string
-          category: string
-          column_count: number
-        }[]
-      }
       get_proj4_from_srid: {
         Args: { "": number }
         Returns: string
       }
-      get_property_county_requirements: {
-        Args: { p_property_id: string }
+      get_user_consent_status: {
+        Args: { p_user_id: string }
         Returns: {
-          requirement_details: Json
-          requirement_value: string
-          requirement_type: string
+          document_type: Database["public"]["Enums"]["legal_document_type"]
+          is_accepted: boolean
+          accepted_version: string
+          accepted_at: string
+          needs_update: boolean
         }[]
       }
-      get_raw_data_counts_by_source: {
-        Args: Record<PropertyKey, never>
+      get_user_metadata: {
+        Args: { target_user_id?: string }
         Returns: Json
+      }
+      get_user_subscription_tier: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      get_user_type: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       gettransactionid: {
         Args: Record<PropertyKey, never>
@@ -5608,65 +3992,54 @@ export type Database = {
       }
       l2_normalize: {
         Args: { "": string } | { "": unknown } | { "": unknown }
+        Returns: unknown
+      }
+      link_consent_to_user: {
+        Args: { p_user_id: string; p_email: string; p_consent_token: string }
+        Returns: Json
+      }
+      log_error: {
+        Args: {
+          p_error_type: string
+          p_error_code: string
+          p_error_message: string
+          p_error_stack?: string
+          p_context?: Json
+          p_severity?: string
+          p_url?: string
+          p_user_agent?: string
+        }
         Returns: string
       }
       log_login_activity: {
-        Args: {
-          p_user_agent: string
-          p_user_id: string
-          p_ip_address: string
-          p_failure_reason?: string
-          p_success?: boolean
-        }
+        Args: { p_user_id: string; p_tracking_data: Json }
         Returns: undefined
       }
-      log_user_action: {
+      log_security_event: {
         Args: {
-          p_resource_type?: string
-          p_resource_id?: string
-          p_metadata?: Json
+          p_event_type: string
+          p_severity: string
           p_action: string
+          p_metadata?: Json
         }
-        Returns: undefined
+        Returns: string
       }
-      log_user_creation_debug: {
+      log_user_activity: {
         Args: {
           p_user_id: string
-          p_metadata?: Json
-          p_error_message?: string
-          p_success: boolean
-          p_step: string
+          p_session_id: string
+          p_activity_type: string
+          p_activity_name: string
+          p_activity_category?: string
+          p_activity_value?: Json
+          p_page_url?: string
+          p_page_title?: string
         }
-        Returns: undefined
+        Returns: string
       }
       longtransactionsenabled: {
         Args: Record<PropertyKey, never>
         Returns: boolean
-      }
-      max_objectid_for_county: {
-        Args: { cnty_layer: number }
-        Returns: {
-          max: number
-        }[]
-      }
-      merge_license_into_contractor: {
-        Args: Record<PropertyKey, never>
-        Returns: undefined
-      }
-      needs_reaccept: {
-        Args: { uid: string }
-        Returns: {
-          created_at: string | null
-          effective_date: string
-          id: string
-          is_active: boolean | null
-          sha256_hash: string
-          slug: string
-          storage_url: string
-          title: string
-          updated_at: string | null
-          version: string
-        }[]
       }
       path: {
         Args: { "": unknown }
@@ -5739,7 +4112,7 @@ export type Database = {
         Returns: number
       }
       postgis_constraint_srid: {
-        Args: { geomtable: string; geomschema: string; geomcolumn: string }
+        Args: { geomschema: string; geomtable: string; geomcolumn: string }
         Returns: number
       }
       postgis_constraint_type: {
@@ -5755,6 +4128,10 @@ export type Database = {
         Returns: string
       }
       postgis_full_version: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      postgis_gdal_version: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -5807,10 +4184,22 @@ export type Database = {
         Returns: string
       }
       postgis_noop: {
-        Args: { "": unknown }
+        Args: { "": unknown } | { "": unknown }
         Returns: unknown
       }
       postgis_proj_version: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      postgis_raster_lib_build_date: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      postgis_raster_lib_version: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      postgis_raster_scripts_installed: {
         Args: Record<PropertyKey, never>
         Returns: string
       }
@@ -5833,8 +4222,8 @@ export type Database = {
       postgis_type_name: {
         Args: {
           geomname: string
-          use_new_name?: boolean
           coord_dimension: number
+          use_new_name?: boolean
         }
         Returns: string
       }
@@ -5858,59 +4247,77 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: string
       }
-      queue_county_scraping: {
-        Args: Record<PropertyKey, never>
-        Returns: Json
+      raster_hash: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      raster_in: {
+        Args: { "": unknown }
+        Returns: unknown
+      }
+      raster_out: {
+        Args: { "": unknown }
+        Returns: unknown
       }
       record_legal_acceptance: {
         Args: {
-          p_legal_id: string
           p_user_id: string
+          p_legal_id: string
+          p_ip_address?: string
+          p_user_agent?: string
           p_signature_data?: Json
-          p_user_agent: string
-          p_ip_address: unknown
         }
-        Returns: string
-      }
-      refresh_parcels_view: {
-        Args: Record<PropertyKey, never>
         Returns: undefined
       }
-      search_floir_data: {
+      record_signup_consent: {
         Args: {
-          match_count?: number
-          data_types?: Database["public"]["Enums"]["floir_data_type"][]
-          match_threshold?: number
-          query_embedding: string
+          p_email: string
+          p_gdpr_consent: boolean
+          p_ccpa_consent: boolean
+          p_marketing_consent: boolean
+          p_data_processing_consent: boolean
+          p_cookie_consent: boolean
+          p_terms_accepted: boolean
+          p_privacy_accepted: boolean
+          p_age_confirmed: boolean
+          p_ai_tools_consent: boolean
+          p_ip_address?: string
+          p_user_agent?: string
+          p_fingerprint?: string
         }
-        Returns: {
-          normalized_data: Json
-          data_type: Database["public"]["Enums"]["floir_data_type"]
-          id: string
-          primary_key: string
-          similarity: number
-          source_url: string
-        }[]
+        Returns: Json
       }
-      search_parcels_by_owner: {
-        Args: { p_limit?: number; p_county_fips?: number; p_owner_name: string }
-        Returns: {
-          parcel_id: string
-          assessment_year: number
-          physical_address: string
-          city: string
-          just_value: number
-          county_name: string
-          owner_name: string
-        }[]
+      record_user_consent: {
+        Args: {
+          p_user_id: string
+          p_document_id: string
+          p_action: Database["public"]["Enums"]["consent_action_type"]
+          p_ip_address: unknown
+          p_user_agent?: string
+          p_device_fingerprint?: string
+          p_metadata?: Json
+        }
+        Returns: string
       }
       set_limit: {
         Args: { "": number }
         Returns: number
       }
+      set_user_metadata: {
+        Args: { target_user_id: string; metadata_updates: Json }
+        Returns: Json
+      }
+      show_current_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       show_limit: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      show_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
       }
       show_trgm: {
         Args: { "": string }
@@ -5945,7 +4352,7 @@ export type Database = {
         Returns: number
       }
       st_3dintersects: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       st_3dlength: {
@@ -5953,15 +4360,15 @@ export type Database = {
         Returns: number
       }
       st_3dlongestline: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
       st_3dmakebox: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
       st_3dmaxdistance: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: number
       }
       st_3dperimeter: {
@@ -5969,7 +4376,54 @@ export type Database = {
         Returns: number
       }
       st_3dshortestline: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: unknown
+      }
+      st_addband: {
+        Args:
+          | {
+              rast: unknown
+              addbandargset: Database["public"]["CompositeTypes"]["addbandarg"][]
+            }
+          | {
+              rast: unknown
+              index: number
+              outdbfile: string
+              outdbindex: number[]
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              index: number
+              pixeltype: string
+              initialvalue?: number
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              outdbfile: string
+              outdbindex: number[]
+              index?: number
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              pixeltype: string
+              initialvalue?: number
+              nodataval?: number
+            }
+          | {
+              torast: unknown
+              fromrast: unknown
+              fromband?: number
+              torastindex?: number
+            }
+          | {
+              torast: unknown
+              fromrasts: unknown[]
+              fromband?: number
+              torastindex?: number
+            }
         Returns: unknown
       }
       st_addpoint: {
@@ -5978,9 +4432,116 @@ export type Database = {
       }
       st_angle: {
         Args:
-          | { line2: unknown; line1: unknown }
-          | { pt2: unknown; pt1: unknown; pt3: unknown; pt4?: unknown }
+          | { line1: unknown; line2: unknown }
+          | { pt1: unknown; pt2: unknown; pt3: unknown; pt4?: unknown }
         Returns: number
+      }
+      st_approxcount: {
+        Args:
+          | {
+              rast: unknown
+              exclude_nodata_value: boolean
+              sample_percent?: number
+            }
+          | { rast: unknown; nband: number; sample_percent: number }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              sample_percent?: number
+            }
+          | { rast: unknown; sample_percent: number }
+        Returns: number
+      }
+      st_approxhistogram: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              sample_percent: number
+              bins: number
+              right: boolean
+            }
+          | { rast: unknown; nband: number; sample_percent: number }
+          | {
+              rast: unknown
+              nband: number
+              sample_percent: number
+              bins: number
+              right: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              sample_percent: number
+              bins: number
+              width?: number[]
+              right?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              sample_percent?: number
+              bins?: number
+              width?: number[]
+              right?: boolean
+            }
+          | { rast: unknown; sample_percent: number }
+        Returns: Record<string, unknown>[]
+      }
+      st_approxquantile: {
+        Args:
+          | { rast: unknown; exclude_nodata_value: boolean; quantile?: number }
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              sample_percent: number
+              quantile: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              sample_percent: number
+              quantile: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              sample_percent: number
+              quantiles?: number[]
+            }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              sample_percent?: number
+              quantiles?: number[]
+            }
+          | { rast: unknown; quantile: number }
+          | { rast: unknown; quantiles: number[] }
+          | { rast: unknown; sample_percent: number; quantile: number }
+          | { rast: unknown; sample_percent: number; quantiles?: number[] }
+        Returns: number
+      }
+      st_approxsummarystats: {
+        Args:
+          | {
+              rast: unknown
+              exclude_nodata_value: boolean
+              sample_percent?: number
+            }
+          | { rast: unknown; nband: number; sample_percent: number }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              sample_percent?: number
+            }
+          | { rast: unknown; sample_percent: number }
+        Returns: Database["public"]["CompositeTypes"]["summarystats"]
       }
       st_area: {
         Args:
@@ -6009,16 +4570,25 @@ export type Database = {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
       }
+      st_asgdalraster: {
+        Args: {
+          rast: unknown
+          format: string
+          options?: string[]
+          srid?: number
+        }
+        Returns: string
+      }
       st_asgeojson: {
         Args:
           | { "": string }
-          | { maxdecimaldigits?: number; geog: unknown; options?: number }
-          | { maxdecimaldigits?: number; options?: number; geom: unknown }
+          | { geog: unknown; maxdecimaldigits?: number; options?: number }
+          | { geom: unknown; maxdecimaldigits?: number; options?: number }
           | {
               r: Record<string, unknown>
+              geom_column?: string
               maxdecimaldigits?: number
               pretty_bool?: boolean
-              geom_column?: string
             }
         Returns: string
       }
@@ -6027,39 +4597,48 @@ export type Database = {
           | { "": string }
           | {
               geog: unknown
+              maxdecimaldigits?: number
               options?: number
               nprefix?: string
               id?: string
-              maxdecimaldigits?: number
             }
+          | { geom: unknown; maxdecimaldigits?: number; options?: number }
           | {
-              id?: string
               version: number
               geog: unknown
               maxdecimaldigits?: number
               options?: number
               nprefix?: string
-            }
-          | {
-              nprefix?: string
-              options?: number
-              maxdecimaldigits?: number
-              geom: unknown
-              version: number
               id?: string
             }
-          | { options?: number; maxdecimaldigits?: number; geom: unknown }
+          | {
+              version: number
+              geom: unknown
+              maxdecimaldigits?: number
+              options?: number
+              nprefix?: string
+              id?: string
+            }
         Returns: string
       }
       st_ashexewkb: {
         Args: { "": unknown }
         Returns: string
       }
+      st_asjpeg: {
+        Args:
+          | { rast: unknown; nband: number; options?: string[] }
+          | { rast: unknown; nband: number; quality: number }
+          | { rast: unknown; nbands: number[]; options?: string[] }
+          | { rast: unknown; nbands: number[]; quality: number }
+          | { rast: unknown; options?: string[] }
+        Returns: string
+      }
       st_askml: {
         Args:
           | { "": string }
-          | { maxdecimaldigits?: number; geog: unknown; nprefix?: string }
-          | { nprefix?: string; geom: unknown; maxdecimaldigits?: number }
+          | { geog: unknown; maxdecimaldigits?: number; nprefix?: string }
+          | { geom: unknown; maxdecimaldigits?: number; nprefix?: string }
         Returns: string
       }
       st_aslatlontext: {
@@ -6072,55 +4651,272 @@ export type Database = {
       }
       st_asmvtgeom: {
         Args: {
-          buffer?: number
           geom: unknown
           bounds: unknown
-          clip_geom?: boolean
           extent?: number
+          buffer?: number
+          clip_geom?: boolean
         }
+        Returns: unknown
+      }
+      st_aspect: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              units?: string
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              units?: string
+              interpolate_nodata?: boolean
+            }
+        Returns: unknown
+      }
+      st_aspng: {
+        Args:
+          | { rast: unknown; nband: number; compression: number }
+          | { rast: unknown; nband: number; options?: string[] }
+          | { rast: unknown; nbands: number[]; compression: number }
+          | { rast: unknown; nbands: number[]; options?: string[] }
+          | { rast: unknown; options?: string[] }
+        Returns: string
+      }
+      st_asraster: {
+        Args:
+          | {
+              geom: unknown
+              ref: unknown
+              pixeltype: string
+              value?: number
+              nodataval?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              ref: unknown
+              pixeltype?: string[]
+              value?: number[]
+              nodataval?: number[]
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              scalex: number
+              scaley: number
+              gridx: number
+              gridy: number
+              pixeltype: string
+              value?: number
+              nodataval?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              scalex: number
+              scaley: number
+              gridx?: number
+              gridy?: number
+              pixeltype?: string[]
+              value?: number[]
+              nodataval?: number[]
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              scalex: number
+              scaley: number
+              pixeltype: string[]
+              value?: number[]
+              nodataval?: number[]
+              upperleftx?: number
+              upperlefty?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              scalex: number
+              scaley: number
+              pixeltype: string
+              value?: number
+              nodataval?: number
+              upperleftx?: number
+              upperlefty?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              width: number
+              height: number
+              gridx: number
+              gridy: number
+              pixeltype: string
+              value?: number
+              nodataval?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              width: number
+              height: number
+              gridx?: number
+              gridy?: number
+              pixeltype?: string[]
+              value?: number[]
+              nodataval?: number[]
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              width: number
+              height: number
+              pixeltype: string[]
+              value?: number[]
+              nodataval?: number[]
+              upperleftx?: number
+              upperlefty?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
+          | {
+              geom: unknown
+              width: number
+              height: number
+              pixeltype: string
+              value?: number
+              nodataval?: number
+              upperleftx?: number
+              upperlefty?: number
+              skewx?: number
+              skewy?: number
+              touched?: boolean
+            }
         Returns: unknown
       }
       st_assvg: {
         Args:
           | { "": string }
-          | { geom: unknown; maxdecimaldigits?: number; rel?: number }
-          | { rel?: number; maxdecimaldigits?: number; geog: unknown }
+          | { geog: unknown; rel?: number; maxdecimaldigits?: number }
+          | { geom: unknown; rel?: number; maxdecimaldigits?: number }
         Returns: string
       }
       st_astext: {
         Args: { "": string } | { "": unknown } | { "": unknown }
         Returns: string
       }
+      st_astiff: {
+        Args:
+          | { rast: unknown; compression: string; srid?: number }
+          | {
+              rast: unknown
+              nbands: number[]
+              compression: string
+              srid?: number
+            }
+          | {
+              rast: unknown
+              nbands: number[]
+              options?: string[]
+              srid?: number
+            }
+          | { rast: unknown; options?: string[]; srid?: number }
+        Returns: string
+      }
       st_astwkb: {
         Args:
           | {
-              prec_m?: number
-              with_sizes?: boolean
-              prec_z?: number
-              prec?: number
-              geom: unknown
-              with_boxes?: boolean
-            }
-          | {
-              with_boxes?: boolean
               geom: unknown[]
               ids: number[]
               prec?: number
               prec_z?: number
               prec_m?: number
               with_sizes?: boolean
+              with_boxes?: boolean
+            }
+          | {
+              geom: unknown
+              prec?: number
+              prec_z?: number
+              prec_m?: number
+              with_sizes?: boolean
+              with_boxes?: boolean
             }
         Returns: string
       }
       st_asx3d: {
-        Args: { geom: unknown; options?: number; maxdecimaldigits?: number }
+        Args: { geom: unknown; maxdecimaldigits?: number; options?: number }
         Returns: string
       }
       st_azimuth: {
         Args:
-          | { geog2: unknown; geog1: unknown }
-          | { geom2: unknown; geom1: unknown }
+          | { geog1: unknown; geog2: unknown }
+          | { geom1: unknown; geom2: unknown }
         Returns: number
+      }
+      st_band: {
+        Args:
+          | { rast: unknown; nband: number }
+          | { rast: unknown; nbands: string; delimiter?: string }
+          | { rast: unknown; nbands?: number[] }
+        Returns: unknown
+      }
+      st_bandfilesize: {
+        Args: { rast: unknown; band?: number }
+        Returns: number
+      }
+      st_bandfiletimestamp: {
+        Args: { rast: unknown; band?: number }
+        Returns: number
+      }
+      st_bandisnodata: {
+        Args:
+          | { rast: unknown; band?: number; forcechecking?: boolean }
+          | { rast: unknown; forcechecking: boolean }
+        Returns: boolean
+      }
+      st_bandmetadata: {
+        Args:
+          | { rast: unknown; band: number[] }
+          | { rast: unknown; band?: number }
+        Returns: {
+          pixeltype: string
+          nodatavalue: number
+          isoutdb: boolean
+          path: string
+          outdbbandnum: number
+          filesize: number
+          filetimestamp: number
+        }[]
+      }
+      st_bandnodatavalue: {
+        Args: { rast: unknown; band?: number }
+        Returns: number
+      }
+      st_bandpath: {
+        Args: { rast: unknown; band?: number }
+        Returns: string
+      }
+      st_bandpixeltype: {
+        Args: { rast: unknown; band?: number }
+        Returns: string
       }
       st_boundary: {
         Args: { "": unknown }
@@ -6132,8 +4928,8 @@ export type Database = {
       }
       st_buffer: {
         Args:
-          | { options?: string; radius: number; geom: unknown }
-          | { quadsegs: number; geom: unknown; radius: number }
+          | { geom: unknown; radius: number; options?: string }
+          | { geom: unknown; radius: number; quadsegs: number }
         Returns: unknown
       }
       st_buildarea: {
@@ -6148,12 +4944,39 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      st_clip: {
+        Args:
+          | { rast: unknown; geom: unknown; crop: boolean }
+          | { rast: unknown; geom: unknown; nodataval: number; crop?: boolean }
+          | {
+              rast: unknown
+              geom: unknown
+              nodataval?: number[]
+              crop?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number[]
+              geom: unknown
+              nodataval?: number[]
+              crop?: boolean
+            }
+          | { rast: unknown; nband: number; geom: unknown; crop: boolean }
+          | {
+              rast: unknown
+              nband: number
+              geom: unknown
+              nodataval: number
+              crop?: boolean
+            }
+        Returns: unknown
+      }
       st_clipbybox2d: {
         Args: { geom: unknown; box: unknown }
         Returns: unknown
       }
       st_closestpoint: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
       st_clusterintersecting: {
@@ -6172,56 +4995,114 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      st_colormap: {
+        Args:
+          | { rast: unknown; colormap: string; method?: string }
+          | {
+              rast: unknown
+              nband?: number
+              colormap?: string
+              method?: string
+            }
+        Returns: unknown
+      }
       st_concavehull: {
         Args: {
-          param_allow_holes?: boolean
-          param_pctconvex: number
           param_geom: unknown
+          param_pctconvex: number
+          param_allow_holes?: boolean
         }
         Returns: unknown
       }
       st_contains: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
       st_containsproperly: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
+      st_contour: {
+        Args: {
+          rast: unknown
+          bandnumber?: number
+          level_interval?: number
+          level_base?: number
+          fixed_levels?: number[]
+          polygonize?: boolean
+        }
+        Returns: {
+          geom: unknown
+          id: number
+          value: number
+        }[]
+      }
       st_convexhull: {
-        Args: { "": unknown }
+        Args: { "": unknown } | { "": unknown }
         Returns: unknown
       }
       st_coorddim: {
         Args: { geometry: unknown }
         Returns: number
       }
+      st_count: {
+        Args:
+          | { rast: unknown; exclude_nodata_value: boolean }
+          | { rast: unknown; nband?: number; exclude_nodata_value?: boolean }
+        Returns: number
+      }
       st_coveredby: {
         Args:
-          | { geog2: unknown; geog1: unknown }
-          | { geom2: unknown; geom1: unknown }
+          | { geog1: unknown; geog2: unknown }
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
       st_covers: {
         Args:
-          | { geog2: unknown; geog1: unknown }
+          | { geog1: unknown; geog2: unknown }
           | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
+      }
+      st_createoverview: {
+        Args: { tab: unknown; col: unknown; factor: number; algo?: string }
+        Returns: unknown
       }
       st_crosses: {
         Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       st_curvetoline: {
-        Args: { flags?: number; geom: unknown; tol?: number; toltype?: number }
+        Args: { geom: unknown; tol?: number; toltype?: number; flags?: number }
         Returns: unknown
       }
       st_delaunaytriangles: {
-        Args: { flags?: number; g1: unknown; tolerance?: number }
+        Args: { g1: unknown; tolerance?: number; flags?: number }
         Returns: unknown
       }
+      st_dfullywithin: {
+        Args:
+          | {
+              rast1: unknown
+              nband1: number
+              rast2: unknown
+              nband2: number
+              distance: number
+            }
+          | { rast1: unknown; rast2: unknown; distance: number }
+        Returns: boolean
+      }
       st_difference: {
-        Args: { geom2: unknown; geom1: unknown; gridsize?: number }
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
         Returns: unknown
       }
       st_dimension: {
@@ -6229,28 +5110,41 @@ export type Database = {
         Returns: number
       }
       st_disjoint: {
-        Args: { geom1: unknown; geom2: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
       st_distance: {
         Args:
-          | { geog2: unknown; use_spheroid?: boolean; geog1: unknown }
+          | { geog1: unknown; geog2: unknown; use_spheroid?: boolean }
           | { geom1: unknown; geom2: unknown }
         Returns: number
       }
       st_distancesphere: {
         Args:
           | { geom1: unknown; geom2: unknown }
-          | { geom1: unknown; radius: number; geom2: unknown }
+          | { geom1: unknown; geom2: unknown; radius: number }
         Returns: number
       }
       st_distancespheroid: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_distinct4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
         Returns: number
       }
       st_dump: {
         Args: { "": unknown }
         Returns: Database["public"]["CompositeTypes"]["geometry_dump"][]
+      }
+      st_dumpaspolygons: {
+        Args: { rast: unknown; band?: number; exclude_nodata_value?: boolean }
+        Returns: Database["public"]["CompositeTypes"]["geomval"][]
       }
       st_dumppoints: {
         Args: { "": unknown }
@@ -6264,13 +5158,31 @@ export type Database = {
         Args: { "": unknown }
         Returns: Database["public"]["CompositeTypes"]["geometry_dump"][]
       }
+      st_dumpvalues: {
+        Args:
+          | { rast: unknown; nband: number; exclude_nodata_value?: boolean }
+          | { rast: unknown; nband?: number[]; exclude_nodata_value?: boolean }
+        Returns: {
+          nband: number
+          valarray: number[]
+        }[]
+      }
       st_dwithin: {
-        Args: {
-          use_spheroid?: boolean
-          geog1: unknown
-          geog2: unknown
-          tolerance: number
-        }
+        Args:
+          | {
+              geog1: unknown
+              geog2: unknown
+              tolerance: number
+              use_spheroid?: boolean
+            }
+          | {
+              rast1: unknown
+              nband1: number
+              rast2: unknown
+              nband2: number
+              distance: number
+            }
+          | { rast1: unknown; rast2: unknown; distance: number }
         Returns: boolean
       }
       st_endpoint: {
@@ -6278,18 +5190,18 @@ export type Database = {
         Returns: unknown
       }
       st_envelope: {
-        Args: { "": unknown }
+        Args: { "": unknown } | { "": unknown }
         Returns: unknown
       }
       st_equals: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       st_expand: {
         Args:
-          | { dm?: number; dz?: number; dy: number; dx: number; geom: unknown }
-          | { dx: number; box: unknown; dy: number }
-          | { dz?: number; dy: number; dx: number; box: unknown }
+          | { box: unknown; dx: number; dy: number }
+          | { box: unknown; dx: number; dy: number; dz?: number }
+          | { geom: unknown; dx: number; dy: number; dz?: number; dm?: number }
         Returns: unknown
       }
       st_exteriorring: {
@@ -6305,7 +5217,7 @@ export type Database = {
         Returns: unknown
       }
       st_force3d: {
-        Args: { zvalue?: number; geom: unknown }
+        Args: { geom: unknown; zvalue?: number }
         Returns: unknown
       }
       st_force3dm: {
@@ -6317,7 +5229,7 @@ export type Database = {
         Returns: unknown
       }
       st_force4d: {
-        Args: { geom: unknown; mvalue?: number; zvalue?: number }
+        Args: { geom: unknown; zvalue?: number; mvalue?: number }
         Returns: unknown
       }
       st_forcecollection: {
@@ -6344,10 +5256,18 @@ export type Database = {
         Args: { "": unknown }
         Returns: unknown
       }
+      st_fromgdalraster: {
+        Args: { gdaldata: string; srid?: number }
+        Returns: unknown
+      }
+      st_gdaldrivers: {
+        Args: Record<PropertyKey, never>
+        Returns: Record<string, unknown>[]
+      }
       st_generatepoints: {
         Args:
-          | { npoints: number; area: unknown }
-          | { seed: number; npoints: number; area: unknown }
+          | { area: unknown; npoints: number }
+          | { area: unknown; npoints: number; seed: number }
         Returns: unknown
       }
       st_geogfromtext: {
@@ -6364,8 +5284,8 @@ export type Database = {
       }
       st_geohash: {
         Args:
+          | { geog: unknown; maxchars?: number }
           | { geom: unknown; maxchars?: number }
-          | { maxchars?: number; geog: unknown }
         Returns: string
       }
       st_geomcollfromtext: {
@@ -6378,10 +5298,10 @@ export type Database = {
       }
       st_geometricmedian: {
         Args: {
-          max_iter?: number
-          tolerance?: number
-          fail_if_not_converged?: boolean
           g: unknown
+          tolerance?: number
+          max_iter?: number
+          fail_if_not_converged?: boolean
         }
         Returns: unknown
       }
@@ -6429,16 +5349,47 @@ export type Database = {
         Args: { "": string }
         Returns: unknown
       }
+      st_georeference: {
+        Args: { rast: unknown; format?: string }
+        Returns: string
+      }
+      st_geotransform: {
+        Args: { "": unknown }
+        Returns: Record<string, unknown>
+      }
       st_gmltosql: {
         Args: { "": string }
+        Returns: unknown
+      }
+      st_grayscale: {
+        Args:
+          | {
+              rast: unknown
+              redband?: number
+              greenband?: number
+              blueband?: number
+              extenttype?: string
+            }
+          | {
+              rastbandargset: Database["public"]["CompositeTypes"]["rastbandarg"][]
+              extenttype?: string
+            }
         Returns: unknown
       }
       st_hasarc: {
         Args: { geometry: unknown }
         Returns: boolean
       }
+      st_hasnoband: {
+        Args: { rast: unknown; nband?: number }
+        Returns: boolean
+      }
       st_hausdorffdistance: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
+        Returns: number
+      }
+      st_height: {
+        Args: { "": unknown }
         Returns: number
       }
       st_hexagon: {
@@ -6449,19 +5400,137 @@ export type Database = {
         Args: { size: number; bounds: unknown }
         Returns: Record<string, unknown>[]
       }
+      st_hillshade: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              azimuth?: number
+              altitude?: number
+              max_bright?: number
+              scale?: number
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              azimuth?: number
+              altitude?: number
+              max_bright?: number
+              scale?: number
+              interpolate_nodata?: boolean
+            }
+        Returns: unknown
+      }
+      st_histogram: {
+        Args:
+          | { rast: unknown; nband: number; bins: number; right: boolean }
+          | {
+              rast: unknown
+              nband: number
+              bins: number
+              width?: number[]
+              right?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              bins: number
+              right: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              bins?: number
+              width?: number[]
+              right?: boolean
+            }
+        Returns: Record<string, unknown>[]
+      }
       st_interpolatepoint: {
-        Args: { point: unknown; line: unknown }
+        Args: { line: unknown; point: unknown }
         Returns: number
       }
+      st_interpolateraster: {
+        Args: {
+          geom: unknown
+          options: string
+          rast: unknown
+          bandnumber?: number
+        }
+        Returns: unknown
+      }
       st_intersection: {
-        Args: { gridsize?: number; geom1: unknown; geom2: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown; gridsize?: number }
+          | { geomin: unknown; rast: unknown; band?: number }
+          | { rast: unknown; band: number; geomin: unknown }
+          | { rast: unknown; geomin: unknown }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              nodataval: number[]
+            }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              nodataval: number
+            }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              returnband: string
+              nodataval: number
+            }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              returnband?: string
+              nodataval?: number[]
+            }
+          | { rast1: unknown; rast2: unknown; nodataval: number[] }
+          | { rast1: unknown; rast2: unknown; nodataval: number }
+          | {
+              rast1: unknown
+              rast2: unknown
+              returnband: string
+              nodataval: number
+            }
+          | {
+              rast1: unknown
+              rast2: unknown
+              returnband?: string
+              nodataval?: number[]
+            }
         Returns: unknown
       }
       st_intersects: {
         Args:
           | { geog1: unknown; geog2: unknown }
+          | { geom: unknown; rast: unknown; nband?: number }
           | { geom1: unknown; geom2: unknown }
+          | { rast: unknown; geom: unknown; nband?: number }
+          | { rast: unknown; nband: number; geom: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
+      }
+      st_invdistweight4ma: {
+        Args: { value: number[]; pos: number[] }
+        Returns: number
       }
       st_isclosed: {
         Args: { "": unknown }
@@ -6471,8 +5540,17 @@ export type Database = {
         Args: { "": unknown }
         Returns: boolean
       }
+      st_iscoveragetile: {
+        Args: {
+          rast: unknown
+          coverage: unknown
+          tilewidth: number
+          tileheight: number
+        }
+        Returns: boolean
+      }
       st_isempty: {
-        Args: { "": unknown }
+        Args: { "": unknown } | { rast: unknown }
         Returns: boolean
       }
       st_ispolygonccw: {
@@ -6496,7 +5574,7 @@ export type Database = {
         Returns: boolean
       }
       st_isvaliddetail: {
-        Args: { flags?: number; geom: unknown }
+        Args: { geom: unknown; flags?: number }
         Returns: Database["public"]["CompositeTypes"]["valid_detail"]
       }
       st_isvalidreason: {
@@ -6543,7 +5621,7 @@ export type Database = {
         Returns: unknown
       }
       st_linelocatepoint: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: number
       }
       st_linemerge: {
@@ -6565,14 +5643,14 @@ export type Database = {
       st_locatebetween: {
         Args: {
           geometry: unknown
-          leftrightoffset?: number
-          tomeasure: number
           frommeasure: number
+          tomeasure: number
+          leftrightoffset?: number
         }
         Returns: unknown
       }
       st_locatebetweenelevations: {
-        Args: { fromelevation: number; geometry: unknown; toelevation: number }
+        Args: { geometry: unknown; fromelevation: number; toelevation: number }
         Returns: unknown
       }
       st_longestline: {
@@ -6587,8 +5665,47 @@ export type Database = {
         Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
+      st_makeemptycoverage: {
+        Args: {
+          tilewidth: number
+          tileheight: number
+          width: number
+          height: number
+          upperleftx: number
+          upperlefty: number
+          scalex: number
+          scaley: number
+          skewx: number
+          skewy: number
+          srid?: number
+        }
+        Returns: unknown[]
+      }
+      st_makeemptyraster: {
+        Args:
+          | { rast: unknown }
+          | {
+              width: number
+              height: number
+              upperleftx: number
+              upperlefty: number
+              pixelsize: number
+            }
+          | {
+              width: number
+              height: number
+              upperleftx: number
+              upperlefty: number
+              scalex: number
+              scaley: number
+              skewx: number
+              skewy: number
+              srid?: number
+            }
+        Returns: unknown
+      }
       st_makeline: {
-        Args: { "": unknown[] } | { geom2: unknown; geom1: unknown }
+        Args: { "": unknown[] } | { geom1: unknown; geom2: unknown }
         Returns: unknown
       }
       st_makepolygon: {
@@ -6596,8 +5713,193 @@ export type Database = {
         Returns: unknown
       }
       st_makevalid: {
-        Args: { "": unknown } | { params: string; geom: unknown }
+        Args: { "": unknown } | { geom: unknown; params: string }
         Returns: unknown
+      }
+      st_mapalgebra: {
+        Args:
+          | {
+              rast: unknown
+              nband: number[]
+              callbackfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+              customextent?: unknown
+              distancex?: number
+              distancey?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              callbackfunc: unknown
+              mask: number[]
+              weighted: boolean
+              pixeltype?: string
+              extenttype?: string
+              customextent?: unknown
+            }
+          | {
+              rast: unknown
+              nband: number
+              callbackfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+              customextent?: unknown
+              distancex?: number
+              distancey?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              pixeltype: string
+              expression: string
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              pixeltype: string
+              expression: string
+              nodataval?: number
+            }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              expression: string
+              pixeltype?: string
+              extenttype?: string
+              nodata1expr?: string
+              nodata2expr?: string
+              nodatanodataval?: number
+            }
+          | {
+              rast1: unknown
+              nband1: number
+              rast2: unknown
+              nband2: number
+              callbackfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+              customextent?: unknown
+              distancex?: number
+              distancey?: number
+            }
+          | {
+              rast1: unknown
+              rast2: unknown
+              expression: string
+              pixeltype?: string
+              extenttype?: string
+              nodata1expr?: string
+              nodata2expr?: string
+              nodatanodataval?: number
+            }
+          | {
+              rastbandargset: Database["public"]["CompositeTypes"]["rastbandarg"][]
+              callbackfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+              customextent?: unknown
+              distancex?: number
+              distancey?: number
+            }
+        Returns: unknown
+      }
+      st_mapalgebraexpr: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              pixeltype: string
+              expression: string
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              pixeltype: string
+              expression: string
+              nodataval?: number
+            }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              expression: string
+              pixeltype?: string
+              extenttype?: string
+              nodata1expr?: string
+              nodata2expr?: string
+              nodatanodataval?: number
+            }
+          | {
+              rast1: unknown
+              rast2: unknown
+              expression: string
+              pixeltype?: string
+              extenttype?: string
+              nodata1expr?: string
+              nodata2expr?: string
+              nodatanodataval?: number
+            }
+        Returns: unknown
+      }
+      st_mapalgebrafct: {
+        Args:
+          | { rast: unknown; band: number; onerastuserfunc: unknown }
+          | { rast: unknown; band: number; onerastuserfunc: unknown }
+          | {
+              rast: unknown
+              band: number
+              pixeltype: string
+              onerastuserfunc: unknown
+            }
+          | {
+              rast: unknown
+              band: number
+              pixeltype: string
+              onerastuserfunc: unknown
+            }
+          | { rast: unknown; onerastuserfunc: unknown }
+          | { rast: unknown; onerastuserfunc: unknown }
+          | { rast: unknown; pixeltype: string; onerastuserfunc: unknown }
+          | { rast: unknown; pixeltype: string; onerastuserfunc: unknown }
+          | {
+              rast1: unknown
+              band1: number
+              rast2: unknown
+              band2: number
+              tworastuserfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+            }
+          | {
+              rast1: unknown
+              rast2: unknown
+              tworastuserfunc: unknown
+              pixeltype?: string
+              extenttype?: string
+            }
+        Returns: unknown
+      }
+      st_mapalgebrafctngb: {
+        Args: {
+          rast: unknown
+          band: number
+          pixeltype: string
+          ngbwidth: number
+          ngbheight: number
+          onerastngbuserfunc: unknown
+          nodatamode: string
+        }
+        Returns: unknown
+      }
+      st_max4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
       }
       st_maxdistance: {
         Args: { geom1: unknown; geom2: unknown }
@@ -6607,8 +5909,32 @@ export type Database = {
         Args: { "": unknown }
         Returns: Record<string, unknown>
       }
+      st_mean4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
+      }
       st_memsize: {
-        Args: { "": unknown }
+        Args: { "": unknown } | { "": unknown }
+        Returns: number
+      }
+      st_metadata: {
+        Args: { rast: unknown }
+        Returns: Record<string, unknown>
+      }
+      st_min4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
+      }
+      st_minconvexhull: {
+        Args: { rast: unknown; nband?: number }
+        Returns: unknown
+      }
+      st_mindist4ma: {
+        Args: { value: number[]; pos: number[] }
         Returns: number
       }
       st_minimumboundingcircle: {
@@ -6626,6 +5952,10 @@ export type Database = {
       st_minimumclearanceline: {
         Args: { "": unknown }
         Returns: unknown
+      }
+      st_minpossiblevalue: {
+        Args: { pixeltype: string }
+        Returns: number
       }
       st_mlinefromtext: {
         Args: { "": string }
@@ -6683,6 +6013,66 @@ export type Database = {
         Args: { "": unknown }
         Returns: number
       }
+      st_nearestvalue: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              columnx: number
+              rowy: number
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              band: number
+              pt: unknown
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              columnx: number
+              rowy: number
+              exclude_nodata_value?: boolean
+            }
+          | { rast: unknown; pt: unknown; exclude_nodata_value?: boolean }
+        Returns: number
+      }
+      st_neighborhood: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              columnx: number
+              rowy: number
+              distancex: number
+              distancey: number
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              band: number
+              pt: unknown
+              distancex: number
+              distancey: number
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              columnx: number
+              rowy: number
+              distancex: number
+              distancey: number
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              pt: unknown
+              distancex: number
+              distancey: number
+              exclude_nodata_value?: boolean
+            }
+        Returns: number[]
+      }
       st_node: {
         Args: { g: unknown }
         Returns: unknown
@@ -6691,11 +6081,19 @@ export type Database = {
         Args: { geom: unknown }
         Returns: unknown
       }
+      st_notsamealignmentreason: {
+        Args: { rast1: unknown; rast2: unknown }
+        Returns: string
+      }
       st_npoints: {
         Args: { "": unknown }
         Returns: number
       }
       st_nrings: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_numbands: {
         Args: { "": unknown }
         Returns: number
       }
@@ -6720,11 +6118,11 @@ export type Database = {
         Returns: number
       }
       st_offsetcurve: {
-        Args: { distance: number; params?: string; line: unknown }
+        Args: { line: unknown; distance: number; params?: string }
         Returns: unknown
       }
       st_orderingequals: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: boolean
       }
       st_orientedenvelope: {
@@ -6732,7 +6130,10 @@ export type Database = {
         Returns: unknown
       }
       st_overlaps: {
-        Args: { geom1: unknown; geom2: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
       st_perimeter: {
@@ -6740,6 +6141,74 @@ export type Database = {
         Returns: number
       }
       st_perimeter2d: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_pixelascentroid: {
+        Args: { rast: unknown; x: number; y: number }
+        Returns: unknown
+      }
+      st_pixelascentroids: {
+        Args: { rast: unknown; band?: number; exclude_nodata_value?: boolean }
+        Returns: {
+          geom: unknown
+          val: number
+          x: number
+          y: number
+        }[]
+      }
+      st_pixelaspoint: {
+        Args: { rast: unknown; x: number; y: number }
+        Returns: unknown
+      }
+      st_pixelaspoints: {
+        Args: { rast: unknown; band?: number; exclude_nodata_value?: boolean }
+        Returns: {
+          geom: unknown
+          val: number
+          x: number
+          y: number
+        }[]
+      }
+      st_pixelaspolygon: {
+        Args: { rast: unknown; x: number; y: number }
+        Returns: unknown
+      }
+      st_pixelaspolygons: {
+        Args: { rast: unknown; band?: number; exclude_nodata_value?: boolean }
+        Returns: {
+          geom: unknown
+          val: number
+          x: number
+          y: number
+        }[]
+      }
+      st_pixelheight: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_pixelofvalue: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              search: number[]
+              exclude_nodata_value?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              search: number
+              exclude_nodata_value?: boolean
+            }
+          | { rast: unknown; search: number[]; exclude_nodata_value?: boolean }
+          | { rast: unknown; search: number; exclude_nodata_value?: boolean }
+        Returns: {
+          x: number
+          y: number
+        }[]
+      }
+      st_pixelwidth: {
         Args: { "": unknown }
         Returns: number
       }
@@ -6753,10 +6222,10 @@ export type Database = {
       }
       st_pointm: {
         Args: {
+          xcoordinate: number
+          ycoordinate: number
           mcoordinate: number
           srid?: number
-          ycoordinate: number
-          xcoordinate: number
         }
         Returns: unknown
       }
@@ -6770,20 +6239,20 @@ export type Database = {
       }
       st_pointz: {
         Args: {
-          ycoordinate: number
-          srid?: number
           xcoordinate: number
+          ycoordinate: number
           zcoordinate: number
+          srid?: number
         }
         Returns: unknown
       }
       st_pointzm: {
         Args: {
-          mcoordinate: number
-          srid?: number
           xcoordinate: number
           ycoordinate: number
           zcoordinate: number
+          mcoordinate: number
+          srid?: number
         }
         Returns: unknown
       }
@@ -6793,6 +6262,10 @@ export type Database = {
       }
       st_polyfromwkb: {
         Args: { "": string }
+        Returns: unknown
+      }
+      st_polygon: {
+        Args: { rast: unknown; band?: number }
         Returns: unknown
       }
       st_polygonfromtext: {
@@ -6808,17 +6281,81 @@ export type Database = {
         Returns: unknown
       }
       st_project: {
-        Args: { azimuth: number; distance: number; geog: unknown }
+        Args: { geog: unknown; distance: number; azimuth: number }
         Returns: unknown
+      }
+      st_quantile: {
+        Args:
+          | { rast: unknown; exclude_nodata_value: boolean; quantile?: number }
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              quantile: number
+            }
+          | { rast: unknown; nband: number; quantile: number }
+          | { rast: unknown; nband: number; quantiles: number[] }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              quantiles?: number[]
+            }
+          | { rast: unknown; quantile: number }
+          | { rast: unknown; quantiles: number[] }
+        Returns: Record<string, unknown>[]
       }
       st_quantizecoordinates: {
         Args: {
-          prec_z?: number
           g: unknown
           prec_x: number
           prec_y?: number
+          prec_z?: number
           prec_m?: number
         }
+        Returns: unknown
+      }
+      st_range4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
+      }
+      st_rastertoworldcoord: {
+        Args: { rast: unknown; columnx: number; rowy: number }
+        Returns: Record<string, unknown>
+      }
+      st_rastertoworldcoordx: {
+        Args:
+          | { rast: unknown; xr: number }
+          | { rast: unknown; xr: number; yr: number }
+        Returns: number
+      }
+      st_rastertoworldcoordy: {
+        Args:
+          | { rast: unknown; xr: number; yr: number }
+          | { rast: unknown; yr: number }
+        Returns: number
+      }
+      st_rastfromhexwkb: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      st_rastfromwkb: {
+        Args: { "": string }
+        Returns: unknown
+      }
+      st_reclass: {
+        Args:
+          | { rast: unknown }
+          | {
+              rast: unknown
+              nband: number
+              reclassexpr: string
+              pixeltype: string
+              nodataval?: number
+            }
+          | { rast: unknown; reclassexpr: string; pixeltype: string }
         Returns: unknown
       }
       st_reduceprecision: {
@@ -6826,23 +6363,335 @@ export type Database = {
         Returns: unknown
       }
       st_relate: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: string
       }
       st_removerepeatedpoints: {
         Args: { geom: unknown; tolerance?: number }
         Returns: unknown
       }
+      st_resample: {
+        Args:
+          | {
+              rast: unknown
+              ref: unknown
+              algorithm?: string
+              maxerr?: number
+              usescale?: boolean
+            }
+          | {
+              rast: unknown
+              ref: unknown
+              usescale: boolean
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              scalex?: number
+              scaley?: number
+              gridx?: number
+              gridy?: number
+              skewx?: number
+              skewy?: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              width: number
+              height: number
+              gridx?: number
+              gridy?: number
+              skewx?: number
+              skewy?: number
+              algorithm?: string
+              maxerr?: number
+            }
+        Returns: unknown
+      }
+      st_rescale: {
+        Args:
+          | {
+              rast: unknown
+              scalex: number
+              scaley: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              scalexy: number
+              algorithm?: string
+              maxerr?: number
+            }
+        Returns: unknown
+      }
+      st_resize: {
+        Args:
+          | {
+              rast: unknown
+              percentwidth: number
+              percentheight: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              width: number
+              height: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              width: string
+              height: string
+              algorithm?: string
+              maxerr?: number
+            }
+        Returns: unknown
+      }
+      st_reskew: {
+        Args:
+          | {
+              rast: unknown
+              skewx: number
+              skewy: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              skewxy: number
+              algorithm?: string
+              maxerr?: number
+            }
+        Returns: unknown
+      }
+      st_retile: {
+        Args: {
+          tab: unknown
+          col: unknown
+          ext: unknown
+          sfx: number
+          sfy: number
+          tw: number
+          th: number
+          algo?: string
+        }
+        Returns: unknown[]
+      }
       st_reverse: {
         Args: { "": unknown }
         Returns: unknown
+      }
+      st_rotation: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_roughness: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
+        Returns: unknown
+      }
+      st_samealignment: {
+        Args:
+          | { rast1: unknown; rast2: unknown }
+          | {
+              ulx1: number
+              uly1: number
+              scalex1: number
+              scaley1: number
+              skewx1: number
+              skewy1: number
+              ulx2: number
+              uly2: number
+              scalex2: number
+              scaley2: number
+              skewx2: number
+              skewy2: number
+            }
+        Returns: boolean
+      }
+      st_scalex: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_scaley: {
+        Args: { "": unknown }
+        Returns: number
       }
       st_segmentize: {
         Args: { geog: unknown; max_segment_length: number }
         Returns: unknown
       }
+      st_setbandindex: {
+        Args: {
+          rast: unknown
+          band: number
+          outdbindex: number
+          force?: boolean
+        }
+        Returns: unknown
+      }
+      st_setbandisnodata: {
+        Args: { rast: unknown; band?: number }
+        Returns: unknown
+      }
+      st_setbandnodatavalue: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              nodatavalue: number
+              forcechecking?: boolean
+            }
+          | { rast: unknown; nodatavalue: number }
+        Returns: unknown
+      }
+      st_setbandpath: {
+        Args: {
+          rast: unknown
+          band: number
+          outdbpath: string
+          outdbindex: number
+          force?: boolean
+        }
+        Returns: unknown
+      }
+      st_setgeoreference: {
+        Args:
+          | { rast: unknown; georef: string; format?: string }
+          | {
+              rast: unknown
+              upperleftx: number
+              upperlefty: number
+              scalex: number
+              scaley: number
+              skewx: number
+              skewy: number
+            }
+        Returns: unknown
+      }
+      st_setgeotransform: {
+        Args: {
+          rast: unknown
+          imag: number
+          jmag: number
+          theta_i: number
+          theta_ij: number
+          xoffset: number
+          yoffset: number
+        }
+        Returns: unknown
+      }
+      st_setm: {
+        Args: { rast: unknown; geom: unknown; resample?: string; band?: number }
+        Returns: unknown
+      }
+      st_setrotation: {
+        Args: { rast: unknown; rotation: number }
+        Returns: unknown
+      }
+      st_setscale: {
+        Args:
+          | { rast: unknown; scale: number }
+          | { rast: unknown; scalex: number; scaley: number }
+        Returns: unknown
+      }
+      st_setskew: {
+        Args:
+          | { rast: unknown; skew: number }
+          | { rast: unknown; skewx: number; skewy: number }
+        Returns: unknown
+      }
       st_setsrid: {
-        Args: { geom: unknown; srid: number } | { srid: number; geog: unknown }
+        Args:
+          | { geog: unknown; srid: number }
+          | { geom: unknown; srid: number }
+          | { rast: unknown; srid: number }
+        Returns: unknown
+      }
+      st_setupperleft: {
+        Args: { rast: unknown; upperleftx: number; upperlefty: number }
+        Returns: unknown
+      }
+      st_setvalue: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              x: number
+              y: number
+              newvalue: number
+            }
+          | { rast: unknown; geom: unknown; newvalue: number }
+          | { rast: unknown; nband: number; geom: unknown; newvalue: number }
+          | { rast: unknown; x: number; y: number; newvalue: number }
+        Returns: unknown
+      }
+      st_setvalues: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              geomvalset: Database["public"]["CompositeTypes"]["geomval"][]
+              keepnodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              x: number
+              y: number
+              newvalueset: number[]
+              noset?: boolean[]
+              keepnodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              x: number
+              y: number
+              newvalueset: number[]
+              nosetvalue: number
+              keepnodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband: number
+              x: number
+              y: number
+              width: number
+              height: number
+              newvalue: number
+              keepnodata?: boolean
+            }
+          | {
+              rast: unknown
+              x: number
+              y: number
+              width: number
+              height: number
+              newvalue: number
+              keepnodata?: boolean
+            }
+        Returns: unknown
+      }
+      st_setz: {
+        Args: { rast: unknown; geom: unknown; resample?: string; band?: number }
         Returns: unknown
       }
       st_sharedpaths: {
@@ -6858,7 +6707,66 @@ export type Database = {
         Returns: unknown
       }
       st_simplifypolygonhull: {
-        Args: { vertex_fraction: number; geom: unknown; is_outer?: boolean }
+        Args: { geom: unknown; vertex_fraction: number; is_outer?: boolean }
+        Returns: unknown
+      }
+      st_skewx: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_skewy: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_slope: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              units?: string
+              scale?: number
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              units?: string
+              scale?: number
+              interpolate_nodata?: boolean
+            }
+        Returns: unknown
+      }
+      st_snaptogrid: {
+        Args:
+          | {
+              rast: unknown
+              gridx: number
+              gridy: number
+              algorithm?: string
+              maxerr?: number
+              scalex?: number
+              scaley?: number
+            }
+          | {
+              rast: unknown
+              gridx: number
+              gridy: number
+              scalex: number
+              scaley: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              gridx: number
+              gridy: number
+              scalexy: number
+              algorithm?: string
+              maxerr?: number
+            }
         Returns: unknown
       }
       st_split: {
@@ -6866,7 +6774,7 @@ export type Database = {
         Returns: unknown
       }
       st_square: {
-        Args: { size: number; cell_j: number; origin?: unknown; cell_i: number }
+        Args: { size: number; cell_i: number; cell_j: number; origin?: unknown }
         Returns: unknown
       }
       st_squaregrid: {
@@ -6874,52 +6782,163 @@ export type Database = {
         Returns: Record<string, unknown>[]
       }
       st_srid: {
-        Args: { geog: unknown } | { geom: unknown }
+        Args: { "": unknown } | { geog: unknown } | { geom: unknown }
         Returns: number
       }
       st_startpoint: {
         Args: { "": unknown }
         Returns: unknown
       }
+      st_stddev4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
+      }
       st_subdivide: {
-        Args: { gridsize?: number; geom: unknown; maxvertices?: number }
+        Args: { geom: unknown; maxvertices?: number; gridsize?: number }
         Returns: unknown[]
       }
+      st_sum4ma: {
+        Args:
+          | { matrix: number[]; nodatamode: string }
+          | { value: number[]; pos: number[] }
+        Returns: number
+      }
       st_summary: {
-        Args: { "": unknown } | { "": unknown }
+        Args: { "": unknown } | { "": unknown } | { rast: unknown }
         Returns: string
       }
+      st_summarystats: {
+        Args:
+          | { rast: unknown; exclude_nodata_value: boolean }
+          | { rast: unknown; nband?: number; exclude_nodata_value?: boolean }
+        Returns: Database["public"]["CompositeTypes"]["summarystats"]
+      }
       st_swapordinates: {
-        Args: { ords: unknown; geom: unknown }
+        Args: { geom: unknown; ords: unknown }
         Returns: unknown
       }
       st_symdifference: {
-        Args: { gridsize?: number; geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown; gridsize?: number }
         Returns: unknown
       }
       st_symmetricdifference: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args: { geom1: unknown; geom2: unknown }
         Returns: unknown
+      }
+      st_tile: {
+        Args:
+          | {
+              rast: unknown
+              nband: number[]
+              width: number
+              height: number
+              padwithnodata?: boolean
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              width: number
+              height: number
+              padwithnodata?: boolean
+              nodataval?: number
+            }
+          | {
+              rast: unknown
+              width: number
+              height: number
+              padwithnodata?: boolean
+              nodataval?: number
+            }
+        Returns: unknown[]
       }
       st_tileenvelope: {
         Args: {
-          bounds?: unknown
-          y: number
-          x: number
-          margin?: number
           zoom: number
+          x: number
+          y: number
+          bounds?: unknown
+          margin?: number
         }
         Returns: unknown
       }
       st_touches: {
-        Args: { geom2: unknown; geom1: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
+      }
+      st_tpi: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
+        Returns: unknown
       }
       st_transform: {
         Args:
-          | { geom: unknown; to_proj: string; from_proj: string }
-          | { geom: unknown; to_srid: number; from_proj: string }
-          | { to_proj: string; geom: unknown }
+          | { geom: unknown; from_proj: string; to_proj: string }
+          | { geom: unknown; from_proj: string; to_srid: number }
+          | { geom: unknown; to_proj: string }
+          | {
+              rast: unknown
+              alignto: unknown
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              srid: number
+              algorithm?: string
+              maxerr?: number
+              scalex?: number
+              scaley?: number
+            }
+          | {
+              rast: unknown
+              srid: number
+              scalex: number
+              scaley: number
+              algorithm?: string
+              maxerr?: number
+            }
+          | {
+              rast: unknown
+              srid: number
+              scalexy: number
+              algorithm?: string
+              maxerr?: number
+            }
+        Returns: unknown
+      }
+      st_tri: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              customextent: unknown
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
+          | {
+              rast: unknown
+              nband?: number
+              pixeltype?: string
+              interpolate_nodata?: boolean
+            }
         Returns: unknown
       }
       st_triangulatepolygon: {
@@ -6929,20 +6948,208 @@ export type Database = {
       st_union: {
         Args:
           | { "": unknown[] }
-          | { geom2: unknown; geom1: unknown }
-          | { gridsize: number; geom2: unknown; geom1: unknown }
+          | { geom1: unknown; geom2: unknown }
+          | { geom1: unknown; geom2: unknown; gridsize: number }
         Returns: unknown
       }
+      st_upperleftx: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_upperlefty: {
+        Args: { "": unknown }
+        Returns: number
+      }
+      st_value: {
+        Args:
+          | {
+              rast: unknown
+              band: number
+              pt: unknown
+              exclude_nodata_value?: boolean
+              resample?: string
+            }
+          | {
+              rast: unknown
+              band: number
+              x: number
+              y: number
+              exclude_nodata_value?: boolean
+            }
+          | { rast: unknown; pt: unknown; exclude_nodata_value?: boolean }
+          | {
+              rast: unknown
+              x: number
+              y: number
+              exclude_nodata_value?: boolean
+            }
+        Returns: number
+      }
+      st_valuecount: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              searchvalues: number[]
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+          | { rast: unknown; searchvalue: number; roundto?: number }
+          | { rast: unknown; searchvalues: number[]; roundto?: number }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              exclude_nodata_value: boolean
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              searchvalues: number[]
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              searchvalues: number[]
+              roundto?: number
+            }
+        Returns: number
+      }
+      st_valuepercent: {
+        Args:
+          | {
+              rast: unknown
+              nband: number
+              exclude_nodata_value: boolean
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband: number
+              searchvalues: number[]
+              roundto?: number
+            }
+          | {
+              rast: unknown
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+          | { rast: unknown; searchvalue: number; roundto?: number }
+          | { rast: unknown; searchvalues: number[]; roundto?: number }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              exclude_nodata_value: boolean
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband: number
+              searchvalues: number[]
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              nband?: number
+              exclude_nodata_value?: boolean
+              searchvalues?: number[]
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              searchvalue: number
+              roundto?: number
+            }
+          | {
+              rastertable: string
+              rastercolumn: string
+              searchvalues: number[]
+              roundto?: number
+            }
+        Returns: Record<string, unknown>[]
+      }
       st_voronoilines: {
-        Args: { tolerance?: number; extend_to?: unknown; g1: unknown }
+        Args: { g1: unknown; tolerance?: number; extend_to?: unknown }
         Returns: unknown
       }
       st_voronoipolygons: {
-        Args: { extend_to?: unknown; g1: unknown; tolerance?: number }
+        Args: { g1: unknown; tolerance?: number; extend_to?: unknown }
         Returns: unknown
       }
+      st_width: {
+        Args: { "": unknown }
+        Returns: number
+      }
       st_within: {
-        Args: { geom1: unknown; geom2: unknown }
+        Args:
+          | { geom1: unknown; geom2: unknown }
+          | { rast1: unknown; nband1: number; rast2: unknown; nband2: number }
+          | { rast1: unknown; rast2: unknown }
         Returns: boolean
       }
       st_wkbtosql: {
@@ -6952,6 +7159,26 @@ export type Database = {
       st_wkttosql: {
         Args: { "": string }
         Returns: unknown
+      }
+      st_worldtorastercoord: {
+        Args:
+          | { rast: unknown; longitude: number; latitude: number }
+          | { rast: unknown; pt: unknown }
+        Returns: Record<string, unknown>
+      }
+      st_worldtorastercoordx: {
+        Args:
+          | { rast: unknown; pt: unknown }
+          | { rast: unknown; xw: number }
+          | { rast: unknown; xw: number; yw: number }
+        Returns: number
+      }
+      st_worldtorastercoordy: {
+        Args:
+          | { rast: unknown; pt: unknown }
+          | { rast: unknown; xw: number; yw: number }
+          | { rast: unknown; yw: number }
+        Returns: number
       }
       st_wrapx: {
         Args: { geom: unknown; wrap: number; move: number }
@@ -6997,47 +7224,106 @@ export type Database = {
         Args: { "": unknown }
         Returns: number
       }
-      suggest_type_optimizations: {
-        Args: Record<PropertyKey, never>
-        Returns: {
-          column_name: string
-          reason: string
-          suggested_type: string
-          current_type: string
-        }[]
-      }
       text: {
         Args: { "": unknown }
         Returns: string
       }
-      transfer_florida_parcels_staging: {
-        Args: Record<PropertyKey, never>
+      track_user_consent: {
+        Args: {
+          p_user_id: string
+          p_action: string
+          p_consent_data: Json
+          p_ip_address?: string
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
+      track_user_device: {
+        Args: {
+          p_user_id: string
+          p_device_fingerprint: string
+          p_device_type?: string
+          p_browser?: string
+          p_os?: string
+          p_ip_address?: string
+        }
         Returns: undefined
+      }
+      track_user_login: {
+        Args: {
+          p_user_id: string
+          p_session_id: string
+          p_ip_address: unknown
+          p_user_agent: string
+          p_referrer_url?: string
+          p_utm_source?: string
+          p_utm_medium?: string
+          p_utm_campaign?: string
+          p_login_method?: string
+        }
+        Returns: string
       }
       unlockrows: {
         Args: { "": string }
         Returns: number
       }
-      update_all_property_counties: {
-        Args: Record<PropertyKey, never>
+      update_email_status: {
+        Args: { p_resend_id: string; p_status: string; p_timestamp?: string }
+        Returns: undefined
+      }
+      update_property_enrichment: {
+        Args: {
+          p_property_id: string
+          p_enrichment_data: Json
+          p_previous_version: number
+        }
+        Returns: undefined
+      }
+      update_user_consent_preferences: {
+        Args: {
+          p_user_id: string
+          p_consent_type: string
+          p_consent_value: boolean
+        }
+        Returns: Json
+      }
+      update_user_phone: {
+        Args: { p_user_id: string; p_phone: string }
+        Returns: boolean
+      }
+      update_user_preference: {
+        Args: {
+          p_user_id: string
+          p_preference_name: string
+          p_preference_value: boolean
+          p_ip_address: string
+        }
         Returns: undefined
       }
       updategeometrysrid: {
         Args: {
           catalogn_name: string
-          new_srid_in: number
-          column_name: string
-          table_name: string
           schema_name: string
+          table_name: string
+          column_name: string
+          new_srid_in: number
         }
         Returns: string
       }
-      validate_parcel_data: {
-        Args: { p_parcel_id: string }
-        Returns: {
-          field_name: string
-          issue: string
-        }[]
+      updaterastersrid: {
+        Args:
+          | {
+              schema_name: unknown
+              table_name: unknown
+              column_name: unknown
+              new_srid: number
+            }
+          | { table_name: unknown; column_name: unknown; new_srid: number }
+        Returns: boolean
+      }
+      validate_signup_consent: {
+        Args: { p_email: string; p_consent_token: string }
+        Returns: Json
       }
       vector_avg: {
         Args: { "": number[] }
@@ -7065,86 +7351,103 @@ export type Database = {
       }
     }
     Enums: {
-      claim_status_enum:
+      claim_status:
         | "draft"
         | "submitted"
-        | "under_review"
+        | "acknowledged"
+        | "investigating"
         | "approved"
         | "denied"
         | "settled"
         | "closed"
-      crawl_status: "pending" | "running" | "completed" | "failed" | "cancelled"
-      damage_severity: "minor" | "moderate" | "major" | "total_loss"
-      damage_type_enum:
-        | "hurricane"
-        | "flood"
-        | "fire"
-        | "theft"
-        | "vandalism"
-        | "water"
-        | "wind"
-        | "hail"
-        | "other"
-      document_type_enum: "policy" | "claim" | "evidence"
-      floir_data_type:
-        | "catastrophe"
-        | "industry_reports"
-        | "professional_liability"
-        | "data_call"
-        | "licensee_search"
-        | "rate_filings"
-        | "receivership"
-        | "financial_reports"
-        | "news_bulletins"
-        | "surplus_lines"
-      import_status:
-        | "pending"
-        | "downloading"
-        | "validating"
-        | "transforming"
-        | "importing"
-        | "completed"
-        | "failed"
-        | "cancelled"
+        | "reopened"
+        | "withdrawn"
+      consent_action_type:
+        | "accepted"
+        | "declined"
+        | "withdrawn"
+        | "updated"
+        | "rejected"
+      damage_severity: "minor" | "moderate" | "major" | "severe" | "total_loss"
+      item_category:
+        | "ELECTRONICS"
+        | "FURNITURE"
+        | "APPLIANCES"
+        | "JEWELRY"
+        | "CLOTHING"
+        | "TOOLS"
+        | "SPORTS"
+        | "COLLECTIBLES"
+        | "DOCUMENTS"
+        | "STRUCTURE"
+        | "SYSTEM"
+        | "OTHER"
+      legal_document_type:
+        | "privacy_policy"
+        | "terms_of_service"
+        | "ai_use_agreement"
+        | "cookie_policy"
+        | "data_processing_agreement"
       occupancy_status:
         | "owner_occupied"
         | "tenant_occupied"
         | "vacant"
         | "seasonal"
-      parcel_data_source:
-        | "fl_dor_statewide"
-        | "fl_county_charlotte"
-        | "fl_county_lee"
-        | "fl_county_sarasota"
-        | "fl_county_miami_dade"
-        | "fl_county_broward"
-        | "fl_county_palm_beach"
-        | "fl_county_hillsborough"
-        | "fl_county_pinellas"
-        | "fl_county_orange"
-        | "fl_county_duval"
-      plan_status_enum: "active" | "canceled" | "suspended" | "trial"
-      plan_type_enum: "free" | "basic" | "premium" | "enterprise"
-      policy_type_enum:
-        | "homeowners"
-        | "flood"
-        | "windstorm"
-        | "umbrella"
-        | "auto"
-        | "other"
-      processing_status_enum: "pending" | "processing" | "completed" | "failed"
-      property_type: "residential" | "commercial" | "land" | "mixed_use"
-      user_role_enum:
-        | "user"
-        | "contractor"
-        | "adjuster"
-        | "admin"
-        | "super_admin"
+      property_type:
+        | "single_family"
+        | "condo"
+        | "townhouse"
+        | "mobile_home"
+        | "multi_family"
+        | "commercial"
+        | "vacant_land"
     }
     CompositeTypes: {
+      addbandarg: {
+        index: number | null
+        pixeltype: string | null
+        initialvalue: number | null
+        nodataval: number | null
+      }
+      agg_count: {
+        count: number | null
+        nband: number | null
+        exclude_nodata_value: boolean | null
+        sample_percent: number | null
+      }
+      agg_samealignment: {
+        refraster: unknown | null
+        aligned: boolean | null
+      }
       geometry_dump: {
         path: number[] | null
         geom: unknown | null
+      }
+      geomval: {
+        geom: unknown | null
+        val: number | null
+      }
+      rastbandarg: {
+        rast: unknown | null
+        nband: number | null
+      }
+      reclassarg: {
+        nband: number | null
+        reclassexpr: string | null
+        pixeltype: string | null
+        nodataval: number | null
+      }
+      summarystats: {
+        count: number | null
+        sum: number | null
+        mean: number | null
+        stddev: number | null
+        min: number | null
+        max: number | null
+      }
+      unionarg: {
+        nband: number | null
+        uniontype: string | null
       }
       valid_detail: {
         valid: boolean | null
@@ -7275,50 +7578,46 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      claim_status_enum: [
+      claim_status: [
         "draft",
         "submitted",
-        "under_review",
+        "acknowledged",
+        "investigating",
         "approved",
         "denied",
         "settled",
         "closed",
+        "reopened",
+        "withdrawn",
       ],
-      crawl_status: ["pending", "running", "completed", "failed", "cancelled"],
-      damage_severity: ["minor", "moderate", "major", "total_loss"],
-      damage_type_enum: [
-        "hurricane",
-        "flood",
-        "fire",
-        "theft",
-        "vandalism",
-        "water",
-        "wind",
-        "hail",
-        "other",
+      consent_action_type: [
+        "accepted",
+        "declined",
+        "withdrawn",
+        "updated",
+        "rejected",
       ],
-      document_type_enum: ["policy", "claim", "evidence"],
-      floir_data_type: [
-        "catastrophe",
-        "industry_reports",
-        "professional_liability",
-        "data_call",
-        "licensee_search",
-        "rate_filings",
-        "receivership",
-        "financial_reports",
-        "news_bulletins",
-        "surplus_lines",
+      damage_severity: ["minor", "moderate", "major", "severe", "total_loss"],
+      item_category: [
+        "ELECTRONICS",
+        "FURNITURE",
+        "APPLIANCES",
+        "JEWELRY",
+        "CLOTHING",
+        "TOOLS",
+        "SPORTS",
+        "COLLECTIBLES",
+        "DOCUMENTS",
+        "STRUCTURE",
+        "SYSTEM",
+        "OTHER",
       ],
-      import_status: [
-        "pending",
-        "downloading",
-        "validating",
-        "transforming",
-        "importing",
-        "completed",
-        "failed",
-        "cancelled",
+      legal_document_type: [
+        "privacy_policy",
+        "terms_of_service",
+        "ai_use_agreement",
+        "cookie_policy",
+        "data_processing_agreement",
       ],
       occupancy_status: [
         "owner_occupied",
@@ -7326,39 +7625,15 @@ export const Constants = {
         "vacant",
         "seasonal",
       ],
-      parcel_data_source: [
-        "fl_dor_statewide",
-        "fl_county_charlotte",
-        "fl_county_lee",
-        "fl_county_sarasota",
-        "fl_county_miami_dade",
-        "fl_county_broward",
-        "fl_county_palm_beach",
-        "fl_county_hillsborough",
-        "fl_county_pinellas",
-        "fl_county_orange",
-        "fl_county_duval",
-      ],
-      plan_status_enum: ["active", "canceled", "suspended", "trial"],
-      plan_type_enum: ["free", "basic", "premium", "enterprise"],
-      policy_type_enum: [
-        "homeowners",
-        "flood",
-        "windstorm",
-        "umbrella",
-        "auto",
-        "other",
-      ],
-      processing_status_enum: ["pending", "processing", "completed", "failed"],
-      property_type: ["residential", "commercial", "land", "mixed_use"],
-      user_role_enum: [
-        "user",
-        "contractor",
-        "adjuster",
-        "admin",
-        "super_admin",
+      property_type: [
+        "single_family",
+        "condo",
+        "townhouse",
+        "mobile_home",
+        "multi_family",
+        "commercial",
+        "vacant_land",
       ],
     },
   },
 } as const
-
