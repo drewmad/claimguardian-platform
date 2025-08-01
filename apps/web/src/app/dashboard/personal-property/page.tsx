@@ -12,7 +12,7 @@ import {
   List, Music, Package, Plus, Search, Shield, Shirt, Sofa, 
   Sparkles, Trash2, Tv, Watch, Home, Layers, ScanLine,
   Calendar, MapPin, Tag, Filter, Share2, Archive, CheckCircle,
-  X, Upload, QrCode, History, TrendingUp, Star, Info
+  X, Upload, QrCode, History, TrendingUp, TrendingDown, Star, Info
 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useRef } from 'react'
@@ -31,6 +31,9 @@ import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Progress } from '@/components/ui/progress'
 import { toast } from 'sonner'
+import { calculateDepreciation, getDepreciationAlerts } from '@/lib/depreciation'
+import { DepreciationTracker } from '@/components/property/depreciation-tracker'
+import { DepreciationAlerts } from '@/components/property/depreciation-alerts'
 
 interface PropertyItem {
   id: string
@@ -188,6 +191,26 @@ function PersonalPropertyContent() {
   const highValueItems = items.filter(item => item.currentValue >= 5000).length
   const totalPurchaseValue = items.reduce((sum, item) => sum + item.purchasePrice, 0)
   const valueChange = totalValue - totalPurchaseValue
+  
+  // Calculate depreciation values and alerts
+  const itemsWithDepreciation = items.map(item => {
+    const depreciation = calculateDepreciation(item.purchasePrice, item.purchaseDate, item.category)
+    return {
+      ...item,
+      currentValue: depreciation.currentValue, // Update with calculated value
+      depreciationData: depreciation
+    }
+  })
+  
+  // Get all depreciation alerts
+  const allAlerts = items.flatMap(item => 
+    getDepreciationAlerts({
+      purchasePrice: item.purchasePrice,
+      purchaseDate: item.purchaseDate,
+      category: item.category,
+      name: item.name
+    })
+  )
 
   // Filter items
   const filteredItems = items.filter(item => {
@@ -364,10 +387,10 @@ function PersonalPropertyContent() {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-2xl font-bold text-white">${totalValue.toLocaleString()}</p>
+                    <p className="text-2xl font-bold text-white">${itemsWithDepreciation.reduce((sum, item) => sum + item.currentValue, 0).toLocaleString()}</p>
                     <p className="text-sm text-gray-400">Total Value</p>
                     <p className={`text-xs mt-1 ${valueChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                      {valueChange >= 0 ? '+' : ''}{valueChange.toLocaleString()} change
+                      {valueChange >= 0 ? '+' : ''}${Math.abs(valueChange).toLocaleString()} {valueChange >= 0 ? 'appreciation' : 'depreciation'}
                     </p>
                   </div>
                   <DollarSign className="h-8 w-8 text-green-400" />
@@ -519,6 +542,25 @@ function PersonalPropertyContent() {
                   </div>
                 </CardContent>
               </Card>
+
+              {/* Depreciation Alerts */}
+              {allAlerts.length > 0 && (
+                <DepreciationAlerts 
+                  alerts={allAlerts}
+                  onDismiss={(alert) => {
+                    toast.info(`Dismissed alert: ${alert.title}`)
+                  }}
+                  onAction={(alert) => {
+                    if (alert.type === 'maintenance') {
+                      toast.info('Opening maintenance schedule...')
+                    } else if (alert.type === 'replacement') {
+                      toast.info('Opening replacement options...')
+                    } else {
+                      toast.info(`Taking action on: ${alert.title}`)
+                    }
+                  }}
+                />
+              )}
 
               {/* Top Categories */}
               <Card className="bg-gray-800 border-gray-700">
@@ -778,13 +820,14 @@ function PersonalPropertyContent() {
                               <MapPin className="h-3 w-3" />
                               <span>{item.room}</span>
                             </div>
-                            <div className="flex justify-between">
+                            <div className="flex justify-between items-center">
                               <span className="text-gray-400">Value:</span>
-                              <span className={`font-semibold ${
-                                item.currentValue > item.purchasePrice ? 'text-green-400' : 'text-orange-400'
-                              }`}>
-                                ${item.currentValue.toLocaleString()}
-                              </span>
+                              <DepreciationTracker
+                                purchasePrice={item.purchasePrice}
+                                purchaseDate={item.purchaseDate}
+                                category={item.category}
+                                compact={true}
+                              />
                             </div>
                           </div>
 
@@ -1191,15 +1234,25 @@ function PersonalPropertyContent() {
                   <CardContent>
                     <div className="space-y-4">
                       {CATEGORIES.map(category => {
-                        const categoryItems = items.filter(item => item.category === category.id)
+                        const categoryItems = itemsWithDepreciation.filter(item => item.category === category.id)
                         const categoryValue = categoryItems.reduce((sum, item) => sum + item.currentValue, 0)
-                        const percentage = (categoryValue / totalValue) * 100
+                        const categoryPurchaseValue = categoryItems.reduce((sum, item) => sum + item.purchasePrice, 0)
+                        const depreciationAmount = categoryPurchaseValue - categoryValue
+                        const currentTotalValue = itemsWithDepreciation.reduce((sum, item) => sum + item.currentValue, 0)
+                        const percentage = (categoryValue / currentTotalValue) * 100
                         
                         return (
                           <div key={category.id}>
                             <div className="flex items-center justify-between mb-1">
                               <span className="text-sm text-gray-300">{category.name}</span>
-                              <span className="text-sm text-gray-400">${categoryValue.toLocaleString()}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-gray-400">${categoryValue.toLocaleString()}</span>
+                                {depreciationAmount !== 0 && (
+                                  <span className={`text-xs ${depreciationAmount > 0 ? 'text-red-400' : 'text-green-400'}`}>
+                                    {depreciationAmount > 0 ? '-' : '+'}${Math.abs(depreciationAmount).toLocaleString()}
+                                  </span>
+                                )}
+                              </div>
                             </div>
                             <Progress value={percentage} className="h-2 bg-gray-700" />
                           </div>
@@ -1246,6 +1299,52 @@ function PersonalPropertyContent() {
                 </Card>
               </div>
 
+              {/* Depreciation Analytics */}
+              <Card className="bg-gray-800 border-gray-700">
+                <CardHeader>
+                  <CardTitle className="text-white flex items-center gap-2">
+                    <TrendingDown className="h-5 w-5 text-orange-400" />
+                    Depreciation Analysis
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="text-center p-4 bg-gray-700 rounded-lg">
+                      <p className="text-2xl font-bold text-white">
+                        ${Math.abs(totalPurchaseValue - itemsWithDepreciation.reduce((sum, item) => sum + item.currentValue, 0)).toLocaleString()}
+                      </p>
+                      <p className="text-sm text-gray-400">Total Depreciation</p>
+                    </div>
+                    <div className="text-center p-4 bg-gray-700 rounded-lg">
+                      <p className="text-2xl font-bold text-white">
+                        {Math.round(((totalPurchaseValue - itemsWithDepreciation.reduce((sum, item) => sum + item.currentValue, 0)) / totalPurchaseValue) * 100)}%
+                      </p>
+                      <p className="text-sm text-gray-400">Average Depreciation Rate</p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-yellow-900/20 rounded-lg">
+                    <div className="flex items-center gap-3 mb-2">
+                      <AlertCircle className="h-5 w-5 text-yellow-400" />
+                      <p className="font-medium text-yellow-300">Maintenance Alerts</p>
+                    </div>
+                    <p className="text-sm text-gray-300">
+                      {allAlerts.filter(a => a.type === 'maintenance').length} items need maintenance soon
+                    </p>
+                  </div>
+                  
+                  <div className="p-4 bg-red-900/20 rounded-lg">
+                    <div className="flex items-center gap-3 mb-2">
+                      <TrendingDown className="h-5 w-5 text-red-400" />
+                      <p className="font-medium text-red-300">Replacement Consideration</p>
+                    </div>
+                    <p className="text-sm text-gray-300">
+                      {allAlerts.filter(a => a.type === 'replacement').length} items may need replacement
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
               {/* Top Value Items */}
               <Card className="bg-gray-800 border-gray-700">
                 <CardHeader>
@@ -1253,11 +1352,12 @@ function PersonalPropertyContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    {[...items]
+                    {[...itemsWithDepreciation]
                       .sort((a, b) => b.currentValue - a.currentValue)
                       .slice(0, 5)
                       .map(item => {
                         const Icon = getCategoryIcon(item.category)
+                        const depreciationPercent = item.depreciationData ? item.depreciationData.depreciationPercent : 0
                         return (
                           <div key={item.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                             <div className="flex items-center gap-3">
@@ -1269,11 +1369,16 @@ function PersonalPropertyContent() {
                             </div>
                             <div className="text-right">
                               <p className="font-semibold text-white">${item.currentValue.toLocaleString()}</p>
-                              {item.insured ? (
-                                <Badge className="text-xs bg-green-600/20 text-green-300">Insured</Badge>
-                              ) : (
-                                <Badge className="text-xs bg-orange-600/20 text-orange-300">Not Insured</Badge>
-                              )}
+                              <div className="flex items-center gap-2">
+                                {item.insured ? (
+                                  <Badge className="text-xs bg-green-600/20 text-green-300">Insured</Badge>
+                                ) : (
+                                  <Badge className="text-xs bg-orange-600/20 text-orange-300">Not Insured</Badge>
+                                )}
+                                <Badge className={`text-xs ${depreciationPercent > 0 ? 'bg-red-600/20 text-red-300' : 'bg-green-600/20 text-green-300'}`}>
+                                  {depreciationPercent > 0 ? '-' : '+'}{Math.abs(depreciationPercent)}%
+                                </Badge>
+                              </div>
                             </div>
                           </div>
                         )
@@ -1389,15 +1494,13 @@ function PersonalPropertyContent() {
               </div>
 
               {/* Value Info */}
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="text-gray-400">Purchase Price</Label>
-                  <p className="text-xl font-semibold text-white">${selectedItem.purchasePrice.toLocaleString()}</p>
-                </div>
-                <div>
-                  <Label className="text-gray-400">Current Value</Label>
-                  <p className="text-xl font-semibold text-green-400">${selectedItem.currentValue.toLocaleString()}</p>
-                </div>
+              <div className="space-y-4">
+                <DepreciationTracker
+                  purchasePrice={selectedItem.purchasePrice}
+                  purchaseDate={selectedItem.purchaseDate}
+                  category={selectedItem.category}
+                  showDetails={true}
+                />
               </div>
 
               {/* Additional Details */}

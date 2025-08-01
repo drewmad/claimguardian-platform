@@ -40,7 +40,7 @@ export function Header() {
         <Link href="/auth/signin" className="text-gray-300 hover:text-primary transition-colors">Sign In</Link>
         <span className="text-gray-300/30">|</span>
         <Link 
-          href="/auth/signup" 
+          href="/auth/signup-advanced" 
           className="py-2 px-4 rounded-full transition-colors hover:opacity-90" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >
@@ -49,7 +49,7 @@ export function Header() {
       </nav>
       <div className="md:hidden">
         <Link 
-          href="/auth/signup" 
+          href="/auth/signup-advanced" 
           className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >

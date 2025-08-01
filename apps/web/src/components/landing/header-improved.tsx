@@ -82,7 +82,7 @@ export function Header() {
             Sign In
           </Link>
           <Link 
-            href="/auth/signup" 
+            href="/auth/signup-advanced" 
             className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
             style={{ 
               backgroundColor: COLORS.brand.neonGreen,
@@ -99,7 +99,7 @@ export function Header() {
       {/* Mobile Navigation */}
       <div className="md:hidden">
         <Link 
-          href="/auth/signup" 
+          href="/auth/signup-advanced" 
           className="font-semibold text-sm py-2 px-4 rounded-full transition-all duration-300 hover:scale-105 inline-block" 
           style={{ 
             backgroundColor: COLORS.brand.neonGreen,
