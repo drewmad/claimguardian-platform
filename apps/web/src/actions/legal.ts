@@ -1,59 +1,32 @@
-/**
- * @fileMetadata
- * @purpose Server actions for legal compliance and consent management
- * @owner legal-team
- * @status active
- */
 'use server'
 
-import { headers } from 'next/headers'
+import { revalidatePath } from 'next/cache'
 
-import { legalServiceServer } from '@/lib/legal/legal-service-server'
-import { logger } from '@/lib/logger'
+export async function uploadLegalDocument(formData: FormData) {
+  const docType = formData.get('docType')
+  const version = formData.get('version')
+  const file = formData.get('file') as File
 
-/**
- * Record legal document acceptances with client metadata
- */
-export async function recordLegalAcceptances(
-  userId: string,
-  acceptedDocuments: string[]
-) {
-  try {
-    // Get client metadata from headers
-    const headersList = await headers()
-    const ip = headersList.get('x-forwarded-for') || 
-               headersList.get('x-real-ip') ||
-               'unknown'
-    const userAgent = headersList.get('user-agent') || 'unknown'
-    
-    const metadata = {
-      ip_address: ip,
-      user_agent: userAgent
-    }
-    
-    // Prepare acceptance requests
-    const acceptances = acceptedDocuments.map(docId => ({
-      legal_id: docId,
-      ...metadata,
-      signature_data: {
-        timestamp: new Date().toISOString(),
-        method: 'update_page',
-        page_url: headersList.get('referer') || 'unknown'
-      }
-    }))
-
-    // Record acceptances using server service
-    await legalServiceServer.recordAcceptances(userId, acceptances)
-
-    logger.track('legal_acceptances_recorded', {
-      userId,
-      documentCount: acceptedDocuments.length,
-      source: 'server_action'
-    })
-
-    return { success: true }
-  } catch (error) {
-    logger.error('Failed to record legal acceptances', { userId }, error instanceof Error ? error : new Error(String(error)))
-    throw new Error('Failed to record legal acceptances')
+  if (!docType || !version || !file) {
+    return { error: 'Missing required fields.' }
   }
+
+  console.log('Uploading document:', {
+    docType,
+    version,
+    fileName: file.name,
+    fileSize: file.size,
+  })
+
+  // In a real application, you would upload the file to Supabase Storage here.
+  // For example:
+  // const { data, error } = await supabase.storage
+  //   .from('legal-documents')
+  //   .upload(`${docType}/${version}/${file.name}`, file)
+  // if (error) return { error: error.message }
+
+  // Revalidate the admin path to show the new document
+  revalidatePath('/admin')
+
+  return { success: true }
 }

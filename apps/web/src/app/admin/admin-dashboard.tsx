@@ -31,6 +31,8 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 
+import { LegalDocumentsTab } from './legal-documents-tab'
+
 export function AdminDashboard() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -542,83 +544,8 @@ export function AdminDashboard() {
           </TabsContent>
 
           {/* Legal Documents Tab */}
-          <TabsContent value="legal-docs" className="space-y-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Legal Documents</h2>
-                <p className="text-gray-400">Manage terms, privacy policy, and other legal documents</p>
-              </div>
-              <Button>
-                <FileText className="mr-2 h-4 w-4" />
-                New Document
-              </Button>
-            </div>
-
-            <Card className="bg-slate-900 border-slate-800">
-              <CardContent className="p-6">
-                <div className="space-y-4">
-                  {legalDocs.map((doc) => (
-                    <div key={doc.id} className="p-4 bg-slate-800 rounded-lg">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <FileText className="h-10 w-10 text-blue-500 bg-blue-500/10 rounded-lg p-2" />
-                          <div>
-                            <h4 className="font-medium text-white">{doc.title}</h4>
-                            <p className="text-sm text-gray-400">Version {doc.version} • Last updated {doc.lastUpdated}</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <Badge variant={doc.status === 'published' ? 'secondary' : 'outline'}>
-                            {doc.status}
-                          </Badge>
-                          <Button variant="ghost" size="sm">
-                            <History className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Eye className="h-4 w-4" />
-                          </Button>
-                          <Button variant="ghost" size="sm">
-                            <Edit className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-slate-900 border-slate-800">
-              <CardHeader>
-                <CardTitle>Document History</CardTitle>
-                <CardDescription>Recent changes to legal documents</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3 text-sm">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <div>
-                      <p className="text-white">Terms of Service updated to v2.3</p>
-                      <p className="text-gray-400">by Admin User • 3 days ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <div>
-                      <p className="text-white">Privacy Policy updated to v3.1</p>
-                      <p className="text-gray-400">by Legal Team • 5 days ago</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-sm">
-                    <Clock className="h-4 w-4 text-gray-400" />
-                    <div>
-                      <p className="text-white">AI Use Agreement created</p>
-                      <p className="text-gray-400">by Admin User • 1 week ago</p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          <TabsContent value="legal-docs">
+            <LegalDocumentsTab />
           </TabsContent>
 
           {/* Compliance Tab */}
