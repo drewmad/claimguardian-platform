@@ -16,7 +16,6 @@ import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { COLORS } from '@/lib/constants'
-import { useModalStore } from '@/stores/modal-store'
 // import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 
@@ -119,7 +118,6 @@ const PricingCard: React.FC<{ plan: PricingPlan & { priceIds?: { monthly: string
 export function Pricing() {
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'annual'>('monthly')
   const [processingPlan, setProcessingPlan] = useState<string | null>(null)
-  const { openModal } = useModalStore()
   const router = useRouter()
   const supabase = createBrowserSupabaseClient()
   
@@ -174,8 +172,8 @@ export function Pricing() {
     const { data: { user } } = await supabase.auth.getUser()
     
     if (!user) {
-      // Open signup modal if not authenticated
-      openModal('signup')
+      // Redirect to signup if not authenticated
+      router.push('/test-signup-simple')
       return
     }
 

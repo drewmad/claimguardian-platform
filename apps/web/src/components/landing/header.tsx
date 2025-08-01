@@ -2,7 +2,7 @@
  * @fileMetadata
  * @purpose Landing page header with enhanced navigation and branding
  * @owner frontend-team
- * @dependencies ["react", "@/stores/modal-store", "@/lib/constants"]
+ * @dependencies ["react", "next/link", "@/lib/constants"]
  * @exports ["Header"]
  * @complexity medium
  * @tags ["header", "navigation", "landing"]
@@ -10,8 +10,8 @@
  */
 'use client'
 
+import Link from 'next/link'
 import { COLORS } from '@/lib/constants'
-import { useModalStore } from '@/stores/modal-store'
 
 const HeaderShieldIcon = () => (
   <svg width="28" height="32" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,8 +26,6 @@ const HeaderShieldIcon = () => (
 )
 
 export function Header() {
-  const { openModal } = useModalStore()
-
   return (
     <header className="sticky top-0 z-50 p-4 md:px-6 flex justify-between items-center transition-colors duration-300" style={{ backgroundColor: 'rgba(10, 14, 26, 0.8)', backdropFilter: 'blur(10px)', borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
       <div className="flex items-center gap-3">
@@ -39,24 +37,24 @@ export function Header() {
       <nav className="hidden md:flex items-center gap-4 text-sm font-semibold">
         <a href="#how-it-works" className="text-gray-300 hover:text-primary transition-colors">How It Works</a>
         <span className="text-gray-300/30">|</span>
-        <button onClick={() => openModal('login')} className="text-gray-300 hover:text-primary transition-colors">Sign In</button>
+        <Link href="/auth/signin" className="text-gray-300 hover:text-primary transition-colors">Sign In</Link>
         <span className="text-gray-300/30">|</span>
-        <button 
-          onClick={() => openModal('signup')} 
+        <Link 
+          href="/test-signup-simple" 
           className="py-2 px-4 rounded-full transition-colors hover:opacity-90" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >
           Start Free Trial
-        </button>
+        </Link>
       </nav>
       <div className="md:hidden">
-        <button 
-          onClick={() => openModal('signup')} 
-          className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90" 
+        <Link 
+          href="/test-signup-simple" 
+          className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >
           Get Started
-        </button>
+        </Link>
       </div>
     </header>
   )

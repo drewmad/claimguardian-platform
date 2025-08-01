@@ -2,7 +2,7 @@
  * @fileMetadata
  * @purpose Get Started CTA section
  * @owner frontend-team
- * @dependencies ["react", "@/stores/modal-store"]
+ * @dependencies ["react", "next/link", "@/stores/modal-store"]
  * @exports ["GetStarted"]
  * @complexity low
  * @tags ["landing", "cta", "conversion"]
@@ -10,6 +10,7 @@
  */
 'use client'
 
+import Link from 'next/link'
 import { useModalStore } from '@/stores/modal-store'
 
 export function GetStarted() {
@@ -28,12 +29,12 @@ export function GetStarted() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <button
-              onClick={() => openModal('signup')}
-              className="btn-primary text-white font-bold py-4 px-8 text-lg w-full sm:w-auto"
+            <Link
+              href="/test-signup-simple"
+              className="btn-primary text-white font-bold py-4 px-8 text-lg w-full sm:w-auto text-center"
             >
               Start Your Free Trial
-            </button>
+            </Link>
             <button
               onClick={() => openModal('content', {
                 title: 'Schedule a Demo',

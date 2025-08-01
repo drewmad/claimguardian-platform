@@ -12,9 +12,9 @@
 
 import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight, Building } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
+import Link from 'next/link'
 
 import { COLORS } from '@/lib/constants'
-import { useModalStore } from '@/stores/modal-store'
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {
@@ -73,7 +73,6 @@ const GuardianShieldIcon = () => (
 )
 
 export function Hero() {
-  const { openModal } = useModalStore()
   
   const pills = [
     { label: 'Homeowners', icon: Home },
@@ -154,13 +153,13 @@ export function Hero() {
           
           <AnimatedSection delay={400}>
             <div className="mt-10">
-              <button
-                onClick={() => openModal('signup')}
-                className="font-bold py-4 px-8 rounded-full text-black text-lg transition-transform hover:scale-105 flex items-center gap-2 mx-auto shadow-[0_4px_20px_rgba(91,163,245,0.3)] hover:shadow-[0_6px_30px_rgba(91,163,245,0.4)]"
+              <Link
+                href="/test-signup-simple"
+                className="font-bold py-4 px-8 rounded-full text-black text-lg transition-transform hover:scale-105 inline-flex items-center gap-2 mx-auto shadow-[0_4px_20px_rgba(91,163,245,0.3)] hover:shadow-[0_6px_30px_rgba(91,163,245,0.4)]"
                 style={{ backgroundColor: COLORS.primary }}
               >
                 Guard My Property <ArrowRight size={20} />
-              </button>
+              </Link>
             </div>
           </AnimatedSection>
           
