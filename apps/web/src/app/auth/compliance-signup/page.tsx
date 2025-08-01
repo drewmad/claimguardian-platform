@@ -5,8 +5,8 @@
  * @status active
  */
 
-import { ComplianceSignupFlow } from './compliance-signup-flow'
+import { StreamlinedSignupFlow } from './streamlined-signup-flow'
 
 export default function ComplianceSignupPage() {
-  return <ComplianceSignupFlow />
+  return <StreamlinedSignupFlow />
 }

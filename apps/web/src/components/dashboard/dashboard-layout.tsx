@@ -38,7 +38,11 @@ const navigationItems = [
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
   { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' },
-  { id: 'ml-operations', label: 'ML Operations', icon: Brain, href: '/dashboard/ml-operations' }
+]
+
+const adminFeatures = [
+  { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Settings, href: '/admin' },
+  { id: 'ml-operations', label: 'ML Operations', icon: Brain, href: '/admin/ml-operations' }
 ]
 
 const aiFeatures = [
@@ -212,6 +216,38 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                       className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
                         isActive
                           ? 'bg-cyan-600/20 text-cyan-300'
+                          : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                      <span>{feature.label}</span>
+                    </Link>
+                  )
+                })}
+              </div>
+            </div>
+
+            {/* Admin Features Section */}
+            <div className="pt-4 border-t border-gray-700">
+              <div className="flex items-center gap-2 px-4 mb-2">
+                <Shield className="w-4 h-4 text-red-400" />
+                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</span>
+              </div>
+              <div className="space-y-1">
+                {adminFeatures.map((feature) => {
+                  const Icon = feature.icon
+                  const isActive = pathname.startsWith(feature.href)
+                  
+                  return (
+                    <Link
+                      key={feature.id}
+                      href={feature.href}
+                      onClick={() => {
+                        if (isMobile) setIsSidebarOpen(false)
+                      }}
+                      className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                        isActive
+                          ? 'bg-red-600/20 text-red-300'
                           : 'text-gray-400 hover:text-white hover:bg-gray-700'
                       }`}
                     >
