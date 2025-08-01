@@ -13,15 +13,15 @@ export async function GET() {
       .maybeSingle()
     
     // Test 2: Check auth status
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+    const { data: { user }, error: userError } = await supabase.auth.getUser()
     
-    // Test 3: Validate session with getUser() if session exists
-    let validatedUser = null
-    let userError = null
-    if (session) {
-      const { data: { user }, error } = await supabase.auth.getUser()
-      validatedUser = user
-      userError = error
+    // Test 3: Validate session with getSession() if user exists
+    let session = null
+    let sessionError = null
+    if (user) {
+      const { data, error } = await supabase.auth.getSession()
+      session = data.session
+      sessionError = error
     }
     
     // Test 4: Check if auth schema exists
@@ -36,15 +36,15 @@ export async function GET() {
           supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...',
           hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
         },
+        userValidation: {
+          hasValidatedUser: !!user,
+          validatedEmail: user?.email || null,
+          userError: userError?.message || null,
+        },
         session: {
           hasSession: !!session,
           sessionUser: session?.user?.email || null,
           sessionError: sessionError?.message || null,
-        },
-        userValidation: {
-          hasValidatedUser: !!validatedUser,
-          validatedEmail: validatedUser?.email || null,
-          userError: userError?.message || null,
         },
         authSchema: {
           exists: !!authSchema,

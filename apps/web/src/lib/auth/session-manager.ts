@@ -54,10 +54,17 @@ class SessionManager {
     this.stopMonitoring()
     
     // Check current session
-    const { data: { session }, error } = await this.supabase.auth.getSession()
+    const { data: { user }, error } = await this.supabase.auth.getUser()
     
-    if (error || !session) {
-      logger.error('Failed to get session for monitoring', {}, error || undefined)
+    if (error || !user) {
+      logger.error('Failed to get user for monitoring', {}, error || undefined)
+      return
+    }
+    
+    const { data: { session } } = await this.supabase.auth.getSession()
+    
+    if (!session) {
+      logger.error('No session found for monitoring')
       return
     }
     
@@ -143,16 +150,23 @@ class SessionManager {
     try {
       logger.info('Attempting to refresh session')
       
-      // First check if we have a current session
-      const { data: { session: currentSession }, error: currentError } = await this.supabase.auth.getSession()
+      // First check if we have a current user
+      const { data: { user: currentUser }, error: currentError } = await this.supabase.auth.getUser()
       
-      if (currentError || !currentSession) {
-        logger.error('No current session to refresh', {}, currentError || undefined)
+      if (currentError || !currentUser) {
+        logger.error('No current user to refresh', {}, currentError || undefined)
         this.config.onSessionExpired?.()
         return
       }
       
       // Check if current session is still valid
+      const { data: { session: currentSession } } = await this.supabase.auth.getSession()
+      if (!currentSession) {
+        logger.warn('No session found, cannot refresh')
+        this.config.onSessionExpired?.()
+        return
+      }
+      
       const now = Date.now() / 1000
       if (currentSession.expires_at! <= now) {
         logger.warn('Current session already expired, cannot refresh')
@@ -204,9 +218,15 @@ class SessionManager {
    * Get time until session expiry in seconds
    */
   async getTimeUntilExpiry(): Promise<number | null> {
-    const { data: { session }, error } = await this.supabase.auth.getSession()
+    const { data: { user }, error } = await this.supabase.auth.getUser()
     
-    if (error || !session) {
+    if (error || !user) {
+      return null
+    }
+    
+    const { data: { session } } = await this.supabase.auth.getSession()
+    
+    if (!session) {
       return null
     }
     

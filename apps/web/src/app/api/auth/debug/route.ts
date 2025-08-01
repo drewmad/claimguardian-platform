@@ -38,10 +38,10 @@ export async function GET(request: Request) {
       const supabase = await createClient()
       clientCreated = true
       
-      // Try to get session
-      const { data: { session }, error } = await supabase.auth.getSession()
+      // Try to get user
+      const { data: { user }, error } = await supabase.auth.getUser()
       sessionCheck = {
-        hasSession: !!session,
+        hasSession: !!user,
         error: error?.message || null
       }
       

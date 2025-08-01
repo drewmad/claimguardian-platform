@@ -347,8 +347,8 @@ export class SentinelService {
     // Parse recommendations from response
     return response.text
       .split('\n')
-      .filter(line => line.trim().match(/^[\d\-\*•]/))
-      .map(line => line.replace(/^[\d\-\*•]\s*/, '').trim());
+      .filter(line => line.trim().match(/^[\d\-*•]/))
+      .map(line => line.replace(/^[\d\-*•]\s*/, '').trim());
   }
   
   private async generateSummary(

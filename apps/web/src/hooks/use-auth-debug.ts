@@ -27,15 +27,15 @@ export function useAuthDebug(componentName: string) {
     const checkAuthState = async () => {
       const { logger } = await import('@/lib/logger')
       
-      // Check Supabase session directly
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      // Check Supabase user directly
+      const { data: { user: supabaseUser }, error: userError } = await supabase.auth.getUser()
       
       logger.authDebug(componentName, {
         loading,
         hasUser: !!user,
         error: error?.message,
-        sessionValid: !!session,
-        sessionError: sessionError?.message
+        sessionValid: !!supabaseUser,
+        sessionError: userError?.message
       })
     }
 

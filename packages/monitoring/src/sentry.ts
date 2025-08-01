@@ -30,7 +30,7 @@ export function initializeSentry(config: SentryConfig) {
     profilesSampleRate: 1.0,
     
     // Custom error filtering
-    beforeSend: config.beforeSend || ((event, hint) => {
+    beforeSend: config.beforeSend || ((event, _hint) => {
       // Filter out non-error logs
       if (event.level === 'log') return null
       
@@ -79,6 +79,7 @@ export function withErrorBoundary<P extends object>(
   })
 }
 
+import React from 'react';
 // Default error fallback component
 function ErrorFallback({ error, resetError }: { error: Error; resetError: () => void }) {
   // Return plain object for server-side compatibility
@@ -87,7 +88,6 @@ function ErrorFallback({ error, resetError }: { error: Error; resetError: () => 
   }
   
   // Client-side React component
-  const React = require('react')
   return React.createElement('div', {
     className: 'min-h-screen flex items-center justify-center p-4'
   },

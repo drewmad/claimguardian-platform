@@ -212,7 +212,7 @@ export class CacheManager {
     
     try {
       await this.redis.hincrby('cache:stats', stat, 1);
-    } catch (_error) {
+    } catch {
       // Ignore stat tracking errors
     }
   }

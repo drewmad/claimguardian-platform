@@ -53,8 +53,6 @@ export class ClarityService {
   }
   
   async calculateClaim(claimData: ClaimData, userId: string): Promise<ClarityCalculation> {
-    const startTime = Date.now();
-    
     // 1. Generate calculation steps
     const steps = await this.generateCalculationSteps(claimData);
     

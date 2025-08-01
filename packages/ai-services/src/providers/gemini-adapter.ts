@@ -3,7 +3,6 @@ import { GoogleGenerativeAI } from '@google/generative-ai';
 import type { AIResponse } from '../types';
 import { 
   AIRequest as NewAIRequest,
-  AIResponse as NewAIResponse,
   ImageAnalysisRequest as NewImageAnalysisRequest 
 } from '../types/index';
 

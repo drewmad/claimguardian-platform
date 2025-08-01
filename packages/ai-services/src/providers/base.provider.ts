@@ -26,7 +26,7 @@ export abstract class BaseAIProvider {
   abstract getAvailableModels(): string[];
   
   // Optional methods with default implementations
-  async analyzeImage(request: ImageAnalysisRequest): Promise<ImageAnalysisResponse> {
+  async analyzeImage(_request: ImageAnalysisRequest): Promise<ImageAnalysisResponse> {
     throw new AIServiceError(
       `Image analysis not supported by ${this.constructor.name}`,
       'FEATURE_NOT_SUPPORTED',
@@ -34,7 +34,7 @@ export abstract class BaseAIProvider {
     );
   }
   
-  async generateEmbedding(text: string): Promise<number[]> {
+  async generateEmbedding(_text: string): Promise<number[]> {
     throw new AIServiceError(
       `Embeddings not supported by ${this.constructor.name}`,
       'FEATURE_NOT_SUPPORTED',

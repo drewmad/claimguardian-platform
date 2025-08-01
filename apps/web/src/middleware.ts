@@ -140,8 +140,7 @@ export async function middleware(request: NextRequest) {
   const supabase = createClient(request, response)
   
   try {
-    // Get session and validate
-    const { data: { session }, error } = await supabase.auth.getSession()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
     if (error) {
       console.error('[MIDDLEWARE] Session error:', {
@@ -166,16 +165,16 @@ export async function middleware(request: NextRequest) {
     
     // Double-validate session for extra security on protected routes
     let validatedUser = null
-    if (session && !error) {
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
+    if (user && !error) {
+      const { data: { user: validatedUserFromGet }, error: userError } = await supabase.auth.getUser()
       
-      if (!userError && user) {
-        validatedUser = user
+      if (!userError && validatedUserFromGet) {
+        validatedUser = validatedUserFromGet
       } else if (userError) {
         console.warn('[MIDDLEWARE] User validation failed:', {
           error: userError.message,
           path: pathname,
-          sessionUser: session.user?.email
+          sessionUser: user.email
         })
         
         // Clear cookies on validation failure

@@ -93,9 +93,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         router.push('/')
       } else if (isValid && !user) {
         // Server has session but client doesn't - refresh client state
-        const { data: { session } } = await supabase.auth.getSession()
-        if (session?.user) {
-          setUser(session.user)
+        const { data: { user: serverUser } } = await supabase.auth.getUser()
+        if (serverUser) {
+          setUser(serverUser)
           sessionManager.startMonitoring()
         }
       }
@@ -116,12 +116,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         logger.info('Initializing authentication with server sync')
         
-        // Get initial session
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        // Get initial user
+        const { data: { user: initialUser }, error: userError } = await supabase.auth.getUser()
         
-        if (sessionError) {
-          logger.error('Failed to get initial session', {}, sessionError)
-          await handleAuthError(sessionError, supabase)
+        if (userError) {
+          logger.error('Failed to get initial user', {}, userError)
+          await handleAuthError(userError, supabase)
           if (mounted) {
             setUser(null)
             setLoading(false)
@@ -131,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         
         // Validate session with server
-        if (session) {
+        if (initialUser) {
           const isServerValid = await validateSessionAction()
           
           if (!isServerValid) {
@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Validate session for security
         const validatedUser = await validateSession(supabase)
         
-        if (!validatedUser && session) {
+        if (!validatedUser && initialUser) {
           logger.warn('Client validation failed, clearing session')
           if (mounted) {
             setUser(null)
@@ -159,17 +159,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
 
         if (mounted) {
-          setUser(session?.user ?? null)
+          setUser(validatedUser)
           setLoading(false)
           setError(null)
           
-          if (session?.user) {
+          if (validatedUser) {
+            const { data: { session } } = await supabase.auth.getSession()
             const now = Date.now() / 1000
-            const timeUntilExpiry = session.expires_at! - now
+            const timeUntilExpiry = session!.expires_at! - now
             
             logger.setUser({
-              id: session.user.id,
-              email: session.user.email
+              id: validatedUser.id,
+              email: validatedUser.email
             })
             
             if (timeUntilExpiry > 60) {

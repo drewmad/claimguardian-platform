@@ -309,7 +309,7 @@ export class DocumentCategorizerService {
         reasoning: `Detected as ${parsed.documentType} based on content analysis`,
         extractedInfo: parsed.keyInfo || {}
       };
-    } catch (_error) {
+    } catch {
       // Fallback analysis based on filename
       return this.analyzeByFilename(fileName);
     }
@@ -329,7 +329,7 @@ export class DocumentCategorizerService {
         reasoning: parsed.reasoning || 'Based on document analysis',
         extractedInfo: parsed.keyInfo || {}
       };
-    } catch (_error) {
+    } catch {
       return {
         category: this.DOCUMENT_CATEGORIES.find(c => c.id === 'other')!,
         confidence: 0.3,

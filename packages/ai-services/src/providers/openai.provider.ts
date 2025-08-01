@@ -7,8 +7,7 @@ import type {
   ChatRequest, 
   ChatResponse,
   ImageAnalysisRequest,
-  ImageAnalysisResponse,
-  AIServiceError
+  ImageAnalysisResponse
 } from '../types/index';
 
 export class OpenAIProvider extends BaseAIProvider {

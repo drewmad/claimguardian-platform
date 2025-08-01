@@ -20,11 +20,11 @@ export default function AuthDebugPage() {
     const checkAuth = async () => {
       const supabase = createClient()
       
-      // Check session
-      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
       // Check user
       const { data: { user }, error: userError } = await supabase.auth.getUser()
+      
+      // Check session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
       
       // Test connection
       const { error: testError } = await supabase.from('_test').select('*').limit(1)
@@ -35,17 +35,17 @@ export default function AuthDebugPage() {
           supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL?.substring(0, 30) + '...',
           hasAnonKey: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
         },
-        session: {
-          exists: !!session,
-          error: sessionError?.message,
-          expiresAt: session?.expires_at,
-          user: session?.user?.email
-        },
         user: {
           exists: !!user,
           error: userError?.message,
           email: user?.email,
           id: user?.id
+        },
+        session: {
+          exists: !!session,
+          error: sessionError?.message,
+          expiresAt: session?.expires_at,
+          user: session?.user?.email
         },
         connection: {
           error: testError?.message,

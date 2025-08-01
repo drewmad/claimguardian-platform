@@ -42,17 +42,6 @@ export async function handleAuthError(error: unknown, supabase: SupabaseClient) 
 
 export async function validateSession(supabase: SupabaseClient) {
   try {
-    const { data: { session }, error } = await supabase.auth.getSession()
-    
-    if (error) {
-      await handleAuthError(error, supabase)
-      return null
-    }
-    
-    if (!session) {
-      return null
-    }
-    
     // Validate with getUser to ensure token is still valid
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     

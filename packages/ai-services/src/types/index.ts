@@ -205,7 +205,7 @@ export class AIServiceError extends Error {
 }
 
 export class RateLimitError extends AIServiceError {
-  constructor(provider: string, retryAfter?: number) {
+  constructor(provider: string, _retryAfter?: number) {
     super(
       `Rate limit exceeded for ${provider}`,
       'RATE_LIMIT',

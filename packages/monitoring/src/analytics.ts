@@ -69,7 +69,7 @@ class Analytics {
             this.trackPageView(url, document.title)
           })
         }
-      } catch (error) {
+      } catch {
         // Router not available, skip route tracking
         console.debug('Next.js router not available for analytics tracking')
       }

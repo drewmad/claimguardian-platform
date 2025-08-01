@@ -143,10 +143,10 @@ export default function TestSystemPage() {
     // Auth Test 1: Check Supabase Connection
     updateTest('auth-1', { status: 'running' })
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { user } } = await supabase.auth.getUser()
       updateTest('auth-1', { 
         status: 'passed', 
-        result: { connected: true, hasSession: !!session }
+        result: { connected: true, hasSession: !!user }
       })
     } catch (error) {
       updateTest('auth-1', { 
@@ -156,8 +156,8 @@ export default function TestSystemPage() {
     }
 
     // Auth Test 2: Test Login Flow (Skip if already logged in)
-    const { data: { session } } = await supabase.auth.getSession()
-    if (session) {
+    const { data: { user } } = await supabase.auth.getUser()
+    if (user) {
       updateTest('auth-2', { 
         status: 'skipped', 
         result: 'Already logged in'

@@ -75,14 +75,6 @@ export async function getServerSession() {
   try {
     const supabase = await createAuthClient()
     
-    // Get session from cookies
-    const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-    
-    if (sessionError || !session) {
-      authLogger.debug('No valid session found', { error: sessionError?.message })
-      return null
-    }
-    
     // Validate session by checking user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     
@@ -98,6 +90,9 @@ export async function getServerSession() {
       return null
     }
     
+    // If user is found, get the session from the user object
+    const { data: { session } } = await supabase.auth.getSession()
+
     authLogger.debug('Valid session found', { userId: user.id })
     
     return {

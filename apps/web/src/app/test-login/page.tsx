@@ -21,7 +21,7 @@ export default function TestLoginPage() {
     setMessage(null)
     
     try {
-      const { data, error } = await supabase.auth.signUp({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
       })
@@ -31,7 +31,7 @@ export default function TestLoginPage() {
       } else {
         setMessage({ type: 'success', text: 'Account created! Check your email for verification link.' })
       }
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'An error occurred' })
     } finally {
       setLoading(false)
@@ -43,7 +43,7 @@ export default function TestLoginPage() {
     setMessage(null)
     
     try {
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
@@ -54,7 +54,7 @@ export default function TestLoginPage() {
         setMessage({ type: 'success', text: 'Logged in successfully!' })
         setTimeout(() => router.push('/dashboard'), 1000)
       }
-    } catch (err) {
+    } catch {
       setMessage({ type: 'error', text: 'An error occurred' })
     } finally {
       setLoading(false)

@@ -89,8 +89,8 @@ export function SessionMonitor({
 
     // Check session on focus
     const handleFocus = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
-      if (!session) {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
         router.push('/auth/signin?message=Session expired')
       } else {
         resetTimer()

@@ -3,7 +3,6 @@ import {
   DashboardData,
   PerformanceMetrics,
   CostMetrics,
-  CacheStats,
   HealthMetrics
 } from '../types/index';
 
@@ -116,7 +115,6 @@ export class AIMonitoringDashboard {
     const values = this.getRecentValues(metric, seconds);
     if (values.length === 0) return 0;
     
-    const timeRange = seconds * 1000;
     const count = values.length;
     
     return (count / seconds) * 60; // Convert to per minute

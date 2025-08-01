@@ -72,13 +72,15 @@ export async function refreshSessionAction(): Promise<boolean> {
 export async function getSessionExpiryAction(): Promise<number | null> {
   try {
     const supabase = await createAuthClient()
-    const { data: { session }, error } = await supabase.auth.getSession()
+    const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (error || !session) {
+    if (error || !user) {
       return null
     }
     
-    return session.expires_at || null
+    const { data: { session } } = await supabase.auth.getSession()
+    
+    return session?.expires_at || null
   } catch (error) {
     authLogger.error('Get session expiry failed', {}, error as Error)
     return null

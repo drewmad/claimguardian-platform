@@ -271,7 +271,7 @@ export function usePresence(
     const client = getRealtimeClient(supabase, userId)
     clientRef.current = client
 
-    const channel = client.createPresenceChannel(channelName, {
+    client.createPresenceChannel(channelName, {
       user_id: userId,
       user_email: userInfo.email,
       user_name: userInfo.name,

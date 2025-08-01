@@ -250,7 +250,7 @@ export class AIOrchestrator {
   
   private getFallbackProvider(primary: BaseAIProvider): BaseAIProvider | null {
     // Find a different provider as fallback
-    for (const [name, provider] of this.providers) {
+    for (const provider of this.providers.values()) {
       if (provider !== primary) {
         return provider;
       }

@@ -17,7 +17,7 @@ import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { handleAuthError, validateSession } from '@/lib/supabase/auth-helpers'
+import { handleAuthError } from '@/lib/supabase/auth-helpers'
 
 import { SessionMonitor } from './session-monitor'
 
@@ -99,13 +99,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.info('Initializing authentication')
         logger.info('Authentication provider initializing')
         
-        // Get initial session and validate with server
-        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        const { data: { user: validatedUser }, error: userError } = await supabase.auth.getUser()
         
-        if (sessionError) {
-          logger.error('Failed to get initial session', {}, sessionError)
+        if (userError) {
+          logger.error('Failed to get initial user', {}, userError)
           // Handle refresh token errors
-          await handleAuthError(sessionError, supabase)
+          await handleAuthError(userError, supabase)
           if (mounted) {
             setUser(null)
             setLoading(false)
@@ -114,11 +113,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           return
         }
         
-        // Validate session for security
-        const validatedUser = await validateSession(supabase)
-        
-        if (!validatedUser && session) {
-          logger.warn('Session validation failed, invalid session cleared')
+        if (!validatedUser) {
+          logger.warn('No validated user found, session cleared')
           if (mounted) {
             setUser(null)
             setLoading(false)
@@ -129,6 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         if (mounted) {
           // Batch state updates to prevent loops
+          const { data: { session } } = await supabase.auth.getSession()
           const updates = {
             user: session?.user ?? null,
             loading: false,
@@ -161,7 +158,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               logger.warn('Session expires very soon, skipping monitoring to avoid immediate logout')
             }
           } else {
-            logger.info('No active session found during initialization')
             logger.info('No active session found during initialization')
           }
         }
