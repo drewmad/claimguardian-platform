@@ -126,22 +126,22 @@ export function Pricing() {
       name: 'Guardian Free', 
       price: {}, 
       per: {}, 
-      subtitle: 'Available to Florida property owners. No credit card required.', 
-      features: ['1 Property', 'Unlimited Manual Inventory Entry', 'Basic Policy Analysis', 'Limited AI Damage Scans', '500MB Evidence Storage'], 
-      comingSoon: ['Mobile App (iOS)', 'Claim Checklist & Timeline', 'Community Forum Access', 'Data Export (JSON/CSV)'], 
-      ctaText: 'Get Started for Free', 
-      ctaClass: 'bg-gray-800 hover:bg-gray-700' 
+      subtitle: 'Perfect for testing the waters. Get protection for your primary home.', 
+      features: ['1 Property Protection', 'Unlimited Manual Inventory', 'Basic Policy Health Check', '5 AI Damage Scans/month', '500MB Secure Evidence Vault'], 
+      comingSoon: ['Mobile App (iOS)', 'Claim Timeline Guide', 'Community Forum Access', 'Export Your Data'], 
+      ctaText: 'Start Free Protection →', 
+      ctaClass: 'bg-gray-800 hover:bg-gray-700 transition-all hover:scale-105' 
     },
     essential: { 
       name: 'Guardian Essential', 
-      subtitle: 'Recommended for most homeowners.', 
+      subtitle: 'Full protection for serious homeowners. Most popular choice.', 
       price: { monthly: 29, annual: 290 }, 
       per: { monthly: 'mo', annual: 'yr' }, 
       recommended: true, 
-      features: ['Everything in Free, plus:', 'More AI Damage Scans per month', 'Advanced Policy Analysis & Q&A', 'Settlement Analyzer', 'More AI-Augmented Documents per month', 'Priority Email Support', '10GB Evidence Storage'], 
-      comingSoon: ['Export Reports (PDF/CSV)', 'Data Export (JSON/CSV)', 'Weather Alerts', 'Document Templates', 'OCR Receipt Scanning', 'Calendar Integration', 'Spanish Language Support', '3D Model Generation'], 
-      ctaText: 'Go Essential', 
-      ctaClass: 'bg-primary text-black hover:opacity-90',
+      features: ['Everything in Free, plus:', '50 AI Damage Scans/month', 'Deep Policy Analysis & Q&A', 'Settlement Amount Calculator', '25 AI-Generated Documents/month', 'Priority Email Support', '10GB Evidence Vault'], 
+      comingSoon: ['Professional PDF Reports', 'Weather Threat Alerts', 'Legal Document Templates', 'Receipt OCR Scanning', 'Calendar Integration', 'Spanish Support', 'Unlimited 3D Models'], 
+      ctaText: 'Get Full Protection →', 
+      ctaClass: 'bg-primary text-black hover:opacity-90 transition-all hover:scale-105',
       priceIds: {
         monthly: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIAL_MONTHLY || '',
         annual: process.env.NEXT_PUBLIC_STRIPE_PRICE_ESSENTIAL_ANNUAL || ''
@@ -149,21 +149,21 @@ export function Pricing() {
     },
     plus: { 
       name: 'Guardian Plus', 
-      subtitle: 'Perfect for small landlords and families with rental properties.', 
+      subtitle: 'Scale protection across multiple properties. Perfect for small portfolios.', 
       price: {}, 
       per: {}, 
-      features: ['Everything in Essential, plus:', 'Up to 3 Properties', '2 Team Members', 'Even More AI Damage Scans', 'More AI Documents', '25GB Evidence Storage', 'Property Comparison Tools', 'Rental Income Protection Tools', 'Tenant Service Requests'], 
-      ctaText: 'Join Waitlist', 
-      ctaClass: 'bg-gray-800 hover:bg-gray-700' 
+      features: ['Everything in Essential, plus:', 'Up to 3 Properties Protected', '2 Team Members', '150 AI Damage Scans/month', '75 AI Documents/month', '25GB Evidence Vault', 'Property Performance Dashboard', 'Rental Income Protection', 'Tenant Communication Portal'], 
+      ctaText: 'Join Waitlist →', 
+      ctaClass: 'bg-gray-800 hover:bg-gray-700 transition-all hover:scale-105' 
     },
     pro: { 
       name: 'Guardian Professional', 
-      subtitle: 'For serious property managers.', 
+      subtitle: 'Enterprise-grade protection for serious property managers.', 
       price: {}, 
       per: {}, 
-      features: ['Everything in Plus, plus:', 'Up to 10 Properties', '5 Team Members', 'Maximum AI Damage Scans', 'Unlimited AI Documents', 'Contractor Marketplace', 'Priority Phone Support', '50GB Evidence Storage', 'Bulk Operations', 'Audit Trail & Version History', 'Integrations (Google Drive, Dropbox)', '3D Model Generation (Unlimited)'], 
-      ctaText: 'Join Waitlist', 
-      ctaClass: 'bg-gray-800 hover:bg-gray-700' 
+      features: ['Everything in Plus, plus:', 'Up to 10 Properties Protected', '5 Team Members', 'Unlimited AI Damage Scans', 'Unlimited AI Documents', 'Verified Contractor Network', 'Priority Phone Support', '50GB Evidence Vault', 'Bulk Property Operations', 'Complete Audit Trail', 'Third-party Integrations', 'White-label Options'], 
+      ctaText: 'Join Waitlist →', 
+      ctaClass: 'bg-gray-800 hover:bg-gray-700 transition-all hover:scale-105' 
     }
   }
   
@@ -199,8 +199,13 @@ export function Pricing() {
   return (
     <section className="px-4 md:px-8 py-20 bg-black/10">
       <AnimatedSection className="max-w-6xl mx-auto text-center">
-        <h2 className="font-slab text-3xl md:text-4xl font-bold">Simple, Powerful Pricing</h2>
-        <p className="mt-3 max-w-2xl mx-auto text-gray-300">Choose the plan that&apos;s right for you. Start for free, upgrade for more power.</p>
+        <h2 className="font-slab text-3xl md:text-4xl font-bold">
+          <span className="text-white">Stop Overpaying for Insurance.</span>
+          <span className="block mt-2 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Start Protecting Your Assets.</span>
+        </h2>
+        <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-300">
+          Your plan pays for itself with one avoided claim denial. Choose the protection level that matches your property portfolio.
+        </p>
 
         <div className="flex justify-center my-8">
           <div className="p-1 rounded-lg flex items-center gap-2" style={{backgroundColor: 'rgba(255,255,255,0.1)'}}>
