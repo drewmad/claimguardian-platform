@@ -33,7 +33,17 @@
     "legal:version": "node scripts/legal/version-docs.mjs",
     "db:generate-types": "cd apps/web && pnpm db:types",
     "db:generate-types:local": "cd apps/web && pnpm db:types:local",
-    "db:sync": "cd apps/web && pnpm db:types && git add packages/db/src/types/database.types.ts && git commit -m 'chore(db): Update generated types' || echo 'No type changes'"
+    "db:sync": "cd apps/web && pnpm db:types && git add packages/db/src/types/database.types.ts && git commit -m 'chore(db): Update generated types' || echo 'No type changes'",
+    "clean:deps": "pnpm install --frozen-lockfile",
+    "clean:lint": "pnpm lint:fix:all",
+    "clean:types": "pnpm db:generate-types && pnpm type-check",
+    "clean:build": "pnpm build",
+    "clean:all": "pnpm clean:deps && pnpm clean:lint && pnpm clean:types && pnpm clean:build",
+    "clean:quick": "pnpm lint:fix && pnpm build",
+    "ci:local": "pnpm install --frozen-lockfile && pnpm lint && pnpm type-check && pnpm test && pnpm build",
+    "ci:validate": "pnpm deps:check && pnpm lint && pnpm type-check",
+    "fix:all": "pnpm lint:smart-fix && pnpm db:generate-types && pnpm build",
+    "health:check": "pnpm lint:list | grep -E '(error|warning)' | wc -l && echo 'lint issues' && pnpm type-check 2>&1 | grep error | wc -l && echo 'type errors'"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

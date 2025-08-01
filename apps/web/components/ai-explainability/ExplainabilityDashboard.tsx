@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card } from '@claimguardian/ui'
+import { CardContent, CardHeader, CardTitle } from '../ui/card'
 import { BarChart, Info, TrendingUp, AlertTriangle, Brain } from 'lucide-react'
 
 interface ExplainabilityProps {
@@ -27,8 +28,8 @@ interface Explanation {
   }>
   counterfactuals: Array<{
     feature: string
-    currentValue: any
-    suggestedValue: any
+    currentValue: string | number
+    suggestedValue: string | number
     expectedOutcome: string
   }>
 }
@@ -205,7 +206,7 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {explanation.decisionPath.map((step, index) => (
+            {explanation.decisionPath.map((step) => (
               <div key={step.step} className="flex items-start gap-4">
                 <div className="flex-shrink-0 w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-600 font-semibold text-sm">
                   {step.step}

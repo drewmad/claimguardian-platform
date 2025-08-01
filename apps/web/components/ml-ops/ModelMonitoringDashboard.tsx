@@ -1,8 +1,9 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Activity, AlertCircle, TrendingDown, CheckCircle, BarChart2, GitBranch } from 'lucide-react'
+import { Card } from '@claimguardian/ui'
+import { CardContent, CardHeader, CardTitle } from '../ui/card'
+import { AlertCircle, TrendingDown, CheckCircle, GitBranch } from 'lucide-react'
 
 interface ModelMetrics {
   requestCount: number
@@ -38,7 +39,7 @@ export function ModelMonitoringDashboard() {
   const [metrics, setMetrics] = useState<ModelMetrics | null>(null)
   const [driftAnalysis, setDriftAnalysis] = useState<DriftAnalysis | null>(null)
   const [loading, setLoading] = useState(true)
-  const [refreshInterval, setRefreshInterval] = useState(30000) // 30 seconds
+  const [refreshInterval] = useState(30000) // 30 seconds
 
   useEffect(() => {
     fetchActiveModels()

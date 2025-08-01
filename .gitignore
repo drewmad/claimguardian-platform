@@ -46,6 +46,7 @@ dist/
 # Environment files
 .env
 .env*.local
+.env.production
 !.env.example
 
 # Vercel deployment
@@ -128,6 +129,7 @@ parcels_part_*.csv
 supabase/sql/*_dump.sql
 supabase/sql/*_backup.sql
 supabase/sql/temp-*.sql
+supabase/schema.sql.backup.*
 
 # Keep tracked schema files
 !supabase/sql/schema.sql
@@ -204,6 +206,7 @@ lint-report.html
 lint-report.txt
 lint-analysis.json
 files-to-fix.txt
+lint-output.txt
 
 # Backup files
 *.backup
