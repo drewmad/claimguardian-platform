@@ -112,7 +112,7 @@ export function AdvancedSignupForm() {
     
     const consentValidation = await validateConsents()
     if (!consentValidation.valid) {
-      const missingConsents = consentValidation.missing.map(c => consentNameToText[c] || c).join(', ')
+      const missingConsents = consentValidation.missing.map((c: string) => consentNameToText[c] || c).join(', ')
       setError(`Please review and accept the following: ${missingConsents}.`)
       setConsentErrors(consentValidation.missing)
       return
@@ -283,7 +283,7 @@ export function AdvancedSignupForm() {
                     <Info className="h-5 w-5 text-blue-400" /> Legal Agreements
                   </h3>
                   
-                  <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification')} />
+                  <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification') ? 'Age verification is required' : undefined} />
                   
                   <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: c}))} error={consentErrors.includes('terms_of_service')}>
                     <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">

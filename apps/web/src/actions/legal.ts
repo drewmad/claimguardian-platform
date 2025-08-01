@@ -30,3 +30,25 @@ export async function uploadLegalDocument(formData: FormData) {
 
   return { success: true }
 }
+
+export async function recordLegalAcceptances(acceptances: {
+  userId: string
+  termsAccepted: boolean
+  privacyAccepted: boolean
+  dataProcessingAccepted: boolean
+  cookiesAccepted: boolean
+  ageVerified: boolean
+}) {
+  // Record legal acceptances in the database
+  // This would typically save to a legal_acceptances table
+  console.log('Recording legal acceptances for user:', acceptances.userId, acceptances)
+  
+  // In a real implementation, you would save to the database:
+  // const { data, error } = await supabase
+  //   .from('legal_acceptances')
+  //   .insert(acceptances)
+  // if (error) return { error: error.message }
+  
+  revalidatePath('/legal')
+  return { success: true }
+}

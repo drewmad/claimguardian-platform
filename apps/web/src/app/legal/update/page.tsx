@@ -39,7 +39,14 @@ export default function LegalUpdatePage() {
       setSubmitting(true)
       
       // Record acceptances using server action
-      await recordLegalAcceptances(user.id, acceptedDocuments)
+      await recordLegalAcceptances({
+        userId: user.id,
+        termsAccepted: acceptedDocuments.includes('terms_of_service'),
+        privacyAccepted: acceptedDocuments.includes('privacy_policy'),
+        dataProcessingAccepted: acceptedDocuments.includes('data_processing'),
+        cookiesAccepted: acceptedDocuments.includes('cookies'),
+        ageVerified: acceptedDocuments.includes('age_verification')
+      })
 
       logger.track('legal_update_completed', {
         userId: user.id,
