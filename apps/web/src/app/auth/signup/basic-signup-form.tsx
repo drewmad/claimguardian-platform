@@ -70,12 +70,12 @@ export function BasicSignupForm() {
       if (data?.user) {
         console.log('User created successfully:', data.user.id)
         
-        // Try to create/update profile, but don't fail if it doesn't work
+        // Try to create/update profile in user_profiles table
         try {
-          // Use the existing profiles table structure
-          await supabase.from('profiles').upsert({
-            id: data.user.id,
-            full_name: `${formData.firstName} ${formData.lastName}`,
+          // Use the existing user_profiles table
+          await supabase.from('user_profiles').upsert({
+            user_id: data.user.id,
+            created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           })
         } catch (profileError) {
