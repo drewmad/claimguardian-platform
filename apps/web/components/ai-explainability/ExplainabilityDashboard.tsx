@@ -66,7 +66,7 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
           .map(([feature, importance]) => ({
             feature,
             importance: importance as number,
-            direction: (importance as number) > 0 ? 'positive' : 'negative'
+            direction: ((importance as number) > 0 ? 'positive' : 'negative') as 'positive' | 'negative'
           }))
           .sort((a, b) => Math.abs(b.importance) - Math.abs(a.importance))
 
