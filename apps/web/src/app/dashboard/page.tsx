@@ -3,7 +3,11 @@
 import { 
   Shield, Building, TrendingUp, Wrench, CheckCircle, 
   AlertCircle, CloudRain, Wind, Droplets, Activity,
-  FileCheck, Camera, FileText, UserPlus, ChevronRight
+  FileCheck, Camera, FileText, UserPlus, ChevronRight,
+  Package, DollarSign, Bell, Calendar, Home, Car,
+  Zap, Users, Eye, Plus, ArrowUpRight, ArrowDownRight,
+  Clock, MapPin, Thermometer, Timer, Settings2,
+  ShieldCheck, Receipt, HardHat, Siren, Code
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -14,6 +18,10 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { LearningWidget } from '@/components/learning/learning-widget'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { useSupabase } from '@/lib/supabase/client'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 
 function DashboardContent() {
   const { user } = useAuth()

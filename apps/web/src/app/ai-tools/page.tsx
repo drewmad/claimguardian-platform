@@ -1,6 +1,6 @@
 'use client'
 
-import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff, Receipt } from 'lucide-react'
+import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff, Receipt, Home, Package } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
@@ -93,6 +93,28 @@ const AI_TOOLS: AITool[] = [
     status: 'active',
     category: 'documentation',
     features: ['OCR Text Extraction', 'Structured Data Parsing', 'Multi-language Support', 'Expense Tracking', 'Export to Claims']
+  },
+  {
+    id: 'floorplan-creator',
+    title: 'AI Floorplan Creator',
+    description: 'Create accurate floor plans with your phone! Keep scanning your whole home and get professional measurements',
+    icon: Home,
+    color: 'blue',
+    href: '/ai-tools/floorplan-creator',
+    status: 'active',
+    category: 'documentation',
+    features: ['Phone Scanning', 'Auto Room Detection', 'Professional Measurements', 'Export Floor Plans', '3D Visualization']
+  },
+  {
+    id: 'donation-assistant',
+    title: 'Donation Assistant',
+    description: 'Create tax-deductible donation forms by taking pictures of items. AI estimates Fair Market Value',
+    icon: Package,
+    color: 'green',
+    href: '/ai-tools/donation-assistant',
+    status: 'active',
+    category: 'documentation',
+    features: ['Photo-based Valuation', 'Fair Market Value Estimation', 'Tax Form Generation', 'Charity Integration', 'Receipt Storage']
   },
   {
     id: '3d-model-generator',
