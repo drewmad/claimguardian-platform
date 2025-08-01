@@ -33,6 +33,10 @@ module.exports = {
         'neon-lime': '#39FF14',
         'accent-blue': '#0095FF',
         'danger-red': '#D50000',
+        // Brand colors
+        crimson: {
+          600: '#DC143C',
+        },
       },
       animation: {
         'fade-in-up': 'fadeInUp 0.6s ease-out',
@@ -47,6 +51,29 @@ module.exports = {
           '0%': { opacity: '0' },
           '100%': { opacity: '1' },
         },
+        'pulse-slow': {
+          '0%, 100%': { opacity: '1', transform: 'scale(1) rotate(0deg)' },
+          '50%': { opacity: '0.8', transform: 'scale(1.02) rotate(1deg)' },
+        },
+        'drift-1': {
+          '0%': { transform: 'translate(-50%, -50%) scale(1)' },
+          '100%': { transform: 'translate(-20%, -30%) scale(1.2)' },
+        },
+        'drift-2': {
+          '0%': { transform: 'translate(-50%, -50%) scale(1)' },
+          '100%': { transform: 'translate(-70%, -70%) scale(1.1)' },
+        },
+      },
+      fontSize: {
+        'clamp-hero': 'clamp(2.5rem, 5vw, 4rem)',
+        'clamp-subtitle': 'clamp(1.125rem, 2.5vw, 1.5rem)',
+      },
+      animation: {
+        'fade-in-up': 'fadeInUp 0.6s ease-out',
+        'fade-in': 'fadeIn 0.3s ease-out',
+        'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+        'drift-1': 'drift-1 20s ease-in-out infinite alternate',
+        'drift-2': 'drift-2 25s ease-in-out infinite alternate',
       },
     },
   },

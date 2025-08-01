@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { APIKeyValidator } from '@/components/ai/api-key-validator'
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -197,6 +198,7 @@ export default function ClaimAssistantPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] = useState(CLAIM_STEPS)
   const [claimNotes, setClaimNotes] = useState('')
+  const [hasAPIKeys, setHasAPIKeys] = useState(false)
   const { } = useAuth()
   const aiClient = new AIClientService()
 
@@ -273,7 +275,8 @@ Format the summary for submission to an insurance company.`
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6">
+        <APIKeyValidator onValidation={setHasAPIKeys} requiredProviders={['openai']}>
+          <div className="p-6">
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
@@ -546,6 +549,7 @@ Format the summary for submission to an insurance company.`
             </Card>
           </div>
         </div>
+        </APIKeyValidator>
       </DashboardLayout>
     </ProtectedRoute>
   )

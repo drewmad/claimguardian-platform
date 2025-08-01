@@ -182,21 +182,38 @@ function DamageAnalyzerContent() {
     startAnalysis(imageFile)
   }
 
-  const startAnalysis = (file: File) => {
+  const startAnalysis = async (file: File) => {
     setStep('analyzing')
-    // Simulate AI analysis
-    setTimeout(() => {
-      // In a real app, you'd send the image and policy to a backend service.
-      // Here, we'll just pick a mock result.
-      const mockResultKey = file.name.includes('roof') ? 'roof-leak' : 'siding-damage'
-      const result = MOCK_ANALYSIS[mockResultKey]
-      if (selectedPolicy) {
-        result.coverage.policy_provider = selectedPolicy.provider
-        result.coverage.policy_number = selectedPolicy.policy_number
-      }
+    try {
+      // TODO: Replace with actual AI service call
+      // const result = await aiService.analyzeDamage(file, selectedPolicy)
+      
+      // Simulate AI analysis with error handling
+      const result = await new Promise<typeof MOCK_ANALYSIS.roof_leak>((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate occasional failures for testing
+          if (Math.random() < 0.1) {
+            reject(new Error('AI analysis service temporarily unavailable'))
+            return
+          }
+          
+          const mockResultKey = file.name.includes('roof') ? 'roof-leak' : 'siding-damage'
+          const result = MOCK_ANALYSIS[mockResultKey]
+          if (selectedPolicy) {
+            result.coverage.policy_provider = selectedPolicy.provider
+            result.coverage.policy_number = selectedPolicy.policy_number
+          }
+          resolve(result)
+        }, 3000)
+      })
+      
       setAnalysisResult(result)
       setStep('result')
-    }, 3000)
+    } catch (error) {
+      console.error('Analysis failed:', error)
+      toast.error(error instanceof Error ? error.message : 'Analysis failed. Please try again.')
+      setStep('upload')
+    }
   }
 
   const reset = () => {

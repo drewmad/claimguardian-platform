@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
 import { Shield, Loader2, AlertCircle, Check, FileText, Lock, ChevronRight, Info, Cookie } from 'lucide-react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Button } from '@/components/ui/button'
@@ -12,6 +11,7 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { AgeVerification } from '@/components/compliance/age-verification'
+import { LegalDocumentModal } from '@/components/modals/legal-document-modal'
 
 interface ConsentState {
   termsAccepted: boolean
@@ -51,16 +51,30 @@ export function AdvancedSignupForm() {
   })
   
   const [consentErrors, setConsentErrors] = useState<string[]>([])
+  const [modalContent, setModalContent] = useState({ title: '', content: '' });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   
   const supabase = createBrowserSupabaseClient()
   
+  const showLegalModal = async (doc: 'terms-of-service' | 'privacy-policy') => {
+    try {
+      const response = await fetch(`/legal/${doc}.md`);
+      const content = await response.text();
+      const title = doc === 'terms-of-service' ? 'Terms of Service' : 'Privacy Policy';
+      setModalContent({ title, content });
+      setIsModalOpen(true);
+    } catch (error) {
+      console.error('Failed to load legal document:', error);
+      setError('Could not load the legal document. Please try again later.');
+    }
+  };
+
   const validateConsents = async () => {
     const payload = {
       p_terms_accepted: consents.termsAccepted,
       p_privacy_accepted: consents.privacyAccepted,
       p_age_verified: consents.ageVerified,
       p_data_processing: consents.dataProcessingAccepted,
-      // ai_disclaimer is removed
     };
     
     const { data, error } = await supabase.rpc('validate_signup_consent', payload)
@@ -98,7 +112,7 @@ export function AdvancedSignupForm() {
     
     const consentValidation = await validateConsents()
     if (!consentValidation.valid) {
-      const missingConsents = consentValidation.missing.map((c: string) => consentNameToText[c] || c).join(', ')
+      const missingConsents = consentValidation.missing.map(c => consentNameToText[c] || c).join(', ')
       setError(`Please review and accept the following: ${missingConsents}.`)
       setConsentErrors(consentValidation.missing)
       return
@@ -203,104 +217,112 @@ export function AdvancedSignupForm() {
   }
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-4">
-      <div className="absolute top-8 left-8 flex items-center space-x-2">
-        <Shield className="h-8 w-8 text-blue-400" />
-        <span className="text-2xl font-bold text-white">ClaimGuardian</span>
-      </div>
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="w-full max-w-2xl bg-slate-900/50 backdrop-blur-sm border-slate-700">
-          <div className="p-8">
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
-              <p className="text-slate-400">Join thousands of Florida property owners protecting their assets</p>
+    <>
+      <LegalDocumentModal 
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalContent.title}
+        content={modalContent.content}
+      />
+      <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-4">
+        <div className="absolute top-8 left-8 flex items-center space-x-2">
+          <Shield className="h-8 w-8 text-blue-400" />
+          <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+        </div>
+        <div className="flex items-center justify-center min-h-screen">
+          <Card className="w-full max-w-2xl bg-slate-900/50 backdrop-blur-sm border-slate-700">
+            <div className="p-8">
+              <div className="text-center mb-8">
+                <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
+                <p className="text-slate-400">Join thousands of Florida property owners protecting their assets</p>
+              </div>
+
+              {error && (
+                <Alert variant="destructive" className="mb-6">
+                  <AlertCircle className="h-4 w-4" />
+                  <AlertDescription>{error}</AlertDescription>
+                </Alert>
+              )}
+
+              <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
+                    <Input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1" placeholder="John" disabled={isLoading} />
+                  </div>
+                  <div>
+                    <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
+                    <Input id="lastName" type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-1" placeholder="Doe" disabled={isLoading} />
+                  </div>
+                </div>
+                
+                <div>
+                  <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
+                  <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1" placeholder="you@example.com" disabled={isLoading} />
+                </div>
+
+                <div>
+                  <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
+                  <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="mt-1" placeholder="(555) 123-4567" disabled={isLoading} />
+                </div>
+                
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
+                    <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
+                    <p className="mt-1 text-xs text-slate-400">Must be at least 8 characters</p>
+                  </div>
+                  <div>
+                    <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
+                    <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
+                  </div>
+                </div>
+
+                <div className="space-y-4 pt-4 border-t border-slate-800">
+                  <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+                    <Info className="h-5 w-5 text-blue-400" /> Legal Agreements
+                  </h3>
+                  
+                  <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification')} />
+                  
+                  <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: c}))} error={consentErrors.includes('terms_of_service')}>
+                    <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                      <FileText className="h-4 w-4 text-slate-400" /> I accept the <button type="button" onClick={(e) => { e.stopPropagation(); showLegalModal('terms-of-service'); }} className="text-blue-400 hover:text-blue-300 underline">Terms of Service</button> <span className="text-red-500">*</span>
+                    </Label>
+                  </ConsentItem>
+                  
+                  <ConsentItem id="privacy" checked={consents.privacyAccepted} onCheckedChange={(c) => setConsents(s => ({...s, privacyAccepted: c}))} error={consentErrors.includes('privacy_policy')}>
+                    <Label htmlFor="privacy" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                      <Lock className="h-4 w-4 text-slate-400" /> I accept the <button type="button" onClick={(e) => { e.stopPropagation(); showLegalModal('privacy-policy'); }} className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</button> <span className="text-red-500">*</span>
+                    </Label>
+                  </ConsentItem>
+
+                  <ConsentItem id="data-processing" checked={consents.dataProcessingAccepted} onCheckedChange={(c) => setConsents(s => ({...s, dataProcessingAccepted: c}))} error={consentErrors.includes('data_processing')}>
+                    <Label htmlFor="data-processing" className="text-sm font-medium cursor-pointer">I consent to my data being processed as described in the Privacy Policy <span className="text-red-500">*</span></Label>
+                  </ConsentItem>
+
+                  <ConsentItem id="cookies" checked={consents.cookiesAccepted} onCheckedChange={(c) => setConsents(s => ({...s, cookiesAccepted: c}))} error={consentErrors.includes('cookies')}>
+                    <Label htmlFor="cookies" className="text-sm font-medium cursor-pointer flex items-center gap-2">
+                      <Cookie className="h-4 w-4 text-slate-400" /> I accept the use of cookies as described in the <button type="button" onClick={(e) => { e.stopPropagation(); showLegalModal('privacy-policy'); }} className="text-blue-400 hover:text-blue-300 underline">Cookie Policy</button> <span className="text-red-500">*</span>
+                    </Label>
+                  </ConsentItem>
+                </div>
+
+                <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading}>
+                  {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Account...</> : <>Create Account <ChevronRight className="ml-2 h-4 w-4" /></>}
+                </Button>
+              </form>
+
+              <div className="mt-6 text-center">
+                <p className="text-slate-400">
+                  Already have an account?{' '}
+                  <button onClick={() => router.push('/auth/signin')} className="text-blue-400 hover:text-blue-300 font-medium">Sign In</button>
+                </p>
+              </div>
             </div>
-
-            {error && (
-              <Alert variant="destructive" className="mb-6">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{error}</AlertDescription>
-              </Alert>
-            )}
-
-            <form onSubmit={handleSubmit} className="space-y-6">
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
-                  <Input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1" placeholder="John" disabled={isLoading} />
-                </div>
-                <div>
-                  <Label htmlFor="lastName">Last Name <span className="text-red-500">*</span></Label>
-                  <Input id="lastName" type="text" required value={lastName} onChange={(e) => setLastName(e.target.value)} className="mt-1" placeholder="Doe" disabled={isLoading} />
-                </div>
-              </div>
-              
-              <div>
-                <Label htmlFor="email">Email Address <span className="text-red-500">*</span></Label>
-                <Input id="email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} className="mt-1" placeholder="you@example.com" disabled={isLoading} />
-              </div>
-
-              <div>
-                <Label htmlFor="phone">Phone Number <span className="text-red-500">*</span></Label>
-                <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="mt-1" placeholder="(555) 123-4567" disabled={isLoading} />
-              </div>
-              
-              <div className="grid md:grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
-                  <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
-                  <p className="mt-1 text-xs text-slate-400">Must be at least 8 characters</p>
-                </div>
-                <div>
-                  <Label htmlFor="confirmPassword">Confirm Password <span className="text-red-500">*</span></Label>
-                  <Input id="confirmPassword" type="password" required value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />
-                </div>
-              </div>
-
-              <div className="space-y-4 pt-4 border-t border-slate-800">
-                <h3 className="text-lg font-semibold text-white flex items-center gap-2">
-                  <Info className="h-5 w-5 text-blue-400" /> Legal Agreements
-                </h3>
-                
-                <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification') ? 'You must be 18 or older to create an account' : undefined} />
-                
-                <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: c}))} error={consentErrors.includes('terms_of_service')}>
-                  <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                    <FileText className="h-4 w-4 text-slate-400" /> I accept the <Link href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Terms of Service</Link> <span className="text-red-500">*</span>
-                  </Label>
-                </ConsentItem>
-                
-                <ConsentItem id="privacy" checked={consents.privacyAccepted} onCheckedChange={(c) => setConsents(s => ({...s, privacyAccepted: c}))} error={consentErrors.includes('privacy_policy')}>
-                  <Label htmlFor="privacy" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                    <Lock className="h-4 w-4 text-slate-400" /> I accept the <Link href="/legal/privacy-policy" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</Link> <span className="text-red-500">*</span>
-                  </Label>
-                </ConsentItem>
-
-                <ConsentItem id="data-processing" checked={consents.dataProcessingAccepted} onCheckedChange={(c) => setConsents(s => ({...s, dataProcessingAccepted: c}))} error={consentErrors.includes('data_processing')}>
-                  <Label htmlFor="data-processing" className="text-sm font-medium cursor-pointer">I consent to my data being processed as described in the Privacy Policy <span className="text-red-500">*</span></Label>
-                </ConsentItem>
-
-                <ConsentItem id="cookies" checked={consents.cookiesAccepted} onCheckedChange={(c) => setConsents(s => ({...s, cookiesAccepted: c}))} error={consentErrors.includes('cookies')}>
-                  <Label htmlFor="cookies" className="text-sm font-medium cursor-pointer flex items-center gap-2">
-                    <Cookie className="h-4 w-4 text-slate-400" /> I accept the use of cookies as described in the <Link href="/legal/privacy-policy#cookies" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Cookie Policy</Link> <span className="text-red-500">*</span>
-                  </Label>
-                </ConsentItem>
-              </div>
-
-              <Button type="submit" className="w-full !mt-8" size="lg" disabled={isLoading}>
-                {isLoading ? <><Loader2 className="mr-2 h-4 w-4 animate-spin" />Creating Account...</> : <>Create Account <ChevronRight className="ml-2 h-4 w-4" /></>}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-slate-400">
-                Already have an account?{' '}
-                <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300 font-medium">Sign In</Link>
-              </p>
-            </div>
-          </div>
-        </Card>
+          </Card>
+        </div>
       </div>
-    </div>
+    </>
   )
 }

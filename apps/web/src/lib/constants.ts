@@ -25,4 +25,11 @@ export const COLORS = {
     bg: 'rgba(255, 255, 255, 0.05)',
     border: 'rgba(255, 255, 255, 0.1)',
   },
+  // Brand Colors
+  brand: {
+    gunmetal: '#2B2D42', // Gunmetal Gray
+    royalBlue: '#0038A8', // Royal Electric Blue
+    neonGreen: '#39FF14', // Neon Green
+    crimsonRed: '#DC143C', // Crimson Red
+  },
 };

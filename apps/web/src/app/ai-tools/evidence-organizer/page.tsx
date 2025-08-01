@@ -137,18 +137,42 @@ export default function EvidenceOrganizerPage() {
   }
 
   const analyzeEvidenceWithAI = async (): Promise<Evidence['aiAnalysis']> => {
-    // Simulate AI analysis - in production, this would call the AI service
-    await new Promise(resolve => setTimeout(resolve, 1500))
-    
-    const mockAnalysis: Evidence['aiAnalysis'] = {
-      autoCategory: 'damage-photos',
-      suggestedTags: ['water-damage', 'ceiling', 'severe', 'immediate-attention'],
-      documentType: 'damage-documentation',
-      severity: 'high',
-      relevanceScore: 0.95
-    }
+    try {
+      // TODO: Replace with actual AI service call
+      // const analysis = await aiService.analyzeEvidence(file)
+      
+      // Simulate AI analysis with potential failures
+      await new Promise((resolve, reject) => {
+        setTimeout(() => {
+          // Simulate occasional AI service failures
+          if (Math.random() < 0.05) {
+            reject(new Error('AI analysis service temporarily unavailable'))
+            return
+          }
+          resolve(undefined)
+        }, 1500)
+      })
+      
+      const mockAnalysis: Evidence['aiAnalysis'] = {
+        autoCategory: 'damage-photos',
+        suggestedTags: ['water-damage', 'ceiling', 'severe', 'immediate-attention'],
+        documentType: 'damage-documentation',
+        severity: 'high',
+        relevanceScore: 0.95
+      }
 
-    return mockAnalysis
+      return mockAnalysis
+    } catch (error) {
+      console.error('AI analysis failed:', error)
+      toast.error('AI enhancement failed - files uploaded without AI categorization')
+      // Return basic analysis without AI enhancement
+      return {
+        autoCategory: 'uncategorized',
+        suggestedTags: [],
+        severity: 'medium',
+        relevanceScore: 0.5
+      }
+    }
   }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({

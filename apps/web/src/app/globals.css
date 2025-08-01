@@ -81,7 +81,35 @@
 /* --- Other Styles --- */
 .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
 .shadow-lg { box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3), 0 4px 6px -2px rgba(0,0,0,0.15); }
+/* Scrollbar styling */
 ::-webkit-scrollbar { width: 8px; }
 ::-webkit-scrollbar-track { background: #1E1E1E; }
 ::-webkit-scrollbar-thumb { background: #424242; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+/* Scrollbar hide utility for mobile chip scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Enhanced focus states for accessibility */
+.focus-ring {
+  outline-offset: 2px;
+  outline: 2px solid rgba(57, 255, 20, 0.6);
+}
+
+/* Motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .motion-reduce\:hidden {
+    display: none !important;
+  }
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
