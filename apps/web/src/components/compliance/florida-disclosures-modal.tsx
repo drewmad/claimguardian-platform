@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { AlertTriangle, Scale, Users, FileText, X } from 'lucide-react'
+import { AlertTriangle, Scale, Users, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
@@ -116,7 +116,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="public-adjuster"
                 checked={consents.publicAdjuster}
-                onCheckedChange={(checked) => 
+                onCheckedChange={(checked: boolean) => 
                   setConsents({ ...consents, publicAdjuster: !!checked })
                 }
               />
@@ -147,7 +147,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="legal-advice"
                 checked={consents.legalAdvice}
-                onCheckedChange={(checked) => 
+                onCheckedChange={(checked: boolean) => 
                   setConsents({ ...consents, legalAdvice: !!checked })
                 }
               />
@@ -182,7 +182,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="insurance-cooperation"
                 checked={consents.insuranceCooperation}
-                onCheckedChange={(checked) => 
+                onCheckedChange={(checked: boolean) => 
                   setConsents({ ...consents, insuranceCooperation: !!checked })
                 }
               />

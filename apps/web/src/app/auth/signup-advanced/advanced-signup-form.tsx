@@ -320,7 +320,7 @@ export function AdvancedSignupForm() {
                   <Checkbox
                     id="terms"
                     checked={consents.termsAccepted}
-                    onCheckedChange={(checked) => setConsents({ ...consents, termsAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, termsAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -346,7 +346,7 @@ export function AdvancedSignupForm() {
                   <Checkbox
                     id="privacy"
                     checked={consents.privacyAccepted}
-                    onCheckedChange={(checked) => setConsents({ ...consents, privacyAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, privacyAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -373,7 +373,7 @@ export function AdvancedSignupForm() {
                   <Checkbox
                     id="ai-disclaimer"
                     checked={consents.aiDisclaimerAccepted}
-                    onCheckedChange={(checked) => setConsents({ ...consents, aiDisclaimerAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, aiDisclaimerAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -398,7 +398,7 @@ export function AdvancedSignupForm() {
                   <Checkbox
                     id="data-processing"
                     checked={consents.dataProcessingAccepted}
-                    onCheckedChange={(checked) => setConsents({ ...consents, dataProcessingAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setConsents({ ...consents, dataProcessingAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">

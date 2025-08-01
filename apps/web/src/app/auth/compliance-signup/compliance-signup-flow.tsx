@@ -21,7 +21,6 @@ import {
   Scale,
   Users,
   Cookie,
-  Bell,
   ChevronRight,
   Info
 } from 'lucide-react'
@@ -33,8 +32,6 @@ import { Card } from '@/components/ui/card'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
-import { Separator } from '@/components/ui/separator'
 import { cn } from '@/lib/utils'
 
 type Step = 
@@ -473,7 +470,7 @@ export function ComplianceSignupFlow() {
                 <Checkbox
                   id="age-verification"
                   checked={formData.ageVerified}
-                  onCheckedChange={(checked) => setFormData({ ...formData, ageVerified: !!checked })}
+                  onCheckedChange={(checked: boolean) => setFormData({ ...formData, ageVerified: !!checked })}
                   className="mt-1"
                 />
                 <div>
@@ -506,7 +503,7 @@ export function ComplianceSignupFlow() {
                 <Checkbox
                   id="florida-resident"
                   checked={formData.isFloridaResident}
-                  onCheckedChange={(checked) => setFormData({ ...formData, isFloridaResident: !!checked })}
+                  onCheckedChange={(checked: boolean) => setFormData({ ...formData, isFloridaResident: !!checked })}
                 />
                 <Label htmlFor="florida-resident" className="cursor-pointer">
                   I am a Florida resident with property in Florida
@@ -586,7 +583,7 @@ export function ComplianceSignupFlow() {
                   <Checkbox
                     id="terms"
                     checked={formData.termsAccepted}
-                    onCheckedChange={(checked) => setFormData({ ...formData, termsAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, termsAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -608,7 +605,7 @@ export function ComplianceSignupFlow() {
                   <Checkbox
                     id="privacy"
                     checked={formData.privacyAccepted}
-                    onCheckedChange={(checked) => setFormData({ ...formData, privacyAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, privacyAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -630,7 +627,7 @@ export function ComplianceSignupFlow() {
                   <Checkbox
                     id="data-processing"
                     checked={formData.dataProcessingAccepted}
-                    onCheckedChange={(checked) => setFormData({ ...formData, dataProcessingAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, dataProcessingAccepted: !!checked })}
                     className="mt-1"
                   />
                   <div className="flex-1">
@@ -692,7 +689,7 @@ export function ComplianceSignupFlow() {
                   <Checkbox
                     id="ai-disclaimer"
                     checked={formData.aiDisclaimerAccepted}
-                    onCheckedChange={(checked) => setFormData({ ...formData, aiDisclaimerAccepted: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, aiDisclaimerAccepted: !!checked })}
                     className="mt-1"
                   />
                   <Label htmlFor="ai-disclaimer" className="cursor-pointer">
@@ -728,7 +725,7 @@ export function ComplianceSignupFlow() {
                   </div>
                   <Checkbox
                     checked={formData.marketingEmails}
-                    onCheckedChange={(checked) => setFormData({ ...formData, marketingEmails: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, marketingEmails: !!checked })}
                   />
                 </div>
               </div>
@@ -746,7 +743,7 @@ export function ComplianceSignupFlow() {
                   </div>
                   <Checkbox
                     checked={formData.smsNotifications}
-                    onCheckedChange={(checked) => setFormData({ ...formData, smsNotifications: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, smsNotifications: !!checked })}
                   />
                 </div>
               </div>
@@ -764,7 +761,7 @@ export function ComplianceSignupFlow() {
                   </div>
                   <Checkbox
                     checked={formData.analyticsTracking}
-                    onCheckedChange={(checked) => setFormData({ ...formData, analyticsTracking: !!checked })}
+                    onCheckedChange={(checked: boolean) => setFormData({ ...formData, analyticsTracking: !!checked })}
                   />
                 </div>
               </div>
@@ -804,7 +801,7 @@ export function ComplianceSignupFlow() {
                       <Checkbox
                         id="public-adjuster"
                         checked={formData.publicAdjusterNotice}
-                        onCheckedChange={(checked) => setFormData({ ...formData, publicAdjusterNotice: !!checked })}
+                        onCheckedChange={(checked: boolean) => setFormData({ ...formData, publicAdjusterNotice: !!checked })}
                       />
                       <Label htmlFor="public-adjuster" className="text-sm cursor-pointer">
                         I understand ClaimGuardian is not a public adjuster
@@ -827,7 +824,7 @@ export function ComplianceSignupFlow() {
                       <Checkbox
                         id="legal-advice"
                         checked={formData.legalAdviceDisclaimer}
-                        onCheckedChange={(checked) => setFormData({ ...formData, legalAdviceDisclaimer: !!checked })}
+                        onCheckedChange={(checked: boolean) => setFormData({ ...formData, legalAdviceDisclaimer: !!checked })}
                       />
                       <Label htmlFor="legal-advice" className="text-sm cursor-pointer">
                         I understand this is not legal advice
@@ -850,7 +847,7 @@ export function ComplianceSignupFlow() {
                       <Checkbox
                         id="insurance-cooperation"
                         checked={formData.insuranceCooperation}
-                        onCheckedChange={(checked) => setFormData({ ...formData, insuranceCooperation: !!checked })}
+                        onCheckedChange={(checked: boolean) => setFormData({ ...formData, insuranceCooperation: !!checked })}
                       />
                       <Label htmlFor="insurance-cooperation" className="text-sm cursor-pointer">
                         I will cooperate with my insurance company

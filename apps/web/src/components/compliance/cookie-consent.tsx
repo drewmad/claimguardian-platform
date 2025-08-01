@@ -258,7 +258,7 @@ export function CookieConsentBanner() {
                     <Switch
                       id="analytics"
                       checked={consent.analytics}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked: boolean) => 
                         setConsent({ ...consent, analytics: checked })
                       }
                       className="ml-4"
@@ -279,7 +279,7 @@ export function CookieConsentBanner() {
                     <Switch
                       id="marketing"
                       checked={consent.marketing}
-                      onCheckedChange={(checked) => 
+                      onCheckedChange={(checked: boolean) => 
                         setConsent({ ...consent, marketing: checked })
                       }
                       className="ml-4"
