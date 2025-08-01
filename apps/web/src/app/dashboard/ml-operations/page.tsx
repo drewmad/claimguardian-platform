@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { Activity, Brain, Shield, TrendingUp, AlertTriangle, CheckCircle2 } from 'lucide-react'
+import { Activity, Brain, Shield, AlertTriangle, CheckCircle2 } from 'lucide-react'
 // Inline stub components to resolve TypeScript errors
 const ModelMonitoringDashboard = ({ modelId }: { modelId: string }) => (
   <Card>
@@ -104,7 +104,6 @@ const ExplainabilityDashboard = ({ modelId }: { modelId: string }) => (
 
 export default function MLOperationsPage() {
   const [selectedModel, setSelectedModel] = useState('property_risk_v1.2.3')
-  const [refreshInterval, setRefreshInterval] = useState(30000) // 30 seconds
 
   // Mock data for overview
   const mlOverview = {
