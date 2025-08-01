@@ -23,7 +23,7 @@ import {
   Eye,
   History
 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -323,7 +323,7 @@ export function AdminDashboard() {
                           <p className="text-sm text-gray-400">Joined</p>
                           <p className="text-sm font-medium">{user.joined}</p>
                         </div>
-                        <Badge variant={user.status === 'active' ? 'success' : 'secondary'}>
+                        <Badge variant={user.status === 'active' ? 'secondary' : 'outline'}>
                           {user.status}
                         </Badge>
                         <Button variant="ghost" size="sm">
@@ -400,7 +400,7 @@ export function AdminDashboard() {
                   <div className="p-4 bg-slate-800 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">Damage Assessment Model</h4>
-                      <Badge variant="success">Active</Badge>
+                      <Badge variant="secondary">Active</Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
@@ -420,7 +420,7 @@ export function AdminDashboard() {
                   <div className="p-4 bg-slate-800 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">Document Extraction Model</h4>
-                      <Badge variant="success">Active</Badge>
+                      <Badge variant="secondary">Active</Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
@@ -568,7 +568,7 @@ export function AdminDashboard() {
                           </div>
                         </div>
                         <div className="flex items-center gap-3">
-                          <Badge variant={doc.status === 'published' ? 'success' : 'secondary'}>
+                          <Badge variant={doc.status === 'published' ? 'secondary' : 'outline'}>
                             {doc.status}
                           </Badge>
                           <Button variant="ghost" size="sm">

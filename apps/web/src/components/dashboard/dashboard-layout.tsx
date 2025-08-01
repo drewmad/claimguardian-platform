@@ -13,8 +13,9 @@
 import { 
   Home, Building, Package, Shield, FileText, 
   Calendar, HardHat, Users, AlertTriangle, Settings, 
-  Bell, Search, Menu, LogOut,
-  Bot, Camera, FileSearch, Sparkles, Brain
+  Bell, Search, Menu, LogOut, User,
+  Bot, Camera, FileSearch, Sparkles, Brain,
+  ShieldCheck, Code, Siren, DollarSign, Wrench
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -34,10 +35,13 @@ const navigationItems = [
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
   { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/policies' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
-  { id: 'maintenance', label: 'Maintenance Hub', icon: Calendar, href: '/dashboard/maintenance' },
+  { id: 'maintenance', label: 'Maintenance', icon: Wrench, href: '/dashboard/maintenance' },
+  { id: 'expenses', label: 'Expenses', icon: DollarSign, href: '/dashboard/expenses' },
+  { id: 'warranty-watch', label: 'Warranty Watch', icon: ShieldCheck, href: '/dashboard/warranty-watch' },
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
-  { id: 'disaster', label: 'Disaster Hub', icon: AlertTriangle, href: '/dashboard/disaster' },
+  { id: 'situation-room', label: 'Situation Room', icon: Siren, href: '/dashboard/situation-room' },
+  { id: 'development', label: 'Development', icon: Code, href: '/dashboard/development' },
 ]
 
 const adminFeatures = [
@@ -109,26 +113,26 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 </span>
               )}
             </button>
-            <button 
-              onClick={() => openSettings('profile')}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-              title="Settings"
+            <div className="h-6 w-px bg-gray-600 mx-2" />
+            <button
+              onClick={() => router.push('/account/profile')}
+              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-lg transition-colors"
             >
-              <Settings className="w-5 h-5 text-gray-400" />
-            </button>
-            <div className="flex items-center gap-2 ml-2">
-              <div className="text-right">
+              <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
+                <User className="w-5 h-5 text-white" />
+              </div>
+              <div className="text-left">
                 <p className="text-sm font-medium text-white">{user?.user_metadata?.firstName || 'User'}</p>
                 <p className="text-xs text-gray-400">{user?.email}</p>
               </div>
-              <button
-                onClick={handleSignOut}
-                className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
-                title="Sign out"
-              >
-                <LogOut className="w-5 h-5 text-gray-400" />
-              </button>
-            </div>
+            </button>
+            <button
+              onClick={handleSignOut}
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              title="Sign out"
+            >
+              <LogOut className="w-5 h-5 text-gray-400" />
+            </button>
           </div>
         </div>
       </header>
@@ -137,8 +141,8 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside className={`${
           isSidebarOpen ? 'w-64' : 'w-0'
-        } transition-all duration-300 overflow-hidden bg-gray-800 border-r border-gray-700 sticky top-[57px] h-[calc(100vh-57px)]`}>
-          <div className="p-4 space-y-6 overflow-y-auto h-full">
+        } transition-all duration-300 overflow-hidden bg-gray-800 border-r border-gray-700 sticky top-[57px] h-[calc(100vh-57px)] flex flex-col`}>
+          <div className="p-4 space-y-6 overflow-y-auto flex-1">
             {/* Main Navigation */}
             <div className="space-y-1">
               {navigationItems.map((item) => {
@@ -163,18 +167,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   </Link>
                 )
               })}
-              
-              {/* Settings Button */}
-              <button
-                onClick={() => {
-                  openSettings('profile')
-                  if (isMobile) setIsSidebarOpen(false)
-                }}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700"
-              >
-                <Settings className="w-5 h-5" />
-                <span className="font-medium">Settings</span>
-              </button>
             </div>
 
             {/* AI Features Section */}
@@ -256,6 +248,27 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   )
                 })}
               </div>
+            </div>
+          </div>
+          
+          {/* Bottom Section */}
+          <div className="p-4 border-t border-gray-700">
+            {/* Settings Button */}
+            <button
+              onClick={() => {
+                openSettings('profile')
+                if (isMobile) setIsSidebarOpen(false)
+              }}
+              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700 mb-3"
+            >
+              <Settings className="w-5 h-5" />
+              <span className="font-medium">Settings</span>
+            </button>
+            
+            {/* AI Toolkit Label */}
+            <div className="px-4 py-2">
+              <p className="text-xs text-gray-500 text-center">AI Toolkit</p>
+              <p className="text-xs text-gray-600 text-center">Leverage powerful AI to protect, manage, and understand your assets.</p>
             </div>
           </div>
         </aside>

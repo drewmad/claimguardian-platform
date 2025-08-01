@@ -16,7 +16,7 @@ import {
   Shield,
   X
 } from 'lucide-react'
-import { useState, useRef, useCallback, useMemo } from 'react'
+import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 
@@ -213,7 +213,7 @@ function DamageAnalyzerContent() {
       case 'upload':
         return <UploadStep onUpload={handleImageUpload} onSwitchToCamera={() => setStep('capture')} />
       case 'capture':
-        return <CameraCapture onCapture={handleCapture} onCancel={() => setStep('upload')} />
+        return <CameraCapture onCapture={handleCapture} onClose={() => setStep('upload')} />
       case 'analyzing':
         return <AnalyzingStep image={uploadedImage} />
       case 'result':

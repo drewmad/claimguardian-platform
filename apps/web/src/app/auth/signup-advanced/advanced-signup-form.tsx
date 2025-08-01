@@ -98,7 +98,7 @@ export function AdvancedSignupForm() {
     
     const consentValidation = await validateConsents()
     if (!consentValidation.valid) {
-      const missingConsents = consentValidation.missing.map(c => consentNameToText[c] || c).join(', ')
+      const missingConsents = consentValidation.missing.map((c: string) => consentNameToText[c] || c).join(', ')
       setError(`Please review and accept the following: ${missingConsents}.`)
       setConsentErrors(consentValidation.missing)
       return
@@ -264,9 +264,9 @@ export function AdvancedSignupForm() {
                   <Info className="h-5 w-5 text-blue-400" /> Legal Agreements
                 </h3>
                 
-                <AgeVerification value={consents.ageVerified} onChange={(verified) => setConsents(c => ({ ...c, ageVerified: verified }))} error={consentErrors.includes('age_verification')} />
+                <AgeVerification value={consents.ageVerified.toString()} onChange={(verified: string) => setConsents(c => ({ ...c, ageVerified: verified === 'true' }))} error={consentErrors.includes('age_verification')} />
                 
-                <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: c}))} error={consentErrors.includes('terms_of_service')}>
+                <ConsentItem id="terms" checked={consents.termsAccepted} onCheckedChange={(c) => setConsents(s => ({...s, termsAccepted: Boolean(c)}))} error={consentErrors.includes('terms_of_service')}>
                   <Label htmlFor="terms" className="text-sm font-medium cursor-pointer flex items-center gap-2">
                     <FileText className="h-4 w-4 text-slate-400" /> I accept the <Link href="/legal/terms-of-service" target="_blank" className="text-blue-400 hover:text-blue-300 underline">Terms of Service</Link> <span className="text-red-500">*</span>
                   </Label>
