@@ -14,6 +14,11 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { subscribeWithSelector } from 'zustand/middleware'
 
+import { 
+  ThreatLevel,
+  EventType,
+  ActionStatus
+} from '@/types/situation-room'
 import type {
   SituationRoomState,
   ThreatAssessment,
@@ -23,9 +28,6 @@ import type {
   AIRecommendation,
   RealtimeEvent,
   ActionItem,
-  ThreatLevel,
-  EventType,
-  ActionStatus,
   EmergencyContact,
   EvacuationPlan,
   ThreatMonitoringConfig
@@ -64,6 +66,7 @@ interface SituationRoomActions {
   
   // Real-time events
   addRealtimeEvent: (event: RealtimeEvent) => void
+  processRealtimeEvent: (event: RealtimeEvent) => void
   markEventAsProcessed: (eventId: string) => void
   clearProcessedEvents: () => void
   
@@ -122,7 +125,7 @@ const initialState: SituationRoomState = {
   error: null
 }
 
-export const useSituationRoom = create<SituationRoomStore>()(
+const createSituationRoomStore = () => create<SituationRoomStore>()(
   subscribeWithSelector(
     immer((set, get) => ({
       ...initialState,
@@ -154,7 +157,7 @@ export const useSituationRoom = create<SituationRoomStore>()(
           set(state => {
             state.threats = threatResponse.threats
             state.overallThreatLevel = threatResponse.overallLevel
-            state.activeThreatCount = threatResponse.threats.filter(t => t.isActive).length
+            state.activeThreatCount = threatResponse.threats.filter((t: ThreatAssessment) => t.isActive).length
             
             state.intelligenceFeeds = intelligenceResponse.feeds
             state.unreadFeedCount = intelligenceResponse.feeds.length
@@ -167,10 +170,10 @@ export const useSituationRoom = create<SituationRoomStore>()(
             state.neighborhoodThreatLevel = communityResponse.threatLevel
             
             state.aiRecommendations = recommendationsResponse.recommendations
-            state.pendingActions = recommendationsResponse.actions.filter(a => 
+            state.pendingActions = recommendationsResponse.actions.filter((a: ActionItem) => 
               a.status === ActionStatus.PENDING || a.status === ActionStatus.IN_PROGRESS
             )
-            state.completedActions = recommendationsResponse.actions.filter(a => 
+            state.completedActions = recommendationsResponse.actions.filter((a: ActionItem) => 
               a.status === ActionStatus.COMPLETED
             )
             
@@ -191,7 +194,7 @@ export const useSituationRoom = create<SituationRoomStore>()(
           set(state => {
             state.threats = response.threats
             state.overallThreatLevel = response.overallLevel
-            state.activeThreatCount = response.threats.filter(t => t.isActive).length
+            state.activeThreatCount = response.threats.filter((t: ThreatAssessment) => t.isActive).length
           })
         } catch (error) {
           console.error('Failed to refresh threat assessment:', error)
@@ -203,7 +206,7 @@ export const useSituationRoom = create<SituationRoomStore>()(
           const response = await fetchIntelligenceFeeds(getCurrentPropertyId())
           set(state => {
             state.intelligenceFeeds = response.feeds
-            state.unreadFeedCount = response.feeds.filter(f => !f.actionRequired).length
+            state.unreadFeedCount = response.feeds.filter((f: IntelligenceFeed) => !f.actionRequired).length
           })
         } catch (error) {
           console.error('Failed to refresh intelligence feeds:', error)
@@ -240,12 +243,12 @@ export const useSituationRoom = create<SituationRoomStore>()(
       addThreat(threat: ThreatAssessment) {
         set(state => {
           state.threats.unshift(threat)
-          state.activeThreatCount = state.threats.filter(t => t.isActive).length
+          state.activeThreatCount = state.threats.filter((t: ThreatAssessment) => t.isActive).length
           
           // Update overall threat level based on highest active threat
           const activeThreatLevels = state.threats
-            .filter(t => t.isActive)
-            .map(t => getThreatLevelValue(t.severity))
+            .filter((t: ThreatAssessment) => t.isActive)
+            .map((t: ThreatAssessment) => getThreatLevelValue(t.severity))
           
           if (activeThreatLevels.length > 0) {
             const maxLevel = Math.max(...activeThreatLevels)
@@ -258,27 +261,27 @@ export const useSituationRoom = create<SituationRoomStore>()(
       
       updateThreat(threatId: string, updates: Partial<ThreatAssessment>) {
         set(state => {
-          const index = state.threats.findIndex(t => t.id === threatId)
+          const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
           if (index !== -1) {
             state.threats[index] = { ...state.threats[index], ...updates }
-            state.activeThreatCount = state.threats.filter(t => t.isActive).length
+            state.activeThreatCount = state.threats.filter((t: ThreatAssessment) => t.isActive).length
           }
         })
       },
       
       dismissThreat(threatId: string) {
         set(state => {
-          const index = state.threats.findIndex(t => t.id === threatId)
+          const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
           if (index !== -1) {
             state.threats[index].isActive = false
-            state.activeThreatCount = state.threats.filter(t => t.isActive).length
+            state.activeThreatCount = state.threats.filter((t: ThreatAssessment) => t.isActive).length
           }
         })
       },
       
       acknowledgeThreat(threatId: string) {
         set(state => {
-          const index = state.threats.findIndex(t => t.id === threatId)
+          const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
           if (index !== -1) {
             // Add acknowledged flag to threat
             state.threats[index] = {
@@ -559,6 +562,8 @@ export const useSituationRoom = create<SituationRoomStore>()(
     }))
   )
 )
+
+export const useSituationRoom: () => SituationRoomStore = createSituationRoomStore()
 
 // ===== HELPER FUNCTIONS =====
 

@@ -167,6 +167,8 @@ export interface AIRecommendation {
   timeframe: string
   actions: ActionItem[]
   alternatives: string[]
+  executedAt?: Date
+  dismissedAt?: Date
 }
 
 // ===== PROPERTY STATUS TYPES =====
@@ -379,6 +381,7 @@ export interface RealtimeEvent {
   requiresAttention: boolean
   autoProcessed: boolean
   source: string
+  processedAt?: Date
 }
 
 // ===== SITUATION ROOM STATE TYPES =====

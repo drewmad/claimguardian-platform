@@ -15,15 +15,18 @@ import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
+import { 
+  EventType,
+  ThreatLevel,
+  ActionPriority
+} from '@/types/situation-room'
 import type {
   RealtimeEvent,
   ThreatAssessment,
   IntelligenceFeed,
   PropertyStatus,
   CommunityIntelligence,
-  AIRecommendation,
-  EventType,
-  ThreatLevel
+  AIRecommendation
 } from '@/types/situation-room'
 
 interface RealtimeSubscriptionConfig {
@@ -210,12 +213,12 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'ai_analyses',
           filter: `entity_id=eq.${propertyId} AND entity_type=eq.property`
-        }, (payload) => {
+        }, (payload: any) => {
           if (payload.new?.analysis_type === 'threat_assessment') {
             handleThreatUpdate(payload)
           }
         })
-        .subscribe((status) => {
+        .subscribe((status: any) => {
           console.log('Threat channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('threats', threatChannel)
@@ -238,7 +241,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'environmental_data',
           filter: `property_id=eq.${propertyId}`
-        }, (payload) => {
+        }, (payload: any) => {
           const event = createRealtimeEvent(
             EventType.INTELLIGENCE_FEED,
             { environmentalData: payload.new },
@@ -246,7 +249,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           )
           addRealtimeEvent(event)
         })
-        .subscribe((status) => {
+        .subscribe((status: any) => {
           console.log('Intelligence channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('intelligence', intelligenceChannel)
@@ -269,7 +272,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'property_alerts',
           filter: `property_id=eq.${propertyId}`
-        }, (payload) => {
+        }, (payload: any) => {
           const event = createRealtimeEvent(
             EventType.PROPERTY_ALERT,
             { alert: payload.new },
@@ -277,7 +280,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           )
           addRealtimeEvent(event)
         })
-        .subscribe((status) => {
+        .subscribe((status: any) => {
           console.log('Property channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('property', propertyChannel)
@@ -514,26 +517,26 @@ export function useRealtimeSubscription(
 
 // ===== HELPER FUNCTIONS =====
 
-function determinePriority(eventType: EventType, data: any): 'low' | 'medium' | 'high' | 'urgent' | 'immediate' {
+function determinePriority(eventType: EventType, data: any): ActionPriority {
   switch (eventType) {
     case EventType.EMERGENCY_BROADCAST:
-      return 'immediate'
+      return ActionPriority.IMMEDIATE
     case EventType.THREAT_UPDATE:
       if (data.threat?.severity === ThreatLevel.CRITICAL || data.threat?.severity === ThreatLevel.EMERGENCY) {
-        return 'immediate'
+        return ActionPriority.IMMEDIATE
       }
       if (data.threat?.severity === ThreatLevel.HIGH) {
-        return 'urgent'
+        return ActionPriority.URGENT
       }
-      return 'high'
+      return ActionPriority.HIGH
     case EventType.PROPERTY_ALERT:
-      return 'high'
+      return ActionPriority.HIGH
     case EventType.AI_RECOMMENDATION:
-      return data.recommendation?.priority || 'medium'
+      return data.recommendation?.priority || ActionPriority.MEDIUM
     case EventType.INTELLIGENCE_FEED:
-      return data.feed?.urgency || 'medium'
+      return data.feed?.urgency || ActionPriority.MEDIUM
     default:
-      return 'medium'
+      return ActionPriority.MEDIUM
   }
 }
 

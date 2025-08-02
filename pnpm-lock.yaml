@@ -138,6 +138,9 @@ importers:
       '@stripe/stripe-js':
         specifier: ^7.7.0
         version: 7.7.0
+      '@supabase/auth-helpers-nextjs':
+        specifier: ^0.10.0
+        version: 0.10.0(@supabase/supabase-js@2.53.0)
       '@supabase/ssr':
         specifier: ^0.5.2
         version: 0.5.2(@supabase/supabase-js@2.53.0)
@@ -513,6 +516,12 @@ importers:
       typescript:
         specifier: ^5.8.3
         version: 5.9.2
+
+  scripts/ai:
+    dependencies:
+      chokidar:
+        specifier: ^3.6.0
+        version: 3.6.0
 
   services/scraper:
     dependencies:
@@ -2640,6 +2649,18 @@ packages:
   '@stripe/stripe-js@7.7.0':
     resolution: {integrity: sha512-SXuhqhuR5FXaYgKTXzZJeqtVA6JKb9IZWaGeEUxHHiOcFy2p51wccO72bYpXwoK4D5pzQOIYLTuAc7etxyMmwg==}
     engines: {node: '>=12.16'}
+
+  '@supabase/auth-helpers-nextjs@0.10.0':
+    resolution: {integrity: sha512-2dfOGsM4yZt0oS4TPiE7bD4vf7EVz7NRz/IJrV6vLg0GP7sMUx8wndv2euLGq4BjN9lUCpu6DG/uCC8j+ylwPg==}
+    deprecated: This package is now deprecated - please use the @supabase/ssr package instead.
+    peerDependencies:
+      '@supabase/supabase-js': ^2.39.8
+
+  '@supabase/auth-helpers-shared@0.7.0':
+    resolution: {integrity: sha512-FBFf2ei2R7QC+B/5wWkthMha8Ca2bWHAndN+syfuEUUfufv4mLcAgBCcgNg5nJR8L0gZfyuaxgubtOc9aW3Cpg==}
+    deprecated: This package is now deprecated - please use the @supabase/ssr package instead.
+    peerDependencies:
+      '@supabase/supabase-js': ^2.39.8
 
   '@supabase/auth-js@2.71.1':
     resolution: {integrity: sha512-mMIQHBRc+SKpZFRB2qtupuzulaUhFYupNyxqDj5Jp/LyPvcWvjaJzZzObv6URtL/O6lPxkanASnotGtNpS3H2Q==}
@@ -5255,6 +5276,9 @@ packages:
     resolution: {integrity: sha512-/imKNG4EbWNrVjoNC/1H5/9GFy+tqjGBHCaSsN+P2RnPqjsLmv6UD3Ej+Kj8nBWaRAwyk7kK5ZUc+OEatnTR3A==}
     hasBin: true
 
+  jose@4.15.9:
+    resolution: {integrity: sha512-1vUQX+IdDMVPj4k8kOxgUqlcK518yluMuGZwqlr44FS1ppZB/5GWh4rZG89erpOBOJjU/OBsnCVFfapsRz6nEA==}
+
   joycon@3.1.1:
     resolution: {integrity: sha512-34wB/Y7MW7bzjKRjUKTa46I2Z7eV62Rkhva+KkopW7Qvv/OSWBqvkSY7vusOPrNuZcUG3tApvdVgNB8POj3SPw==}
     engines: {node: '>=10'}
@@ -6554,6 +6578,9 @@ packages:
   serialize-to-js@3.1.2:
     resolution: {integrity: sha512-owllqNuDDEimQat7EPG0tH7JjO090xKNzUtYz6X+Sk2BXDnOCilDdNLwjWeFywG9xkJul1ULvtUQa9O4pUaY0w==}
     engines: {node: '>=4.0.0'}
+
+  set-cookie-parser@2.7.1:
+    resolution: {integrity: sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ==}
 
   set-function-length@1.2.2:
     resolution: {integrity: sha512-pgRc4hJ4/sNjWCSS9AmnS40x3bNMDTknHgL5UaMBTMyJnU90EgWh1Rz+MC9eFu4BuN/UwZjKQuY/1v3rM7HMfg==}
@@ -9801,6 +9828,17 @@ snapshots:
   '@standard-schema/utils@0.3.0': {}
 
   '@stripe/stripe-js@7.7.0': {}
+
+  '@supabase/auth-helpers-nextjs@0.10.0(@supabase/supabase-js@2.53.0)':
+    dependencies:
+      '@supabase/auth-helpers-shared': 0.7.0(@supabase/supabase-js@2.53.0)
+      '@supabase/supabase-js': 2.53.0
+      set-cookie-parser: 2.7.1
+
+  '@supabase/auth-helpers-shared@0.7.0(@supabase/supabase-js@2.53.0)':
+    dependencies:
+      '@supabase/supabase-js': 2.53.0
+      jose: 4.15.9
 
   '@supabase/auth-js@2.71.1':
     dependencies:
@@ -13051,6 +13089,8 @@ snapshots:
 
   jiti@1.21.7: {}
 
+  jose@4.15.9: {}
+
   joycon@3.1.1: {}
 
   js-tokens@4.0.0: {}
@@ -14577,6 +14617,8 @@ snapshots:
       randombytes: 2.1.0
 
   serialize-to-js@3.1.2: {}
+
+  set-cookie-parser@2.7.1: {}
 
   set-function-length@1.2.2:
     dependencies:

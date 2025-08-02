@@ -17,13 +17,16 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { useRealtimeSubscription } from '@/hooks/use-situation-room-realtime'
+import { 
+  ThreatLevel
+} from '@/types/situation-room'
 import type { 
   ThreatAssessment, 
   IntelligenceFeed, 
-  ThreatLevel, 
   ActionItem,
   AIRecommendation,
-  PropertyStatus
+  PropertyStatus,
+  CommunityIntelligence
 } from '@/types/situation-room'
 
 export default function SituationRoomPage() {
@@ -707,7 +710,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.activeIncidents.slice(0, 3).map(incident => (
+              {data.activeIncidents.slice(0, 3).map((incident: any) => (
                 <div key={incident.id} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
                   <div>
                     <p className="text-white font-medium">{incident.description}</p>
