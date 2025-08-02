@@ -36,7 +36,7 @@ export default function HomePage() {
       <OrganizationData />
       <ProductData 
         name="ClaimGuardian"
-        description="AI-powered insurance claim assistance platform for Florida property owners. Document damage, analyze policies, and maximize settlements."
+        description="AI-powered property intelligence network that creates living digital twins of everything you own. Track warranties, optimize maintenance, protect investments, and preserve your legacy. Built by Florida family for comprehensive property management and generational wealth building."
         url="https://claimguardianai.com"
         offers={{
           price: "0",
@@ -46,8 +46,8 @@ export default function HomePage() {
       />
       <FAQData faqs={CLAIMGUARDIAN_FAQS} />
       <HowToData 
-        name="How to Document Florida Insurance Claims with AI"
-        description="Complete guide to using ClaimGuardian's AI tools for maximum claim recovery in Florida"
+        name="How to Create Your Complete Property Digital Twin"
+        description="Complete guide to using ClaimGuardian's AI-powered property intelligence network for comprehensive asset protection and generational wealth building"
         steps={CLAIM_DOCUMENTATION_STEPS}
       />
       

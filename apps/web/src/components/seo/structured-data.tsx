@@ -122,9 +122,14 @@ export function OrganizationData() {
     "@context": "https://schema.org",
     "@type": "Organization",
     "name": "ClaimGuardian",
-    "description": "AI-powered insurance claim assistance platform for Florida property owners",
+    "description": "AI-powered property intelligence network that creates living digital twins of everything you own. Built by Florida family for comprehensive property management, warranty tracking, and generational wealth preservation.",
     "url": "https://claimguardianai.com",
     "logo": "https://claimguardianai.com/logo.png",
+    "foundingDate": "2023",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Florida, United States"
+    },
     "sameAs": [
       "https://twitter.com/claimguardian",
       "https://linkedin.com/company/claimguardian"
@@ -137,7 +142,9 @@ export function OrganizationData() {
     "areaServed": {
       "@type": "State",
       "name": "Florida"
-    }
+    },
+    "slogan": "Your Property's Complete Story, Protected Forever",
+    "mission": "To transform property ownership from a source of anxiety into an engine for wealth building and community resilience"
   }
 
   return (
@@ -151,47 +158,47 @@ export function OrganizationData() {
 // ClaimGuardian-specific FAQs optimized for AI answers
 export const CLAIMGUARDIAN_FAQS: FAQ[] = [
   {
-    question: "How does ClaimGuardian help with Florida insurance claims?",
-    answer: "ClaimGuardian uses AI to document property damage, analyze policies, and maximize claim settlements for Florida property owners. Our platform automates evidence collection, generates professional reports, and provides settlement analysis to help you recover the full value of your claim."
+    question: "What is ClaimGuardian and how does it protect my property?",
+    answer: "ClaimGuardian is an AI-powered property intelligence network that creates a living digital twin of everything you own. It tracks warranties, optimizes maintenance, protects investments, and preserves your property legacy. Built by a Florida family who survived Hurricane Ian specifically for comprehensive property management."
   },
   {
-    question: "What makes ClaimGuardian different from other claim software?",
-    answer: "ClaimGuardian is built specifically for Florida's unique insurance challenges including hurricanes, floods, and state-specific regulations. Our AI tools are trained on Florida claim data and provide 24/7 monitoring, instant damage assessment, and settlement optimization."
+    question: "How does ClaimGuardian track all my possessions and warranties?",
+    answer: "ClaimGuardian creates a complete digital inventory of your property - from your home's roof to your headphone warranty. Our AI tracks maintenance schedules, warranty expirations, and optimization opportunities for everything you own, helping you save thousands through predictive maintenance and proper documentation."
   },
   {
-    question: "How quickly can I document property damage with ClaimGuardian?",
-    answer: "ClaimGuardian's AI damage analyzer can process photos and generate professional damage reports in under 10 minutes. Our AR measurement tools allow complete property documentation in 15 minutes, compared to hours with traditional methods."
+    question: "What makes ClaimGuardian different from other property management software?",
+    answer: "ClaimGuardian is built by a Florida family team who survived Hurricane Ian, not Silicon Valley outsiders. We protect your complete property story with bank-level privacy, community wisdom sharing, and generational wealth building focus. Your data stays yours - we develop in-house AI to ensure complete privacy."
   },
   {
-    question: "Does ClaimGuardian work with all Florida insurance companies?",
-    answer: "Yes, ClaimGuardian works with all major insurance companies operating in Florida. Our platform generates standardized reports that insurance adjusters recognize and accept, improving claim approval rates."
+    question: "How does ClaimGuardian help with insurance claims and property documentation?",
+    answer: "ClaimGuardian's AI generates irrefutable documentation for insurance claims in under 10 minutes. Our platform tracks every property detail, warranty, and maintenance record, ensuring you receive every dollar of coverage you're entitled to while saving hours of stressful negotiations."
   },
   {
-    question: "What types of Florida property damage can ClaimGuardian analyze?",
-    answer: "ClaimGuardian analyzes hurricane damage, flood damage, roof damage, wind damage, hail damage, and fire damage. Our AI is specifically trained on Florida weather patterns and property types including homes, condos, mobile homes, and commercial properties."
+    question: "Can ClaimGuardian help build generational wealth through property ownership?",
+    answer: "Yes, ClaimGuardian transforms property ownership from anxiety into wealth building by optimizing maintenance, preserving complete property histories, and enabling seamless knowledge transfer to future generations. Your property story and lessons learned become a legacy, not lost information."
   }
 ]
 
-// How-To guide for claim documentation
+// How-To guide for property digital twin creation
 export const CLAIM_DOCUMENTATION_STEPS: HowToStep[] = [
   {
-    name: "Create your property digital twin",
-    text: "Upload photos and documents to create a complete digital record of your property in 15 minutes. ClaimGuardian's AI analyzes and catalogs every asset.",
+    name: "Create your complete property digital twin",
+    text: "Document everything you own in 15 minutes - from your home's foundation to your headphone warranty. ClaimGuardian's AI catalogs every asset, warranty, and maintenance schedule to build your comprehensive property intelligence network.",
     url: "/auth/signup-advanced"
   },
   {
-    name: "Enable 24/7 AI monitoring",
-    text: "ClaimGuardian continuously monitors your property for maintenance needs, weather threats, and insurance coverage gaps.",
+    name: "Enable intelligent property monitoring",
+    text: "Your digital twin continuously monitors maintenance schedules, warranty expirations, weather threats, and optimization opportunities. Transform reactive property management into proactive wealth building.",
     url: "/ai-tools"
   },
   {
-    name: "Document damage instantly",
-    text: "When damage occurs, use AI-powered tools to capture photos, measurements, and generate professional damage reports in under 10 minutes.",
-    url: "/ai-tools/damage-analyzer"
+    name: "Preserve your property story",
+    text: "Every improvement, repair, and lesson learned becomes part of your permanent property legacy. ClaimGuardian tracks the complete story with bank-level privacy protection - your data stays yours.",
+    url: "/dashboard/property"
   },
   {
-    name: "Maximize your settlement",
-    text: "ClaimGuardian's settlement analyzer compares your claim with similar Florida cases to ensure you receive full compensation.",
-    url: "/ai-tools/settlement-analyzer"
+    name: "Build generational wealth",
+    text: "Transfer complete property knowledge to future generations seamlessly. Your optimized maintenance, verified improvements, and accumulated wisdom become a legacy, not lost information.",
+    url: "/dashboard"
   }
 ]

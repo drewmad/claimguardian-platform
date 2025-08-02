@@ -25,10 +25,10 @@ import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ClaimGuardian - AI Insurance Claims Platform for Florida Property Owners',
-  description: 'ClaimGuardian helps Florida property owners maximize insurance claim settlements using AI-powered damage assessment, policy analysis, and evidence organization. Document damage in 15 minutes, get settlement analysis, and recover the full value of your claim.',
-  keywords: 'Florida insurance claims, AI damage assessment, property insurance Florida, hurricane damage claims, flood insurance claims, claim settlement analysis, insurance claim help Florida',
-  authors: [{ name: 'ClaimGuardian Team' }],
+  title: 'ClaimGuardian - Your Property\'s Complete Story, Protected Forever',
+  description: 'AI-powered property intelligence network that creates a living digital twin of everything you own. Track warranties, optimize maintenance, protect investments, and preserve your legacy. Built by Florida family for Florida families.',
+  keywords: 'property management Florida, AI property intelligence, warranty tracking, digital twin property, Florida hurricane protection, property insurance optimization, generational wealth building, community resilience Florida',
+  authors: [{ name: 'ClaimGuardian Family Team' }],
   creator: 'ClaimGuardian',
   publisher: 'ClaimGuardian',
   formatDetection: {
@@ -40,14 +40,14 @@ export const metadata: Metadata = {
     type: 'website',
     locale: 'en_US',
     url: 'https://claimguardianai.com',
-    title: 'ClaimGuardian - AI Insurance Claims Platform for Florida',
-    description: 'Maximize your Florida insurance claim settlements with AI-powered damage assessment and policy analysis. Built specifically for Florida property owners.',
+    title: 'ClaimGuardian - Your Property\'s Complete Story, Protected Forever',
+    description: 'Transform property ownership from anxiety into wealth building. AI-powered platform tracks everything you own, protects your investments, and preserves your legacy with complete privacy control.',
     siteName: 'ClaimGuardian',
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ClaimGuardian - AI Insurance Claims for Florida',
-    description: 'AI-powered platform helping Florida property owners maximize insurance claim settlements',
+    title: 'ClaimGuardian - Property Intelligence for Florida Families',
+    description: 'Built by Florida family who survived Hurricane Ian. AI-powered property management that protects your investments and preserves your legacy.',
     creator: '@claimguardian',
   },
   robots: {
