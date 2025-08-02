@@ -104,15 +104,15 @@ function DashboardContent() {
 
             {/* Enhanced Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Home className="h-6 w-6 text-blue-400" />
-                    <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs">
+                    <Home className="h-6 w-6 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]" />
+                    <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs backdrop-blur-sm">
                       Active
                     </Badge>
                   </div>
-                  <p className="text-2xl font-bold text-white">$485,000</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$485,000</p>
                   <p className="text-sm text-gray-400">Property Value</p>
                   <div className="flex items-center gap-1 mt-2">
                     <ArrowUpRight className="h-3 w-3 text-green-400" />
@@ -121,37 +121,37 @@ function DashboardContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Package className="h-6 w-6 text-purple-400" />
+                    <Package className="h-6 w-6 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
                     <span className="text-xs text-gray-500">Updated 2h ago</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">247</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">247</p>
                   <p className="text-sm text-gray-400">Items Tracked</p>
                   <p className="text-xs text-purple-400 mt-2">$45,320 total value</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] transition-all duration-300 hover:bg-gray-800/90">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Shield className="h-6 w-6 text-cyan-400" />
+                    <Shield className="h-6 w-6 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.3)]" />
                     <CheckCircle className="h-4 w-4 text-green-400" />
                   </div>
-                  <p className="text-2xl font-bold text-white">100%</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">100%</p>
                   <p className="text-sm text-gray-400">Coverage Score</p>
                   <Progress value={100} className="h-1 mt-2" />
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 hover:bg-gray-800/90">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <Receipt className="h-6 w-6 text-green-400" />
+                    <Receipt className="h-6 w-6 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.3)]" />
                     <span className="text-xs text-green-400">This month</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">$1,245</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$1,245</p>
                   <p className="text-sm text-gray-400">Expenses</p>
                   <div className="flex items-center gap-1 mt-2">
                     <ArrowDownRight className="h-3 w-3 text-green-400" />
@@ -160,13 +160,13 @@ function DashboardContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90">
                 <CardContent className="p-4">
                   <div className="flex items-center justify-between mb-2">
-                    <AlertCircle className="h-6 w-6 text-orange-400" />
+                    <AlertCircle className="h-6 w-6 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
                     <span className="text-xs text-orange-400 animate-pulse">Action needed</span>
                   </div>
-                  <p className="text-2xl font-bold text-white">3</p>
+                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
                   <p className="text-sm text-gray-400">Pending Tasks</p>
                   <p className="text-xs text-orange-400 mt-2">2 urgent, 1 routine</p>
                 </CardContent>
@@ -178,14 +178,14 @@ function DashboardContent() {
               {/* Left Column - 2/3 width */}
               <div className="lg:col-span-2 space-y-6">
                 {/* Weather & Environmental */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(6,182,212,0.1)] transition-all duration-500">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white flex items-center gap-2">
-                        <CloudRain className="h-5 w-5 text-cyan-400" />
+                        <CloudRain className="h-5 w-5 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.4)]" />
                         Environmental Monitoring
                       </CardTitle>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white">
+                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white backdrop-blur-sm hover:bg-white/10">
                         <Settings2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -193,10 +193,10 @@ function DashboardContent() {
                   <CardContent>
                     <div className="space-y-3">
                       {/* Hurricane Alert */}
-                      <div className="p-4 bg-orange-900/20 border border-orange-500/30 rounded-lg">
+                      <div className="p-4 bg-orange-900/25 backdrop-blur-sm border border-orange-500/40 rounded-lg shadow-[0_8px_24px_rgba(251,146,60,0.15)]">
                         <div className="flex items-start gap-3">
-                          <div className="p-2 bg-orange-600/20 rounded-lg">
-                            <Wind className="h-5 w-5 text-orange-400" />
+                          <div className="p-2 bg-orange-600/25 backdrop-blur-sm rounded-lg shadow-[0_4px_12px_rgba(251,146,60,0.2)]">
+                            <Wind className="h-5 w-5 text-orange-400 drop-shadow-[0_2px_6px_rgba(251,146,60,0.4)]" />
                           </div>
                           <div className="flex-1">
                             <div className="flex items-center justify-between mb-1">
@@ -225,28 +225,28 @@ function DashboardContent() {
 
                       {/* Current Conditions */}
                       <div className="grid grid-cols-3 gap-3">
-                        <div className="bg-gray-700/50 rounded-lg p-3">
+                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
-                            <Thermometer className="h-4 w-4 text-red-400" />
+                            <Thermometer className="h-4 w-4 text-red-400 drop-shadow-[0_2px_4px_rgba(239,68,68,0.3)]" />
                             <span className="text-sm text-gray-400">Temperature</span>
                           </div>
-                          <p className="text-xl font-semibold text-white">78°F</p>
+                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">78°F</p>
                           <p className="text-xs text-gray-500">Feels like 82°F</p>
                         </div>
-                        <div className="bg-gray-700/50 rounded-lg p-3">
+                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
-                            <Droplets className="h-4 w-4 text-blue-400" />
+                            <Droplets className="h-4 w-4 text-blue-400 drop-shadow-[0_2px_4px_rgba(59,130,246,0.3)]" />
                             <span className="text-sm text-gray-400">Humidity</span>
                           </div>
-                          <p className="text-xl font-semibold text-white">85%</p>
+                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">85%</p>
                           <p className="text-xs text-gray-500">High moisture</p>
                         </div>
-                        <div className="bg-gray-700/50 rounded-lg p-3">
+                        <div className="bg-gray-700/60 backdrop-blur-sm rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:bg-gray-700/70 transition-all duration-300">
                           <div className="flex items-center gap-2 mb-1">
-                            <Wind className="h-4 w-4 text-gray-400" />
+                            <Wind className="h-4 w-4 text-gray-400 drop-shadow-[0_2px_4px_rgba(156,163,175,0.3)]" />
                             <span className="text-sm text-gray-400">Wind</span>
                           </div>
-                          <p className="text-xl font-semibold text-white">12 mph</p>
+                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">12 mph</p>
                           <p className="text-xs text-gray-500">From SE</p>
                         </div>
                       </div>
@@ -255,7 +255,7 @@ function DashboardContent() {
                 </Card>
 
                 {/* Quick Access Grid */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
                   <CardHeader>
                     <CardTitle className="text-white">Quick Access</CardTitle>
                   </CardHeader>
@@ -263,28 +263,28 @@ function DashboardContent() {
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                       <button 
                         onClick={() => router.push('/dashboard/personal-property')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(147,51,234,0.15)]"
                       >
                         <Package className="h-8 w-8 text-purple-400 group-hover:scale-110 transition-transform" />
                         <span className="text-sm">Personal Property</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/expenses')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]"
                       >
                         <DollarSign className="h-8 w-8 text-green-400 group-hover:scale-110 transition-transform" />
                         <span className="text-sm">Expenses</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/warranty-watch')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(234,179,8,0.15)]"
                       >
                         <ShieldCheck className="h-8 w-8 text-yellow-400 group-hover:scale-110 transition-transform" />
                         <span className="text-sm">Warranty Watch</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/contractors')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(251,146,60,0.15)]"
                       >
                         <HardHat className="h-8 w-8 text-orange-400 group-hover:scale-110 transition-transform" />
                         <span className="text-sm">Contractors</span>
@@ -399,10 +399,10 @@ function DashboardContent() {
               {/* Right Column - 1/3 width */}
               <div className="space-y-6">
                 {/* Recent Activity */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Activity className="h-5 w-5 text-blue-400" />
+                      <Activity className="h-5 w-5 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.4)]" />
                       Recent Activity
                     </CardTitle>
                   </CardHeader>
@@ -462,22 +462,22 @@ function DashboardContent() {
                 </Card>
 
                 {/* Upcoming Tasks */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(251,146,60,0.1)] transition-all duration-500">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Upcoming Tasks</CardTitle>
-                      <Badge className="bg-orange-600/20 text-orange-400 border-orange-600/30">3 pending</Badge>
+                      <Badge className="bg-orange-600/25 backdrop-blur-sm text-orange-400 border-orange-600/40">3 pending</Badge>
                     </div>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      <div className="p-3 bg-orange-900/20 border border-orange-600/30 rounded-lg">
+                      <div className="p-3 bg-orange-900/25 backdrop-blur-sm border border-orange-600/40 rounded-lg shadow-[0_4px_16px_rgba(251,146,60,0.15)]">
                         <div className="flex items-start justify-between">
                           <div>
                             <p className="text-sm font-medium text-white">Prepare for Hurricane</p>
                             <p className="text-xs text-gray-400 mt-1">Review checklist and secure property</p>
                           </div>
-                          <Badge className="bg-red-600/20 text-red-400 text-xs">Urgent</Badge>
+                          <Badge className="bg-red-600/25 backdrop-blur-sm text-red-400 text-xs border-red-600/40">Urgent</Badge>
                         </div>
                         <div className="flex items-center gap-3 mt-2">
                           <span className="text-xs text-gray-500 flex items-center gap-1">
@@ -524,13 +524,13 @@ function DashboardContent() {
                 </Card>
 
                 {/* AI Assistant */}
-                <Card className="bg-gradient-to-br from-blue-900/20 to-purple-900/20 border-blue-600/30">
+                <Card className="bg-gradient-to-br from-blue-900/30 to-purple-900/30 backdrop-blur-md border-blue-600/40 shadow-[0_16px_40px_rgba(59,130,246,0.2)] hover:shadow-[0_20px_48px_rgba(59,130,246,0.25)] transition-all duration-500">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 bg-blue-600/20 rounded-lg">
-                        <Zap className="h-5 w-5 text-blue-400" />
+                      <div className="p-2 bg-blue-600/25 backdrop-blur-sm rounded-lg shadow-[0_4px_12px_rgba(59,130,246,0.3)]">
+                        <Zap className="h-5 w-5 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.5)]" />
                       </div>
-                      <h3 className="font-semibold text-white">AI Insights</h3>
+                      <h3 className="font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">AI Insights</h3>
                     </div>
                     <p className="text-sm text-gray-300 mb-3">
                       Based on the approaching hurricane, I recommend documenting your property's current condition and reviewing your insurance coverage limits.

@@ -336,11 +336,11 @@ Analyze this image and identify all items visible. For each item, provide detail
             </div>
 
             {/* Model Selection */}
-            <Card className="bg-gray-800 border-gray-700">
+            <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(234,179,8,0.15)] transition-all duration-300">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-yellow-400" />
+                    <Sparkles className="h-4 w-4 text-yellow-400 drop-shadow-[0_2px_8px_rgba(234,179,8,0.4)]" />
                     <span className="font-semibold text-white">AI Model:</span>
                   </div>
                   <div className="flex gap-2">
@@ -386,23 +386,23 @@ Analyze this image and identify all items visible. For each item, provide detail
             <div className="space-y-6">
               {/* Summary Stats */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <Package className="h-8 w-8 text-purple-400" />
+                      <Package className="h-8 w-8 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white">{scanResult.items.length}</p>
+                        <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.items.length}</p>
                         <p className="text-sm text-gray-400">Total Items</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
-                      <DollarSign className="h-8 w-8 text-green-400" />
+                      <DollarSign className="h-8 w-8 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white">${scanResult.total_value.toLocaleString()}</p>
+                        <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">${scanResult.total_value.toLocaleString()}</p>
                         <p className="text-sm text-gray-400">Total Value</p>
                       </div>
                     </div>
