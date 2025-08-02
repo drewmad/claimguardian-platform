@@ -19,8 +19,8 @@ interface PhoneInputProps {
   country?: string
 }
 
-const PhoneInput = forwardRef<any, PhoneInputProps>(
-  ({ label, error, helperText, className, country = 'us', ...props }, ref) => {
+const PhoneInput = forwardRef<HTMLInputElement, PhoneInputProps>(
+  ({ label, error, helperText, country = 'us', ...props }, ref) => {
     const inputId = `phone-input-${Math.random().toString(36).substr(2, 9)}`
     const errorId = `${inputId}-error`
     const helperId = `${inputId}-helper`

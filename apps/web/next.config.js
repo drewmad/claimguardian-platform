@@ -30,12 +30,84 @@ const nextConfig = {
   output: 'standalone',
   experimental: {
     // Optimize more packages for better performance
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-dialog', 'framer-motion']
+    optimizePackageImports: [
+      'lucide-react', 
+      '@radix-ui/react-dialog', 
+      'framer-motion',
+      '@radix-ui/react-tabs',
+      '@radix-ui/react-select', 
+      '@radix-ui/react-alert-dialog',
+      '@radix-ui/react-dropdown-menu',
+      '@claimguardian/ui'
+    ],
+    // Improve build performance
+    forceSwcTransforms: true
+  },
+  
+  // Turbopack configuration (stable in Next.js 15)
+  turbopack: {
+    rules: {
+      '*.svg': {
+        loaders: ['@svgr/webpack'],
+        as: '*.js',
+      },
+    },
   },
   // Add image optimization
   images: {
     formats: ['image/avif', 'image/webp'],
     minimumCacheTTL: 60,
+    dangerouslyAllowSVG: true,
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+  },
+  
+  // Improve webpack build performance
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
+    // Improve build performance with better caching
+    config.cache = {
+      type: 'filesystem',
+      buildDependencies: {
+        config: [__filename],
+      },
+    }
+    
+    // Optimize bundle splitting
+    if (!dev && !isServer) {
+      config.optimization.splitChunks = {
+        chunks: 'all',
+        cacheGroups: {
+          default: false,
+          vendors: false,
+          // Create separate chunks for large libraries
+          react: {
+            name: 'react',
+            chunks: 'all',
+            test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
+            priority: 20,
+          },
+          ui: {
+            name: 'ui',
+            chunks: 'all',
+            test: /[\\/]node_modules[\\/](@radix-ui|@claimguardian\/ui)[\\/]/,
+            priority: 15,
+          },
+          lucide: {
+            name: 'lucide',
+            chunks: 'all',
+            test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
+            priority: 15,
+          },
+          commons: {
+            name: 'commons',
+            chunks: 'all',
+            minChunks: 2,
+            priority: 10,
+          },
+        },
+      }
+    }
+    
+    return config
   },
   async headers() {
     return [

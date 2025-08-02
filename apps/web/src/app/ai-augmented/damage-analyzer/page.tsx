@@ -2,7 +2,6 @@
 
 import {
   Camera,
-  AlertTriangle,
   CheckCircle,
   FileText,
   Sparkles,
@@ -16,11 +15,9 @@ import {
   Shield,
   X
 } from 'lucide-react'
-import { useState, useRef, useCallback, useMemo, useEffect } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
-
-import { getPolicies } from '@/actions/policies'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -311,7 +308,7 @@ function UploadStep({ onUpload, onSwitchToCamera }: { onUpload: (files: File[]) 
 function AnalyzingStep({ image }: { image: File | null }) {
   return (
     <div className="text-center">
-      {image && <img src={URL.createObjectURL(image)} alt="Damage analysis" className="max-h-64 rounded-lg mx-auto mb-6" />}
+      {image && <img src={URL.createObjectURL(image)} alt="Damage analysis in progress" className="max-h-64 rounded-lg mx-auto mb-6" />}
       <h2 className="text-2xl font-semibold text-white mb-4">Analyzing Damage...</h2>
       <p className="text-gray-400 mb-6">Our AI is assessing the damage and cross-referencing your policy. This may take a moment.</p>
       <Progress value={50} className="w-full max-w-md mx-auto" />

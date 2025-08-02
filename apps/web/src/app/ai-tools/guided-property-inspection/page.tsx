@@ -2,14 +2,12 @@
 
 import { 
   Camera, Home, CheckCircle, AlertCircle, ChevronRight,
-  ListChecks, Eye, FileText, Download, Share2, Clock,
-  MapPin, Calendar, User, Building, Shield, Wrench,
+  ListChecks, FileText, Clock,
   Zap, Info, Play, Pause, SkipForward, ChevronLeft, Flag,
-  MessageSquare, Volume2, VolumeX, Maximize2, Save,
-  RefreshCw, Target, Layers, AlertTriangle, Star
+  MessageSquare, Volume2, VolumeX, AlertTriangle
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useRef, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -19,17 +17,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface InspectionRoom {
   id: string
   name: string
-  icon: any
+  icon: React.ElementType
   areas: InspectionArea[]
   status: 'pending' | 'in-progress' | 'completed'
   issues: number
@@ -243,7 +239,7 @@ export default function GuidedPropertyInspectionPage() {
       )
       window.speechSynthesis.speak(utterance)
     }
-  }, [currentCheckpointIndex, isInspecting, isPaused, audioEnabled])
+  }, [currentCheckpointIndex, isInspecting, isPaused, audioEnabled, currentCheckpoint?.description, currentCheckpoint?.item])
 
   const handleStartInspection = () => {
     setIsInspecting(true)
@@ -458,7 +454,7 @@ export default function GuidedPropertyInspectionPage() {
                 <div className="space-y-6">
                   <Card className="bg-gray-800 border-gray-700">
                     <CardHeader>
-                      <CardTitle className="text-white">What You'll Need</CardTitle>
+                      <CardTitle className="text-white">What You&apos;ll Need</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2 text-sm">
@@ -658,7 +654,7 @@ export default function GuidedPropertyInspectionPage() {
                             <div className="relative">
                               <img 
                                 src={currentCheckpoint.photo} 
-                                alt="Inspection photo"
+                                alt={`Inspection photo for ${currentCheckpoint.item}`}
                                 className="w-full h-48 object-cover rounded-lg"
                               />
                               <Badge className="absolute top-2 right-2 bg-black/60">

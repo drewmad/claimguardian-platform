@@ -198,7 +198,7 @@ export default function ClaimAssistantPage() {
   const [currentStep, setCurrentStep] = useState(0)
   const [steps, setSteps] = useState(CLAIM_STEPS)
   const [claimNotes, setClaimNotes] = useState('')
-  const [hasAPIKeys, setHasAPIKeys] = useState(false)
+  const [, setHasAPIKeys] = useState(false)
   const { } = useAuth()
   const aiClient = new AIClientService()
 

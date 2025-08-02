@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { useFloridaDisclosures } from '@/components/compliance/florida-disclosures-context'
 
@@ -17,11 +17,7 @@ export function useFloridaCompliance() {
   const [isLoading, setIsLoading] = useState(true)
   const [needsDisclosures, setNeedsDisclosures] = useState(false)
   
-  useEffect(() => {
-    checkComplianceStatus()
-  }, [])
-  
-  const checkComplianceStatus = async () => {
+  const checkComplianceStatus = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -43,7 +39,11 @@ export function useFloridaCompliance() {
       console.error('Error checking compliance status:', error)
       setIsLoading(false)
     }
-  }
+  }, [supabase, hasSeenDisclosures])
+  
+  useEffect(() => {
+    checkComplianceStatus()
+  }, [checkComplianceStatus])
   
   const triggerDisclosuresIfNeeded = async (context: 'policy_upload' | 'claim_creation' | 'florida_property') => {
     if (!needsDisclosures || hasSeenDisclosures) return

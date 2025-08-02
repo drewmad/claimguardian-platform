@@ -1,6 +1,6 @@
 'use client'
 
-import { Camera, Ruler, Save, Download, Upload, Maximize2, Info, AlertTriangle, CheckCircle, RotateCw, RefreshCw, FileImage, MapPin, Clock, Layers, Brain, ArrowLeftRight, StickyNote, Wrench, Droplet, Zap, ShieldAlert, Home } from 'lucide-react'
+import { Camera, Ruler, Save, Download, Upload, Maximize2, Info, AlertTriangle, CheckCircle, RotateCw, FileImage, MapPin, Clock, Layers, Brain, ArrowLeftRight, StickyNote, Wrench, Droplet, Zap, ShieldAlert, Home } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
@@ -14,7 +14,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 
@@ -83,7 +82,7 @@ export default function ARDamageDocumenterPage() {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
   const [measurements, setMeasurements] = useState<Measurement[]>([])
   const [annotations, setAnnotations] = useState<Annotation[]>([])
-  const [arNotes, setArNotes] = useState<ARNote[]>([])
+  const [arNotes] = useState<ARNote[]>([])
   const [currentMode, setCurrentMode] = useState<'capture' | 'measure' | 'annotate' | 'ar-notes' | 'compare' | 'ai-analysis'>('capture')
   const [measurementUnit, setMeasurementUnit] = useState<'inches' | 'feet' | 'meters'>('feet')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -93,8 +92,8 @@ export default function ARDamageDocumenterPage() {
   const [showCameraCapture, setShowCameraCapture] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
   const [imageType, setImageType] = useState<'before' | 'after' | 'progress'>('before')
-  const [location, setLocation] = useState<{ lat: number; lng: number } | null>(null)
-  const [policyAnalysis, setPolicyAnalysis] = useState<PolicyComparison | null>(null)
+  const [location] = useState<{ lat: number; lng: number } | null>(null)
+  const [policyAnalysis] = useState<PolicyComparison | null>(null)
   const [beforeImage, setBeforeImage] = useState<CapturedImage | null>(null)
   const [afterImage, setAfterImage] = useState<CapturedImage | null>(null)
   const [comparisonMode, setComparisonMode] = useState<'side-by-side' | 'overlay' | 'slider'>('side-by-side')
@@ -103,7 +102,6 @@ export default function ARDamageDocumenterPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const measurementStartRef = useRef<{ x: number; y: number } | null>(null)
 
   useEffect(() => {
     // Check for WebXR support
@@ -132,21 +130,7 @@ export default function ARDamageDocumenterPage() {
     }
   }
 
-  const startCamera = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
-      })
-      
-      if (videoRef.current) {
-        videoRef.current.srcObject = stream
-        setIsCapturing(true)
-      }
-    } catch (error) {
-      console.error('Failed to access camera:', error)
-      toast.error('Failed to access camera')
-    }
-  }
+  // Removed unused startCamera function
 
   const captureImage = () => {
     if (videoRef.current && canvasRef.current) {
@@ -444,7 +428,7 @@ export default function ARDamageDocumenterPage() {
                         {/* Image Type Selection */}
                         <div className="flex items-center gap-4">
                           <Label htmlFor="imageType" className="text-white">Image Type:</Label>
-                          <Select value={imageType} onValueChange={(value: any) => setImageType(value)}>
+                          <Select value={imageType} onValueChange={(value: 'before' | 'after' | 'progress') => setImageType(value)}>
                             <SelectTrigger className="w-48">
                               <SelectValue />
                             </SelectTrigger>
@@ -556,7 +540,6 @@ export default function ARDamageDocumenterPage() {
                               
                               {/* Current Image */}
                               <div className="relative">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src={capturedImages[currentImageIndex]?.dataUrl}
                                   alt={`${capturedImages[currentImageIndex]?.type} damage photo`}
@@ -667,7 +650,7 @@ export default function ARDamageDocumenterPage() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-2">
                                 <Label className="text-white">ArrowLeftRight Mode:</Label>
-                                <Select value={comparisonMode} onValueChange={(value: any) => setComparisonMode(value)}>
+                                <Select value={comparisonMode} onValueChange={(value: 'side-by-side' | 'overlay' | 'slider') => setComparisonMode(value)}>
                                   <SelectTrigger className="w-40">
                                     <SelectValue />
                                   </SelectTrigger>
@@ -695,7 +678,6 @@ export default function ARDamageDocumenterPage() {
                                         {new Date(beforeImage.timestamp).toLocaleDateString()}
                                       </span>
                                     </div>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                       src={beforeImage.dataUrl}
                                       alt="Before damage"
@@ -709,7 +691,6 @@ export default function ARDamageDocumenterPage() {
                                         {new Date(afterImage.timestamp).toLocaleDateString()}
                                       </span>
                                     </div>
-                                    {/* eslint-disable-next-line @next/next/no-img-element */}
                                     <img
                                       src={afterImage.dataUrl}
                                       alt="After damage"
@@ -721,13 +702,11 @@ export default function ARDamageDocumenterPage() {
                               
                               {comparisonMode === 'overlay' && (
                                 <div className="relative">
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={beforeImage.dataUrl}
                                     alt="Before damage"
                                     className="w-full h-96 object-cover rounded"
                                   />
-                                  {/* eslint-disable-next-line @next/next/no-img-element */}
                                   <img
                                     src={afterImage.dataUrl}
                                     alt="After damage"
@@ -757,7 +736,7 @@ export default function ARDamageDocumenterPage() {
                         <div className="space-y-4">
                           <div className="flex items-center justify-between bg-gray-900 p-3 rounded">
                             <p className="text-sm text-gray-400">Click two points to measure distance</p>
-                            <Select value={measurementUnit} onValueChange={(value: any) => setMeasurementUnit(value)}>
+                            <Select value={measurementUnit} onValueChange={(value: 'inches' | 'feet' | 'meters') => setMeasurementUnit(value)}>
                               <SelectTrigger className="w-32">
                                 <SelectValue />
                               </SelectTrigger>
@@ -857,7 +836,6 @@ export default function ARDamageDocumenterPage() {
                             {/* AR Notes Display */}
                             {capturedImages.length > 0 && (
                               <div className="relative bg-black rounded-lg overflow-hidden">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src={capturedImages[currentImageIndex]?.dataUrl}
                                   alt="Room with AR notes"
@@ -983,11 +961,10 @@ export default function ARDamageDocumenterPage() {
                       <p className="text-gray-400 text-sm">No photos captured yet</p>
                     ) : (
                       <div className="space-y-3">
-                        {capturedImages.map((image, index) => (
+                        {capturedImages.map((image) => (
                           <div key={image.id} className="flex items-center justify-between p-2 bg-gray-700 rounded">
                             <div className="flex items-center gap-3">
                               <div className="w-12 h-12 rounded overflow-hidden">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
                                 <img
                                   src={image.dataUrl}
                                   alt={`${image.type} photo`}

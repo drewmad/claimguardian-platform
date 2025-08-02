@@ -110,7 +110,7 @@ export function AccountWizard() {
             <div className="space-y-2">
               <p className="font-medium">Account created successfully! 🎉</p>
               <p className="text-sm">
-                Welcome to ClaimGuardian! Check your email for a confirmation link, then we'll redirect you to your dashboard.
+                Welcome to ClaimGuardian! Check your email for a confirmation link, then we&apos;ll redirect you to your dashboard.
               </p>
             </div>
           </AlertDescription>

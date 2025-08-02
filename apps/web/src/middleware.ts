@@ -104,10 +104,7 @@ export async function middleware(request: NextRequest) {
     '/favicon.ico',
     '/api/health',
     '/api/legal/documents',
-    '/test-signup',
-    '/test-login',
-    '/test-signup-simple',
-    '/simple-signup-demo'
+    '/debug'
   ]
   
   // Define truly public pages that don't require authentication

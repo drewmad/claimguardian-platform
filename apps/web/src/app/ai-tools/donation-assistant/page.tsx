@@ -1,8 +1,8 @@
 'use client'
 
 import { 
-  Package, Camera, Upload, DollarSign, FileText,
-  CheckCircle, Building, Calendar, Download, Plus,
+  Package, Camera, Upload,
+  Building, Plus,
   X, Info, Heart, TrendingUp, Receipt, Shield
 } from 'lucide-react'
 import Link from 'next/link'

@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import Link from 'next/link'
 import { 
   Shield, 
   ArrowLeft, 
@@ -11,7 +10,6 @@ import {
   AlertCircle, 
   Settings, 
   Activity,
-  Database,
   Brain,
   BarChart3,
   Clock,
@@ -19,14 +17,11 @@ import {
   XCircle,
   Search,
   Calendar,
-  Edit,
-  Eye,
-  History
+  Eye
 } from 'lucide-react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
@@ -73,11 +68,7 @@ export function AdminDashboard() {
     { id: 3, name: 'Bob Johnson', email: 'bob@example.com', joined: '2024-01-18', status: 'inactive' },
   ]
 
-  const legalDocs = [
-    { id: 1, title: 'Terms of Service', version: '2.3', lastUpdated: '2024-01-10', status: 'published' },
-    { id: 2, title: 'Privacy Policy', version: '3.1', lastUpdated: '2024-01-08', status: 'published' },
-    { id: 3, title: 'AI Use Agreement', version: '1.2', lastUpdated: '2024-01-05', status: 'draft' },
-  ]
+  // Removed unused legalDocs array
 
   const recentErrors = [
     { id: 1, level: 'critical', message: 'Database connection timeout', timestamp: '2024-01-20 14:23:45', count: 3 },

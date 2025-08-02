@@ -1,10 +1,10 @@
 'use client'
 
 import { 
-  Home, Maximize2, Square, Download, Save, Upload,
-  Undo, Redo, Grid, Layers, Ruler, Eye, EyeOff,
-  Plus, Minus, RotateCw, Move, CheckCircle, AlertCircle,
-  Bed, Sofa, Bath, ChefHat, Car, TreePine, Building
+  Home, Maximize2, Square, Download, Upload,
+  Grid, Ruler, Eye, EyeOff,
+  Plus, Move, CheckCircle,
+  Bed, Sofa, Bath, ChefHat, Car, Building
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef } from 'react'
@@ -12,14 +12,11 @@ import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Room {
   id: string
@@ -224,7 +221,7 @@ export default function FloorplanCreatorPage() {
           const data = JSON.parse(e.target?.result as string)
           setCurrentPlan(data)
           toast.success('Floor plan imported successfully')
-        } catch (error) {
+        } catch {
           toast.error('Failed to import floor plan')
         }
       }

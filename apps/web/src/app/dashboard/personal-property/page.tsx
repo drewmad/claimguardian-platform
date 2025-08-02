@@ -10,9 +10,9 @@ import {
   AlertCircle, BarChart3, Camera, Car, ChevronRight, Diamond, 
   DollarSign, Download, Edit, Eye, FileText, Gamepad, Grid, 
   List, Music, Package, Plus, Search, Shield, Shirt, Sofa, 
-  Sparkles, Trash2, Tv, Watch, Home, Layers, ScanLine,
-  Calendar, MapPin, Tag, Filter, Share2, Archive, CheckCircle,
-  X, Upload, QrCode, History, TrendingUp, TrendingDown, Star, Info
+  Sparkles, Trash2, Tv, Watch, Home, ScanLine,
+  MapPin, Tag, Filter, Share2, CheckCircle,
+  Upload, QrCode, History, TrendingUp, TrendingDown, Star, Info
 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useRef } from 'react'
@@ -323,13 +323,13 @@ function PersonalPropertyContent() {
     toast.success(`Exported ${selectedItems.size} items`)
   }
 
-  const handleBatchUpdateRoom = (newRoom: string) => {
-    setItems(items.map(item => 
-      selectedItems.has(item.id) ? { ...item, room: newRoom } : item
-    ))
-    toast.success(`Updated room for ${selectedItems.size} items`)
-    clearSelection()
-  }
+  // const handleBatchUpdateRoom = (newRoom: string) => {
+  //   setItems(items.map(item => 
+  //     selectedItems.has(item.id) ? { ...item, room: newRoom } : item
+  //   ))
+  //   toast.success(`Updated room for ${selectedItems.size} items`)
+  //   clearSelection()
+  // }
 
   return (
     <DashboardLayout>
@@ -526,12 +526,12 @@ function PersonalPropertyContent() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <p className="text-sm text-gray-300">Added "Kitchen Aid Stand Mixer" to Kitchen</p>
+                      <p className="text-sm text-gray-300">Added &quot;Kitchen Aid Stand Mixer&quot; to Kitchen</p>
                       <span className="text-xs text-gray-500 ml-auto">2 hours ago</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <p className="text-sm text-gray-300">Updated value for "65\" OLED TV"</p>
+                      <p className="text-sm text-gray-300">Updated value for &quot;65&quot; OLED TV&quot;</p>
                       <span className="text-xs text-gray-500 ml-auto">Yesterday</span>
                     </div>
                     <div className="flex items-center gap-3">
@@ -1804,7 +1804,7 @@ function PersonalPropertyContent() {
         ref={fileInputRef}
         type="file"
         accept=".csv,.json"
-        onChange={(e) => {
+        onChange={() => {
           // Handle file import
           toast.success('Import feature coming soon!')
         }}

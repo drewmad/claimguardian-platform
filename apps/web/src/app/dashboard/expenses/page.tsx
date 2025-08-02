@@ -1,9 +1,9 @@
 'use client'
 
 import { 
-  DollarSign, Receipt, TrendingUp, TrendingDown,
+  DollarSign, Receipt, TrendingUp,
   Calendar, Filter, Download, Upload, Search,
-  Home, Wrench, ShoppingCart, Car, Zap, Package,
+  Home, Wrench, ShoppingCart, Zap, Package,
   Plus, Camera, FileText, PieChart
 } from 'lucide-react'
 import { useState } from 'react'
@@ -14,7 +14,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 export default function ExpensesPage() {
   const router = useRouter()
   const [selectedCategory, setSelectedCategory] = useState('all')
-  const [selectedMonth, setSelectedMonth] = useState('current')
+  const [, setSelectedMonth] = useState('current')
 
   const categories = [
     { id: 'maintenance', label: 'Maintenance', icon: Wrench, color: 'text-blue-400' },

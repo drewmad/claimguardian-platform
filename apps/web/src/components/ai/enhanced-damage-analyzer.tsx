@@ -58,18 +58,16 @@ interface AIAnalysisResult {
 interface EnhancedDamageAnalyzerProps {
   onAnalysisComplete?: (result: AIAnalysisResult) => void
   propertyId?: string
-  policyData?: any
+  policyData?: Record<string, unknown>
 }
 
 export function EnhancedDamageAnalyzer({ 
-  onAnalysisComplete, 
-  propertyId, 
-  policyData 
+  onAnalysisComplete 
 }: EnhancedDamageAnalyzerProps) {
   // State management
   const [images, setImages] = useState<AnalysisImage[]>([])
   const [currentStep, setCurrentStep] = useState<'upload' | 'analyze' | 'results'>('upload')
-  const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
   const [analysisResult, setAnalysisResult] = useState<AIAnalysisResult | null>(null)
   const [showCameraCapture, setShowCameraCapture] = useState(false)
@@ -218,7 +216,7 @@ export function EnhancedDamageAnalyzer({
 
   const beforeImage = images.find(img => img.type === 'before')
   const afterImage = images.find(img => img.type === 'after')
-  const currentImage = images.find(img => img.type === 'current')
+  // const currentImage = images.find(img => img.type === 'current')
 
   return (
     <div className="space-y-6">
@@ -270,7 +268,7 @@ export function EnhancedDamageAnalyzer({
             {/* Image Type Selection */}
             <div className="space-y-2">
               <Label className="text-white">Photo Type</Label>
-              <Select value={selectedImageType} onValueChange={(value: any) => setSelectedImageType(value)}>
+              <Select value={selectedImageType} onValueChange={(value: 'before' | 'after' | 'current') => setSelectedImageType(value)}>
                 <SelectTrigger>
                   <SelectValue />
                 </SelectTrigger>
@@ -314,7 +312,7 @@ export function EnhancedDamageAnalyzer({
                     <div key={image.id} className="relative">
                       <img
                         src={image.dataUrl}
-                        alt={`${image.type} damage`}
+                        alt={`${image.type} damage photo`}
                         className="w-full h-32 object-cover rounded border"
                       />
                       <Badge 
@@ -344,7 +342,7 @@ export function EnhancedDamageAnalyzer({
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-white">AI Model</Label>
-                <Select value={selectedAIModel} onValueChange={(value: any) => setSelectedAIModel(value)}>
+                <Select value={selectedAIModel} onValueChange={(value: 'gpt-4-vision' | 'claude-3-vision' | 'gemini-pro-vision') => setSelectedAIModel(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
@@ -428,7 +426,7 @@ export function EnhancedDamageAnalyzer({
                     <h4 className="text-white font-medium mb-2">Before</h4>
                     <img
                       src={beforeImage.dataUrl}
-                      alt="Before damage"
+                      alt="Before damage photo"
                       className="w-full h-48 object-cover rounded"
                     />
                   </div>
@@ -436,7 +434,7 @@ export function EnhancedDamageAnalyzer({
                     <h4 className="text-white font-medium mb-2">After</h4>
                     <img
                       src={afterImage.dataUrl}
-                      alt="After damage"
+                      alt="After damage photo"
                       className="w-full h-48 object-cover rounded"
                     />
                   </div>

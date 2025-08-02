@@ -12,9 +12,9 @@
 
 import { 
   Home, Building, Package, Shield, FileText, 
-  Calendar, HardHat, Users, AlertTriangle, Settings, 
+  HardHat, Users, Settings, 
   Bell, Search, Menu, LogOut, User,
-  Bot, Camera, FileSearch, Sparkles, Brain,
+  Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench
 } from 'lucide-react'
 import Link from 'next/link'

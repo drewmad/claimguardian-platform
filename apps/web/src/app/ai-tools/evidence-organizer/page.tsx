@@ -1,6 +1,6 @@
 'use client'
 
-import { FolderOpen, Search, Tag, Calendar, FileText, Image, VideoIcon, Upload, Brain, Sparkles, CheckCircle, Clock, Archive, Filter, Grid, List } from 'lucide-react'
+import { FolderOpen, Search, Tag, FileText, Image, VideoIcon, Upload, Brain, Sparkles, CheckCircle, Clock, Archive, Grid, List } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface EvidenceItem {
   id: string

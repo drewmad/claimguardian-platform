@@ -2,7 +2,7 @@
 
 import { 
   Code, Map, Building, TrendingUp, DollarSign,
-  MapPin, Layers, Activity, FileText, BarChart,
+  Layers, Activity, FileText, BarChart,
   Home, TreePine, Car, Users, Zap, Droplets,
   ChevronRight, ExternalLink, Info
 } from 'lucide-react'
