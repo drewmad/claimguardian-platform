@@ -32,6 +32,7 @@ import type {
   EvacuationPlan,
   ThreatMonitoringConfig
 } from '@/types/situation-room'
+import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
 
 interface SituationRoomActions {
   // Data loading actions
@@ -40,6 +41,35 @@ interface SituationRoomActions {
   refreshIntelligenceFeeds: () => Promise<void>
   refreshPropertyStatus: () => Promise<void>
   refreshCommunityIntel: () => Promise<void>
+  
+  // AI threat assessment actions
+  runAIThreatAssessment: (propertyId: string, options?: { 
+    focusAreas?: string[]
+    urgencyThreshold?: ThreatLevel
+    preferredProvider?: 'openai' | 'grok' | 'claude' | 'gemini' | 'auto'
+    model?: string
+    budget?: 'low' | 'medium' | 'high'
+    speedPriority?: boolean
+  }) => Promise<void>
+  getAIAssessmentStatus: () => { 
+    available: boolean
+    providers: Array<{
+      name: string
+      available: boolean
+      models: string[]
+      priority: number
+      costPerToken: number
+      avgResponseTime: number
+      strengths: string[]
+    }>
+    primaryProvider: string
+    totalProviders: number
+    optimizationCapabilities: {
+      costOptimization: boolean
+      speedOptimization: boolean
+      abilityOptimization: boolean
+    }
+  }
   
   // Threat management
   addThreat: (threat: ThreatAssessment) => void
@@ -122,7 +152,11 @@ const initialState: SituationRoomState = {
   isLoading: false,
   lastUpdate: null,
   connectionStatus: 'disconnected',
-  error: null
+  error: null,
+  
+  // AI assessment status
+  aiAssessmentRunning: false,
+  lastAIAssessment: null
 }
 
 const createSituationRoomStore = () => create<SituationRoomStore>()(
@@ -141,24 +175,16 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         try {
           // Simulate API calls - replace with actual API integration
           const [
-            threatResponse,
             intelligenceResponse,
             propertyResponse,
-            communityResponse,
-            recommendationsResponse
+            communityResponse
           ] = await Promise.all([
-            fetchThreatAssessment(propertyId),
             fetchIntelligenceFeeds(propertyId),
             fetchPropertyStatus(propertyId),
-            fetchCommunityIntelligence(propertyId),
-            fetchAIRecommendations(propertyId)
+            fetchCommunityIntelligence(propertyId)
           ])
           
           set(state => {
-            state.threats = threatResponse.threats
-            state.overallThreatLevel = threatResponse.overallLevel
-            state.activeThreatCount = threatResponse.threats.filter((t: ThreatAssessment) => t.isActive).length
-            
             state.intelligenceFeeds = intelligenceResponse.feeds
             state.unreadFeedCount = intelligenceResponse.feeds.length
             
@@ -169,17 +195,12 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.communityIntel = communityResponse.intelligence
             state.neighborhoodThreatLevel = communityResponse.threatLevel
             
-            state.aiRecommendations = recommendationsResponse.recommendations
-            state.pendingActions = recommendationsResponse.actions.filter((a: ActionItem) => 
-              a.status === ActionStatus.PENDING || a.status === ActionStatus.IN_PROGRESS
-            )
-            state.completedActions = recommendationsResponse.actions.filter((a: ActionItem) => 
-              a.status === ActionStatus.COMPLETED
-            )
-            
             state.lastUpdate = new Date()
             state.isLoading = false
           })
+          
+          // Run AI threat assessment after initial data load
+          get().runAIThreatAssessment(propertyId)
         } catch (error) {
           set(state => {
             state.error = error instanceof Error ? error.message : 'Failed to load situation data'
@@ -190,12 +211,8 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
       
       async refreshThreatAssessment() {
         try {
-          const response = await fetchThreatAssessment(getCurrentPropertyId())
-          set(state => {
-            state.threats = response.threats
-            state.overallThreatLevel = response.overallLevel
-            state.activeThreatCount = response.threats.filter((t: ThreatAssessment) => t.isActive).length
-          })
+          const propertyId = getCurrentPropertyId()
+          await get().runAIThreatAssessment(propertyId)
         } catch (error) {
           console.error('Failed to refresh threat assessment:', error)
         }
@@ -236,6 +253,95 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         } catch (error) {
           console.error('Failed to refresh community intelligence:', error)
         }
+      },
+      
+      // ===== AI THREAT ASSESSMENT ACTIONS =====
+      
+      async runAIThreatAssessment(propertyId: string, options = {}) {
+        set(state => {
+          state.aiAssessmentRunning = true
+          state.error = null
+        })
+        
+        try {
+          const threatEngine = getThreatAssessmentEngine()
+          
+          // Generate context for AI assessment
+          const weatherContext = await threatEngine.generateWeatherContext({ lat: 25.7617, lng: -80.1918 }) // Miami coords
+          const propertyContext = await threatEngine.generatePropertyContext(propertyId)
+          
+          const assessmentRequest = {
+            propertyId,
+            context: {
+              weather: weatherContext,
+              property: propertyContext,
+              location: {
+                lat: 25.7617,
+                lng: -80.1918,
+                county: 'Miami-Dade',
+                state: 'Florida'
+              },
+              historical: {
+                hurricanes: 3,
+                floods: 2,
+                storms: 15,
+                timeframe: '10 years'
+              }
+            },
+            focusAreas: options.focusAreas,
+            urgencyThreshold: options.urgencyThreshold,
+            preferredProvider: options.preferredProvider,
+            model: options.model,
+            budget: options.budget,
+            speedPriority: options.speedPriority
+          }
+          
+          const aiResponse = await threatEngine.assessThreats(assessmentRequest)
+          
+          set(state => {
+            // Update threats with AI assessment results
+            state.threats = aiResponse.threats
+            state.overallThreatLevel = aiResponse.overallLevel
+            state.activeThreatCount = aiResponse.threats.filter(t => t.isActive).length
+            
+            // Add AI recommendations
+            aiResponse.recommendations.forEach(rec => {
+              if (!state.aiRecommendations.find(r => r.title === rec.title)) {
+                state.aiRecommendations.unshift(rec)
+              }
+            })
+            
+            // Add AI intelligence feeds
+            aiResponse.intelligenceFeeds.forEach(feed => {
+              if (!state.intelligenceFeeds.find(f => f.id === feed.id)) {
+                state.intelligenceFeeds.unshift(feed)
+              }
+            })
+            
+            state.lastAIAssessment = new Date()
+            state.aiAssessmentRunning = false
+            state.lastUpdate = new Date()
+          })
+          
+          console.log('AI threat assessment completed:', {
+            threats: aiResponse.threats.length,
+            recommendations: aiResponse.recommendations.length,
+            confidence: aiResponse.confidence,
+            processingTime: aiResponse.processingTime
+          })
+          
+        } catch (error) {
+          set(state => {
+            state.error = error instanceof Error ? error.message : 'AI threat assessment failed'
+            state.aiAssessmentRunning = false
+          })
+          console.error('AI threat assessment failed:', error)
+        }
+      },
+      
+      getAIAssessmentStatus() {
+        const threatEngine = getThreatAssessmentEngine()
+        return threatEngine.getStatus()
       },
       
       // ===== THREAT MANAGEMENT ACTIONS =====

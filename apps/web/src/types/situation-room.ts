@@ -424,6 +424,10 @@ export interface SituationRoomState {
   lastUpdate: Date | null
   connectionStatus: 'connected' | 'reconnecting' | 'disconnected'
   error: string | null
+  
+  // AI assessment status
+  aiAssessmentRunning: boolean
+  lastAIAssessment: Date | null
 }
 
 export interface EvacuationPlan {
