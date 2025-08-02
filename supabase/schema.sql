@@ -53,3 +53,26 @@ BEGIN
   RETURN v_error_id;
 END;
 $function$;
+
+--
+-- Name: workflow_test; Type: TABLE; Schema: public; Owner: -
+-- This is a test table to demonstrate the database CI/CD workflow
+--
+
+CREATE TABLE IF NOT EXISTS public.workflow_test (
+    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+    name text NOT NULL,
+    description text,
+    created_at timestamp with time zone DEFAULT now(),
+    created_by uuid REFERENCES auth.users(id)
+);
+
+-- Enable RLS
+ALTER TABLE public.workflow_test ENABLE ROW LEVEL SECURITY;
+
+-- Add RLS policy
+CREATE POLICY "Users can manage own test data" ON public.workflow_test
+    FOR ALL USING (auth.uid() = created_by);
+
+-- Add index for performance
+CREATE INDEX idx_workflow_test_created_by ON public.workflow_test(created_by);
