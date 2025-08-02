@@ -316,20 +316,22 @@ Analyze this image and identify all items visible. For each item, provide detail
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <div className="p-3 sm:p-6">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-purple-600/20 rounded-lg">
-                  <Package className="h-6 w-6 text-purple-400" />
+            <div className="mb-6 sm:mb-8">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-purple-600/20 rounded-lg">
+                    <Package className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+                  </div>
+                  <h1 className="text-xl sm:text-3xl font-bold text-white">AI Inventory Scanner</h1>
                 </div>
-                <h1 className="text-3xl font-bold text-white">AI Inventory Scanner</h1>
-                <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">
+                <Badge variant="outline" className="text-gray-400 border-gray-600 w-fit">
                   AI Enhanced
                 </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
+              <p className="text-sm sm:text-base text-gray-400 max-w-3xl">
                 Automatically catalog your belongings for insurance documentation. Our AI identifies 
                 items, estimates values, and helps ensure you have adequate coverage.
               </p>
@@ -337,20 +339,20 @@ Analyze this image and identify all items visible. For each item, provide detail
 
             {/* Model Selection */}
             <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(234,179,8,0.15)] transition-all duration-300">
-              <CardContent className="p-4">
-                <div className="flex items-center justify-between">
+              <CardContent className="p-3 sm:p-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-yellow-400 drop-shadow-[0_2px_8px_rgba(234,179,8,0.4)]" />
-                    <span className="font-semibold text-white">AI Model:</span>
+                    <span className="font-semibold text-white text-sm sm:text-base">AI Model:</span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 w-full sm:w-auto">
                     <Button
                       size="sm"
                       variant={selectedModel === 'openai' ? 'default' : 'outline'}
                       onClick={() => setSelectedModel('openai')}
-                      className={selectedModel === 'openai' 
+                      className={`flex-1 sm:flex-none text-xs sm:text-sm active:scale-95 ${selectedModel === 'openai' 
                         ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
                     >
                       GPT-4 Vision
                     </Button>
@@ -358,9 +360,9 @@ Analyze this image and identify all items visible. For each item, provide detail
                       size="sm"
                       variant={selectedModel === 'gemini' ? 'default' : 'outline'}
                       onClick={() => setSelectedModel('gemini')}
-                      className={selectedModel === 'gemini' 
+                      className={`flex-1 sm:flex-none text-xs sm:text-sm active:scale-95 ${selectedModel === 'gemini' 
                         ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}
+                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
                     >
                       Gemini Vision
                     </Button>
@@ -385,47 +387,47 @@ Analyze this image and identify all items visible. For each item, provide detail
           {scanResult && (
             <div className="space-y-6">
               {/* Summary Stats */}
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Package className="h-8 w-8 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.4)]" />
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Package className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.items.length}</p>
-                        <p className="text-sm text-gray-400">Total Items</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.items.length}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">Total Items</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <DollarSign className="h-8 w-8 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.4)]" />
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">${scanResult.total_value.toLocaleString()}</p>
-                        <p className="text-sm text-gray-400">Total Value</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">${scanResult.total_value.toLocaleString()}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">Total Value</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800 border-gray-700">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <AlertCircle className="h-8 w-8 text-orange-400" />
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white">{scanResult.high_value_items}</p>
-                        <p className="text-sm text-gray-400">High Value Items</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.high_value_items}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">High Value Items</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800 border-gray-700">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3">
-                      <Home className="h-8 w-8 text-blue-400" />
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                  <CardContent className="p-3 sm:p-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <Home className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.4)]" />
                       <div>
-                        <p className="text-2xl font-bold text-white">{Object.keys(scanResult.rooms).length}</p>
-                        <p className="text-sm text-gray-400">Rooms Scanned</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{Object.keys(scanResult.rooms).length}</p>
+                        <p className="text-xs sm:text-sm text-gray-400">Rooms Scanned</p>
                       </div>
                     </div>
                   </CardContent>
@@ -449,24 +451,27 @@ Analyze this image and identify all items visible. For each item, provide detail
 
               {/* Filters and Actions */}
               <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <Filter className="h-4 w-4 text-gray-400" />
-                      <select
-                        value={filterRoom}
-                        onChange={(e) => setFilterRoom(e.target.value)}
-                        className="text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1"
-                      >
-                        <option value="">All Rooms</option>
-                        {Object.keys(scanResult.rooms).map(room => (
-                          <option key={room} value={room}>{room}</option>
-                        ))}
-                      </select>
+                <CardContent className="p-3 sm:p-4">
+                  <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
+                    {/* Filters Row */}
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 w-full sm:w-auto">
+                      <div className="flex items-center gap-2">
+                        <Filter className="h-4 w-4 text-gray-400" />
+                        <select
+                          value={filterRoom}
+                          onChange={(e) => setFilterRoom(e.target.value)}
+                          className="text-xs sm:text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1 flex-1 sm:flex-none"
+                        >
+                          <option value="">All Rooms</option>
+                          {Object.keys(scanResult.rooms).map(room => (
+                            <option key={room} value={room}>{room}</option>
+                          ))}
+                        </select>
+                      </div>
                       <select
                         value={filterCategory}
                         onChange={(e) => setFilterCategory(e.target.value)}
-                        className="text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1"
+                        className="text-xs sm:text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1 flex-1 sm:flex-none"
                       >
                         <option value="">All Categories</option>
                         {Object.keys(scanResult.categories).map(cat => (
@@ -474,36 +479,40 @@ Analyze this image and identify all items visible. For each item, provide detail
                         ))}
                       </select>
                     </div>
+                    
+                    {/* Sort Row */}
                     <div className="flex items-center gap-2">
                       <ArrowUpDown className="h-4 w-4 text-gray-400" />
                       <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value as 'value' | 'name' | 'room')}
-                        className="text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1"
+                        className="text-xs sm:text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1 flex-1 sm:flex-none"
                       >
                         <option value="value">Sort by Value</option>
                         <option value="name">Sort by Name</option>
                         <option value="room">Sort by Room</option>
                       </select>
                     </div>
-                    <div className="ml-auto flex gap-2">
+                    
+                    {/* Actions Row */}
+                    <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
                       <Button 
                         variant="outline" 
                         size="sm" 
                         onClick={exportToCSV}
-                        className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                        className="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 text-xs sm:text-sm active:scale-95"
                       >
-                        <FileSpreadsheet className="h-4 w-4 mr-2" />
-                        Export CSV
+                        <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Export </span>CSV
                       </Button>
                       <Button 
                         size="sm" 
                         onClick={saveInventory} 
                         disabled={isSaving}
-                        className="bg-blue-600 hover:bg-blue-700 text-white"
+                        className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm active:scale-95"
                       >
-                        <Save className="h-4 w-4 mr-2" />
-                        Save Inventory
+                        <Save className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
+                        <span className="hidden sm:inline">Save </span>Inventory
                       </Button>
                     </div>
                   </div>
@@ -512,55 +521,56 @@ Analyze this image and identify all items visible. For each item, provide detail
 
               {/* Items List */}
               <div className="space-y-4">
-                <h2 className="text-xl font-semibold text-white">Inventory Items</h2>
+                <h2 className="text-lg sm:text-xl font-semibold text-white">Inventory Items</h2>
                 {filteredItems.map((item) => (
                   <Card key={item.id} className="bg-gray-800 border-gray-700">
-                    <CardContent className="p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                        <div className="md:col-span-2">
+                    <CardContent className="p-3 sm:p-4">
+                      <div className="grid grid-cols-1 lg:grid-cols-6 gap-3 sm:gap-4">
+                        <div className="lg:col-span-2">
                           <div className="flex items-start gap-2">
-                            <span className="text-2xl">{CATEGORY_ICONS[item.category as keyof typeof CATEGORY_ICONS] || '📦'}</span>
-                            <div>
+                            <span className="text-xl sm:text-2xl flex-shrink-0">{CATEGORY_ICONS[item.category as keyof typeof CATEGORY_ICONS] || '📦'}</span>
+                            <div className="flex-1 min-w-0">
                               <Input
                                 value={item.name}
                                 onChange={(e) => updateItem(item.id, { name: e.target.value })}
-                                className="font-semibold mb-1 bg-gray-700 border-gray-600 text-white"
+                                className="font-semibold mb-1 bg-gray-700 border-gray-600 text-white text-sm sm:text-base"
                               />
-                              <div className="flex gap-2 text-xs">
-                                <Badge variant="outline" className="text-gray-300 border-gray-600">{item.category}</Badge>
-                                <Badge variant="outline" className="text-gray-300 border-gray-600">{item.room}</Badge>
-                                {item.high_value && <Badge className="bg-red-600/20 text-red-300 border-red-600/30">High Value</Badge>}
+                              <div className="flex flex-wrap gap-1 sm:gap-2 text-xs">
+                                <Badge variant="outline" className="text-gray-300 border-gray-600 text-xs">{item.category}</Badge>
+                                <Badge variant="outline" className="text-gray-300 border-gray-600 text-xs">{item.room}</Badge>
+                                {item.high_value && <Badge className="bg-red-600/20 text-red-300 border-red-600/30 text-xs">High Value</Badge>}
                               </div>
                             </div>
                           </div>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                           <label className="text-xs text-gray-400">Brand/Model</label>
                           <Input
                             value={item.brand || ''}
                             onChange={(e) => updateItem(item.id, { brand: e.target.value })}
                             placeholder="Brand"
-                            className="mb-1 bg-gray-700 border-gray-600 text-white"
+                            className="bg-gray-700 border-gray-600 text-white text-sm"
                           />
                           <Input
                             value={item.model || ''}
                             onChange={(e) => updateItem(item.id, { model: e.target.value })}
                             placeholder="Model"
-                            className="bg-gray-700 border-gray-600 text-white"
+                            className="bg-gray-700 border-gray-600 text-white text-sm"
                           />
                         </div>
-                        <div>
-                          <label className="text-xs text-gray-400">Value</label>
+                        <div className="space-y-2">
+                          <label className="text-xs text-gray-400">Value & Condition</label>
                           <Input
                             type="number"
                             value={item.estimated_value}
                             onChange={(e) => updateItem(item.id, { estimated_value: parseFloat(e.target.value) || 0 })}
-                            className="mb-1 bg-gray-700 border-gray-600 text-white"
+                            className="bg-gray-700 border-gray-600 text-white text-sm"
+                            placeholder="$0"
                           />
                           <select
                             value={item.condition}
                             onChange={(e) => updateItem(item.id, { condition: e.target.value as 'new' | 'excellent' | 'good' | 'fair' | 'poor' })}
-                            className="w-full text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1"
+                            className="w-full text-xs sm:text-sm bg-gray-700 border-gray-600 text-white rounded px-2 py-1"
                           >
                             <option value="new">New</option>
                             <option value="excellent">Excellent</option>
@@ -569,38 +579,39 @@ Analyze this image and identify all items visible. For each item, provide detail
                             <option value="poor">Poor</option>
                           </select>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                           <label className="text-xs text-gray-400">Quantity</label>
                           <Input
                             type="number"
                             value={item.quantity}
                             onChange={(e) => updateItem(item.id, { quantity: parseInt(e.target.value) || 1 })}
-                            className="bg-gray-700 border-gray-600 text-white"
+                            className="bg-gray-700 border-gray-600 text-white text-sm"
+                            min="1"
                           />
-                          <p className="text-sm font-semibold mt-1 text-white">
+                          <p className="text-xs sm:text-sm font-semibold text-white bg-gray-700/50 px-2 py-1 rounded">
                             Total: ${(item.estimated_value * item.quantity).toLocaleString()}
                           </p>
                         </div>
-                        <div>
+                        <div className="space-y-2">
                           <label className="text-xs text-gray-400">Notes / Serial #</label>
                           <div className="flex gap-1">
                             <Input
                               value={item.notes || ''}
                               onChange={(e) => updateItem(item.id, { notes: e.target.value })}
                               placeholder="Serial #, notes..."
-                              className="flex-1 bg-gray-700 border-gray-600 text-white"
+                              className="flex-1 bg-gray-700 border-gray-600 text-white text-sm"
                             />
                             <Button
                               size="sm"
                               variant="outline"
                               onClick={() => startBarcodeScanner(item.id)}
                               title="Scan barcode"
-                              className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                              className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 active:scale-95 px-2"
                             >
-                              <Scan className="h-4 w-4" />
+                              <Scan className="h-3 w-3 sm:h-4 sm:w-4" />
                             </Button>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">{item.image_ref}</p>
+                          <p className="text-xs text-gray-500">{item.image_ref}</p>
                         </div>
                       </div>
                     </CardContent>
@@ -609,11 +620,11 @@ Analyze this image and identify all items visible. For each item, provide detail
               </div>
 
               {/* Actions */}
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button 
                   onClick={() => setScanResult(null)} 
                   variant="outline"
-                  className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                  className="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 active:scale-95"
                 >
                   <Camera className="h-4 w-4 mr-2" />
                   Scan More Items

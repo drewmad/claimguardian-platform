@@ -79,40 +79,43 @@ function DashboardContent() {
   return (
     <>
       <DashboardLayout>
-        <div className="p-6">
-          <div className="max-w-7xl mx-auto space-y-6">
+        <div className="p-4 sm:p-6">
+          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Enhanced Header */}
-            <div className="flex items-center justify-between mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
               <div>
-                <h1 className="text-3xl font-bold text-white mb-2">Welcome back, {user?.user_metadata?.firstName || 'Property Owner'}</h1>
-                <p className="text-gray-400">Your property is protected and monitored 24/7</p>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome back, {user?.user_metadata?.firstName || 'Property Owner'}</h1>
+                <p className="text-gray-400 text-sm sm:text-base">Your property is protected and monitored 24/7</p>
               </div>
-              <div className="flex items-center gap-3">
-                <Button variant="outline" size="sm" className="bg-gray-700 hover:bg-gray-600 border-gray-600">
-                  <Bell className="h-4 w-4 mr-2" />
-                  <span className="relative">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Button variant="outline" size="sm" className="bg-gray-700 hover:bg-gray-600 border-gray-600 flex-1 sm:flex-none">
+                  <Bell className="h-4 w-4 sm:mr-2" />
+                  <span className="relative hidden sm:inline">
                     Alerts
+                    <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
+                  </span>
+                  <span className="relative sm:hidden">
                     <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full"></span>
                   </span>
                 </Button>
                 <Button className="bg-blue-600 hover:bg-blue-700" size="sm">
-                  <Plus className="h-4 w-4 mr-2" />
-                  Quick Add
+                  <Plus className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Quick Add</span>
                 </Button>
               </div>
             </div>
 
             {/* Enhanced Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90">
-                <CardContent className="p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <Home className="h-6 w-6 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]" />
+                    <Home className="h-6 w-6 sm:h-7 sm:w-7 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]" />
                     <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs backdrop-blur-sm">
                       Active
                     </Badge>
                   </div>
-                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$485,000</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$485,000</p>
                   <p className="text-sm text-gray-400">Property Value</p>
                   <div className="flex items-center gap-1 mt-2">
                     <ArrowUpRight className="h-3 w-3 text-green-400" />
@@ -121,37 +124,37 @@ function DashboardContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90">
-                <CardContent className="p-4">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <Package className="h-6 w-6 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
-                    <span className="text-xs text-gray-500">Updated 2h ago</span>
+                    <Package className="h-6 w-6 sm:h-7 sm:w-7 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
+                    <span className="text-xs text-gray-500 hidden sm:inline">Updated 2h ago</span>
                   </div>
-                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">247</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">247</p>
                   <p className="text-sm text-gray-400">Items Tracked</p>
                   <p className="text-xs text-purple-400 mt-2">$45,320 total value</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] transition-all duration-300 hover:bg-gray-800/90">
-                <CardContent className="p-4">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <Shield className="h-6 w-6 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.3)]" />
-                    <CheckCircle className="h-4 w-4 text-green-400" />
+                    <Shield className="h-6 w-6 sm:h-7 sm:w-7 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.3)]" />
+                    <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
                   </div>
-                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">100%</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">100%</p>
                   <p className="text-sm text-gray-400">Coverage Score</p>
                   <Progress value={100} className="h-1 mt-2" />
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 hover:bg-gray-800/90">
-                <CardContent className="p-4">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <Receipt className="h-6 w-6 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.3)]" />
+                    <Receipt className="h-6 w-6 sm:h-7 sm:w-7 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.3)]" />
                     <span className="text-xs text-green-400">This month</span>
                   </div>
-                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$1,245</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$1,245</p>
                   <p className="text-sm text-gray-400">Expenses</p>
                   <div className="flex items-center gap-1 mt-2">
                     <ArrowDownRight className="h-3 w-3 text-green-400" />
@@ -160,13 +163,13 @@ function DashboardContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90">
-                <CardContent className="p-4">
+              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                <CardContent className="p-4 sm:p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <AlertCircle className="h-6 w-6 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
+                    <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
                     <span className="text-xs text-orange-400 animate-pulse">Action needed</span>
                   </div>
-                  <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
+                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
                   <p className="text-sm text-gray-400">Pending Tasks</p>
                   <p className="text-xs text-orange-400 mt-2">2 urgent, 1 routine</p>
                 </CardContent>
@@ -174,9 +177,9 @@ function DashboardContent() {
             </div>
 
             {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Left Column - 2/3 width */}
-              <div className="lg:col-span-2 space-y-6">
+              <div className="lg:col-span-2 space-y-4 sm:space-y-6">
                 {/* Weather & Environmental */}
                 <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(6,182,212,0.1)] transition-all duration-500">
                   <CardHeader className="pb-3">
@@ -260,62 +263,62 @@ function DashboardContent() {
                     <CardTitle className="text-white">Quick Access</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                       <button 
                         onClick={() => router.push('/dashboard/personal-property')}
-                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(147,51,234,0.15)]"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(147,51,234,0.15)]"
                       >
-                        <Package className="h-8 w-8 text-purple-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Personal Property</span>
+                        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Personal Property</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/expenses')}
-                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]"
                       >
-                        <DollarSign className="h-8 w-8 text-green-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Expenses</span>
+                        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Expenses</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/warranty-watch')}
-                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(234,179,8,0.15)]"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(234,179,8,0.15)]"
                       >
-                        <ShieldCheck className="h-8 w-8 text-yellow-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Warranty Watch</span>
+                        <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Warranty Watch</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/contractors')}
-                        className="p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(251,146,60,0.15)]"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(251,146,60,0.15)]"
                       >
-                        <HardHat className="h-8 w-8 text-orange-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Contractors</span>
+                        <HardHat className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Contractors</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/situation-room')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]"
                       >
-                        <Siren className="h-8 w-8 text-red-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Situation Room</span>
+                        <Siren className="h-6 w-6 sm:h-8 sm:w-8 text-red-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Situation Room</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/claims')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(59,130,246,0.15)]"
                       >
-                        <FileText className="h-8 w-8 text-blue-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Claims</span>
+                        <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Claims</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/maintenance')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(6,182,212,0.15)]"
                       >
-                        <Wrench className="h-8 w-8 text-cyan-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Maintenance</span>
+                        <Wrench className="h-6 w-6 sm:h-8 sm:w-8 text-cyan-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Maintenance</span>
                       </button>
                       <button 
                         onClick={() => router.push('/dashboard/development')}
-                        className="p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-all flex flex-col items-center gap-2 group"
+                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.15)]"
                       >
-                        <Code className="h-8 w-8 text-indigo-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-sm">Development</span>
+                        <Code className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-400 group-hover:scale-110 transition-transform" />
+                        <span className="text-xs sm:text-sm text-center">Development</span>
                       </button>
                     </div>
                   </CardContent>
@@ -397,7 +400,7 @@ function DashboardContent() {
               </div>
 
               {/* Right Column - 1/3 width */}
-              <div className="space-y-6">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Recent Activity */}
                 <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                   <CardHeader>

@@ -190,13 +190,13 @@ export function AdvancedSignupForm() {
   const ConsentItem = ({ id, checked, onCheckedChange, error, children }: { id: string, checked: boolean, onCheckedChange: (checked: boolean) => void, error?: boolean, children: React.ReactNode }) => (
     <div 
       onClick={() => onCheckedChange(!checked)}
-      className={`p-4 rounded-lg border cursor-pointer transition-all ${
+      className={`p-3 sm:p-4 rounded-lg border cursor-pointer transition-all active:scale-95 ${
         error ? 'border-red-500 bg-red-900/10' : 'border-slate-700 bg-slate-800/50 hover:bg-slate-800'
       }`}
     >
       <div className="flex items-start space-x-3">
-        <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} className="mt-1" />
-        <div className="flex-1">
+        <Checkbox id={id} checked={checked} onCheckedChange={onCheckedChange} className="mt-1 flex-shrink-0" />
+        <div className="flex-1 min-w-0">
           {children}
         </div>
       </div>
@@ -230,16 +230,16 @@ export function AdvancedSignupForm() {
         content={modalContent.content}
       />
       <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-800 p-4">
-        <div className="absolute top-8 left-8 flex items-center space-x-2">
-          <Shield className="h-8 w-8 text-blue-400" />
-          <span className="text-2xl font-bold text-white">ClaimGuardian</span>
+        <div className="absolute top-4 sm:top-8 left-4 sm:left-8 flex items-center space-x-2">
+          <Shield className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400" />
+          <span className="text-xl sm:text-2xl font-bold text-white">ClaimGuardian</span>
         </div>
-        <div className="flex items-center justify-center min-h-screen">
+        <div className="flex items-center justify-center min-h-screen pt-16 sm:pt-0">
           <Card className="w-full max-w-2xl bg-slate-900/50 backdrop-blur-sm border-slate-700">
-            <div className="p-8">
-              <div className="text-center mb-8">
-                <h1 className="text-2xl font-bold text-white mb-2">Create Your Account</h1>
-                <p className="text-slate-400">Join thousands of Florida property owners protecting their assets</p>
+            <div className="p-4 sm:p-8">
+              <div className="text-center mb-6 sm:mb-8">
+                <h1 className="text-xl sm:text-2xl font-bold text-white mb-2">Create Your Account</h1>
+                <p className="text-slate-400 text-sm sm:text-base">Join thousands of Florida property owners protecting their assets</p>
               </div>
 
               {error && (
@@ -249,8 +249,8 @@ export function AdvancedSignupForm() {
                 </Alert>
               )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-4">
+              <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="firstName">First Name <span className="text-red-500">*</span></Label>
                     <Input id="firstName" type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)} className="mt-1" placeholder="John" disabled={isLoading} />
@@ -271,7 +271,7 @@ export function AdvancedSignupForm() {
                   <Input id="phone" type="tel" required value={phone} onChange={(e) => setPhone(formatPhone(e.target.value))} className="mt-1" placeholder="(555) 123-4567" disabled={isLoading} />
                 </div>
                 
-                <div className="grid md:grid-cols-2 gap-4">
+                <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="password">Password <span className="text-red-500">*</span></Label>
                     <Input id="password" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} placeholder="••••••••" disabled={isLoading} />

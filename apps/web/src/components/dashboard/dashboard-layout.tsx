@@ -84,28 +84,31 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   return (
     <div className="min-h-screen bg-gray-900 text-white">
       {/* Header */}
-      <header className="bg-gray-800 border-b border-gray-700 px-4 py-3 sticky top-0 z-40">
+      <header className="bg-gray-800 border-b border-gray-700 px-3 sm:px-4 py-3 sticky top-0 z-40">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <button
               onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-              className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-2 hover:bg-gray-700 rounded-lg transition-colors active:scale-95"
             >
               <Menu className="w-5 h-5" />
             </button>
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Shield className="w-6 h-6 text-cyan-400" />
-              <span className="text-xl font-bold text-white">
+              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+              <span className="text-lg sm:text-xl font-bold text-white hidden sm:block">
                 ClaimGuardian
+              </span>
+              <span className="text-lg font-bold text-white sm:hidden">
+                CG
               </span>
             </Link>
           </div>
           
-          <div className="flex items-center gap-3">
-            <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors">
+          <div className="flex items-center gap-1 sm:gap-3">
+            <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors active:scale-95 hidden sm:block">
               <Search className="w-5 h-5 text-gray-400" />
             </button>
-            <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors relative">
+            <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors active:scale-95 relative">
               <Bell className="w-5 h-5 text-gray-400" />
               {notifications > 0 && (
                 <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full text-xs flex items-center justify-center">
