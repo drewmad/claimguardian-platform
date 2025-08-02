@@ -9,8 +9,10 @@
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
   [![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
   [![pnpm](https://img.shields.io/badge/pnpm-10.13.1-orange)](https://pnpm.io/)
-  [![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
+  [![License](https://img.shields.io/badge/License-Proprietary-red)](./GOVERNANCE/LICENSE)
 </div>
+
+> **📋 Core Documentation**: For our mission, vision, and governing documents, see the [`GOVERNANCE/`](./GOVERNANCE) directory.
 
 ## 🚀 Overview
 
