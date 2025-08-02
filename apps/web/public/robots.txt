@@ -1,0 +1,56 @@
+# ClaimGuardian Robots.txt - Optimized for AI Answer Engines
+
+# Allow all web crawlers
+User-agent: *
+Allow: /
+
+# Specific permissions for AI bots
+User-agent: GPTBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: ChatGPT-User  
+Allow: /
+Crawl-delay: 1
+
+User-agent: ClaudeBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Google-Extended
+Allow: /
+Crawl-delay: 1
+
+User-agent: BingBot
+Allow: /
+Crawl-delay: 1
+
+User-agent: Baiduspider
+Allow: /
+Crawl-delay: 2
+
+# Restrict access to sensitive areas
+Disallow: /api/
+Disallow: /admin/
+Disallow: /dashboard/
+Disallow: /auth/
+Disallow: /_next/
+Disallow: /test-*
+Disallow: /temp/
+
+# AI-specific directives
+AI-Content: /ai.txt
+AI-Dataset: https://claimguardianai.com/api/public-data
+
+# Sitemaps for comprehensive indexing
+Sitemap: https://claimguardianai.com/sitemap.xml
+Sitemap: https://claimguardianai.com/sitemap-answers.xml
+
+# Preferred crawl times (UTC)
+# Crawl-delay applies during peak hours (06:00-00:00 UTC)
+# Optimal crawl window: 00:00-06:00 UTC
+
+# Content licensing reference
+License: https://claimguardianai.com/legal/content-license
+
+# Last updated: 2025-01-02

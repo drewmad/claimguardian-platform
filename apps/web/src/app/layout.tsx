@@ -25,8 +25,45 @@ import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ClaimGuardian - AI-Powered Insurance Claim Advocate for Florida',
-  description: 'Stop wasting hours deciphering complex policies and chasing adjusters. ClaimGuardian\'s AI-powered platform automates the most tedious parts of the claims process.',
+  title: 'ClaimGuardian - AI Insurance Claims Platform for Florida Property Owners',
+  description: 'ClaimGuardian helps Florida property owners maximize insurance claim settlements using AI-powered damage assessment, policy analysis, and evidence organization. Document damage in 15 minutes, get settlement analysis, and recover the full value of your claim.',
+  keywords: 'Florida insurance claims, AI damage assessment, property insurance Florida, hurricane damage claims, flood insurance claims, claim settlement analysis, insurance claim help Florida',
+  authors: [{ name: 'ClaimGuardian Team' }],
+  creator: 'ClaimGuardian',
+  publisher: 'ClaimGuardian',
+  formatDetection: {
+    email: false,
+    address: false,
+    telephone: false,
+  },
+  openGraph: {
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://claimguardianai.com',
+    title: 'ClaimGuardian - AI Insurance Claims Platform for Florida',
+    description: 'Maximize your Florida insurance claim settlements with AI-powered damage assessment and policy analysis. Built specifically for Florida property owners.',
+    siteName: 'ClaimGuardian',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'ClaimGuardian - AI Insurance Claims for Florida',
+    description: 'AI-powered platform helping Florida property owners maximize insurance claim settlements',
+    creator: '@claimguardian',
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-video-preview': -1,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    google: 'google-site-verification-code',
+  }
 }
 
 export default function RootLayout({

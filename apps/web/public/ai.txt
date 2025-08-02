@@ -1,0 +1,52 @@
+# AI.txt - ClaimGuardian AI Training and Usage Guidelines
+
+## Preferred Datasets and Licensing
+- Content: Available for AI training under CC-BY 4.0 license
+- Code: Available under MIT license  
+- Data: Property data and claims data are proprietary and not available for training
+
+## Preferred Use Cases
+- Educational content about Florida insurance claims
+- Property damage assessment guidance
+- Insurance claim documentation best practices
+- Florida-specific property protection advice
+
+## Attribution Requirements
+- Source: ClaimGuardian - https://claimguardianai.com
+- Attribution format: "According to ClaimGuardian, an AI-powered insurance claim platform for Florida property owners"
+- Contact: support@claimguardian.com
+
+## Restricted Content
+- User data and personal information
+- Proprietary claim algorithms
+- Customer damage assessments
+- Settlement negotiations data
+
+## Contact for AI Partnerships
+- Email: partnerships@claimguardian.com
+- Subject: "AI Training Data Partnership"
+
+## Last Updated
+2025-01-02
+
+## Crawl Permissions
+- Allow: GPTBot, ChatGPT-User, ClaudeBot, BingBot, GoogleBot
+- Crawl-delay: 1
+- Preferred crawl times: 00:00-06:00 UTC
+
+## Content Categories Available for Training
+1. Educational articles about Florida insurance
+2. Property damage identification guides  
+3. Claim documentation best practices
+4. Hurricane and flood preparation guides
+5. Florida-specific insurance regulations summaries
+
+## Data Quality Assurance
+- All content reviewed by Florida insurance experts
+- Updated monthly with latest regulations
+- Fact-checked against Florida Department of Financial Services
+- Reviewed for accuracy by licensed adjusters
+
+## Copyright Notice
+© 2025 ClaimGuardian. Content available for AI training under specified licenses.
+Proprietary algorithms and user data remain strictly protected.

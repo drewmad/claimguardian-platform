@@ -27,10 +27,30 @@ import { ContentModal } from '@/components/modals/content-modal'
 import { ForgotPasswordModal } from '@/components/modals/forgot-password-modal'
 import { SimpleLoginModal } from '@/components/modals/simple-login-modal'
 import { SimpleSignupModal } from '@/components/modals/simple-signup-modal'
+import { FAQData, HowToData, ProductData, OrganizationData, CLAIMGUARDIAN_FAQS, CLAIM_DOCUMENTATION_STEPS } from '@/components/seo/structured-data'
 
 export default function HomePage() {
   return (
     <div className="min-h-screen w-full">
+      {/* Structured Data for AI Answer Engines */}
+      <OrganizationData />
+      <ProductData 
+        name="ClaimGuardian"
+        description="AI-powered insurance claim assistance platform for Florida property owners. Document damage, analyze policies, and maximize settlements."
+        url="https://claimguardianai.com"
+        offers={{
+          price: "0",
+          priceCurrency: "USD", 
+          availability: "https://schema.org/InStock"
+        }}
+      />
+      <FAQData faqs={CLAIMGUARDIAN_FAQS} />
+      <HowToData 
+        name="How to Document Florida Insurance Claims with AI"
+        description="Complete guide to using ClaimGuardian's AI tools for maximum claim recovery in Florida"
+        steps={CLAIM_DOCUMENTATION_STEPS}
+      />
+      
       <Header />
       
       <main className="relative">

@@ -291,20 +291,34 @@ export default function AIToolsPage() {
       <DashboardLayout>
         <div className="p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-lg">
-                  <Sparkles className="h-6 w-6 text-blue-400" />
+            {/* Enhanced Header */}
+            <div className="text-center mb-12">
+              <div className="flex items-center justify-center gap-3 mb-6">
+                <div className="p-3 bg-gradient-to-br from-blue-600/20 to-purple-600/20 rounded-xl">
+                  <Sparkles className="h-8 w-8 text-blue-400" />
                 </div>
-                <h1 className="text-3xl font-bold text-white">AI Tools</h1>
-                <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">
-                  {AI_TOOLS.filter(t => t.status === 'active').length} Available
+                <h1 className="text-4xl font-bold">
+                  <span className="text-white">Your AI-Powered</span>
+                  <span className="block mt-2 text-3xl bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Insurance Command Center</span>
+                </h1>
+              </div>
+              <p className="text-xl text-gray-300 max-w-4xl mx-auto mb-6">
+                Turn complex claims into simple wins. Each tool maximizes your settlement and minimizes your stress.
+              </p>
+              <div className="flex flex-wrap justify-center items-center gap-6 text-sm">
+                <Badge variant="outline" className="text-green-400 border-green-400/30 bg-green-400/10">
+                  <CheckCircle className="w-3 h-3 mr-1" />
+                  {AI_TOOLS.filter(t => t.status === 'active').length} Tools Ready
+                </Badge>
+                <Badge variant="outline" className="text-blue-400 border-blue-400/30 bg-blue-400/10">
+                  <Clock className="w-3 h-3 mr-1" />
+                  24/7 Available
+                </Badge>
+                <Badge variant="outline" className="text-purple-400 border-purple-400/30 bg-purple-400/10">
+                  <Shield className="w-3 h-3 mr-1" />
+                  Florida Focused
                 </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
-                Powerful AI-powered tools to help you document damage, understand your policy, and navigate the insurance claim process with confidence.
-              </p>
             </div>
 
             {/* Status Bar */}

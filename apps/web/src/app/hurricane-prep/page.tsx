@@ -60,7 +60,7 @@ export default function HurricanePrepPage() {
           </Link>
           
           <p className="mt-4 text-gray-400">
-            Join 12,000+ Floridians using ClaimGuardian to protect their assets
+            Built specifically for Florida property owners
           </p>
         </div>
       </div>
