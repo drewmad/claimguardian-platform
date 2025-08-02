@@ -11,19 +11,19 @@
 #
 
 # --- Core Setup ---
-# Ensure the script is run from the project root and load utilities
 set -e
 source "$(dirname "$0")/utils/common.sh"
 check_project_root
 
-# --- Script Constants ---
-readonly SCRIPTS_DIR="scripts"
-readonly DB_UTILS_DIR="$SCRIPTS_DIR/utils/db"
-readonly DB_CHECKS_DIR="$SCRIPTS_DIR/database/checks"
-readonly DB_FIXES_DIR="$SCRIPTS_DIR/database/fixes"
-readonly DB_SEED_DIR="$SCRIPTS_DIR/database/seed"
-readonly DB_CONTENT_DIR="$SCRIPTS_DIR/database/content"
-readonly DB_MIGRATIONS_DIR="supabase/migrations"
+# --- Environment Validation ---
+if [ -z "$DATABASE_URL" ]; then
+  log_error "DATABASE_URL environment variable is not set."
+  log_info "Please set it and re-run the script. e.g., DATABASE_URL=\`...your_url...\` ./scripts/db.sh"
+  exit 1
+fi
+export DATABASE_URL
+
+
 
 # --- Help Documentation ---
 print_help() {
@@ -69,9 +69,13 @@ print_help() {
 
 run_migration() {
     local action="$1"
-    local option="$2"
-    log_info "Running migration command: $action $option"
-    pnpm node-pg-migrate --envPath ./.env.local "$action" $option
+    local option1="$2"
+    local option2="$3"
+    
+    log_info "Running migration: $action $option1 $option2"
+    # The DATABASE_URL is now in the environment, so this should just work.
+    # We specify the migrations directory and a migrations table name.
+    pnpm exec node-pg-migrate --migrations-dir "$MIGRATIONS_DIR" --migrations-table "cg_migrations" "$action" "$option1" "$option2"
 }
 
 

@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Provides React hooks for managing real-time WebSocket subscriptions for the Situation Room.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Real-time WebSocket hooks for Situation Room monitoring
  * @owner frontend-team
  * @dependencies ["react", "@supabase/supabase-js", "@/types/situation-room"]

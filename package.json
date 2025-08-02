@@ -10,7 +10,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
-    "dev:co-strategist": "node ./scripts/ai/co-strategist.js > co-strategist.log 2>&1",
+    "dev:co-strategist": "node ./scripts/ai/co-strategist.js",
     "lint": "turbo lint",
     "test": "turbo test",
     "type-check": "turbo type-check",

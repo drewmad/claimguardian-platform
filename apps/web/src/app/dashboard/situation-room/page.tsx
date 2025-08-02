@@ -1,3 +1,9 @@
+/**
+ * @fileMetadata
+ * @purpose The main page for the Situation Room, providing a real-time threat monitoring dashboard.
+ * @owner frontend-team
+ * @status active
+ */
 'use client'
 
 import { 
@@ -15,6 +21,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { AIAssessmentPanel } from '@/components/situation-room/ai-assessment-panel'
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { useRealtimeSubscription } from '@/hooks/use-situation-room-realtime'
 import { 
@@ -482,6 +489,9 @@ function OverviewDashboard({
           <IntelligenceFeedPanel feeds={intelligenceFeeds} />
         </div>
       </div>
+      
+      {/* AI Assessment Panel */}
+      <AIAssessmentPanel propertyId="current-property-id" />
       
       {/* AI Recommendations & Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

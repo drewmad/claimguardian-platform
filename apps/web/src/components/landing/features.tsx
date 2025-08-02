@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Displays the value proposition and key features section on the landing page.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Value proposition section with animated cards
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants"]

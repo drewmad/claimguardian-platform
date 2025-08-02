@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose The main public-facing landing page for the ClaimGuardian application.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Public landing page for ClaimGuardian with comprehensive sections
  * @owner frontend-team
  * @dependencies ["react", "@/components/landing/*", "@/components/modals/*"]
@@ -73,6 +79,8 @@ export default function HomePage() {
       <SimpleSignupModal />
       <ForgotPasswordModal />
       <ContentModal />
+      {/* Test comment for Co-Strategist */}
+      {/* Test comment for Co-Strategist */}
     </div>
   )
 }

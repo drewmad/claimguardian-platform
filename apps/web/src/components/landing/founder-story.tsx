@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Displays the founder's story section on the landing page.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Founder story section with animated content
  * @owner frontend-team
  * @dependencies ["react"]

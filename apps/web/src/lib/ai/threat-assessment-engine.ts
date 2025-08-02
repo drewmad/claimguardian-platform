@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Implements the core logic for the AI Threat Assessment Engine, using multiple AI providers.
+ * @owner ai-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose AI Threat Assessment Engine using Gemini AI for real-time property threat analysis
  * @owner ai-team
  * @dependencies ["@google/generative-ai", "@/types/situation-room", "@/lib/ai/client-service"]

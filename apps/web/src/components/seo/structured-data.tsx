@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Provides components for rendering SEO-related structured data (JSON-LD).
+ * @owner seo-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Structured data for AEO/GEO optimization - Answer Engine Optimization
  * @owner seo-team
  * @dependencies ["react"]

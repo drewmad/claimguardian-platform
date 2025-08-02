@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "id": "claude-3-opus",
+      "provider": "anthropic",
+      "tier": "high-cost",
+      "strengths": ["complex-reasoning", "architecture", "synthesis"]
+    },
+    {
+      "id": "claude-3-haiku",
+      "provider": "anthropic",
+      "tier": "low-cost",
+      "strengths": ["docs-update", "summarization", "fast-feedback"]
+    },
+    {
+      "id": "local-llama3-8b",
+      "provider": "local",
+      "tier": "zero-cost",
+      "strengths": ["real-time-linting", "co-strategist-feedback"]
+    },
+    {
+      "id": "gemini-1.5-pro",
+      "provider": "google",
+      "tier": "high-cost",
+      "strengths": ["multimodal-analysis", "large-context", "synthesis"]
+    },
+    {
+      "id": "gemini-1.5-flash",
+      "provider": "google",
+      "tier": "low-cost",
+      "strengths": ["fast-feedback", "summarization", "data-extraction"]
+    }
+  ]
+}

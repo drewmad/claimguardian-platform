@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Provides a UI panel for controlling and viewing AI threat assessments in the Situation Room.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose AI Assessment Panel for Situation Room - displays AI threat assessment status and controls
  * @owner frontend-team
  * @dependencies ["react", "zustand", "lucide-react", "@/lib/stores/situation-room-store"]

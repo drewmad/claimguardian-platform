@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Renders the FAQ section with collapsible questions on the landing page.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose FAQ section with collapsible questions
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]

@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Zustand store for Situation Room state management, handling real-time data and AI assessments.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Zustand store for Situation Room state management
  * @owner frontend-team
  * @dependencies ["zustand", "immer", "@/types/situation-room"]

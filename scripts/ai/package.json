@@ -1,0 +1,9 @@
+{
+  "name": "@claimguardian/ai-scripts",
+  "version": "1.0.0",
+  "private": true,
+  "description": "A collection of AI-powered scripts and agents.",
+  "dependencies": {
+    "chokidar": "^3.6.0"
+  }
+}

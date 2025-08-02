@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Renders the pricing section with different plans and a billing cycle toggle.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Pricing section with annual/monthly toggle
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants", "@/stores/modal-store"]

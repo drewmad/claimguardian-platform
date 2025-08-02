@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose A visually improved and animated hero section component for the landing page.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Improved Hero section with better UI/UX based on critique
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants", "next/link"]
@@ -104,8 +110,7 @@ export function Hero() {
         </Link>
       </div>
 
-      <section className="relative min-h-[80vh] flex items-center justify-center overflow-hidden" 
-        style={{ background: `radial-gradient(circle at 50% 50%, ${COLORS.brand.royalBlue}22 0%, ${COLORS.brand.gunmetal} 100%)` }}>
+      <section className="hero-liquid-glass relative min-h-[80vh] flex items-center justify-center overflow-hidden">
         
         {/* Skip Link for Accessibility */}
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50 focus:ring-2 focus:ring-blue-300">
@@ -144,7 +149,7 @@ export function Hero() {
                 Transform property ownership from anxiety into wealth building • Track warranties • Optimize maintenance • Preserve your legacy
               </p>
               <p className="text-xl font-bold text-green-400">
-                Built by Florida family for generational wealth and community resilience.
+                Built by Florida family for smart property ownership and community resilience.
               </p>
             </div>
           </AnimatedSection>
@@ -153,7 +158,7 @@ export function Hero() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
                 href="/auth/signup-advanced"
-                className="group relative font-bold py-4 px-8 rounded-full text-black text-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 shadow-lg overflow-hidden focus:outline-none focus:ring-4 focus:ring-green-400/50"
+                className="cta-liquid group relative font-bold py-4 px-8 text-black text-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50"
                 style={{ 
                   background: hoveredCTA 
                     ? `linear-gradient(135deg, ${COLORS.brand.royalBlue}, ${COLORS.brand.neonGreen})` 
@@ -164,13 +169,11 @@ export function Hero() {
                 aria-label="Create your complete property digital twin - no credit card required"
               >
                 <span className="relative z-10">Create My Digital Twin →</span>
-                {/* Gradient sweep effect */}
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               </Link>
               
               <Link
                 href="#how-it-works"
-                className="font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-all duration-300 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50"
+                className="liquid-glass-subtle font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-all duration-300 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50"
                 aria-label="Watch our 2-minute product demonstration video"
               >
                 <PlayCircle size={20} aria-hidden="true" />
@@ -186,7 +189,7 @@ export function Hero() {
                 {pills.map(pill => (
                   <button 
                     key={pill.label} 
-                    className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/[.03] backdrop-blur-sm transition-all duration-300 hover:bg-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black"
+                    className="liquid-glass-subtle flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 transition-all duration-300 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black"
                     onClick={() => document.getElementById('who-we-serve')?.scrollIntoView({ behavior: 'smooth' })}
                   >
                     <pill.icon size={16} className="text-green-400"/>

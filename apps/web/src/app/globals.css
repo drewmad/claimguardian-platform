@@ -23,6 +23,9 @@
 /* Import mobile-specific overrides */
 @import '../styles/mobile-overrides.css';
 
+/* Import liquid glass effects */
+@import '../styles/liquid-glass.css';
+
 @layer base {
   html {
     scroll-behavior: smooth;

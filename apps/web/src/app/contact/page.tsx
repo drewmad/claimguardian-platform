@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Renders the contact page with support information and team details.
+ * @owner support-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Contact support page with team information and support email
  * @owner support-team
  * @dependencies ["react", "lucide-react"]

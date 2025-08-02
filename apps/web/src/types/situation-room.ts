@@ -1,5 +1,11 @@
 /**
  * @fileMetadata
+ * @purpose Defines TypeScript types and enums for the real-time Situation Room feature.
+ * @owner frontend-team
+ * @status active
+ */
+/**
+ * @fileMetadata
  * @purpose Type definitions for Situation Room real-time threat monitoring
  * @owner frontend-team
  * @dependencies ["react"]
