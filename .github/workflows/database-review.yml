@@ -1,0 +1,232 @@
+name: Database Schema Review
+
+on:
+  pull_request:
+    paths:
+      - 'supabase/schema.sql'
+      - 'supabase/sql/**'
+      - 'supabase/functions/**'
+
+env:
+  SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+  SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+
+jobs:
+  schema-review:
+    name: Schema Change Review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        
+      - name: Checkout base branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.base.ref }}
+          path: base
+      
+      - name: Setup Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: latest
+      
+      - name: Create review database
+        id: create-review-db
+        run: |
+          # Generate unique branch name for review
+          BRANCH_NAME="review-pr-${{ github.event.pull_request.number }}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          
+          # Delete existing branch if it exists (from previous runs)
+          supabase branches delete $BRANCH_NAME --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} 2>/dev/null || true
+          
+          # Create a review branch (requires Supabase Pro)
+          echo "Creating review branch: $BRANCH_NAME"
+          supabase branches create $BRANCH_NAME --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+          
+          # Wait for branch to be ready
+          sleep 10
+          
+          # Get the review branch ID
+          BRANCH_ID=$(supabase branches list --project-ref ${{ secrets.SUPABASE_PROJECT_ID }} --format json | jq -r ".[] | select(.name == \"$BRANCH_NAME\") | .id")
+          echo "branch_id=$BRANCH_ID" >> $GITHUB_OUTPUT
+          
+          # Get the database URL for the branch
+          REVIEW_URL="postgresql://postgres:${{ secrets.SUPABASE_DB_PASSWORD }}@db.$BRANCH_ID.supabase.co:5432/postgres"
+          echo "review_url=$REVIEW_URL" >> $GITHUB_OUTPUT
+          echo "Review database created at branch: $BRANCH_ID"
+      
+      - name: Apply base schema to review database
+        run: |
+          # Apply the base branch schema first
+          supabase db push --db-url "${{ steps.create-review-db.outputs.review_url }}" < base/supabase/schema.sql
+      
+      - name: Generate schema diff
+        id: schema-diff
+        run: |
+          # Compare schemas and generate diff
+          diff -u base/supabase/schema.sql supabase/schema.sql > schema.diff || true
+          
+          # Check if there are actual changes
+          if [ -s schema.diff ]; then
+            echo "has_changes=true" >> $GITHUB_OUTPUT
+            echo "## Schema Changes" > schema-report.md
+            echo '```sql' >> schema-report.md
+            cat schema.diff >> schema-report.md
+            echo '```' >> schema-report.md
+          else
+            echo "has_changes=false" >> $GITHUB_OUTPUT
+            echo "No schema changes detected." > schema-report.md
+          fi
+      
+      - name: Apply PR schema to review database
+        if: steps.schema-diff.outputs.has_changes == 'true'
+        run: |
+          # Apply the PR schema
+          supabase db push --db-url "${{ steps.create-review-db.outputs.review_url }}" < supabase/schema.sql
+          
+          # Run basic validation queries
+          psql "${{ steps.create-review-db.outputs.review_url }}" << EOF > validation.log 2>&1
+          -- Check for orphaned tables
+          SELECT 'Orphaned tables:', schemaname, tablename 
+          FROM pg_tables 
+          WHERE schemaname NOT IN ('pg_catalog', 'information_schema', 'extensions')
+          AND tablename NOT IN (
+            SELECT tablename FROM pg_tables WHERE schemaname = 'public'
+          );
+          
+          -- Check RLS policies
+          SELECT 'Tables without RLS:', schemaname, tablename 
+          FROM pg_tables 
+          WHERE schemaname = 'public' 
+          AND tablename NOT IN (
+            SELECT tablename FROM pg_policies
+          );
+          
+          -- Check indexes
+          SELECT 'Tables without indexes:', schemaname, tablename
+          FROM pg_tables t
+          WHERE schemaname = 'public'
+          AND NOT EXISTS (
+            SELECT 1 FROM pg_indexes i 
+            WHERE i.schemaname = t.schemaname 
+            AND i.tablename = t.tablename
+          );
+          EOF
+          
+          echo "## Validation Results" >> schema-report.md
+          echo '```' >> schema-report.md
+          cat validation.log >> schema-report.md
+          echo '```' >> schema-report.md
+      
+      - name: Test Edge Functions
+        if: steps.schema-diff.outputs.has_changes == 'true'
+        run: |
+          # Test edge functions against review database
+          if [ -d "supabase/functions" ]; then
+            echo "## Edge Function Tests" >> schema-report.md
+            for func in supabase/functions/*/; do
+              if [ -d "$func" ]; then
+                func_name=$(basename "$func")
+                echo "Testing $func_name..." >> schema-report.md
+                # Deploy and test function
+                supabase functions deploy $func_name --project-ref ${{ steps.create-review-db.outputs.branch_id }}
+              fi
+            done
+          fi
+      
+      - name: Generate TypeScript types
+        if: steps.schema-diff.outputs.has_changes == 'true'
+        run: |
+          # Generate types from review database
+          npx supabase gen types typescript --db-url "${{ steps.create-review-db.outputs.review_url }}" > types.review.ts
+          
+          # Compare with existing types
+          if [ -f "packages/db/src/types/database.ts" ]; then
+            echo "## Type Changes" >> schema-report.md
+            echo '```typescript' >> schema-report.md
+            diff -u packages/db/src/types/database.ts types.review.ts >> schema-report.md || true
+            echo '```' >> schema-report.md
+          fi
+      
+      - name: Comment PR with results
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const report = fs.readFileSync('schema-report.md', 'utf8');
+            
+            // Find existing comment
+            const { data: comments } = await github.rest.issues.listComments({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+            });
+            
+            const botComment = comments.find(comment => 
+              comment.user.type === 'Bot' && 
+              comment.body.includes('## Database Review Report')
+            );
+            
+            const body = `## Database Review Report\n\n${report}\n\n---\n*Review database: \`${{ steps.create-review-db.outputs.branch_name }}\`*`;
+            
+            if (botComment) {
+              await github.rest.issues.updateComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                comment_id: botComment.id,
+                body
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body
+              });
+            }
+      
+      - name: Cleanup review database
+        if: always()
+        continue-on-error: true
+        run: |
+          # Delete the review branch after analysis
+          supabase branches delete ${{ steps.create-review-db.outputs.branch_name }} --project-ref ${{ secrets.SUPABASE_PROJECT_ID }}
+
+  schema-safety-check:
+    name: Schema Safety Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Analyze schema for breaking changes
+        run: |
+          # Check for dangerous operations
+          DANGEROUS_PATTERNS=(
+            "DROP TABLE"
+            "DROP COLUMN" 
+            "ALTER TABLE.*TYPE"
+            "DELETE FROM"
+            "TRUNCATE"
+          )
+          
+          echo "## Safety Check Results" > safety-report.md
+          
+          for pattern in "${DANGEROUS_PATTERNS[@]}"; do
+            if grep -i "$pattern" supabase/schema.sql; then
+              echo "⚠️ **Warning**: Found potentially dangerous operation: \`$pattern\`" >> safety-report.md
+              echo "Please ensure proper data migration plan is in place." >> safety-report.md
+            fi
+          done
+          
+          # Check for missing RLS policies
+          if grep -i "CREATE TABLE" supabase/schema.sql | grep -v "CREATE TABLE IF NOT EXISTS"; then
+            echo "⚠️ **Warning**: New tables detected. Ensure RLS policies are added." >> safety-report.md
+          fi
+          
+      - name: Upload safety report
+        uses: actions/upload-artifact@v4
+        with:
+          name: schema-safety-report
+          path: safety-report.md
