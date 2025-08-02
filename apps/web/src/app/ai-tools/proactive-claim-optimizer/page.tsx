@@ -204,31 +204,40 @@ export default function ProactiveClaimOptimizerPage() {
       <DashboardLayout>
         <div className="p-6">
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
-                className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
-              >
-                ← Back to AI Tools
-              </Link>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-br from-emerald-600/20 to-blue-600/20 rounded-lg">
-                  <Shield className="h-6 w-6 text-emerald-400" />
+            {/* Premium Header */}
+            <div className="mb-8 relative">
+              {/* Premium Background Gradient */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-gradient-to-br from-emerald-400/20 via-green-500/15 to-cyan-600/20 rounded-full blur-3xl animate-pulse opacity-40" />
+              
+              <div className="relative">
+                <Link 
+                  href="/ai-tools" 
+                  className="text-emerald-400 hover:text-emerald-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-emerald-400/20 shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.25)] transition-all duration-300"
+                >
+                  ← Back to AI Tools
+                </Link>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-emerald-600/30 to-cyan-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(34,197,94,0.3)] hover:shadow-[0_25px_80px_rgba(34,197,94,0.4)] transition-all duration-700">
+                    <Shield className="h-8 w-8 text-emerald-300 drop-shadow-[0_0_20px_rgba(34,197,94,0.8)]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Proactive Claim Optimizer</h1>
+                      <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        Beta
+                      </Badge>
+                    </div>
+                    <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                      It caught issues I never would have noticed! Pre-submission review with claim strength scoring and optimization recommendations.
+                    </p>
+                  </div>
                 </div>
-                <h1 className="text-3xl font-bold text-white">Proactive Claim Optimizer</h1>
-                <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
-                  Beta
-                </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
-                It caught issues I never would have noticed! Pre-submission review with claim strength scoring and optimization recommendations.
-              </p>
             </div>
 
             {/* Quick Start */}
             {!analysisComplete && (
-              <Card className="bg-gradient-to-r from-blue-900/20 to-emerald-900/20 border-blue-600/30">
+              <Card className="bg-gradient-to-r from-blue-900/30 to-emerald-900/30 backdrop-blur-xl border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(34,197,94,0.3)] transition-all duration-500">
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -241,7 +250,7 @@ export default function ProactiveClaimOptimizerPage() {
                       onClick={runAnalysis}
                       disabled={isAnalyzing}
                       size="lg"
-                      className="bg-blue-600 hover:bg-blue-700"
+                      className="bg-gradient-to-r from-blue-600 to-emerald-600 hover:from-blue-700 hover:to-emerald-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_40px_rgba(34,197,94,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                     >
                       {isAnalyzing ? (
                         <>
@@ -262,7 +271,7 @@ export default function ProactiveClaimOptimizerPage() {
 
             {/* Analysis Progress */}
             {isAnalyzing && (
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.15)] transition-all duration-500">
                 <CardContent className="p-6">
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
@@ -300,10 +309,12 @@ export default function ProactiveClaimOptimizerPage() {
               <>
                 {/* Claim Strength Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500">
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
-                        <TrendingUp className="h-5 w-5 text-blue-400" />
+                        <div className="p-2 bg-gradient-to-br from-blue-600/30 to-cyan-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.2)]">
+                          <TrendingUp className="h-5 w-5 text-blue-300 drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
+                        </div>
                         Claim Strength
                       </CardTitle>
                     </CardHeader>
@@ -335,10 +346,12 @@ export default function ProactiveClaimOptimizerPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
-                        <Sparkles className="h-5 w-5 text-yellow-400" />
+                        <div className="p-2 bg-gradient-to-br from-yellow-600/30 to-orange-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                          <Sparkles className="h-5 w-5 text-yellow-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+                        </div>
                         Success Probability
                       </CardTitle>
                     </CardHeader>
@@ -360,10 +373,12 @@ export default function ProactiveClaimOptimizerPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.15)] transition-all duration-500">
                     <CardHeader>
                       <CardTitle className="text-white flex items-center gap-2">
-                        <FileCheck className="h-5 w-5 text-green-400" />
+                        <div className="p-2 bg-gradient-to-br from-green-600/30 to-emerald-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(34,197,94,0.2)]">
+                          <FileCheck className="h-5 w-5 text-green-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]" />
+                        </div>
                         Optimization Progress
                       </CardTitle>
                     </CardHeader>
@@ -451,7 +466,7 @@ export default function ProactiveClaimOptimizerPage() {
                   {filteredItems.map((item) => (
                     <Card 
                       key={item.id} 
-                      className={`bg-gray-800 border-gray-700 ${item.completed ? 'opacity-75' : ''}`}
+                      className={`bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500 ${item.completed ? 'opacity-75' : ''}`}
                     >
                       <CardContent className="p-6">
                         <div className="flex items-start gap-4">
@@ -502,9 +517,14 @@ export default function ProactiveClaimOptimizerPage() {
                 </div>
 
                 {/* Export Options */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(147,51,234,0.15)] transition-all duration-500">
                   <CardHeader>
-                    <CardTitle className="text-white">Export Optimization Report</CardTitle>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-purple-600/30 to-pink-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(147,51,234,0.2)]">
+                        <FileText className="h-5 w-5 text-purple-300 drop-shadow-[0_0_12px_rgba(147,51,234,0.6)]" />
+                      </div>
+                      Export Optimization Report
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="flex gap-3">

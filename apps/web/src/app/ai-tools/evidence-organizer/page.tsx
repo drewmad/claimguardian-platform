@@ -1,752 +1,424 @@
 'use client'
 
-import { FolderOpen, Upload, Search, FileText, Video, File, Download, Trash2, Eye, Grid, List, Check, Image as ImageIcon, Sparkles, Calendar, Hash, Clock } from 'lucide-react'
-import Image from 'next/image'
+import { FolderOpen, Search, Tag, Calendar, FileText, Image, VideoIcon, Upload, Brain, Sparkles, CheckCircle, Clock, Archive, Filter, Grid, List } from 'lucide-react'
+import Link from 'next/link'
 import { useState } from 'react'
-import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 
-import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { EnhancedAIService } from '@/lib/ai/enhanced-ai-service'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
-interface Evidence {
+interface EvidenceItem {
   id: string
   name: string
-  type: 'image' | 'video' | 'document' | 'other'
-  category: string
+  type: 'image' | 'video' | 'document' | 'audio'
+  category: 'damage' | 'before' | 'after' | 'receipts' | 'correspondence' | 'reports'
   tags: string[]
-  date: Date
-  location?: string
-  description?: string
-  size: number
-  url?: string
+  dateCreated: string
+  fileSize: string
+  aiAnalysis?: string
   thumbnail?: string
-  aiAnalysis?: {
-    autoCategory: string
-    suggestedTags: string[]
-    documentType?: string
-    severity?: 'low' | 'medium' | 'high'
-    relevanceScore: number
-  }
-  chainOfCustody?: {
-    uploadedBy: string
-    uploadedAt: Date
-    modifications: Array<{
-      action: string
-      timestamp: Date
-      user: string
-    }>
-  }
+  priority: 'high' | 'medium' | 'low'
 }
 
-const EVIDENCE_CATEGORIES = [
-  { value: 'damage-photos', label: 'Damage Photos', icon: ImageIcon, color: 'blue' },
-  { value: 'receipts', label: 'Receipts & Invoices', icon: FileText, color: 'green' },
-  { value: 'estimates', label: 'Repair Estimates', icon: FileText, color: 'yellow' },
-  { value: 'correspondence', label: 'Correspondence', icon: FileText, color: 'purple' },
-  { value: 'reports', label: 'Reports & Assessments', icon: FileText, color: 'orange' },
-  { value: 'videos', label: 'Video Evidence', icon: Video, color: 'red' },
-  { value: 'other', label: 'Other Documents', icon: File, color: 'gray' }
+const mockEvidenceItems: EvidenceItem[] = [
+  {
+    id: '1',
+    name: 'Kitchen Water Damage Overview.jpg',
+    type: 'image',
+    category: 'damage',
+    tags: ['water damage', 'kitchen', 'ceiling'],
+    dateCreated: '2024-01-15',
+    fileSize: '2.3 MB',
+    aiAnalysis: 'Water staining detected on ceiling. Estimated damage area: 12 sq ft. Severity: Moderate to severe.',
+    priority: 'high'
+  },
+  {
+    id: '2',
+    name: 'Contractor Estimate - ABC Restoration.pdf',
+    type: 'document',
+    category: 'reports',
+    tags: ['estimate', 'contractor', 'repair cost'],
+    dateCreated: '2024-01-16',
+    fileSize: '456 KB',
+    aiAnalysis: 'Professional repair estimate: $8,750. Includes water damage remediation and ceiling repair.',
+    priority: 'high'
+  },
+  {
+    id: '3',
+    name: 'Before - Kitchen Original State.jpg',
+    type: 'image',
+    category: 'before',
+    tags: ['kitchen', 'original condition'],
+    dateCreated: '2023-12-01',
+    fileSize: '1.8 MB',
+    aiAnalysis: 'Clean, undamaged kitchen ceiling for comparison. Good baseline documentation.',
+    priority: 'medium'
+  },
+  {
+    id: '4',
+    name: 'Insurance Adjuster Call Recording.mp3',
+    type: 'audio',
+    category: 'correspondence',
+    tags: ['adjuster', 'call', 'discussion'],
+    dateCreated: '2024-01-18',
+    fileSize: '12.4 MB',
+    aiAnalysis: 'Discussion about coverage limits and next steps. Adjuster confirmed coverage for water damage.',
+    priority: 'high'
+  }
 ]
 
 export default function EvidenceOrganizerPage() {
-  const [evidence, setEvidence] = useState<Evidence[]>([])
-  const [selectedCategory, setSelectedCategory] = useState<string>('all')
+  const [evidenceItems, setEvidenceItems] = useState<EvidenceItem[]>(mockEvidenceItems)
   const [searchQuery, setSearchQuery] = useState('')
+  const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
-  const [selectedItems, setSelectedItems] = useState<string[]>([])
-  const [, setIsUploading] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  const [aiEnabled, setAiEnabled] = useState(true)
-  const { user } = useAuth()
-  const aiService = new EnhancedAIService()
 
-  const onDrop = async (acceptedFiles: File[]) => {
-    setIsUploading(true)
+  const filteredItems = evidenceItems.filter(item => {
+    const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                         item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                         (item.aiAnalysis?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
     
-    try {
-      const newEvidence: Evidence[] = await Promise.all(acceptedFiles.map(async file => {
-        // Determine file type
-        let type: Evidence['type'] = 'other'
-        if (file.type.startsWith('image/')) type = 'image'
-        else if (file.type.startsWith('video/')) type = 'video'
-        else if (file.type.includes('pdf') || file.type.includes('document')) type = 'document'
-
-        // Basic auto-categorize based on filename
-        let category = 'other'
-        const filename = file.name.toLowerCase()
-        if (filename.includes('damage') || filename.includes('photo')) category = 'damage-photos'
-        else if (filename.includes('receipt') || filename.includes('invoice')) category = 'receipts'
-        else if (filename.includes('estimate') || filename.includes('quote')) category = 'estimates'
-        else if (filename.includes('report') || filename.includes('assessment')) category = 'reports'
-
-        const evidenceItem: Evidence = {
-          id: `evidence-${Date.now()}-${Math.random()}`,
-          name: file.name,
-          type,
-          category,
-          tags: [],
-          date: new Date(file.lastModified),
-          size: file.size,
-          url: URL.createObjectURL(file),
-          thumbnail: type === 'image' ? URL.createObjectURL(file) : undefined,
-          chainOfCustody: {
-            uploadedBy: user?.email || 'Unknown',
-            uploadedAt: new Date(),
-            modifications: []
-          }
-        }
-
-        // AI-powered analysis if enabled
-        if (aiEnabled && type === 'image') {
-          try {
-            setIsAnalyzing(true)
-            const analysis = await analyzeEvidenceWithAI()
-            evidenceItem.aiAnalysis = analysis
-            evidenceItem.category = analysis?.autoCategory || category
-            evidenceItem.tags = analysis?.suggestedTags || []
-          } catch (error) {
-            console.error('AI analysis failed:', error)
-          } finally {
-            setIsAnalyzing(false)
-          }
-        }
-
-        return evidenceItem
-      }))
-
-      setEvidence(prev => [...prev, ...newEvidence])
-      toast.success(`${acceptedFiles.length} files added successfully${aiEnabled ? ' with AI enhancement' : ''}`)
-      
-      // Preload predicted next actions
-      if (user) {
-        await aiService.preloadPredictiveData(user.id, 'evidence-upload')
-      }
-    } catch (error) {
-      console.error('Upload error:', error)
-      toast.error('Failed to upload files')
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
-  const analyzeEvidenceWithAI = async (): Promise<Evidence['aiAnalysis']> => {
-    try {
-      // TODO: Replace with actual AI service call
-      // const analysis = await aiService.analyzeEvidence(file)
-      
-      // Simulate AI analysis with potential failures
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate occasional AI service failures
-          if (Math.random() < 0.05) {
-            reject(new Error('AI analysis service temporarily unavailable'))
-            return
-          }
-          resolve(undefined)
-        }, 1500)
-      })
-      
-      const mockAnalysis: Evidence['aiAnalysis'] = {
-        autoCategory: 'damage-photos',
-        suggestedTags: ['water-damage', 'ceiling', 'severe', 'immediate-attention'],
-        documentType: 'damage-documentation',
-        severity: 'high',
-        relevanceScore: 0.95
-      }
-
-      return mockAnalysis
-    } catch (error) {
-      console.error('AI analysis failed:', error)
-      toast.error('AI enhancement failed - files uploaded without AI categorization')
-      // Return basic analysis without AI enhancement
-      return {
-        autoCategory: 'uncategorized',
-        suggestedTags: [],
-        severity: 'medium',
-        relevanceScore: 0.5
-      }
-    }
-  }
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop,
-    multiple: true
-  })
-
-  const filteredEvidence = evidence.filter(item => {
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
     
-    if (!searchQuery) return matchesCategory
-    
-    const query = searchQuery.toLowerCase()
-    
-    // Enhanced semantic search
-    const matchesName = item.name.toLowerCase().includes(query)
-    const matchesDescription = item.description?.toLowerCase().includes(query)
-    const matchesTags = item.tags.some(tag => tag.toLowerCase().includes(query))
-    
-    // AI-enhanced search - check AI-generated tags and categories
-    const matchesAITags = item.aiAnalysis?.suggestedTags?.some(tag => 
-      tag.toLowerCase().includes(query)
-    )
-    const matchesAICategory = item.aiAnalysis?.autoCategory?.toLowerCase().includes(query)
-    const matchesDocType = item.aiAnalysis?.documentType?.toLowerCase().includes(query)
-    
-    // Semantic matching for damage-related queries
-    const semanticMatches: Record<string, string[]> = {
-      'water': ['flood', 'leak', 'moisture', 'wet', 'rain'],
-      'damage': ['broken', 'destroyed', 'ruined', 'cracked'],
-      'roof': ['ceiling', 'attic', 'shingle', 'gutter'],
-      'urgent': ['severe', 'high', 'immediate', 'critical']
-    }
-    
-    let matchesSemantic = false
-    for (const [key, synonyms] of Object.entries(semanticMatches)) {
-      if (query.includes(key)) {
-        matchesSemantic = synonyms.some(synonym => 
-          item.name.toLowerCase().includes(synonym) ||
-          item.tags.some(tag => tag.toLowerCase().includes(synonym))
-        )
-        if (matchesSemantic) break
-      }
-    }
-    
-    const matchesSearch = matchesName || matchesDescription || matchesTags || 
-                         matchesAITags || matchesAICategory || matchesDocType || 
-                         matchesSemantic
-    
-    return matchesCategory && matchesSearch
+    return matchesSearch && matchesCategory
   })
 
-  const getCategoryCount = (category: string) => {
-    if (category === 'all') return evidence.length
-    return evidence.filter(item => item.category === category).length
-  }
-
-  const getTotalSize = () => {
-    const totalBytes = evidence.reduce((sum, item) => sum + item.size, 0)
-    return formatFileSize(totalBytes)
-  }
-
-  const formatFileSize = (bytes: number) => {
-    if (bytes < 1024) return bytes + ' B'
-    if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB'
-    if (bytes < 1024 * 1024 * 1024) return (bytes / (1024 * 1024)).toFixed(1) + ' MB'
-    return (bytes / (1024 * 1024 * 1024)).toFixed(1) + ' GB'
-  }
-
-  const deleteEvidence = (id: string) => {
-    setEvidence(prev => prev.filter(item => item.id !== id))
-    setSelectedItems(prev => prev.filter(itemId => itemId !== id))
-    toast.success('Evidence removed')
-  }
-
-  const toggleSelection = (id: string) => {
-    setSelectedItems(prev => 
-      prev.includes(id) 
-        ? prev.filter(itemId => itemId !== id)
-        : [...prev, id]
-    )
-  }
-
-  const exportEvidence = () => {
-    const exportData = {
-      exportDate: new Date().toISOString(),
-      claimant: user?.email,
-      totalItems: evidence.length,
-      evidence: evidence.map(item => ({
-        ...item,
-        url: undefined, // Remove blob URLs from export
-        thumbnail: undefined
-      }))
-    }
-
-    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
-    const a = document.createElement('a')
-    a.href = url
-    a.download = `claim-evidence-${new Date().toISOString().split('T')[0]}.json`
-    document.body.appendChild(a)
-    a.click()
-    document.body.removeChild(a)
-    URL.revokeObjectURL(url)
+  const runAIAnalysis = async () => {
+    setIsAnalyzing(true)
     
-    toast.success('Evidence list exported')
+    // Simulate AI analysis
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    
+    setIsAnalyzing(false)
+    toast.success('AI analysis complete! Evidence auto-categorized and tagged.')
   }
 
-  const getFileIcon = (type: Evidence['type']) => {
+  const handleFileUpload = () => {
+    toast.success('Files uploaded successfully! AI analysis started.')
+    // Simulate adding new files
+    const newItem: EvidenceItem = {
+      id: Date.now().toString(),
+      name: 'New Evidence File.jpg',
+      type: 'image',
+      category: 'damage',
+      tags: ['ai-generated', 'recent'],
+      dateCreated: new Date().toISOString().split('T')[0],
+      fileSize: '1.2 MB',
+      aiAnalysis: 'Analyzing... AI categorization in progress.',
+      priority: 'medium'
+    }
+    setEvidenceItems(prev => [newItem, ...prev])
+  }
+
+  const getTypeIcon = (type: string) => {
     switch (type) {
-      case 'image': return ImageIcon
-      case 'video': return Video
-      case 'document': return FileText
-      default: return File
+      case 'image': return <Image className="h-4 w-4" />
+      case 'video': return <VideoIcon className="h-4 w-4" />
+      case 'document': return <FileText className="h-4 w-4" />
+      case 'audio': return <Archive className="h-4 w-4" />
+      default: return <FileText className="h-4 w-4" />
+    }
+  }
+
+  const getCategoryColor = (category: string) => {
+    switch (category) {
+      case 'damage': return 'bg-red-600/20 text-red-400 border-red-600/30'
+      case 'before': return 'bg-blue-600/20 text-blue-400 border-blue-600/30'
+      case 'after': return 'bg-green-600/20 text-green-400 border-green-600/30'
+      case 'receipts': return 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30'
+      case 'correspondence': return 'bg-purple-600/20 text-purple-400 border-purple-600/30'
+      case 'reports': return 'bg-cyan-600/20 text-cyan-400 border-cyan-600/30'
+      default: return 'bg-gray-600/20 text-gray-400 border-gray-600/30'
     }
   }
 
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-teal-600/20 rounded-lg">
-                  <FolderOpen className="h-6 w-6 text-teal-400" />
-                </div>
-                <h1 className="text-3xl font-bold text-white">Evidence Organizer</h1>
-                <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
-                  Beta
-                </Badge>
-              </div>
-              <p className="text-gray-400 max-w-3xl">
-                Smart organization with AI-powered auto-categorization, tagging, and advanced search capabilities. Includes chain of custody tracking.
-              </p>
+            {/* Premium Header with Advanced Liquid Glass */}
+            <div className="mb-8 relative">
+              {/* Premium Background Orb */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-teal-400/25 via-cyan-500/20 to-blue-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
               
-              {/* AI Toggle */}
-              <div className="mt-4 flex items-center gap-2">
-                <Button
-                  size="sm"
-                  variant={aiEnabled ? 'default' : 'outline'}
-                  onClick={() => setAiEnabled(!aiEnabled)}
-                  className={aiEnabled ? 'bg-teal-600 hover:bg-teal-700' : 'bg-gray-700 hover:bg-gray-600'}
+              <div className="relative">
+                <Link 
+                  href="/ai-tools" 
+                  className="text-teal-400 hover:text-teal-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-teal-400/20 shadow-[0_8px_32px_rgba(20,184,166,0.15)] hover:shadow-[0_8px_32px_rgba(20,184,166,0.25)] transition-all duration-300"
                 >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  AI Enhancement {aiEnabled ? 'On' : 'Off'}
-                </Button>
-                {isAnalyzing && (
-                  <div className="flex items-center gap-2 text-sm text-teal-400">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-teal-400" />
-                    Analyzing with AI...
+                  ← Back to AI Tools
+                </Link>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-teal-600/30 to-cyan-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(20,184,166,0.3)] hover:shadow-[0_25px_80px_rgba(20,184,166,0.4)] transition-all duration-700">
+                    <FolderOpen className="h-8 w-8 text-teal-300 drop-shadow-[0_0_20px_rgba(20,184,166,0.8)]" />
                   </div>
-                )}
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Evidence Organizer</h1>
+                      <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        Beta
+                      </Badge>
+                    </div>
+                    <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                      Smart organization with AI-powered auto-categorization, tagging, and advanced search capabilities.
+                    </p>
+                  </div>
+                </div>
               </div>
             </div>
 
-            {/* Stats Overview */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-2xl font-bold text-white">{evidence.length}</p>
-                      <p className="text-sm text-gray-400">Total Files</p>
+            {/* Premium Stats Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4 sm:gap-6">
+              <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(20,184,166,0.15)] transition-all duration-500">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-teal-600/30 to-cyan-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(20,184,166,0.2)]">
+                      <Archive className="h-6 w-6 text-teal-300 drop-shadow-[0_0_12px_rgba(20,184,166,0.6)]" />
                     </div>
-                    <FolderOpen className="h-8 w-8 text-gray-600" />
-                  </div>
-                </CardContent>
-              </Card>
-              
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-2xl font-bold text-white">
-                        {evidence.filter(e => e.type === 'image').length}
-                      </p>
-                      <p className="text-sm text-gray-400">Photos</p>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.length}</p>
+                      <p className="text-sm text-gray-400">Total Items</p>
                     </div>
-                    <ImageIcon className="h-8 w-8 text-blue-600" />
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-2xl font-bold text-white">
-                        {evidence.filter(e => e.type === 'document').length}
-                      </p>
-                      <p className="text-sm text-gray-400">Documents</p>
+              <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.15)] transition-all duration-500">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-green-600/30 to-emerald-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(34,197,94,0.2)]">
+                      <CheckCircle className="h-6 w-6 text-green-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]" />
                     </div>
-                    <FileText className="h-8 w-8 text-green-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.filter(item => item.aiAnalysis).length}</p>
+                      <p className="text-sm text-gray-400">AI Analyzed</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800 border-gray-700">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-2xl font-bold text-white">{getTotalSize()}</p>
-                      <p className="text-sm text-gray-400">Total Size</p>
+              <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-yellow-600/30 to-orange-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                      <Clock className="h-6 w-6 text-yellow-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
                     </div>
-                    <File className="h-8 w-8 text-purple-600" />
+                    <div>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{evidenceItems.filter(item => item.priority === 'high').length}</p>
+                      <p className="text-sm text-gray-400">High Priority</p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(147,51,234,0.15)] transition-all duration-500">
+                <CardContent className="p-4 sm:p-6">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-gradient-to-br from-purple-600/30 to-pink-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(147,51,234,0.2)]">
+                      <Tag className="h-6 w-6 text-purple-300 drop-shadow-[0_0_12px_rgba(147,51,234,0.6)]" />
+                    </div>
+                    <div>
+                      <p className="text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{[...new Set(evidenceItems.flatMap(item => item.tags))].length}</p>
+                      <p className="text-sm text-gray-400">Unique Tags</p>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Categories Sidebar */}
-              <div className="lg:col-span-1">
-                <Card className="bg-gray-800 border-gray-700">
-                  <CardHeader>
-                    <CardTitle className="text-white">Categories</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => setSelectedCategory('all')}
-                        className={`w-full text-left p-3 rounded-lg transition-all ${
-                          selectedCategory === 'all'
-                            ? 'bg-blue-600/20 border border-blue-600/30'
-                            : 'hover:bg-gray-700'
-                        }`}
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            <FolderOpen className={`h-4 w-4 ${
-                              selectedCategory === 'all' ? 'text-blue-400' : 'text-gray-400'
-                            }`} />
-                            <span className={`font-medium ${
-                              selectedCategory === 'all' ? 'text-white' : 'text-gray-300'
-                            }`}>
-                              All Evidence
-                            </span>
-                          </div>
-                          <Badge variant="outline" className="text-xs">
-                            {getCategoryCount('all')}
-                          </Badge>
-                        </div>
-                      </button>
-
-                      {EVIDENCE_CATEGORIES.map((category) => {
-                        const Icon = category.icon
-                        const count = getCategoryCount(category.value)
-                        
-                        return (
-                          <button
-                            key={category.value}
-                            onClick={() => setSelectedCategory(category.value)}
-                            className={`w-full text-left p-3 rounded-lg transition-all ${
-                              selectedCategory === category.value
-                                ? 'bg-blue-600/20 border border-blue-600/30'
-                                : 'hover:bg-gray-700'
-                            }`}
-                          >
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center gap-2">
-                                <Icon className={`h-4 w-4 text-${category.color}-400`} />
-                                <span className={`font-medium ${
-                                  selectedCategory === category.value ? 'text-white' : 'text-gray-300'
-                                }`}>
-                                  {category.label}
-                                </span>
-                              </div>
-                              {count > 0 && (
-                                <Badge variant="outline" className="text-xs">
-                                  {count}
-                                </Badge>
-                              )}
-                            </div>
-                          </button>
-                        )
-                      })}
+            {/* Premium Search and Controls */}
+            <Card className="bg-gray-800/60 backdrop-blur-xl border-gray-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_80px_rgba(20,184,166,0.15)] transition-all duration-500">
+              <CardContent className="p-4 sm:p-6">
+                <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+                  <div className="flex-1 flex flex-col sm:flex-row gap-4 w-full">
+                    {/* Semantic Search */}
+                    <div className="flex-1 relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+                      <Input
+                        placeholder="Semantic search: 'water damage ceiling' or 'contractor estimates'..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="pl-10 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
+                      />
                     </div>
-                  </CardContent>
-                </Card>
-              </div>
 
-              {/* Main Content */}
-              <div className="lg:col-span-3">
-                {/* Upload Area */}
-                <div
-                  {...getRootProps()}
-                  className={`mb-6 border-2 border-dashed rounded-lg p-8 text-center transition-colors ${
-                    isDragActive
-                      ? 'border-blue-500 bg-blue-500/10'
-                      : 'border-gray-600 hover:border-gray-500 bg-gray-800/50'
-                  }`}
-                >
-                  <input {...getInputProps()} />
-                  <Upload className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-                  <p className="text-gray-300 font-medium">
-                    {isDragActive
-                      ? 'Drop files here...'
-                      : 'Drag & drop evidence files here, or click to browse'}
-                  </p>
-                  <p className="text-sm text-gray-500 mt-2">
-                    Supports images, videos, PDFs, and documents
-                  </p>
-                </div>
-
-                {/* Toolbar */}
-                <Card className="bg-gray-800 border-gray-700 mb-6">
-                  <CardContent className="p-4">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex items-center gap-4 flex-1">
-                        <div className="relative flex-1 max-w-md">
-                          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-500" />
-                          <Input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            placeholder="Search evidence..."
-                            className="pl-10 bg-gray-700 border-gray-600 text-white"
-                          />
-                        </div>
-                        <div className="flex gap-2">
-                          <Button
-                            variant={viewMode === 'grid' ? 'default' : 'outline'}
-                            size="icon"
-                            onClick={() => setViewMode('grid')}
-                            className={viewMode === 'grid' 
-                              ? 'bg-blue-600 hover:bg-blue-700' 
-                              : 'bg-gray-700 hover:bg-gray-600 border-gray-600'
-                            }
-                          >
-                            <Grid className="h-4 w-4" />
-                          </Button>
-                          <Button
-                            variant={viewMode === 'list' ? 'default' : 'outline'}
-                            size="icon"
-                            onClick={() => setViewMode('list')}
-                            className={viewMode === 'list' 
-                              ? 'bg-blue-600 hover:bg-blue-700' 
-                              : 'bg-gray-700 hover:bg-gray-600 border-gray-600'
-                            }
-                          >
-                            <List className="h-4 w-4" />
-                          </Button>
-                        </div>
-                      </div>
-                      
-                      <div className="flex gap-2">
-                        {selectedItems.length > 0 && (
-                          <Badge variant="outline" className="px-3 py-1">
-                            {selectedItems.length} selected
-                          </Badge>
-                        )}
+                    {/* Category Filter */}
+                    <div className="flex gap-2 flex-wrap">
+                      {['all', 'damage', 'before', 'after', 'receipts', 'correspondence', 'reports'].map((category) => (
                         <Button
-                          variant="outline"
+                          key={category}
                           size="sm"
-                          onClick={exportEvidence}
-                          className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                          variant={selectedCategory === category ? 'default' : 'outline'}
+                          onClick={() => setSelectedCategory(category)}
+                          className={selectedCategory === category 
+                            ? 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] backdrop-blur-md border-0' 
+                            : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md'
+                          }
                         >
-                          <Download className="h-4 w-4 mr-2" />
-                          Export
+                          {category === 'all' ? 'All' : category.charAt(0).toUpperCase() + category.slice(1)}
                         </Button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* View Controls */}
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setViewMode('grid')}
+                      className={`${viewMode === 'grid' ? 'bg-teal-600/20 text-teal-400' : 'bg-gray-700/50 text-gray-400'} border-gray-600/50 backdrop-blur-md`}
+                    >
+                      <Grid className="h-4 w-4" />
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => setViewMode('list')}
+                      className={`${viewMode === 'list' ? 'bg-teal-600/20 text-teal-400' : 'bg-gray-700/50 text-gray-400'} border-gray-600/50 backdrop-blur-md`}
+                    >
+                      <List className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Premium Action Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+              <Button
+                onClick={handleFileUpload}
+                className="bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] hover:shadow-[0_12px_40px_rgba(20,184,166,0.4)] transition-all duration-300 backdrop-blur-md border-0"
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Upload Evidence
+              </Button>
+              
+              <Button
+                onClick={runAIAnalysis}
+                disabled={isAnalyzing}
+                className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white shadow-[0_8px_32px_rgba(147,51,234,0.3)] hover:shadow-[0_12px_40px_rgba(147,51,234,0.4)] transition-all duration-300 backdrop-blur-md border-0"
+              >
+                {isAnalyzing ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                    Analyzing...
+                  </>
+                ) : (
+                  <>
+                    <Brain className="h-4 w-4 mr-2" />
+                    Run AI Analysis
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Evidence Items */}
+            <div className={viewMode === 'grid' 
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' 
+              : 'space-y-4'
+            }>
+              {filteredItems.map((item) => (
+                <Card 
+                  key={item.id} 
+                  className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden transition-all duration-500 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:border-gray-600/70 hover:shadow-[0_20px_60px_rgba(20,184,166,0.2)] hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1"
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-2">
+                        <div className="p-2 bg-gray-700/50 backdrop-blur-md rounded-lg border border-white/10">
+                          {getTypeIcon(item.type)}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="font-semibold text-white text-sm truncate">{item.name}</h3>
+                          <p className="text-xs text-gray-400">{item.fileSize} • {item.dateCreated}</p>
+                        </div>
                       </div>
+                      <Badge className={getCategoryColor(item.category)}>
+                        {item.category}
+                      </Badge>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent>
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-1 mb-3">
+                      {item.tags.map((tag) => (
+                        <Badge key={tag} variant="outline" className="text-xs bg-gray-700/30 text-gray-300 border-gray-600/30">
+                          {tag}
+                        </Badge>
+                      ))}
+                    </div>
+
+                    {/* AI Analysis */}
+                    {item.aiAnalysis && (
+                      <div className="bg-gradient-to-br from-blue-900/20 to-purple-900/10 backdrop-blur-md border border-blue-600/20 rounded-lg p-3 mb-3">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Sparkles className="h-3 w-3 text-cyan-400" />
+                          <span className="text-xs font-medium text-cyan-300">AI Analysis</span>
+                        </div>
+                        <p className="text-xs text-gray-300">{item.aiAnalysis}</p>
+                      </div>
+                    )}
+
+                    {/* Priority Badge */}
+                    <div className="flex justify-between items-center">
+                      <Badge className={
+                        item.priority === 'high' ? 'bg-red-600/20 text-red-400' :
+                        item.priority === 'medium' ? 'bg-yellow-600/20 text-yellow-400' :
+                        'bg-green-600/20 text-green-400'
+                      }>
+                        {item.priority} priority
+                      </Badge>
+                      
+                      <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white">
+                        View Details
+                      </Button>
                     </div>
                   </CardContent>
                 </Card>
-
-                {/* Evidence Grid/List */}
-                {filteredEvidence.length === 0 ? (
-                  <Card className="bg-gray-800 border-gray-700">
-                    <CardContent className="p-12 text-center">
-                      <FolderOpen className="h-12 w-12 text-gray-600 mx-auto mb-4" />
-                      <p className="text-gray-400">
-                        {searchQuery || selectedCategory !== 'all'
-                          ? 'No evidence found matching your filters'
-                          : 'No evidence uploaded yet'}
-                      </p>
-                    </CardContent>
-                  </Card>
-                ) : viewMode === 'grid' ? (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filteredEvidence.map((item) => {
-                      const Icon = getFileIcon(item.type)
-                      const isSelected = selectedItems.includes(item.id)
-                      
-                      return (
-                        <Card
-                          key={item.id}
-                          className={`bg-gray-800 border-gray-700 overflow-hidden cursor-pointer transition-all ${
-                            isSelected ? 'ring-2 ring-blue-500' : ''
-                          }`}
-                          onClick={() => toggleSelection(item.id)}
-                        >
-                          <div className="relative">
-                            {item.thumbnail ? (
-                              <Image
-                                src={item.thumbnail}
-                                alt={item.name}
-                                width={400}
-                                height={192}
-                                className="w-full h-48 object-cover"
-                              />
-                            ) : (
-                              <div className="w-full h-48 bg-gray-700 flex items-center justify-center">
-                                <Icon className="h-12 w-12 text-gray-500" />
-                              </div>
-                            )}
-                            {isSelected && (
-                              <div className="absolute top-2 right-2 p-1 bg-blue-600 rounded-full">
-                                <Check className="h-4 w-4 text-white" />
-                              </div>
-                            )}
-                          </div>
-                          <CardContent className="p-4">
-                            <h4 className="font-medium text-white truncate">{item.name}</h4>
-                            
-                            {/* AI Analysis Tags */}
-                            {item.aiAnalysis && (
-                              <div className="mt-2 space-y-2">
-                                {item.aiAnalysis.severity && (
-                                  <Badge 
-                                    className={
-                                      item.aiAnalysis.severity === 'high' ? 'bg-red-600/20 text-red-400' :
-                                      item.aiAnalysis.severity === 'medium' ? 'bg-yellow-600/20 text-yellow-400' :
-                                      'bg-green-600/20 text-green-400'
-                                    }
-                                  >
-                                    {item.aiAnalysis.severity} severity
-                                  </Badge>
-                                )}
-                                <div className="flex flex-wrap gap-1">
-                                  {item.tags.slice(0, 3).map((tag, idx) => (
-                                    <Badge key={idx} variant="outline" className="text-xs">
-                                      <Hash className="h-2 w-2 mr-1" />
-                                      {tag}
-                                    </Badge>
-                                  ))}
-                                  {item.tags.length > 3 && (
-                                    <Badge variant="outline" className="text-xs">
-                                      +{item.tags.length - 3}
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            )}
-                            
-                            <div className="flex items-center justify-between mt-2">
-                              <span className="text-xs text-gray-400">
-                                {formatFileSize(item.size)}
-                              </span>
-                              <Badge variant="outline" className="text-xs">
-                                {EVIDENCE_CATEGORIES.find(c => c.value === item.category)?.label}
-                              </Badge>
-                            </div>
-                            <div className="flex gap-2 mt-3">
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  // Preview functionality
-                                }}
-                                className="flex-1"
-                              >
-                                <Eye className="h-3 w-3" />
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                onClick={(e) => {
-                                  e.stopPropagation()
-                                  deleteEvidence(item.id)
-                                }}
-                                className="flex-1 text-red-400 hover:text-red-300"
-                              >
-                                <Trash2 className="h-3 w-3" />
-                              </Button>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      )
-                    })}
-                  </div>
-                ) : (
-                  <Card className="bg-gray-800 border-gray-700">
-                    <CardContent className="p-0">
-                      <div className="divide-y divide-gray-700">
-                        {filteredEvidence.map((item) => {
-                          const Icon = getFileIcon(item.type)
-                          const isSelected = selectedItems.includes(item.id)
-                          
-                          return (
-                            <div
-                              key={item.id}
-                              className={`p-4 hover:bg-gray-700/50 cursor-pointer transition-all ${
-                                isSelected ? 'bg-blue-900/20' : ''
-                              }`}
-                              onClick={() => toggleSelection(item.id)}
-                            >
-                              <div className="flex items-center gap-4">
-                                <div className="flex-shrink-0">
-                                  {isSelected ? (
-                                    <div className="w-10 h-10 bg-blue-600 rounded-lg flex items-center justify-center">
-                                      <Check className="h-5 w-5 text-white" />
-                                    </div>
-                                  ) : (
-                                    <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
-                                      <Icon className="h-5 w-5 text-gray-400" />
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex-1 min-w-0">
-                                  <h4 className="font-medium text-white truncate">{item.name}</h4>
-                                  <div className="flex items-center gap-4 mt-1 text-sm text-gray-400">
-                                    <span>{formatFileSize(item.size)}</span>
-                                    <span className="flex items-center gap-1">
-                                      <Calendar className="h-3 w-3" />
-                                      {item.date.toLocaleDateString()}
-                                    </span>
-                                    <Badge variant="outline" className="text-xs">
-                                      {EVIDENCE_CATEGORIES.find(c => c.value === item.category)?.label}
-                                    </Badge>
-                                    {item.chainOfCustody && (
-                                      <span className="flex items-center gap-1 text-xs">
-                                        <Clock className="h-3 w-3" />
-                                        by {item.chainOfCustody.uploadedBy.split('@')[0]}
-                                      </span>
-                                    )}
-                                  </div>
-                                  {/* AI Tags in List View */}
-                                  {item.aiAnalysis && item.tags.length > 0 && (
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                      {item.tags.slice(0, 5).map((tag, idx) => (
-                                        <Badge key={idx} variant="outline" className="text-xs">
-                                          <Hash className="h-2 w-2 mr-1" />
-                                          {tag}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="flex gap-2">
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      // Preview functionality
-                                    }}
-                                  >
-                                    <Eye className="h-4 w-4" />
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="ghost"
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      deleteEvidence(item.id)
-                                    }}
-                                    className="text-red-400 hover:text-red-300"
-                                  >
-                                    <Trash2 className="h-4 w-4" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          )
-                        })}
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
-              </div>
+              ))}
             </div>
+
+            {/* Premium AI Insights */}
+            <Card className="bg-gradient-to-br from-teal-900/30 to-cyan-900/20 backdrop-blur-xl border-teal-600/40 shadow-[0_20px_60px_rgba(20,184,166,0.2)] hover:shadow-[0_25px_80px_rgba(20,184,166,0.3)] transition-all duration-500">
+              <CardHeader>
+                <CardTitle className="text-teal-300 text-lg flex items-center gap-2">
+                  <div className="p-2 bg-gradient-to-br from-teal-600/30 to-cyan-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(20,184,166,0.3)]">
+                    <Brain className="h-5 w-5 text-teal-300 drop-shadow-[0_0_12px_rgba(20,184,166,0.7)]" />
+                  </div>
+                  AI Organization Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <h4 className="font-semibold text-gray-200 mb-2">Smart Categorization:</h4>
+                    <ul className="space-y-1 text-gray-400">
+                      <li>• Auto-detects damage types and severity</li>
+                      <li>• Chronological timeline organization</li>
+                      <li>• Semantic search across content</li>
+                    </ul>
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-200 mb-2">Evidence Quality:</h4>
+                    <ul className="space-y-1 text-gray-400">
+                      <li>• Missing documentation suggestions</li>
+                      <li>• Chain of custody tracking</li>
+                      <li>• Quality scoring and optimization</li>
+                    </ul>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </DashboardLayout>

@@ -110,6 +110,26 @@ export async function middleware(request: NextRequest) {
     '/simple-signup-demo'
   ]
   
+  // Define truly public pages that don't require authentication
+  const publicPages = [
+    '/',
+    '/auth/signin',
+    '/auth/signup',
+    '/auth/signup-advanced',
+    '/auth/recover',
+    '/auth/reset-password',
+    '/auth/verify',
+    '/auth/callback',
+    '/legal/privacy-policy',
+    '/legal/terms-of-service',
+    '/legal/ai-use-agreement',
+    '/contact',
+    '/blog',
+    '/guides',
+    '/hurricane-prep',
+    '/onboarding'
+  ]
+  
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return response
   }
@@ -140,20 +160,25 @@ export async function middleware(request: NextRequest) {
     response.headers.set('X-Bot-Confidence', botCheck.confidence.toString())
   }
   
+  // Determine if this is a public page
+  const isPublicPage = publicPages.includes(pathname) || 
+                      publicPages.some(page => pathname.startsWith(page))
+  
   // Create Supabase client for middleware
   const supabase = createClient(request, response)
   
   try {
     const { data: { user }, error } = await supabase.auth.getUser()
     
-    if (error) {
+    // Only log auth errors for protected routes, not public pages
+    if (error && !isPublicPage) {
       console.error('[MIDDLEWARE] Session error:', {
         error: error.message,
         path: pathname,
         timestamp: new Date().toISOString()
       })
       
-      // Handle refresh token errors by clearing cookies
+      // Handle refresh token errors by clearing cookies (only for protected routes)
       if (error.message.includes('refresh_token_not_found') || 
           error.message.includes('Invalid Refresh Token') ||
           error.message.includes('invalid_grant')) {
@@ -165,11 +190,14 @@ export async function middleware(request: NextRequest) {
           return NextResponse.redirect(new URL('/auth/signin?message=Session expired', request.url))
         }
       }
+    } else if (error && isPublicPage) {
+      // For public pages, silently handle auth errors without logging
+      // This is expected behavior - public pages don't require auth
     }
     
-    // Double-validate session for extra security on protected routes
+    // Double-validate session for extra security on protected routes only
     let validatedUser = null
-    if (user && !error) {
+    if (user && !error && !isPublicPage) {
       const { data: { user: validatedUserFromGet }, error: userError } = await supabase.auth.getUser()
       
       if (!userError && validatedUserFromGet) {
@@ -190,6 +218,9 @@ export async function middleware(request: NextRequest) {
           await supabase.auth.signOut()
         }
       }
+    } else if (user && !error && isPublicPage) {
+      // For public pages, if user exists, use them directly without double validation
+      validatedUser = user
     }
     
     // Audit logging for security and compliance
@@ -211,8 +242,8 @@ export async function middleware(request: NextRequest) {
         timestamp: new Date().toISOString()
       }
       
-      // Log authenticated requests to audit_logs
-      if (validatedUser) {
+      // Log authenticated requests to audit_logs (only for protected routes to reduce noise)
+      if (validatedUser && !isPublicPage) {
         await supabase.from('audit_logs').insert({
           user_id: validatedUser.id,
           action: `${request.method} ${pathname}`,

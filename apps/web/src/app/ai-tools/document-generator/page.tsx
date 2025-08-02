@@ -1,6 +1,7 @@
 'use client'
 
 import { FileText, Download, Copy, Sparkles, AlertTriangle, FileSearch, Calendar, Shield, Edit, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
@@ -194,27 +195,42 @@ The letter should be ready to send after adding the recipient's information.`
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-indigo-600/20 rounded-lg">
-                  <FileSearch className="h-6 w-6 text-indigo-400" />
+            {/* Premium Header with Advanced Liquid Glass */}
+            <div className="mb-8 relative">
+              {/* Premium Background Orb */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-indigo-400/25 via-purple-500/20 to-blue-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
+              
+              <div className="relative">
+                <Link 
+                  href="/ai-tools" 
+                  className="text-indigo-400 hover:text-indigo-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-indigo-400/20 shadow-[0_8px_32px_rgba(99,102,241,0.15)] hover:shadow-[0_8px_32px_rgba(99,102,241,0.25)] transition-all duration-300"
+                >
+                  ← Back to AI Tools
+                </Link>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-indigo-600/30 to-purple-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(99,102,241,0.3)] hover:shadow-[0_25px_80px_rgba(99,102,241,0.4)] transition-all duration-700">
+                    <FileSearch className="h-8 w-8 text-indigo-300 drop-shadow-[0_0_20px_rgba(99,102,241,0.8)]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Document Generator</h1>
+                      <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        Beta
+                      </Badge>
+                    </div>
+                    <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                      Generate professional insurance claim documents, appeals, and correspondence. Our AI ensures proper formatting, legal language, and Florida-specific requirements.
+                    </p>
+                  </div>
                 </div>
-                <h1 className="text-3xl font-bold text-white">Document Generator</h1>
-                <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">
-                  AI Powered
-                </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
-                Generate professional insurance claim documents, appeals, and correspondence. Our AI ensures proper formatting, legal language, and Florida-specific requirements.
-              </p>
             </div>
 
-            {/* API Key Check */}
+            {/* Premium API Key Check */}
             {!hasOpenAIKey && !hasGeminiKey && (
-              <Alert className="bg-red-900/20 border-red-600/30">
+              <Alert className="bg-red-900/20 border-red-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(220,38,38,0.2)]">
                 <AlertTriangle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-300">
                   AI API keys required. Please configure OpenAI or Gemini API keys to use this tool.
@@ -223,11 +239,16 @@ The letter should be ready to send after adding the recipient's information.`
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Template Selection */}
+              {/* Premium Template Selection */}
               <div className="lg:col-span-1">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(99,102,241,0.15)] transition-all duration-500">
                   <CardHeader>
-                    <CardTitle className="text-white">Document Templates</CardTitle>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-indigo-600/30 to-purple-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(99,102,241,0.2)]">
+                        <FileText className="h-5 w-5 text-indigo-300 drop-shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
+                      </div>
+                      Document Templates
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2">
@@ -243,19 +264,19 @@ The letter should be ready to send after adding the recipient's information.`
                             }}
                             className={`w-full text-left p-3 rounded-lg transition-all ${
                               selectedTemplate?.id === template.id
-                                ? 'bg-blue-600/20 border border-blue-600/30'
-                                : 'hover:bg-gray-700'
+                                ? 'bg-indigo-600/20 border border-indigo-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(99,102,241,0.2)]'
+                                : 'hover:bg-gray-700/50 backdrop-blur-md'
                             }`}
                           >
                             <div className="flex items-start gap-3">
                               <div className={`p-2 rounded-lg ${
                                 selectedTemplate?.id === template.id
-                                  ? 'bg-blue-600/20'
-                                  : 'bg-gray-700'
+                                  ? 'bg-indigo-600/20 backdrop-blur-md border border-white/10'
+                                  : 'bg-gray-700/50 backdrop-blur-md'
                               }`}>
                                 <Icon className={`h-4 w-4 ${
                                   selectedTemplate?.id === template.id
-                                    ? 'text-blue-400'
+                                    ? 'text-indigo-400 drop-shadow-[0_0_8px_rgba(99,102,241,0.5)]'
                                     : 'text-gray-400'
                                 }`} />
                               </div>
@@ -286,19 +307,21 @@ The letter should be ready to send after adding the recipient's information.`
                 </Card>
               </div>
 
-              {/* Form/Preview */}
+              {/* Premium Form/Preview */}
               <div className="lg:col-span-2">
                 {!selectedTemplate ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
                     <CardContent className="p-12 text-center">
-                      <FileText className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                      <div className="p-4 bg-gradient-to-br from-indigo-600/30 to-purple-600/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(99,102,241,0.2)] mx-auto mb-4 w-fit">
+                        <FileText className="h-12 w-12 text-indigo-300 drop-shadow-[0_0_12px_rgba(99,102,241,0.6)]" />
+                      </div>
                       <p className="text-gray-400">
                         Select a document template to get started
                       </p>
                     </CardContent>
                   </Card>
                 ) : showPreview ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.15)] transition-all duration-500">
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-white">Document Preview</CardTitle>
@@ -307,7 +330,7 @@ The letter should be ready to send after adding the recipient's information.`
                             variant="outline"
                             size="sm"
                             onClick={() => setShowPreview(false)}
-                            className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+                            className="bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md"
                           >
                             <Edit className="h-4 w-4 mr-2" />
                             Edit
@@ -315,7 +338,7 @@ The letter should be ready to send after adding the recipient's information.`
                           <Button
                             size="sm"
                             onClick={copyToClipboard}
-                            className="bg-blue-600 hover:bg-blue-700 text-white"
+                            className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] backdrop-blur-md border-0"
                           >
                             <Copy className="h-4 w-4 mr-2" />
                             Copy
@@ -323,7 +346,7 @@ The letter should be ready to send after adding the recipient's information.`
                           <Button
                             size="sm"
                             onClick={downloadDocument}
-                            className="bg-green-600 hover:bg-green-700 text-white"
+                            className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-[0_8px_32px_rgba(34,197,94,0.3)] backdrop-blur-md border-0"
                           >
                             <Download className="h-4 w-4 mr-2" />
                             Download
@@ -332,7 +355,7 @@ The letter should be ready to send after adding the recipient's information.`
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="bg-gray-900 border border-gray-700 rounded-lg p-6">
+                      <div className="bg-gray-900/70 border border-gray-700/50 rounded-lg p-6 backdrop-blur-md">
                         <pre className="whitespace-pre-wrap text-gray-300 text-sm font-mono">
                           {generatedDocument}
                         </pre>
@@ -340,7 +363,7 @@ The letter should be ready to send after adding the recipient's information.`
                     </CardContent>
                   </Card>
                 ) : (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(99,102,241,0.15)] transition-all duration-500">
                     <CardHeader>
                       <CardTitle className="text-white">{selectedTemplate.title}</CardTitle>
                       <p className="text-sm text-gray-400">{selectedTemplate.description}</p>
@@ -362,7 +385,7 @@ The letter should be ready to send after adding the recipient's information.`
                                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                                 placeholder={field.placeholder}
                                 required={field.required}
-                                className="mt-1 bg-gray-700 border-gray-600 text-white"
+                                className="mt-1 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                                 rows={4}
                               />
                             ) : field.type === 'select' ? (
@@ -370,7 +393,7 @@ The letter should be ready to send after adding the recipient's information.`
                                 value={formData[field.id] || ''}
                                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                                 required={field.required}
-                                className="mt-1 w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2"
+                                className="mt-1 w-full bg-gray-700/50 border-gray-600/50 text-white rounded-md px-3 py-2 backdrop-blur-md"
                               >
                                 <option value="">Select {field.label}</option>
                                 {field.options?.map(option => (
@@ -384,7 +407,7 @@ The letter should be ready to send after adding the recipient's information.`
                                 onChange={(e) => handleFieldChange(field.id, e.target.value)}
                                 placeholder={field.placeholder}
                                 required={field.required}
-                                className="mt-1 bg-gray-700 border-gray-600 text-white"
+                                className="mt-1 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                               />
                             )}
                           </div>
@@ -394,7 +417,7 @@ The letter should be ready to send after adding the recipient's information.`
                           <Button
                             type="submit"
                             disabled={!isFormValid || isGenerating || (!hasOpenAIKey && !hasGeminiKey)}
-                            className="w-full bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
+                            className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white shadow-[0_8px_32px_rgba(99,102,241,0.3)] hover:shadow-[0_12px_40px_rgba(99,102,241,0.4)] transition-all duration-300 backdrop-blur-md border-0 disabled:opacity-50"
                           >
                             {isGenerating ? (
                               <>
@@ -416,11 +439,13 @@ The letter should be ready to send after adding the recipient's information.`
               </div>
             </div>
 
-            {/* Tips */}
-            <Card className="bg-blue-900/20 border-blue-600/30">
+            {/* Premium Document Tips */}
+            <Card className="bg-gradient-to-br from-blue-900/30 to-indigo-900/20 backdrop-blur-xl border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.3)] transition-all duration-500">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <Shield className="h-6 w-6 text-blue-400 flex-shrink-0 mt-0.5" />
+                  <div className="p-3 bg-gradient-to-br from-blue-600/30 to-indigo-600/20 backdrop-blur-md rounded-xl border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.3)] flex-shrink-0 mt-0.5">
+                    <Shield className="h-6 w-6 text-blue-300 drop-shadow-[0_0_12px_rgba(59,130,246,0.7)]" />
+                  </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-2">Document Tips</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">

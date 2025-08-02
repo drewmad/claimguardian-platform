@@ -377,26 +377,35 @@ export default function ARDamageDocumenterPage() {
       <DashboardLayout>
         <div className="p-6">
           <div className="max-w-6xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
-                className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
-              >
-                ← Back to AI Tools
-              </Link>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-br from-cyan-600/20 to-blue-600/20 rounded-lg">
-                  <Camera className="h-6 w-6 text-cyan-400" />
+            {/* Premium Header */}
+            <div className="mb-8 relative">
+              {/* Premium Background Gradient */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-purple-600/20 rounded-full blur-3xl animate-pulse opacity-40" />
+              
+              <div className="relative">
+                <Link 
+                  href="/ai-tools" 
+                  className="text-cyan-400 hover:text-cyan-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-cyan-400/20 shadow-[0_8px_32px_rgba(6,182,212,0.15)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.25)] transition-all duration-300"
+                >
+                  ← Back to AI Tools
+                </Link>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-cyan-600/30 to-blue-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(6,182,212,0.3)] hover:shadow-[0_25px_80px_rgba(6,182,212,0.4)] transition-all duration-700">
+                    <Camera className="h-8 w-8 text-cyan-300 drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">AR Damage Documenter</h1>
+                      <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        Beta
+                      </Badge>
+                    </div>
+                    <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                      Professional documentation in minutes! Use WebXR measurement tools with AI validation and 3D visualization.
+                    </p>
+                  </div>
                 </div>
-                <h1 className="text-3xl font-bold text-white">AR Damage Documenter</h1>
-                <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
-                  Beta
-                </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
-                Professional documentation in minutes! Use WebXR measurement tools with AI validation and 3D visualization.
-              </p>
             </div>
 
             {/* AR Support Alert */}
@@ -413,7 +422,7 @@ export default function ARDamageDocumenterPage() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Capture/Preview Area */}
               <div className="lg:col-span-2">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_20px_60px_rgba(0,0,0,0.4)] hover:shadow-[0_25px_80px_rgba(6,182,212,0.15)] transition-all duration-500">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Damage Capture</CardTitle>
@@ -960,10 +969,12 @@ export default function ARDamageDocumenterPage() {
               {/* Tools Panel */}
               <div className="space-y-6">
                 {/* Image Collection Summary */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(6,182,212,0.15)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <FileImage className="h-5 w-5 text-cyan-400" />
+                      <div className="p-2 bg-gradient-to-br from-cyan-600/30 to-blue-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(6,182,212,0.2)]">
+                        <FileImage className="h-5 w-5 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]" />
+                      </div>
                       Photo Collection
                     </CardTitle>
                   </CardHeader>
@@ -1050,10 +1061,12 @@ export default function ARDamageDocumenterPage() {
                 </Card>
                 
                 {/* Measurements List */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Ruler className="h-5 w-5 text-blue-400" />
+                      <div className="p-2 bg-gradient-to-br from-blue-600/30 to-indigo-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.2)]">
+                        <Ruler className="h-5 w-5 text-blue-300 drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
+                      </div>
                       Measurements
                     </CardTitle>
                   </CardHeader>
@@ -1092,10 +1105,12 @@ export default function ARDamageDocumenterPage() {
                 </Card>
 
                 {/* Annotations List */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(6,182,212,0.15)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white flex items-center gap-2">
-                      <Info className="h-5 w-5 text-cyan-400" />
+                      <div className="p-2 bg-gradient-to-br from-cyan-600/30 to-teal-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(6,182,212,0.2)]">
+                        <Info className="h-5 w-5 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.6)]" />
+                      </div>
                       Damage Annotations
                     </CardTitle>
                   </CardHeader>
@@ -1148,15 +1163,20 @@ export default function ARDamageDocumenterPage() {
                 </Card>
 
                 {/* Actions */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(147,51,234,0.15)] transition-all duration-500">
                   <CardHeader>
-                    <CardTitle className="text-white">Actions</CardTitle>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-purple-600/30 to-pink-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(147,51,234,0.2)]">
+                        <Zap className="h-5 w-5 text-purple-300 drop-shadow-[0_0_12px_rgba(147,51,234,0.6)]" />
+                      </div>
+                      Actions
+                    </CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-3">
                     <Button
                       onClick={generateReport}
                       disabled={capturedImages.length === 0 || isProcessing}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                     >
                       {isProcessing ? (
                         <>
@@ -1177,7 +1197,7 @@ export default function ARDamageDocumenterPage() {
                           // Generate comparison report
                           toast.success('Comparison report generated')
                         }}
-                        className="w-full bg-green-600 hover:bg-green-700"
+                        className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white shadow-[0_8px_32px_rgba(34,197,94,0.3)] hover:shadow-[0_12px_40px_rgba(34,197,94,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                       >
                         <ArrowLeftRight className="h-4 w-4 mr-2" />
                         ArrowLeftRight Analysis
@@ -1187,7 +1207,7 @@ export default function ARDamageDocumenterPage() {
                     <Button
                       onClick={() => setCurrentMode('ai-analysis')}
                       disabled={capturedImages.length === 0}
-                      className="w-full bg-cyan-600 hover:bg-cyan-700"
+                      className="w-full bg-gradient-to-r from-cyan-600 to-teal-600 hover:from-cyan-700 hover:to-teal-700 text-white shadow-[0_8px_32px_rgba(6,182,212,0.3)] hover:shadow-[0_12px_40px_rgba(6,182,212,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                     >
                       <Brain className="h-4 w-4 mr-2" />
                       AI Policy Analysis
@@ -1206,9 +1226,14 @@ export default function ARDamageDocumenterPage() {
                 </Card>
 
                 {/* AI Insights */}
-                <Card className="bg-blue-900/20 border-blue-600/30">
+                <Card className="bg-gradient-to-br from-blue-900/30 to-cyan-900/20 backdrop-blur-xl border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.3)] transition-all duration-500">
                   <CardHeader>
-                    <CardTitle className="text-blue-400 text-lg">AI Insights</CardTitle>
+                    <CardTitle className="text-cyan-300 text-lg flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-cyan-600/30 to-blue-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(6,182,212,0.3)]">
+                        <Brain className="h-5 w-5 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.7)]" />
+                      </div>
+                      AI Insights
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-2 text-sm">

@@ -1,6 +1,7 @@
 'use client'
 
 import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
+import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
@@ -155,27 +156,42 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-6">
+        <div className="p-4 sm:p-6">
           <div className="max-w-7xl mx-auto space-y-6">
-            {/* Header */}
-            <div className="mb-8">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-yellow-600/20 rounded-lg">
-                  <Calculator className="h-6 w-6 text-yellow-400" />
+            {/* Premium Header with Advanced Liquid Glass */}
+            <div className="mb-8 relative">
+              {/* Premium Background Orb */}
+              <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-yellow-400/25 via-orange-500/20 to-amber-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
+              
+              <div className="relative">
+                <Link 
+                  href="/ai-tools" 
+                  className="text-yellow-400 hover:text-yellow-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-yellow-400/20 shadow-[0_8px_32px_rgba(245,158,11,0.15)] hover:shadow-[0_8px_32px_rgba(245,158,11,0.25)] transition-all duration-300"
+                >
+                  ← Back to AI Tools
+                </Link>
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="p-4 bg-gradient-to-br from-yellow-600/30 to-orange-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(245,158,11,0.3)] hover:shadow-[0_25px_80px_rgba(245,158,11,0.4)] transition-all duration-700">
+                    <Calculator className="h-8 w-8 text-yellow-300 drop-shadow-[0_0_20px_rgba(245,158,11,0.8)]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <h1 className="text-4xl font-bold text-white drop-shadow-[0_2px_20px_rgba(255,255,255,0.3)]">Settlement Analyzer</h1>
+                      <Badge className="bg-gradient-to-r from-yellow-600/30 to-orange-600/30 text-yellow-300 border-yellow-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        Beta
+                      </Badge>
+                    </div>
+                    <p className="text-gray-300 max-w-3xl drop-shadow-[0_2px_10px_rgba(0,0,0,0.3)]">
+                      Analyze settlement offers and compare with typical payouts for similar claims. Get AI-powered insights to help you make informed decisions.
+                    </p>
+                  </div>
                 </div>
-                <h1 className="text-3xl font-bold text-white">Settlement Analyzer</h1>
-                <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">
-                  AI Powered
-                </Badge>
               </div>
-              <p className="text-gray-400 max-w-3xl">
-                Analyze settlement offers and compare with typical payouts for similar claims. Get AI-powered insights to help you make informed decisions.
-              </p>
             </div>
 
-            {/* API Key Check */}
+            {/* Premium API Key Check */}
             {!hasOpenAIKey && !hasGeminiKey && (
-              <Alert className="bg-red-900/20 border-red-600/30">
+              <Alert className="bg-red-900/20 border-red-600/30 backdrop-blur-md shadow-[0_8px_32px_rgba(220,38,38,0.2)]">
                 <AlertTriangle className="h-4 w-4 text-red-400" />
                 <AlertDescription className="text-red-300">
                   AI API keys required. Please configure OpenAI or Gemini API keys to use this tool.
@@ -184,11 +200,16 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
             )}
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Input Form */}
+              {/* Premium Input Form */}
               <div className="lg:col-span-1">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
                   <CardHeader>
-                    <CardTitle className="text-white">Settlement Details</CardTitle>
+                    <CardTitle className="text-white flex items-center gap-2">
+                      <div className="p-2 bg-gradient-to-br from-yellow-600/30 to-orange-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(245,158,11,0.2)]">
+                        <DollarSign className="h-5 w-5 text-yellow-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+                      </div>
+                      Settlement Details
+                    </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <form className="space-y-4" onSubmit={(e) => {
@@ -206,7 +227,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                             value={claimAmount}
                             onChange={(e) => setClaimAmount(e.target.value)}
                             placeholder="50000"
-                            className="pl-10 bg-gray-700 border-gray-600 text-white"
+                            className="pl-10 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                             required
                           />
                         </div>
@@ -223,7 +244,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                             value={offeredAmount}
                             onChange={(e) => setOfferedAmount(e.target.value)}
                             placeholder="35000"
-                            className="pl-10 bg-gray-700 border-gray-600 text-white"
+                            className="pl-10 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                             required
                           />
                         </div>
@@ -240,7 +261,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                             value={deductible}
                             onChange={(e) => setDeductible(e.target.value)}
                             placeholder="2500"
-                            className="pl-10 bg-gray-700 border-gray-600 text-white"
+                            className="pl-10 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                           />
                         </div>
                       </div>
@@ -252,7 +273,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                         <select
                           value={damageType}
                           onChange={(e) => setDamageType(e.target.value)}
-                          className="mt-1 w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2"
+                          className="mt-1 w-full bg-gray-700/50 border-gray-600/50 text-white rounded-md px-3 py-2 backdrop-blur-md"
                           required
                         >
                           <option value="">Select damage type</option>
@@ -272,7 +293,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                         <select
                           value={propertyType}
                           onChange={(e) => setPropertyType(e.target.value)}
-                          className="mt-1 w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2"
+                          className="mt-1 w-full bg-gray-700/50 border-gray-600/50 text-white rounded-md px-3 py-2 backdrop-blur-md"
                         >
                           <option value="">Select property type</option>
                           <option value="single-family">Single Family Home</option>
@@ -289,7 +310,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                           value={damageDescription}
                           onChange={(e) => setDamageDescription(e.target.value)}
                           placeholder="Describe the damage and any relevant details..."
-                          className="mt-1 bg-gray-700 border-gray-600 text-white"
+                          className="mt-1 bg-gray-700/50 border-gray-600/50 text-white placeholder-gray-400 backdrop-blur-md"
                           rows={4}
                         />
                       </div>
@@ -297,7 +318,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       <Button
                         type="submit"
                         disabled={!isFormValid || isAnalyzing || (!hasOpenAIKey && !hasGeminiKey)}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                        className="w-full bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-[0_8px_32px_rgba(245,158,11,0.3)] hover:shadow-[0_12px_40px_rgba(245,158,11,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                       >
                         {isAnalyzing ? (
                           <>
@@ -316,12 +337,14 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                 </Card>
               </div>
 
-              {/* Analysis Results */}
+              {/* Premium Analysis Results */}
               <div className="lg:col-span-2">
                 {!analysis ? (
-                  <Card className="bg-gray-800 border-gray-700">
+                  <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)]">
                     <CardContent className="p-12 text-center">
-                      <BarChart className="h-12 w-12 text-gray-600 mx-auto mb-4" />
+                      <div className="p-4 bg-gradient-to-br from-yellow-600/30 to-orange-600/20 backdrop-blur-md rounded-2xl border border-white/10 shadow-[0_8px_32px_rgba(245,158,11,0.2)] mx-auto mb-4 w-fit">
+                        <BarChart className="h-12 w-12 text-yellow-300 drop-shadow-[0_0_12px_rgba(245,158,11,0.6)]" />
+                      </div>
                       <p className="text-gray-400">
                         Enter settlement details to see AI analysis
                       </p>
@@ -330,7 +353,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                 ) : (
                   <div className="space-y-6">
                     {/* Main Recommendation */}
-                    <Card className="bg-gray-800 border-gray-700 overflow-hidden">
+                    <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
                       <div className={`p-6 bg-gradient-to-r ${
                         analysis.recommendation === 'accept' 
                           ? 'from-green-900/20 to-green-800/20' 
@@ -377,12 +400,14 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </CardContent>
                     </Card>
 
-                    {/* Comparisons */}
+                    {/* Premium Comparisons */}
                     {analysis.comparisons.length > 0 && (
-                      <Card className="bg-gray-800 border-gray-700">
+                      <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500">
                         <CardHeader>
                           <CardTitle className="text-white flex items-center gap-2">
-                            <BarChart className="h-5 w-5" />
+                            <div className="p-2 bg-gradient-to-br from-blue-600/30 to-cyan-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.2)]">
+                              <BarChart className="h-5 w-5 text-blue-300 drop-shadow-[0_0_12px_rgba(59,130,246,0.6)]" />
+                            </div>
                             Market Comparisons
                           </CardTitle>
                         </CardHeader>
@@ -419,12 +444,14 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </Card>
                     )}
 
-                    {/* Negotiation Points */}
+                    {/* Premium Negotiation Points */}
                     {analysis.negotiationPoints.length > 0 && (
-                      <Card className="bg-gray-800 border-gray-700">
+                      <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.15)] transition-all duration-500">
                         <CardHeader>
                           <CardTitle className="text-white flex items-center gap-2">
-                            <Target className="h-5 w-5" />
+                            <div className="p-2 bg-gradient-to-br from-green-600/30 to-emerald-600/20 backdrop-blur-md rounded-lg border border-white/10 shadow-[0_8px_32px_rgba(34,197,94,0.2)]">
+                              <Target className="h-5 w-5 text-green-300 drop-shadow-[0_0_12px_rgba(34,197,94,0.6)]" />
+                            </div>
                             Negotiation Strategy
                           </CardTitle>
                         </CardHeader>
@@ -441,10 +468,10 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </Card>
                     )}
 
-                    {/* Strengths and Red Flags */}
+                    {/* Premium Strengths and Red Flags */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {analysis.strengthsOfOffer.length > 0 && (
-                        <Card className="bg-green-900/20 border-green-600/30">
+                        <Card className="bg-green-900/20 border-green-600/30 backdrop-blur-xl shadow-[0_12px_40px_rgba(34,197,94,0.2)] hover:shadow-[0_20px_60px_rgba(34,197,94,0.3)] transition-all duration-500">
                           <CardHeader>
                             <CardTitle className="text-green-300 text-base">
                               Strengths of Offer
@@ -464,7 +491,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       )}
 
                       {analysis.redFlags.length > 0 && (
-                        <Card className="bg-red-900/20 border-red-600/30">
+                        <Card className="bg-red-900/20 border-red-600/30 backdrop-blur-xl shadow-[0_12px_40px_rgba(220,38,38,0.2)] hover:shadow-[0_20px_60px_rgba(220,38,38,0.3)] transition-all duration-500">
                           <CardHeader>
                             <CardTitle className="text-red-300 text-base">
                               Red Flags
@@ -488,11 +515,13 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
               </div>
             </div>
 
-            {/* Tips */}
-            <Card className="bg-blue-900/20 border-blue-600/30">
+            {/* Premium Settlement Tips */}
+            <Card className="bg-gradient-to-br from-blue-900/30 to-cyan-900/20 backdrop-blur-xl border-blue-600/40 shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:shadow-[0_25px_80px_rgba(59,130,246,0.3)] transition-all duration-500">
               <CardContent className="p-6">
                 <div className="flex items-start gap-4">
-                  <Brain className="h-6 w-6 text-blue-400 flex-shrink-0" />
+                  <div className="p-3 bg-gradient-to-br from-blue-600/30 to-cyan-600/20 backdrop-blur-md rounded-xl border border-white/10 shadow-[0_8px_32px_rgba(59,130,246,0.3)] flex-shrink-0">
+                    <Brain className="h-6 w-6 text-cyan-300 drop-shadow-[0_0_12px_rgba(6,182,212,0.7)]" />
+                  </div>
                   <div>
                     <h3 className="text-lg font-semibold text-white mb-2">Settlement Tips</h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-300">
