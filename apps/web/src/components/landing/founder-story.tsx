@@ -68,11 +68,14 @@ export function FounderStory() {
           className="w-40 h-40 rounded-full object-cover border-4 border-primary/50" 
         />
         <div>
-          <h2 className="font-slab text-3xl font-bold">Developed from a Disaster</h2>
+          <h2 className="font-slab text-3xl font-bold">Built by Florida Family, For Florida Families</h2>
           <p className="mt-3 text-gray-300">
-            &quot;After Hurricane Ian, my family&apos;s life was turned upside down. I was blindsided by a massive hurricane deductible I didn&apos;t know I had, forcing me to spend over $100,000 out-of-pocket. Worse, I lost two years fighting insurers and rebuilding—time with my new family that I can never get back. I built ClaimGuardian from that experience, engineering a tool to ensure no other Floridian has to feel that powerless. This is about giving you the control you deserve.&quot;
+            &quot;Hurricane Ian taught us that surviving the storm was easy—navigating the aftermath was the real disaster. We lost over $100,000 and two precious years rebuilding that we'll never get back with our new family. From that struggle, ClaimGuardian was born—not just as an insurance tool, but as a complete property intelligence network. We're transforming property ownership from anxiety into wealth building, ensuring every Florida family can protect their investments and preserve their legacy with complete privacy control.&quot;
           </p>
-          <p className="mt-3 font-semibold">- Drew M., P.E., Founder</p>
+          <p className="mt-3 font-semibold">- Drew M., P.E., Florida Professional Engineer & Founder</p>
+          <p className="mt-2 text-sm text-gray-400">
+            Family team of five • Single developer • Building one feature at a time based on real user needs
+          </p>
         </div>
       </AnimatedSection>
     </section>

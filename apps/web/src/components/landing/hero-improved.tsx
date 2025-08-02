@@ -130,18 +130,21 @@ export function Hero() {
           </AnimatedSection>
           
           <AnimatedSection delay={100}>
-            <p className="mt-4 text-[clamp(1.125rem,2.5vw,1.5rem)] font-medium text-gray-200 max-w-2xl mx-auto">
-              <span className="font-bold text-white">Instantly document, monitor, and maximize every Florida asset</span>—from your boat to your home.
+            <p className="mt-4 text-[clamp(1.125rem,2.5vw,1.5rem)] font-medium text-gray-200 max-w-3xl mx-auto">
+              <span className="font-bold text-white">Your Property's Complete Story, Protected Forever</span>
+            </p>
+            <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
+              AI-powered property intelligence network that creates living digital twins of everything you own—from your headphones to your air conditioner.
             </p>
           </AnimatedSection>
           
           <AnimatedSection delay={200}>
             <div className="mt-6 max-w-3xl mx-auto space-y-4">
               <p className="text-lg text-gray-300">
-                Your AI Guardian tracks maintenance • Maximizes insurance claims • Protects against Florida&apos;s unique challenges
+                Transform property ownership from anxiety into wealth building • Track warranties • Optimize maintenance • Preserve your legacy
               </p>
               <p className="text-xl font-bold text-green-400">
-                Stop losing thousands to claim denials and slow upkeep.
+                Built by Florida family for generational wealth and community resilience.
               </p>
             </div>
           </AnimatedSection>
@@ -158,9 +161,9 @@ export function Hero() {
                 }}
                 onMouseEnter={() => setHoveredCTA(true)}
                 onMouseLeave={() => setHoveredCTA(false)}
-                aria-label="Start your free property scan - no credit card required"
+                aria-label="Create your complete property digital twin - no credit card required"
               >
-                <span className="relative z-10">Get My Property Scan →</span>
+                <span className="relative z-10">Create My Digital Twin →</span>
                 {/* Gradient sweep effect */}
                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
               </Link>
@@ -228,16 +231,16 @@ export function Hero() {
           <div className="max-w-5xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div className="group hover:scale-105 transition-transform">
-                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">15 Minutes</h3>
-                <p className="mt-1 text-gray-300">To setup your property&apos;s digital twin.</p>
+                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Everything</h3>
+                <p className="mt-1 text-gray-300">Track from your home's foundation to your headphone warranty.</p>
               </div>
               <div className="group hover:scale-105 transition-transform">
-                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Seconds</h3>
-                <p className="mt-1 text-gray-300">To capture & value personal property.</p>
+                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Generations</h3>
+                <p className="mt-1 text-gray-300">Preserve property knowledge for your family's future.</p>
               </div>
               <div className="group hover:scale-105 transition-transform">
-                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Minutes</h3>
-                <p className="mt-1 text-gray-300">To capture a full damage assessment.</p>
+                <h3 className="font-slab text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Community</h3>
+                <p className="mt-1 text-gray-300">Share wisdom while protecting your privacy.</p>
               </div>
             </div>
           </div>

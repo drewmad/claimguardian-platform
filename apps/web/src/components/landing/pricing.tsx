@@ -197,7 +197,7 @@ export function Pricing() {
   }
   
   return (
-    <section className="px-4 md:px-8 py-20 bg-black/10">
+    <section id="pricing" className="px-4 md:px-8 py-20 bg-black/10">
       <AnimatedSection className="max-w-6xl mx-auto text-center">
         <h2 className="font-slab text-3xl md:text-4xl font-bold">
           <span className="text-white">Stop Overpaying for Insurance.</span>
