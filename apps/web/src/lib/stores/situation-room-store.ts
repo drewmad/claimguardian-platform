@@ -400,7 +400,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
               ...state.threats[index],
               aiAnalysis: {
                 ...state.threats[index].aiAnalysis,
-                // @ts-ignore - adding acknowledged property
+                // @ts-expect-error - adding acknowledged property
                 acknowledged: true,
                 acknowledgedAt: new Date()
               }
@@ -429,7 +429,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.intelligenceFeeds.findIndex(f => f.id === feedId)
           if (index !== -1 && !state.intelligenceFeeds[index].actionRequired) {
-            // @ts-ignore - adding read property
+            // @ts-expect-error - adding read property
             state.intelligenceFeeds[index].read = true
             state.unreadFeedCount = Math.max(0, state.unreadFeedCount - 1)
           }
@@ -440,7 +440,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           state.intelligenceFeeds.forEach(feed => {
             if (!feed.actionRequired) {
-              // @ts-ignore - adding read property
+              // @ts-expect-error - adding read property
               feed.read = true
             }
           })
@@ -484,7 +484,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           set(state => {
             const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
             if (index !== -1) {
-              // @ts-ignore - adding executed property
+              // @ts-expect-error - adding executed property
               state.aiRecommendations[index].executed = true
               state.aiRecommendations[index].executedAt = new Date()
             }
@@ -501,7 +501,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
           if (index !== -1) {
-            // @ts-ignore - adding dismissed property
+            // @ts-expect-error - adding dismissed property
             state.aiRecommendations[index].dismissed = true
             state.aiRecommendations[index].dismissedAt = new Date()
           }
@@ -577,7 +577,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.realtimeEvents.findIndex(e => e.id === eventId)
           if (index !== -1) {
-            // @ts-ignore - adding processed property
+            // @ts-expect-error - adding processed property
             state.realtimeEvents[index].processed = true
             state.realtimeEvents[index].processedAt = new Date()
           }
@@ -586,7 +586,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
       
       clearProcessedEvents() {
         set(state => {
-          // @ts-ignore - filtering by processed property
+          // @ts-expect-error - filtering by processed property
           state.realtimeEvents = state.realtimeEvents.filter(e => !e.processed)
         })
       },

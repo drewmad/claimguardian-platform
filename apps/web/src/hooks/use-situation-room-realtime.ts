@@ -16,7 +16,7 @@
  */
 'use client'
 
-import { useEffect, useRef, useCallback } from 'react'
+import { useEffect, useRef, useCallback, useState } from 'react'
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 
@@ -55,13 +55,26 @@ interface SituationRoomRealtimeHook {
 }
 
 export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
-  const supabase = createClientComponentClient()
+  const [isClient, setIsClient] = useState(false)
+  const supabaseRef = useRef<ReturnType<typeof createClientComponentClient> | null>(null)
   const channelsRef = useRef<Map<string, RealtimeChannel>>(new Map())
   const connectionStateRef = useRef<'connected' | 'reconnecting' | 'disconnected'>('disconnected')
   const reconnectAttemptsRef = useRef(0)
   const reconnectTimeoutRef = useRef<NodeJS.Timeout>()
   const heartbeatRef = useRef<Date | null>(null)
   const configRef = useRef<RealtimeSubscriptionConfig | null>(null)
+
+  // Initialize Supabase client only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        supabaseRef.current = createClientComponentClient()
+        setIsClient(true)
+      } catch (error) {
+        console.warn('Failed to initialize Supabase client:', error)
+      }
+    }
+  }, [])
   
   const {
     addThreat,
@@ -196,6 +209,12 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [addRealtimeEvent, createRealtimeEvent])
 
   const setupChannelSubscriptions = useCallback((config: RealtimeSubscriptionConfig) => {
+    const supabase = supabaseRef.current
+    if (!supabase || !isClient) {
+      console.warn('Supabase client not initialized, skipping subscription setup')
+      return
+    }
+
     const { propertyId, enabledEventTypes = Object.values(EventType) } = config
     
     // Clear existing channels
@@ -373,7 +392,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
       })
 
   }, [
-    supabase,
+    isClient,
     handleThreatUpdate,
     handleIntelligenceUpdate,
     handlePropertySystemUpdate,
@@ -414,15 +433,19 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [setupChannelSubscriptions])
 
   const unsubscribe = useCallback(() => {
+    const supabase = supabaseRef.current
+    
     // Clear reconnection timeout
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current)
     }
 
     // Remove all channels
-    channelsRef.current.forEach(channel => {
-      supabase.removeChannel(channel)
-    })
+    if (supabase) {
+      channelsRef.current.forEach(channel => {
+        supabase.removeChannel(channel)
+      })
+    }
     channelsRef.current.clear()
 
     // Reset state
@@ -430,7 +453,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     reconnectAttemptsRef.current = 0
     heartbeatRef.current = null
     handleConnectionStateChange('disconnected')
-  }, [supabase, handleConnectionStateChange])
+  }, [handleConnectionStateChange])
 
   const forceReconnect = useCallback(() => {
     unsubscribe()

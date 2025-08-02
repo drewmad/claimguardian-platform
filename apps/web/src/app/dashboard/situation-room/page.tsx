@@ -6,6 +6,9 @@
  */
 'use client'
 
+// Force dynamic rendering to prevent SSG issues with Supabase client
+export const dynamic = 'force-dynamic'
+
 import { 
   AlertTriangle, Wind, CloudRain, Zap, Home, Shield,
   CheckCircle, XCircle, Clock, Phone, FileText,

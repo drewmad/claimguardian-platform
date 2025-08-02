@@ -1,5 +1,8 @@
 'use client'
 
+// Force dynamic rendering to prevent SSG issues with Supabase client
+export const dynamic = 'force-dynamic'
+
 import { Shield, FileText, AlertCircle, Sparkles, DollarSign, Clock, BookOpen, ChevronRight } from 'lucide-react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'

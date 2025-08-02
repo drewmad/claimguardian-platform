@@ -1,6 +1,9 @@
 'use client'
 
-import dynamic from 'next/dynamic'
+// Force dynamic rendering to prevent SSG issues with Supabase client
+export const dynamic = 'force-dynamic'
+
+import NextDynamic from 'next/dynamic'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
@@ -15,7 +18,7 @@ import { Card } from '@/components/ui/card'
 import { CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 
-const BarcodeScanner = dynamic(
+const BarcodeScanner = NextDynamic(
   () => import('@/components/ui/barcode-scanner').then(mod => mod.BarcodeScanner),
   { ssr: false }
 )
