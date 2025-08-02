@@ -10,6 +10,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "turbo dev",
+    "dev:co-strategist": "node ./scripts/ai/co-strategist.js > co-strategist.log 2>&1",
     "lint": "turbo lint",
     "test": "turbo test",
     "type-check": "turbo type-check",
@@ -50,7 +51,7 @@
     "@next/eslint-plugin-next": "^15.4.5",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^14.0.0",
-    "@testing-library/react-hooks": "^8.0.1",
+    
     "@turbo/gen": "^2.5.4",
     "@types/node": "^24.0.10",
     "@types/react": "18.3.23",
@@ -65,7 +66,7 @@
     "prettier": "^3.6.2",
     "turbo": "^2.5.4",
     "typescript": "^5.8.3",
-    "typescript-eslint": "^8.38.0",
+    "typescript-eslint": "^8.0.0-alpha.33",
     "vitest": "^2.1.8"
   },
   "workspaces": [
@@ -89,7 +90,10 @@
   "pnpm": {
     "overrides": {
       "@types/react": "18.3.23",
-      "@types/react-dom": "18.3.7"
+      "@types/react-dom": "18.3.7",
+      "@typescript-eslint/eslint-plugin": "8.0.0-alpha.33",
+      "@typescript-eslint/parser": "8.0.0-alpha.33",
+      "typescript-eslint": "8.0.0-alpha.33"
     }
   }
 }

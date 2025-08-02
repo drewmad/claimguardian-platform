@@ -17,7 +17,7 @@
     "ioredis": "^5.4.1",
     "openai": "^4.73.0",
     "p-retry": "^6.2.0",
-    "zod": "^4.0.10"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@claimguardian/config": "workspace:*",
