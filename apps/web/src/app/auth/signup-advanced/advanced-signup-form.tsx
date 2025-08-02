@@ -16,6 +16,7 @@ import { LegalDocumentModal } from '@/components/modals/legal-document-modal'
 interface ConsentState {
   termsAccepted: boolean
   privacyAccepted: boolean
+  aiDisclaimerAccepted: boolean
   dataProcessingAccepted: boolean
   cookiesAccepted: boolean
   ageVerified: boolean
@@ -24,6 +25,7 @@ interface ConsentState {
 const consentNameToText: { [key: string]: string } = {
   terms_of_service: 'Terms of Service',
   privacy_policy: 'Privacy Policy',
+  ai_disclaimer: 'AI Tools Disclaimer',
   data_processing: 'Data Processing consent',
   age_verification: 'Age Verification',
   cookies: 'Cookie Policy'
@@ -45,6 +47,7 @@ export function AdvancedSignupForm() {
   const [consents, setConsents] = useState<ConsentState>({
     termsAccepted: false,
     privacyAccepted: false,
+    aiDisclaimerAccepted: false,
     dataProcessingAccepted: false,
     cookiesAccepted: false,
     ageVerified: false
@@ -73,6 +76,7 @@ export function AdvancedSignupForm() {
     const payload = {
       p_terms_accepted: consents.termsAccepted,
       p_privacy_accepted: consents.privacyAccepted,
+      p_ai_disclaimer_accepted: consents.aiDisclaimerAccepted,
       p_age_verified: consents.ageVerified,
       p_data_processing: consents.dataProcessingAccepted,
     };
@@ -146,6 +150,7 @@ export function AdvancedSignupForm() {
           p_consents: {
             terms_of_service: consents.termsAccepted,
             privacy_policy: consents.privacyAccepted,
+            ai_disclaimer: consents.aiDisclaimerAccepted,
             data_processing: consents.dataProcessingAccepted,
             age_verification: consents.ageVerified,
             cookies: consents.cookiesAccepted,
@@ -294,6 +299,12 @@ export function AdvancedSignupForm() {
                   <ConsentItem id="privacy" checked={consents.privacyAccepted} onCheckedChange={(c) => setConsents(s => ({...s, privacyAccepted: c}))} error={consentErrors.includes('privacy_policy')}>
                     <Label htmlFor="privacy" className="text-sm font-medium cursor-pointer flex items-center gap-2">
                       <Lock className="h-4 w-4 text-slate-400" /> I accept the <button type="button" onClick={(e) => { e.stopPropagation(); showLegalModal('privacy-policy'); }} className="text-blue-400 hover:text-blue-300 underline">Privacy Policy</button> <span className="text-red-500">*</span>
+                    </Label>
+                  </ConsentItem>
+
+                  <ConsentItem id="ai-disclaimer" checked={consents.aiDisclaimerAccepted} onCheckedChange={(c) => setConsents(s => ({...s, aiDisclaimerAccepted: c}))} error={consentErrors.includes('ai_disclaimer')}>
+                    <Label htmlFor="ai-disclaimer" className="text-sm font-medium cursor-pointer">
+                      I understand that AI tools provide guidance only and may contain errors. AI-generated content should be reviewed and verified. This is not a replacement for professional advice. <span className="text-red-500">*</span>
                     </Label>
                   </ConsentItem>
 

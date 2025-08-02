@@ -1,0 +1,27 @@
+feat(ai): Implement AI-Augmented Development Protocol
+
+This commit implements the foundational pillars of the AI-Augmented Development Protocol, enhancing the repository with a comprehensive, self-describing metadata system and the services to support it.
+
+Key implementations:
+
+1.  **Pillar 11: World Model Metadata Cache**
+    -   Introduces a new service at `services/world-model` that scans and caches all `@fileMetadata` from the repository.
+    -   Provides a local API endpoint (`/metadata`) for AI agents to query file information with low latency, accelerating their tasks.
+
+2.  **Pillar 12: Dynamic Model Routing**
+    -   Adds a model registry at `.ai-context/model-roster.json` to define available AI models, their costs, and strengths.
+    -   Enables dispatcher agents to dynamically select the most cost-effective model for a given task.
+
+3.  **Pillar 13: Terminal Co-Strategist**
+    -   Creates a new script at `scripts/ai/co-strategist.js` that provides real-time, terminal-based feedback to developers.
+    -   Uses a file watcher and a local, low-latency model to check for protocol violations on file save.
+
+4.  **Pillar 14: Self-Improving Protocol**
+    -   Updates the schema for `retrospectives.json` to include a "misses" array.
+    -   This allows agents to log instances where they lacked necessary information, creating a data-driven feedback loop for improving the protocol itself.
+
+5.  **Codebase-wide Metadata Integration**
+    -   Adds `@fileMetadata` blocks to all 581 source code files (`.ts`, `.tsx`, `.js`, etc.) across the entire monorepo.
+    -   This makes the codebase self-describing and machine-readable, fulfilling a core tenet of the protocol.
+
+This foundational work enables advanced agentic workflows, improves developer experience, and prepares the codebase for a more collaborative human-AI development environment.
