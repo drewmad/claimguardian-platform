@@ -25,6 +25,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
+import { liquidGlass } from '@/lib/styles/liquid-glass'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
 
@@ -130,7 +131,7 @@ export function AdminDashboard() {
           {/* Overview Tab */}
           <TabsContent value="overview" className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Users</CardTitle>
                   <Users className="h-4 w-4 text-muted-foreground" />
@@ -143,7 +144,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Claims</CardTitle>
                   <FileText className="h-4 w-4 text-muted-foreground" />
@@ -156,7 +157,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">ML Accuracy</CardTitle>
                   <Brain className="h-4 w-4 text-muted-foreground" />
@@ -169,7 +170,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">System Errors</CardTitle>
                   <AlertCircle className="h-4 w-4 text-muted-foreground" />
@@ -184,7 +185,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader>
                   <CardTitle>Recent Activity</CardTitle>
                   <CardDescription>Latest system events</CardDescription>
@@ -214,7 +215,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader>
                   <CardTitle>Quick Actions</CardTitle>
                   <CardDescription>Common administrative tasks</CardDescription>
@@ -261,7 +262,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold">{stats.totalUsers}</div>
                   <p className="text-sm text-gray-400">Total Users</p>
@@ -271,7 +272,7 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold">{stats.activeUsers}</div>
                   <p className="text-sm text-gray-400">Active Users</p>
@@ -281,7 +282,7 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="text-2xl font-bold">79.9%</div>
                   <p className="text-sm text-gray-400">Retention Rate</p>
@@ -293,7 +294,7 @@ export function AdminDashboard() {
               </Card>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className={liquidGlass.cards.default}>
               <CardHeader>
                 <CardTitle>Recent Users</CardTitle>
                 <CardDescription>Latest user registrations</CardDescription>
@@ -338,7 +339,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Models Deployed</CardTitle>
                   <Brain className="h-4 w-4 text-muted-foreground" />
@@ -349,7 +350,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Total Predictions</CardTitle>
                   <BarChart3 className="h-4 w-4 text-muted-foreground" />
@@ -360,7 +361,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Avg Accuracy</CardTitle>
                   <Activity className="h-4 w-4 text-muted-foreground" />
@@ -371,7 +372,7 @@ export function AdminDashboard() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                   <CardTitle className="text-sm font-medium">Last Training</CardTitle>
                   <Clock className="h-4 w-4 text-muted-foreground" />
@@ -383,7 +384,7 @@ export function AdminDashboard() {
               </Card>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className={liquidGlass.cards.default}>
               <CardHeader>
                 <CardTitle>Model Performance</CardTitle>
                 <CardDescription>Performance metrics for deployed models</CardDescription>
@@ -453,7 +454,7 @@ export function AdminDashboard() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -464,7 +465,7 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -475,7 +476,7 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -486,7 +487,7 @@ export function AdminDashboard() {
                   </div>
                 </CardContent>
               </Card>
-              <Card className="bg-slate-900 border-slate-800">
+              <Card className={liquidGlass.cards.default}>
                 <CardContent className="pt-6">
                   <div className="flex items-center justify-between">
                     <div>
@@ -499,7 +500,7 @@ export function AdminDashboard() {
               </Card>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className={liquidGlass.cards.default}>
               <CardHeader>
                 <CardTitle>Recent Errors</CardTitle>
                 <CardDescription>Latest system errors and warnings</CardDescription>
@@ -546,7 +547,7 @@ export function AdminDashboard() {
               <p className="text-gray-400">Florida insurance compliance and user consent tracking</p>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className={liquidGlass.cards.default}>
               <CardHeader>
                 <CardTitle>Consent Statistics</CardTitle>
                 <CardDescription>User consent acceptance rates</CardDescription>
@@ -581,7 +582,7 @@ export function AdminDashboard() {
               <p className="text-gray-400">Configure admin panel and system settings</p>
             </div>
 
-            <Card className="bg-slate-900 border-slate-800">
+            <Card className={liquidGlass.cards.default}>
               <CardHeader>
                 <CardTitle>General Settings</CardTitle>
               </CardHeader>

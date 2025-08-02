@@ -21,6 +21,7 @@ import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
 
 import { COLORS } from '@/lib/constants'
+import { liquidGlass } from '@/lib/styles/liquid-glass'
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {
