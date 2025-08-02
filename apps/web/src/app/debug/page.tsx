@@ -103,8 +103,8 @@ export default function DebugIndexPage() {
         localStorage,
         supabaseStatus: {
           connected: true,
-          projectUrl: supabase.supabaseUrl,
-          anonKeyPresent: !!supabase.supabaseKey
+          projectUrl: process.env.NEXT_PUBLIC_SUPABASE_URL || 'Not configured',
+          anonKeyPresent: !!process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
         }
       }
 
