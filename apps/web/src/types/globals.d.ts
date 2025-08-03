@@ -43,6 +43,9 @@ declare global {
           }
         }
       }
+      namespace event {
+        function clearInstanceListeners(instance: object): void
+      }
     }
   }
 }

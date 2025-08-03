@@ -15,6 +15,7 @@ import React, { useReducer, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 
 import { createProperty } from '@/actions/properties'
+import { useGooglePlaces } from '@/hooks/use-google-maps'
 
 // --- Constants & Configuration ---
 const COLORS = {
@@ -360,42 +361,12 @@ interface StepProps {
 
 const Step1: React.FC<StepProps> = ({ state, onChange }) => {
     const addressInputRef = useRef<HTMLInputElement>(null)
-    const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
     const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+    
+    // Use centralized Google Maps hook
+    const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
 
-    // Load Google Places API
-    useEffect(() => {
-        const loadGooglePlaces = () => {
-            if (window.google?.maps?.places) {
-                setIsGoogleLoaded(true)
-                return
-            }
-
-            const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-            if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
-                console.warn('Google Maps API key not configured. Address autocomplete will not be available.')
-                return
-            }
-
-            const script = document.createElement('script')
-            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGooglePlaces`
-            script.async = true
-            script.defer = true
-
-            window.initGooglePlaces = () => {
-                setIsGoogleLoaded(true)
-            }
-
-            document.head.appendChild(script)
-
-            return () => {
-                document.head.removeChild(script)
-                delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
-            }
-        }
-
-        loadGooglePlaces()
-    }, [])
+    // Google Maps loading is now handled by useGooglePlaces hook
 
     // Initialize autocomplete when Google is loaded
     useEffect(() => {
@@ -452,14 +423,14 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => {
                         ✓ Address autocomplete enabled
                     </p>
                 )}
-                {!isGoogleLoaded && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY_HERE' && (
+                {isGoogleLoading && (
                     <p className="text-xs text-yellow-400 mt-1">
                         Loading address autocomplete...
                     </p>
                 )}
-                {(!process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY || process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') && (
+                {googleError && (
                     <p className="text-xs text-gray-400 mt-1">
-                        ℹ️ Address autocomplete not available (API key not configured)
+                        ℹ️ Manual entry only ({googleError})
                     </p>
                 )}
             </div>

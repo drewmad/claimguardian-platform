@@ -39,7 +39,9 @@ interface AddressComponents {
 }
 
 class PropertyDataService {
-  private googleApiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+  // NOTE: This service is currently unused. If activated, it should use server-side API keys
+  // and be moved to a server action or Edge Function for security
+  private googleApiKey = process.env.GOOGLE_MAPS_API_KEY // Fixed: Use server-side key
   
   /**
    * Fetch property data using Google Places API and other sources

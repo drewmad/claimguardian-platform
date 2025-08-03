@@ -19,6 +19,7 @@ import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSupabase } from '@/lib/supabase/client'
+import { useGooglePlaces } from '@/hooks/use-google-maps'
 
 interface OnboardingStep {
   id: string
@@ -477,8 +478,8 @@ function UserProfileStep({
   const [propertyStructures, setPropertyStructures] = useState<string[]>(data.propertyStructures || [])
   const [roomsPerFloor, setRoomsPerFloor] = useState<Record<number, number>>(data.roomsPerFloor || { 1: 4 })
   
-  // Google Maps state
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
+  // Use centralized Google Maps hook
+  const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
   
   // Computed values - declare early to avoid hoisting issues
   const isProfessional = selectedType === 'property-professional'
@@ -543,41 +544,7 @@ function UserProfileStep({
     })
   }
 
-  // Load Google Places API
-  useEffect(() => {
-    const loadGooglePlaces = () => {
-      if (window.google?.maps?.places) {
-        setIsGoogleLoaded(true)
-        return
-      }
-
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-      if (!apiKey) {
-        console.warn('Google Maps API key not configured')
-        return
-      }
-
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGooglePlaces`
-      script.async = true
-      script.defer = true
-      window.initGooglePlaces = () => {
-        setIsGoogleLoaded(true)
-      }
-
-      document.head.appendChild(script)
-      return () => {
-        if (document.head.contains(script)) {
-          document.head.removeChild(script)
-        }
-        delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
-      }
-    }
-
-    if (selectedType && !isProfessional) {
-      loadGooglePlaces()
-    }
-  }, [selectedType, isProfessional])
+  // Google Maps loading is now handled by useGooglePlaces hook
 
   // Initialize Google Places Autocomplete
   useEffect(() => {
@@ -753,13 +720,18 @@ function UserProfileStep({
                     type="text"
                     value={propertyAddress}
                     onChange={(e) => handleAddressChange(e.target.value)}
-                    placeholder={isGoogleLoaded ? "Start typing and select from dropdown..." : "Loading address verification..."}
+                    placeholder={isGoogleLoaded ? "Start typing and select from dropdown..." : isGoogleLoading ? "Loading address verification..." : "Enter address manually"}
                     className="w-full px-4 py-3 bg-panel/30 backdrop-blur-sm border border-border rounded-lg text-text-primary placeholder-text-secondary focus:border-accent-border focus:outline-none transition-all duration-200"
                     disabled={addressVerified}
                   />
-                  {!isGoogleLoaded && (
+                  {isGoogleLoading && (
                     <p className="text-warning text-xs mt-2">
                       Address verification is loading...
+                    </p>
+                  )}
+                  {googleError && (
+                    <p className="text-gray-400 text-xs mt-2">
+                      Manual entry only ({googleError})
                     </p>
                   )}
                   {isGoogleLoaded && !addressVerified && propertyAddress && (

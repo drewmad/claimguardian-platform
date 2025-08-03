@@ -80,14 +80,18 @@ Depending on your location, you may have the following rights regarding your per
 
 To exercise these rights, please contact us at the contact information below.
 
-### 7. Children's Privacy
+### 7. Geographic Restrictions
+
+ClaimGuardian is available exclusively to residents of the United States. Our services are not available to residents of the European Union, European Economic Area, or any other international jurisdictions. We do not provide services to, or collect personal information from, individuals located outside the United States.
+
+### 8. Children's Privacy
 
 Our Service is not intended for use by children under the age of 13. We do not knowingly collect personally identifiable information from children under 13.
 
-### 8. Changes to This Privacy Policy
+### 9. Changes to This Privacy Policy
 
 We may update this Privacy Policy from time to time. We will notify you of any changes by posting the new Privacy Policy on this page and updating the "Last Updated" date.
 
-### 9. Contact Us
+### 10. Contact Us
 
 If you have questions or comments about this Privacy Policy, please contact us at: **support@claimguardian.com**.

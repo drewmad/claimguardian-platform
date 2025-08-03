@@ -15,6 +15,7 @@ import { useEffect, useRef, useState, useCallback } from 'react'
 import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographic'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useGooglePlaces } from '@/hooks/use-google-maps'
 
 interface AddressComponents {
   street1: string
@@ -41,9 +42,11 @@ interface CountyOption {
 export function FloridaAddressForm({ value, onChange, disabled, className }: FloridaAddressFormProps) {
   const street1Ref = useRef<HTMLInputElement>(null)
   const [autocomplete, setAutocomplete] = useState<unknown>(null)
-  const [isGoogleLoaded, setIsGoogleLoaded] = useState(false)
   const [counties, setCounties] = useState<CountyOption[]>([])
   const [validationMessage, setValidationMessage] = useState('')
+  
+  // Use centralized Google Maps hook
+  const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
   
   // Infer county from city name
   const inferCountyFromCity = useCallback(async (cityName: string): Promise<string | null> => {
@@ -110,39 +113,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
     loadCounties()
   }, [])
 
-  // Load Google Places API with Florida restriction
-  useEffect(() => {
-    const loadGooglePlaces = () => {
-      if (window.google?.maps?.places) {
-        setIsGoogleLoaded(true)
-        return
-      }
-
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-      if (!apiKey) {
-        console.warn('Google Maps API key not found. Address autocomplete will not be available.')
-        return
-      }
-
-      const script = document.createElement('script')
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=initGooglePlaces`
-      script.async = true
-      script.defer = true
-
-      window.initGooglePlaces = () => {
-        setIsGoogleLoaded(true)
-      }
-
-      document.head.appendChild(script)
-
-      return () => {
-        document.head.removeChild(script)
-        delete (window as { initGooglePlaces?: () => void }).initGooglePlaces
-      }
-    }
-
-    loadGooglePlaces()
-  }, [])
+  // Google Maps loading is now handled by useGooglePlaces hook
 
   // Initialize autocomplete when Google is loaded - Florida only
   useEffect(() => {
@@ -286,9 +257,14 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
             ✓ Google Places autocomplete enabled (Florida only)
           </p>
         )}
-        {!isGoogleLoaded && process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && (
+        {isGoogleLoading && (
           <p className="text-xs text-yellow-400 mt-1">
             Loading address autocomplete...
+          </p>
+        )}
+        {googleError && (
+          <p className="text-xs text-gray-400 mt-1">
+            Manual entry only ({googleError})
           </p>
         )}
       </div>

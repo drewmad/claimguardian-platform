@@ -4,14 +4,16 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Shield, Home, MapPin, Search, Loader2, Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { useGooglePlaces } from '@/hooks/use-google-maps'
 
+// Google Maps types are declared in types/globals.d.ts
 
 export default function PropertySetupPage() {
   const router = useRouter()
@@ -20,6 +22,11 @@ export default function PropertySetupPage() {
   const [error, setError] = useState<string | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [residencyType, setResidencyType] = useState<string>('')
+  const addressInputRef = useRef<HTMLInputElement>(null)
+  const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
+  
+  // Use centralized Google Maps hook
+  const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
   
   const [propertyData, setPropertyData] = useState({
     address: '',
@@ -46,18 +53,78 @@ export default function PropertySetupPage() {
       }
     }
     fetchUserProfile()
-  }, [])
+  }, [supabase])
+
+  // Google Maps loading is now handled by useGooglePlaces hook
+
+  // Initialize autocomplete when Google is loaded
+  useEffect(() => {
+    if (!isGoogleLoaded || !addressInputRef.current || autocomplete) return
+
+    const autocompleteInstance = new google.maps.places.Autocomplete(
+      addressInputRef.current,
+      {
+        types: ['address'],
+        componentRestrictions: { country: 'us' },
+        fields: ['address_components', 'formatted_address', 'geometry']
+      }
+    )
+
+    autocompleteInstance.addListener('place_changed', () => {
+      const place = autocompleteInstance.getPlace()
+      
+      if (place.formatted_address && place.address_components) {
+        // Parse address components
+        let address = ''
+        let city = ''
+        let state = ''
+        let zipCode = ''
+
+        place.address_components.forEach((component) => {
+          const types = component.types
+          if (types.includes('street_number') || types.includes('route')) {
+            address = address ? `${address} ${component.long_name}` : component.long_name
+          }
+          if (types.includes('locality')) {
+            city = component.long_name
+          }
+          if (types.includes('administrative_area_level_1')) {
+            state = component.short_name
+          }
+          if (types.includes('postal_code')) {
+            zipCode = component.long_name
+          }
+        })
+
+        setPropertyData({
+          address: address,
+          city: city,
+          state: state || 'FL',
+          zipCode: zipCode,
+          unit: propertyData.unit,
+        })
+        setSearchQuery(place.formatted_address)
+      }
+    })
+
+    setAutocomplete(autocompleteInstance)
+
+    return () => {
+      if (autocompleteInstance) {
+        google.maps.event.clearInstanceListeners(autocompleteInstance)
+      }
+    }
+  }, [isGoogleLoaded, autocomplete, propertyData.unit])
   
-  const handleAddressSearch = async () => {
-    // TODO: Integrate Google Places API for address autocomplete
-    // For now, just use the search query
-    if (searchQuery) {
-      // Parse address (simple implementation)
-      const parts = searchQuery.split(',').map(p => p.trim())
-      if (parts.length >= 3) {
+  const handleManualAddressChange = (value: string) => {
+    setSearchQuery(value)
+    // If user types manually and autocomplete isn't working, allow manual entry
+    if (!isGoogleLoaded) {
+      const parts = value.split(',').map(p => p.trim())
+      if (parts.length >= 2) {
         setPropertyData({
           address: parts[0],
-          city: parts[1],
+          city: parts[1] || '',
           state: 'FL',
           zipCode: parts[2] || '',
           unit: propertyData.unit,
@@ -79,7 +146,7 @@ export default function PropertySetupPage() {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
       
-      // Create property
+      // Create property - store unit in metadata if provided
       const { data: property, error: propertyError } = await supabase
         .from('properties')
         .insert({
@@ -88,8 +155,9 @@ export default function PropertySetupPage() {
           city: propertyData.city,
           state: propertyData.state,
           zip_code: propertyData.zipCode,
-          unit: propertyData.unit || null,
-          is_primary: true,
+          metadata: propertyData.unit ? { unit: propertyData.unit } : {},
+          property_type: 'residential',
+          occupancy_status: 'owner_occupied',
         })
         .select()
         .single()
@@ -160,24 +228,48 @@ export default function PropertySetupPage() {
               <div className="flex gap-2">
                 <Input
                   id="search"
+                  ref={addressInputRef}
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => handleManualAddressChange(e.target.value)}
                   placeholder="Enter your address (e.g., 123 Main St, Miami, FL 33101)"
                   className="flex-1 bg-slate-800 border-slate-700 text-white"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAddressSearch()}
                 />
-                <Button
-                  type="button"
-                  onClick={handleAddressSearch}
-                  variant="outline"
-                  className="border-slate-700 hover:bg-slate-800"
-                >
-                  <Search className="w-4 h-4" />
-                </Button>
+                <div className="flex items-center px-3 py-2 bg-slate-800 border border-slate-700 rounded-md">
+                  {isGoogleLoaded ? (
+                    <div className="flex items-center gap-1 text-green-400 text-xs">
+                      <Check className="w-3 h-3" />
+                      <span>Auto</span>
+                    </div>
+                  ) : isGoogleLoading ? (
+                    <div className="flex items-center gap-1 text-yellow-400 text-xs">
+                      <Loader2 className="w-3 h-3 animate-spin" />
+                      <span>Loading</span>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-1 text-gray-400 text-xs">
+                      <AlertCircle className="w-3 h-3" />
+                      <span>Manual</span>
+                    </div>
+                  )}
+                </div>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                Start typing and we'll help find your address
-              </p>
+              {isGoogleLoaded ? (
+                <p className="text-xs text-green-400 mt-2">
+                  ✓ Address autocomplete enabled - start typing your address
+                </p>
+              ) : isGoogleLoading ? (
+                <p className="text-xs text-yellow-400 mt-2">
+                  Loading address autocomplete...
+                </p>
+              ) : googleError ? (
+                <p className="text-xs text-gray-400 mt-2">
+                  Enter your address manually ({googleError})
+                </p>
+              ) : (
+                <p className="text-xs text-gray-400 mt-2">
+                  Enter your address manually (autocomplete not available)
+                </p>
+              )}
             </div>
             
             {(propertyData.address || propertyData.city) && (
