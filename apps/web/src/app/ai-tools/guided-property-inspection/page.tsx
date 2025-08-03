@@ -2,7 +2,7 @@
 
 import { 
   Camera, Home, CheckCircle, AlertCircle, ChevronRight,
-  ListChecks, FileText, Clock,
+  ListChecks, FileText, Clock, Target,
   Zap, Info, Play, Pause, SkipForward, ChevronLeft, Flag,
   MessageSquare, Volume2, VolumeX, AlertTriangle
 } from 'lucide-react'
