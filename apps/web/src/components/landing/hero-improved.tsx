@@ -103,7 +103,7 @@ export function Hero() {
   return (
     <>
       {/* Announcement Bar */}
-      <div className="bg-gradient-to-r from-orange-600/20 to-red-600/20 border-b border-orange-500/30 h-12 flex items-center justify-center">
+      <div className={`${liquidGlass.backgrounds.warning} border-b border-orange-500/30 h-12 flex items-center justify-center`}>
         <Link href="/hurricane-prep" className="flex items-center gap-2 text-sm font-medium text-orange-200 hover:text-white transition-colors group">
           <span className="animate-pulse">⚡</span>
           <span>Hurricane Season 2025: Free 15-Min Property Prep Checklist</span>
@@ -120,8 +120,8 @@ export function Hero() {
         
         {/* Animated Background - Reduced motion for accessibility */}
         <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden motion-reduce:hidden">
-          <div className="absolute w-[60vw] h-[60vw] top-[10%] left-[10%] rounded-full blur-[120px] opacity-10 bg-gradient-to-br from-blue-600 to-transparent animate-drift-1" />
-          <div className="absolute w-[50vw] h-[50vw] top-[50%] left-[50%] rounded-full blur-[120px] opacity-10 bg-gradient-to-br from-green-500 to-transparent animate-drift-2" />
+          <div className={liquidGlass.orbs.header} />
+          <div className={liquidGlass.orbs.section} />
         </div>
         
         {/* Content */}
@@ -158,8 +158,8 @@ export function Hero() {
           <AnimatedSection delay={300}>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
-                href="/auth/signup-advanced"
-                className="cta-liquid group relative font-bold py-4 px-8 text-black text-lg transition-all duration-300 hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50"
+                href="/auth/signup"
+                className={`${liquidGlass.buttons.primary} group relative font-bold py-4 px-8 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50`}
                 style={{ 
                   background: hoveredCTA 
                     ? `linear-gradient(135deg, ${COLORS.brand.royalBlue}, ${COLORS.brand.neonGreen})` 
@@ -174,7 +174,7 @@ export function Hero() {
               
               <Link
                 href="#how-it-works"
-                className="liquid-glass-subtle font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white transition-all duration-300 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50"
+                className={`${liquidGlass.buttons.secondary} font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50`}
                 aria-label="Watch our 2-minute product demonstration video"
               >
                 <PlayCircle size={20} aria-hidden="true" />
@@ -190,10 +190,10 @@ export function Hero() {
                 {pills.map(pill => (
                   <button 
                     key={pill.label} 
-                    className="liquid-glass-subtle flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 transition-all duration-300 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black"
+                    className={`${liquidGlass.backgrounds.secondary} flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle}`}
                     onClick={() => document.getElementById('who-we-serve')?.scrollIntoView({ behavior: 'smooth' })}
                   >
-                    <pill.icon size={16} className="text-green-400"/>
+                    <pill.icon size={16} className={`text-green-400 ${liquidGlass.text.glowSubtle}`}/>
                     <span className="text-sm font-medium whitespace-nowrap">{pill.label}</span>
                   </button>
                 ))}

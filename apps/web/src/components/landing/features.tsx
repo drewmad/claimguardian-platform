@@ -20,6 +20,7 @@ import { Clock, DollarSign, ShieldCheck } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
 import { COLORS } from '@/lib/constants'
+import { liquidGlass } from '@/lib/styles/liquid-glass'
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {
@@ -75,12 +76,12 @@ export function Features() {
           ClaimGuardian creates living digital twins of everything you own, transforming scattered property data into actionable intelligence for wealth building.
         </p>
         <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className="value-prop-card p-8 rounded-2xl h-full flex flex-col text-left" style={{ backgroundColor: COLORS.glass.bg, border: `1px solid ${COLORS.glass.border}` }}>
+          <div className={`${liquidGlass.cards.success} p-8 rounded-2xl h-full flex flex-col text-left`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-green-400 to-green-600 text-black">
+              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-green-400 to-green-600 text-black`}>
                 <Clock size={24} />
               </div>
-              <h3 className="font-bold text-xl text-white">Complete Property Intelligence</h3>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Complete Property Intelligence</h3>
             </div>
             <p className="text-base text-gray-300 flex-grow leading-relaxed">
               <span className="font-semibold text-green-400">Track everything you own.</span> From your home's foundation to your headphone warranty, create a living digital twin that grows smarter over time. 
@@ -90,12 +91,12 @@ export function Features() {
               → Every possession tracked and optimized
             </div>
           </div>
-          <div className="value-prop-card p-8 rounded-2xl h-full flex flex-col text-left" style={{ backgroundColor: COLORS.glass.bg, border: `1px solid ${COLORS.glass.border}` }}>
+          <div className={`${liquidGlass.cards.info} p-8 rounded-2xl h-full flex flex-col text-left`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-400 to-blue-600 text-black">
+              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-blue-400 to-blue-600 text-black`}>
                 <DollarSign size={24} />
               </div>
-              <h3 className="font-bold text-xl text-white">Predictive Wealth Building</h3>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Predictive Wealth Building</h3>
             </div>
             <p className="text-base text-gray-300 flex-grow leading-relaxed">
               <span className="font-semibold text-blue-400">Optimize before problems arise.</span> AI predicts maintenance needs, tracks warranty expirations, and identifies investment opportunities. 
@@ -105,12 +106,12 @@ export function Features() {
               → Save $12,000+ through predictive maintenance
             </div>
           </div>
-          <div className="value-prop-card p-8 rounded-2xl h-full flex flex-col text-left" style={{ backgroundColor: COLORS.glass.bg, border: `1px solid ${COLORS.glass.border}` }}>
+          <div className={`${liquidGlass.cards.primary} p-8 rounded-2xl h-full flex flex-col text-left`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-purple-400 to-purple-600 text-black">
+              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-purple-400 to-purple-600 text-black`}>
                 <ShieldCheck size={24} />
               </div>
-              <h3 className="font-bold text-xl text-white">Preserve Your Legacy</h3>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Preserve Your Legacy</h3>
             </div>
             <p className="text-base text-gray-300 flex-grow leading-relaxed">
               <span className="font-semibold text-purple-400">Build generational wealth.</span> Your complete property story transfers seamlessly to future generations. 
@@ -123,16 +124,6 @@ export function Features() {
         </div>
       </AnimatedSection>
       
-      <style jsx>{`
-        .value-prop-card {
-          transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-        }
-        .value-prop-card:hover {
-          transform: translateY(-8px);
-          border-color: ${COLORS.primary}80;
-          box-shadow: 0 10px 25px -5px ${COLORS.primary}20;
-        }
-      `}</style>
     </section>
   )
 }
