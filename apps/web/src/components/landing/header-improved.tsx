@@ -107,13 +107,13 @@ export function Header() {
       <div className="md:hidden flex items-center gap-3">
         <Link 
           href="/auth/signup" 
-          className="font-semibold text-xs py-2 px-3 rounded-full transition-all duration-300 hover:scale-105 inline-block a11y-touch-target" 
+          className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target" 
           style={{ 
             backgroundColor: COLORS.brand.neonGreen,
             color: 'black'
           }}
         >
-          Join
+          Sign Up
         </Link>
         <button
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
