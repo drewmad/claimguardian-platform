@@ -190,7 +190,7 @@ export const CLAIM_DOCUMENTATION_STEPS: HowToStep[] = [
   {
     name: "Create your complete property digital twin",
     text: "Document everything you own in 15 minutes - from your home's foundation to your headphone warranty. ClaimGuardian's AI catalogs every asset, warranty, and maintenance schedule to build your comprehensive property intelligence network.",
-    url: "/auth/signup-advanced"
+    url: "/auth/signup"
   },
   {
     name: "Enable intelligent property monitoring",

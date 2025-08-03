@@ -112,7 +112,6 @@ export async function middleware(request: NextRequest) {
     '/',
     '/auth/signin',
     '/auth/signup',
-    '/auth/signup-advanced',
     '/auth/recover',
     '/auth/reset-password',
     '/auth/verify',

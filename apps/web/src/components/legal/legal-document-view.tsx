@@ -195,7 +195,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
               Have Questions?
             </Link>
             <Link
-              href="/auth/signup-advanced"
+              href="/auth/signup"
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
             >
               Create Free Account
