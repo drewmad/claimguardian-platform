@@ -91,6 +91,16 @@ export function MultiStepSignupForm() {
     return { score, strength, feedback, color }
   }
   
+  const getStepProgress = () => {
+    const steps: Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer']
+    const currentIndex = steps.indexOf(currentStep)
+    return {
+      currentStep: currentIndex + 1,
+      totalSteps: steps.length,
+      percentage: ((currentIndex + 1) / steps.length) * 100
+    }
+  }
+
   const isStepValid = (step: Step): boolean => {
     switch (step) {
       case 'welcome':
@@ -574,6 +584,48 @@ export function MultiStepSignupForm() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
+          
+          {/* Progress Indicator */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
+              <span>Step {getStepProgress().currentStep} of {getStepProgress().totalSteps}</span>
+              <span>{Math.round(getStepProgress().percentage)}% complete</span>
+            </div>
+            <div className="w-full bg-slate-800 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
+                style={{ width: `${getStepProgress().percentage}%` }}
+              />
+            </div>
+            <div className="flex justify-between mt-2">
+              {['Welcome', 'Account', 'Legal', 'AI Terms'].map((stepName, index) => {
+                const progress = getStepProgress()
+                const isCompleted = index < progress.currentStep - 1
+                const isCurrent = index === progress.currentStep - 1
+                
+                return (
+                  <div key={stepName} className="flex flex-col items-center">
+                    <div className={`w-3 h-3 rounded-full border-2 transition-colors ${
+                      isCompleted 
+                        ? 'bg-blue-600 border-blue-600' 
+                        : isCurrent 
+                        ? 'border-blue-600 bg-slate-900' 
+                        : 'border-slate-600 bg-slate-800'
+                    }`}>
+                      {isCompleted && (
+                        <Check className="w-2 h-2 text-white m-0.5" />
+                      )}
+                    </div>
+                    <span className={`text-xs mt-1 ${
+                      isCompleted || isCurrent ? 'text-blue-400' : 'text-gray-500'
+                    }`}>
+                      {stepName}
+                    </span>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
           
           {renderStepContent()}
           

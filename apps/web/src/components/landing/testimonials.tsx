@@ -11,6 +11,7 @@
 'use client'
 
 import { Star } from 'lucide-react'
+import Image from 'next/image'
 import { useState, useEffect, useRef } from 'react'
 
 // Animation hook reused
@@ -58,15 +59,38 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 export function Testimonials() {
   return (
     <section className="px-4 md:px-8 py-16 bg-[#0a0e1a]">
-      <AnimatedSection className="max-w-3xl mx-auto text-center">
-        <div className="flex justify-center mb-4">
-          {[...Array(5)].map((_, i) => <Star key={i} size={24} className="text-yellow-400" fill="currentColor" />)}
+      <AnimatedSection className="max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+          {/* Testimonial Content */}
+          <div className="text-center lg:text-left">
+            <div className="flex justify-center lg:justify-start mb-4">
+              {[...Array(5)].map((_, i) => <Star key={i} size={24} className="text-yellow-400" fill="currentColor" />)}
+            </div>
+            <blockquote className="font-slab text-2xl md:text-3xl font-semibold italic text-white">
+              &quot;Documenting everything after the storm used to take weeks. With ClaimGuardian, I had a complete, undeniable evidence package in under an hour. My claim was paid while my neighbors were still taking pictures. It&apos;s a game-changer.&quot;
+            </blockquote>
+            <p className="mt-6 font-semibold text-white">- Marissa M., Southwest Florida</p>
+            <p className="text-sm text-gray-300">ClaimGuardian User Since 2023</p>
+          </div>
+
+          {/* Team Consultation Image */}
+          <div className="relative">
+            <div className="aspect-[4/3] relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
+              <Image
+                src="/images/property-team-consultation.jpg"
+                alt="ClaimGuardian team consultation with Florida property owner"
+                fill
+                className="object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+              <div className="absolute bottom-4 left-4 right-4">
+                <p className="text-white text-sm font-medium">
+                  Personal consultation with ClaimGuardian experts
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
-        <blockquote className="font-slab text-2xl md:text-3xl font-semibold italic">
-          &quot;Documenting everything after the storm used to take weeks. With ClaimGuardian, I had a complete, undeniable evidence package in under an hour. My claim was paid while my neighbors were still taking pictures. It&apos;s a game-changer.&quot;
-        </blockquote>
-        <p className="mt-6 font-semibold">- Marissa M., Port Charlotte, FL</p>
-        <p className="text-sm text-gray-300">ClaimGuardian User Since 2023</p>
       </AnimatedSection>
     </section>
   )

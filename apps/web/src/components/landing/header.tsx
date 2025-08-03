@@ -14,23 +14,21 @@ import Link from 'next/link'
 
 import { COLORS } from '@/lib/constants'
 
-const HeaderShieldIcon = () => (
-  <svg width="28" height="32" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <path d="M32 0L2.78461 12V36C2.78461 52.8 15.2462 68.4 32 72C48.7538 68.4 61.2154 52.8 61.2154 36V12L32 0Z" fill="url(#shield-gradient-header)"/>
-    <defs>
-      <linearGradient id="shield-gradient-header" x1="32" y1="0" x2="32" y2="72" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#5BA3F5"/>
-        <stop offset="1" stopColor="#3D7BC7"/>
-      </linearGradient>
-    </defs>
-  </svg>
+const HeaderLogoIcon = () => (
+  <img 
+    src="/images/claimguardian-logo.png" 
+    alt="ClaimGuardian Logo" 
+    width={28} 
+    height={32}
+    className="object-contain"
+  />
 )
 
 export function Header() {
   return (
     <header className="sticky top-0 z-50 p-4 md:px-6 flex justify-between items-center transition-colors duration-300" style={{ backgroundColor: 'rgba(10, 14, 26, 0.8)', backdropFilter: 'blur(10px)', borderBottom: `1px solid rgba(255, 255, 255, 0.1)` }}>
       <div className="flex items-center gap-3">
-        <HeaderShieldIcon />
+        <HeaderLogoIcon />
         <h1 className="font-slab text-xl md:text-2xl font-bold" style={{ textShadow: `0 0 8px rgba(0, 169, 255, 0.5)` }}>
           ClaimGuardian
         </h1>

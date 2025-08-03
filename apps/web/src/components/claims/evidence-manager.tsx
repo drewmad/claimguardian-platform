@@ -98,7 +98,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
       {
         id: '1',
         claimId,
-        fileUrl: '/placeholder-damage-1.jpg',
+        fileUrl: '/images/property-waterfront-estate.jpg',
         fileName: 'kitchen-water-damage-1.jpg',
         fileSize: 2457600,
         fileType: 'image/jpeg',

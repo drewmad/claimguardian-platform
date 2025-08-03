@@ -16,25 +16,18 @@ import { Menu, X } from 'lucide-react'
 
 import { COLORS } from '@/lib/constants'
 
-// Enhanced shield with neon outline
-const HeaderShieldIcon = () => (
+// Professional logo with enhanced styling
+const HeaderLogoIcon = () => (
   <div className="relative">
-    <svg width="28" height="32" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M32 0L2.78461 12V36C2.78461 52.8 15.2462 68.4 32 72C48.7538 68.4 61.2154 52.8 61.2154 36V12L32 0Z" 
-        fill="url(#shield-gradient-header-improved)"
-        stroke={COLORS.brand.neonGreen}
-        strokeWidth="1.5"
-        strokeOpacity="0.6"
-      />
-      <defs>
-        <linearGradient id="shield-gradient-header-improved" x1="32" y1="0" x2="32" y2="72" gradientUnits="userSpaceOnUse">
-          <stop stopColor={COLORS.brand.royalBlue}/>
-          <stop offset="1" stopColor={COLORS.brand.gunmetal}/>
-        </linearGradient>
-      </defs>
-    </svg>
-    {/* Subtle glow */}
-    <div className="absolute inset-0 blur-md opacity-50 bg-green-400 animate-pulse" />
+    <img 
+      src="/images/claimguardian-logo.png" 
+      alt="ClaimGuardian Logo" 
+      width={28} 
+      height={32}
+      className="object-contain"
+    />
+    {/* Subtle glow effect for logo */}
+    <div className="absolute inset-0 blur-md opacity-30 bg-green-400/20 animate-pulse" />
   </div>
 )
 
@@ -52,9 +45,9 @@ export function Header() {
         WebkitBackdropFilter: 'blur(12px)' // Safari support
       }}
     >
-      {/* Logo - Shield + Wordmark paired -->
+      {/* Logo - Professional logo + Wordmark paired */}
       <Link href="/" className="flex items-center gap-2 group">
-        <HeaderShieldIcon />
+        <HeaderLogoIcon />
         <h1 className="font-slab text-xl md:text-2xl font-bold text-white group-hover:text-green-400 transition-colors duration-300">
           ClaimGuardian
         </h1>

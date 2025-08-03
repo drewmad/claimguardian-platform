@@ -65,25 +65,14 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   )
 }
 
-// Enhanced shield with neon glow
-const GuardianShieldIcon = () => (
+// Professional logo with enhanced styling for hero section
+const GuardianHeroLogo = () => (
   <div className="relative">
-    <svg width="64" height="72" viewBox="0 0 64 72" fill="none" xmlns="http://www.w3.org/2000/svg" 
-      className="drop-shadow-[0_8px_32px_rgba(57,255,20,0.4)] h-16 md:h-20 w-auto animate-pulse-slow">
-      <path d="M32 0L2.78461 12V36C2.78461 52.8 15.2462 68.4 32 72C48.7538 68.4 61.2154 52.8 61.2154 36V12L32 0Z" 
-        fill="url(#shield-gradient-improved)" 
-        stroke={COLORS.brand.neonGreen} 
-        strokeWidth="2" 
-        strokeOpacity="0.6"/>
-      <circle cx="32" cy="28" r="6" fill="#0D1117" stroke={COLORS.brand.neonGreen} strokeOpacity="0.8" strokeWidth="2"/>
-      <circle cx="32" cy="28" r="2" fill={COLORS.brand.neonGreen}/>
-      <defs>
-        <linearGradient id="shield-gradient-improved" x1="32" y1="0" x2="32" y2="72" gradientUnits="userSpaceOnUse">
-          <stop stopColor={COLORS.brand.royalBlue}/>
-          <stop offset="1" stopColor={COLORS.brand.gunmetal}/>
-        </linearGradient>
-      </defs>
-    </svg>
+    <img 
+      src="/images/claimguardian-logo.png" 
+      alt="ClaimGuardian Logo" 
+      className="drop-shadow-[0_8px_32px_rgba(57,255,20,0.4)] h-16 md:h-20 w-auto object-contain"
+    />
     {/* Ambient glow effect */}
     <div className="absolute inset-0 blur-2xl opacity-30 bg-gradient-to-b from-green-400 to-transparent animate-pulse" />
   </div>
@@ -128,7 +117,7 @@ export function Hero() {
         <div className="relative z-10 container mx-auto px-4 text-center pt-12 pb-16" id="main">
           <AnimatedSection>
             <header className="flex items-center justify-center gap-3 mb-8">
-              <GuardianShieldIcon />
+              <GuardianHeroLogo />
               <h1 className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none" aria-label="ClaimGuardian - AI-powered insurance claim assistance">
                 ClaimGuardian
               </h1>
