@@ -20,11 +20,11 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { LearningWidget } from '@/components/learning/learning-widget'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
-import { useSupabase } from '@/lib/supabase/client'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { useSupabase } from '@/lib/supabase/client'
 
 function DashboardContent() {
   const { user } = useAuth()

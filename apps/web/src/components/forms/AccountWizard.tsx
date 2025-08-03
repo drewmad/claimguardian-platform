@@ -1,13 +1,16 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { PersonalInfo } from './steps/PersonalInfo'
-import { Agreements } from './steps/Agreements'
-import { ProgressBar } from './ProgressBar'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CheckCircle, AlertCircle } from 'lucide-react'
+import { useRouter } from 'next/navigation'
+import React, { useState } from 'react'
+
+import { ProgressBar } from './ProgressBar'
+import { Agreements } from './steps/Agreements'
+import { PersonalInfo } from './steps/PersonalInfo'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
+
 
 interface FormData {
   firstName: string

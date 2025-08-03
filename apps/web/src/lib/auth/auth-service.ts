@@ -9,12 +9,12 @@
  * @status active
  */
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
 
 import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { getAuthCallbackURL } from '@/lib/utils/site-url'
 
 export class AuthError extends AppError {

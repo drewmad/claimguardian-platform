@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '../ui/card'
 import { BarChart, Info, TrendingUp, AlertTriangle, Brain } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+import { CardContent, CardHeader, CardTitle } from '../ui/card'
+
 
 interface ExplainabilityProps {
   predictionId: string

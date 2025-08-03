@@ -1,9 +1,11 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Card } from '@claimguardian/ui'
-import { CardContent, CardHeader, CardTitle } from '../ui/card'
 import { AlertCircle, TrendingDown, CheckCircle, GitBranch } from 'lucide-react'
+import { useState, useEffect } from 'react'
+
+import { CardContent, CardHeader, CardTitle } from '../ui/card'
+
 
 interface ModelMetrics {
   requestCount: number

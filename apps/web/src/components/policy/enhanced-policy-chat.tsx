@@ -1,5 +1,6 @@
 'use client'
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { FileText, Shield, Upload, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
@@ -7,7 +8,6 @@ import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 // import { AIClientService } from '@/lib/ai/client-service' // TODO: Remove if not needed
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 interface ChatMessage {
   role: 'user' | 'assistant'

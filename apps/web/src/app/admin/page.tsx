@@ -1,6 +1,7 @@
 'use client'
 
 import { Suspense } from 'react'
+
 import { AdminDashboard } from './admin-dashboard'
 
 function AdminDashboardWrapper() {

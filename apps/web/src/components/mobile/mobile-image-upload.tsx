@@ -1,9 +1,9 @@
 'use client'
 
-import { useState, useRef, useCallback } from 'react'
-import { Camera, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import { motion } from 'framer-motion'
+import { Camera, Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react'
 import Image from 'next/image'
+import { useState, useRef, useCallback } from 'react'
 
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'

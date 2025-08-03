@@ -1,9 +1,9 @@
 import pRetry from 'p-retry'
 
+import { BaseAIProvider } from './providers/base.provider'
 import { GeminiProvider } from './providers/gemini.provider'
 import { OpenAIProvider } from './providers/openai.provider'
 import type { ClaimAssistantContext, AIResponse } from './types'
-import { BaseAIProvider } from './providers/base.provider'
 
 interface ClaimStep {
   id: string

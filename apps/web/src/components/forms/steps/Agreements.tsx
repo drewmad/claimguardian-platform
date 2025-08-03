@@ -1,12 +1,14 @@
 'use client'
 
-import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
 import { FileText, ShieldCheck, Cookie, Brain, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import React, { useState } from 'react'
+import { useForm } from 'react-hook-form'
+
+import { Accordion } from '../Accordion'
+
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Accordion } from '../Accordion'
 
 interface AgreementsData {
   agreed: boolean

@@ -1,10 +1,11 @@
 'use client'
 
-import { useState } from 'react'
 import { Check, AlertCircle, Calendar } from 'lucide-react'
-import { Label } from '@/components/ui/label'
-import { Checkbox } from '@/components/ui/checkbox'
+import { useState } from 'react'
+
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 
 interface AgeVerificationProps {
   value: boolean

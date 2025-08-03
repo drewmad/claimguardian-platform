@@ -19,9 +19,9 @@ import { getProperties } from '@/actions/properties'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { PropertyWizard } from '@/components/property/property-wizard'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
-import { Button } from '@/components/ui/button'
 
 interface DisplayProperty {
   id: string

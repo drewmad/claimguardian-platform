@@ -1,13 +1,13 @@
 'use client'
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { FileText, Bug, TestTube, Settings, User, Key, Database, Shield, AlertCircle, CheckCircle, Clock, Info, Loader2, RefreshCw, Trash2 } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 interface DebugInfo {
   timestamp: string

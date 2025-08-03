@@ -11,6 +11,7 @@
 'use client'
 
 import Link from 'next/link'
+
 import { COLORS } from '@/lib/constants'
 
 // Enhanced shield with neon outline

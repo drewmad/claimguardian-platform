@@ -2,8 +2,8 @@
  * Simplified auth service - just the basics
  */
 
-import { User } from '@supabase/supabase-js'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { User } from '@supabase/supabase-js'
 
 interface AuthResponse<T = unknown> {
   data?: T

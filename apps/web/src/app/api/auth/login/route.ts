@@ -7,10 +7,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
+import { logger } from '@/lib/logger'
 import { BotProtection, HONEYPOT_FIELDS } from '@/lib/security/bot-protection'
 import { withRateLimit } from '@/lib/security/rate-limiter'
 import { createClient } from '@/lib/supabase/server'
-import { logger } from '@/lib/logger'
 
 export async function POST(request: NextRequest) {
   return withRateLimit(

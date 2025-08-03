@@ -7,6 +7,7 @@
 'use client'
 
 import { TrendingDown, TrendingUp, DollarSign, Calendar, Info } from 'lucide-react'
+
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip'

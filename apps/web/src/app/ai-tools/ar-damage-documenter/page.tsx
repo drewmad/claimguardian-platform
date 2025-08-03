@@ -5,17 +5,17 @@ import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
-import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { CameraCapture } from '@/components/camera/camera-capture'
 import { EnhancedDamageAnalyzer } from '@/components/ai/enhanced-damage-analyzer'
+import { ProtectedRoute } from '@/components/auth/protected-route'
+import { CameraCapture } from '@/components/camera/camera-capture'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
 interface Measurement {
   id: string

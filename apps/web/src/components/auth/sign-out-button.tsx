@@ -9,6 +9,7 @@
 import { Button } from '@claimguardian/ui'
 import { LogOut, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 
 interface SignOutButtonProps {

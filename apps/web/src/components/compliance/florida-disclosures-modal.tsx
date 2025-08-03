@@ -1,10 +1,12 @@
 'use client'
 
-import { useState } from 'react'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { AlertTriangle, Scale, Users, FileText } from 'lucide-react'
+import { useState } from 'react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Label } from '@/components/ui/label'
 import {
   Dialog,
   DialogContent,
@@ -13,8 +15,8 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { Alert, AlertDescription } from '@/components/ui/alert'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { Label } from '@/components/ui/label'
+
 
 interface FloridaDisclosuresModalProps {
   open: boolean

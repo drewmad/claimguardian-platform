@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+
 import { DocumentExtractor } from '../document-extractor'
 import type { DocumentExtractionRequest } from '../types'
 

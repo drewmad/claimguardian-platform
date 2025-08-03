@@ -6,6 +6,7 @@
  */
 
 import { redirect } from 'next/navigation'
+
 import { getServerSession } from '@/lib/supabase/server-auth'
 
 interface ProtectedLayoutProps {

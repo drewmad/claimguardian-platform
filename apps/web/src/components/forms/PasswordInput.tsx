@@ -1,7 +1,8 @@
 'use client'
 
-import React, { forwardRef, useState, useMemo } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
+import React, { forwardRef, useState, useMemo } from 'react'
+
 import { cn } from '@/lib/utils'
 
 interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'type'> {

@@ -1,7 +1,7 @@
 'use client'
 
-import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { AuthProvider } from '@/components/auth/auth-provider'
+import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 
 export default function OnboardingPage() {
   return (

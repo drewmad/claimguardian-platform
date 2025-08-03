@@ -17,9 +17,10 @@
 
 'use client'
 
+import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 import OpenAI from 'openai'
-import Anthropic from '@anthropic-ai/sdk'
+
 import { 
   ThreatAssessment, 
   ThreatLevel, 

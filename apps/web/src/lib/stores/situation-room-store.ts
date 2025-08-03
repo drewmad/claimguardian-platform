@@ -17,9 +17,10 @@
 'use client'
 
 import { create } from 'zustand'
-import { immer } from 'zustand/middleware/immer'
 import { subscribeWithSelector } from 'zustand/middleware'
+import { immer } from 'zustand/middleware/immer'
 
+import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
 import { 
   ThreatLevel,
   EventType,
@@ -38,7 +39,6 @@ import type {
   EvacuationPlan,
   ThreatMonitoringConfig
 } from '@/types/situation-room'
-import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
 
 interface SituationRoomActions {
   // Data loading actions

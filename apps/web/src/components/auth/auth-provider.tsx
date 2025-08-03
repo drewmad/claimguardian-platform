@@ -10,16 +10,17 @@
  */
 'use client'
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { User } from '@supabase/supabase-js'
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react'
+
+import { SessionMonitor } from './session-monitor'
 
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { handleAuthError } from '@/lib/supabase/auth-helpers'
 
-import { SessionMonitor } from './session-monitor'
 
 interface AuthContextType {
   user: User | null

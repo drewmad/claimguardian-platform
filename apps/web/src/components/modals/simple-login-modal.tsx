@@ -8,6 +8,7 @@
 
 import { X } from 'lucide-react'
 import { useState } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { useModalStore } from '@/stores/modal-store'
 

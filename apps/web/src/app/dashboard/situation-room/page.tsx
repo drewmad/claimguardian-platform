@@ -21,12 +21,12 @@ import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+import { AIAssessmentPanel } from '@/components/situation-room/ai-assessment-panel'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { AIAssessmentPanel } from '@/components/situation-room/ai-assessment-panel'
-import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { useRealtimeSubscription } from '@/hooks/use-situation-room-realtime'
+import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { 
   ThreatLevel
 } from '@/types/situation-room'

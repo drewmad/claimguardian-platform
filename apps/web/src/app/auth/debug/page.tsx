@@ -6,8 +6,9 @@
  */
 'use client'
 
-import { useEffect, useState } from 'react'
 import { Card } from '@claimguardian/ui'
+import { useEffect, useState } from 'react'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { createClient } from '@/lib/supabase/client'
 

@@ -6,12 +6,12 @@
  */
 'use client'
 
+import { Card } from '@claimguardian/ui'
 import { AlertCircle, CheckCircle, Shield, TrendingUp, Users } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
-import { AdminLayout } from '@/components/admin/admin-layout'
-import { Card } from '@claimguardian/ui'
 import { getComplianceDashboardData } from '@/actions/compliance-dashboard'
+import { AdminLayout } from '@/components/admin/admin-layout'
 
 interface ComplianceMetrics {
   totalUsers: number

@@ -11,6 +11,7 @@
 'use client'
 
 import Link from 'next/link'
+
 import { useModalStore } from '@/stores/modal-store'
 
 export function GetStarted() {

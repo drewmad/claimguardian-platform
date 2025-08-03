@@ -6,6 +6,7 @@
  */
 
 import { SupabaseClient } from '@supabase/supabase-js'
+
 import { authLogger } from '@/lib/logger'
 
 export async function handleAuthError(error: unknown, supabase: SupabaseClient) {

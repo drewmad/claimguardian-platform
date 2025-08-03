@@ -2,6 +2,7 @@
 
 import { X } from 'lucide-react'
 import ReactMarkdown from 'react-markdown'
+
 import { Button } from '@/components/ui/button'
 
 interface LegalDocumentModalProps {

@@ -3,6 +3,19 @@
 // Force dynamic rendering to prevent SSG issues with Supabase client
 export const dynamic = 'force-dynamic'
 
+import { 
+  Package,
+  DollarSign,
+  Home,
+  AlertCircle,
+  Sparkles,
+  Filter,
+  ArrowUpDown,
+  Camera,
+  Save,
+  FileSpreadsheet,
+  Scan
+} from 'lucide-react'
 import NextDynamic from 'next/dynamic'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -22,19 +35,6 @@ const BarcodeScanner = NextDynamic(
   () => import('@/components/ui/barcode-scanner').then(mod => mod.BarcodeScanner),
   { ssr: false }
 )
-import { 
-  Package,
-  DollarSign,
-  Home,
-  AlertCircle,
-  Sparkles,
-  Filter,
-  ArrowUpDown,
-  Camera,
-  Save,
-  FileSpreadsheet,
-  Scan
-} from 'lucide-react'
 
 import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'

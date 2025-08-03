@@ -1,11 +1,13 @@
 'use client'
 
+import { User, Mail, Phone as PhoneIcon, Lock, Shield } from 'lucide-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
-import { User, Mail, Phone as PhoneIcon, Lock, Shield } from 'lucide-react'
-import { TextInput } from '../TextInput'
+
 import { PasswordInput } from '../PasswordInput'
 import { PhoneInput } from '../PhoneInput'
+import { TextInput } from '../TextInput'
+
 import { Button } from '@/components/ui/button'
 
 interface PersonalInfoData {

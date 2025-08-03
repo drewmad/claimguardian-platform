@@ -18,6 +18,7 @@ import {
 import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'

@@ -1,14 +1,15 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Shield, Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { Shield, Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
+import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export function BasicSignupForm() {
   const router = useRouter()

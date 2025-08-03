@@ -1,7 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
 import { ChevronDown, ChevronRight } from 'lucide-react'
+import React, { useState } from 'react'
+
 import { cn } from '@/lib/utils'
 
 interface AccordionProps {

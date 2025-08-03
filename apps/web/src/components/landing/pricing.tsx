@@ -16,15 +16,15 @@
  */
 'use client'
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Check, Loader2 } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 
 import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 // import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {

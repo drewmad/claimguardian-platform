@@ -8,8 +8,9 @@
 
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
-import { createAuthClient, serverSignOut } from '@/lib/supabase/server-auth'
+
 import { authLogger } from '@/lib/logger'
+import { createAuthClient, serverSignOut } from '@/lib/supabase/server-auth'
 
 /**
  * Server action to sign out the user

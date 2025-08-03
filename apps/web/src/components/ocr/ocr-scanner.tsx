@@ -1,11 +1,12 @@
 
 'use client'
 
-import { useState } from 'react'
 import { Camera, FileText, Loader2, Upload, X, AlertCircle } from 'lucide-react'
-import { toast } from 'sonner'
 import Image from 'next/image'
+import { useState } from 'react'
+import { toast } from 'sonner'
 
+import { CameraCapture } from '@/components/camera/camera-capture'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -13,7 +14,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ocrService, DocumentType, OCRResult, ReceiptData, OCRHistoryEntry } from '@/lib/services/ocr-service'
-import { CameraCapture } from '@/components/camera/camera-capture'
 
 interface OCRScannerProps {
   onScanComplete?: (result: OCRResult) => void

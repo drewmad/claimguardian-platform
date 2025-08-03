@@ -1,5 +1,5 @@
 import OpenAI from 'openai';
-import { BaseAIProvider } from './base.provider';
+
 import type { 
   AIRequest, 
   AIResponse as NewAIResponse, 
@@ -9,6 +9,8 @@ import type {
   ImageAnalysisRequest,
   ImageAnalysisResponse
 } from '../types/index';
+
+import { BaseAIProvider } from './base.provider';
 
 export class OpenAIProvider extends BaseAIProvider {
   private client: OpenAI;

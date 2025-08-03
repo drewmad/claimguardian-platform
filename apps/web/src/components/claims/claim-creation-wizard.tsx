@@ -1,5 +1,6 @@
 'use client'
 
+import { createBrowserSupabaseClient } from '@claimguardian/db'
 import {
   AlertCircle,
   ArrowLeft,
@@ -16,6 +17,8 @@ import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
 
+import { EvidenceManager } from './evidence-manager'
+
 import { useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -24,9 +27,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { createBrowserSupabaseClient } from '@claimguardian/db'
 
-import { EvidenceManager } from './evidence-manager'
 
 interface ClaimData {
   // Step 1: Basic Info

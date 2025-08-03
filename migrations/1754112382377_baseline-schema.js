@@ -4,7 +4,7 @@
  * @owner db-team
  * @status active
  */
-/* eslint-disable camelcase */
+ 
 
 exports.shorthands = undefined;
 

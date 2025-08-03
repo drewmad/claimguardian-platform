@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest'
+
 import { ClaimAssistant } from '../claim-assistant'
 import type { ClaimAssistantContext } from '../types'
 

@@ -1,7 +1,5 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useRouter, useSearchParams } from 'next/navigation'
 import { 
   Shield, 
   ArrowLeft, 
@@ -19,15 +17,19 @@ import {
   Calendar,
   Eye
 } from 'lucide-react'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Badge } from '@/components/ui/badge'
-import { liquidGlass } from '@/lib/styles/liquid-glass'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useState, useEffect } from 'react'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
+
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { liquidGlass } from '@/lib/styles/liquid-glass'
+
 
 export function AdminDashboard() {
   const router = useRouter()

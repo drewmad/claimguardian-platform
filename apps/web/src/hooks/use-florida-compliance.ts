@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useState, useCallback } from 'react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { useEffect, useState, useCallback } from 'react'
+
 import { useFloridaDisclosures } from '@/components/compliance/florida-disclosures-context'
 
 /**

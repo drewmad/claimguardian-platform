@@ -11,8 +11,8 @@
 'use client'
 
 import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight, Building } from 'lucide-react'
-import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
+import { useState, useEffect, useRef } from 'react'
 
 import { COLORS } from '@/lib/constants'
 

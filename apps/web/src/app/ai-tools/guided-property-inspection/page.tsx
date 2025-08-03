@@ -11,16 +11,16 @@ import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
-import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { CameraCapture } from '@/components/camera/camera-capture'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 
 interface InspectionRoom {
   id: string

@@ -1,8 +1,8 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 
 import { simpleAuthService } from '@/lib/auth/simple-auth-service'
 

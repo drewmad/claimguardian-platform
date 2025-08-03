@@ -1,10 +1,10 @@
 'use client'
 
+import { motion, AnimatePresence } from 'framer-motion'
 import { Home, Building, FileText, Shield, Menu, X, ChevronRight, Bot } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
 
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'

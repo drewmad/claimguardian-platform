@@ -5,8 +5,8 @@
  * @status active
  */
 
-import Link from 'next/link'
 import { Shield, Home, ArrowLeft, Download, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 
 export default function HurricanePrepPage() {
   return (

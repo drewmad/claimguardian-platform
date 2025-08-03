@@ -7,15 +7,15 @@
 'use client'
 
 import { User } from '@supabase/supabase-js'
-import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
+import React, { createContext, useContext, useEffect, useState, useCallback, useRef } from 'react'
 
+import { validateSessionAction, refreshSessionAction } from '@/app/auth/actions'
 import { authService, AuthError } from '@/lib/auth/auth-service'
 import { sessionManager } from '@/lib/auth/session-manager'
 import { logger } from '@/lib/logger'
-import { createClient } from '@/lib/supabase/client'
 import { handleAuthError, validateSession } from '@/lib/supabase/auth-helpers'
-import { validateSessionAction, refreshSessionAction } from '@/app/auth/actions'
+import { createClient } from '@/lib/supabase/client'
 
 interface AuthContextType {
   user: User | null

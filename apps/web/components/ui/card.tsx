@@ -1,5 +1,5 @@
-import React from 'react'
 import { cn } from '@claimguardian/ui'
+import React from 'react'
 
 const Card = React.forwardRef<
   HTMLDivElement,
