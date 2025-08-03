@@ -61,6 +61,36 @@ export function MultiStepSignupForm() {
     return digits.length === 10
   }
   
+  const getPasswordStrength = (password: string) => {
+    let score = 0
+    const feedback = []
+    
+    if (password.length >= 8) score += 1
+    else feedback.push('At least 8 characters')
+    
+    if (/[a-z]/.test(password)) score += 1
+    else feedback.push('A lowercase letter')
+    
+    if (/[A-Z]/.test(password)) score += 1
+    else feedback.push('An uppercase letter')
+    
+    if (/\d/.test(password)) score += 1
+    else feedback.push('A number')
+    
+    if (/[^a-zA-Z0-9]/.test(password)) score += 1
+    else feedback.push('A special character')
+    
+    const strength = score <= 2 ? 'weak' : score <= 3 ? 'medium' : score <= 4 ? 'strong' : 'very-strong'
+    const color = {
+      weak: 'text-red-400',
+      medium: 'text-yellow-400', 
+      strong: 'text-blue-400',
+      'very-strong': 'text-green-400'
+    }[strength]
+    
+    return { score, strength, feedback, color }
+  }
+  
   const isStepValid = (step: Step): boolean => {
     switch (step) {
       case 'welcome':
@@ -82,6 +112,10 @@ export function MultiStepSignupForm() {
       case 'legal':
         return formData.over18 && formData.legalAgreements
       case 'ai-disclaimer':
+        console.log('🤖 AI disclaimer validation:', {
+          aiDisclaimerAccepted: formData.aiDisclaimerAccepted,
+          isValid: formData.aiDisclaimerAccepted
+        })
         return formData.aiDisclaimerAccepted
       default:
         return false
@@ -107,10 +141,45 @@ export function MultiStepSignupForm() {
   }
   
   const handleSubmit = async () => {
+    console.log('🔵 handleSubmit called - starting signup process')
+    console.log('📱 User agent:', navigator.userAgent)
+    console.log('📋 Form data:', formData)
+    console.log('🔍 Step validation check:', {
+      currentStep,
+      isValid: isStepValid(currentStep),
+      validationBreakdown: {
+        over18: formData.over18,
+        legalAgreements: formData.legalAgreements,
+        aiDisclaimerAccepted: formData.aiDisclaimerAccepted
+      }
+    })
+    
+    // Double-check all validations before proceeding
+    if (!isStepValid(currentStep)) {
+      console.log('⚠️ Step validation failed, aborting submission')
+      setError('Please complete all required fields before continuing.')
+      return
+    }
+    
     setIsLoading(true)
     setError(null)
+    console.log('🔄 Loading state set to true, error cleared')
     
     try {
+      console.log('🔐 Attempting signup with Supabase...')
+      console.log('🔗 Supabase client initialized:', !!supabase)
+      console.log('📧 Signup payload:', {
+        email: formData.email,
+        password: formData.password ? '[PROVIDED]' : '[MISSING]',
+        options: {
+          data: {
+            first_name: formData.firstName,
+            last_name: formData.lastName,
+            phone: formData.phone,
+          }
+        }
+      })
+      
       // Sign up the user
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -124,9 +193,15 @@ export function MultiStepSignupForm() {
         }
       })
       
+      console.log('📨 Supabase signup response:', { signUpData, signUpError })
+      console.log('👤 User data received:', signUpData?.user ? 'YES' : 'NO')
+      console.log('🔑 Session data received:', signUpData?.session ? 'YES' : 'NO')
+      
       if (signUpError) throw signUpError
       
       if (signUpData?.user) {
+        console.log('✅ User created successfully:', signUpData.user.id)
+        
         // Profile will be automatically created by database trigger
         // Store additional signup data in user metadata for now
         console.log('User profile will be created automatically by database trigger')
@@ -143,13 +218,18 @@ export function MultiStepSignupForm() {
           signup_landing_page: window.location.href
         })
         
+        console.log('🚀 Redirecting to onboarding...')
         // Redirect to property setup
         router.push('/onboarding/property-setup')
+      } else {
+        console.log('❌ No user data received from signup')
+        setError('Signup completed but no user data received. Please try signing in.')
       }
     } catch (err) {
-      console.error('Signup error:', err)
+      console.error('❌ Signup error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred during signup')
     } finally {
+      console.log('🏁 Signup process completed, setting loading to false')
       setIsLoading(false)
     }
   }
@@ -199,7 +279,7 @@ export function MultiStepSignupForm() {
                     value={formData.firstName}
                     onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                     className="mt-1 bg-slate-800 border-slate-700 text-white"
-                    placeholder="John"
+                    placeholder="Enter your first name"
                   />
                 </div>
                 
@@ -210,7 +290,7 @@ export function MultiStepSignupForm() {
                     value={formData.lastName}
                     onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                     className="mt-1 bg-slate-800 border-slate-700 text-white"
-                    placeholder="Doe"
+                    placeholder="Enter your last name"
                   />
                 </div>
               </div>
@@ -226,7 +306,7 @@ export function MultiStepSignupForm() {
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.email && !validateEmail(formData.email) && "border-red-500"
                   )}
-                  placeholder="you@example.com"
+                  placeholder="Enter your email address"
                 />
                 {formData.email && !validateEmail(formData.email) && (
                   <p className="text-xs text-red-500 mt-1">Please enter a valid email</p>
@@ -244,7 +324,7 @@ export function MultiStepSignupForm() {
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.phone && !validatePhone(formData.phone) && "border-red-500"
                   )}
-                  placeholder="(555) 123-4567"
+                  placeholder="Enter your phone number"
                 />
                 {formData.phone && !validatePhone(formData.phone) && (
                   <p className="text-xs text-red-500 mt-1">Please enter a valid 10-digit phone number</p>
@@ -269,6 +349,39 @@ export function MultiStepSignupForm() {
                   )}
                   placeholder="••••••••"
                 />
+                {formData.password && (
+                  <div className="mt-2">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="text-xs text-gray-400">Password strength:</span>
+                      <span className={`text-xs font-medium ${getPasswordStrength(formData.password).color}`}>
+                        {getPasswordStrength(formData.password).strength.replace('-', ' ').toUpperCase()}
+                      </span>
+                    </div>
+                    <div className="flex gap-1 mb-1">
+                      {[...Array(5)].map((_, i) => (
+                        <div
+                          key={i}
+                          className={`h-1 w-full rounded ${
+                            i < getPasswordStrength(formData.password).score
+                              ? getPasswordStrength(formData.password).strength === 'weak'
+                                ? 'bg-red-400'
+                                : getPasswordStrength(formData.password).strength === 'medium'
+                                ? 'bg-yellow-400'
+                                : getPasswordStrength(formData.password).strength === 'strong'
+                                ? 'bg-blue-400'
+                                : 'bg-green-400'
+                              : 'bg-gray-600'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {getPasswordStrength(formData.password).feedback.length > 0 && (
+                      <p className="text-xs text-gray-400">
+                        Add: {getPasswordStrength(formData.password).feedback.join(', ')}
+                      </p>
+                    )}
+                  </div>
+                )}
                 <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
               </div>
               
@@ -497,9 +610,47 @@ export function MultiStepSignupForm() {
                 
                 {currentStep === 'ai-disclaimer' ? (
                   <Button
-                    onClick={handleSubmit}
+                    type="button"
+                    onClick={(e) => {
+                      console.log('🖱️ Create Account button clicked!', e)
+                      console.log('📱 Touch or click event:', e.type)
+                      console.log('🎯 Button disabled?', !isStepValid(currentStep) || isLoading)
+                      console.log('✅ Step valid?', isStepValid(currentStep))
+                      console.log('⏳ Loading?', isLoading)
+                      console.log('📋 Current form data valid:', {
+                        aiDisclaimerAccepted: formData.aiDisclaimerAccepted,
+                        firstName: !!formData.firstName,
+                        lastName: !!formData.lastName,
+                        email: !!formData.email && validateEmail(formData.email),
+                        phone: !!formData.phone && validatePhone(formData.phone),
+                        password: !!formData.password && formData.password.length >= 8,
+                        confirmPassword: formData.password === formData.confirmPassword,
+                        residencyType: !!formData.residencyType,
+                        over18: formData.over18,
+                        legalAgreements: formData.legalAgreements
+                      })
+                      
+                      // Prevent double-clicks/taps
+                      if (isLoading) {
+                        console.log('🚫 Already loading, preventing duplicate submission')
+                        return
+                      }
+                      
+                      handleSubmit()
+                    }}
+                    onTouchStart={(e) => {
+                      console.log('👆 Touch start event:', e.type)
+                    }}
+                    onTouchEnd={(e) => {
+                      console.log('👆 Touch end event:', e.type)
+                    }}
                     disabled={!isStepValid(currentStep) || isLoading}
-                    className="bg-blue-600 hover:bg-blue-700"
+                    className="bg-blue-600 hover:bg-blue-700 a11y-touch-target w-full"
+                    style={{ 
+                      touchAction: 'manipulation',
+                      WebkitTapHighlightColor: 'transparent',
+                      userSelect: 'none' 
+                    }}
                   >
                     {isLoading ? (
                       <>

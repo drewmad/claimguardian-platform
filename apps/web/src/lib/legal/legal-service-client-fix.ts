@@ -52,11 +52,20 @@ class LegalServiceClientFix {
    */
   async getDocumentByType(type: LegalDocumentType): Promise<LegalDocument | null> {
     try {
-      const response = await fetch(`/api/legal/documents?type=${type}`)
+      // First try the database endpoint
+      let response = await fetch(`/api/legal/documents?type=${type}`)
       
-      if (!response.ok) {
-        const error = await response.json()
-        throw new Error(error.message || 'Failed to fetch legal document')
+      if (!response.ok || response.status === 500) {
+        // Fallback to static endpoint
+        response = await fetch(`/api/legal/static?type=${type}`)
+        
+        if (!response.ok) {
+          const error = await response.json()
+          throw new Error(error.message || 'Failed to fetch legal document')
+        }
+        
+        const { data } = await response.json()
+        return data || null
       }
       
       const { data } = await response.json()

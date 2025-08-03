@@ -175,11 +175,11 @@ export function Hero() {
               <Link
                 href="#how-it-works"
                 className={`${liquidGlass.buttons.secondary} font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50 a11y-touch-target`}
-                aria-label="Watch our 2-minute product demonstration video"
+                aria-label="Learn how ClaimGuardian works"
               >
                 <PlayCircle size={20} aria-hidden="true" />
-                <span className="hidden sm:inline">Watch 2-Min Demo</span>
-                <span className="sm:hidden">Demo</span>
+                <span className="hidden sm:inline">Learn How It Works</span>
+                <span className="sm:hidden">Learn More</span>
               </Link>
             </div>
           </AnimatedSection>

@@ -11,7 +11,7 @@ import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Printer } from
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
-import { legalService } from '@/lib/legal/legal-service'
+import { legalServiceClientFix as legalService } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
 
 
