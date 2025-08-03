@@ -89,7 +89,7 @@ export function Header() {
               color: 'black'
             }}
           >
-            <span className="relative z-10">Start Free Trial</span>
+            <span className="relative z-10">Join the Community</span>
             {/* Hover gradient effect */}
             <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           </Link>
@@ -106,7 +106,7 @@ export function Header() {
             color: 'black'
           }}
         >
-          Get Started
+          Join Community
         </Link>
       </div>
     </header>

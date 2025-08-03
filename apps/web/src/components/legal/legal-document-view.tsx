@@ -184,7 +184,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
       <div className="mt-8 bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-lg p-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-semibold text-white mb-2">Ready to Get Started?</h3>
+            <h3 className="text-lg font-semibold text-white mb-2">Ready to Join?</h3>
             <p className="text-slate-300">Join thousands of Florida property owners protecting their assets with ClaimGuardian.</p>
           </div>
           <div className="flex items-center gap-3">
@@ -198,7 +198,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
               href="/auth/signup"
               className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all font-medium"
             >
-              Create Free Account
+              Join the Community
             </Link>
           </div>
         </div>

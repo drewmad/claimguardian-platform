@@ -47,7 +47,7 @@ export function Footer() {
         <div>
           <h4 className="font-bold mb-4 text-white">Quick Start</h4>
           <ul className="space-y-2 text-sm text-gray-300">
-            <li><a href="/auth/signup" className="hover:text-blue-400 transition-colors">Create Account</a></li>
+            <li><a href="/auth/signup" className="hover:text-blue-400 transition-colors">Join Community</a></li>
             <li><a href="#how-it-works" className="hover:text-blue-400 transition-colors">How It Works</a></li>
             <li><a href="#pricing" className="hover:text-blue-400 transition-colors">Pricing</a></li>
             <li><a href="/hurricane-prep" className="hover:text-blue-400 transition-colors">Hurricane Prep</a></li>

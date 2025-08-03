@@ -44,7 +44,7 @@ export function Header() {
           className="py-2 px-4 rounded-full transition-colors hover:opacity-90" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >
-          Start Free Trial
+          Join the Community
         </Link>
       </nav>
       <div className="md:hidden">
@@ -53,7 +53,7 @@ export function Header() {
           className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block" 
           style={{ backgroundColor: COLORS.primary, color: 'black' }}
         >
-          Get Started
+          Join Community
         </Link>
       </div>
     </header>
