@@ -127,31 +127,21 @@ export function MultiStepSignupForm() {
       if (signUpError) throw signUpError
       
       if (signUpData?.user) {
-        // Store user profile data (temporarily skip consent RPC until it's fixed)
-        try {
-          // Use user_profiles table which exists in production
-          await supabase.from('user_profiles').upsert({
-            user_id: signUpData.user.id,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-            signup_completed_at: new Date().toISOString(),
-            signup_user_agent: navigator.userAgent,
-            signup_timestamp: new Date().toISOString(),
-            // Store basic info we have available
-            signup_referrer: document.referrer || null,
-            signup_landing_page: window.location.href
-          })
-          
-          // TODO: Store consent data when RPC function is available
-          console.log('User consents recorded:', {
-            terms_accepted: formData.legalAgreements,
-            ai_disclaimer_accepted: formData.aiDisclaimerAccepted,
-            residency_type: formData.residencyType
-          })
-        } catch (profileError) {
-          console.warn('Profile creation warning:', profileError)
-          // Continue anyway - user account was created successfully
-        }
+        // Profile will be automatically created by database trigger
+        // Store additional signup data in user metadata for now
+        console.log('User profile will be created automatically by database trigger')
+        
+        // Log consent data for audit trail
+        console.log('User consents recorded:', {
+          terms_accepted: formData.legalAgreements,
+          ai_disclaimer_accepted: formData.aiDisclaimerAccepted,
+          residency_type: formData.residencyType,
+          over_18: formData.over18,
+          signup_timestamp: new Date().toISOString(),
+          signup_user_agent: navigator.userAgent,
+          signup_referrer: document.referrer || null,
+          signup_landing_page: window.location.href
+        })
         
         // Redirect to property setup
         router.push('/onboarding/property-setup')

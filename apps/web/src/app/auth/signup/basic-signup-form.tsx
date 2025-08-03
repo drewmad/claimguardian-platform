@@ -71,18 +71,9 @@ export function BasicSignupForm() {
       if (data?.user) {
         console.log('User created successfully:', data.user.id)
         
-        // Try to create/update profile in user_profiles table
-        try {
-          // Use the existing user_profiles table
-          await supabase.from('user_profiles').upsert({
-            user_id: data.user.id,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          })
-        } catch (profileError) {
-          console.warn('Profile creation warning:', profileError)
-          // Continue anyway - profile might be created by trigger
-        }
+        // Profile will be automatically created by database trigger
+        // No manual profile creation needed
+        console.log('User profile will be created automatically by database trigger')
         
         setSuccess(true)
         
