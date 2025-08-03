@@ -366,6 +366,9 @@ cron.yaml.backup
 *.md
 !README.md
 !CONTRIBUTING.md
+!CLAUDE.md
+!claude.md
+!**/claude.md
 !/docs/**/*.md
 !/legal/**/*.md
 !/packages/**/README.md
