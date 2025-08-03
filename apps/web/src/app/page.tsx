@@ -37,7 +37,7 @@ import { FAQData, HowToData, ProductData, OrganizationData, CLAIMGUARDIAN_FAQS, 
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen w-full">
+    <div className="min-h-screen w-full overflow-x-hidden">
       {/* Structured Data for AI Answer Engines */}
       <OrganizationData />
       <ProductData 
@@ -59,7 +59,7 @@ export default function HomePage() {
       
       <Header />
       
-      <main className="relative">
+      <main className="relative safe-area-bottom">
         <Hero />
         <WhoWeServe />
         <WhoWeFightFor />
@@ -79,8 +79,6 @@ export default function HomePage() {
       <SimpleSignupModal />
       <ForgotPasswordModal />
       <ContentModal />
-      {/* Test comment for Co-Strategist */}
-      {/* Test comment for Co-Strategist */}
     </div>
   )
 }

@@ -31,6 +31,13 @@ export const metadata: Metadata = {
   authors: [{ name: 'ClaimGuardian Family Team' }],
   creator: 'ClaimGuardian',
   publisher: 'ClaimGuardian',
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 5,
+    userScalable: true,
+  },
+  themeColor: '#0f172a',
   formatDetection: {
     email: false,
     address: false,

@@ -1,5 +1,17 @@
 /* Mobile-specific style overrides for better responsiveness */
 
+/* Viewport fixes for mobile browsers */
+@viewport {
+  width: device-width;
+  zoom: 1.0;
+}
+
+/* Mobile viewport meta improvements */
+html {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
 /* Touch-friendly tap targets (minimum 44x44px) */
 @media (max-width: 768px) {
   button, 
@@ -86,10 +98,39 @@
     -webkit-touch-callout: none;
     -webkit-overflow-scrolling: touch;
   }
+  
+  /* Fix Safari button styling */
+  button {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
+  
+  /* Fix Safari input styling */
+  input {
+    -webkit-appearance: none;
+    appearance: none;
+    border-radius: 0;
+  }
 
   /* Prevent horizontal scroll */
   html, body {
     overflow-x: hidden;
+    width: 100%;
+    height: 100%;
+  }
+  
+  /* Fix mobile viewport height */
+  .min-h-screen {
+    min-height: 100vh;
+    min-height: -webkit-fill-available;
+  }
+  
+  /* Better mobile typography */
+  body {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
   }
 
   /* Camera capture full screen */
@@ -127,9 +168,17 @@
 /* Small device optimizations */
 @media (max-width: 375px) {
   /* Reduce font sizes slightly */
-  h1 { font-size: 1.75rem; }
-  h2 { font-size: 1.5rem; }
-  h3 { font-size: 1.25rem; }
+  h1 { font-size: 1.75rem; line-height: 1.2; }
+  h2 { font-size: 1.5rem; line-height: 1.3; }
+  h3 { font-size: 1.25rem; line-height: 1.4; }
+  
+  /* Better mobile spacing */
+  .px-4 { padding-left: 1rem; padding-right: 1rem; }
+  .py-4 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+  
+  /* Mobile card improvements */
+  .rounded-lg { border-radius: 0.75rem; }
+  .rounded-xl { border-radius: 1rem; }
   
   /* Adjust button padding */
   .btn-sm {
@@ -144,10 +193,16 @@
 
 /* iOS-specific fixes */
 @supports (-webkit-touch-callout: none) {
-  /* Fix iOS rubber band scrolling */
+  /* Fix iOS viewport issues */
+  html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
   body {
-    position: fixed;
-    width: 100%;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
   }
 
   /* Fix iOS form zoom */
@@ -157,11 +212,16 @@
 
   /* Safe area insets for notched devices */
   .safe-area-bottom {
-    padding-bottom: env(safe-area-inset-bottom);
+    padding-bottom: max(1rem, env(safe-area-inset-bottom));
   }
 
   .safe-area-top {
-    padding-top: env(safe-area-inset-top);
+    padding-top: max(0.5rem, env(safe-area-inset-top));
+  }
+  
+  /* Fix Safari backdrop-filter support */
+  [style*="backdrop-filter"] {
+    -webkit-backdrop-filter: blur(12px);
   }
 }
 
@@ -205,6 +265,9 @@
     position: relative;
     min-height: 48px;
     min-width: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   /* Focus visible improvements */
@@ -227,5 +290,87 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+/* Safari-specific mobile fixes */
+@media screen and (-webkit-min-device-pixel-ratio: 0) and (max-width: 768px) {
+  /* Fix Safari input zoom */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  textarea {
+    font-size: 16px !important;
+    transform: scale(1);
+  }
+  
+  /* Fix Safari button appearance */
+  button, input[type="submit"] {
+    -webkit-appearance: none;
+    background-color: transparent;
+    border-radius: 0;
+  }
+  
+  /* Fix Safari backdrop-filter blur */
+  .backdrop-blur-xl {
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+  }
+  
+  .backdrop-blur-lg {
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+  }
+  
+  .backdrop-blur-md {
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+}
+
+/* Mobile menu animations */
+@media (max-width: 768px) {
+  .mobile-menu-enter {
+    animation: mobileMenuSlideIn 0.3s ease-out forwards;
+  }
+  
+  .mobile-menu-exit {
+    animation: mobileMenuSlideOut 0.3s ease-in forwards;
+  }
+  
+  @keyframes mobileMenuSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  
+  @keyframes mobileMenuSlideOut {
+    from {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+  }
+}
+
+/* Mobile liquid glass improvements */
+@media (max-width: 768px) {
+  .liquid-glass {
+    backdrop-filter: blur(8px) !important;
+    -webkit-backdrop-filter: blur(8px) !important;
+  }
+  
+  .liquid-glass-accent {
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
   }
 }
