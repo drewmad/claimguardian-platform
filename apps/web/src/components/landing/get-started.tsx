@@ -30,7 +30,7 @@ export function GetStarted() {
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
-              href="/test-signup-simple"
+              href="/auth/signup"
               className="btn-primary text-white font-bold py-4 px-8 text-lg w-full sm:w-auto text-center"
             >
               Start Your Free Trial

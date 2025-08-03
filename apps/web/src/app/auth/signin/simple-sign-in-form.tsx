@@ -141,7 +141,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
             <p className="text-slate-400">
               Don&apos;t have an account?{' '}
               <Link
-                href="/test-signup-simple"
+                href="/auth/signup"
                 className="text-blue-400 hover:text-blue-300 font-medium"
               >
                 Sign Up

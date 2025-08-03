@@ -154,7 +154,7 @@ export function Hero() {
           <AnimatedSection delay={400}>
             <div className="mt-10">
               <Link
-                href="/test-signup-simple"
+                href="/auth/signup"
                 className="font-bold py-4 px-8 rounded-full text-black text-lg transition-transform hover:scale-105 inline-flex items-center gap-2 mx-auto shadow-[0_4px_20px_rgba(91,163,245,0.3)] hover:shadow-[0_6px_30px_rgba(91,163,245,0.4)]"
                 style={{ backgroundColor: COLORS.primary }}
               >

@@ -179,7 +179,7 @@ export function Pricing() {
     
     if (!user) {
       // Redirect to signup if not authenticated
-      router.push('/test-signup-simple')
+      router.push('/auth/signup')
       return
     }
 
