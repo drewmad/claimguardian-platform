@@ -12,7 +12,7 @@ Welcome to ClaimGuardian. These Terms of Service ("Terms") govern your access to
 
 ### 1. Description of Service
 
-ClaimGuardian is a web-based platform that utilizes data processing, user tracking, and artificial intelligence ("AI") to provide insights and services related to claims management and data analysis. The Service may include data scraping, integration with third-party services like Google Maps and Stripe, and AI-powered tools.
+ClaimGuardian is a web-based platform that utilizes data processing, user tracking, and artificial intelligence ("AI") to provide independent claims advocacy and property management services. ClaimGuardian operates without insurance company partnerships or commercial third-party vendor relationships, ensuring unbiased advocacy for users. The Service may include data scraping, integration with essential technical services like Google Maps and Stripe for platform functionality, and AI-powered tools.
 
 ### 2. Acceptance of Related Documents
 
@@ -47,9 +47,9 @@ The Service and its entire contents, features, and functionality (including but 
 
 You are granted a limited, non-exclusive, non-transferable, revocable license to access and use the Service for your personal, non-commercial use only, subject to these Terms.
 
-### 8. Third-Party Services
+### 8. Technical Service Integrations
 
-The Service may contain links to or integrate with third-party websites or services (e.g., Google Maps) that are not owned or controlled by the Company. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of any third-party services.
+The Service integrates with essential technical services (e.g., Google Maps for location services, Stripe for payment processing) that are not owned or controlled by the Company. These are infrastructure services necessary for platform functionality, not commercial partnerships or vendor relationships. We have no control over, and assume no responsibility for, the content, privacy policies, or practices of these technical service providers.
 
 ### 9. Termination
 

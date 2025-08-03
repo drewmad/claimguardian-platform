@@ -32,7 +32,9 @@ Our Service may involve scraping data from public websites or other sources. Thi
 
 ### 2. How We Use Your Information
 
-Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. Specifically, we may use information collected about you via the Service to:
+Having accurate information about you permits us to provide you with a smooth, efficient, and customized experience. ClaimGuardian operates independently without insurance company partnerships or third-party vendor relationships that could influence our advocacy for you.
+
+Specifically, we may use information collected about you via the Service to:
 - Create and manage your account.
 - Provide, operate, and maintain the Service.
 - Improve, personalize, and expand the Service.
@@ -41,22 +43,27 @@ Having accurate information about you permits us to provide you with a smooth, e
 - Detect, prevent, and address technical issues and security incidents.
 - Respond to your comments, questions, and provide customer service.
 - Comply with legal and regulatory obligations.
+- Provide AI-powered advocacy and claim assistance without conflicts of interest.
 
 ### 3. Disclosure of Your Information
 
-We do not share, sell, rent, or trade your information with third parties for their commercial purposes. We may share information we have collected about you in certain situations:
+We do not share, sell, rent, or trade your information with insurance companies, third-party vendors, marketing partners, or any commercial third parties. ClaimGuardian maintains complete independence to advocate solely for your interests. We may share information we have collected about you only in these limited situations:
 
 **a. By Law or to Protect Rights:**
 If we believe the release of information about you is necessary to respond to legal process, to investigate or remedy potential violations of our policies, or to protect the rights, property, and safety of others.
 
-**b. Third-Party Service Providers:**
-We may share your information with third parties that perform services for us or on our behalf, including payment processing (Stripe), data analysis (Google Analytics), error monitoring (Sentry), cloud hosting (Supabase, Vercel), and customer service.
+**b. Technical Service Providers:**
+We may share your information only with essential technical service providers that directly support our platform operations, including payment processing (Stripe), error monitoring (Sentry), cloud hosting (Supabase, Vercel), and infrastructure services. We do not share your information with insurance companies, third-party vendors, or marketing partners.
 
 **c. Business Transfers:**
 We may share or transfer your information in connection with, or during negotiations of, any merger, sale of company assets, financing, or acquisition of all or a portion of our business to another company.
 
-### 4. Data Security
+### 4. Data Location and Security
 
+**Data Location:**
+All your personal information is stored and processed within the United States. ClaimGuardian does not transfer your data internationally or store it outside US borders. Our cloud infrastructure (Supabase, Vercel) operates within US data centers.
+
+**Data Security:**
 We use administrative, technical, and physical security measures to help protect your personal information. While we have taken reasonable steps to secure the personal information you provide to us, please be aware that despite our efforts, no security measures are perfect or impenetrable.
 
 ### 5. Data Retention
