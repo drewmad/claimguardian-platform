@@ -45,7 +45,7 @@ const AI_TOOLS: AITool[] = [
     description: 'AI-powered damage assessment from photos with instant severity ratings and repair recommendations',
     icon: Camera,
     color: 'orange',
-    href: '/ai-augmented/damage-analyzer',
+    href: '/ai-tools/damage-analyzer',
     status: 'active',
     category: 'analysis',
     features: ['Photo & Video Analysis', 'Severity Assessment', 'Cost Estimation', 'Safety Warnings']
@@ -67,7 +67,7 @@ const AI_TOOLS: AITool[] = [
     description: 'Get instant answers about your insurance policy with integrated explanations and plain English translations',
     icon: Shield,
     color: 'blue',
-    href: '/ai-augmented/policy-chat',
+    href: '/ai-tools/policy-chat',
     status: 'active',
     category: 'assistance',
     features: ['Policy Q&A', 'Document Upload', 'Coverage Analysis', 'Plain English Explanations', 'Multi-Model Support']
@@ -78,7 +78,7 @@ const AI_TOOLS: AITool[] = [
     description: 'Automatically catalog your belongings with AI-powered recognition and value estimation',
     icon: FolderOpen,
     color: 'purple',
-    href: '/ai-augmented/inventory-scanner',
+    href: '/ai-tools/inventory-scanner',
     status: 'active',
     category: 'documentation',
     features: ['Auto Item Recognition', 'Value Estimation', 'Room Organization', 'Export Reports']
@@ -122,7 +122,7 @@ const AI_TOOLS: AITool[] = [
     description: 'Create 3D models of damage from multiple photos for comprehensive documentation',
     icon: Zap,
     color: 'cyan',
-    href: '/ai-augmented/3d-model-generator',
+    href: '/ai-tools/3d-model-generator',
     status: 'beta',
     category: 'analysis',
     features: ['3D Reconstruction', 'Multiple Formats', 'Measurements', 'Texture Generation']

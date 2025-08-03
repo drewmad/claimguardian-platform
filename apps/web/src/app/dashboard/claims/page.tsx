@@ -380,7 +380,7 @@ function ClaimsDashboardContent() {
               <CardContent>
                 <div className="space-y-3">
                   <button 
-                    onClick={() => router.push('/ai-augmented/damage-analyzer')}
+                    onClick={() => router.push('/ai-tools/damage-analyzer')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">

@@ -312,10 +312,10 @@ export default function DebugIndexPage() {
                 <CardContent>
                   <p className="text-gray-400 text-sm mb-4">Comprehensive AI system testing</p>
                   <Button
-                    onClick={() => window.open('/ai-augmented', '_blank')}
+                    onClick={() => window.open('/ai-tools', '_blank')}
                     className="w-full bg-purple-600/20 hover:bg-purple-600/30 text-purple-300"
                   >
-                    Test AI Augmented
+                    Test AI Tools
                   </Button>
                 </CardContent>
               </Card>

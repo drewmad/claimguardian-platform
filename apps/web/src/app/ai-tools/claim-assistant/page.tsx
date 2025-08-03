@@ -79,7 +79,7 @@ const CLAIM_STEPS: ClaimStep[] = [
         description: 'Document all damage from multiple angles with timestamps',
         completed: false,
         required: true,
-        relatedTool: '/ai-augmented/damage-analyzer'
+        relatedTool: '/ai-tools/damage-analyzer'
       },
       {
         id: 'inventory',
@@ -87,7 +87,7 @@ const CLAIM_STEPS: ClaimStep[] = [
         description: 'List all damaged personal property with values',
         completed: false,
         required: true,
-        relatedTool: '/ai-augmented/inventory-scanner'
+        relatedTool: '/ai-tools/inventory-scanner'
       },
       {
         id: 'receipts',
@@ -181,7 +181,7 @@ const CLAIM_STEPS: ClaimStep[] = [
         description: 'Ensure settlement matches your policy coverage',
         completed: false,
         required: true,
-        relatedTool: '/ai-augmented/policy-chat'
+        relatedTool: '/ai-tools/policy-chat'
       },
       {
         id: 'negotiate',

@@ -353,7 +353,7 @@ function PersonalPropertyContent() {
                 <Upload className="w-4 h-4 mr-2" />
                 Import
               </Button>
-              <Link href="/ai-augmented/inventory-scanner">
+              <Link href="/ai-tools/inventory-scanner">
                 <Button className="bg-purple-600 hover:bg-purple-700">
                   <Sparkles className="w-4 h-4 mr-2" />
                   AI Scanner

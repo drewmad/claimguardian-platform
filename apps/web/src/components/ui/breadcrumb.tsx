@@ -62,7 +62,7 @@ export function AIBreadcrumb({
   className?: string 
 }) {
   const items: BreadcrumbItem[] = [
-    { label: 'AI Tools', href: '/ai-augmented' },
+    { label: 'AI Tools', href: '/ai-tools' },
     { label: section },
     { label: page }
   ]

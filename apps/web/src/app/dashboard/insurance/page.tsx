@@ -413,7 +413,7 @@ function InsuranceDashboardContent() {
                   </button>
 
                   <button 
-                    onClick={() => router.push('/ai-augmented/policy-chat')}
+                    onClick={() => router.push('/ai-tools/policy-chat')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >
                     <div className="flex items-center gap-3">

@@ -49,10 +49,10 @@ const adminFeatures = [
 ]
 
 const aiFeatures = [
-  { id: 'damage-analyzer', label: 'Damage Analyzer', icon: Camera, href: '/ai-augmented/damage-analyzer' },
-  { id: 'policy-chat', label: 'Policy Advisor', icon: FileSearch, href: '/ai-augmented/policy-chat' },
-  { id: 'inventory-scanner', label: 'Inventory Scanner', icon: Package, href: '/ai-augmented/inventory-scanner' },
-  { id: '3d-model-generator', label: '3D Model Generator', icon: Package, href: '/ai-augmented/3d-model-generator' }
+  { id: 'damage-analyzer', label: 'Damage Analyzer', icon: Camera, href: '/ai-tools/damage-analyzer' },
+  { id: 'policy-chat', label: 'Policy Advisor', icon: FileSearch, href: '/ai-tools/policy-chat' },
+  { id: 'inventory-scanner', label: 'Inventory Scanner', icon: Package, href: '/ai-tools/inventory-scanner' },
+  { id: '3d-model-generator', label: '3D Model Generator', icon: Package, href: '/ai-tools/3d-model-generator' }
 ]
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {

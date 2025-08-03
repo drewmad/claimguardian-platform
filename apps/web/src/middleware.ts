@@ -182,7 +182,7 @@ export async function middleware(request: NextRequest) {
         clearAuthCookies(request, response)
         
         // Redirect to signin if on protected route
-        const protectedPaths = ['/dashboard', '/ai-tools', '/ai-augmented', '/account', '/admin']
+        const protectedPaths = ['/dashboard', '/ai-tools', '/account', '/admin']
         if (protectedPaths.some(path => pathname.startsWith(path))) {
           return NextResponse.redirect(new URL('/auth/signin?message=Session expired', request.url))
         }
@@ -301,7 +301,6 @@ export async function middleware(request: NextRequest) {
     const protectedRoutes = [
       { path: '/dashboard', requiresAuth: true },
       { path: '/ai-tools', requiresAuth: true },
-      { path: '/ai-augmented', requiresAuth: true },
       { path: '/account', requiresAuth: true },
       { path: '/admin', requiresAuth: true, requiresAdmin: true }
     ]
