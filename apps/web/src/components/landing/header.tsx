@@ -43,7 +43,7 @@ export function Header() {
         <Link 
           href="/auth/signup" 
           className="py-2 px-4 rounded-full transition-colors hover:opacity-90" 
-          style={{ backgroundColor: COLORS.primary, color: 'black' }}
+          style={{ backgroundColor: COLORS.primary, color: 'white' }}
         >
           Join the Community
         </Link>
@@ -52,7 +52,7 @@ export function Header() {
         <Link 
           href="/auth/signup" 
           className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block" 
-          style={{ backgroundColor: COLORS.primary, color: 'black' }}
+          style={{ backgroundColor: COLORS.primary, color: 'white' }}
         >
           Join Community
         </Link>

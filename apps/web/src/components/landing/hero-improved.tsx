@@ -159,7 +159,7 @@ export function Hero() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
                 href="/auth/signup"
-                className={`${liquidGlass.buttons.primary} group relative font-bold py-4 px-8 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target`}
+                className={`${liquidGlass.buttons.primary} group relative font-bold py-4 px-8 text-white text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-lg`}
                 style={{ 
                   background: hoveredCTA 
                     ? `linear-gradient(135deg, ${COLORS.brand.royalBlue}, ${COLORS.brand.neonGreen})` 

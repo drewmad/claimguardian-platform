@@ -93,7 +93,7 @@ export function Header() {
             className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
             style={{ 
               backgroundColor: COLORS.brand.neonGreen,
-              color: 'black'
+              color: 'white'
             }}
           >
             <span className="relative z-10">Join the Community</span>
@@ -110,7 +110,7 @@ export function Header() {
           className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target" 
           style={{ 
             backgroundColor: COLORS.brand.neonGreen,
-            color: 'black'
+            color: 'white'
           }}
         >
           Sign Up
@@ -182,7 +182,7 @@ export function Header() {
                 className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"
                 style={{ 
                   backgroundColor: COLORS.brand.neonGreen,
-                  color: 'black'
+                  color: 'white'
                 }}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
