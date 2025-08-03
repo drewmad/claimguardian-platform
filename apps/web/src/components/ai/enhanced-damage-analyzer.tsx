@@ -342,7 +342,7 @@ export function EnhancedDamageAnalyzer({
             <div className="space-y-4">
               <div className="space-y-2">
                 <Label className="text-white">AI Model</Label>
-                <Select value={selectedAIModel} onValueChange={(value: 'gpt-4-vision' | 'claude-3-vision' | 'gemini-pro-vision') => setSelectedAIModel(value)}>
+                <Select value={selectedAIModel} onValueChange={(value: 'gpt4-vision' | 'gemini-vision') => setSelectedAIModel(value)}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>

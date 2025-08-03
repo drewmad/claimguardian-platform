@@ -933,7 +933,7 @@ export default function ARDamageDocumenterPage() {
                                 console.log('Analysis result:', result)
                               }}
                               propertyId="current-property"
-                              policyData={null}
+                              policyData={undefined}
                             />
                           </div>
                         </div>
