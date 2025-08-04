@@ -2,10 +2,12 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { GoogleGenerativeAI } from 'npm:@google/generative-ai@0.24.1'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-}
+// Security: Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://claimguardianai.com',
+  'https://app.claimguardianai.com',
+  Deno.env.get('ENVIRONMENT') === 'development' ? 'http://localhost:3000' : null
+].filter(Boolean)
 
 interface DamageAnalysisRequest {
   propertyId: string
@@ -81,6 +83,18 @@ Consider Florida-specific factors:
 - Additional living expenses if home is uninhabitable`
 
 Deno.serve(async (req) => {
+  const origin = req.headers.get('origin')
+  
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+  }
+  
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }

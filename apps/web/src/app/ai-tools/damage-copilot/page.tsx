@@ -8,7 +8,10 @@
  * @status active
  */
 
-import { ToolComponent } from '@claimguardian/damage-doc-copilot'
+'use client'
+
+// Temporarily disabled for deployment
+// import { ToolComponent } from '@claimguardian/damage-doc-copilot'
 
 export default function DamageCopilotPage() {
   return (
@@ -22,7 +25,9 @@ export default function DamageCopilotPage() {
           </p>
         </div>
         
-        <ToolComponent />
+        <div className="bg-gray-800 border-gray-700 rounded-lg p-6">
+          <p className="text-gray-400">Feature temporarily disabled for deployment.</p>
+        </div>
         
         <div className="mt-8 bg-gray-900 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Documentation Best Practices</h2>

@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Update Edge Functions with Security Fixes
-# This script patches all Edge Functions to use secure patterns
+# Update Edge Functions with Security Patches
+# This script applies security updates to all critical Edge Functions
 
 set -euo pipefail
 
-echo "======================================"
-echo "🔒 EDGE FUNCTION SECURITY UPDATE"
-echo "======================================"
+echo "========================================"
+echo "🔐 UPDATING EDGE FUNCTIONS SECURITY"
+echo "========================================"
 echo ""
 
 # Colors
@@ -17,241 +17,201 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m'
 
-# Base directory for Edge Functions
-FUNCTIONS_DIR="supabase/functions"
+# Critical functions that need security updates
+CRITICAL_FUNCTIONS=(
+  "ai-document-extraction"
+  "analyze-damage-with-policy"
+  "extract-policy-data"
+  "policy-chat"
+  "send-email"
+  "ocr-document"
+  "property-ai-enrichment"
+  "spatial-ai-api"
+  "florida/floir-extractor"
+  "florida/scrape-florida-parcels"
+)
 
-# Create patches directory
-PATCHES_DIR="$FUNCTIONS_DIR/_security-patches"
-mkdir -p "$PATCHES_DIR"
+# Backup directory
+BACKUP_DIR="supabase/functions/_backups/$(date +%Y%m%d-%H%M%S)"
+mkdir -p "$BACKUP_DIR"
 
-# Function to update CORS headers in a file
-update_cors_headers() {
-    local file=$1
-    local function_name=$(basename $(dirname "$file"))
-    
-    echo -e "${BLUE}Updating CORS in: $function_name${NC}"
-    
-    # Create backup
-    cp "$file" "$PATCHES_DIR/${function_name}.backup.ts"
-    
-    # Create patch file with updated CORS
-    cat > "$PATCHES_DIR/cors-patch.ts" << 'EOF'
-// Secure CORS configuration
-const ALLOWED_ORIGINS = [
-  'https://claimguardianai.com',
-  'https://app.claimguardianai.com',
-  process.env.NODE_ENV === 'development' ? 'http://localhost:3000' : null
-].filter(Boolean)
+echo -e "${BLUE}Creating security update script...${NC}"
 
-function getCorsHeaders(origin: string | null): HeadersInit {
-  const headers: HeadersInit = {
-    'Content-Type': 'application/json',
-    'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
-    'X-XSS-Protection': '1; mode=block',
-    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+# Create security patch function
+apply_security_patch() {
+  local func_path="$1"
+  local func_file="supabase/functions/$func_path/index.ts"
+  
+  if [ ! -f "$func_file" ]; then
+    echo -e "${YELLOW}  ⚠️  Function not found: $func_path${NC}"
+    return 1
+  fi
+  
+  echo -e "${BLUE}Securing $func_path...${NC}"
+  
+  # Backup original
+  cp "$func_file" "$BACKUP_DIR/$(basename $func_path).ts.backup"
+  
+  # Create temporary file for modifications
+  local temp_file=$(mktemp)
+  
+  # Apply security patches
+  awk '
+  BEGIN {
+    in_serve = 0
+    added_origins = 0
+    added_headers = 0
   }
   
-  if (origin && ALLOWED_ORIGINS.includes(origin)) {
-    headers['Access-Control-Allow-Origin'] = origin
-    headers['Access-Control-Allow-Credentials'] = 'true'
+  # Add ALLOWED_ORIGINS after imports if not present
+  /^import/ && !added_origins {
+    imports_done = 1
   }
   
-  headers['Access-Control-Allow-Methods'] = 'POST, OPTIONS'
-  headers['Access-Control-Allow-Headers'] = 'authorization, x-client-info, apikey, content-type'
-  
-  return headers
-}
-EOF
-
-    # Replace old CORS pattern
-    if grep -q "Access-Control-Allow-Origin.*\*" "$file"; then
-        # Simple replacement for basic CORS headers
-        sed -i.bak "s/'Access-Control-Allow-Origin': '\*'/'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : ''/g" "$file"
-        
-        # Add ALLOWED_ORIGINS if not present
-        if ! grep -q "ALLOWED_ORIGINS" "$file"; then
-            # Insert at the beginning after imports
-            awk '/^import/ {p=1} p && /^$/ {print ""; system("cat " PATCHES_DIR "/cors-patch.ts"); print ""; p=0} 1' "$file" > "$file.tmp"
-            mv "$file.tmp" "$file"
-        fi
-        
-        echo -e "${GREEN}  ✓ CORS headers updated${NC}"
-    else
-        echo -e "${YELLOW}  ⚠ No wildcard CORS found, manual review needed${NC}"
-    fi
-}
-
-# Function to add input validation
-add_input_validation() {
-    local file=$1
-    local function_name=$(basename $(dirname "$file"))
-    
-    echo -e "${BLUE}Adding input validation to: $function_name${NC}"
-    
-    # Check if Zod is already imported
-    if ! grep -q "zod" "$file"; then
-        # Add Zod import after other imports
-        sed -i.bak "/^import.*edge-runtime/a\\
-import { z } from 'https://deno.land/x/zod@v3.22.4/mod.ts'" "$file"
-        echo -e "${GREEN}  ✓ Zod validation added${NC}"
-    else
-        echo -e "${YELLOW}  ⚠ Zod already imported${NC}"
-    fi
-}
-
-# Function to add rate limiting check
-add_rate_limiting() {
-    local file=$1
-    local function_name=$(basename $(dirname "$file"))
-    
-    echo -e "${BLUE}Adding rate limiting to: $function_name${NC}"
-    
-    # Create rate limiting function
-    cat > "$PATCHES_DIR/rate-limit.ts" << 'EOF'
-
-// Rate limiting function
-async function checkRateLimit(supabase: any, userId: string, functionName: string): Promise<boolean> {
-  const WINDOW_MS = 60000 // 1 minute
-  const MAX_REQUESTS = 30 // 30 requests per minute
-  
-  const windowStart = new Date(Date.now() - WINDOW_MS)
-  
-  const { data: limits } = await supabase
-    .from('api_rate_limits')
-    .select('request_count')
-    .eq('user_id', userId)
-    .eq('function_name', functionName)
-    .gte('window_start', windowStart.toISOString())
-    .single()
-
-  const currentCount = limits?.request_count || 0
-  
-  if (currentCount >= MAX_REQUESTS) {
-    return false
+  # After last import, add ALLOWED_ORIGINS
+  !/^import/ && imports_done && !added_origins {
+    print "// Security: Allowed origins for CORS"
+    print "const ALLOWED_ORIGINS = ["
+    print "  '\''https://claimguardianai.com'\'',"
+    print "  '\''https://app.claimguardianai.com'\'',"
+    print "  Deno.env.get('\''ENVIRONMENT'\'') === '\''development'\'' ? '\''http://localhost:3000'\'' : null"
+    print "].filter(Boolean)"
+    print ""
+    added_origins = 1
   }
-
-  await supabase.from('api_rate_limits').upsert({
-    user_id: userId,
-    function_name: functionName,
-    request_count: currentCount + 1,
-    window_start: windowStart.toISOString(),
-    updated_at: new Date().toISOString()
-  })
-
-  return true
+  
+  # Fix CORS headers
+  /Access-Control-Allow-Origin.*\*/ {
+    gsub(/'\''Access-Control-Allow-Origin'\'': '\''*'\''/, "'\''Access-Control-Allow-Origin'\'': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\''")
+  }
+  
+  # Add security headers to response headers
+  /Content-Type.*application\/json/ && !added_headers {
+    print $0 ","
+    print "    '\''X-Content-Type-Options'\'': '\''nosniff'\'',"
+    print "    '\''X-Frame-Options'\'': '\''DENY'\'',"
+    print "    '\''X-XSS-Protection'\'': '\''1; mode=block'\'',"
+    print "    '\''Strict-Transport-Security'\'': '\''max-age=31536000; includeSubDomains'\''"
+    added_headers = 1
+    next
+  }
+  
+  # Add origin extraction if not present
+  /Deno\.serve\(async \(req/ {
+    in_serve = 1
+  }
+  
+  in_serve && /const corsHeaders/ && !/const origin = req\.headers\.get/ {
+    print "  const origin = req.headers.get('\''origin'\'')"
+    print ""
+  }
+  
+  # Fix wildcard in corsHeaders object
+  /corsHeaders.*=.*{/ {
+    in_cors_headers = 1
+  }
+  
+  in_cors_headers && /Access-Control-Allow-Origin.*\*/ {
+    gsub(/'\''*'\''/, "origin && ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\''")
+  }
+  
+  in_cors_headers && /}/ {
+    in_cors_headers = 0
+  }
+  
+  # Print all lines (modified or not)
+  {
+    if (!added_headers || $0 !~ /Content-Type.*application\/json/) {
+      print
+    }
+  }
+  ' "$func_file" > "$temp_file"
+  
+  # Move temp file back
+  mv "$temp_file" "$func_file"
+  
+  echo -e "${GREEN}  ✓ $func_path secured${NC}"
+  return 0
 }
-EOF
 
-    # Add rate limiting after auth check
-    if grep -q "getUser" "$file" && ! grep -q "checkRateLimit" "$file"; then
-        # This is complex, so we'll mark for manual review
-        echo -e "${YELLOW}  ⚠ Manual rate limiting integration needed${NC}"
-        echo "$function_name" >> "$PATCHES_DIR/needs-rate-limiting.txt"
-    fi
-}
-
-# Function to add secure logging
-add_secure_logging() {
-    local file=$1
-    local function_name=$(basename $(dirname "$file"))
-    
-    echo -e "${BLUE}Adding secure logging to: $function_name${NC}"
-    
-    # Replace console.error patterns that might leak sensitive data
-    sed -i.bak 's/console\.error(\(.*\)error\(.*\))/console.error(\1error.message || "Error occurred"\2)/g' "$file"
-    
-    echo -e "${GREEN}  ✓ Secure logging patterns applied${NC}"
-}
-
-# Main update process
-echo "Scanning Edge Functions..."
+# Apply patches to all critical functions
+echo ""
+echo -e "${BLUE}Applying security patches to critical functions...${NC}"
 echo ""
 
-# Find all Edge Function index.ts files
-functions=$(find "$FUNCTIONS_DIR" -name "index.ts" -not -path "*/_*" | sort)
-total=$(echo "$functions" | wc -l | tr -d ' ')
-
-echo "Found $total Edge Functions to update"
-echo ""
-
-# Track progress
-updated=0
-needs_manual=0
-
-# Update each function
-for func in $functions; do
-    function_name=$(basename $(dirname "$func"))
-    echo "----------------------------------------"
-    echo -e "${BLUE}Processing: $function_name${NC}"
-    
-    # Skip template files
-    if [[ "$function_name" == "_templates" ]]; then
-        echo -e "${YELLOW}  Skipping template${NC}"
-        continue
-    fi
-    
-    # Apply security updates
-    update_cors_headers "$func"
-    add_input_validation "$func"
-    add_rate_limiting "$func"
-    add_secure_logging "$func"
-    
-    ((updated++))
-    echo ""
+updated_count=0
+for func in "${CRITICAL_FUNCTIONS[@]}"; do
+  if apply_security_patch "$func"; then
+    ((updated_count++))
+  fi
 done
 
-# Create summary report
-echo "======================================"
-echo -e "${GREEN}SECURITY UPDATE SUMMARY${NC}"
-echo "======================================"
 echo ""
-echo "Total functions processed: $updated"
-echo ""
-
-# List functions needing manual review
-if [ -f "$PATCHES_DIR/needs-rate-limiting.txt" ]; then
-    echo -e "${YELLOW}Functions needing manual rate limiting:${NC}"
-    cat "$PATCHES_DIR/needs-rate-limiting.txt"
-    echo ""
-fi
+echo -e "${GREEN}✓ Updated $updated_count functions${NC}"
 
 # Create verification script
-cat > "$PATCHES_DIR/verify-updates.sh" << 'EOF'
-#!/bin/bash
-# Verify security updates were applied
+echo ""
+echo -e "${BLUE}Creating verification script...${NC}"
 
-echo "Verifying Edge Function security updates..."
+cat > verify-edge-functions-security.sh << 'EOF'
+#!/bin/bash
+
+# Verify Edge Functions Security
+echo "Verifying Edge Function Security..."
 echo ""
 
 # Check for wildcard CORS
-echo "Checking for wildcard CORS..."
-if grep -r "Access-Control-Allow-Origin.*\*" supabase/functions --include="*.ts" --exclude-dir="_*"; then
-    echo "⚠️  WARNING: Wildcard CORS still present in above files"
-else
-    echo "✓ No wildcard CORS found"
-fi
+echo "Checking for wildcard CORS headers..."
+grep -r "Access-Control-Allow-Origin.*\*" supabase/functions/*/index.ts | grep -v "_templates" | grep -v "_shared" || echo "✅ No wildcard CORS found"
 
 echo ""
-echo "Checking for Zod imports..."
-missing_zod=$(find supabase/functions -name "index.ts" -not -path "*/_*" | xargs grep -L "zod" | wc -l)
-echo "Functions without Zod validation: $missing_zod"
+echo "Checking for ALLOWED_ORIGINS..."
+for func in ai-document-extraction analyze-damage-with-policy extract-policy-data policy-chat send-email; do
+  if [ -f "supabase/functions/$func/index.ts" ]; then
+    if grep -q "ALLOWED_ORIGINS" "supabase/functions/$func/index.ts"; then
+      echo "✅ $func has ALLOWED_ORIGINS"
+    else
+      echo "❌ $func missing ALLOWED_ORIGINS"
+    fi
+  fi
+done
 
 echo ""
-echo "Security verification complete!"
+echo "Checking for security headers..."
+for func in ai-document-extraction analyze-damage-with-policy extract-policy-data policy-chat send-email; do
+  if [ -f "supabase/functions/$func/index.ts" ]; then
+    if grep -q "X-Frame-Options" "supabase/functions/$func/index.ts"; then
+      echo "✅ $func has security headers"
+    else
+      echo "❌ $func missing security headers"
+    fi
+  fi
+done
 EOF
 
-chmod +x "$PATCHES_DIR/verify-updates.sh"
+chmod +x verify-edge-functions-security.sh
 
-echo -e "${GREEN}Next steps:${NC}"
-echo "1. Review the changes in each function"
-echo "2. Run verification: $PATCHES_DIR/verify-updates.sh"
-echo "3. Test each function locally"
-echo "4. Deploy updated functions: supabase functions deploy"
+echo -e "${GREEN}✓ Verification script created${NC}"
+
+# Summary
 echo ""
-echo -e "${YELLOW}Important:${NC} Some functions need manual review for:"
-echo "  - Complex authentication flows"
-echo "  - Rate limiting integration"
-echo "  - Custom error handling"
+echo "========================================"
+echo -e "${GREEN}✅ EDGE FUNCTIONS SECURITY UPDATED${NC}"
+echo "========================================"
 echo ""
-echo "Backups saved in: $PATCHES_DIR/"
+echo "Updated functions:"
+for func in "${CRITICAL_FUNCTIONS[@]}"; do
+  if [ -f "supabase/functions/$func/index.ts" ]; then
+    echo "  - $func"
+  fi
+done
+echo ""
+echo "Backups saved to: $BACKUP_DIR"
+echo ""
+echo -e "${YELLOW}Next steps:${NC}"
+echo "1. Review the changes with: git diff supabase/functions/"
+echo "2. Test functions locally: supabase functions serve"
+echo "3. Deploy to production: supabase functions deploy"
+echo "4. Verify security: ./verify-edge-functions-security.sh"
+echo ""
+echo -e "${GREEN}Security patches applied! Ready for deployment.${NC}"

@@ -241,11 +241,11 @@ function ThreeDModelGeneratorContent() {
           setProcessingStage('error')
         }
       }, 5000) // Poll every 5 seconds
+    }
       
-      return () => {
-        if (pollingInterval.current) {
-          clearInterval(pollingInterval.current)
-        }
+    return () => {
+      if (pollingInterval.current) {
+        clearInterval(pollingInterval.current)
       }
     }
   }, [taskId, supabase])

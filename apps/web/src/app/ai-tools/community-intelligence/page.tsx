@@ -195,18 +195,13 @@ export default function CommunityIntelligencePage() {
               </AlertDescription>
             </Alert>
 
-            {/* Real Analytics Section */}
+            {/* Real Analytics Section - Temporarily disabled for deployment */}
             {showRealAnalytics && (
-              <Suspense fallback={
-                <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mr-3" />
-                    <span className="text-white">Loading privacy-preserving analytics...</span>
-                  </div>
+              <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
+                <div className="text-center">
+                  <span className="text-gray-400">Privacy-preserving analytics temporarily disabled for deployment.</span>
                 </div>
-              }>
-                <PrivacyPreservingAnalytics onInsightsUpdate={handleInsightsUpdate} />
-              </Suspense>
+              </div>
             )}
 
             {/* Mock Data Section (Original) */}

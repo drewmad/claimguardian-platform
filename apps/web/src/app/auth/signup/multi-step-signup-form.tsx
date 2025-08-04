@@ -22,7 +22,13 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /^\d{10}$/
 
 // Password strength cache to avoid repeated calculations
-const passwordStrengthCache = new Map<string, ReturnType<typeof getPasswordStrength>>()
+type PasswordStrengthResult = {
+  strength: string
+  score: number
+  color: string
+  feedback: string[]
+}
+const passwordStrengthCache = new Map<string, PasswordStrengthResult>()
 
 export function MultiStepSignupForm() {
   const router = useRouter()
@@ -171,7 +177,7 @@ export function MultiStepSignupForm() {
     logger.info('📋 Form data:', formData)
     console.log('🔍 Step validation check:', {
       currentStep,
-      isValid: isStepValid(currentStep),
+      isValid: isStepValid,
       validationBreakdown: {
         over18: formData.over18,
         legalAgreements: formData.legalAgreements,
@@ -658,7 +664,7 @@ export function MultiStepSignupForm() {
             </div>
           </div>
           
-          {renderStepContent()}
+          {renderStepContent}
           
           {/* Navigation */}
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">

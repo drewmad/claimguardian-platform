@@ -26,11 +26,13 @@ export interface ClaimResult {
 export async function createClaim({ 
   propertyId, 
   damageType, 
-  description
+  description,
+  dateOfLoss
 }: {
   propertyId: string
   damageType: string
   description: string
+  dateOfLoss?: string
 }): Promise<ClaimResult> {
   try {
     const cookieStore = await cookies()
@@ -50,6 +52,7 @@ export async function createClaim({
       property_id: propertyId,
       damage_type: damageType,
       description,
+      date_of_loss: dateOfLoss || new Date().toISOString(),
       status: 'draft'
     }
 

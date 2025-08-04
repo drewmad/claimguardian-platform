@@ -1,10 +1,13 @@
 {
   "name": "@claimguardian/damage-doc-copilot",
   "version": "1.0.0",
-  "main": "./src/index.ts",
+  "main": "./dist/index.mjs",
   "types": "./src/index.ts",
   "exports": {
-    ".": "./src/index.ts"
+    ".": {
+      "import": "./dist/index.mjs",
+      "types": "./src/index.ts"
+    }
   },
   "dependencies": {
     "@claimguardian/ai-services": "workspace:*",
