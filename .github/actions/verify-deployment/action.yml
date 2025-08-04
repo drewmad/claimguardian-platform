@@ -1,0 +1,125 @@
+name: 'Verify Deployment'
+description: 'Verify deployment health and performance'
+inputs:
+  deployment-url:
+    description: 'URL to verify'
+    required: true
+  environment:
+    description: 'Environment name (preview/production)'
+    required: true
+    default: 'preview'
+  max-wait-minutes:
+    description: 'Maximum time to wait for deployment'
+    required: false
+    default: '10'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Wait for deployment
+      shell: bash
+      run: |
+        echo "🔍 Verifying deployment at ${{ inputs.deployment-url }}"
+        MAX_ATTEMPTS=$((60 * ${{ inputs.max-wait-minutes }} / 10))
+        
+        for i in $(seq 1 $MAX_ATTEMPTS); do
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${{ inputs.deployment-url }}" || echo "000")
+          
+          if [ "$STATUS" = "200" ]; then
+            echo "✅ Deployment is ready after $((i * 10)) seconds!"
+            break
+          elif [ "$STATUS" = "000" ]; then
+            echo "⏳ Deployment not accessible yet (attempt $i/$MAX_ATTEMPTS)"
+          else
+            echo "⚠️  Received HTTP $STATUS (attempt $i/$MAX_ATTEMPTS)"
+          fi
+          
+          if [ $i -eq $MAX_ATTEMPTS ]; then
+            echo "❌ Deployment verification timeout!"
+            exit 1
+          fi
+          
+          sleep 10
+        done
+    
+    - name: Run health checks
+      shell: bash
+      run: |
+        DEPLOYMENT_URL="${{ inputs.deployment-url }}"
+        FAILED_CHECKS=0
+        
+        echo "🏥 Running health checks..."
+        
+        # Function to check endpoint
+        check_endpoint() {
+          local endpoint=$1
+          local expected_status=${2:-200}
+          
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${DEPLOYMENT_URL}${endpoint}" || echo "000")
+          
+          if [ "$STATUS" = "$expected_status" ] || [ "$STATUS" = "307" ] || [ "$STATUS" = "308" ]; then
+            echo "✅ ${endpoint} - OK ($STATUS)"
+            return 0
+          else
+            echo "❌ ${endpoint} - Failed ($STATUS)"
+            ((FAILED_CHECKS++))
+            return 1
+          fi
+        }
+        
+        # Check critical endpoints
+        check_endpoint "/"
+        check_endpoint "/api/health"
+        
+        # Environment-specific checks
+        if [ "${{ inputs.environment }}" = "production" ]; then
+          check_endpoint "/login"
+          check_endpoint "/ai-tools"
+          check_endpoint "/properties"
+        fi
+        
+        if [ $FAILED_CHECKS -gt 0 ]; then
+          echo "❌ $FAILED_CHECKS health checks failed!"
+          exit 1
+        else
+          echo "✅ All health checks passed!"
+        fi
+    
+    - name: Check performance metrics
+      shell: bash
+      run: |
+        DEPLOYMENT_URL="${{ inputs.deployment-url }}"
+        
+        echo "⚡ Checking performance..."
+        
+        # Measure response time
+        RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "${DEPLOYMENT_URL}/api/health" || echo "999")
+        
+        echo "Response time: ${RESPONSE_TIME}s"
+        
+        # Alert if response time is too high
+        if (( $(echo "$RESPONSE_TIME > 3" | bc -l 2>/dev/null || echo 1) )); then
+          echo "⚠️  High response time detected (${RESPONSE_TIME}s > 3s threshold)"
+          if [ "${{ inputs.environment }}" = "production" ]; then
+            exit 1
+          fi
+        else
+          echo "✅ Response time is acceptable"
+        fi
+    
+    - name: Verify static assets
+      shell: bash
+      run: |
+        DEPLOYMENT_URL="${{ inputs.deployment-url }}"
+        
+        echo "📦 Verifying static assets..."
+        
+        # Check if main JS bundle loads
+        BUNDLE_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${DEPLOYMENT_URL}/_next/static/chunks/main.js" || echo "000")
+        
+        if [ "$BUNDLE_STATUS" = "200" ]; then
+          echo "✅ Static assets are loading correctly"
+        else
+          echo "❌ Failed to load static assets (status: $BUNDLE_STATUS)"
+          exit 1
+        fi

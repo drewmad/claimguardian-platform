@@ -1,0 +1,85 @@
+name: CI/CD Resource Monitor
+
+on:
+  workflow_run:
+    workflows: ["Optimized CI/CD Pipeline"]
+    types: [completed]
+  schedule:
+    # Run weekly to analyze CI usage patterns
+    - cron: '0 0 * * 0'
+
+jobs:
+  analyze-usage:
+    name: Analyze CI/CD Usage
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event_name == 'schedule'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Analyze workflow efficiency
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            
+            // Get recent workflow runs
+            const runs = await github.rest.actions.listWorkflowRuns({
+              owner,
+              repo,
+              workflow_id: 'main.yml',
+              per_page: 50
+            });
+            
+            // Calculate statistics
+            const stats = {
+              total_runs: runs.data.workflow_runs.length,
+              successful_runs: 0,
+              failed_runs: 0,
+              cancelled_runs: 0,
+              total_duration_minutes: 0,
+              average_duration_minutes: 0
+            };
+            
+            runs.data.workflow_runs.forEach(run => {
+              if (run.status === 'completed') {
+                const duration = (new Date(run.updated_at) - new Date(run.created_at)) / 60000;
+                stats.total_duration_minutes += duration;
+                
+                if (run.conclusion === 'success') stats.successful_runs++;
+                else if (run.conclusion === 'failure') stats.failed_runs++;
+                else if (run.conclusion === 'cancelled') stats.cancelled_runs++;
+              }
+            });
+            
+            stats.average_duration_minutes = stats.total_duration_minutes / stats.total_runs;
+            
+            // Create issue with report
+            const issueBody = `## CI/CD Usage Report
+            
+            ### Statistics (Last 50 runs)
+            - Total runs: ${stats.total_runs}
+            - Successful: ${stats.successful_runs} (${(stats.successful_runs/stats.total_runs*100).toFixed(1)}%)
+            - Failed: ${stats.failed_runs} (${(stats.failed_runs/stats.total_runs*100).toFixed(1)}%)
+            - Cancelled: ${stats.cancelled_runs}
+            - Average duration: ${stats.average_duration_minutes.toFixed(1)} minutes
+            - Total compute time: ${stats.total_duration_minutes.toFixed(0)} minutes
+            
+            ### Recommendations
+            ${stats.average_duration_minutes > 20 ? '⚠️ Consider optimizing long-running jobs' : '✅ Pipeline duration is optimal'}
+            ${stats.cancelled_runs > stats.total_runs * 0.2 ? '⚠️ High cancellation rate detected' : '✅ Cancellation rate is normal'}
+            ${stats.failed_runs > stats.total_runs * 0.1 ? '⚠️ High failure rate needs attention' : '✅ Failure rate is acceptable'}
+            `;
+            
+            // Only create issue on scheduled runs
+            if (context.eventName === 'schedule') {
+              await github.rest.issues.create({
+                owner,
+                repo,
+                title: `CI/CD Usage Report - ${new Date().toISOString().split('T')[0]}`,
+                body: issueBody,
+                labels: ['ci-cd', 'monitoring']
+              });
+            }
+            
+            console.log(issueBody);
