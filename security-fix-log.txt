@@ -1,0 +1,26 @@
+==============================================
+🔐 APPLYING ALL SECURITY FIXES
+==============================================
+
+This will apply all critical security patches.
+Make sure you have backed up your database!
+
+[0;34mStep 0: Setting up environment...[0m
+======================================
+🔧 SECURITY ENVIRONMENT SETUP
+======================================
+
+[0;32m✓ Supabase already linked[0m
+
+[0;34mChecking database connection...[0m
+[0;32m✓ Database connection configured[0m
+
+[0;34mSetting up local test environment...[0m
+Starting local Supabase...
+Starting database from backup...
+Stopping containers...
+failed to start docker container: Error response from daemon: failed to set up container networking: driver failed programming external connectivity on endpoint supabase_db_ClaimGuardian (adfd6ddad4e793eb012aceed398fad9dc2f93c2ec5a58168001cbf2062725109): Bind for 0.0.0.0:54322 failed: port is already allocated
+
+Try stopping the running project with supabase stop --project-id mad-monorepo
+Or configure a different db port in supabase/config.toml
+[0;31mEnvironment setup failed. Please configure manually.[0m

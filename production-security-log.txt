@@ -1,0 +1,27 @@
+==============================================
+🔐 APPLYING SECURITY FIXES TO PRODUCTION
+==============================================
+
+⚠️  This will modify your PRODUCTION database!
+
+[0;32m✓ Connected to Supabase project[0m
+
+[1;33mIMPORTANT: Make sure you have a recent database backup![0m
+To create a backup: supabase db dump -f backup-20250804-175558.sql
+
+
+
+[0;34mApplying critical database security fixes...[0m
+Applying fixes to production database...
+Initialising cli_login_postgres role...
+Connecting to remote database...
+Skipping migration README.md... (file name must match pattern "<timestamp>_name.sql")
+Skipping migration create_maps_intelligence_schema.sql... (file name must match pattern "<timestamp>_name.sql")
+Remote migration versions not found in local migrations directory.
+
+Make sure your local git repo is up-to-date. If the error persists, try repairing the migration history table:
+supabase migration repair --status reverted 20250130000001 20250130000002 20250130000003 20250130000004 20250130000005 20250131000001 20250131_fix_column_names 20250730031311 20250730032323 20250730034353 20250730090532 20250730101612 20250731023043 20250731052735 20250731052751 20250731052819 20250731052853 20250731053842 20250731065536 20250731070142 20250731070158 20250731071611 20250731102805 20250731102919 20250731103029 20250731103045 20250731103104 20250731103127 20250731103141 20250731103150 20250731103307 20250731103438 20250731103536 20250731125400 20250801014221 20250801014245 20250801014315 20250801014337 20250801014409 20250801021222 20250801021233
+
+And update local migrations to match remote database:
+supabase db pull
+
