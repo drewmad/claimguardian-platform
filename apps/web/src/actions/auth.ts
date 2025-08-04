@@ -142,7 +142,7 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
 
     const cookieStore = await cookies()
     const supabase = await createServerSupabaseClient(cookieStore)
-    const headersList = headers()
+    const headersList = await headers()
     const origin = headersList.get('origin')
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
