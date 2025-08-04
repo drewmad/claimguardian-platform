@@ -46,6 +46,7 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 - **Monitoring**: Sentry 8.46.0, Web Vitals 4.2.4
 - **Styling**: Tailwind CSS 3.4.1
 - **UI Components**: Radix UI, Lucide React 0.525.0
+- **3D Graphics**: React Three Fiber, Three.js (dynamically imported for SSR compatibility)
 
 ## Repository Structure (Updated)
 
@@ -296,6 +297,12 @@ Unified AI orchestration system with:
     - Predictive claim analysis
     - Optimization recommendations
 
+11. **3D Model Generator** (`/ai-tools/3d-model-generator/`)
+    - AI-powered photogrammetry from multiple images
+    - Real-time 3D reconstruction with quality settings
+    - Export to OBJ, FBX, GLTF, STL formats
+    - WebGL-based viewer with React Three Fiber
+
 ### Camera Integration
 - `CameraCapture` component for vision features
 - Handles permissions and stream management
@@ -511,6 +518,13 @@ ClaimGuardian leverages Deno Edge Functions for:
 3. **`environmental-data-sync`**: Environmental data integration
 4. **`fetch-disaster-alerts`**: Real-time disaster monitoring
 5. **`fetch-tidal-data`**: Coastal flood risk data integration
+6. **`model_3d_generation`**: 3D model generation from photogrammetry
+
+#### Security & Compliance Updates
+- **Enhanced Input Validation**: All Edge Functions now include comprehensive input sanitization
+- **Rate Limiting**: Implemented across all AI processing functions
+- **CORS Security**: Strict origin validation for production environment
+- **Audit Logging**: All AI operations logged with user context and IP tracking
 
 #### Function Development Pattern
 ```typescript
@@ -735,6 +749,12 @@ Consider integrating periodic updates into the development workflow:
 
 ## Current Project Status & Recent Improvements
 
+### Latest Deployment Status
+- **Production**: https://claimguardianai.com (Live)
+- **Build Status**: ✅ All builds passing
+- **Last Deploy**: August 4, 2025
+- **Recent Fix**: Resolved React Three Fiber SSR compatibility issue
+
 ### Recently Completed (August 2025)
 - ✅ **ML Operations Infrastructure**: Complete federated learning and model management system
 - ✅ **AI Services Unification**: Centralized AI orchestration with cost tracking and monitoring
@@ -742,6 +762,8 @@ Consider integrating periodic updates into the development workflow:
 - ✅ **Database Schema Consolidation**: Single schema.sql approach with automated type generation
 - ✅ **Progressive Error Handling**: Smart pre-commit hooks with auto-fixing capabilities
 - ✅ **Monitoring Dashboard**: Real-time AI operation visibility and performance tracking
+- ✅ **3D Model Generator**: AI-powered photogrammetry tool with React Three Fiber (SSR-safe)
+- ✅ **React Three Fiber SSR Fix**: Dynamic imports with SSR disabled for 3D components
 
 ### Current Focus Areas
 - 🔄 **Type Safety Enhancement**: Progressive TypeScript error elimination
@@ -754,6 +776,25 @@ Consider integrating periodic updates into the development workflow:
 - **AI-First Design**: Multi-provider AI integration with intelligent caching and cost management
 - **Real-time Capabilities**: Full-stack real-time features with Supabase subscriptions
 - **Florida-Specific**: Specialized tools for Florida insurance regulations and property data
+- **3D Visualization**: React Three Fiber integration for 3D model viewing and AR features
+
+### Known Issues & Solutions
+
+#### React Three Fiber SSR Compatibility
+- **Issue**: `TypeError: Cannot read properties of undefined (reading 'ReactCurrentBatchConfig')`
+- **Cause**: React Three Fiber components attempt to access browser APIs during SSR
+- **Solution**: Use dynamic imports with `{ ssr: false }` for all R3F components
+```typescript
+const Canvas = dynamic(
+  () => import('@react-three/fiber').then((mod) => mod.Canvas),
+  { ssr: false }
+)
+```
+
+#### Metadata Warnings
+- **Issue**: "Unsupported metadata viewport/themeColor is configured in metadata export"
+- **Cause**: Next.js 15 requires viewport and themeColor in separate viewport export
+- **Status**: Non-blocking warnings, low priority fix
 
 ## Important Instruction Reminders
 Do what has been asked; nothing more, nothing less.
