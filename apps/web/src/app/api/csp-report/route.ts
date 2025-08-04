@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: NextRequest) {
   try {
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
       })
     } catch (dbError) {
       // Don't fail if database insert fails
-      console.error('Failed to store CSP violation in database:', dbError)
+      logger.error('Failed to store CSP violation in database:', dbError)
     }
     
     // Return 204 No Content as per CSP reporting spec

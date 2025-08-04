@@ -13,9 +13,11 @@
 import { Home, Building, Shield, Banknote, CheckSquare, ChevronLeft, ChevronRight, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
 import React, { useReducer, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createProperty } from '@/actions/properties'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { logger } from "@/lib/logger/production-logger"
 
 // --- Constants & Configuration ---
 const COLORS = {
@@ -220,7 +222,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             
             onClose();
         } catch (error) {
-            console.error('Error creating property:', error);
+            logger.error('Error creating property:', error);
             toast.error('Failed to create property');
         } finally {
             dispatch({ type: 'SET_LOADING', payload: false });

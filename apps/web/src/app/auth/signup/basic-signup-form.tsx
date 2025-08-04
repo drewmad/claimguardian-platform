@@ -5,11 +5,13 @@ import { Shield, Loader2, AlertCircle, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { logger } from "@/lib/logger/production-logger"
 
 export function BasicSignupForm() {
   const router = useRouter()
@@ -64,16 +66,16 @@ export function BasicSignupForm() {
       })
       
       if (signUpError) {
-        console.error('Signup error:', signUpError)
+        logger.error('Signup error:', signUpError)
         throw signUpError
       }
       
       if (data?.user) {
-        console.log('User created successfully:', data.user.id)
+        logger.info('User created successfully:', data.user.id)
         
         // Profile will be automatically created by database trigger
         // No manual profile creation needed
-        console.log('User profile will be created automatically by database trigger')
+        logger.info('User profile will be created automatically by database trigger')
         
         setSuccess(true)
         
@@ -87,7 +89,7 @@ export function BasicSignupForm() {
         }
       }
     } catch (err) {
-      console.error('Signup error:', err)
+      logger.error('Signup error:', err)
       if (err instanceof Error) {
         if (err.message.includes('User already registered')) {
           setError('An account with this email already exists. Please sign in instead.')

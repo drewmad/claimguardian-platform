@@ -5,6 +5,7 @@ import { Camera, FileText, Loader2, Upload, X, AlertCircle } from 'lucide-react'
 import Image from 'next/image'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -14,6 +15,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ocrService, DocumentType, OCRResult, ReceiptData, OCRHistoryEntry } from '@/lib/services/ocr-service'
+import { logger } from "@/lib/logger/production-logger"
 
 interface OCRScannerProps {
   onScanComplete?: (result: OCRResult) => void
@@ -94,7 +96,7 @@ export function OCRScanner({
         toast.error(ocrResult.error || 'Failed to process document')
       }
     } catch (error) {
-      console.error('OCR error:', error)
+      logger.error('OCR error:', error)
       toast.error('Failed to process document')
     } finally {
       setIsProcessing(false)

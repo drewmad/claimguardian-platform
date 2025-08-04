@@ -4,12 +4,14 @@ import { Button } from '@claimguardian/ui'
 import { Shield, AlertCircle, CheckCircle, FileText, DollarSign, AlertTriangle } from 'lucide-react'
 import React, { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { PolicyUpload } from '@/components/policy/policy-upload'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePolicyData, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
 import { useSupabase } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 
@@ -86,7 +88,7 @@ export function DamageAnalyzerEnhanced({
 
       toast.success('Coverage analysis complete')
     } catch (error) {
-      console.error('Analysis error:', error)
+      logger.error('Analysis error:', error)
       toast.error('Failed to analyze coverage')
     } finally {
       setAnalyzing(false)

@@ -8,6 +8,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { readFile } from 'fs/promises'
 import { join } from 'path'
+import { logger } from "@/lib/logger/production-logger"
 
 const LEGAL_DOCS = {
   'privacy_policy': {
@@ -61,7 +62,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ data: document })
     
   } catch (error) {
-    console.error('Failed to load legal document:', error)
+    logger.error('Failed to load legal document:', error)
     return NextResponse.json(
       { error: 'Document not found' },
       { status: 404 }

@@ -8,8 +8,10 @@
 
 import { createServiceRoleClient } from '@claimguardian/db'
 import { headers } from 'next/headers'
+import { logger } from "@/lib/logger/production-logger"
 
 import { logger } from '@/lib/logger'
+import { logger } from "@/lib/logger/production-logger"
 
 interface TrackingData {
   userId: string
@@ -157,10 +159,10 @@ export async function captureSignupData(data: SignupTrackingData) {
         })
       
       if (captureError) {
-        console.error('[USER TRACKING] RPC function error:', captureError)
+        logger.error('[USER TRACKING] RPC function error:', captureError)
         // If RPC doesn't exist, fall back to direct insert
         if (captureError.message?.includes('function') || captureError.code === 'PGRST202') {
-          console.log('[USER TRACKING] Falling back to direct user_profiles update')
+          logger.info('[USER TRACKING] Falling back to direct user_profiles update')
           
           // Update user profile directly
           const { error: profileError } = await supabase
@@ -186,7 +188,7 @@ export async function captureSignupData(data: SignupTrackingData) {
             })
           
           if (profileError) {
-            console.error('[USER TRACKING] Profile update error:', profileError)
+            logger.error('[USER TRACKING] Profile update error:', profileError)
             // Don't throw - this is not critical for signup
           }
         } else {
@@ -195,7 +197,7 @@ export async function captureSignupData(data: SignupTrackingData) {
         }
       }
     } catch (rpcError) {
-      console.error('[USER TRACKING] Unexpected RPC error:', rpcError)
+      logger.error('[USER TRACKING] Unexpected RPC error:', rpcError)
       // Don't throw - continue with signup
     }
     
@@ -216,7 +218,7 @@ export async function captureSignupData(data: SignupTrackingData) {
       })
       
       if (prefsError) {
-        console.error('[USER TRACKING] Preferences error:', prefsError)
+        logger.error('[USER TRACKING] Preferences error:', prefsError)
         // Try direct insert as fallback
         const { error: directError } = await supabase
           .from('user_preferences')
@@ -232,13 +234,13 @@ export async function captureSignupData(data: SignupTrackingData) {
             timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
           })
         if (directError) {
-          console.error('[USER TRACKING] Direct preferences insert also failed:', directError)
+          logger.error('[USER TRACKING] Direct preferences insert also failed:', directError)
         }
         logger.error('Failed to create user preferences', { userId: data.userId }, prefsError)
         // Don't throw - preferences are not critical for signup
       }
     } catch (prefsError) {
-      console.error('[USER TRACKING] Unexpected preferences error:', prefsError)
+      logger.error('[USER TRACKING] Unexpected preferences error:', prefsError)
       // Don't throw - continue with signup
     }
     
@@ -266,13 +268,13 @@ export async function captureSignupData(data: SignupTrackingData) {
             })
           
           if (auditError) {
-            console.error('[USER TRACKING] Consent audit error:', auditError)
+            logger.error('[USER TRACKING] Consent audit error:', auditError)
             // Don't throw - audit logging is not critical
           }
         }
       }
     } catch (auditError) {
-      console.error('[USER TRACKING] Unexpected audit error:', auditError)
+      logger.error('[USER TRACKING] Unexpected audit error:', auditError)
       // Don't throw - continue with signup
     }
     

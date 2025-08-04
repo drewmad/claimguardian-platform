@@ -5,6 +5,7 @@ import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { logger } from "@/lib/logger/production-logger"
 
 export function SimpleSignupForm() {
   const router = useRouter()
@@ -121,7 +123,7 @@ export function SimpleSignupForm() {
         router.push('/onboarding/property-setup')
       }
     } catch (err) {
-      console.error('Signup error:', err)
+      logger.error('Signup error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred during signup')
     } finally {
       setIsLoading(false)

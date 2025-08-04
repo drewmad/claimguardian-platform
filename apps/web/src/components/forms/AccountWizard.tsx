@@ -4,12 +4,15 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { CheckCircle, AlertCircle } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { ProgressBar } from './ProgressBar'
 import { Agreements } from './steps/Agreements'
 import { PersonalInfo } from './steps/PersonalInfo'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface FormData {
@@ -86,7 +89,7 @@ export function AccountWizard() {
           })
         } catch (consentError) {
           // Log but don't fail the signup
-          console.error('Error logging consents:', consentError)
+          logger.error('Error logging consents:', consentError)
         }
 
         setSuccess(true)
@@ -97,7 +100,7 @@ export function AccountWizard() {
         }, 2000)
       }
     } catch (err) {
-      console.error('Signup error:', err)
+      logger.error('Signup error:', err)
       setError(err instanceof Error ? err.message : 'An unexpected error occurred')
     } finally {
       setIsLoading(false)

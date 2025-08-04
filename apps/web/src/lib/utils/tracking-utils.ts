@@ -10,6 +10,7 @@
  */
 
 import { UAParser } from 'ua-parser-js'
+import { logger } from "@/lib/logger/production-logger"
 
 export interface SignupTrackingData {
   ipAddress?: string
@@ -116,12 +117,12 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
         }
       } catch (error) {
         // Geolocation permission denied or failed - this is okay
-        console.debug('Geolocation not available:', error)
+        logger.debug('Geolocation not available:', error)
       }
     }
     
   } catch (error) {
-    console.error('Error collecting tracking data:', error)
+    logger.error('Error collecting tracking data:', error)
   }
   
   return trackingData
@@ -164,6 +165,6 @@ function generateDeviceFingerprint(): string {
 export async function getApproximateLocation(): Promise<{ country?: string; region?: string; city?: string } | null> {
   // External geolocation API calls removed for security
   // Geolocation will be handled server-side if needed
-  console.debug('Client-side geolocation disabled for security - use server-side detection')
+  logger.debug('Client-side geolocation disabled for security - use server-side detection')
   return null
 }

@@ -7,6 +7,10 @@ export * from './types/claim'
 export * from './types/insurance'
 export * from './types/legal-compliance'
 
+// Export Maps Intelligence types and services
+export * from './types/maps-intelligence'
+export * from './services/maps-intelligence-service'
+
 import type { Database } from './types/database.types'
 
 // Export Supabase client factory functions
@@ -53,3 +57,20 @@ export type PropertyInsert = Database['public']['Tables']['properties']['Insert'
 export type PropertyUpdate = Database['public']['Tables']['properties']['Update']
 export type ClaimInsert = Database['public']['Tables']['claims']['Insert']
 export type ClaimUpdate = Database['public']['Tables']['claims']['Update']
+
+// Re-export Maps Intelligence for convenience
+export { MapsIntelligenceService } from './services/maps-intelligence-service'
+export type {
+  MapsApiType,
+  ApiExecutionTrigger,
+  ApiExecutionStatus,
+  AddressIntelligence,
+  WeatherIntelligence,
+  AerialIntelligence,
+  EnvironmentalIntelligence,
+  StreetViewIntelligence,
+  SolarIntelligence,
+  StaticMapsIntelligence,
+  PropertyIntelligenceSummary,
+  IntelligenceResponse
+} from './types/maps-intelligence'

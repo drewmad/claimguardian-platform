@@ -73,7 +73,7 @@ export class FLOIRCrawler {
     })
 
     try {
-      console.log(`Starting crawl for ${dataType} on ${domain}`)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting crawl for ${dataType} on ${domain}` }))
       
       // Apply rate limiting
       await this.rateLimit(domain)
@@ -118,7 +118,7 @@ export class FLOIRCrawler {
 
   private async crawlCatastrophe(page: any, config: any, query: any): Promise<any[]> {
     const url = `${config.site.baseUrl}${config.endpoints.main}`
-    console.log(`Navigating to: ${url}`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Navigating to: ${url}` }))
     
     await page.goto(url, { waitUntil: 'networkidle' })
     
@@ -153,7 +153,7 @@ export class FLOIRCrawler {
       return results
     }, config.fieldMapping)
 
-    console.log(`Extracted ${data.length} catastrophe records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} catastrophe records` }))
     return data
   }
 
@@ -184,7 +184,7 @@ export class FLOIRCrawler {
       return results
     })
 
-    console.log(`Extracted ${data.length} industry report records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} industry report records` }))
     return data
   }
 
@@ -222,7 +222,7 @@ export class FLOIRCrawler {
       return results
     })
 
-    console.log(`Extracted ${data.length} professional liability records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} professional liability records` }))
     return data
   }
 
@@ -251,7 +251,7 @@ export class FLOIRCrawler {
     }, url, requestBody)
 
     const data = response.data || []
-    console.log(`Extracted ${data.length} rate filing records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} rate filing records` }))
     
     // Add metadata to each record
     return data.map((record: any) => ({
@@ -287,7 +287,7 @@ export class FLOIRCrawler {
       return results
     })
 
-    console.log(`Extracted ${data.length} receivership records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} receivership records` }))
     return data
   }
 
@@ -318,7 +318,7 @@ export class FLOIRCrawler {
       })
     })
 
-    console.log(`Extracted ${data.length} news bulletin records`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Extracted ${data.length} news bulletin records` }))
     return data
   }
 

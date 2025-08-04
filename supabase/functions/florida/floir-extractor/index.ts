@@ -30,7 +30,7 @@ serve(async (req: Request) => {
       throw new Error(`Invalid data_type. Must be one of: ${Object.values(FliorDataType).join(', ')}`)
     }
 
-    console.log(`Starting crawl for data_type: ${data_type}`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting crawl for data_type: ${data_type}` }))
 
     // Create crawl run record
     const { data: crawlRun, error: crawlError } = await supabase
@@ -57,10 +57,10 @@ serve(async (req: Request) => {
       const crawler = new FLOIRCrawler()
       
       // Crawl raw data
-      console.log(`Crawling ${data_type} data...`)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Crawling ${data_type} data...` }))
       const rawData = await crawler.crawl(data_type, query)
       
-      console.log(`Crawled ${rawData.length} records, processing...`)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Crawled ${rawData.length} records, processing...` }))
       
       // Process each record
       for (const record of rawData) {
@@ -90,7 +90,7 @@ serve(async (req: Request) => {
               .single()
 
             if (existing?.content_hash === contentHash) {
-              console.log(`Skipping duplicate record: ${parsed.primary_key}`)
+              console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Skipping duplicate record: ${parsed.primary_key}` }))
               continue
             }
           }
@@ -105,7 +105,7 @@ serve(async (req: Request) => {
               })
               embedding = embeddingResponse.data[0].embedding
             } catch (embeddingError) {
-              console.error(`Failed to generate embedding for ${parsed.primary_key}:`, embeddingError)
+              console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Failed to generate embedding for ${parsed.primary_key}:`, embeddingError }))
               errors.push({
                 record_id: parsed.primary_key,
                 error: 'Failed to generate embedding',
@@ -131,7 +131,7 @@ serve(async (req: Request) => {
             })
 
           if (upsertError) {
-            console.error(`Failed to upsert record ${parsed.primary_key}:`, upsertError)
+            console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Failed to upsert record ${parsed.primary_key}:`, upsertError }))
             errors.push({
               record_id: parsed.primary_key,
               error: 'Database upsert failed',
@@ -156,7 +156,7 @@ serve(async (req: Request) => {
           }
 
         } catch (recordError) {
-          console.error(`Error processing record:`, recordError)
+          console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Error processing record:`, recordError }))
           errors.push({
             record_data: record,
             error: 'Record processing failed',
@@ -226,7 +226,7 @@ serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.error('FLOIR extractor error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'FLOIR extractor error:', error }))
     
     return new Response(JSON.stringify({
       success: false,

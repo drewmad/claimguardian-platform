@@ -4,10 +4,12 @@ import { Button } from '@claimguardian/ui'
 import { Input } from '@claimguardian/ui'
 import { Search, ExternalLink, Loader2, FileText, AlertTriangle } from 'lucide-react'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface SearchResult {
@@ -70,7 +72,7 @@ export default function FLOIRSearch() {
 
       setResults(data)
     } catch (err: unknown) {
-      console.error('Search error:', err)
+      logger.error('Search error:', err)
       setError(err instanceof Error ? err.message : 'Search failed')
     } finally {
       setLoading(false)

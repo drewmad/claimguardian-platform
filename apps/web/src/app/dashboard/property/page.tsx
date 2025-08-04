@@ -14,6 +14,7 @@ import { MapPin, Shield, Plus, ChevronRight, Loader2, Home } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getProperties } from '@/actions/properties'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -22,6 +23,7 @@ import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
+import { logger } from "@/lib/logger/production-logger"
 
 interface DisplayProperty {
   id: string
@@ -108,7 +110,7 @@ function PropertyOverviewContent() {
           setProperty(null)
         }
       } catch (error) {
-        console.error('Error loading property:', error)
+        logger.error('Error loading property:', error)
         toast.error('Failed to load your property.')
         setProperty(null)
       } finally {
@@ -153,7 +155,7 @@ function PropertyOverviewContent() {
           setProperty(transformedData)
         }
       } catch (error) {
-        console.error('Error reloading property:', error)
+        logger.error('Error reloading property:', error)
       } finally {
         setLoading(false)
       }

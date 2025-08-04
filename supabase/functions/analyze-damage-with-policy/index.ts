@@ -215,7 +215,7 @@ Deno.serve(async (req) => {
       }
       coverageAnalysis = JSON.parse(jsonMatch[1] || jsonMatch[0])
     } catch (parseError) {
-      console.error('Failed to parse AI response:', parseError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to parse AI response:', parseError }))
       coverageAnalysis = {
         isCovered: false,
         applicableCoverages: [],
@@ -272,7 +272,7 @@ Deno.serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Error in analyze-damage-with-policy:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error in analyze-damage-with-policy:', error }))
     
     return new Response(
       JSON.stringify({ 

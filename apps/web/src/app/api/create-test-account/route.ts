@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function POST() {
   try {
@@ -33,7 +35,7 @@ export async function POST() {
     )
     
     if (confirmError) {
-      console.error('Failed to auto-confirm user:', confirmError)
+      logger.error('Failed to auto-confirm user:', confirmError)
     }
     
     return NextResponse.json({
@@ -45,7 +47,7 @@ export async function POST() {
       message: 'Test account created and confirmed!'
     })
   } catch (error) {
-    console.error('Error creating test account:', error)
+    logger.error('Error creating test account:', error)
     return NextResponse.json({ error: 'Failed to create test account' }, { status: 500 })
   }
 }

@@ -19,6 +19,7 @@
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { useEffect, useRef, useCallback, useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { 
@@ -34,6 +35,7 @@ import type {
   CommunityIntelligence,
   AIRecommendation
 } from '@/types/situation-room'
+import { logger } from "@/lib/logger/production-logger"
 
 interface RealtimeSubscriptionConfig {
   propertyId: string
@@ -71,7 +73,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
         supabaseRef.current = createClientComponentClient()
         setIsClient(true)
       } catch (error) {
-        console.warn('Failed to initialize Supabase client:', error)
+        logger.warn('Failed to initialize Supabase client:', error)
       }
     }
   }, [])
@@ -99,7 +101,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [setConnectionStatus])
 
   const handleError = useCallback((error: Error) => {
-    console.error('Situation Room realtime error:', error)
+    logger.error('Situation Room realtime error:', error)
     setError(error.message)
     configRef.current?.onError?.(error)
   }, [setError])
@@ -120,7 +122,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }), [])
 
   const handleThreatUpdate = useCallback((payload: any) => {
-    console.log('Threat update received:', payload)
+    logger.info('Threat update received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
       const threat: ThreatAssessment = payload.new
@@ -142,7 +144,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [addThreat, addRealtimeEvent, createRealtimeEvent])
 
   const handleIntelligenceUpdate = useCallback((payload: any) => {
-    console.log('Intelligence feed received:', payload)
+    logger.info('Intelligence feed received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
       const feed: IntelligenceFeed = payload.new
@@ -154,7 +156,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [addIntelligenceFeed, addRealtimeEvent, createRealtimeEvent])
 
   const handlePropertySystemUpdate = useCallback((payload: any) => {
-    console.log('Property system update:', payload)
+    logger.info('Property system update:', payload)
     
     // Refresh property status when systems change
     refreshPropertyStatus()
@@ -168,7 +170,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [refreshPropertyStatus, addRealtimeEvent, createRealtimeEvent])
 
   const handleCommunityUpdate = useCallback((payload: any) => {
-    console.log('Community update received:', payload)
+    logger.info('Community update received:', payload)
     
     // Refresh community intelligence
     refreshCommunityIntel()
@@ -182,7 +184,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [refreshCommunityIntel, addRealtimeEvent, createRealtimeEvent])
 
   const handleAIRecommendation = useCallback((payload: any) => {
-    console.log('AI recommendation received:', payload)
+    logger.info('AI recommendation received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
       const recommendation: AIRecommendation = payload.new
@@ -198,7 +200,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   }, [addRecommendation, addRealtimeEvent, createRealtimeEvent])
 
   const handleEmergencyBroadcast = useCallback((payload: any) => {
-    console.log('Emergency broadcast received:', payload)
+    logger.info('Emergency broadcast received:', payload)
     
     const event = createRealtimeEvent(
       EventType.EMERGENCY_BROADCAST,
@@ -211,7 +213,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   const setupChannelSubscriptions = useCallback((config: RealtimeSubscriptionConfig) => {
     const supabase = supabaseRef.current
     if (!supabase || !isClient) {
-      console.warn('Supabase client not initialized, skipping subscription setup')
+      logger.warn('Supabase client not initialized, skipping subscription setup')
       return
     }
 
@@ -244,7 +246,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           }
         })
         .subscribe((status: any) => {
-          console.log('Threat channel status:', status)
+          logger.info('Threat channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('threats', threatChannel)
           }
@@ -275,7 +277,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           addRealtimeEvent(event)
         })
         .subscribe((status: any) => {
-          console.log('Intelligence channel status:', status)
+          logger.info('Intelligence channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('intelligence', intelligenceChannel)
           }
@@ -306,7 +308,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           addRealtimeEvent(event)
         })
         .subscribe((status: any) => {
-          console.log('Property channel status:', status)
+          logger.info('Property channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('property', propertyChannel)
           }
@@ -330,7 +332,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           addRealtimeEvent(event)
         })
         .subscribe((status) => {
-          console.log('Community channel status:', status)
+          logger.info('Community channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('community', communityChannel)
           }
@@ -348,7 +350,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           filter: `property_id=eq.${propertyId}`
         }, handleAIRecommendation)
         .subscribe((status) => {
-          console.log('AI channel status:', status)
+          logger.info('AI channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('ai', aiChannel)
           }
@@ -369,7 +371,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           addRealtimeEvent(event)
         })
         .subscribe((status) => {
-          console.log('Emergency channel status:', status)
+          logger.info('Emergency channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('emergency', emergencyChannel)
           }
@@ -384,7 +386,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
         handleConnectionStateChange('connected')
       })
       .subscribe((status) => {
-        console.log('Status channel status:', status)
+        logger.info('Status channel status:', status)
         if (status === 'SUBSCRIBED') {
           channelsRef.current.set('status', statusChannel)
           handleConnectionStateChange('connected')
@@ -412,7 +414,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     const interval = config.reconnectInterval || 5000
 
     if (reconnectAttemptsRef.current >= maxAttempts) {
-      console.error('Max reconnection attempts reached')
+      logger.error('Max reconnection attempts reached')
       handleConnectionStateChange('disconnected')
       return
     }
@@ -421,7 +423,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     handleConnectionStateChange('reconnecting')
 
     reconnectTimeoutRef.current = setTimeout(() => {
-      console.log(`Reconnection attempt ${reconnectAttemptsRef.current}/${maxAttempts}`)
+      logger.info(`Reconnection attempt ${reconnectAttemptsRef.current}/${maxAttempts}`)
       setupChannelSubscriptions(config)
     }, interval)
 
@@ -475,7 +477,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
       
       if (lastHeartbeat && (now.getTime() - lastHeartbeat.getTime()) > 30000) {
         // No heartbeat for 30 seconds, attempt reconnect
-        console.warn('Connection appears stale, attempting reconnect')
+        logger.warn('Connection appears stale, attempting reconnect')
         attemptReconnect()
       }
     }, 15000) // Check every 15 seconds
@@ -527,7 +529,7 @@ export function useRealtimeSubscription(
       reconnectInterval: 3000,
       maxReconnectAttempts: 15,
       onConnectionStateChange: (state) => {
-        console.log('Realtime connection state:', state)
+        logger.info('Realtime connection state:', state)
       },
       onError: options.onError
     })

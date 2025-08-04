@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 export interface RetryConfig {
   maxRetries: number
@@ -176,7 +177,7 @@ export function withErrorBoundary<T>(
   errorMessage?: string
 ): Promise<T> {
   return operation().catch((error) => {
-    console.error('Error caught by boundary:', error)
+    logger.error('Error caught by boundary:', error)
     
     if (errorMessage) {
       toast.error(errorMessage)

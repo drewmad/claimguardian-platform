@@ -1,6 +1,8 @@
 import { UAParser } from 'ua-parser-js'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface TrackingData {
   userId: string
@@ -50,7 +52,7 @@ class UserTracker {
       const data = await response.json()
       this.ipAddress = data.ip
     } catch (error) {
-      console.error('Failed to fetch IP address:', error)
+      logger.error('Failed to fetch IP address:', error)
     }
   }
 
@@ -107,7 +109,7 @@ class UserTracker {
         })
 
       if (error) {
-        console.error('Error tracking login:', error)
+        logger.error('Error tracking login:', error)
         return
       }
 
@@ -129,7 +131,7 @@ class UserTracker {
       })
 
     } catch (error) {
-      console.error('Error in trackLogin:', error)
+      logger.error('Error in trackLogin:', error)
     }
   }
 
@@ -148,10 +150,10 @@ class UserTracker {
         })
 
       if (error) {
-        console.error('Error logging activity:', error)
+        logger.error('Error logging activity:', error)
       }
     } catch (error) {
-      console.error('Error in logActivity:', error)
+      logger.error('Error in logActivity:', error)
     }
   }
 

@@ -10,9 +10,11 @@ import { Card } from '@claimguardian/ui'
 import { formatDistanceToNow } from 'date-fns'
 import { AlertCircle, AlertTriangle, Bug, CheckCircle, Clock, Info, RefreshCw, XCircle } from 'lucide-react'
 import React, { useEffect, useState, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface ErrorLog {
@@ -68,7 +70,7 @@ export function ErrorDashboard() {
       if (error) throw error
       setErrors(data || [])
     } catch (error) {
-      console.error('Failed to fetch errors:', error)
+      logger.error('Failed to fetch errors:', error)
     } finally {
       setLoading(false)
     }
@@ -85,7 +87,7 @@ export function ErrorDashboard() {
       if (error) throw error
       setSummary(data || [])
     } catch (error) {
-      console.error('Failed to fetch error summary:', error)
+      logger.error('Failed to fetch error summary:', error)
     }
   }, [supabase])
 
@@ -109,7 +111,7 @@ export function ErrorDashboard() {
       // Refresh the list
       fetchErrors()
     } catch (error) {
-      console.error('Failed to resolve error:', error)
+      logger.error('Failed to resolve error:', error)
     }
   }
 

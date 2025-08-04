@@ -4,6 +4,7 @@ import { Camera, Ruler, Save, Download, Upload, Maximize2, Info, AlertTriangle, 
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { EnhancedDamageAnalyzer } from '@/components/ai/enhanced-damage-analyzer'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -16,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { logger } from "@/lib/logger/production-logger"
 
 interface Measurement {
   id: string
@@ -125,7 +127,7 @@ export default function ARDamageDocumenterPage() {
       setArSession({ active: true })
       toast.success('AR session started')
     } catch (error) {
-      console.error('Failed to start AR session:', error)
+      logger.error('Failed to start AR session:', error)
       toast.error('Failed to start AR session')
     }
   }
@@ -230,7 +232,7 @@ export default function ARDamageDocumenterPage() {
         }
         reader.readAsDataURL(file)
       } catch (error) {
-        console.error('Error processing image:', error)
+        logger.error('Error processing image:', error)
         toast.error('Failed to process image')
       }
     }
@@ -273,7 +275,7 @@ export default function ARDamageDocumenterPage() {
       }
       reader.readAsDataURL(file)
     } catch (error) {
-      console.error('Error processing captured image:', error)
+      logger.error('Error processing captured image:', error)
       toast.error('Failed to process captured image')
     }
   }
@@ -326,7 +328,7 @@ export default function ARDamageDocumenterPage() {
       }
 
       toast.success('Professional report generated successfully')
-      console.log('Generated report:', report)
+      logger.info('Generated report:', report)
     } catch {
       toast.error('Failed to generate report')
     } finally {
@@ -930,7 +932,7 @@ export default function ARDamageDocumenterPage() {
                             <EnhancedDamageAnalyzer
                               onAnalysisComplete={(result) => {
                                 toast.success('AI analysis completed successfully')
-                                console.log('Analysis result:', result)
+                                logger.info('Analysis result:', result)
                               }}
                               propertyId="current-property"
                               policyData={undefined}

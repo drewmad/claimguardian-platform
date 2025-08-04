@@ -228,7 +228,7 @@ Deno.serve(async (req: Request) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     } catch (extractionError) {
-      console.error('Extraction failed:', extractionError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Extraction failed:', extractionError }))
       
       return new Response(
         JSON.stringify({
@@ -240,7 +240,7 @@ Deno.serve(async (req: Request) => {
       )
     }
   } catch (error) {
-    console.error('Edge function error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Edge function error:', error }))
     
     return new Response(
       JSON.stringify({

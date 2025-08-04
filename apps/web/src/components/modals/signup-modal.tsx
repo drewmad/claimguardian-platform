@@ -12,11 +12,13 @@
 
 import { X, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { useModalStore } from '@/stores/modal-store'
+import { logger } from "@/lib/logger/production-logger"
 
 export function SignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -105,7 +107,7 @@ export function SignupModal() {
         })
       }
     } catch (error) {
-      console.error('Signup error:', error)
+      logger.error('Signup error:', error)
       setValidationError('An error occurred during signup. Please try again.')
     } finally {
       setLoading(false)

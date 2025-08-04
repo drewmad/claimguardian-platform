@@ -109,7 +109,7 @@ serve(async (req) => {
           })
         }
       } catch (error) {
-        console.error(`Error processing ${county.name}:`, error)
+        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Error processing ${county.name}:`, error }))
         
         await supabaseClient
           .from('scraper_runs')

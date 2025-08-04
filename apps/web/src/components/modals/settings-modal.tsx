@@ -3,12 +3,14 @@
 import { X, User, Shield, Bell, Palette, Globe, Key, Save, Trash2, AlertCircle, CheckCircle, Moon, Sun, Monitor, Volume2, VolumeX, Mail, Phone, Lock, Eye, EyeOff, Smartphone, Settings as SettingsIcon, Wrench, FileText } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { profileService, UserProfile } from '@/lib/auth/profile-service'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface SettingsModalProps {
@@ -94,7 +96,7 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
         setIsXConnected(data.isXConnected || false)
       }
     } catch (error) {
-      console.error('Failed to load profile:', error)
+      logger.error('Failed to load profile:', error)
       toast.error('Failed to load profile')
     } finally {
       setLoading(false)
@@ -128,7 +130,7 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
         toast.error('Failed to update profile')
       }
     } catch (error) {
-      console.error('Failed to update profile:', error)
+      logger.error('Failed to update profile:', error)
       toast.error('An error occurred while updating profile')
     } finally {
       setSaving(false)
@@ -161,7 +163,7 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
         toast.error(result.error || 'Failed to update password')
       }
     } catch (error) {
-      console.error('Failed to update password:', error)
+      logger.error('Failed to update password:', error)
       toast.error('An error occurred while updating password')
     } finally {
       setSaving(false)

@@ -4,6 +4,7 @@ import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSe
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -13,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePreload } from '@/hooks/use-preload'
 import { AIClientService } from '@/lib/ai/client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface AITool {
@@ -232,7 +234,7 @@ export default function AIToolsPage() {
         setHasOpenAIKey(keysStatus.hasOpenAIKey)
         setHasGeminiKey(keysStatus.hasGeminiKey)
       } catch (error) {
-        console.error('Failed to check API keys:', error)
+        logger.error('Failed to check API keys:', error)
       } finally {
         setKeysLoaded(true)
       }

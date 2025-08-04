@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { 
   uploadPolicyDocument,
@@ -8,6 +9,7 @@ import {
   getDocumentDownloadUrl,
   createDocumentRecord,
 } from '@/actions/documents'
+import { logger } from "@/lib/logger/production-logger"
 
 // Query keys factory
 export const documentKeys = {
@@ -60,7 +62,7 @@ export function useUploadDocument() {
     },
     onError: (error: Error) => {
       toast.error('Failed to upload document')
-      console.error('Document upload error:', error)
+      logger.error('Document upload error:', error)
     },
   })
 }
@@ -81,7 +83,7 @@ export function useCreateDocumentRecord() {
     },
     onError: (error: Error) => {
       toast.error('Failed to create document record')
-      console.error('Document record creation error:', error)
+      logger.error('Document record creation error:', error)
     },
   })
 }
@@ -106,7 +108,7 @@ export function useDeleteDocument() {
     },
     onError: (error: Error) => {
       toast.error('Failed to delete document')
-      console.error('Document deletion error:', error)
+      logger.error('Document deletion error:', error)
     },
   })
 }

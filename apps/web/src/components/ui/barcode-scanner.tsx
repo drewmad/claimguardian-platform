@@ -4,9 +4,11 @@ import { BrowserMultiFormatReader } from '@zxing/library'
 import { X, Scan } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from './button'
 import { Card } from './card'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface BarcodeScannerProps {
@@ -54,7 +56,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         )
       }
     } catch (error) {
-      console.error('Failed to start scanner:', error)
+      logger.error('Failed to start scanner:', error)
       toast.error('Failed to access camera')
       setIsScanning(false)
     }

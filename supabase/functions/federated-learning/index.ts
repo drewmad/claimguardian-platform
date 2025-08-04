@@ -369,12 +369,12 @@ async function getNextRoundNumber(supabase: any, modelFamily: string): Promise<n
 
 async function notifyNodesForRound(nodes: any[], roundId: string) {
   // In production, this would send push notifications or webhooks
-  console.log(`Notifying ${nodes.length} nodes for round ${roundId}`)
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Notifying ${nodes.length} nodes for round ${roundId}` }))
 }
 
 async function triggerAggregation(supabase: any, roundId: string) {
   // Schedule aggregation job
-  console.log(`Triggering aggregation for round ${roundId}`)
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Triggering aggregation for round ${roundId}` }))
   
   // In production, this would trigger a background job
   // For now, we'll set a flag

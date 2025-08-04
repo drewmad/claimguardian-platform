@@ -184,7 +184,7 @@ serve(async (req) => {
         })
       }
     } catch (emailError) {
-      console.error('Failed to send enrichment email:', emailError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to send enrichment email:', emailError }))
       // Don't fail the enrichment if email fails
     }
 
@@ -199,7 +199,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Enrichment error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Enrichment error:', error }))
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

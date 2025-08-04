@@ -5,6 +5,7 @@ import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check } from 'luci
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { logger } from "@/lib/logger/production-logger"
 
 type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer'
 
@@ -151,9 +153,9 @@ export function MultiStepSignupForm() {
   }
   
   const handleSubmit = async () => {
-    console.log('🔵 handleSubmit called - starting signup process')
-    console.log('📱 User agent:', navigator.userAgent)
-    console.log('📋 Form data:', formData)
+    logger.info('🔵 handleSubmit called - starting signup process')
+    logger.info('📱 User agent:', navigator.userAgent)
+    logger.info('📋 Form data:', formData)
     console.log('🔍 Step validation check:', {
       currentStep,
       isValid: isStepValid(currentStep),
@@ -166,18 +168,18 @@ export function MultiStepSignupForm() {
     
     // Double-check all validations before proceeding
     if (!isStepValid(currentStep)) {
-      console.log('⚠️ Step validation failed, aborting submission')
+      logger.info('⚠️ Step validation failed, aborting submission')
       setError('Please complete all required fields before continuing.')
       return
     }
     
     setIsLoading(true)
     setError(null)
-    console.log('🔄 Loading state set to true, error cleared')
+    logger.info('🔄 Loading state set to true, error cleared')
     
     try {
-      console.log('🔐 Attempting signup with Supabase...')
-      console.log('🔗 Supabase client initialized:', !!supabase)
+      logger.info('🔐 Attempting signup with Supabase...')
+      logger.info('🔗 Supabase client initialized:', !!supabase)
       console.log('📧 Signup payload:', {
         email: formData.email,
         password: formData.password ? '[PROVIDED]' : '[MISSING]',
@@ -203,18 +205,18 @@ export function MultiStepSignupForm() {
         }
       })
       
-      console.log('📨 Supabase signup response:', { signUpData, signUpError })
-      console.log('👤 User data received:', signUpData?.user ? 'YES' : 'NO')
-      console.log('🔑 Session data received:', signUpData?.session ? 'YES' : 'NO')
+      logger.info('📨 Supabase signup response:', { signUpData, signUpError })
+      logger.info('👤 User data received:', signUpData?.user ? 'YES' : 'NO')
+      logger.info('🔑 Session data received:', signUpData?.session ? 'YES' : 'NO')
       
       if (signUpError) throw signUpError
       
       if (signUpData?.user) {
-        console.log('✅ User created successfully:', signUpData.user.id)
+        logger.info('✅ User created successfully:', signUpData.user.id)
         
         // Profile will be automatically created by database trigger
         // Store additional signup data in user metadata for now
-        console.log('User profile will be created automatically by database trigger')
+        logger.info('User profile will be created automatically by database trigger')
         
         // Log consent data for audit trail
         console.log('User consents recorded:', {
@@ -228,18 +230,18 @@ export function MultiStepSignupForm() {
           signup_landing_page: window.location.href
         })
         
-        console.log('🚀 Redirecting to onboarding...')
+        logger.info('🚀 Redirecting to onboarding...')
         // Redirect to property setup
         router.push('/onboarding/property-setup')
       } else {
-        console.log('❌ No user data received from signup')
+        logger.info('❌ No user data received from signup')
         setError('Signup completed but no user data received. Please try signing in.')
       }
     } catch (err) {
-      console.error('❌ Signup error:', err)
+      logger.error('❌ Signup error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred during signup')
     } finally {
-      console.log('🏁 Signup process completed, setting loading to false')
+      logger.info('🏁 Signup process completed, setting loading to false')
       setIsLoading(false)
     }
   }
@@ -664,11 +666,11 @@ export function MultiStepSignupForm() {
                   <Button
                     type="button"
                     onClick={(e) => {
-                      console.log('🖱️ Create Account button clicked!', e)
-                      console.log('📱 Touch or click event:', e.type)
-                      console.log('🎯 Button disabled?', !isStepValid(currentStep) || isLoading)
-                      console.log('✅ Step valid?', isStepValid(currentStep))
-                      console.log('⏳ Loading?', isLoading)
+                      logger.info('🖱️ Create Account button clicked!', e)
+                      logger.info('📱 Touch or click event:', e.type)
+                      logger.info('🎯 Button disabled?', !isStepValid(currentStep) || isLoading)
+                      logger.info('✅ Step valid?', isStepValid(currentStep))
+                      logger.info('⏳ Loading?', isLoading)
                       console.log('📋 Current form data valid:', {
                         aiDisclaimerAccepted: formData.aiDisclaimerAccepted,
                         firstName: !!formData.firstName,
@@ -684,17 +686,17 @@ export function MultiStepSignupForm() {
                       
                       // Prevent double-clicks/taps
                       if (isLoading) {
-                        console.log('🚫 Already loading, preventing duplicate submission')
+                        logger.info('🚫 Already loading, preventing duplicate submission')
                         return
                       }
                       
                       handleSubmit()
                     }}
                     onTouchStart={(e) => {
-                      console.log('👆 Touch start event:', e.type)
+                      logger.info('👆 Touch start event:', e.type)
                     }}
                     onTouchEnd={(e) => {
-                      console.log('👆 Touch end event:', e.type)
+                      logger.info('👆 Touch end event:', e.type)
                     }}
                     disabled={!isStepValid(currentStep) || isLoading}
                     className="bg-blue-600 hover:bg-blue-700 a11y-touch-target w-full"

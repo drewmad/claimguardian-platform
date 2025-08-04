@@ -100,7 +100,7 @@ async function normalizeWithGPT(
     return normalized
     
   } catch (error) {
-    console.error(`Failed to normalize ${dataType} data:`, error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Failed to normalize ${dataType} data:`, error }))
     
     // Fallback to basic normalization
     return basicNormalization(dataType, rawData)

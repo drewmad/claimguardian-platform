@@ -2,11 +2,13 @@
 
 import { Send, Loader2, User, Bot, Sparkles } from 'lucide-react'
 import { useState, useRef, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
+import { logger } from "@/lib/logger/production-logger"
 
 interface Message {
   id: string
@@ -76,7 +78,7 @@ export function AIChatInterface({
 
       setMessages(prev => [...prev, assistantMessage])
     } catch (error) {
-      console.error('Chat error:', error)
+      logger.error('Chat error:', error)
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',

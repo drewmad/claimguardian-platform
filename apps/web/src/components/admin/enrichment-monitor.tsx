@@ -21,11 +21,13 @@ import {
 } from 'lucide-react'
 import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getUserEnrichmentStats, checkEnrichmentHealth } from '@/actions/property-verification'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface EnrichmentStats {
   totalProperties: number
@@ -71,7 +73,7 @@ export function EnrichmentMonitor() {
       }
 
     } catch (error) {
-      console.error('Error fetching enrichment data:', error)
+      logger.error('Error fetching enrichment data:', error)
       toast.error('Failed to load enrichment data')
     } finally {
       setLoading(false)

@@ -6,8 +6,10 @@
  */
 
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: Request) {
   try {
@@ -56,7 +58,7 @@ export async function POST(request: Request) {
       }
     })
   } catch (error) {
-    console.error('Test sign in error:', error)
+    logger.error('Test sign in error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

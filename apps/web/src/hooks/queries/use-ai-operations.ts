@@ -1,7 +1,9 @@
 import { useMutation } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { AIClientService } from '@/lib/ai/client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 const aiClient = new AIClientService()
 
@@ -21,7 +23,7 @@ export function useAIImageAnalysis() {
     },
     onError: (error) => {
       toast.error('Failed to analyze image')
-      console.error('AI image analysis error:', error)
+      logger.error('AI image analysis error:', error)
     },
   })
 }
@@ -47,7 +49,7 @@ export function useAIChat() {
     },
     onError: (error) => {
       toast.error('Failed to get AI response')
-      console.error('AI chat error:', error)
+      logger.error('AI chat error:', error)
     },
   })
 }
@@ -77,7 +79,7 @@ export function useAIDocumentAnalysis() {
     },
     onError: (error) => {
       toast.error('Failed to analyze document')
-      console.error('AI document analysis error:', error)
+      logger.error('AI document analysis error:', error)
     },
   })
 }
@@ -114,7 +116,7 @@ export function useAIBulkAnalysis<T, R = unknown>() {
     },
     onError: (error) => {
       toast.error('Bulk analysis failed')
-      console.error('AI bulk analysis error:', error)
+      logger.error('AI bulk analysis error:', error)
     },
   })
 }

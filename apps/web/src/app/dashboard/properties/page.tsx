@@ -22,11 +22,13 @@ import {
 import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { PropertyEnrichmentStatus } from '@/components/property/property-enrichment-status'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface Property {
   id: string
@@ -92,7 +94,7 @@ export default function PropertiesPage() {
         .order('created_at', { ascending: false })
 
       if (error) {
-        console.error('Error fetching properties:', error)
+        logger.error('Error fetching properties:', error)
         toast.error('Failed to load properties')
         return
       }
@@ -105,7 +107,7 @@ export default function PropertiesPage() {
 
       setProperties(transformedData)
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
       toast.error('An error occurred while loading properties')
     } finally {
       setLoading(false)

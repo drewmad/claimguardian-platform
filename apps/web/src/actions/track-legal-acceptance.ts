@@ -13,6 +13,7 @@
 
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 interface LegalAcceptanceData {
   userId: string
@@ -49,7 +50,7 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
     })
 
     if (consentError) {
-      console.warn('Failed to record consent:', consentError)
+      logger.warn('Failed to record consent:', consentError)
       // Don't throw - this shouldn't break signup
     }
 
@@ -82,10 +83,10 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
       const { error: prefError } = await supabase.rpc('update_user_consent_preferences', updateParams)
       
       if (prefError) {
-        console.warn('Failed to update user preferences:', prefError)
+        logger.warn('Failed to update user preferences:', prefError)
       }
     } catch (prefUpdateError) {
-      console.warn('User preferences update failed:', prefUpdateError)
+      logger.warn('User preferences update failed:', prefUpdateError)
     }
 
     logger.info('Legal acceptance tracked', {
@@ -132,7 +133,7 @@ export async function trackSignupConsents(data: {
     })
     
     if (error) {
-      console.warn('Failed to update consent preferences:', error)
+      logger.warn('Failed to update consent preferences:', error)
     }
     
     // Track individual consents for audit trail
@@ -169,7 +170,7 @@ export async function trackSignupConsents(data: {
     await Promise.allSettled(promises)
     return { success: true }
   } catch (error) {
-    console.warn('Some consent tracking failed:', error)
+    logger.warn('Some consent tracking failed:', error)
     return { success: true, warning: 'Partial consent tracking failure' }
   }
 }

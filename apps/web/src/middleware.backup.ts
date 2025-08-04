@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/middleware'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
@@ -34,7 +36,7 @@ export async function middleware(request: NextRequest) {
         }
       })
       
-      console.log('[MIDDLEWARE] Cleared all auth cookies due to refresh token error')
+      logger.info('[MIDDLEWARE] Cleared all auth cookies due to refresh token error')
     }
   }
   
@@ -114,7 +116,7 @@ export async function middleware(request: NextRequest) {
     }
   } catch (error) {
     // Don't block requests if logging fails
-    console.warn('Audit logging failed:', error)
+    logger.warn('Audit logging failed:', error)
   }
   */
 

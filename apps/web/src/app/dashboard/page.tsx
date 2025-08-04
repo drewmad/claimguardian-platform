@@ -14,6 +14,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -25,6 +26,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useSupabase } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 function DashboardContent() {
   const { user } = useAuth()
@@ -46,7 +48,7 @@ function DashboardContent() {
           .single()
 
         if (error && error.code !== 'PGRST116') {
-          console.error('Error checking onboarding:', error)
+          logger.error('Error checking onboarding:', error)
         }
 
         // Show onboarding if not completed or no record exists
@@ -54,7 +56,7 @@ function DashboardContent() {
           setShowOnboarding(true)
         }
       } catch (error) {
-        console.error('Error checking onboarding status:', error)
+        logger.error('Error checking onboarding status:', error)
       } finally {
         setLoading(false)
       }

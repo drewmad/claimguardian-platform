@@ -5,11 +5,13 @@ import { Upload, FileText, Loader2, CheckCircle } from 'lucide-react'
 import React, { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { processPDF } from '@/lib/ai/pdf-processor'
 import { useSupabase } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface PolicyUploadProps {
@@ -175,7 +177,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
       pollExtractionStatus(document.id)
 
     } catch (error) {
-      console.error('Upload error:', error)
+      logger.error('Upload error:', error)
       setUploadStatus({
         stage: 'error',
         progress: 0,

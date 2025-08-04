@@ -16,8 +16,10 @@ import {
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { EvidenceManager } from './evidence-manager'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
@@ -27,6 +29,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface ClaimData {
@@ -246,7 +249,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
       
       toast.success('Draft saved')
     } catch (error) {
-      console.error('Error saving draft:', error)
+      logger.error('Error saving draft:', error)
       toast.error('Failed to save draft')
     } finally {
       setSaving(false)
@@ -295,7 +298,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
             .upload(fileName, photo)
 
           if (uploadError) {
-            console.error('Photo upload error:', uploadError)
+            logger.error('Photo upload error:', uploadError)
           }
         }
       }
@@ -308,7 +311,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
         router.push(`/dashboard/claims/${claim.id}`)
       }
     } catch (error) {
-      console.error('Error submitting claim:', error)
+      logger.error('Error submitting claim:', error)
       toast.error('Failed to submit claim')
     } finally {
       setLoading(false)
@@ -591,7 +594,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
               claimId={`draft-${Date.now()}`} // Temporary ID for draft
               onUpdate={(evidence) => {
                 // Note: This is a simplified conversion - in production you'd handle this better
-                console.log('Evidence updated:', evidence)
+                logger.info('Evidence updated:', evidence)
               }}
             />
           </div>

@@ -19,6 +19,7 @@ import {
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getProperty, updateProperty } from '@/actions/properties'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -29,6 +30,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PropertyImage } from '@/components/ui/property-image'
+import { logger } from "@/lib/logger/production-logger"
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -227,7 +229,7 @@ function PropertyDetailContent() {
           })
         }
       } catch (error) {
-        console.error('Error loading property:', error)
+        logger.error('Error loading property:', error)
         toast.error('Failed to load property details')
         // Use mock data as fallback
         const addressString = '1234 Main Street, Austin, TX 78701'
@@ -275,8 +277,8 @@ function PropertyDetailContent() {
   const handleSave = async () => {
     setSaving(true)
     try {
-      console.log('[PROPERTY SAVE] Starting save for property:', propertyId)
-      console.log('[PROPERTY SAVE] Edit form data:', editForm)
+      logger.info('[PROPERTY SAVE] Starting save for property:', propertyId)
+      logger.info('[PROPERTY SAVE] Edit form data:', editForm)
       
       // Reconstruct address from individual fields
       const fullAddress = formatAddress({
@@ -301,16 +303,16 @@ function PropertyDetailContent() {
         }
       }
       
-      console.log('[PROPERTY SAVE] Sending updates:', updates)
+      logger.info('[PROPERTY SAVE] Sending updates:', updates)
       
       const { data, error } = await updateProperty({ propertyId, updates })
       
       if (error) {
-        console.error('[PROPERTY SAVE] Update failed:', error)
+        logger.error('[PROPERTY SAVE] Update failed:', error)
         throw error
       }
       
-      console.log('[PROPERTY SAVE] Update successful:', data)
+      logger.info('[PROPERTY SAVE] Update successful:', data)
       
       // Update local state with saved data
       setProperty({
@@ -330,7 +332,7 @@ function PropertyDetailContent() {
       setIsEditing(false)
       toast.success('Property details updated successfully')
     } catch (error) {
-      console.error('[PROPERTY SAVE] Error saving property:', error)
+      logger.error('[PROPERTY SAVE] Error saving property:', error)
       const errorMessage = error instanceof Error ? error.message : 'Failed to save property details'
       toast.error(errorMessage)
     } finally {

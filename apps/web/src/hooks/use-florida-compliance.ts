@@ -2,8 +2,10 @@
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { useEffect, useState, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useFloridaDisclosures } from '@/components/compliance/florida-disclosures-context'
+import { logger } from "@/lib/logger/production-logger"
 
 /**
  * Hook to check and handle Florida insurance compliance requirements
@@ -37,7 +39,7 @@ export function useFloridaCompliance() {
       setNeedsDisclosures(!hasAllDisclosures && !hasSeenDisclosures)
       setIsLoading(false)
     } catch (error) {
-      console.error('Error checking compliance status:', error)
+      logger.error('Error checking compliance status:', error)
       setIsLoading(false)
     }
   }, [supabase, hasSeenDisclosures])
@@ -53,7 +55,7 @@ export function useFloridaCompliance() {
     if (!user) return
     
     // Log the context for analytics
-    console.log(`Showing Florida disclosures for context: ${context}`)
+    logger.info(`Showing Florida disclosures for context: ${context}`)
     
     showDisclosures(user.id)
   }

@@ -3,6 +3,8 @@ import type { NextRequest } from 'next/server'
 
 import { botProtection } from '@/lib/security/bot-protection'
 import { createClient } from '@/lib/supabase/middleware'
+import { rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
+import { logger } from "@/lib/logger/production-logger"
 
 // Helper to clear all auth cookies
 function clearAuthCookies(request: NextRequest, response: NextResponse) {
@@ -24,7 +26,7 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
     }
   })
   
-  console.log('[MIDDLEWARE] Cleared all auth cookies')
+  logger.info('[MIDDLEWARE] Cleared all auth cookies')
 }
 
 // Helper to add security headers
@@ -98,6 +100,14 @@ export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
   
+  // Skip middleware for static assets and health checks
+  const skipRateLimit = [
+    '/_next',
+    '/favicon.ico',
+    '/api/health',
+    '/debug'
+  ]
+  
   // Skip middleware for static assets and API routes that don't need auth
   const publicPaths = [
     '/_next',
@@ -128,6 +138,47 @@ export async function middleware(request: NextRequest) {
   
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return response
+  }
+
+  // Apply rate limiting (except for static assets)
+  if (!skipRateLimit.some(path => pathname.startsWith(path))) {
+    const rateLimitConfig = getRateLimitConfigForPath(pathname)
+    const rateLimitResult = await rateLimiter.isRateLimited(request, pathname, rateLimitConfig)
+    
+    if (rateLimitResult.limited) {
+      // Log rate limit violation for security monitoring
+      console.warn('[RATE_LIMIT_EXCEEDED]', {
+        timestamp: new Date().toISOString(),
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown',
+        path: pathname,
+        method: request.method,
+        userAgent: request.headers.get('user-agent'),
+        resetTime: new Date(rateLimitResult.resetTime).toISOString()
+      })
+      
+      return new NextResponse(
+        JSON.stringify({
+          error: 'Rate limit exceeded',
+          message: 'Too many requests. Please try again later.',
+          resetTime: new Date(rateLimitResult.resetTime).toISOString()
+        }),
+        {
+          status: 429,
+          headers: {
+            'Content-Type': 'application/json',
+            'Retry-After': Math.ceil((rateLimitResult.resetTime - Date.now()) / 1000).toString(),
+            'X-RateLimit-Limit': rateLimitConfig.maxRequests.toString(),
+            'X-RateLimit-Remaining': '0',
+            'X-RateLimit-Reset': rateLimitResult.resetTime.toString()
+          }
+        }
+      )
+    }
+    
+    // Add rate limit headers to successful responses
+    response.headers.set('X-RateLimit-Limit', rateLimitConfig.maxRequests.toString())
+    response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
+    response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString())
   }
   
   // Bot protection check
@@ -353,6 +404,57 @@ export async function middleware(request: NextRequest) {
   response.headers.set('X-Request-Id', crypto.randomUUID())
   
   return response
+}
+
+// Helper function to get rate limit configuration based on path
+function getRateLimitConfigForPath(pathname: string) {
+  // Authentication paths - very strict
+  if (pathname.includes('/auth/signin') || 
+      pathname.includes('/auth/callback') ||
+      pathname.includes('/api/auth/signin')) {
+    return RateLimiter.configs.strict
+  }
+
+  // Password reset paths - very strict
+  if (pathname.includes('/auth/reset') || 
+      pathname.includes('/auth/recover') ||
+      pathname.includes('/api/auth/reset')) {
+    return { maxRequests: 3, windowMs: 60 * 60 * 1000 } // 3 per hour
+  }
+
+  // Registration paths - strict
+  if (pathname.includes('/auth/signup') || 
+      pathname.includes('/api/auth/signup')) {
+    return { maxRequests: 5, windowMs: 60 * 60 * 1000 } // 5 per hour
+  }
+
+  // Upload paths - moderate
+  if (pathname.includes('/upload') || 
+      pathname.includes('/api/upload') ||
+      pathname.includes('/api/documents')) {
+    return { maxRequests: 10, windowMs: 60 * 60 * 1000 } // 10 per hour
+  }
+
+  // AI processing paths - moderate
+  if (pathname.includes('/ai-tools') || 
+      pathname.includes('/api/ai') ||
+      pathname.includes('/api/analysis') ||
+      pathname.includes('/api/extraction')) {
+    return { maxRequests: 30, windowMs: 60 * 60 * 1000 } // 30 per hour
+  }
+
+  // API paths - standard
+  if (pathname.startsWith('/api/')) {
+    return RateLimiter.configs.moderate
+  }
+
+  // Admin paths - strict
+  if (pathname.startsWith('/admin')) {
+    return RateLimiter.configs.strict
+  }
+
+  // Default for all other paths - lenient
+  return RateLimiter.configs.lenient
 }
 
 export const config = {

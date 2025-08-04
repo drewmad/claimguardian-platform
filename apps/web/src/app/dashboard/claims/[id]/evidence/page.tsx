@@ -2,10 +2,12 @@
 
 import { ArrowLeft } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
+import { logger } from "@/lib/logger/production-logger"
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { EvidenceManager } from '@/components/claims/evidence-manager'
 import { Button } from '@/components/ui/button'
+import { logger } from "@/lib/logger/production-logger"
 
 export default function ClaimEvidencePage() {
   const params = useParams()
@@ -37,7 +39,7 @@ export default function ClaimEvidencePage() {
           <EvidenceManager 
             claimId={claimId}
             onUpdate={(evidence) => {
-              console.log('Evidence updated:', evidence)
+              logger.info('Evidence updated:', evidence)
             }}
           />
         </div>

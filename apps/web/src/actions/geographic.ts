@@ -11,6 +11,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 interface State {
   id: number
@@ -64,7 +65,7 @@ export async function getStates() {
     
     return { data: data as State[], error: null }
   } catch (error) {
-    console.error('Error fetching states:', error)
+    logger.error('Error fetching states:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -91,7 +92,7 @@ export async function getCounties(stateCode?: string) {
     
     return { data: data as (County & { states: { code: string; name: string } })[], error: null }
   } catch (error) {
-    console.error('Error fetching counties:', error)
+    logger.error('Error fetching counties:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -129,7 +130,7 @@ export async function getCities(countyId?: number, stateCode?: string) {
       error: null 
     }
   } catch (error) {
-    console.error('Error fetching cities:', error)
+    logger.error('Error fetching cities:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -173,7 +174,7 @@ export async function getZipCodes(zipCode?: string, cityId?: number, countyId?: 
       error: null 
     }
   } catch (error) {
-    console.error('Error fetching ZIP codes:', error)
+    logger.error('Error fetching ZIP codes:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -252,7 +253,7 @@ export async function validateAddress({
     
     if (error) {
       // If database fails, return not found
-      console.warn('Database query failed, using local data only:', error)
+      logger.warn('Database query failed, using local data only:', error)
       return {
         data: {
           isValid: false,
@@ -287,7 +288,7 @@ export async function validateAddress({
       error: null 
     }
   } catch (error) {
-    console.error('Error validating address:', error)
+    logger.error('Error validating address:', error)
     return { data: null, error: error as Error }
   }
 }

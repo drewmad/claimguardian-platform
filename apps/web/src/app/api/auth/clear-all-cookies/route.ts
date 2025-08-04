@@ -7,6 +7,7 @@
 
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -39,7 +40,7 @@ export async function GET() {
       ).map(c => c.name)
     })
   } catch (error) {
-    console.error('Clear cookies error:', error)
+    logger.error('Clear cookies error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

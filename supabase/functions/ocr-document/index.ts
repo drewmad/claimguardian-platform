@@ -242,7 +242,7 @@ async function performOCR(fileUrl: string, documentType: string, extractStructur
             structuredData = JSON.parse(jsonObjMatch[0])
           }
         } catch (e) {
-          console.error('Failed to parse structured data:', e)
+          console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to parse structured data:', e }))
         }
       }
 
@@ -377,7 +377,7 @@ Deno.serve(async (req: Request) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     } catch (ocrError) {
-      console.error('OCR processing error:', ocrError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'OCR processing error:', ocrError }))
 
       // Log failed attempt
       await supabase
@@ -399,7 +399,7 @@ Deno.serve(async (req: Request) => {
       )
     }
   } catch (error) {
-    console.error('Edge function error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Edge function error:', error }))
     
     return new Response(
       JSON.stringify({

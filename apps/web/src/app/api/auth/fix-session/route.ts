@@ -7,8 +7,10 @@
 
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -39,7 +41,7 @@ export async function GET() {
     // Redirect to sign in page with success message
     return NextResponse.redirect(new URL('/auth/signin?message=Session cleared. Please sign in again.', process.env.NEXT_PUBLIC_APP_URL || 'https://claimguardianai.com'))
   } catch (error) {
-    console.error('Fix session error:', error)
+    logger.error('Fix session error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error'

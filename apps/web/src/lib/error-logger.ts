@@ -11,6 +11,7 @@
 
 import { createClient } from '@supabase/supabase-js'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 interface ErrorContext {
   feature: string
@@ -49,8 +50,8 @@ export class AIErrorLogger {
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
     } catch (_error) {
-      console.warn('Error logger: Supabase client not initialized')
-      console.log(_error)
+      logger.warn('Error logger: Supabase client not initialized')
+      logger.info(_error)
       this.isEnabled = false
     }
   }
@@ -90,7 +91,7 @@ export class AIErrorLogger {
       try {
         await this.supabase.from('error_logs').insert([logEntry])
       } catch (dbError) {
-        console.error('Failed to log error to database:', dbError)
+        logger.error('Failed to log error to database:', dbError)
       }
     }
 
@@ -159,7 +160,7 @@ export class AIErrorLogger {
         timestamp: new Date()
       }])
     } catch (dbError) {
-      console.error('Failed to log user action:', dbError)
+      logger.error('Failed to log user action:', dbError)
     }
   }
 
@@ -236,12 +237,12 @@ export class AIErrorLogger {
         timestamp: new Date()
       }])
     } catch (dbError) {
-      console.error('Failed to log performance:', dbError)
+      logger.error('Failed to log performance:', dbError)
     }
 
     // Warn if action is taking too long
     if (duration > 30000) { // 30 seconds
-      console.warn(`Slow performance detected: ${feature} ${action} took ${duration}ms`)
+      logger.warn(`Slow performance detected: ${feature} ${action} took ${duration}ms`)
     }
   }
 }

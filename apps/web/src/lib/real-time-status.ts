@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 export interface StatusUpdate {
   id: string
@@ -45,7 +46,7 @@ class RealTimeStatusManager {
         this.isConnected = true
         this.reconnectAttempts = 0
         if (process.env.NODE_ENV === 'development') {
-          console.debug('Real-time status connected')
+          logger.debug('Real-time status connected')
         }
         
         // Subscribe to AI service updates
@@ -73,7 +74,7 @@ class RealTimeStatusManager {
             this.systemStatusCallbacks.forEach(cb => cb(status))
           }
         } catch (error) {
-          console.error('Error parsing WebSocket message:', error)
+          logger.error('Error parsing WebSocket message:', error)
         }
       }
 
@@ -83,11 +84,11 @@ class RealTimeStatusManager {
       }
 
       this.ws.onerror = (error) => {
-        console.error('WebSocket error:', error)
+        logger.error('WebSocket error:', error)
         this.isConnected = false
       }
     } catch (error) {
-      console.error('Failed to connect to WebSocket:', error)
+      logger.error('Failed to connect to WebSocket:', error)
       this.reconnect()
     }
   }
@@ -96,14 +97,14 @@ class RealTimeStatusManager {
     if (this.reconnectAttempts < this.maxReconnectAttempts) {
       this.reconnectAttempts++
       if (process.env.NODE_ENV === 'development') {
-        console.debug(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
+        logger.debug(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
       }
       
       setTimeout(() => {
         this.connect()
       }, this.reconnectDelay * this.reconnectAttempts)
     } else {
-      console.error('Max reconnection attempts reached')
+      logger.error('Max reconnection attempts reached')
       toast.error('Lost connection to real-time updates')
     }
   }

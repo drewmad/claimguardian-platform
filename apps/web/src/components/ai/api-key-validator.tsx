@@ -2,11 +2,13 @@
 
 import { Shield, AlertTriangle, Key, ExternalLink } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AIClientService } from '@/lib/ai/client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 interface APIKeyValidatorProps {
   onValidation: (hasKeys: boolean) => void
@@ -39,7 +41,7 @@ export function APIKeyValidator({
         
         onValidation(hasRequiredKeys)
       } catch (error) {
-        console.error('Failed to check API keys:', error)
+        logger.error('Failed to check API keys:', error)
         onValidation(false)
       } finally {
         setLoading(false)

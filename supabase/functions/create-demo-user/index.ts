@@ -27,7 +27,7 @@ serve(async (req: Request) => {
     })
 
     if (userError) {
-      console.error('User creation error:', userError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'User creation error:', userError }))
       return new Response(JSON.stringify({ 
         error: userError.message,
         details: userError 
@@ -47,7 +47,7 @@ serve(async (req: Request) => {
       })
 
     if (profileError) {
-      console.error('Profile creation error:', profileError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Profile creation error:', profileError }))
     }
 
     // Create user_profiles entry
@@ -61,7 +61,7 @@ serve(async (req: Request) => {
       })
 
     if (userProfileError) {
-      console.error('User profile creation error:', userProfileError)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'User profile creation error:', userProfileError }))
     }
 
     return new Response(JSON.stringify({
@@ -75,7 +75,7 @@ serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.error('Error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error:', error }))
     return new Response(JSON.stringify({ 
       error: error.message 
     }), {

@@ -3,12 +3,14 @@
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { FileText, Bug, TestTube, Settings, User, Key, Database, Shield, AlertCircle, CheckCircle, Clock, Info, Loader2, RefreshCw, Trash2, MapPin, Globe, Play, ExternalLink, Copy, Monitor, Zap, Network } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { logger } from "@/lib/logger/production-logger"
 
 interface DebugInfo {
   timestamp: string
@@ -88,7 +90,7 @@ export default function DebugIndexPage() {
       await navigator.clipboard.writeText(text)
       // Could add a toast notification here
     } catch (err) {
-      console.error('Failed to copy:', err)
+      logger.error('Failed to copy:', err)
     }
   }
   
@@ -272,7 +274,7 @@ export default function DebugIndexPage() {
 
       setDebugInfo(info)
     } catch (error) {
-      console.error('Failed to collect debug info:', error)
+      logger.error('Failed to collect debug info:', error)
     }
     setLoading(false)
   }, [supabase])

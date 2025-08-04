@@ -12,12 +12,14 @@
 
 import { X, AlertCircle, Mail, Shield, Lock } from 'lucide-react'
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { useRateLimit } from '@/hooks/use-rate-limit'
 import { authService } from '@/lib/auth/auth-service'
 import { logger } from '@/lib/logger'
 import { useModalStore } from '@/stores/modal-store'
+import { logger } from "@/lib/logger/production-logger"
 
 export function LoginModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -70,7 +72,7 @@ export function LoginModal() {
       // Modal will close automatically on successful redirect
     } catch (err) {
       // Error is handled by auth provider and will be shown in UI
-      console.error('Login error:', err)
+      logger.error('Login error:', err)
     } finally {
       setLoading(false)
     }

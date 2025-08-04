@@ -6,8 +6,10 @@
  */
 
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -81,7 +83,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Signup test error:', error)
+    logger.error('Signup test error:', error)
     return NextResponse.json({
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',
@@ -123,7 +125,7 @@ export async function POST() {
       testEmail: testSignupData.email
     })
   } catch (error) {
-    console.error('POST signup test error:', error)
+    logger.error('POST signup test error:', error)
     return NextResponse.json({
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',

@@ -20,7 +20,7 @@ Deno.serve(async (req) => {
   const results = [];
   
   for (const endpoint of endpoints) {
-    console.log(`Testing ${endpoint.name}...`);
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Testing ${endpoint.name}...` }));
     
     try {
       const response = await fetch(endpoint.url, {

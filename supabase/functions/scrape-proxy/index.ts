@@ -75,7 +75,7 @@ Deno.serve(async (req) => {
     });
     
   } catch (error) {
-    console.error('Proxy error:', error);
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Proxy error:', error }));
     return new Response(JSON.stringify({
       error: error.message
     }), {

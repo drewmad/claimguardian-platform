@@ -48,7 +48,7 @@ serve(async (req: Request) => {
       generate_embeddings = false
     } = await req.json() as IngestRequest
 
-    console.log(`Starting parcel ingest for ${data_source}`)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting parcel ingest for ${data_source}` }))
 
     // Validate input
     if (!data_source) {
@@ -105,7 +105,7 @@ serve(async (req: Request) => {
         throw new Error('No data source provided')
       }
 
-      console.log(`Processing ${rawData.length} records`)
+      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Processing ${rawData.length} records` }))
 
       // Update batch with total records
       await supabase
@@ -204,7 +204,7 @@ serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.error('Parcel ingest error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Parcel ingest error:', error }))
     
     return new Response(JSON.stringify({
       success: false,
@@ -223,7 +223,7 @@ serve(async (req: Request) => {
 })
 
 async function downloadAndProcessFile(sourceUrl: string, dataSource: string): Promise<any[]> {
-  console.log(`Downloading file from: ${sourceUrl}`)
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Downloading file from: ${sourceUrl}` }))
   
   const response = await fetch(sourceUrl)
   if (!response.ok) {
@@ -319,7 +319,7 @@ async function processChunk(
           })
           propertyRecord.feature_vector = embeddingResponse.data[0].embedding
         } catch (embeddingError) {
-          console.warn(`Failed to generate embedding for ${propertyRecord.parcel_id}:`, embeddingError)
+          console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: `Failed to generate embedding for ${propertyRecord.parcel_id}:`, embeddingError }))
           // Continue without embedding
         }
       }

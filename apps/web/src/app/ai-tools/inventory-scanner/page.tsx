@@ -19,6 +19,7 @@ import {
 import NextDynamic from 'next/dynamic'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { ImageUploadAnalyzer } from '@/components/ai/image-upload-analyzer'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -30,6 +31,7 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { logger } from "@/lib/logger/production-logger"
 
 const BarcodeScanner = NextDynamic(
   () => import('@/components/ui/barcode-scanner').then(mod => mod.BarcodeScanner),
@@ -39,6 +41,7 @@ const BarcodeScanner = NextDynamic(
 import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface InventoryItem {
@@ -139,7 +142,7 @@ Analyze this image and identify all items visible. For each item, provide detail
           }))
           allItems.push(...itemsWithIds)
         } catch {
-          console.error('Parse error')
+          logger.error('Parse error')
         }
       }
 
@@ -191,7 +194,7 @@ Analyze this image and identify all items visible. For each item, provide detail
 
       toast.success(`Found ${allItems.length} items worth $${totalValue.toLocaleString()}`)
     } catch (error) {
-      console.error('Scan error:', error)
+      logger.error('Scan error:', error)
       toast.error('Failed to scan images')
       throw error
     }

@@ -2,8 +2,10 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function updateUserChecklist({ itemId, completed }: { itemId: string, completed: boolean }) {
   const supabase = await createClient()
@@ -22,7 +24,7 @@ export async function updateUserChecklist({ itemId, completed }: { itemId: strin
     .select()
 
   if (error) {
-    console.error('Error updating checklist progress:', error)
+    logger.error('Error updating checklist progress:', error)
     return { error: 'Failed to save progress' }
   }
 
@@ -46,7 +48,7 @@ export async function getChecklistProgress() {
     .eq('user_id', user.id)
 
   if (error) {
-    console.error('Error fetching checklist progress:', error)
+    logger.error('Error fetching checklist progress:', error)
     return { error: 'Failed to fetch progress' }
   }
 

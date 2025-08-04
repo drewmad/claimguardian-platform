@@ -2,8 +2,10 @@
 'use server'
 
 import { unstable_noStore as noStore } from 'next/cache'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function getDisasterHubData() {
   noStore() // Ensure data is always fresh
@@ -23,7 +25,7 @@ export async function getDisasterHubData() {
     .not('longitude', 'is', null)
 
   if (propertiesError) {
-    console.error('Error fetching properties:', propertiesError)
+    logger.error('Error fetching properties:', propertiesError)
     return { error: 'Failed to fetch properties' }
   }
 
@@ -43,7 +45,7 @@ export async function getDisasterHubData() {
     .order('effective_at', { ascending: false })
 
   if (alertsError) {
-    console.error('Error fetching disaster alerts:', alertsError)
+    logger.error('Error fetching disaster alerts:', alertsError)
     return { error: 'Failed to fetch disaster alerts' }
   }
 

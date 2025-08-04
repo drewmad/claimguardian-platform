@@ -4,8 +4,10 @@
  */
 
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -26,7 +28,7 @@ export async function GET() {
       device_fingerprint: 'test-fingerprint-123'
     }
     
-    console.log('Testing consent flow with:', testEmail)
+    logger.info('Testing consent flow with:', testEmail)
     
     // Step 1: Record signup consent
     const { data: recordResult, error: recordError } = await supabase.rpc('record_signup_consent', {
@@ -65,7 +67,7 @@ export async function GET() {
       }, { status: 400 })
     }
     
-    console.log('Consent recorded successfully:', consentResult.consent_token)
+    logger.info('Consent recorded successfully:', consentResult.consent_token)
     
     // Step 2: Validate the consent token
     const { data: validateResult, error: validateError } = await supabase.rpc('validate_signup_consent', {
@@ -95,7 +97,7 @@ export async function GET() {
       }, { status: 400 })
     }
     
-    console.log('Consent validated successfully')
+    logger.info('Consent validated successfully')
     
     // Step 3: Test link_consent_to_user (with a fake user ID)
     const fakeUserId = '00000000-0000-0000-0000-000000000000'
@@ -105,7 +107,7 @@ export async function GET() {
     })
     
     // This will likely fail due to foreign key constraints, but that's expected
-    console.log('Link consent test result:', { linkResult, linkError })
+    logger.info('Link consent test result:', { linkResult, linkError })
     
     // Step 4: Check if all functions exist
     const { data: functions, error: functionsError } = await supabase.rpc('query', {
@@ -151,7 +153,7 @@ export async function GET() {
     })
     
   } catch (error) {
-    console.error('Test consent flow error:', error)
+    logger.error('Test consent flow error:', error)
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : 'Unknown error',

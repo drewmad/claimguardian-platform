@@ -68,18 +68,18 @@ class Logger {
     switch (level) {
       case LogLevel.DEBUG:
         if (this.isDevelopment) {
-          console.debug(formattedMessage, contextStr)
+          logger.debug(formattedMessage, contextStr)
         }
         break
       case LogLevel.INFO:
-        console.info(formattedMessage, contextStr)
+        logger.info(formattedMessage, contextStr)
         break
       case LogLevel.WARN:
-        console.warn(formattedMessage, contextStr)
+        logger.warn(formattedMessage, contextStr)
         break
       case LogLevel.ERROR:
       case LogLevel.CRITICAL:
-        console.error(formattedMessage, contextStr, error?.stack || '')
+        logger.error(formattedMessage, contextStr, error?.stack || '')
         break
     }
 
@@ -100,7 +100,7 @@ class Logger {
           body: JSON.stringify(entry)
         })
       } catch (err) {
-        console.error('Failed to send log to service:', err)
+        logger.error('Failed to send log to service:', err)
       }
     }
   }

@@ -7,8 +7,10 @@
 
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 async function getAuthCookies() {
   const cookieStore = await cookies()
@@ -53,7 +55,7 @@ export async function GET(request: Request) {
         error: healthError?.message || null
       }
     } catch (clientError) {
-      console.error('Client creation error:', clientError)
+      logger.error('Client creation error:', clientError)
       sessionCheck = {
         hasSession: false,
         error: clientError instanceof Error ? clientError.message : 'Unknown error'
@@ -88,7 +90,7 @@ export async function GET(request: Request) {
       }
     })
   } catch (error) {
-    console.error('Debug endpoint error:', error)
+    logger.error('Debug endpoint error:', error)
     return NextResponse.json({
       status: 'error',
       message: error instanceof Error ? error.message : 'Unknown error',

@@ -14,10 +14,12 @@ import {
   TrendingUp
 } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface ParcelStats {
@@ -73,7 +75,7 @@ export default function ParcelDashboard() {
       setStats(statsData || [])
       setRecentBatches(batchesData || [])
     } catch (error) {
-      console.error('Error fetching parcel data:', error)
+      logger.error('Error fetching parcel data:', error)
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -97,7 +99,7 @@ export default function ParcelDashboard() {
       // Refresh data after triggering ingest
       setTimeout(fetchData, 2000)
     } catch (error) {
-      console.error('Error triggering ingest:', error)
+      logger.error('Error triggering ingest:', error)
     }
   }
 
@@ -119,7 +121,7 @@ export default function ParcelDashboard() {
       
       setTimeout(fetchData, 2000)
     } catch (error) {
-      console.error('Error enriching properties:', error)
+      logger.error('Error enriching properties:', error)
     }
   }
 

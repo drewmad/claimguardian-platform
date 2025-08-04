@@ -1,6 +1,7 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function uploadLegalDocument(formData: FormData) {
   const docType = formData.get('docType')
@@ -41,7 +42,7 @@ export async function recordLegalAcceptances(acceptances: {
 }) {
   // Record legal acceptances in the database
   // This would typically save to a legal_acceptances table
-  console.log('Recording legal acceptances for user:', acceptances.userId, acceptances)
+  logger.info('Recording legal acceptances for user:', acceptances.userId, acceptances)
   
   // In a real implementation, you would save to the database:
   // const { data, error } = await supabase

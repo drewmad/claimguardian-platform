@@ -1,8 +1,10 @@
 import type { Database } from '@claimguardian/db'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 type Property = Database['public']['Tables']['properties']['Row']
 type PropertyInsert = Database['public']['Tables']['properties']['Insert']
@@ -91,7 +93,7 @@ export function useCreateProperty() {
     },
     onError: (error) => {
       toast.error('Failed to create property')
-      console.error('Property creation error:', error)
+      logger.error('Property creation error:', error)
     },
   })
 }
@@ -136,7 +138,7 @@ export function useUpdateProperty() {
     },
     onError: (error) => {
       toast.error('Failed to update property')
-      console.error('Property update error:', error)
+      logger.error('Property update error:', error)
     },
   })
 }
@@ -170,7 +172,7 @@ export function useDeleteProperty() {
     },
     onError: (error) => {
       toast.error('Failed to delete property')
-      console.error('Property deletion error:', error)
+      logger.error('Property deletion error:', error)
     },
   })
 }

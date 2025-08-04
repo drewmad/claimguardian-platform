@@ -3,10 +3,12 @@
 import { Button } from '@claimguardian/ui'
 import { AlertCircle, CheckCircle, Clock, Database, Loader2, RefreshCw } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface FLOIRStats {
@@ -59,7 +61,7 @@ export default function FLOIRDashboard() {
       setStats(statsData || [])
       setRecentRuns(runsData || [])
     } catch (error) {
-      console.error('Error fetching FLOIR data:', error)
+      logger.error('Error fetching FLOIR data:', error)
     } finally {
       setLoading(false)
       setRefreshing(false)
@@ -81,7 +83,7 @@ export default function FLOIRDashboard() {
       // Refresh data after triggering crawl
       setTimeout(fetchData, 2000)
     } catch (error) {
-      console.error('Error triggering crawl:', error)
+      logger.error('Error triggering crawl:', error)
     }
   }
 
@@ -92,7 +94,7 @@ export default function FLOIRDashboard() {
     Object.values(DATA_TYPE_CONFIG).forEach(config => {
       supabase.channel(`floir:${config.key}`)
         .on('broadcast', { event: 'crawl_complete' }, (payload) => {
-          console.log('Crawl completed:', payload)
+          logger.info('Crawl completed:', payload)
           fetchData()
         })
         .subscribe()

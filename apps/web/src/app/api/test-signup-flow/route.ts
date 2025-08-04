@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function POST() {
   try {
@@ -10,7 +12,7 @@ export async function POST() {
     const testEmail = `test-${Date.now()}@claimguardian.test`
     const testPassword = 'TestPassword123!'
     
-    console.log('Testing signup flow with:', testEmail)
+    logger.info('Testing signup flow with:', testEmail)
     
     // Step 1: Check if user already exists
     const { data: existingUser } = await supabase
@@ -54,7 +56,7 @@ export async function POST() {
     }
     
     const consentToken = consentResult[0].consent_token
-    console.log('Consent recorded with token:', consentToken)
+    logger.info('Consent recorded with token:', consentToken)
     
     // Step 3: Validate consent
     const { data: validateResult, error: validateError } = await supabase.rpc('validate_signup_consent', {
@@ -71,7 +73,7 @@ export async function POST() {
       })
     }
     
-    console.log('Consent validated successfully')
+    logger.info('Consent validated successfully')
     
     // Step 4: Create user account
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
@@ -102,7 +104,7 @@ export async function POST() {
       })
     }
     
-    console.log('User created:', signUpData.user.id)
+    logger.info('User created:', signUpData.user.id)
     
     // Step 5: Link consent to user
     const { error: linkError } = await supabase.rpc('link_consent_to_user', {
@@ -112,7 +114,7 @@ export async function POST() {
     })
     
     if (linkError) {
-      console.error('Failed to link consent:', linkError)
+      logger.error('Failed to link consent:', linkError)
       // Don't fail the whole flow if linking fails
     }
     
@@ -147,7 +149,7 @@ export async function POST() {
     })
     
   } catch (error) {
-    console.error('Test signup flow error:', error)
+    logger.error('Test signup flow error:', error)
     return NextResponse.json({
       success: false,
       error: 'Unexpected error during signup flow test',

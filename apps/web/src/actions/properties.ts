@@ -17,9 +17,11 @@ import {
   createPaginationMeta 
 } from '@claimguardian/utils'
 import { revalidatePath } from 'next/cache'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
 import { updatePropertySchema } from '@/lib/validation/schemas'
+import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyData {
   name: string
@@ -55,7 +57,7 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
     
     return { data, error: null }
   } catch (error) {
-    console.error('Error fetching property:', error)
+    logger.error('Error fetching property:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -82,12 +84,12 @@ export async function getProperties(params?: PaginationParams) {
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError) {
-      console.error('Auth error in getProperties:', authError)
+      logger.error('Auth error in getProperties:', authError)
       throw new Error('Authentication failed')
     }
     
     if (!user) {
-      console.error('No user found in getProperties')
+      logger.error('No user found in getProperties')
       throw new Error('Not authenticated')
     }
     
@@ -109,7 +111,7 @@ export async function getProperties(params?: PaginationParams) {
       .range(offset, offset + limit - 1)
     
     if (error) {
-      console.error('Database error in getProperties:', error)
+      logger.error('Database error in getProperties:', error)
       throw error
     }
     
@@ -121,7 +123,7 @@ export async function getProperties(params?: PaginationParams) {
     
     return { data: paginatedResponse, error: null }
   } catch (error) {
-    console.error('Error fetching properties:', error)
+    logger.error('Error fetching properties:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -134,24 +136,24 @@ export async function updateProperty(params: unknown) {
     const supabase = await createClient()
     
     // Debug logging
-    console.log('[UPDATE PROPERTY] Starting update for property:', propertyId)
-    console.log('[UPDATE PROPERTY] Updates:', updates)
+    logger.info('[UPDATE PROPERTY] Starting update for property:', propertyId)
+    logger.info('[UPDATE PROPERTY] Updates:', updates)
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError) {
-      console.error('[UPDATE PROPERTY] Auth error:', authError)
+      logger.error('[UPDATE PROPERTY] Auth error:', authError)
       throw new Error(`Authentication failed: ${authError.message}`)
     }
     if (!user) {
-      console.error('[UPDATE PROPERTY] No user found')
+      logger.error('[UPDATE PROPERTY] No user found')
       throw new Error('Not authenticated')
     }
     
-    console.log('[UPDATE PROPERTY] User authenticated:', user.id)
+    logger.info('[UPDATE PROPERTY] User authenticated:', user.id)
     
     // Handle demo property case - it doesn't exist in database
     if (propertyId === 'demo-property-uuid') {
-      console.log('[UPDATE PROPERTY] Demo property detected - skipping database update')
+      logger.info('[UPDATE PROPERTY] Demo property detected - skipping database update')
       // For demo property, just return success without database operation
       return { 
         data: { 
@@ -172,16 +174,16 @@ export async function updateProperty(params: unknown) {
       .single()
     
     if (checkError) {
-      console.error('[UPDATE PROPERTY] Property check error:', checkError)
+      logger.error('[UPDATE PROPERTY] Property check error:', checkError)
       throw new Error(`Property not found or access denied: ${checkError.message}`)
     }
     
     if (!existingProperty) {
-      console.error('[UPDATE PROPERTY] Property not found for user')
+      logger.error('[UPDATE PROPERTY] Property not found for user')
       throw new Error('Property not found or you do not have permission to update it')
     }
     
-    console.log('[UPDATE PROPERTY] Property found, proceeding with update')
+    logger.info('[UPDATE PROPERTY] Property found, proceeding with update')
     
     // Format the data for the database
     const dbUpdates: Record<string, unknown> = {
@@ -202,7 +204,7 @@ export async function updateProperty(params: unknown) {
       }
     }
     
-    console.log('[UPDATE PROPERTY] Database updates:', dbUpdates)
+    logger.info('[UPDATE PROPERTY] Database updates:', dbUpdates)
     
     const { data, error } = await supabase
       .from('properties')
@@ -213,18 +215,18 @@ export async function updateProperty(params: unknown) {
       .single()
     
     if (error) {
-      console.error('[UPDATE PROPERTY] Database update error:', error)
+      logger.error('[UPDATE PROPERTY] Database update error:', error)
       throw new Error(`Failed to update property: ${error.message}`)
     }
     
-    console.log('[UPDATE PROPERTY] Update successful:', data)
+    logger.info('[UPDATE PROPERTY] Update successful:', data)
     
     revalidatePath('/dashboard/property')
     revalidatePath(`/dashboard/property/${propertyId}`)
     
     return { data, error: null }
   } catch (error) {
-    console.error('[UPDATE PROPERTY] Error updating property:', error)
+    logger.error('[UPDATE PROPERTY] Error updating property:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -256,7 +258,7 @@ export async function createProperty({ propertyData }: { propertyData: PropertyD
     
     return { data, error: null }
   } catch (error) {
-    console.error('Error creating property:', error)
+    logger.error('Error creating property:', error)
     return { data: null, error: error as Error }
   }
 }
@@ -280,7 +282,7 @@ export async function deleteProperty({ propertyId }: { propertyId: string }) {
     
     return { data: { success: true }, error: null }
   } catch (error) {
-    console.error('Error deleting property:', error)
+    logger.error('Error deleting property:', error)
     return { data: null, error: error as Error }
   }
 }

@@ -4,10 +4,12 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { FileText, Shield, Upload, X } from 'lucide-react'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 // import { AIClientService } from '@/lib/ai/client-service' // TODO: Remove if not needed
+import { logger } from "@/lib/logger/production-logger"
 
 interface ChatMessage {
   role: 'user' | 'assistant'
@@ -68,7 +70,7 @@ export function EnhancedPolicyChat({ userId }: EnhancedPolicyChatProps) {
       setUploadedPolicy({ url: publicUrl, name: file.name })
       toast.success('Policy document uploaded successfully')
     } catch (error) {
-      console.error('Upload error:', error)
+      logger.error('Upload error:', error)
       toast.error('Failed to upload policy document')
     } finally {
       setUploading(false)

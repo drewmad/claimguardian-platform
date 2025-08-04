@@ -1,8 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { AIClient } from '@/lib/ai/client'
 import { inputSanitizer } from '@/lib/security/input-sanitizer'
 import { withRateLimit, RateLimiter } from '@/lib/security/rate-limiter'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: NextRequest) {
   return withRateLimit(
@@ -58,7 +60,7 @@ export async function POST(request: NextRequest) {
       } catch (error) {
         // Don't log the error details in production to avoid information leakage
         if (process.env.NODE_ENV === 'development') {
-          console.error('AI Chat API error:', error)
+          logger.error('AI Chat API error:', error)
         }
         
         return NextResponse.json(

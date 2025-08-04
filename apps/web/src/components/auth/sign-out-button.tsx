@@ -9,8 +9,10 @@
 import { Button } from '@claimguardian/ui'
 import { LogOut, Loader2 } from 'lucide-react'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { logger } from "@/lib/logger/production-logger"
 
 interface SignOutButtonProps {
   variant?: 'default' | 'ghost' | 'secondary' | 'link'
@@ -33,7 +35,7 @@ export function SignOutButton({
     try {
       await signOut()
     } catch (error) {
-      console.error('Sign out error:', error)
+      logger.error('Sign out error:', error)
       // Even if sign out fails, try to redirect
       window.location.href = '/'
     } finally {

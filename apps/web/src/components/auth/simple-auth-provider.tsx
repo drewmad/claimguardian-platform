@@ -3,8 +3,10 @@
 import { User } from '@supabase/supabase-js'
 import { useRouter } from 'next/navigation'
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { simpleAuthService } from '@/lib/auth/simple-auth-service'
+import { logger } from "@/lib/logger/production-logger"
 
 interface AuthContextType {
   user: User | null
@@ -38,7 +40,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
         const { data } = await simpleAuthService.getCurrentUser()
         setUser(data || null)
       } catch (err) {
-        console.error('Error checking user session:', err)
+        logger.error('Error checking user session:', err)
       } finally {
         setLoading(false)
       }
@@ -86,7 +88,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
       setUser(null)
       router.push('/')
     } catch (err) {
-      console.error('Error signing out:', err)
+      logger.error('Error signing out:', err)
     }
   }
 

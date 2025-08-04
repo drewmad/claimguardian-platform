@@ -12,10 +12,12 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
+import { logger } from "@/lib/logger/production-logger"
 
 interface ReportSection {
   title: string
@@ -107,7 +109,7 @@ export function ReportGenerator({
 
       toast.success('Report generated successfully!')
     } catch (error) {
-      console.error('Report generation error:', error)
+      logger.error('Report generation error:', error)
       toast.error('Failed to generate report')
     } finally {
       setIsGenerating(false)

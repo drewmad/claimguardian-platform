@@ -1,5 +1,6 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { 
   getPolicies, 
@@ -9,6 +10,7 @@ import {
   getActivePolicies 
 } from '@/actions/policies'
 import type { CreatePolicyInput } from '@/types/database-enhancements'
+import { logger } from "@/lib/logger/production-logger"
 
 // Query keys factory
 export const policyKeys = {
@@ -67,7 +69,7 @@ export function useCreatePolicy() {
     },
     onError: (error) => {
       toast.error('An unexpected error occurred')
-      console.error('Policy creation error:', error)
+      logger.error('Policy creation error:', error)
     },
   })
 }
@@ -95,7 +97,7 @@ export function useUpdatePolicy() {
     },
     onError: (error) => {
       toast.error('An unexpected error occurred')
-      console.error('Policy update error:', error)
+      logger.error('Policy update error:', error)
     },
   })
 }

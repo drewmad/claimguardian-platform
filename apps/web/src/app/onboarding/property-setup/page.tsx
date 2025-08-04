@@ -5,6 +5,7 @@ import { Shield, Home, MapPin, Search, Loader2, Check, AlertCircle } from 'lucid
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -12,6 +13,7 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { logger } from "@/lib/logger/production-logger"
 
 // Google Maps types are declared in types/globals.d.ts
 
@@ -176,7 +178,7 @@ export default function PropertySetupPage() {
         router.push('/dashboard')
       }
     } catch (err) {
-      console.error('Error creating property:', err)
+      logger.error('Error creating property:', err)
       setError(err instanceof Error ? err.message : 'Failed to save property')
     } finally {
       setIsLoading(false)

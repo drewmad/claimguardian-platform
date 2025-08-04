@@ -13,6 +13,7 @@
 
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 interface EnrichmentData {
   userId: string
@@ -47,12 +48,12 @@ export async function enrichDeviceData(data: EnrichmentData) {
     })
     
     if (error && error.code !== '23505') { // Ignore duplicate errors
-      console.warn('Device enrichment failed:', error)
+      logger.warn('Device enrichment failed:', error)
     }
     
     return { success: true }
   } catch (error) {
-    console.warn('Device enrichment error:', error)
+    logger.warn('Device enrichment error:', error)
     return { success: false, error }
   }
 }
@@ -83,13 +84,13 @@ export async function enrichLocationData(data: EnrichmentData) {
         .eq('session_id', data.sessionId)
       
       if (error) {
-        console.warn('Location enrichment failed:', error)
+        logger.warn('Location enrichment failed:', error)
       }
     }
     
     return { success: true }
   } catch (error) {
-    console.warn('Location enrichment error:', error)
+    logger.warn('Location enrichment error:', error)
     return { success: false, error }
   }
 }
@@ -171,7 +172,7 @@ async function getLocationFromIP(ipAddress: string) {
       timezone: data.timezone
     }
   } catch (error) {
-    console.warn('IP geolocation failed:', error)
+    logger.warn('IP geolocation failed:', error)
     return null
   }
 }

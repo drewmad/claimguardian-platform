@@ -14,11 +14,13 @@ import {
   Filter
 } from 'lucide-react'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface PropertyMetadata {
@@ -150,7 +152,7 @@ export default function UnifiedFloridaSearch() {
 
       setResults(response)
     } catch (err: unknown) {
-      console.error('Unified search error:', err)
+      logger.error('Unified search error:', err)
       setError(err instanceof Error ? err.message : 'Search failed')
     } finally {
       setLoading(false)
@@ -225,7 +227,7 @@ export default function UnifiedFloridaSearch() {
 
       return `Found ${results.length} results for "${searchQuery}": ${floirCount} insurance regulation records and ${propertyCount} property records. The results show relevant Florida insurance data and property information that may help with your inquiry.`
     } catch (error) {
-      console.error('Failed to generate unified answer:', error)
+      logger.error('Failed to generate unified answer:', error)
       return undefined
     }
   }

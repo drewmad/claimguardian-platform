@@ -10,8 +10,10 @@
 import { Button } from '@claimguardian/ui'
 import { Brain, Search, Lightbulb, AlertCircle, ChevronRight } from 'lucide-react'
 import React, { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { learningAssistant } from '@/lib/learning/learning-assistant'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface LearningResult {
@@ -43,7 +45,7 @@ export function LearningWidget() {
       const searchResults = await learningAssistant.searchLearnings({ query })
       setResults(searchResults)
     } catch (error) {
-      console.error('Failed to search learnings:', error)
+      logger.error('Failed to search learnings:', error)
     } finally {
       setLoading(false)
     }
@@ -54,7 +56,7 @@ export function LearningWidget() {
       const weeklyStats = await learningAssistant.getStats('week')
       setStats(weeklyStats)
     } catch (error) {
-      console.error('Failed to load stats:', error)
+      logger.error('Failed to load stats:', error)
     }
   }
 

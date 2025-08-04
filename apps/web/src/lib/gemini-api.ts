@@ -9,6 +9,7 @@
  * @status active
  */
 import * as Sentry from '@sentry/nextjs';
+import { logger } from "@/lib/logger/production-logger"
 
 type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
 const callGeminiAPI = async (
@@ -57,7 +58,7 @@ const callGeminiAPI = async (
 
         if (!response.ok) {
             const errorBody = await response.text();
-            console.error("API Error Response:", errorBody);
+            logger.error("API Error Response:", errorBody);
             
             // If API key error, show helpful message
             if (response.status === 400 && errorBody.includes("API_KEY_INVALID")) {
@@ -75,14 +76,14 @@ const callGeminiAPI = async (
             const responseText = result.candidates[0].content.parts[0].text;
             return jsonSchema ? JSON.parse(responseText) : responseText;
         } else {
-            console.error("Unexpected API response structure:", result);
+            logger.error("Unexpected API response structure:", result);
             if (result.promptFeedback && result.promptFeedback.blockReason) {
               return `My apologies, but I cannot fulfill that request. Reason: ${result.promptFeedback.blockReason}`;
             }
             return "Sorry, I couldn't get a response. Please try again.";
         }
     } catch (error) {
-        console.error("Error calling Gemini API:", error);
+        logger.error("Error calling Gemini API:", error);
         Sentry.captureException(error); // Capture exception with Sentry
         return jsonSchema ? {} : "I'm currently in demo mode. AI features are limited but you can still explore the interface!";
     }

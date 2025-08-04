@@ -11,11 +11,13 @@
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
+import { logger } from "@/lib/logger/production-logger"
 
 import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
 import { logger } from '@/lib/logger'
 import { getAuthCallbackURL } from '@/lib/utils/site-url'
+import { logger } from "@/lib/logger/production-logger"
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {
@@ -79,9 +81,9 @@ class AuthService {
   constructor() {
     try {
       this.supabase = createBrowserSupabaseClient()
-      console.log('[AUTH SERVICE] Supabase client created successfully')
+      logger.info('[AUTH SERVICE] Supabase client created successfully')
     } catch (error) {
-      console.error('[AUTH SERVICE] Failed to create Supabase client:', error)
+      logger.error('[AUTH SERVICE] Failed to create Supabase client:', error)
       throw error
     }
   }
@@ -91,7 +93,7 @@ class AuthService {
    */
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
     try {
-      console.log('[AUTH DEBUG] Basic signup - no validation')
+      logger.info('[AUTH DEBUG] Basic signup - no validation')
       
       // ULTRA SIMPLE: Just create the user account with minimal data
       const { data: authData, error } = await this.supabase.auth.signUp({
@@ -130,19 +132,19 @@ class AuthService {
         
         // Check if this is a network/server error
         if (error.status === 500 || error.status === 503) {
-          console.error('[AUTH DEBUG] Server error detected. Possible causes:')
-          console.error('1. Supabase service is down')
-          console.error('2. Network connectivity issues')
-          console.error('3. Invalid Supabase URL or API key')
-          console.error('4. Database migrations not applied')
-          console.error('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+          logger.error('[AUTH DEBUG] Server error detected. Possible causes:')
+          logger.error('1. Supabase service is down')
+          logger.error('2. Network connectivity issues')
+          logger.error('3. Invalid Supabase URL or API key')
+          logger.error('4. Database migrations not applied')
+          logger.error('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
         }
         
         throw this.handleAuthError(error)
       }
 
       if (!authData.user) {
-        console.error('[AUTH DEBUG] No user data returned despite successful signup')
+        logger.error('[AUTH DEBUG] No user data returned despite successful signup')
         throw new AuthError(
           'Signup successful but no user data returned',
           'AUTH_INVALID_RESPONSE'
@@ -256,7 +258,7 @@ class AuthService {
           true
         )
       } catch (trackingError) {
-        console.warn('Failed to track login activity:', trackingError)
+        logger.warn('Failed to track login activity:', trackingError)
       }
       
       return { data: authData.user }
@@ -271,7 +273,7 @@ class AuthService {
           error instanceof Error ? error.message : 'Unknown error'
         )
       } catch (trackingError) {
-        console.warn('Failed to track failed login:', trackingError)
+        logger.warn('Failed to track failed login:', trackingError)
       }
       
       if (error instanceof AuthError) {
@@ -516,14 +518,14 @@ class AuthService {
     logger.error('Supabase auth error', errorDetails)
 
     // Always log auth errors for debugging
-    console.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
+    logger.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
     
     // Log the raw error object
-    console.error('[ClaimGuardian Auth Error] Raw error:', error)
+    logger.error('[ClaimGuardian Auth Error] Raw error:', error)
     
     // If there's additional error info, log it
     if (error.stack) {
-      console.error('[ClaimGuardian Auth Error] Stack trace:', error.stack)
+      logger.error('[ClaimGuardian Auth Error] Stack trace:', error.stack)
     }
 
     // Map Supabase error codes to our error codes

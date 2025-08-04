@@ -14,6 +14,7 @@
 import { Brain, FileText, CheckCircle, XCircle, Clock, Loader2, Edit3, Save, X } from 'lucide-react'
 import { useState, useEffect, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { processDocumentExtraction, getExtractionResults } from '@/actions/ai-extraction'
 import { Button } from '@/components/ui/button'
@@ -23,6 +24,7 @@ import { Label } from '@/components/ui/label'
 import { insuranceTypes } from '@/data/florida-insurance-carriers'
 import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
 import { cn } from '@/lib/utils'
+import { logger } from "@/lib/logger/production-logger"
 
 
 
@@ -67,7 +69,7 @@ export function DocumentExtractionReview({
         setEditedData(data.extracted_data as ExtractedPolicyData)
       }
     } catch (error) {
-      console.error('Error checking extraction:', error)
+      logger.error('Error checking extraction:', error)
     }
   }, [documentId])
 

@@ -1,4 +1,5 @@
 import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { logger } from "@/lib/logger/production-logger"
 
 export type DocumentType = 'receipt' | 'invoice' | 'estimate' | 'report' | 'letter' | 'general'
 
@@ -135,7 +136,7 @@ class OCRService {
 
       return data as OCRResult
     } catch (error) {
-      console.error('OCR processing error:', error)
+      logger.error('OCR processing error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'OCR processing failed'
@@ -161,7 +162,7 @@ class OCRService {
 
       return data as OCRResult
     } catch (error) {
-      console.error('Receipt OCR error:', error)
+      logger.error('Receipt OCR error:', error)
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Receipt processing failed'
@@ -221,7 +222,7 @@ class OCRService {
       .limit(limit)
 
     if (error) {
-      console.error('Error fetching OCR history:', error)
+      logger.error('Error fetching OCR history:', error)
       return []
     }
 
@@ -268,7 +269,7 @@ class OCRService {
 
       return { used, limit, remaining }
     } catch (error) {
-      console.error('Error getting OCR usage:', error)
+      logger.error('Error getting OCR usage:', error)
       return { used: 0, limit: 0, remaining: 0 }
     }
   }

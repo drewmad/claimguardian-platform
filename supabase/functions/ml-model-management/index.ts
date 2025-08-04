@@ -194,7 +194,7 @@ serve(async (req: Request) => {
 
 async function startDeploymentMonitoring(supabase: any, deploymentId: string) {
   // Set up continuous monitoring
-  console.log(`Starting monitoring for deployment ${deploymentId}`)
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting monitoring for deployment ${deploymentId}` }))
   
   // This would typically integrate with monitoring services
   // For now, we'll schedule periodic checks
@@ -265,9 +265,9 @@ function calculateHealthScore(metrics: any) {
 }
 
 async function sendDriftAlert(supabase: any, modelVersionId: string, driftResult: any) {
-  console.log(`ALERT: Model drift detected for ${modelVersionId}`)
-  console.log(`Severity: ${driftResult.severity}`)
-  console.log(`Recommendation: ${driftResult.recommendation}`)
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `ALERT: Model drift detected for ${modelVersionId}` }))
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Severity: ${driftResult.severity}` }))
+  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Recommendation: ${driftResult.recommendation}` }))
   
   // In production, this would send notifications via email/Slack/PagerDuty
 }

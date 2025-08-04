@@ -11,8 +11,10 @@
 
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
 import React, { Component, ReactNode, ErrorInfo } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { logger } from '@/lib/logger'
+import { logger } from "@/lib/logger/production-logger"
 
 interface Props {
   children: ReactNode

@@ -17,6 +17,7 @@ export async function compressImage(
     quality = 0.8,
     format = 'jpeg'
   } = options
+import { logger } from "@/lib/logger/production-logger"
 
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas')
@@ -111,13 +112,13 @@ export function useRequestCache() {
     
     if (cached) {
       if (process.env.NODE_ENV === 'development') {
-        console.debug('Cache hit for:', key)
+        logger.debug('Cache hit for:', key)
       }
       return cached
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.debug('Cache miss for:', key)
+      logger.debug('Cache miss for:', key)
     }
     const result = await requestFn()
     requestCache.set(key, result, ttl)
@@ -180,7 +181,7 @@ export class PerformanceMonitor {
       }
       
       if (process.env.NODE_ENV === 'development') {
-        console.debug(`Performance: ${key}: ${duration.toFixed(2)}ms`)
+        logger.debug(`Performance: ${key}: ${duration.toFixed(2)}ms`)
       }
     }
   }

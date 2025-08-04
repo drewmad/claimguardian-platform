@@ -4,6 +4,7 @@ import { MessageSquare, Copy, RefreshCw, Sparkles, FileText, Phone, Mail, Calend
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -15,6 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface CommunicationTemplate {
@@ -96,7 +98,7 @@ export default function CommunicationHelperPage() {
         setHasOpenAIKey(keysStatus.hasOpenAIKey)
         setHasGeminiKey(keysStatus.hasGeminiKey)
       } catch (error) {
-        console.error('Failed to check API keys:', error)
+        logger.error('Failed to check API keys:', error)
       }
     }
     checkKeys()
@@ -136,7 +138,7 @@ Format as a complete email ready to send.`
       setGeneratedMessage(response)
       toast.success('Message generated successfully!')
     } catch (error) {
-      console.error('Error generating message:', error)
+      logger.error('Error generating message:', error)
       toast.error('Failed to generate message')
     } finally {
       setIsGenerating(false)

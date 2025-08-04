@@ -3,6 +3,7 @@
 import { Camera, Upload, ArrowLeftRight, FileText, AlertTriangle, CheckCircle, Brain, Zap, Shield, ArrowRight, Download, Share } from 'lucide-react'
 import { useState, useRef, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { Badge } from '@/components/ui/badge'
@@ -13,6 +14,7 @@ import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Textarea } from '@/components/ui/textarea'
+import { logger } from "@/lib/logger/production-logger"
 
 interface AnalysisImage {
   id: string
@@ -201,7 +203,7 @@ export function EnhancedDamageAnalyzer({
       onAnalysisComplete?.(mockResult)
       
     } catch (error) {
-      console.error('Analysis error:', error)
+      logger.error('Analysis error:', error)
       toast.error('Analysis failed. Please try again.')
     } finally {
       setIsAnalyzing(false)

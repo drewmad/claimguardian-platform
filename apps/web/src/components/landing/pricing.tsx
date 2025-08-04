@@ -21,10 +21,12 @@ import { Check, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 // import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
+import { logger } from "@/lib/logger/production-logger"
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {
@@ -192,7 +194,7 @@ export function Pricing() {
         // Stripe checkout temporarily disabled
         toast.error('Payment processing is currently being updated. Please try again later.')
       } catch (error) {
-        console.error('Error starting checkout:', error)
+        logger.error('Error starting checkout:', error)
         toast.error('Failed to start checkout process')
       } finally {
         setProcessingPlan(null)

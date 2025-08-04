@@ -32,10 +32,10 @@ export function checkRequiredEnv(): EnvCheckResult {
   // Log warnings in development
   if (process.env.NODE_ENV === 'development') {
     if (missing.length > 0) {
-      console.error('[Environment Check] Missing required variables:', missing)
+      logger.error('[Environment Check] Missing required variables:', missing)
     }
     if (warnings.length > 0) {
-      console.warn('[Environment Check] Missing recommended variables:', warnings)
+      logger.warn('[Environment Check] Missing recommended variables:', warnings)
     }
   }
 

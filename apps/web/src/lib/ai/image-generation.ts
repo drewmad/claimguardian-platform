@@ -75,7 +75,7 @@ export async function generatePropertyImage(options: PropertyImageOptions = {}):
     const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
     
     if (!apiKey) {
-      console.warn('OpenAI API key not found. Cannot generate property images.')
+      logger.warn('OpenAI API key not found. Cannot generate property images.')
       return null
     }
 
@@ -109,7 +109,7 @@ export async function generatePropertyImage(options: PropertyImageOptions = {}):
     
     return null
   } catch (error) {
-    console.error('Error generating property image:', error)
+    logger.error('Error generating property image:', error)
     return null
   }
 }

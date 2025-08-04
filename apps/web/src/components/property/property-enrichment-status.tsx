@@ -23,11 +23,13 @@ import {
 import Image from 'next/image'
 import { useEffect, useState, useCallback } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { enrichPropertyData } from '@/actions/property-enrichment'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyEnrichmentData {
   id: string
@@ -154,12 +156,12 @@ export function PropertyEnrichmentStatus({
         .single()
 
       if (error && error.code !== 'PGRST116') {
-        console.error('Error fetching enrichment data:', error)
+        logger.error('Error fetching enrichment data:', error)
       }
 
       setEnrichmentData(data)
     } catch (error) {
-      console.error('Error:', error)
+      logger.error('Error:', error)
     } finally {
       setLoading(false)
     }

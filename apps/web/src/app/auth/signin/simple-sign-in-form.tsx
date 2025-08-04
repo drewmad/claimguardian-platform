@@ -5,11 +5,13 @@ import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { logger } from "@/lib/logger/production-logger"
 
 interface SimpleSignInFormProps {
   message?: string
@@ -55,7 +57,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
         router.refresh()
       }
     } catch (error) {
-      console.error('Sign in error:', error)
+      logger.error('Sign in error:', error)
       setError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }

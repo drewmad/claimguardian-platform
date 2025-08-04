@@ -19,9 +19,11 @@
 
 import { Brain, RefreshCw, CheckCircle, AlertTriangle, Clock, Zap, Settings, ChevronDown } from 'lucide-react'
 import React, { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { ThreatLevel } from '@/types/situation-room'
+import { logger } from "@/lib/logger/production-logger"
 
 interface AIAssessmentPanelProps {
   propertyId: string
@@ -60,7 +62,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
         speedPriority
       })
     } catch (error) {
-      console.error('Failed to run AI assessment:', error)
+      logger.error('Failed to run AI assessment:', error)
     }
   }
 

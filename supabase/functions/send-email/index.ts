@@ -89,7 +89,7 @@ serve(async (req) => {
     )
 
   } catch (error) {
-    console.error('Email sending error:', error)
+    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Email sending error:', error }))
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

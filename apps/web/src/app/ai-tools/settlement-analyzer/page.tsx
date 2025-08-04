@@ -4,6 +4,7 @@ import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarC
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -17,6 +18,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface SettlementAnalysis {
@@ -55,7 +57,7 @@ export default function SettlementAnalyzerPage() {
         setHasOpenAIKey(keysStatus.hasOpenAIKey)
         setHasGeminiKey(keysStatus.hasGeminiKey)
       } catch (error) {
-        console.error('Failed to check API keys:', error)
+        logger.error('Failed to check API keys:', error)
       }
     }
     checkKeys()
@@ -126,7 +128,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
 
       toast.success('Settlement analysis complete!')
     } catch (error) {
-      console.error('Error analyzing settlement:', error)
+      logger.error('Error analyzing settlement:', error)
       toast.error('Failed to analyze settlement')
     } finally {
       setIsAnalyzing(false)

@@ -1,0 +1,54 @@
+// apps/web/src/actions/checklist.ts
+'use server'
+
+import { revalidatePath } from 'next/cache'
+
+import { createClient } from '@/lib/supabase/server'
+
+export async function updateUserChecklist({ itemId, completed }: { itemId: string, completed: boolean }) {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'User not authenticated' }
+  }
+
+  const { data, error } = await supabase
+    .from('user_checklist_progress')
+    .upsert(
+      { user_id: user.id, item_id: itemId, completed },
+      { onConflict: 'user_id, item_id' }
+    )
+    .select()
+
+  if (error) {
+    console.error('Error updating checklist progress:', error)
+    return { error: 'Failed to save progress' }
+  }
+
+  // Revalidate the disaster hub page to show the updated state
+  revalidatePath('/dashboard/disaster')
+
+  return { data }
+}
+
+export async function getChecklistProgress() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    return { error: 'User not authenticated' }
+  }
+
+  const { data, error } = await supabase
+    .from('user_checklist_progress')
+    .select('item_id, completed')
+    .eq('user_id', user.id)
+
+  if (error) {
+    console.error('Error fetching checklist progress:', error)
+    return { error: 'Failed to fetch progress' }
+  }
+
+  return { data }
+}

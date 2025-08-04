@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 // Whitelist of allowed domains for security
 const ALLOWED_DOMAINS = [
@@ -54,7 +55,7 @@ export async function GET(request: NextRequest) {
     })
     
   } catch (error) {
-    console.error('Proxy error:', error)
+    logger.error('Proxy error:', error)
     return NextResponse.json(
       { error: 'Proxy request failed' },
       { status: 500 }

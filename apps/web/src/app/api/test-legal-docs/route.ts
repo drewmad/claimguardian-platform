@@ -1,10 +1,12 @@
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
-    console.log('Testing legal documents access...')
+    logger.info('Testing legal documents access...')
     
     const supabase = await createClient()
     
@@ -17,11 +19,11 @@ export async function GET() {
       .order('type')
     
     if (error) {
-      console.error('Query error:', error)
+      logger.error('Query error:', error)
       return NextResponse.json({ error: error.message, code: error.code }, { status: 500 })
     }
     
-    console.log('Found documents:', data?.length)
+    logger.info('Found documents:', data?.length)
     
     return NextResponse.json({ 
       success: true, 
@@ -29,7 +31,7 @@ export async function GET() {
       documents: data?.map(d => ({ id: d.id, type: d.type, title: d.title }))
     })
   } catch (err) {
-    console.error('Unexpected error:', err)
+    logger.error('Unexpected error:', err)
     return NextResponse.json({ error: 'Unexpected error' }, { status: 500 })
   }
 }

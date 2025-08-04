@@ -19,6 +19,7 @@
 import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
 import { 
@@ -39,6 +40,7 @@ import type {
   EvacuationPlan,
   ThreatMonitoringConfig
 } from '@/types/situation-room'
+import { logger } from "@/lib/logger/production-logger"
 
 interface SituationRoomActions {
   // Data loading actions
@@ -220,7 +222,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           const propertyId = getCurrentPropertyId()
           await get().runAIThreatAssessment(propertyId)
         } catch (error) {
-          console.error('Failed to refresh threat assessment:', error)
+          logger.error('Failed to refresh threat assessment:', error)
         }
       },
       
@@ -232,7 +234,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.unreadFeedCount = response.feeds.filter((f: IntelligenceFeed) => !f.actionRequired).length
           })
         } catch (error) {
-          console.error('Failed to refresh intelligence feeds:', error)
+          logger.error('Failed to refresh intelligence feeds:', error)
         }
       },
       
@@ -245,7 +247,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.totalSystems = response.totalSystems
           })
         } catch (error) {
-          console.error('Failed to refresh property status:', error)
+          logger.error('Failed to refresh property status:', error)
         }
       },
       
@@ -257,7 +259,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.neighborhoodThreatLevel = response.threatLevel
           })
         } catch (error) {
-          console.error('Failed to refresh community intelligence:', error)
+          logger.error('Failed to refresh community intelligence:', error)
         }
       },
       
@@ -341,7 +343,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.error = error instanceof Error ? error.message : 'AI threat assessment failed'
             state.aiAssessmentRunning = false
           })
-          console.error('AI threat assessment failed:', error)
+          logger.error('AI threat assessment failed:', error)
         }
       },
       
@@ -451,7 +453,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
       filterFeeds(filter: any) {
         // Implementation for feed filtering
         // This would typically filter the displayed feeds without modifying state
-        console.log('Filter feeds:', filter)
+        logger.info('Filter feeds:', filter)
       },
       
       // ===== AI RECOMMENDATION ACTIONS =====
@@ -490,7 +492,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             }
           })
         } catch (error) {
-          console.error('Failed to execute recommendation:', error)
+          logger.error('Failed to execute recommendation:', error)
           set(state => {
             state.error = `Failed to execute recommendation: ${error}`
           })
@@ -708,7 +710,7 @@ function getCurrentPropertyId(): string {
 
 async function executeAction(action: ActionItem): Promise<void> {
   // This would execute the specific action
-  console.log('Executing action:', action.title)
+  logger.info('Executing action:', action.title)
   
   // Simulate action execution
   await new Promise(resolve => setTimeout(resolve, 1000))
@@ -716,7 +718,7 @@ async function executeAction(action: ActionItem): Promise<void> {
 
 function triggerEmergencyProtocols(): void {
   // This would trigger emergency protocols
-  console.log('Emergency protocols activated')
+  logger.info('Emergency protocols activated')
 }
 
 // ===== API SIMULATION FUNCTIONS =====

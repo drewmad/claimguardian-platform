@@ -12,8 +12,10 @@
 
 import Image from 'next/image'
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getPropertyImage, getPropertyImageByType, PropertyImageStyle } from '@/lib/ai/image-generation'
+import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyImageProps {
   propertyType?: string
@@ -65,7 +67,7 @@ export function PropertyImage({
           setImageUrl(image)
         }
       } catch (err) {
-        console.error('Error loading property image:', err)
+        logger.error('Error loading property image:', err)
         setError(true)
       } finally {
         setLoading(false)

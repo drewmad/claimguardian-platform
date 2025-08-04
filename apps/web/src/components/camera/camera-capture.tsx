@@ -2,8 +2,10 @@
 
 import { X, Camera, RotateCcw } from 'lucide-react'
 import React, { useRef, useEffect, useState, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
+import { logger } from "@/lib/logger/production-logger"
 
 interface CameraCaptureProps {
   onClose: () => void
@@ -36,7 +38,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
         videoRef.current.srcObject = mediaStream
       }
     } catch (err) {
-      console.error('Error accessing camera:', err)
+      logger.error('Error accessing camera:', err)
       setError('Unable to access camera. Please check permissions.')
     }
   }, [facingMode])

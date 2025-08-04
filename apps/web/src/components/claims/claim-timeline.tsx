@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import { useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -26,6 +27,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { logger } from "@/lib/logger/production-logger"
 
 export interface TimelineEvent {
   id: string
@@ -153,7 +155,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
         })
 
       if (error) {
-        console.error('Error saving timeline event:', error)
+        logger.error('Error saving timeline event:', error)
         // Continue anyway for demo
       }
 
@@ -176,7 +178,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
       
       toast.success('Timeline event added')
     } catch (error) {
-      console.error('Error adding timeline event:', error)
+      logger.error('Error adding timeline event:', error)
       toast.error('Failed to add timeline event')
     }
   }

@@ -3,6 +3,7 @@
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { AlertTriangle, Scale, Users, FileText } from 'lucide-react'
 import { useState } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
@@ -16,6 +17,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
+import { logger } from "@/lib/logger/production-logger"
 
 
 interface FloridaDisclosuresModalProps {
@@ -75,7 +77,7 @@ export function FloridaDisclosuresModal({
       // Success - call parent callback
       onAccept()
     } catch (err) {
-      console.error('Error saving consents:', err)
+      logger.error('Error saving consents:', err)
       setError('Failed to save your acknowledgments. Please try again.')
     } finally {
       setIsLoading(false)

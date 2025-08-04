@@ -11,11 +11,13 @@
 'use client'
 
 import { useEffect, useRef, useState, useCallback } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographic'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { logger } from "@/lib/logger/production-logger"
 
 interface AddressComponents {
   street1: string
@@ -106,7 +108,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
           setCounties(data)
         }
       } catch (error) {
-        console.error('Error loading counties:', error)
+        logger.error('Error loading counties:', error)
       }
     }
     
@@ -216,7 +218,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
           setValidationMessage(`ZIP code ${zipCode} not found in Florida`)
         }
       } catch (error) {
-        console.error('Error validating ZIP:', error)
+        logger.error('Error validating ZIP:', error)
         setValidationMessage('')
       }
     } else {

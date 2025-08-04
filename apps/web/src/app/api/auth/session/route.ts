@@ -6,8 +6,10 @@
  */
 
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 import { getServerSession } from '@/lib/supabase/server-auth'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -37,7 +39,7 @@ export async function GET() {
       }
     })
   } catch (error) {
-    console.error('Session check error:', error)
+    logger.error('Session check error:', error)
     
     return NextResponse.json({
       authenticated: false,

@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { useSupabase } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface PolicyDocument {
   id: string
@@ -71,7 +73,7 @@ export function usePolicyData(propertyId?: string): UsePolicyDataReturn {
 
       setPolicies(data || [])
     } catch (err) {
-      console.error('Error fetching policies:', err)
+      logger.error('Error fetching policies:', err)
       setError(err instanceof Error ? err.message : 'Failed to fetch policies')
     } finally {
       setLoading(false)

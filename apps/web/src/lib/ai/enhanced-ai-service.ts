@@ -1,6 +1,8 @@
 import { AIClientService } from './client-service'
+import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/client'
+import { logger } from "@/lib/logger/production-logger"
 
 interface CacheEntry {
   key: string
@@ -69,7 +71,7 @@ export class EnhancedAIService extends AIClientService {
     // Check exact match first
     const exactMatch = this.semanticCache.get(prompt)
     if (exactMatch && Date.now() - exactMatch.timestamp < exactMatch.ttl) {
-      console.log('Semantic cache hit (exact)')
+      logger.info('Semantic cache hit (exact)')
       return exactMatch.value
     }
 
@@ -77,7 +79,7 @@ export class EnhancedAIService extends AIClientService {
     for (const [, entry] of this.semanticCache.entries()) {
       if (entry.semanticSignature === signature) {
         if (Date.now() - entry.timestamp < entry.ttl) {
-          console.log('Semantic cache hit (similar)')
+          logger.info('Semantic cache hit (similar)')
           return entry.value
         }
       }
@@ -144,7 +146,7 @@ export class EnhancedAIService extends AIClientService {
       
       this.contextMemory.set(userId, context)
     } catch (error) {
-      console.error('Failed to persist context:', error)
+      logger.error('Failed to persist context:', error)
     }
   }
 
@@ -224,7 +226,7 @@ export class EnhancedAIService extends AIClientService {
       accuracy: params.accuracy || 'standard'
     })
 
-    console.log(`Using ${model.provider} ${model.model} for ${params.type} analysis`)
+    logger.info(`Using ${model.provider} ${model.model} for ${params.type} analysis`)
 
     // Execute with selected model
     // TODO: Fix type mismatches with base class methods
@@ -245,7 +247,7 @@ export class EnhancedAIService extends AIClientService {
       setTimeout(async () => {
         for (const nextAction of prediction.predictedNextActions) {
           // Simulate preloading relevant data
-          console.log(`Preloading data for predicted action: ${nextAction}`)
+          logger.info(`Preloading data for predicted action: ${nextAction}`)
         }
       }, 0)
     }

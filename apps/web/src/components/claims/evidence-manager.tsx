@@ -19,6 +19,7 @@ import {
 import Image from 'next/image'
 import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -28,6 +29,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { logger } from "@/lib/logger/production-logger"
 
 interface Evidence {
   id: string
@@ -163,7 +165,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
           .upload(fileName, file)
 
         if (uploadError) {
-          console.error('Upload error:', uploadError)
+          logger.error('Upload error:', uploadError)
           toast.error(`Failed to upload ${file.name}`)
           continue
         }
@@ -198,7 +200,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
         onUpdate([...evidence, ...uploadedEvidence])
       }
     } catch (error) {
-      console.error('Upload error:', error)
+      logger.error('Upload error:', error)
       toast.error('Failed to upload files')
     } finally {
       setUploading(false)

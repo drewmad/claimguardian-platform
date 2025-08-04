@@ -11,8 +11,10 @@ import { Shield, ArrowLeft, Loader2, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
+import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { logger } from "@/lib/logger/production-logger"
 
 interface SignInFormProps {
   message?: string
@@ -43,7 +45,7 @@ export function SignInForm({ message }: SignInFormProps) {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     
-    console.log('[SIGNIN FORM] Submit started', { email, hasPassword: !!password })
+    logger.info('[SIGNIN FORM] Submit started', { email, hasPassword: !!password })
     
     // Clear any existing errors
     setFormError(null)
@@ -58,21 +60,21 @@ export function SignInForm({ message }: SignInFormProps) {
     setIsLoading(true)
     
     try {
-      console.log('[SIGNIN FORM] Calling signIn...')
+      logger.info('[SIGNIN FORM] Calling signIn...')
       const success = await signIn(email, password)
-      console.log('[SIGNIN FORM] SignIn result:', { success })
+      logger.info('[SIGNIN FORM] SignIn result:', { success })
       
       if (success) {
-        console.log('[SIGNIN FORM] Sign in successful, refreshing router...')
+        logger.info('[SIGNIN FORM] Sign in successful, refreshing router...')
         // Successful sign in - router will handle navigation via auth provider
         router.refresh()
       } else {
-        console.log('[SIGNIN FORM] Sign in failed, auth error:', authError)
+        logger.info('[SIGNIN FORM] Sign in failed, auth error:', authError)
         // Error will be set by auth provider
         setIsLoading(false)
       }
     } catch (error) {
-      console.error('[SIGNIN FORM] Unexpected error:', error)
+      logger.error('[SIGNIN FORM] Unexpected error:', error)
       setFormError('An unexpected error occurred. Please try again.')
       setIsLoading(false)
     }

@@ -12,6 +12,7 @@ import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
+import { logger } from "@/lib/logger/production-logger"
 
 import { saveOnboardingProgress, completeOnboarding, trackOnboardingStep } from '@/actions/onboarding'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -20,6 +21,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSupabase } from '@/lib/supabase/client'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { logger } from "@/lib/logger/production-logger"
 
 interface OnboardingStep {
   id: string
@@ -123,7 +125,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
           .single()
 
         if (error && error.code !== 'PGRST116') {
-          console.error('Error fetching preferences:', error)
+          logger.error('Error fetching preferences:', error)
           return
         }
 
@@ -190,7 +192,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         setCurrentStep(firstIncomplete !== -1 ? firstIncomplete : 0)
         
       } catch (error) {
-        console.error('Error checking onboarding status:', error)
+        logger.error('Error checking onboarding status:', error)
       } finally {
         setLoading(false)
       }
@@ -224,7 +226,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 
   //     setPreferences({ ...preferences, ...updates })
   //   } catch (error) {
-  //     console.error('Error updating preferences:', error)
+  //     logger.error('Error updating preferences:', error)
   //     toast.error('Failed to save preferences')
   //   }
   // }
@@ -250,7 +252,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         stepId
       )
     } catch (error) {
-      console.error('Failed to save onboarding progress:', error)
+      logger.error('Failed to save onboarding progress:', error)
       // Continue anyway - don't block user flow
     }
 
@@ -284,7 +286,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         }, 1500) // Give time for success message
       }
     } catch (error) {
-      console.error('Failed to complete onboarding:', error)
+      logger.error('Failed to complete onboarding:', error)
       toast.error('Failed to save setup. Please try again.')
     }
   }
@@ -304,7 +306,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         })
       
       if (error) {
-        console.error('Failed to skip onboarding:', error)
+        logger.error('Failed to skip onboarding:', error)
       }
       
       // Call onComplete callback if provided, otherwise redirect
@@ -314,7 +316,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         router.push('/dashboard')
       }
     } catch (error) {
-      console.error('Failed to skip onboarding:', error)
+      logger.error('Failed to skip onboarding:', error)
       // Still handle completion even if save fails
       if (onComplete) {
         onComplete()
@@ -577,11 +579,11 @@ function UserProfileStep({
             propertyPlaceId: (place as { place_id?: string }).place_id
           })
           
-          console.log('Address coordinates:', { lat, lng, placeId: (place as { place_id?: string }).place_id })
+          logger.info('Address coordinates:', { lat, lng, placeId: (place as { place_id?: string }).place_id })
         }
       })
     } catch (error) {
-      console.warn('Google Places API not available:', error)
+      logger.warn('Google Places API not available:', error)
     }
 
     return () => {

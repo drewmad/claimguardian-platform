@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { logger } from "@/lib/logger/production-logger"
 
 export async function GET() {
   try {
@@ -11,7 +12,7 @@ export async function GET() {
       hasAnyKey: hasOpenAIKey || hasGeminiKey
     })
   } catch (error) {
-    console.error('API Keys check error:', error)
+    logger.error('API Keys check error:', error)
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

@@ -20,6 +20,7 @@
 import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 import OpenAI from 'openai'
+import { logger } from "@/lib/logger/production-logger"
 
 import { 
   ThreatAssessment, 
@@ -33,6 +34,7 @@ import {
   ImpactLevel,
   ActionPriority
 } from '@/types/situation-room'
+import { logger } from "@/lib/logger/production-logger"
 
 interface WeatherData {
   location: string
@@ -166,9 +168,9 @@ export class ThreatAssessmentEngine {
     
     if (this.isInitialized) {
       const availableProviders = this.getAvailableProviders()
-      console.log('Threat Assessment Engine initialized with providers:', availableProviders)
+      logger.info('Threat Assessment Engine initialized with providers:', availableProviders)
     } else {
-      console.warn('No AI providers available. Threat assessment will use simulated data.')
+      logger.warn('No AI providers available. Threat assessment will use simulated data.')
     }
   }
 
@@ -191,7 +193,7 @@ export class ThreatAssessmentEngine {
       const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
       
       if (!apiKey) {
-        console.warn('OpenAI API key not found')
+        logger.warn('OpenAI API key not found')
         return
       }
 
@@ -209,9 +211,9 @@ export class ThreatAssessmentEngine {
         client
       }
       
-      console.log('OpenAI provider initialized successfully')
+      logger.info('OpenAI provider initialized successfully')
     } catch (error) {
-      console.warn('Failed to initialize OpenAI provider:', error)
+      logger.warn('Failed to initialize OpenAI provider:', error)
     }
   }
 
@@ -220,7 +222,7 @@ export class ThreatAssessmentEngine {
       const apiKey = process.env.NEXT_PUBLIC_XAI_API_KEY || process.env.XAI_API_KEY
       
       if (!apiKey) {
-        console.warn('X.AI API key not found')
+        logger.warn('X.AI API key not found')
         return
       }
 
@@ -240,9 +242,9 @@ export class ThreatAssessmentEngine {
         client
       }
       
-      console.log('Grok (X.AI) provider initialized successfully')
+      logger.info('Grok (X.AI) provider initialized successfully')
     } catch (error) {
-      console.warn('Failed to initialize Grok provider:', error)
+      logger.warn('Failed to initialize Grok provider:', error)
     }
   }
 
@@ -251,7 +253,7 @@ export class ThreatAssessmentEngine {
       const apiKey = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY
       
       if (!apiKey) {
-        console.warn('Anthropic API key not found')
+        logger.warn('Anthropic API key not found')
         return
       }
 
@@ -269,9 +271,9 @@ export class ThreatAssessmentEngine {
         client
       }
       
-      console.log('Claude (Anthropic) provider initialized successfully')
+      logger.info('Claude (Anthropic) provider initialized successfully')
     } catch (error) {
-      console.warn('Failed to initialize Claude provider:', error)
+      logger.warn('Failed to initialize Claude provider:', error)
     }
   }
 
@@ -280,7 +282,7 @@ export class ThreatAssessmentEngine {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY
       
       if (!apiKey) {
-        console.warn('Gemini API key not found')
+        logger.warn('Gemini API key not found')
         return
       }
 
@@ -311,9 +313,9 @@ export class ThreatAssessmentEngine {
         client: { genAI, model }
       }
       
-      console.log('Gemini provider initialized successfully')
+      logger.info('Gemini provider initialized successfully')
     } catch (error) {
-      console.warn('Failed to initialize Gemini provider:', error)
+      logger.warn('Failed to initialize Gemini provider:', error)
     }
   }
 
@@ -534,7 +536,7 @@ export class ThreatAssessmentEngine {
       
       return assessment
     } catch (error) {
-      console.error(`AI threat assessment failed with ${provider}, trying fallback:`, error)
+      logger.error(`AI threat assessment failed with ${provider}, trying fallback:`, error)
       
       // Try alternate provider if available
       const availableProviders = this.getAvailableProviders()
@@ -558,7 +560,7 @@ export class ThreatAssessmentEngine {
           const assessment = this.parseAIResponse(response, request, startTime, alternateProvider)
           return assessment
         } catch (fallbackError) {
-          console.error(`Fallback provider ${alternateProvider} also failed:`, fallbackError)
+          logger.error(`Fallback provider ${alternateProvider} also failed:`, fallbackError)
         }
       }
       
@@ -833,7 +835,7 @@ Respond with valid JSON only, no additional text.
         processingTime: Date.now() - startTime
       }
     } catch (error) {
-      console.error('Failed to parse AI response:', error)
+      logger.error('Failed to parse AI response:', error)
       return this.fallbackAssessment(request, startTime)
     }
   }
@@ -1123,7 +1125,7 @@ Respond with valid JSON only, no additional text.
       const result = await this.assessThreats(testRequest)
       return result.threats.length > 0
     } catch (error) {
-      console.error(`Provider test failed for ${provider}:`, error)
+      logger.error(`Provider test failed for ${provider}:`, error)
       return false
     }
   }
