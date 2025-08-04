@@ -211,7 +211,7 @@ Deno.serve(async (req: Request) => {
 
       // Check confidence threshold
       if (extractedData.confidence && extractedData.confidence < confidenceThreshold) {
-        console.warn('Extraction confidence below threshold', {
+        console.log(JSON.stringify({ level: "warn", timestamp: new Date().toISOString(), message: 'Extraction confidence below threshold', {
           confidence: extractedData.confidence,
           threshold: confidenceThreshold,
           fileName
@@ -228,7 +228,11 @@ Deno.serve(async (req: Request) => {
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     } catch (extractionError) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Extraction failed:', extractionError }))
+      console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Extraction failed:', extractionError
+}));
       
       return new Response(
         JSON.stringify({
@@ -240,7 +244,11 @@ Deno.serve(async (req: Request) => {
       )
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Edge function error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Edge function error:', error
+}));
     
     return new Response(
       JSON.stringify({

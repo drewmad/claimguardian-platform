@@ -83,7 +83,11 @@ async function getPollenData(lat: number, lng: number, days: number = 5): Promis
       return generateMockPollenData(lat, lng, days)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Pollen API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Pollen API error, using mock data:', error
+}));
     return generateMockPollenData(lat, lng, days)
   }
 }
@@ -179,7 +183,11 @@ async function getAirQuality(lat: number, lng: number): Promise<any> {
       return generateMockAirQualityData(lat, lng)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Air Quality API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Air Quality API error, using mock data:', error
+}));
     return generateMockAirQualityData(lat, lng)
   }
 }
@@ -236,7 +244,11 @@ async function getTimezone(lat: number, lng: number): Promise<any> {
       throw new Error(`Timezone API error: ${response.statusText}`)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Timezone API error, using fallback:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Timezone API error, using fallback:', error
+}));
     // Florida fallback
     return {
       dstOffset: 3600, // DST offset in seconds
@@ -260,7 +272,11 @@ async function getElevation(lat: number, lng: number): Promise<any> {
       throw new Error(`Elevation API error: ${response.statusText}`)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Elevation API error, using estimated elevation:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Elevation API error, using estimated elevation:', error
+}));
     // Florida elevation estimation
     const estimatedElevation = lat < 26 ? Math.random() * 10 + 2 : Math.random() * 50 + 10
     return {
@@ -290,7 +306,11 @@ async function getDistanceMatrix(origin: { lat: number, lng: number }, destinati
       throw new Error(`Distance Matrix API error: ${response.statusText}`)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Distance Matrix API error, using estimated distances:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Distance Matrix API error, using estimated distances:', error
+}));
     // Mock distance data
     const elements = destinations.map(dest => ({
       distance: { text: `${Math.floor(Math.random() * 20 + 1)} mi`, value: Math.floor(Math.random() * 32000 + 1600) },
@@ -460,7 +480,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Environmental Intelligence] Processing APIs [${apis.join(', ' }))}] for location: ${location.lat}, ${location.lng}`)
+    console.log(JSON.stringify({
+  level: "info",
+  timestamp: new Date().toISOString(),
+  message: `[Environmental Intelligence] Processing APIs [${apis.join(', '
+}));}] for location: ${location.lat}, ${location.lng}`)
 
     const intelligence: EnvironmentalIntelligence = {}
 
@@ -532,7 +556,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Environmental Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Environmental Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

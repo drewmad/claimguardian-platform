@@ -48,7 +48,11 @@ serve(async (req: Request) => {
       generate_embeddings = false
     } = await req.json() as IngestRequest
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting parcel ingest for ${data_source}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `Starting parcel ingest for ${data_source}`
+    }));
 
     // Validate input
     if (!data_source) {
@@ -105,7 +109,11 @@ serve(async (req: Request) => {
         throw new Error('No data source provided')
       }
 
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Processing ${rawData.length} records` }))
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `Processing ${rawData.length} records`
+      }));
 
       // Update batch with total records
       await supabase
@@ -204,7 +212,11 @@ serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Parcel ingest error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Parcel ingest error:', error
+}));
     
     return new Response(JSON.stringify({
       success: false,
@@ -223,7 +235,11 @@ serve(async (req: Request) => {
 })
 
 async function downloadAndProcessFile(sourceUrl: string, dataSource: string): Promise<any[]> {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Downloading file from: ${sourceUrl}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Downloading file from: ${sourceUrl}`
+  }));
   
   const response = await fetch(sourceUrl)
   if (!response.ok) {
@@ -319,7 +335,11 @@ async function processChunk(
           })
           propertyRecord.feature_vector = embeddingResponse.data[0].embedding
         } catch (embeddingError) {
-          console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: `Failed to generate embedding for ${propertyRecord.parcel_id}:`, embeddingError }))
+          console.log(JSON.stringify({
+            level: "info",
+            timestamp: new Date().toISOString(),
+            message: `Failed to generate embedding for ${propertyRecord.parcel_id}:`, embeddingError
+          }));
           // Continue without embedding
         }
       }

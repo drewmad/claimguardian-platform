@@ -249,3 +249,38 @@ export function serializeError(error: unknown): Record<string, unknown> {
   
   return { error: String(error) }
 }
+
+/**
+ * Convert unknown value to Error object
+ */
+export function toError(error: unknown): Error {
+  if (error instanceof Error) {
+    return error
+  }
+  
+  if (typeof error === 'string') {
+    return new Error(error)
+  }
+  
+  if (typeof error === 'object' && error !== null) {
+    // Handle objects with message property
+    if ('message' in error && typeof (error as any).message === 'string') {
+      const err = new Error((error as any).message)
+      // Copy stack if available
+      if ('stack' in error && typeof (error as any).stack === 'string') {
+        err.stack = (error as any).stack
+      }
+      // Copy name if available
+      if ('name' in error && typeof (error as any).name === 'string') {
+        err.name = (error as any).name
+      }
+      return err
+    }
+    
+    // Fallback: stringify the object
+    return new Error(JSON.stringify(error))
+  }
+  
+  // Fallback for all other types
+  return new Error(String(error))
+}

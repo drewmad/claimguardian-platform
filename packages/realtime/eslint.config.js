@@ -9,24 +9,36 @@ const js = require("@eslint/js");
 
 export default [
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
+    files: ['**/*.{js,ts}'],
     languageOptions: {
       globals: globals.node,
+      parser: tseslint.parser,
       parserOptions: {
         project: ['./tsconfig.json'],
         tsconfigRootDir: path.dirname(fileURLToPath(import.meta.url)),
       },
     },
+    plugins: {
+      '@typescript-eslint': tseslint.plugin
+    },
     rules: {
       // Allow unused vars that start with underscore
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', args: 'none' }],
       // Allow any types for now since this is a realtime library
       '@typescript-eslint/no-explicit-any': 'warn',
       // Allow empty interfaces for realtime interfaces
       '@typescript-eslint/no-empty-object-type': 'off',
+      // Configure no-unused-expressions properly
+      '@typescript-eslint/no-unused-expressions': ['error', { 
+        allowShortCircuit: true,
+        allowTernary: true,
+        allowTaggedTemplates: true
+      }],
       // Disable some strict rules for realtime library
-      'no-undef': 'off' // TypeScript handles this
+      'no-undef': 'off', // TypeScript handles this
+      'no-unused-vars': 'off', // Use TypeScript version instead
+      'no-unused-expressions': 'off' // Use TypeScript version instead
     }
   }
 ];

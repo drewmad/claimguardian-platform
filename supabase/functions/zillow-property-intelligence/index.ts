@@ -126,11 +126,19 @@ async function getZillowData(address: string, lat?: number, lng?: number): Promi
     // 4. Rentals.com API
     // 5. Web scraping (complex, rate-limited)
     
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Zillow Mock] Generating property data for: ${address}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Zillow Mock] Generating property data for: ${address}`
+    }));
     return generateMockZillowData(address, lat, lng)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Zillow API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Zillow API error, using mock data:', error
+}));
     return generateMockZillowData(address, lat, lng)
   }
 }
@@ -386,7 +394,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Property address is required')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Zillow Intelligence] Processing ${analysisType} for address: ${location.address}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Zillow Intelligence] Processing ${analysisType} for address: ${location.address}`
+    }));
 
     // Get property data
     const zillowData = await getZillowData(location.address, location.lat, location.lng)
@@ -467,7 +479,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Zillow Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Zillow Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

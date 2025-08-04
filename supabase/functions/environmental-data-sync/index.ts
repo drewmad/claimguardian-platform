@@ -17,7 +17,11 @@ serve(async (req: Request) => {
 
     const uniqueCounties = [...new Set(counties?.map(c => c.county_fips) || [])]
     
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Starting environmental data sync for ${uniqueCounties.length} counties` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `Starting environmental data sync for ${uniqueCounties.length} counties`
+    }));
 
     const syncResults = {
       counties: uniqueCounties.length,

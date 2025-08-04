@@ -319,5 +319,9 @@ Deno.test("Database - ML Operations Tables Exist", async () => {
 
 // Run tests
 if (import.meta.main) {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: "Running ML Pipeline Integration Tests..." }))
+  console.log(JSON.stringify({
+  level: "info",
+  timestamp: new Date().toISOString(),
+  message: "Running ML Pipeline Integration Tests..."
+}));
 }

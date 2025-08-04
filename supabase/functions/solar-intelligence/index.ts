@@ -138,11 +138,19 @@ async function getSolarData(lat: number, lng: number, options: any = {}): Promis
       const data = await response.json()
       return data
     } else {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Solar API error, using mock data:', await response.text( })))
+      console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Solar API error, using mock data:', await response.text(
+}));)
       return generateMockSolarData(lat, lng)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Solar API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Solar API error, using mock data:', error
+}));
     return generateMockSolarData(lat, lng)
   }
 }
@@ -541,7 +549,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Solar Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Solar Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     const intelligence: SolarIntelligence = {}
 
@@ -612,7 +624,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Solar Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Solar Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

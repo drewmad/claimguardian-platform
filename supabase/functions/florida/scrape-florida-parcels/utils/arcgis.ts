@@ -19,7 +19,11 @@ export async function scrapeArcGIS(
   let moreRecords = true;
   let maxObjectIdInRun = lastObjectId;
   
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[${config.source}] Starting scrape from OBJECTID > ${lastObjectId}` }));
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `[${config.source}] Starting scrape from OBJECTID > ${lastObjectId}`
+  }));
   
   while (moreRecords) {
     const queryParams = new URLSearchParams({
@@ -88,7 +92,7 @@ export async function scrapeArcGIS(
         });
         
         allData.push(...mappedData);
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[${config.source}] Fetched ${features.length} records (total: ${allData.length} }))`);
+        console.log(JSON.stringify({ level: "info", timestamp: new Date().toISOString(), message: `[${config.source}] Fetched ${features.length} records (total: ${allData.length} }))`);
         
         if (features.length < BATCH_SIZE) {
           moreRecords = false;
@@ -100,7 +104,11 @@ export async function scrapeArcGIS(
         
       } catch (error) {
         retries++;
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `[${config.source}] Attempt ${retries}/${MAX_RETRIES} failed:`, error }));
+        console.log(JSON.stringify({
+          level: "info",
+          timestamp: new Date().toISOString(),
+          message: `[${config.source}] Attempt ${retries}/${MAX_RETRIES} failed:`, error
+        }));
         
         if (retries >= MAX_RETRIES) {
           return { 
@@ -117,7 +125,11 @@ export async function scrapeArcGIS(
     }
   }
   
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[${config.source}] Scrape complete. Found ${allData.length} new records.` }));
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `[${config.source}] Scrape complete. Found ${allData.length} new records.`
+  }));
   
   return { 
     source: config.source, 

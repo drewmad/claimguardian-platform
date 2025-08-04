@@ -52,7 +52,11 @@ serve(async (_req) => {
       { headers: { 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error fetching tidal data:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Error fetching tidal data:', error
+}));
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

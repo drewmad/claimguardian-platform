@@ -175,7 +175,11 @@ Deno.serve(async (req) => {
       }
       extractedData = JSON.parse(jsonMatch[1] || jsonMatch[0])
     } catch (parseError) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to parse AI response:', parseError }))
+      console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Failed to parse AI response:', parseError
+}));
       extractedData = {}
     }
 
@@ -202,7 +206,11 @@ Deno.serve(async (req) => {
     )
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error in extract-policy-data:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Error in extract-policy-data:', error
+}));
     
     // Update document with error status
     if (req.method === 'POST') {
@@ -222,7 +230,11 @@ Deno.serve(async (req) => {
           })
           .eq('id', documentId)
       } catch (e) {
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to update error status:', e }))
+        console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Failed to update error status:', e
+}));
       }
     }
 

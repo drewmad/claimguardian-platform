@@ -123,7 +123,11 @@ async function getNOAAGridpoint(lat: number, lng: number): Promise<any> {
     const data = await response.json()
     return data
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'NOAA Gridpoint API error, using fallback:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'NOAA Gridpoint API error, using fallback:', error
+}));
     return generateMockGridpoint(lat, lng)
   }
 }
@@ -178,7 +182,11 @@ async function getCurrentConditions(lat: number, lng: number): Promise<any> {
     return generateMockCurrentConditions(lat, lng)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'NOAA Current Conditions error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'NOAA Current Conditions error, using mock data:', error
+}));
     return generateMockCurrentConditions(lat, lng)
   }
 }
@@ -232,7 +240,11 @@ async function getForecast(gridpoint: any, includeHourly = false): Promise<any> 
     return generateMockForecast(includeHourly)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'NOAA Forecast error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'NOAA Forecast error, using mock data:', error
+}));
     return generateMockForecast(includeHourly)
   }
 }
@@ -300,7 +312,11 @@ async function getActiveAlerts(lat: number, lng: number): Promise<any> {
     return generateMockAlerts(lat, lng)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'NOAA Alerts error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'NOAA Alerts error, using mock data:', error
+}));
     return generateMockAlerts(lat, lng)
   }
 }
@@ -547,7 +563,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Location coordinates are required')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[NOAA Weather Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[NOAA Weather Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     let intelligence: NOAAWeatherIntelligence = {}
 
@@ -630,7 +650,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[NOAA Weather Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[NOAA Weather Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

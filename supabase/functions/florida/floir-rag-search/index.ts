@@ -58,7 +58,11 @@ serve(async (req: Request) => {
       throw new Error('Query is required')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `FLOIR RAG search: "${query}"` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `FLOIR RAG search: "${query}"`
+    }));
 
     // Generate embedding for the query
     const embeddingResponse = await openai.embeddings.create({
@@ -81,7 +85,11 @@ serve(async (req: Request) => {
       throw new Error(`Search failed: ${searchError.message}`)
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Found ${searchResults?.length || 0} matching results` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `Found ${searchResults?.length || 0} matching results`
+    }));
 
     // Format results and create context
     const results: SearchResult[] = (searchResults || []).map((result: any) => ({
@@ -134,7 +142,11 @@ Please provide a comprehensive answer based on the Florida insurance regulation 
 
         answer = completion.choices[0].message.content || undefined
       } catch (aiError) {
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Failed to generate AI answer:', aiError }))
+        console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Failed to generate AI answer:', aiError
+}));
         // Continue without AI answer if embedding search succeeded
       }
     }
@@ -153,7 +165,11 @@ Please provide a comprehensive answer based on the Florida insurance regulation 
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'FLOIR RAG search error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'FLOIR RAG search error:', error
+}));
     
     return new Response(JSON.stringify({
       error: error.message,

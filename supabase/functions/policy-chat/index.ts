@@ -198,7 +198,11 @@ Deno.serve(async (req) => {
       },
     )
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Policy chat error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Policy chat error:', error
+}));
     
     return new Response(
       JSON.stringify({

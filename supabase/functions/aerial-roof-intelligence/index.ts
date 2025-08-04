@@ -80,7 +80,11 @@ async function analyzeRoofFromAerialView(lat: number, lng: number): Promise<any>
     return await mockRoofAnalysis(lat, lng)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Solar API not available, using mock analysis:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Solar API not available, using mock analysis:', error
+}));
     return await mockRoofAnalysis(lat, lng)
   }
 }
@@ -317,7 +321,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Aerial Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Aerial Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     const intelligence: RoofIntelligence = {}
 
@@ -375,7 +383,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Aerial Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Aerial Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

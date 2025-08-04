@@ -376,7 +376,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Maps Static Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Maps Static Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     const intelligence: StaticMapIntelligence = {}
 
@@ -436,7 +440,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Maps Static Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Maps Static Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

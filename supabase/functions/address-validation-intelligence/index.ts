@@ -85,11 +85,19 @@ async function validateAddressWithGoogle(address: string | object): Promise<any>
       const data = await response.json()
       return data
     } else {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Address Validation API error, using mock data:', await response.text( })))
+      console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Address Validation API error, using mock data:', await response.text(
+}));)
       return generateMockValidationData(address)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Address Validation API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Address Validation API error, using mock data:', error
+}));
     return generateMockValidationData(address)
   }
 }
@@ -441,7 +449,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Address Validation] Processing address: ${typeof address === 'string' ? address : JSON.stringify(address }))}`)
+    console.log(JSON.stringify({
+  level: "info",
+  timestamp: new Date().toISOString(),
+  message: `[Address Validation] Processing address: ${typeof address === 'string' ? address : JSON.stringify(address
+}));}`)
 
     const intelligence: AddressIntelligence = {}
 
@@ -487,7 +499,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Address Validation] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Address Validation] Error:', error
+}));
     
     const errorResponse = {
       success: false,

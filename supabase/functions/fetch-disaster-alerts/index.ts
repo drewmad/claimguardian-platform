@@ -19,7 +19,11 @@ function toWkt(geoJson: any): string | null {
     case 'MULTIPOLYGON':
       return `MULTIPOLYGON(${coords.map((poly: any) => `((${poly[0].map((p: number[]) => p.join(' ')).join(',')}))`).join(',')})`
     default:
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: `Unsupported geometry type: ${type}` }))
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `Unsupported geometry type: ${type}`
+      }));
       return null
   }
 }
@@ -73,7 +77,11 @@ serve(async (_req) => {
       { headers: { 'Content-Type': 'application/json' } }
     )
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error fetching disaster alerts:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Error fetching disaster alerts:', error
+}));
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }

@@ -150,11 +150,19 @@ async function getActiveAlerts(lat: number, lng: number, options: any): Promise<
     // Real implementation would query multiple alert sources
     // For now, generate comprehensive mock data based on location and season
     
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Emergency Alerts] Fetching alerts for: ${lat}, ${lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Emergency Alerts] Fetching alerts for: ${lat}, ${lng}`
+    }));
     return generateMockAlertData(lat, lng, options)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Emergency alerts API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Emergency alerts API error, using mock data:', error
+}));
     return generateMockAlertData(lat, lng, options)
   }
 }
@@ -476,7 +484,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Location coordinates are required')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Emergency Alert Intelligence] Processing ${monitoringType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Emergency Alert Intelligence] Processing ${monitoringType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     // Get emergency alert data
     const alertData = await getActiveAlerts(location.lat, location.lng, options)
@@ -550,7 +562,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Emergency Alert Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Emergency Alert Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

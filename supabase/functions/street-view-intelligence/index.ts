@@ -156,11 +156,19 @@ async function checkStreetViewAvailability(location: { lat: number, lng: number 
       const metadata = await response.json()
       return metadata
     } else {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Street View Metadata API error:', await response.text( })))
+      console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Street View Metadata API error:', await response.text(
+}));)
       return generateMockMetadata(location)
     }
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Street View Metadata API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Street View Metadata API error, using mock data:', error
+}));
     return generateMockMetadata(location)
   }
 }
@@ -418,7 +426,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Google Maps API key not configured')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Street View Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Street View Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     const intelligence: StreetViewIntelligence = {}
 
@@ -500,7 +512,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Street View Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Street View Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

@@ -52,7 +52,11 @@ serve(async (req: Request) => {
   try {
     const { action, data_source, force_refresh = false } = await req.json() as MonitorRequest
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Florida parcel monitor action: ${action}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `Florida parcel monitor action: ${action}`
+    }));
 
     switch (action) {
       case 'check_sources':
@@ -72,7 +76,11 @@ serve(async (req: Request) => {
     }
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Parcel monitor error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Parcel monitor error:', error
+}));
     
     return new Response(JSON.stringify({
       success: false,
@@ -103,7 +111,11 @@ async function checkDataSources(targetSource?: string) {
     }
 
     try {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Checking source: ${source}` }))
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `Checking source: ${source}`
+      }));
       
       // Get current source record
       const { data: sourceRecord } = await supabase
@@ -152,7 +164,11 @@ async function checkDataSources(targetSource?: string) {
       results.push(sourceStatus)
 
     } catch (error) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Error checking source ${source}:`, error }))
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `Error checking source ${source}:`, error
+      }));
       results.push({
         source,
         status: 'error',
@@ -181,7 +197,11 @@ async function triggerIngest(dataSource?: string, forceRefresh = false) {
     throw new Error(`Unknown data source: ${dataSource}`)
   }
 
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Triggering ingest for ${dataSource}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Triggering ingest for ${dataSource}`
+  }));
 
   // Check if there's already a running import
   const { data: runningImports } = await supabase
@@ -324,7 +344,11 @@ async function healthCheck() {
     }
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Health check failed:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Health check failed:', error
+}));
     healthResults.overall_status = 'down'
   }
 

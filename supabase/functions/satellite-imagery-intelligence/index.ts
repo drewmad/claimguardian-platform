@@ -96,11 +96,19 @@ async function getSatelliteImagery(lat: number, lng: number, options: any): Prom
     // 3. Google Earth Engine
     // 4. Airbus OneAtlas API
     
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Satellite Mock] Fetching imagery for: ${lat}, ${lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Satellite Mock] Fetching imagery for: ${lat}, ${lng}`
+    }));
     return generateMockSatelliteData(lat, lng, options)
     
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: 'Satellite imagery API error, using mock data:', error }))
+    console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: 'Satellite imagery API error, using mock data:', error
+}));
     return generateMockSatelliteData(lat, lng, options)
   }
 }
@@ -376,7 +384,11 @@ Deno.serve(async (req: Request) => {
       throw new Error('Location coordinates are required')
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Satellite Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Satellite Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     // Get satellite imagery data
     const imageryData = await getSatelliteImagery(location.lat, location.lng, options)
@@ -455,7 +467,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Satellite Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Satellite Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,

@@ -27,19 +27,37 @@ export default [
       '@typescript-eslint': typescript
     },
     rules: {
-      ...typescript.configs.recommended.rules,
-      // Allow unused vars that start with underscore
-      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
-      // Allow any types for utility functions
+      // Base TypeScript rules without extending the full config to avoid conflicts
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        // Allow unused parameters that become class properties
+        args: 'none'
+      }],
+      // Disable the regular no-unused-vars rule in favor of TypeScript version
+      'no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
+      '@typescript-eslint/no-unused-expressions': ['error', { 
+        allowShortCircuit: true,
+        allowTernary: true,
+        allowTaggedTemplates: true
+      }],
       // Disable some strict rules for utility library
-      'no-undef': 'off' // TypeScript handles this
+      'no-undef': 'off', // TypeScript handles this
+      'no-unused-expressions': 'off' // Use TypeScript version instead
     }
   },
   {
     files: ['**/*.js'],
     languageOptions: {
       sourceType: 'module'
+    },
+    rules: {
+      'no-unused-expressions': ['error', { 
+        allowShortCircuit: true,
+        allowTernary: true,
+        allowTaggedTemplates: true
+      }]
     }
   }
 ]

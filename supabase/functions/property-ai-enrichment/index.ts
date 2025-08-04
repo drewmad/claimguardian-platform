@@ -46,7 +46,11 @@ serve(async (req: Request) => {
       include_relationships = false
     } = await req.json() as EnrichmentRequest
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Property AI enrichment action: ${action}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `Property AI enrichment action: ${action}`
+    }));
 
     let result: any
 
@@ -83,7 +87,11 @@ serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Property AI enrichment error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Property AI enrichment error:', error
+}));
     
     return new Response(JSON.stringify({
       success: false,
@@ -105,7 +113,11 @@ async function batchEnrichProperties(
   includeEmbeddings = true,
   includeRelationships = false
 ) {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Batch enriching properties: ${dataSource || 'all sources'}, batch size: ${batchSize}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Batch enriching properties: ${dataSource || 'all sources'}, batch size: ${batchSize}`
+  }));
 
   // Call the database function for batch enrichment
   const { data: enrichmentResult, error } = await supabase
@@ -150,7 +162,11 @@ async function enrichSingleProperty(
   includeEmbeddings = true,
   includeRelationships = false
 ) {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Enriching single property: ${propertyId}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Enriching single property: ${propertyId}`
+  }));
 
   try {
     // Call the database function for single property enrichment
@@ -199,7 +215,11 @@ async function enrichSingleProperty(
 }
 
 async function generateEmbeddings(dataSource?: string, batchSize = 100) {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Generating embeddings for properties: ${dataSource || 'all sources'}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Generating embeddings for properties: ${dataSource || 'all sources'}`
+  }));
 
   let query = supabase
     .from('properties')
@@ -222,7 +242,11 @@ async function generateEmbeddings(dataSource?: string, batchSize = 100) {
     return { processed: 0, success: 0, errors: 0 }
   }
 
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Processing ${properties.length} properties for embeddings` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Processing ${properties.length} properties for embeddings`
+  }));
 
   let processed = 0
   let success = 0
@@ -240,7 +264,11 @@ async function generateEmbeddings(dataSource?: string, batchSize = 100) {
         success++
       } catch (error) {
         errors++
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Failed to generate embedding for property ${property.id}:`, error }))
+        console.log(JSON.stringify({
+          level: "info",
+          timestamp: new Date().toISOString(),
+          message: `Failed to generate embedding for property ${property.id}:`, error
+        }));
       }
     }
 
@@ -313,7 +341,11 @@ async function generatePropertyEmbedding(propertyId: string) {
 }
 
 async function computeSpatialRelationships(dataSource?: string, batchSize = 500) {
-  console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `Computing spatial relationships: ${dataSource || 'all sources'}` }))
+  console.log(JSON.stringify({
+    level: "info",
+    timestamp: new Date().toISOString(),
+    message: `Computing spatial relationships: ${dataSource || 'all sources'}`
+  }));
 
   let query = supabase
     .from('properties')
@@ -347,7 +379,11 @@ async function computeSpatialRelationships(dataSource?: string, batchSize = 500)
       success++
     } catch (error) {
       errors++
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Failed to compute relationships for property ${property.id}:`, error }))
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `Failed to compute relationships for property ${property.id}:`, error
+      }));
     }
   }
 

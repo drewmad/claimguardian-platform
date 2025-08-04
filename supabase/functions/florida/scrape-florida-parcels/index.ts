@@ -51,13 +51,21 @@ Deno.serve(async (req) => {
   // 3. Process results and insert into the database
   for (const result of results) {
     if (result.status === 'rejected' || !result.value.success) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `Scrape failed for a source:`, result.reason || result.value.error }));
+      console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: `Scrape failed for a source:`, result.reason || result.value.error
+}));
       continue;
     }
 
     const scrapeResult = result.value;
     if (scrapeResult.data.length === 0) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[${scrapeResult.source}] No new data to insert.` }));
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `[${scrapeResult.source}] No new data to insert.`
+      }));
       continue;
     }
 
@@ -79,7 +87,11 @@ Deno.serve(async (req) => {
       .upsert(recordsToInsert, { onConflict: 'source, source_record_id' });
 
     if (insertError) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `[${scrapeResult.source}] Failed to insert data:`, insertError }));
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `[${scrapeResult.source}] Failed to insert data:`, insertError
+      }));
       continue;
     }
 
@@ -89,10 +101,18 @@ Deno.serve(async (req) => {
       .upsert({ source: scrapeResult.source, last_object_id: scrapeResult.lastObjectId }, { onConflict: 'source' });
 
     if (updateError) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: `[${scrapeResult.source}] Failed to update scraper run state:`, updateError }));
+      console.log(JSON.stringify({
+        level: "info",
+        timestamp: new Date().toISOString(),
+        message: `[${scrapeResult.source}] Failed to update scraper run state:`, updateError
+      }));
     }
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[${scrapeResult.source}] Successfully processed ${recordsToInsert.length} records.` }));
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[${scrapeResult.source}] Successfully processed ${recordsToInsert.length} records.`
+    }));
   }
 
   return new Response(JSON.stringify({ message: 'Scraping process completed.' }), {

@@ -79,7 +79,11 @@ serve(async (req: Request) => {
         })
 
       if (error) {
-        console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: 'Error storing image analysis:', error }))
+        console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: 'Error storing image analysis:', error
+}));
       }
       
       imageAnalysisResults.push(imageAnalysis)

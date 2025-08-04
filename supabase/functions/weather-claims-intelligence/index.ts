@@ -73,7 +73,11 @@ async function getHistoricalWeather(lat: number, lng: number, startDate: string,
       
       results.push(mockHistoricalData)
     } catch (error) {
-      console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: `Failed to fetch historical data for ${date.toISOString( }))}:`, error)
+      console.log(JSON.stringify({
+  level: "warn",
+  timestamp: new Date().toISOString(),
+  message: `Failed to fetch historical data for ${date.toISOString(
+}));}:`, error)
     }
   }
   
@@ -254,7 +258,11 @@ Deno.serve(async (req: Request) => {
 
     const intelligence: WeatherIntelligence = {}
 
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: `[Weather Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}` }))
+    console.log(JSON.stringify({
+      level: "info",
+      timestamp: new Date().toISOString(),
+      message: `[Weather Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
+    }));
 
     switch (analysisType) {
       case 'current':
@@ -329,7 +337,11 @@ Deno.serve(async (req: Request) => {
     })
 
   } catch (error) {
-    console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: '[Weather Intelligence] Error:', error }))
+    console.log(JSON.stringify({
+  level: "error",
+  timestamp: new Date().toISOString(),
+  message: '[Weather Intelligence] Error:', error
+}));
     
     const errorResponse = {
       success: false,
