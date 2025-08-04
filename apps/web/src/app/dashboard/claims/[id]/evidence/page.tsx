@@ -7,7 +7,6 @@ import { logger } from "@/lib/logger/production-logger"
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { EvidenceManager } from '@/components/claims/evidence-manager'
 import { Button } from '@/components/ui/button'
-import { logger } from "@/lib/logger/production-logger"
 
 export default function ClaimEvidencePage() {
   const params = useParams()

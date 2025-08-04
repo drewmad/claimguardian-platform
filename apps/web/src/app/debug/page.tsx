@@ -10,7 +10,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
-import { logger } from "@/lib/logger/production-logger"
 
 interface DebugInfo {
   timestamp: string

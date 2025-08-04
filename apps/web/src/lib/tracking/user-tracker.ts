@@ -1,8 +1,8 @@
 import { UAParser } from 'ua-parser-js'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 interface TrackingData {
   userId: string
@@ -52,7 +52,7 @@ class UserTracker {
       const data = await response.json()
       this.ipAddress = data.ip
     } catch (error) {
-      logger.error('Failed to fetch IP address:', error)
+      logger.error('Failed to fetch IP address:', toError(error))
     }
   }
 
@@ -131,7 +131,7 @@ class UserTracker {
       })
 
     } catch (error) {
-      logger.error('Error in trackLogin:', error)
+      logger.error('Error in trackLogin:', toError(error))
     }
   }
 
@@ -153,7 +153,7 @@ class UserTracker {
         logger.error('Error logging activity:', error)
       }
     } catch (error) {
-      logger.error('Error in logActivity:', error)
+      logger.error('Error in logActivity:', toError(error))
     }
   }
 

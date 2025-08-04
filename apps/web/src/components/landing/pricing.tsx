@@ -26,7 +26,6 @@ import { logger } from "@/lib/logger/production-logger"
 import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 // import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
-import { logger } from "@/lib/logger/production-logger"
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {

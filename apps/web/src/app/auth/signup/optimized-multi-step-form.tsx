@@ -22,10 +22,18 @@ const PHONE_FORMATTER = /(\d{3})(\d{3})(\d{4})/
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /^\d{10}$/
 
-// Password strength cache to avoid repeated calculations
-const passwordStrengthCache = new Map<string, ReturnType<typeof calculatePasswordStrength>>()
+// Password strength result interface
+interface PasswordStrengthResult {
+  score: number
+  feedback: string[]
+  strength: string
+  color: string
+}
 
-function calculatePasswordStrength(password: string) {
+// Password strength cache to avoid repeated calculations
+const passwordStrengthCache = new Map<string, PasswordStrengthResult>()
+
+function calculatePasswordStrength(password: string): PasswordStrengthResult {
   if (passwordStrengthCache.has(password)) {
     return passwordStrengthCache.get(password)!
   }
@@ -61,7 +69,7 @@ function calculatePasswordStrength(password: string) {
   // Cache result but limit cache size
   if (passwordStrengthCache.size > 100) {
     const firstKey = passwordStrengthCache.keys().next().value
-    passwordStrengthCache.delete(firstKey)
+    if (firstKey) passwordStrengthCache.delete(firstKey)
   }
   passwordStrengthCache.set(password, result)
   

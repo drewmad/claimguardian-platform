@@ -11,7 +11,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { logger } from "@/lib/logger/production-logger"
 
 interface SimpleSignInFormProps {
   message?: string

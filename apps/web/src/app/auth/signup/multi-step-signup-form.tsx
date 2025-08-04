@@ -13,7 +13,6 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
-import { logger } from "@/lib/logger/production-logger"
 
 type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer'
 

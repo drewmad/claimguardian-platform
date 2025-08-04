@@ -8,13 +8,12 @@
 
 import { X, Eye, EyeOff, AlertCircle, CheckCircle, Loader2 } from 'lucide-react'
 import { useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger'
+import { toError } from '@claimguardian/utils'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from '@/lib/logger'
 import { collectSignupTrackingData } from '@/lib/utils/tracking-utils'
 import { useModalStore } from '@/stores/modal-store'
-import { logger } from "@/lib/logger/production-logger"
 
 export function SignupModalSimple() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -90,7 +89,7 @@ export function SignupModalSimple() {
       try {
         trackingData = await collectSignupTrackingData()
       } catch (error) {
-        logger.warn('Tracking data collection failed:', error)
+        logger.warn('Tracking data collection failed:', { error: toError(error).message })
         trackingData = { ipAddress: '127.0.0.1', userAgent: navigator.userAgent }
       }
       
@@ -123,7 +122,7 @@ export function SignupModalSimple() {
         setIsSubmitted(true)
       }
     } catch (error) {
-      logger.error('Signup error:', error)
+      logger.error('Signup error:', undefined, toError(error))
       setValidationError('An error occurred during signup. Please try again.')
     } finally {
       setLoading(false)

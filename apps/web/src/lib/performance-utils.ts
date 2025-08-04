@@ -1,6 +1,8 @@
 'use client'
 
 import { useState, useEffect, useCallback, useRef } from 'react'
+import { logger } from "@/lib/logger/production-logger"
+
 // Image compression utility
 export async function compressImage(
   file: File,
@@ -17,7 +19,6 @@ export async function compressImage(
     quality = 0.8,
     format = 'jpeg'
   } = options
-import { logger } from "@/lib/logger/production-logger"
 
   return new Promise((resolve, reject) => {
     const canvas = document.createElement('canvas')
@@ -112,13 +113,13 @@ export function useRequestCache() {
     
     if (cached) {
       if (process.env.NODE_ENV === 'development') {
-        logger.debug('Cache hit for:', key)
+        logger.debug(`Cache hit for ${key}`)
       }
       return cached
     }
 
     if (process.env.NODE_ENV === 'development') {
-      logger.debug('Cache miss for:', key)
+      logger.debug(`Cache miss for ${key}`)
     }
     const result = await requestFn()
     requestCache.set(key, result, ttl)

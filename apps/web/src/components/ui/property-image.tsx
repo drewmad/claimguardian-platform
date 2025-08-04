@@ -15,7 +15,6 @@ import { useState, useEffect } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { getPropertyImage, getPropertyImageByType, PropertyImageStyle } from '@/lib/ai/image-generation'
-import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyImageProps {
   propertyType?: string

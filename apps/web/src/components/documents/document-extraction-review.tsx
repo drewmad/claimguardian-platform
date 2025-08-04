@@ -24,7 +24,6 @@ import { Label } from '@/components/ui/label'
 import { insuranceTypes } from '@/data/florida-insurance-carriers'
 import { ExtractedPolicyData } from '@/lib/services/ai-document-extraction'
 import { cn } from '@/lib/utils'
-import { logger } from "@/lib/logger/production-logger"
 
 
 

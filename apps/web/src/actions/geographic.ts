@@ -12,6 +12,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 interface State {
   id: number
@@ -65,7 +66,7 @@ export async function getStates() {
     
     return { data: data as State[], error: null }
   } catch (error) {
-    logger.error('Error fetching states:', error)
+    logger.error('Error fetching states:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -92,7 +93,7 @@ export async function getCounties(stateCode?: string) {
     
     return { data: data as (County & { states: { code: string; name: string } })[], error: null }
   } catch (error) {
-    logger.error('Error fetching counties:', error)
+    logger.error('Error fetching counties:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -130,7 +131,7 @@ export async function getCities(countyId?: number, stateCode?: string) {
       error: null 
     }
   } catch (error) {
-    logger.error('Error fetching cities:', error)
+    logger.error('Error fetching cities:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -174,7 +175,7 @@ export async function getZipCodes(zipCode?: string, cityId?: number, countyId?: 
       error: null 
     }
   } catch (error) {
-    logger.error('Error fetching ZIP codes:', error)
+    logger.error('Error fetching ZIP codes:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -288,7 +289,7 @@ export async function validateAddress({
       error: null 
     }
   } catch (error) {
-    logger.error('Error validating address:', error)
+    logger.error('Error validating address:', toError(error))
     return { data: null, error: error as Error }
   }
 }

@@ -13,7 +13,6 @@
 
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 interface LegalAcceptanceData {
   userId: string
@@ -50,7 +49,7 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
     })
 
     if (consentError) {
-      logger.warn('Failed to record consent:', consentError)
+      logger.warn('Failed to record consent', { error: consentError.message, code: consentError.code })
       // Don't throw - this shouldn't break signup
     }
 
@@ -83,10 +82,10 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
       const { error: prefError } = await supabase.rpc('update_user_consent_preferences', updateParams)
       
       if (prefError) {
-        logger.warn('Failed to update user preferences:', prefError)
+        logger.warn('Failed to update user preferences', { error: prefError.message, code: prefError.code })
       }
     } catch (prefUpdateError) {
-      logger.warn('User preferences update failed:', prefUpdateError)
+      logger.error('User preferences update failed', {}, prefUpdateError instanceof Error ? prefUpdateError : new Error(String(prefUpdateError)))
     }
 
     logger.info('Legal acceptance tracked', {
@@ -133,7 +132,7 @@ export async function trackSignupConsents(data: {
     })
     
     if (error) {
-      logger.warn('Failed to update consent preferences:', error)
+      logger.warn('Failed to update consent preferences', { error: error.message, code: error.code })
     }
     
     // Track individual consents for audit trail
@@ -170,7 +169,7 @@ export async function trackSignupConsents(data: {
     await Promise.allSettled(promises)
     return { success: true }
   } catch (error) {
-    logger.warn('Some consent tracking failed:', error)
+    logger.error('Some consent tracking failed', {}, error instanceof Error ? error : new Error(String(error)))
     return { success: true, warning: 'Partial consent tracking failure' }
   }
 }

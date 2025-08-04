@@ -4,7 +4,6 @@ import { logger } from "@/lib/logger/production-logger"
 import { AIClient } from '@/lib/ai/client'
 import { inputSanitizer } from '@/lib/security/input-sanitizer'
 import { withRateLimit, RateLimiter } from '@/lib/security/rate-limiter'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: NextRequest) {
   return withRateLimit(

@@ -30,7 +30,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PropertyImage } from '@/components/ui/property-image'
-import { logger } from "@/lib/logger/production-logger"
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 

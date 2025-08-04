@@ -42,7 +42,7 @@ export async function recordLegalAcceptances(acceptances: {
 }) {
   // Record legal acceptances in the database
   // This would typically save to a legal_acceptances table
-  logger.info('Recording legal acceptances for user:', acceptances.userId, acceptances)
+  logger.info('Recording legal acceptances for user', { userId: acceptances.userId, acceptances })
   
   // In a real implementation, you would save to the database:
   // const { data, error } = await supabase

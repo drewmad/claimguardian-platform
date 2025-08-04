@@ -17,7 +17,6 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface FloridaDisclosuresModalProps {

@@ -12,13 +12,12 @@
 
 import { X, Eye, EyeOff, AlertCircle, Shield } from 'lucide-react'
 import { useState, useEffect } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger'
+import { toError } from '@claimguardian/utils'
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { authService } from '@/lib/auth/auth-service'
-import { logger } from '@/lib/logger'
 import { useModalStore } from '@/stores/modal-store'
-import { logger } from "@/lib/logger/production-logger"
 
 export function SignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -107,7 +106,7 @@ export function SignupModal() {
         })
       }
     } catch (error) {
-      logger.error('Signup error:', error)
+      logger.error('Signup error:', undefined, toError(error))
       setValidationError('An error occurred during signup. Please try again.')
     } finally {
       setLoading(false)
@@ -138,7 +137,7 @@ export function SignupModal() {
       const { error } = await authService.resendConfirmationEmail(formData.email)
       
       if (error) {
-        logger.error('Failed to resend confirmation email', {}, error)
+        logger.error('Failed to resend confirmation email', undefined, toError(error))
         // Could show error toast here
         return
       }
@@ -151,7 +150,7 @@ export function SignupModal() {
         setResendSuccess(false)
       }, 5000)
     } catch (err) {
-      logger.error('Unexpected error resending email', {}, err instanceof Error ? err : new Error(String(err)))
+      logger.error('Unexpected error resending email', undefined, toError(err))
     } finally {
       setResending(false)
     }

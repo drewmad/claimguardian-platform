@@ -8,7 +8,6 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from './button'
 import { Card } from './card'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface BarcodeScannerProps {

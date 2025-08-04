@@ -10,7 +10,6 @@ import {
   getActivePolicies 
 } from '@/actions/policies'
 import type { CreatePolicyInput } from '@/types/database-enhancements'
-import { logger } from "@/lib/logger/production-logger"
 
 // Query keys factory
 export const policyKeys = {

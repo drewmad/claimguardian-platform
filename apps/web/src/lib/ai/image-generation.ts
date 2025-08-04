@@ -9,6 +9,9 @@
  * @status active
  */
 
+import { logger } from '@/lib/logger'
+import { toError } from '@claimguardian/utils'
+
 export type PropertyImageStyle = 
   | 'modern-home'
   | 'traditional-home'
@@ -73,6 +76,7 @@ export function getPropertyImagePrompt(options: PropertyImageOptions = {}): stri
 export async function generatePropertyImage(options: PropertyImageOptions = {}): Promise<string | null> {
   try {
     const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
+    // WARNING: API key moved to server-side - use /api/ai endpoint instead
     
     if (!apiKey) {
       logger.warn('OpenAI API key not found. Cannot generate property images.')
@@ -109,7 +113,7 @@ export async function generatePropertyImage(options: PropertyImageOptions = {}):
     
     return null
   } catch (error) {
-    logger.error('Error generating property image:', error)
+    logger.error('Error generating property image:', undefined, toError(error))
     return null
   }
 }

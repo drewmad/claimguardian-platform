@@ -8,13 +8,10 @@
 
 import { Cookie, Settings, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger'
+import { toError } from '@claimguardian/utils'
 
 import { CookiePreferencesModal } from './cookie-preferences-modal'
-import { logger } from "@/lib/logger/production-logger"
-
-import { logger } from '@/lib/logger'
-import { logger } from "@/lib/logger/production-logger"
 
 export function CookieConsentBanner() {
   const [isVisible, setIsVisible] = useState(false)
@@ -52,7 +49,7 @@ export function CookieConsentBanner() {
       
       setIsVisible(false)
     } catch (error) {
-      logger.error('Failed to save cookie consent:', error)
+      logger.error('Failed to save cookie consent:', undefined, toError(error))
     } finally {
       setIsLoading(false)
     }
@@ -68,7 +65,7 @@ export function CookieConsentBanner() {
       
       setIsVisible(false)
     } catch (error) {
-      logger.error('Failed to save cookie rejection:', error)
+      logger.error('Failed to save cookie rejection:', undefined, toError(error))
     } finally {
       setIsLoading(false)
     }

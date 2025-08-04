@@ -19,7 +19,6 @@ import { logger } from "@/lib/logger/production-logger"
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface ParcelStats {

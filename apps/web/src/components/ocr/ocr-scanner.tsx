@@ -15,7 +15,6 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ocrService, DocumentType, OCRResult, ReceiptData, OCRHistoryEntry } from '@/lib/services/ocr-service'
-import { logger } from "@/lib/logger/production-logger"
 
 interface OCRScannerProps {
   onScanComplete?: (result: OCRResult) => void

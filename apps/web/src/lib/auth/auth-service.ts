@@ -11,13 +11,12 @@
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { User, AuthError as SupabaseAuthError } from '@supabase/supabase-js'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger/production-logger'
+import { toError } from '@claimguardian/utils'
 
 import { loginActivityService } from '@/lib/auth/login-activity-service'
 import { AppError, ErrorCode } from '@/lib/errors/app-error'
-import { logger } from '@/lib/logger'
 import { getAuthCallbackURL } from '@/lib/utils/site-url'
-import { logger } from "@/lib/logger/production-logger"
 
 export class AuthError extends AppError {
   constructor(message: string, code: ErrorCode, originalError?: Error) {
@@ -83,7 +82,7 @@ class AuthService {
       this.supabase = createBrowserSupabaseClient()
       logger.info('[AUTH SERVICE] Supabase client created successfully')
     } catch (error) {
-      logger.error('[AUTH SERVICE] Failed to create Supabase client:', error)
+      logger.error('[AUTH SERVICE] Failed to create Supabase client:', toError(error))
       throw error
     }
   }
@@ -137,7 +136,7 @@ class AuthService {
           logger.error('2. Network connectivity issues')
           logger.error('3. Invalid Supabase URL or API key')
           logger.error('4. Database migrations not applied')
-          logger.error('Supabase URL:', process.env.NEXT_PUBLIC_SUPABASE_URL)
+          logger.error('Invalid Supabase URL:', new Error(`Invalid configuration: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`))
         }
         
         throw this.handleAuthError(error)
@@ -190,7 +189,7 @@ class AuthService {
         timestamp: new Date().toISOString()
       })
       
-      logger.error('Signup failed', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Signup failed', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -263,7 +262,7 @@ class AuthService {
       
       return { data: authData.user }
     } catch (error) {
-      logger.error('Signin failed', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Signin failed', error instanceof Error ? error : new Error(String(error)))
       
       // Track failed login attempt
       try {
@@ -306,7 +305,7 @@ class AuthService {
       logger.info('User signout successful')
       return { data: undefined }
     } catch (error) {
-      logger.error('Signout failed', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Signout failed', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -340,7 +339,7 @@ class AuthService {
       logger.info('Password reset email sent', { email })
       return { data: undefined }
     } catch (error) {
-      logger.error('Password reset failed', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Password reset failed', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -381,7 +380,7 @@ class AuthService {
       logger.info('Password update successful', { userId: data.user.id })
       return { data: data.user }
     } catch (error) {
-      logger.error('Password update failed', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Password update failed', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -419,7 +418,7 @@ class AuthService {
       logger.info('Confirmation email resent', { email })
       return { data: undefined }
     } catch (error) {
-      logger.error('Failed to resend confirmation email', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to resend confirmation email', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -448,7 +447,7 @@ class AuthService {
 
       return { data: user }
     } catch (error) {
-      logger.error('Failed to get current user', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to get current user', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -484,7 +483,7 @@ class AuthService {
 
       return { data: session.user }
     } catch (error) {
-      logger.error('Failed to refresh session', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.error('Failed to refresh session', error instanceof Error ? error : new Error(String(error)))
       
       if (error instanceof AuthError) {
         return { error }
@@ -525,7 +524,7 @@ class AuthService {
     
     // If there's additional error info, log it
     if (error.stack) {
-      logger.error('[ClaimGuardian Auth Error] Stack trace:', error.stack)
+      logger.error('[ClaimGuardian Auth Error] Stack trace:', new Error(error.stack))
     }
 
     // Map Supabase error codes to our error codes

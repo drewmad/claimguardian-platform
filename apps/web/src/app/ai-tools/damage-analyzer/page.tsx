@@ -19,6 +19,7 @@ import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
@@ -28,7 +29,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
-import { logger } from "@/lib/logger/production-logger"
 
 // --- MOCK DATA AND TYPES ---
 
@@ -156,7 +156,7 @@ function DamageAnalyzerContent() {
         setPolicies(MOCK_POLICIES) // Mock implementation
       } catch (error) {
         toast.error('Failed to load insurance policies.')
-        logger.error(error)
+        logger.error('Failed to load policies:', toError(error))
       } finally {
         setIsLoading(false)
       }
@@ -210,7 +210,7 @@ function DamageAnalyzerContent() {
       setAnalysisResult(result)
       setStep('result')
     } catch (error) {
-      logger.error('Analysis failed:', error)
+      logger.error('Analysis failed:', toError(error))
       toast.error(error instanceof Error ? error.message : 'Analysis failed. Please try again.')
       setStep('upload')
     }

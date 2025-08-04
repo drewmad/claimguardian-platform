@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -18,7 +19,6 @@ import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface DocumentTemplate {
@@ -118,7 +118,7 @@ export default function DocumentGeneratorPage() {
         setHasOpenAIKey(keysStatus.hasOpenAIKey)
         setHasGeminiKey(keysStatus.hasGeminiKey)
       } catch (error) {
-        logger.error('Failed to check API keys:', error)
+        logger.error('Failed to check API keys:', toError(error))
       }
     }
     checkKeys()
@@ -166,7 +166,7 @@ The letter should be ready to send after adding the recipient's information.`
       setShowPreview(true)
       toast.success('Document generated successfully!')
     } catch (error) {
-      logger.error('Error generating document:', error)
+      logger.error('Error generating document:', toError(error))
       toast.error('Failed to generate document')
     } finally {
       setIsGenerating(false)

@@ -23,7 +23,6 @@ import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
-import { logger } from "@/lib/logger/production-logger"
 
 interface DisplayProperty {
   id: string

@@ -80,16 +80,16 @@ class ProductionLogger {
       // Development: use console with colors
       switch (entry.level) {
         case 'debug':
-          logger.debug('\x1b[36m%s\x1b[0m', formattedMessage) // Cyan
+          console.debug('\x1b[36m%s\x1b[0m', formattedMessage) // Cyan
           break
         case 'info':
-          logger.info('\x1b[32m%s\x1b[0m', formattedMessage) // Green
+          console.info('\x1b[32m%s\x1b[0m', formattedMessage) // Green
           break
         case 'warn':
-          logger.warn('\x1b[33m%s\x1b[0m', formattedMessage) // Yellow
+          console.warn('\x1b[33m%s\x1b[0m', formattedMessage) // Yellow
           break
         case 'error':
-          logger.error('\x1b[31m%s\x1b[0m', formattedMessage) // Red
+          console.error('\x1b[31m%s\x1b[0m', formattedMessage) // Red
           break
       }
     } else {
@@ -105,7 +105,7 @@ class ProductionLogger {
       this.sendToLoggingService(structuredLog)
       
       // Also write to console for server-side logs
-      logger.info(JSON.stringify(structuredLog))
+      console.log(JSON.stringify(structuredLog))
     }
   }
 
@@ -133,48 +133,50 @@ class ProductionLogger {
         }
       } catch (error) {
         // Fallback if Sentry fails
-        logger.error('Failed to send error to Sentry:', error)
+        console.error('Failed to send error to Sentry:', error)
       }
     }
   }
 
-  debug(message: string, context?: Record<string, any>, component?: string): void {
+  debug(message: string, context?: any, component?: string): void {
     this.writeLog({
       level: 'debug',
       message,
       timestamp: new Date().toISOString(),
-      context,
+      context: typeof context === 'object' && context !== null ? context : undefined,
       component
     })
   }
 
-  info(message: string, context?: Record<string, any>, component?: string): void {
+  info(message: string, context?: any, component?: string): void {
     this.writeLog({
       level: 'info',
       message,
       timestamp: new Date().toISOString(),
-      context,
+      context: typeof context === 'object' && context !== null ? context : undefined,
       component
     })
   }
 
-  warn(message: string, context?: Record<string, any>, component?: string): void {
+  warn(message: string, context?: any, component?: string): void {
     this.writeLog({
       level: 'warn',
       message,
       timestamp: new Date().toISOString(),
-      context,
+      context: typeof context === 'object' && context !== null ? context : undefined,
       component
     })
   }
 
-  error(message: string, error?: Error, context?: Record<string, any>, component?: string): void {
+  error(message: string, error?: any, component?: string): void {
+    // Handle backwards compatibility - error can be Error object or any value
+    const actualError = error instanceof Error ? error : (error ? new Error(String(error)) : undefined)
+    
     this.writeLog({
       level: 'error',
       message,
       timestamp: new Date().toISOString(),
-      error,
-      context,
+      error: actualError,
       component
     })
   }

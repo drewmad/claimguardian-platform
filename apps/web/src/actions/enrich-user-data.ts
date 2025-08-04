@@ -11,9 +11,8 @@
 
 'use server'
 
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logger/production-logger'
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 interface EnrichmentData {
   userId: string
@@ -48,12 +47,12 @@ export async function enrichDeviceData(data: EnrichmentData) {
     })
     
     if (error && error.code !== '23505') { // Ignore duplicate errors
-      logger.warn('Device enrichment failed:', error)
+      logger.warn('Device enrichment failed', { error: error.message, code: error.code })
     }
     
     return { success: true }
   } catch (error) {
-    logger.warn('Device enrichment error:', error)
+    logger.error('Device enrichment error', error instanceof Error ? error : new Error(String(error)))
     return { success: false, error }
   }
 }
@@ -84,13 +83,13 @@ export async function enrichLocationData(data: EnrichmentData) {
         .eq('session_id', data.sessionId)
       
       if (error) {
-        logger.warn('Location enrichment failed:', error)
+        logger.warn('Location enrichment failed', { error: error.message, code: error.code })
       }
     }
     
     return { success: true }
   } catch (error) {
-    logger.warn('Location enrichment error:', error)
+    logger.error('Location enrichment error', error instanceof Error ? error : new Error(String(error)))
     return { success: false, error }
   }
 }
@@ -124,7 +123,7 @@ export async function enrichUserData(data: EnrichmentData) {
       results: results.map(r => r.status === 'fulfilled' ? r.value : { success: false })
     }
   } catch (error) {
-    logger.error('User data enrichment failed', { userId: data.userId }, error as Error)
+    logger.error('User data enrichment failed', error as Error)
     return { success: false, error }
   }
 }
@@ -172,7 +171,7 @@ async function getLocationFromIP(ipAddress: string) {
       timezone: data.timezone
     }
   } catch (error) {
-    logger.warn('IP geolocation failed:', error)
+    logger.error('IP geolocation failed', error instanceof Error ? error : new Error(String(error)))
     return null
   }
 }

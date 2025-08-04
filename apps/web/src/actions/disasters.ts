@@ -5,7 +5,6 @@ import { unstable_noStore as noStore } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function getDisasterHubData() {
   noStore() // Ensure data is always fresh

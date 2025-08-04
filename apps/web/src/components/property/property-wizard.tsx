@@ -17,7 +17,6 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { createProperty } from '@/actions/properties'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
-import { logger } from "@/lib/logger/production-logger"
 
 // --- Constants & Configuration ---
 const COLORS = {

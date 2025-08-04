@@ -5,7 +5,6 @@ import { revalidatePath } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function updateUserChecklist({ itemId, completed }: { itemId: string, completed: boolean }) {
   const supabase = await createClient()

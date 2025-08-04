@@ -8,7 +8,6 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AIClientService } from '@/lib/ai/client-service'
-import { logger } from "@/lib/logger/production-logger"
 
 interface APIKeyValidatorProps {
   onValidation: (hasKeys: boolean) => void

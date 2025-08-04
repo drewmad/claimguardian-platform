@@ -7,6 +7,8 @@
  * @status active
  */
 
+import { logger } from '@/lib/logger/production-logger'
+
 interface EnvCheckResult {
   isValid: boolean
   missing: string[]
@@ -32,10 +34,10 @@ export function checkRequiredEnv(): EnvCheckResult {
   // Log warnings in development
   if (process.env.NODE_ENV === 'development') {
     if (missing.length > 0) {
-      logger.error('[Environment Check] Missing required variables:', missing)
+      logger.error(`[Environment Check] Missing required variables: ${missing.join(', ')}`)
     }
     if (warnings.length > 0) {
-      logger.warn('[Environment Check] Missing recommended variables:', warnings)
+      logger.warn('[Environment Check] Missing recommended variables:', { warnings })
     }
   }
 

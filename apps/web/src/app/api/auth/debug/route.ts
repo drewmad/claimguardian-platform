@@ -10,7 +10,6 @@ import { NextResponse } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 async function getAuthCookies() {
   const cookieStore = await cookies()

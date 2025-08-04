@@ -9,7 +9,6 @@ import {
   getDocumentDownloadUrl,
   createDocumentRecord,
 } from '@/actions/documents'
-import { logger } from "@/lib/logger/production-logger"
 
 // Query keys factory
 export const documentKeys = {

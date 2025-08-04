@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { APIKeyValidator } from '@/components/ai/api-key-validator'
 import { useAuth } from '@/components/auth/auth-provider'
@@ -16,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface ClaimStep {
@@ -266,7 +266,7 @@ Format the summary for submission to an insurance company.`
 
       return response
     } catch (error) {
-      logger.error('Error generating summary:', error)
+      logger.error('Error generating summary:', toError(error))
       toast.error('Failed to generate claim summary')
       return null
     }

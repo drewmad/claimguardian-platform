@@ -11,10 +11,8 @@
 
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
 import React, { Component, ReactNode, ErrorInfo } from 'react'
-import { logger } from "@/lib/logger/production-logger"
-
-import { logger } from '@/lib/logger'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger/production-logger'
+import { toError } from '@claimguardian/utils'
 
 interface Props {
   children: ReactNode
@@ -225,7 +223,7 @@ class ErrorBoundary extends Component<Props, State> {
         }
       })
     } catch (reportingError) {
-      logger.error('Failed to report error to monitoring service', {}, reportingError instanceof Error ? reportingError : new Error(String(reportingError)))
+      logger.error('Failed to report error to monitoring service', toError(reportingError))
     }
   }
 

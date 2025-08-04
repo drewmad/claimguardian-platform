@@ -23,7 +23,6 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
 import { ThreatLevel } from '@/types/situation-room'
-import { logger } from "@/lib/logger/production-logger"
 
 interface AIAssessmentPanelProps {
   propertyId: string

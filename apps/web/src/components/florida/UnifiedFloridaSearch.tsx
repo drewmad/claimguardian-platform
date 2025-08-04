@@ -20,7 +20,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface PropertyMetadata {

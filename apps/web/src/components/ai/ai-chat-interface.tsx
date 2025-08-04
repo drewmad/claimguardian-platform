@@ -8,7 +8,6 @@ import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Textarea } from '@/components/ui/textarea'
 import { cn } from '@/lib/utils'
-import { logger } from "@/lib/logger/production-logger"
 
 interface Message {
   id: string

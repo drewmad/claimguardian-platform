@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { logger } from "@/lib/logger/production-logger"
-
 import { logger } from '@/lib/logger'
+import { toError } from '@claimguardian/utils'
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: NextRequest) {
   try {
@@ -41,13 +39,13 @@ export async function POST(request: NextRequest) {
       })
     } catch (dbError) {
       // Don't fail if database insert fails
-      logger.error('Failed to store CSP violation in database:', dbError)
+      logger.error('Failed to store CSP violation in database:', undefined, toError(dbError))
     }
     
     // Return 204 No Content as per CSP reporting spec
     return new NextResponse(null, { status: 204 })
   } catch (error) {
-    logger.error('Failed to process CSP report', {}, error instanceof Error ? error : new Error(String(error)))
+    logger.error('Failed to process CSP report', undefined, toError(error))
     
     // Still return 204 to prevent browser from retrying
     return new NextResponse(null, { status: 204 })

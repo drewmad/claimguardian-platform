@@ -19,7 +19,6 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
 import { EvidenceManager } from './evidence-manager'
-import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { Button } from '@/components/ui/button'
@@ -29,7 +28,6 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface ClaimData {

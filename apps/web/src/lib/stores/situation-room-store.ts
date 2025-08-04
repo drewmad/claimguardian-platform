@@ -20,6 +20,7 @@ import { create } from 'zustand'
 import { subscribeWithSelector } from 'zustand/middleware'
 import { immer } from 'zustand/middleware/immer'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
 import { 
@@ -40,7 +41,6 @@ import type {
   EvacuationPlan,
   ThreatMonitoringConfig
 } from '@/types/situation-room'
-import { logger } from "@/lib/logger/production-logger"
 
 interface SituationRoomActions {
   // Data loading actions
@@ -222,7 +222,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           const propertyId = getCurrentPropertyId()
           await get().runAIThreatAssessment(propertyId)
         } catch (error) {
-          logger.error('Failed to refresh threat assessment:', error)
+          logger.error('Failed to refresh threat assessment:', toError(error))
         }
       },
       
@@ -234,7 +234,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.unreadFeedCount = response.feeds.filter((f: IntelligenceFeed) => !f.actionRequired).length
           })
         } catch (error) {
-          logger.error('Failed to refresh intelligence feeds:', error)
+          logger.error('Failed to refresh intelligence feeds:', toError(error))
         }
       },
       
@@ -247,7 +247,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.totalSystems = response.totalSystems
           })
         } catch (error) {
-          logger.error('Failed to refresh property status:', error)
+          logger.error('Failed to refresh property status:', toError(error))
         }
       },
       
@@ -259,7 +259,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.neighborhoodThreatLevel = response.threatLevel
           })
         } catch (error) {
-          logger.error('Failed to refresh community intelligence:', error)
+          logger.error('Failed to refresh community intelligence:', toError(error))
         }
       },
       
@@ -343,7 +343,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             state.error = error instanceof Error ? error.message : 'AI threat assessment failed'
             state.aiAssessmentRunning = false
           })
-          logger.error('AI threat assessment failed:', error)
+          logger.error('AI threat assessment failed:', toError(error))
         }
       },
       
@@ -492,7 +492,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             }
           })
         } catch (error) {
-          logger.error('Failed to execute recommendation:', error)
+          logger.error('Failed to execute recommendation:', toError(error))
           set(state => {
             state.error = `Failed to execute recommendation: ${error}`
           })
@@ -710,7 +710,7 @@ function getCurrentPropertyId(): string {
 
 async function executeAction(action: ActionItem): Promise<void> {
   // This would execute the specific action
-  logger.info('Executing action:', action.title)
+  logger.info(`Executing action: ${action.title}`)
   
   // Simulate action execution
   await new Promise(resolve => setTimeout(resolve, 1000))

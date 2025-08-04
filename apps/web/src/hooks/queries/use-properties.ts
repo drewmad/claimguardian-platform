@@ -4,7 +4,6 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 type Property = Database['public']['Tables']['properties']['Row']
 type PropertyInsert = Database['public']['Tables']['properties']['Insert']

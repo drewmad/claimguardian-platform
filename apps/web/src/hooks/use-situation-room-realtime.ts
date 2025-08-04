@@ -35,7 +35,6 @@ import type {
   CommunityIntelligence,
   AIRecommendation
 } from '@/types/situation-room'
-import { logger } from "@/lib/logger/production-logger"
 
 interface RealtimeSubscriptionConfig {
   propertyId: string

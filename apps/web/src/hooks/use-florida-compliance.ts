@@ -5,7 +5,6 @@ import { useEffect, useState, useCallback } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { useFloridaDisclosures } from '@/components/compliance/florida-disclosures-context'
-import { logger } from "@/lib/logger/production-logger"
 
 /**
  * Hook to check and handle Florida insurance compliance requirements

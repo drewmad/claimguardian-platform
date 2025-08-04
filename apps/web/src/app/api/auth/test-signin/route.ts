@@ -9,7 +9,6 @@ import { NextResponse } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function POST(request: Request) {
   try {

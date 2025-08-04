@@ -5,6 +5,7 @@ import { botProtection } from '@/lib/security/bot-protection'
 import { createClient } from '@/lib/supabase/middleware'
 import { rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 // Helper to clear all auth cookies
 function clearAuthCookies(request: NextRequest, response: NextResponse) {
@@ -147,7 +148,7 @@ export async function middleware(request: NextRequest) {
     
     if (rateLimitResult.limited) {
       // Log rate limit violation for security monitoring
-      console.warn('[RATE_LIMIT_EXCEEDED]', {
+      logger.warn('[RATE_LIMIT_EXCEEDED]', {
         timestamp: new Date().toISOString(),
         ip: request.headers.get('x-forwarded-for')?.split(',')[0] || request.headers.get('x-real-ip') || 'unknown',
         path: pathname,
@@ -186,7 +187,7 @@ export async function middleware(request: NextRequest) {
   
   // Block obvious bots
   if (botCheck.shouldBlock) {
-    console.log('[MIDDLEWARE] Bot blocked:', {
+    logger.info('[MIDDLEWARE] Bot blocked:', {
       confidence: botCheck.confidence,
       reasons: botCheck.reasons,
       path: pathname,
@@ -219,11 +220,7 @@ export async function middleware(request: NextRequest) {
     
     // Only log auth errors for protected routes, not public pages
     if (error && !isPublicPage) {
-      console.error('[MIDDLEWARE] Session error:', {
-        error: error.message,
-        path: pathname,
-        timestamp: new Date().toISOString()
-      })
+      logger.error(`[MIDDLEWARE] Session error at ${pathname}:`, new Error(error.message))
       
       // Handle refresh token errors by clearing cookies (only for protected routes)
       if (error.message.includes('refresh_token_not_found') || 
@@ -250,7 +247,7 @@ export async function middleware(request: NextRequest) {
       if (!userError && validatedUserFromGet) {
         validatedUser = validatedUserFromGet
       } else if (userError) {
-        console.warn('[MIDDLEWARE] User validation failed:', {
+        logger.warn('[MIDDLEWARE] User validation failed:', {
           error: userError.message,
           path: pathname,
           sessionUser: user.email
@@ -328,7 +325,7 @@ export async function middleware(request: NextRequest) {
       }
     } catch (error) {
       // Don't block requests if logging fails
-      console.warn('[MIDDLEWARE] Audit logging failed:', {
+      logger.warn('[MIDDLEWARE] Audit logging failed:', {
         error: error instanceof Error ? error.message : 'Unknown error',
         path: pathname
       })
@@ -336,7 +333,7 @@ export async function middleware(request: NextRequest) {
     
     // Log access attempts for security monitoring
     if (process.env.NODE_ENV === 'production' && pathname.startsWith('/admin')) {
-      console.log('[SECURITY] Admin access attempt:', {
+      logger.info('[SECURITY] Admin access attempt:', {
         timestamp: new Date().toISOString(),
         userId: validatedUser?.id || 'unauthenticated',
         userEmail: validatedUser?.email || 'unknown',
@@ -371,7 +368,7 @@ export async function middleware(request: NextRequest) {
     if (matchedRoute?.requiresAdmin && validatedUser) {
       // TODO: Check if user has admin role
       // For now, log the attempt
-      console.warn('[MIDDLEWARE] Admin route accessed:', {
+      logger.warn('[MIDDLEWARE] Admin route accessed:', {
         userId: validatedUser.id,
         email: validatedUser.email,
         path: pathname
@@ -387,11 +384,7 @@ export async function middleware(request: NextRequest) {
     }
     
   } catch (error) {
-    console.error('[MIDDLEWARE] Unexpected error:', {
-      error: error instanceof Error ? error.message : 'Unknown error',
-      path: pathname,
-      timestamp: new Date().toISOString()
-    })
+    logger.error(`[MIDDLEWARE] Unexpected error at ${pathname}:`, toError(error))
     
     // Don't block requests on unexpected errors
     // Just log and continue

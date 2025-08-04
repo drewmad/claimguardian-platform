@@ -9,10 +9,8 @@ import { logger } from "@/lib/logger/production-logger"
 import { ProgressBar } from './ProgressBar'
 import { Agreements } from './steps/Agreements'
 import { PersonalInfo } from './steps/PersonalInfo'
-import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface FormData {

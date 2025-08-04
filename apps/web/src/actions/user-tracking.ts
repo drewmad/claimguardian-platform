@@ -8,10 +8,7 @@
 
 import { createServiceRoleClient } from '@claimguardian/db'
 import { headers } from 'next/headers'
-import { logger } from "@/lib/logger/production-logger"
-
 import { logger } from '@/lib/logger'
-import { logger } from "@/lib/logger/production-logger"
 
 interface TrackingData {
   userId: string
@@ -159,7 +156,7 @@ export async function captureSignupData(data: SignupTrackingData) {
         })
       
       if (captureError) {
-        logger.error('[USER TRACKING] RPC function error:', captureError)
+        logger.error('[USER TRACKING] RPC function error', { error: captureError.message, code: captureError.code })
         // If RPC doesn't exist, fall back to direct insert
         if (captureError.message?.includes('function') || captureError.code === 'PGRST202') {
           logger.info('[USER TRACKING] Falling back to direct user_profiles update')
@@ -188,16 +185,16 @@ export async function captureSignupData(data: SignupTrackingData) {
             })
           
           if (profileError) {
-            logger.error('[USER TRACKING] Profile update error:', profileError)
+            logger.error('[USER TRACKING] Profile update error', { error: profileError.message, code: profileError.code })
             // Don't throw - this is not critical for signup
           }
         } else {
           // For other RPC errors, log but don't throw
-          logger.error('Failed to capture signup data via RPC', { userId: data.userId }, captureError)
+          logger.error('Failed to capture signup data via RPC', { userId: data.userId, error: captureError.message, code: captureError.code })
         }
       }
     } catch (rpcError) {
-      logger.error('[USER TRACKING] Unexpected RPC error:', rpcError)
+      logger.error('[USER TRACKING] Unexpected RPC error', {}, rpcError instanceof Error ? rpcError : new Error(String(rpcError)))
       // Don't throw - continue with signup
     }
     
@@ -218,7 +215,7 @@ export async function captureSignupData(data: SignupTrackingData) {
       })
       
       if (prefsError) {
-        logger.error('[USER TRACKING] Preferences error:', prefsError)
+        logger.error('[USER TRACKING] Preferences error', { error: prefsError.message, code: prefsError.code })
         // Try direct insert as fallback
         const { error: directError } = await supabase
           .from('user_preferences')
@@ -234,13 +231,13 @@ export async function captureSignupData(data: SignupTrackingData) {
             timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
           })
         if (directError) {
-          logger.error('[USER TRACKING] Direct preferences insert also failed:', directError)
+          logger.error('[USER TRACKING] Direct preferences insert also failed', { error: directError.message, code: directError.code })
         }
-        logger.error('Failed to create user preferences', { userId: data.userId }, prefsError)
+        logger.error('Failed to create user preferences', { userId: data.userId, error: prefsError.message, code: prefsError.code })
         // Don't throw - preferences are not critical for signup
       }
     } catch (prefsError) {
-      logger.error('[USER TRACKING] Unexpected preferences error:', prefsError)
+      logger.error('[USER TRACKING] Unexpected preferences error', {}, prefsError instanceof Error ? prefsError : new Error(String(prefsError)))
       // Don't throw - continue with signup
     }
     
@@ -268,13 +265,13 @@ export async function captureSignupData(data: SignupTrackingData) {
             })
           
           if (auditError) {
-            logger.error('[USER TRACKING] Consent audit error:', auditError)
+            logger.error('[USER TRACKING] Consent audit error', { error: auditError.message, code: auditError.code })
             // Don't throw - audit logging is not critical
           }
         }
       }
     } catch (auditError) {
-      logger.error('[USER TRACKING] Unexpected audit error:', auditError)
+      logger.error('[USER TRACKING] Unexpected audit error', {}, auditError instanceof Error ? auditError : new Error(String(auditError)))
       // Don't throw - continue with signup
     }
     

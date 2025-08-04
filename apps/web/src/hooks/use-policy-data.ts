@@ -3,7 +3,6 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
 import { useSupabase } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 interface PolicyDocument {
   id: string

@@ -1,8 +1,8 @@
 import { AIClientService } from './client-service'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from "@claimguardian/utils"
 
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 interface CacheEntry {
   key: string
@@ -146,7 +146,7 @@ export class EnhancedAIService extends AIClientService {
       
       this.contextMemory.set(userId, context)
     } catch (error) {
-      logger.error('Failed to persist context:', error)
+      logger.error('Failed to persist context:', toError(error))
     }
   }
 

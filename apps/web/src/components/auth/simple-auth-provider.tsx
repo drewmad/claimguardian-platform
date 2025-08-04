@@ -6,7 +6,6 @@ import { createContext, useContext, useEffect, useState, ReactNode } from 'react
 import { logger } from "@/lib/logger/production-logger"
 
 import { simpleAuthService } from '@/lib/auth/simple-auth-service'
-import { logger } from "@/lib/logger/production-logger"
 
 interface AuthContextType {
   user: User | null

@@ -12,12 +12,12 @@ interface ImageAnalysisRequest {
 }
 
 export class AIClient {
-  private openaiKey: string | null
-  private geminiKey: string | null
+  private openaiKey: string | null = null
+  private geminiKey: string | null = null
 
   constructor() {
-    this.openaiKey = process.env.OPENAI_API_KEY || null
-    this.geminiKey = process.env.GEMINI_API_KEY || null
+    // WARNING: API key moved to server-side - use /api/ai endpoint instead
+    // Initialize keys as null since they're now server-side only
   }
 
   async chat(messages: ChatMessage[], model: 'openai' | 'gemini' = 'openai') {

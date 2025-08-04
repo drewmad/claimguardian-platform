@@ -5,7 +5,6 @@ import React, { useRef, useEffect, useState, useCallback } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
-import { logger } from "@/lib/logger/production-logger"
 
 interface CameraCaptureProps {
   onClose: () => void

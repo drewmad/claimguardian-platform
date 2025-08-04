@@ -21,7 +21,6 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { useSupabase } from '@/lib/supabase/client'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
-import { logger } from "@/lib/logger/production-logger"
 
 interface OnboardingStep {
   id: string

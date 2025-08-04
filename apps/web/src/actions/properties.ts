@@ -18,10 +18,10 @@ import {
 } from '@claimguardian/utils'
 import { revalidatePath } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { createClient } from '@/lib/supabase/server'
 import { updatePropertySchema } from '@/lib/validation/schemas'
-import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyData {
   name: string
@@ -57,7 +57,7 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error fetching property:', error)
+    logger.error('Error fetching property:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -123,7 +123,7 @@ export async function getProperties(params?: PaginationParams) {
     
     return { data: paginatedResponse, error: null }
   } catch (error) {
-    logger.error('Error fetching properties:', error)
+    logger.error('Error fetching properties:', toError(error))
     return { data: null, error: error as Error }
   }
 }
@@ -136,8 +136,8 @@ export async function updateProperty(params: unknown) {
     const supabase = await createClient()
     
     // Debug logging
-    logger.info('[UPDATE PROPERTY] Starting update for property:', propertyId)
-    logger.info('[UPDATE PROPERTY] Updates:', updates)
+    logger.info('[UPDATE PROPERTY] Starting update for property', { propertyId })
+    logger.info('[UPDATE PROPERTY] Updates', { updates })
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError) {

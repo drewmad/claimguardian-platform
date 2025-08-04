@@ -10,7 +10,6 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { profileService, UserProfile } from '@/lib/auth/profile-service'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface SettingsModalProps {

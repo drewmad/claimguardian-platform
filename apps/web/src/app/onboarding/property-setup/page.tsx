@@ -13,7 +13,6 @@ import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
-import { logger } from "@/lib/logger/production-logger"
 
 // Google Maps types are declared in types/globals.d.ts
 

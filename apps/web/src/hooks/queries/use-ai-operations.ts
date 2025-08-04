@@ -3,7 +3,6 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
 import { AIClientService } from '@/lib/ai/client-service'
-import { logger } from "@/lib/logger/production-logger"
 
 const aiClient = new AIClientService()
 

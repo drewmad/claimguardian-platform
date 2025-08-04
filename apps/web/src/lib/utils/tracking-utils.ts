@@ -11,6 +11,7 @@
 
 import { UAParser } from 'ua-parser-js'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 export interface SignupTrackingData {
   ipAddress?: string
@@ -117,12 +118,12 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
         }
       } catch (error) {
         // Geolocation permission denied or failed - this is okay
-        logger.debug('Geolocation not available:', error)
+        logger.debug('Geolocation not available', toError(error))
       }
     }
     
   } catch (error) {
-    logger.error('Error collecting tracking data:', error)
+    logger.error('Error collecting tracking data:', toError(error))
   }
   
   return trackingData

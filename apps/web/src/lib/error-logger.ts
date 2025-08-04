@@ -51,7 +51,7 @@ export class AIErrorLogger {
       )
     } catch (_error) {
       logger.warn('Error logger: Supabase client not initialized')
-      logger.info(_error)
+      logger.error('Error logger initialization failed', _error instanceof Error ? _error : new Error(String(_error)))
       this.isEnabled = false
     }
   }
@@ -91,7 +91,7 @@ export class AIErrorLogger {
       try {
         await this.supabase.from('error_logs').insert([logEntry])
       } catch (dbError) {
-        logger.error('Failed to log error to database:', dbError)
+        logger.error('Failed to log error to database', dbError instanceof Error ? dbError : new Error(String(dbError)))
       }
     }
 
@@ -160,7 +160,7 @@ export class AIErrorLogger {
         timestamp: new Date()
       }])
     } catch (dbError) {
-      logger.error('Failed to log user action:', dbError)
+      logger.error('Failed to log user action', dbError instanceof Error ? dbError : new Error(String(dbError)))
     }
   }
 
@@ -237,7 +237,7 @@ export class AIErrorLogger {
         timestamp: new Date()
       }])
     } catch (dbError) {
-      logger.error('Failed to log performance:', dbError)
+      logger.error('Failed to log performance', dbError instanceof Error ? dbError : new Error(String(dbError)))
     }
 
     // Warn if action is taking too long

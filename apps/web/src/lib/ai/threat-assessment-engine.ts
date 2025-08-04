@@ -21,6 +21,7 @@ import Anthropic from '@anthropic-ai/sdk'
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai'
 import OpenAI from 'openai'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from "@claimguardian/utils"
 
 import { 
   ThreatAssessment, 
@@ -34,7 +35,6 @@ import {
   ImpactLevel,
   ActionPriority
 } from '@/types/situation-room'
-import { logger } from "@/lib/logger/production-logger"
 
 interface WeatherData {
   location: string
@@ -191,6 +191,7 @@ export class ThreatAssessmentEngine {
   private async initializeOpenAI() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
+      // WARNING: API key moved to server-side - use /api/ai endpoint instead
       
       if (!apiKey) {
         logger.warn('OpenAI API key not found')
@@ -280,6 +281,7 @@ export class ThreatAssessmentEngine {
   private async initializeGemini() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY
+      // WARNING: API key moved to server-side - use /api/ai endpoint instead
       
       if (!apiKey) {
         logger.warn('Gemini API key not found')
@@ -536,7 +538,7 @@ export class ThreatAssessmentEngine {
       
       return assessment
     } catch (error) {
-      logger.error(`AI threat assessment failed with ${provider}, trying fallback:`, error)
+      logger.error(`AI threat assessment failed with ${provider}, trying fallback:`, toError(error))
       
       // Try alternate provider if available
       const availableProviders = this.getAvailableProviders()
@@ -835,7 +837,7 @@ Respond with valid JSON only, no additional text.
         processingTime: Date.now() - startTime
       }
     } catch (error) {
-      logger.error('Failed to parse AI response:', error)
+      logger.error('Failed to parse AI response:', toError(error))
       return this.fallbackAssessment(request, startTime)
     }
   }
@@ -1125,7 +1127,7 @@ Respond with valid JSON only, no additional text.
       const result = await this.assessThreats(testRequest)
       return result.threats.length > 0
     } catch (error) {
-      logger.error(`Provider test failed for ${provider}:`, error)
+      logger.error(`Provider test failed for ${provider}:`, toError(error))
       return false
     }
   }

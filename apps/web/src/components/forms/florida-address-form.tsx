@@ -17,7 +17,6 @@ import { getFloridaCountiesFallback, validateAddress } from '@/actions/geographi
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
-import { logger } from "@/lib/logger/production-logger"
 
 interface AddressComponents {
   street1: string

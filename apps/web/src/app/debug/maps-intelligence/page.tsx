@@ -211,10 +211,10 @@ export default function MapsIntelligencePage() {
         cached = false
       } else {
         // Google Maps service response format
-        success = result.success
-        data = result.data
-        error = result.error
-        cached = result.cached
+        success = (result as any).success
+        data = (result as any).data
+        error = (result as any).error
+        cached = (result as any).cached
       }
       
       updateTestResult(apiKey, {

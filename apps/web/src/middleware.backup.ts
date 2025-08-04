@@ -3,7 +3,6 @@ import type { NextRequest } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/middleware'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()

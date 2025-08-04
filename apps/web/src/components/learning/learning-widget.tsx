@@ -13,7 +13,6 @@ import React, { useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { learningAssistant } from '@/lib/learning/learning-assistant'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface LearningResult {

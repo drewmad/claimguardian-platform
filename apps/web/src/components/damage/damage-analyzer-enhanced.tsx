@@ -11,7 +11,6 @@ import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { usePolicyData, getPolicyCoverageInfo } from '@/hooks/use-policy-data'
 import { useSupabase } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 
 

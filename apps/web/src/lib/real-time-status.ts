@@ -3,6 +3,7 @@
 import { useEffect, useState, useRef } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 export interface StatusUpdate {
   id: string
@@ -74,7 +75,7 @@ class RealTimeStatusManager {
             this.systemStatusCallbacks.forEach(cb => cb(status))
           }
         } catch (error) {
-          logger.error('Error parsing WebSocket message:', error)
+          logger.error('Error parsing WebSocket message:', toError(error))
         }
       }
 
@@ -84,11 +85,11 @@ class RealTimeStatusManager {
       }
 
       this.ws.onerror = (error) => {
-        logger.error('WebSocket error:', error)
+        logger.error('WebSocket error:', new Error(`WebSocket error: ${error.type}`))
         this.isConnected = false
       }
     } catch (error) {
-      logger.error('Failed to connect to WebSocket:', error)
+      logger.error('Failed to connect to WebSocket:', toError(error))
       this.reconnect()
     }
   }

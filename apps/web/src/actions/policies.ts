@@ -12,12 +12,12 @@
 
 import { revalidatePath } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 import { createClient } from '@/lib/supabase/server'
 import type { 
   CreatePolicyInput
 } from '@/types/database-enhancements'
-import { logger } from "@/lib/logger/production-logger"
 
 export async function createPolicy(input: CreatePolicyInput) {
   try {
@@ -59,7 +59,7 @@ export async function createPolicy(input: CreatePolicyInput) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error creating policy:', error)
+    logger.error('Error creating policy:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to create policy' 
@@ -104,7 +104,7 @@ export async function getPolicies(propertyId?: string) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error fetching policies:', error)
+    logger.error('Error fetching policies:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to fetch policies' 
@@ -148,7 +148,7 @@ export async function getPolicy(policyId: string) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error fetching policy:', error)
+    logger.error('Error fetching policy:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to fetch policy' 
@@ -194,7 +194,7 @@ export async function updatePolicy(policyId: string, updates: Partial<CreatePoli
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error updating policy:', error)
+    logger.error('Error updating policy:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to update policy' 
@@ -230,7 +230,7 @@ export async function getActivePolicies() {
     
     return { data: userPolicies, error: null }
   } catch (error) {
-    logger.error('Error fetching active policies:', error)
+    logger.error('Error fetching active policies:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to fetch active policies' 
@@ -275,7 +275,7 @@ export async function deactivatePolicy(policyId: string) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error deactivating policy:', error)
+    logger.error('Error deactivating policy:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to deactivate policy' 
@@ -316,7 +316,7 @@ export async function getPoliciesByProperty(propertyId: string) {
     
     return { data, error: null }
   } catch (error) {
-    logger.error('Error fetching policies by property:', error)
+    logger.error('Error fetching policies by property:', toError(error))
     return { 
       data: null, 
       error: error instanceof Error ? error.message : 'Failed to fetch policies' 

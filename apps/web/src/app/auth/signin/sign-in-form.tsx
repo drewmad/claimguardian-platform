@@ -14,7 +14,6 @@ import React, { useState, useEffect } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from "@/lib/logger/production-logger"
 
 interface SignInFormProps {
   message?: string

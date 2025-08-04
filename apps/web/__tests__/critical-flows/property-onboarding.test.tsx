@@ -1,3 +1,4 @@
+import React from 'react'
 /**
  * @fileMetadata
  * @purpose Critical property onboarding flow tests

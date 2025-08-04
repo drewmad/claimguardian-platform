@@ -29,7 +29,6 @@ import { enrichPropertyData } from '@/actions/property-enrichment'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { createClient } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 interface PropertyEnrichmentData {
   id: string

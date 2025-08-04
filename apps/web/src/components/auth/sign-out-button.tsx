@@ -12,7 +12,6 @@ import { useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { logger } from "@/lib/logger/production-logger"
 
 interface SignOutButtonProps {
   variant?: 'default' | 'ghost' | 'secondary' | 'link'

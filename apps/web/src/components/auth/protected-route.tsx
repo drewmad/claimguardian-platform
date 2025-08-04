@@ -13,15 +13,11 @@
 
 import { useRouter } from 'next/navigation';
 import React, { useEffect } from 'react';
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from '@/lib/logger';
 
 import { AuthLoading } from './auth-loading';
 import { useAuth } from './auth-provider';
 import { ClientOnlyAuth } from './client-only-auth';
-import { logger } from "@/lib/logger/production-logger"
-
-import { logger } from '@/lib/logger';
-import { logger } from "@/lib/logger/production-logger"
 
 interface ProtectedRouteProps {
   children: React.ReactNode;

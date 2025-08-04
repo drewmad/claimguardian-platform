@@ -10,6 +10,7 @@
  */
 import * as Sentry from '@sentry/nextjs';
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from '@claimguardian/utils'
 
 type Part = { text: string } | { inlineData: { mimeType: string; data: string } };
 const callGeminiAPI = async (
@@ -58,7 +59,7 @@ const callGeminiAPI = async (
 
         if (!response.ok) {
             const errorBody = await response.text();
-            logger.error("API Error Response:", errorBody);
+            logger.error("API Error Response:", new Error(errorBody));
             
             // If API key error, show helpful message
             if (response.status === 400 && errorBody.includes("API_KEY_INVALID")) {
@@ -83,7 +84,7 @@ const callGeminiAPI = async (
             return "Sorry, I couldn't get a response. Please try again.";
         }
     } catch (error) {
-        logger.error("Error calling Gemini API:", error);
+        logger.error("Error calling Gemini API:", toError(error));
         Sentry.captureException(error); // Capture exception with Sentry
         return jsonSchema ? {} : "I'm currently in demo mode. AI features are limited but you can still explore the interface!";
     }

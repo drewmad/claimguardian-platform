@@ -9,7 +9,6 @@ import { logger } from "@/lib/logger/production-logger"
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 // import { AIClientService } from '@/lib/ai/client-service' // TODO: Remove if not needed
-import { logger } from "@/lib/logger/production-logger"
 
 interface ChatMessage {
   role: 'user' | 'assistant'

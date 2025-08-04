@@ -1,6 +1,7 @@
 // PDF processing utilities for AI analysis
 import { getPdfLib } from './pdf-client'
 import { logger } from "@/lib/logger/production-logger"
+import { toError } from "@claimguardian/utils"
 
 export interface ProcessedPDF {
   text: string
@@ -94,7 +95,7 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
       } : undefined
     }
   } catch (error) {
-    logger.error('Error processing PDF:', error)
+    logger.error('Error processing PDF:', toError(error))
     throw new Error(`Failed to process PDF: ${error instanceof Error ? error.message : 'Unknown error'}`)
   }
 }

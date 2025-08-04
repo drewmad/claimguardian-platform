@@ -11,7 +11,6 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { processPDF } from '@/lib/ai/pdf-processor'
 import { useSupabase } from '@/lib/supabase/client'
-import { logger } from "@/lib/logger/production-logger"
 
 
 interface PolicyUploadProps {
