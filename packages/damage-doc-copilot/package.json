@@ -14,11 +14,12 @@
   },
   "devDependencies": {
     "@types/react": "^18.0.0",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "tsup": "^8.5.0"
   },
   "scripts": {
-    "build": "tsc",
-    "dev": "tsc --watch",
+    "build": "tsup src/index.ts --format esm",
+    "dev": "tsup src/index.ts --format esm --dts --watch",
     "lint": "eslint src/",
     "type-check": "tsc --noEmit"
   }

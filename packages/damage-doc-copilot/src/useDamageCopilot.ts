@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * @fileMetadata
  * @purpose Damage Documentation Copilot Hook - State management for AI-guided documentation

@@ -511,7 +511,6 @@ export default function CommunityIntelligencePage() {
                 </div>
               </CardContent>
             </Card>
-            </Card>
               </>
             )}
           </div>
