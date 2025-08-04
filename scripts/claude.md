@@ -1,7 +1,7 @@
 # Scripts Directory - Claude.md
 
 ## Overview
-The scripts directory contains essential development, deployment, and maintenance scripts for the ClaimGuardian platform.
+The scripts directory contains essential development, deployment, and maintenance scripts for the ClaimGuardian platform. Updated for modern toolchain with pnpm 10.13.1, Node.js 24.3.0, and enhanced automation.
 
 ## Core Scripts
 

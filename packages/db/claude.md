@@ -8,6 +8,8 @@ The `@claimguardian/db` package provides centralized Supabase client management 
 - **Environment Detection**: Browser vs server client creation
 - **Type Safety**: Generated TypeScript types from database schema
 - **Connection Pooling**: Optimized for serverless environments
+- **PostgreSQL 17**: Latest version with PostGIS for geographic data
+- **Row Level Security**: User-based data access control
 
 ## Key Files
 - `src/index.ts` - Main exports and client factory

@@ -7,8 +7,9 @@ The `@claimguardian/ui` package provides a centralized design system built on Ra
 - **Radix UI Primitives**: Accessible, unstyled components  
 - **Tailwind CSS**: Utility-first styling
 - **Liquid Glass Design**: Premium visual effects with glassmorphism
-- **TypeScript**: Full type safety for all components
+- **TypeScript 5.8.3**: Full type safety for all components
 - **Tree Shaking**: Optimized bundle size with selective imports
+- **Enhanced Button Component**: Loading states, icons, accessibility features
 
 ## Design System
 
@@ -161,6 +162,19 @@ import { Card } from '@claimguardian/ui/card'
 <Button size="default">Default</Button>
 <Button size="lg">Large</Button>
 <Button size="icon">Icon</Button>
+
+// Enhanced Button features (NEW)
+<Button loading={isLoading} loadingText="Processing...">
+  Submit
+</Button>
+
+<Button leftIcon={<Save className="h-4 w-4" />}>
+  Save Document
+</Button>
+
+<Button rightIcon={<ArrowRight className="h-4 w-4" />}>
+  Continue
+</Button>
 ```
 
 ### Custom Styling with Tailwind

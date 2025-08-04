@@ -15,6 +15,7 @@
 
 import { createServerSupabaseClient, type ClaimInsert, type ClaimUpdate } from '@claimguardian/db'
 import { toError } from '@claimguardian/utils'
+import { cookies } from 'next/headers'
 
 export interface ClaimResult {
   success: boolean
@@ -34,7 +35,8 @@ export async function createClaim({
   estimatedAmount?: number
 }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -88,7 +90,8 @@ export async function updateClaim({
   updates: ClaimUpdate
 }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -132,7 +135,8 @@ export async function updateClaim({
 
 export async function deleteClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -171,7 +175,8 @@ export async function deleteClaim({ claimId }: { claimId: string }): Promise<Cla
 
 export async function getClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -218,7 +223,8 @@ export async function getClaim({ claimId }: { claimId: string }): Promise<ClaimR
 
 export async function getUserClaims(): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -272,7 +278,8 @@ export async function uploadClaimDocument({
   documentType: string
 }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -344,7 +351,8 @@ export async function uploadClaimDocument({
 
 export async function generateClaimReport({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const cookieStore = await cookies()
+    const supabase = await createServerSupabaseClient(cookieStore)
     
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()

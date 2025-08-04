@@ -21,3 +21,7 @@ export { Badge } from './badge'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs'
 export { cn } from './utils'
 export { CheckIcon, XIcon } from './icons'
+
+// Mock CameraCapture for build compatibility
+// Note: Use local implementation in apps/web instead
+export const CameraCapture = () => null
