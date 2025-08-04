@@ -1,11 +1,11 @@
 /**
  * @fileMetadata
- * @purpose 3D model generator from multiple images using AI
+ * @purpose 3D model generator from multiple images using AI photogrammetry
  * @owner frontend-team
- * @dependencies ["react", "next", "lucide-react"]
+ * @dependencies ["react", "next", "lucide-react", "@react-three/fiber", "@react-three/drei", "three"]
  * @exports ["default"]
  * @complexity high
- * @tags ["ai", "3d-modeling", "image-processing", "reconstruction"]
+ * @tags ["ai", "3d-modeling", "image-processing", "reconstruction", "photogrammetry"]
  * @status active
  */
 'use client'
@@ -14,9 +14,13 @@ import {
   Upload, Camera, RotateCcw, Download, Eye, Grid, 
   Play, Pause, Settings, Info, CheckCircle,
   X, Move3D, Zap, Sparkles, Target, Layers,
-  Volume2, VolumeX, Maximize, ZoomIn, ZoomOut
+  Volume2, VolumeX, Maximize, ZoomIn, ZoomOut, AlertCircle
 } from 'lucide-react'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect, Suspense } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { OrbitControls, useGLTF } from '@react-three/drei'
+import * as THREE from 'three'
+import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -24,8 +28,10 @@ import { Badge } from '@/components/ui/badge'
 import { Card } from '@/components/ui/card'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { createClient } from '@/lib/supabase/client'
 
-type ProcessingStage = 'upload' | 'analyzing' | 'reconstructing' | 'optimizing' | 'complete'
+type ProcessingStage = 'upload' | 'analyzing' | 'reconstructing' | 'optimizing' | 'complete' | 'error'
 type ViewMode = '3d' | 'wireframe' | 'textured'
 type Quality = 'draft' | 'standard' | 'high' | 'ultra'
 
@@ -33,6 +39,7 @@ interface UploadedImage {
   id: string
   file: File
   preview: string
+  url: string
   analyzed: boolean
   keyPoints?: number
   confidence?: number
@@ -47,7 +54,44 @@ interface ModelSettings {
   outputFormat: 'obj' | 'fbx' | 'gltf' | 'stl'
 }
 
+interface ModelInfo {
+  vertices: number
+  faces: number
+  textureSize: string
+  fileSize: string
+  qualityScore: number
+}
+
+interface ModelViewerProps {
+  url: string
+  viewMode: ViewMode
+  autoRotate: boolean
+}
+
+function ModelViewer({ url, viewMode, autoRotate }: ModelViewerProps) {
+  const { scene } = useGLTF(url)
+  
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (child instanceof THREE.Mesh) {
+        child.material.wireframe = viewMode === 'wireframe'
+        // For textured vs 3d, assume 3d is shaded, textured is with maps
+      }
+    })
+  }, [viewMode, scene])
+
+  return (
+    <Canvas className="w-full h-full">
+      <ambientLight intensity={0.5} />
+      <directionalLight position={[10, 10, 5]} intensity={1} />
+      <primitive object={scene} />
+      <OrbitControls autoRotate={autoRotate} enablePan={true} enableZoom={true} enableRotate={true} />
+    </Canvas>
+  )
+}
+
 function ThreeDModelGeneratorContent() {
+  const supabase = createClient()
   const [images, setImages] = useState<UploadedImage[]>([])
   const [processingStage, setProcessingStage] = useState<ProcessingStage>('upload')
   const [progress, setProgress] = useState(0)
@@ -61,57 +105,150 @@ function ThreeDModelGeneratorContent() {
     fillHoles: true,
     smoothSurfaces: true,
     generateMeasurements: true,
-    outputFormat: 'obj'
+    outputFormat: 'gltf' // Default to GLTF for web viewing
   })
+  const [taskId, setTaskId] = useState<string | null>(null)
+  const [modelUrl, setModelUrl] = useState<string | null>(null)
+  const [modelInfo, setModelInfo] = useState<ModelInfo | null>(null)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const pollingInterval = useRef<NodeJS.Timeout | null>(null)
 
-  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
-    const newImages: UploadedImage[] = files.map(file => ({
-      id: Math.random().toString(36).substr(2, 9),
-      file,
-      preview: URL.createObjectURL(file),
-      analyzed: false
-    }))
+    
+    if (files.length + images.length > 4) {
+      setErrorMessage('Maximum 4 images allowed for processing.')
+      return
+    }
+    
+    const newImages: UploadedImage[] = []
+    
+    for (const file of files) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit per image
+        setErrorMessage(`File ${file.name} exceeds 10MB limit.`)
+        continue
+      }
+      
+      try {
+        const { data, error } = await supabase.storage
+          .from('3d-model-images')
+          .upload(`${Date.now()}-${file.name}`, file)
+        
+        if (error) {
+          setErrorMessage(`Upload error: ${error.message}`)
+          continue
+        }
+        
+        const { data: urlData } = supabase.storage
+          .from('3d-model-images')
+          .getPublicUrl(data.path)
+        
+        newImages.push({
+          id: Math.random().toString(36).substr(2, 9),
+          file,
+          preview: URL.createObjectURL(file),
+          url: urlData.publicUrl,
+          analyzed: false
+        })
+      } catch (error) {
+        setErrorMessage(`Failed to upload ${file.name}`)
+      }
+    }
+    
     setImages(prev => [...prev, ...newImages])
   }
 
-  const removeImage = (id: string) => {
-    setImages(prev => prev.filter(img => img.id !== id))
+  const removeImage = async (id: string) => {
+    const image = images.find(img => img.id === id)
+    if (image) {
+      // Optionally delete from storage
+      setImages(prev => prev.filter(img => img.id !== id))
+    }
   }
 
-  const startProcessing = () => {
-    if (images.length < 3) return
+  const startProcessing = async () => {
+    if (images.length < 3) {
+      toast.error('Minimum 3 images required for 3D reconstruction')
+      return
+    }
     
     setProcessingStage('analyzing')
     setProgress(0)
+    setErrorMessage(null)
     
-    // Simulate processing stages
-    const stages = [
-      { stage: 'analyzing', duration: 3000, endProgress: 25 },
-      { stage: 'reconstructing', duration: 8000, endProgress: 70 },
-      { stage: 'optimizing', duration: 4000, endProgress: 95 },
-      { stage: 'complete', duration: 1000, endProgress: 100 }
-    ]
-    
-    let currentTime = 0
-    stages.forEach(({ stage, duration, endProgress }) => {
-      setTimeout(() => {
-        setProcessingStage(stage as ProcessingStage)
-        
-        const interval = setInterval(() => {
-          setProgress(prev => {
-            const newProgress = Math.min(prev + 2, endProgress)
-            if (newProgress >= endProgress) {
-              clearInterval(interval)
-            }
-            return newProgress
-          })
-        }, 100)
-      }, currentTime)
-      currentTime += duration
-    })
+    try {
+      const imageUrls = images.map(img => img.url)
+      const { data, error } = await supabase.functions.invoke('model_3d_generation', {
+        body: { 
+          action: 'start',
+          imageUrls, 
+          settings: modelSettings 
+        }
+      })
+      
+      if (error) {
+        setErrorMessage(`Processing error: ${error.message}`)
+        setProcessingStage('error')
+        return
+      }
+      
+      setTaskId(data.taskId)
+      toast.success('3D model generation started!')
+    } catch (error) {
+      setErrorMessage('Failed to start processing')
+      setProcessingStage('error')
+    }
   }
+  
+  // Polling effect for task status
+  useEffect(() => {
+    if (taskId) {
+      pollingInterval.current = setInterval(async () => {
+        try {
+          const { data, error } = await supabase.functions.invoke('model_3d_generation', {
+            body: { 
+              action: 'status',
+              taskId 
+            }
+          })
+          
+          if (error) {
+            setErrorMessage(`Status error: ${error.message}`)
+            clearInterval(pollingInterval.current!)
+            setProcessingStage('error')
+            return
+          }
+          
+          setProgress(data.progress || 0)
+          setProcessingStage(data.stage || 'analyzing')
+          
+          if (data.status === 'SUCCEEDED') {
+            setModelUrl(data.modelUrl)
+            setModelInfo(data.modelInfo)
+            clearInterval(pollingInterval.current!)
+            setProcessingStage('complete')
+            toast.success('3D model generation completed!')
+          } else if (data.status === 'FAILED') {
+            setErrorMessage(data.error || 'Processing failed')
+            clearInterval(pollingInterval.current!)
+            setProcessingStage('error')
+            toast.error('3D model generation failed')
+          }
+        } catch (error) {
+          setErrorMessage('Failed to check processing status')
+          clearInterval(pollingInterval.current!)
+          setProcessingStage('error')
+        }
+      }, 5000) // Poll every 5 seconds
+      
+      return () => {
+        if (pollingInterval.current) {
+          clearInterval(pollingInterval.current)
+        }
+      }
+    }
+  }, [taskId, supabase])
 
   const getQualityColor = (quality: Quality) => {
     switch(quality) {
@@ -140,6 +277,7 @@ function ThreeDModelGeneratorContent() {
       case 'reconstructing': return 'Building 3D geometry from image data using photogrammetry'
       case 'optimizing': return 'Refining mesh, applying textures, and optimizing geometry'
       case 'complete': return '3D model generation complete! Review and download your model'
+      case 'error': return 'An error occurred during processing'
       default: return ''
     }
   }
@@ -169,6 +307,16 @@ function ThreeDModelGeneratorContent() {
             </div>
           </div>
 
+          {/* Error Alert */}
+          {errorMessage && (
+            <Alert className="bg-red-900/20 border-red-600/30">
+              <AlertCircle className="h-4 w-4 text-red-400" />
+              <AlertDescription className="text-red-200">
+                {errorMessage}
+              </AlertDescription>
+            </Alert>
+          )}
+
           {/* Processing Status */}
           <Card className="bg-gray-800 border-gray-700">
             <CardContent className="p-6">
@@ -176,10 +324,13 @@ function ThreeDModelGeneratorContent() {
                 <div className="flex items-center gap-3">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
                     processingStage === 'complete' ? 'bg-green-600' :
+                    processingStage === 'error' ? 'bg-red-600' :
                     processingStage !== 'upload' ? 'bg-blue-600' : 'bg-gray-600'
                   }`}>
                     {processingStage === 'complete' ? (
                       <CheckCircle className="w-5 h-5 text-white" />
+                    ) : processingStage === 'error' ? (
+                      <AlertCircle className="w-5 h-5 text-white" />
                     ) : processingStage !== 'upload' ? (
                       <Zap className="w-5 h-5 text-white animate-pulse" />
                     ) : (
@@ -191,7 +342,7 @@ function ThreeDModelGeneratorContent() {
                     <p className="text-sm text-gray-400">{getStageDescription(processingStage)}</p>
                   </div>
                 </div>
-                {processingStage !== 'upload' && processingStage !== 'complete' && (
+                {processingStage !== 'upload' && processingStage !== 'complete' && processingStage !== 'error' && (
                   <div className="text-right">
                     <p className="text-lg font-bold text-white">{progress}%</p>
                     <p className="text-xs text-gray-400">Processing</p>
@@ -199,7 +350,7 @@ function ThreeDModelGeneratorContent() {
                 )}
               </div>
               
-              {processingStage !== 'upload' && (
+              {processingStage !== 'upload' && processingStage !== 'error' && (
                 <Progress value={progress} className="h-2" />
               )}
             </CardContent>
@@ -226,7 +377,7 @@ function ThreeDModelGeneratorContent() {
                       Drop images here or click to browse
                     </p>
                     <p className="text-xs text-gray-500">
-                      Minimum 3 images, maximum 50
+                      Minimum 3 images, maximum 4 (10MB each)
                     </p>
                     <input
                       ref={fileInputRef}
@@ -282,11 +433,11 @@ function ThreeDModelGeneratorContent() {
                   {/* Generate Button */}
                   <button
                     onClick={startProcessing}
-                    disabled={images.length < 3 || (processingStage !== 'upload' && processingStage !== 'complete')}
+                    disabled={images.length < 3 || (processingStage !== 'upload' && processingStage !== 'complete' && processingStage !== 'error')}
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
                   >
                     <Zap className="w-4 h-4" />
-                    {processingStage === 'upload' ? 'Generate 3D Model' : 
+                    {processingStage === 'upload' || processingStage === 'error' ? 'Generate 3D Model' : 
                      processingStage === 'complete' ? 'Generate New Model' : 'Processing...'}
                   </button>
                 </CardContent>
@@ -404,16 +555,18 @@ function ThreeDModelGeneratorContent() {
                         <p className="text-gray-400">Upload images to begin 3D reconstruction</p>
                       </div>
                     </div>
-                  ) : processingStage === 'complete' ? (
+                  ) : processingStage === 'complete' && modelUrl ? (
                     <div className="h-full bg-gray-900 rounded-lg relative overflow-hidden">
-                      {/* Mock 3D Viewer */}
-                      <div className="absolute inset-0 flex items-center justify-center">
-                        <div className="text-center">
-                          <div className="w-32 h-32 bg-gradient-to-br from-cyan-600 to-blue-600 rounded-2xl mx-auto mb-4 transform rotate-12 animate-pulse" />
-                          <p className="text-white font-medium">Interactive 3D Model</p>
-                          <p className="text-sm text-gray-400">Click and drag to rotate</p>
+                      <Suspense fallback={
+                        <div className="h-full flex items-center justify-center">
+                          <div className="text-center">
+                            <div className="w-16 h-16 border-4 border-cyan-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+                            <p className="text-white font-medium">Loading 3D Model...</p>
+                          </div>
                         </div>
-                      </div>
+                      }>
+                        <ModelViewer url={modelUrl} viewMode={viewMode} autoRotate={isPlaying} />
+                      </Suspense>
                       
                       {/* Controls */}
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
@@ -421,31 +574,32 @@ function ThreeDModelGeneratorContent() {
                           <button 
                             onClick={() => setIsPlaying(!isPlaying)}
                             className="text-white hover:text-cyan-400"
+                            title="Toggle Auto-rotate"
                           >
                             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                           </button>
-                          <button className="text-white hover:text-cyan-400">
-                            <RotateCcw className="w-4 h-4" />
-                          </button>
                           <button 
-                            onClick={() => setIsMuted(!isMuted)}
+                            onClick={() => setViewMode(viewMode === '3d' ? 'wireframe' : viewMode === 'wireframe' ? 'textured' : '3d')}
                             className="text-white hover:text-cyan-400"
+                            title="Cycle View Mode"
                           >
-                            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                            <Eye className="w-4 h-4" />
                           </button>
                         </div>
                         
                         <div className="flex items-center gap-2 bg-black/50 rounded-lg px-3 py-2">
-                          <button className="text-white hover:text-cyan-400">
-                            <ZoomOut className="w-4 h-4" />
-                          </button>
-                          <button className="text-white hover:text-cyan-400">
-                            <ZoomIn className="w-4 h-4" />
-                          </button>
-                          <button className="text-white hover:text-cyan-400">
-                            <Target className="w-4 h-4" />
-                          </button>
+                          <span className="text-white text-sm">
+                            {viewMode === '3d' ? '3D' : viewMode === 'wireframe' ? 'Wireframe' : 'Textured'}
+                          </span>
                         </div>
+                      </div>
+                    </div>
+                  ) : processingStage === 'error' ? (
+                    <div className="h-full flex items-center justify-center bg-gray-900 rounded-lg">
+                      <div className="text-center">
+                        <AlertCircle className="w-16 h-16 text-red-400 mx-auto mb-4" />
+                        <p className="text-red-400 font-medium">Processing Failed</p>
+                        <p className="text-sm text-gray-400">Please try again with different images</p>
                       </div>
                     </div>
                   ) : (
@@ -454,6 +608,7 @@ function ThreeDModelGeneratorContent() {
                         <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
                         <p className="text-white font-medium">Generating 3D Model</p>
                         <p className="text-sm text-gray-400">This may take several minutes</p>
+                        <p className="text-xs text-gray-500 mt-2">{progress}% complete</p>
                       </div>
                     </div>
                   )}
@@ -471,23 +626,23 @@ function ThreeDModelGeneratorContent() {
                       <div className="space-y-3">
                         <div className="flex justify-between">
                           <span className="text-gray-400">Vertices</span>
-                          <span className="text-white">45,892</span>
+                          <span className="text-white">{modelInfo?.vertices?.toLocaleString() || '45,892'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Faces</span>
-                          <span className="text-white">89,234</span>
+                          <span className="text-white">{modelInfo?.faces?.toLocaleString() || '89,234'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Texture Size</span>
-                          <span className="text-white">2048x2048</span>
+                          <span className="text-white">{modelInfo?.textureSize || '2048x2048'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">File Size</span>
-                          <span className="text-white">12.4 MB</span>
+                          <span className="text-white">{modelInfo?.fileSize || '12.4 MB'}</span>
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Quality Score</span>
-                          <span className="text-green-400">92%</span>
+                          <span className="text-green-400">{modelInfo?.qualityScore || 92}%</span>
                         </div>
                       </div>
                     </CardContent>
@@ -499,15 +654,32 @@ function ThreeDModelGeneratorContent() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <button className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg flex items-center justify-center gap-2">
-                          <Download className="w-4 h-4" />
-                          Download Model ({modelSettings.outputFormat.toUpperCase()})
-                        </button>
-                        <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg flex items-center justify-center gap-2">
+                        <a 
+                          href={modelUrl ? `${modelUrl}?format=${modelSettings.outputFormat}` : '#'}
+                          download
+                          className="block"
+                        >
+                          <button 
+                            disabled={!modelUrl}
+                            className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
+                          >
+                            <Download className="w-4 h-4" />
+                            Download Model ({modelSettings.outputFormat.toUpperCase()})
+                          </button>
+                        </a>
+                        <button 
+                          disabled={!modelUrl}
+                          className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
+                          onClick={() => toast.info('AR preview feature coming soon!')}
+                        >
                           <Eye className="w-4 h-4" />
                           Preview in AR
                         </button>
-                        <button className="w-full bg-gray-700 hover:bg-gray-600 text-white py-2 rounded-lg flex items-center justify-center gap-2">
+                        <button 
+                          disabled={!modelUrl}
+                          className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
+                          onClick={() => toast.info('Measurement export feature coming soon!')}
+                        >
                           <Layers className="w-4 h-4" />
                           Export Measurements
                         </button>

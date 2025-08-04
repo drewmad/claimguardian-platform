@@ -3,12 +3,19 @@
 import { 
   Home, Maximize2, Square, Download, Upload,
   Grid, Ruler, Eye, EyeOff,
-  Plus, Move, CheckCircle,
+  Plus, Move, CheckCircle, Sparkles,
   Bed, Sofa, Bath, ChefHat, Car, Building
 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useRef } from 'react'
+import { useState, useRef, Suspense } from 'react'
 import { toast } from 'sonner'
+import dynamic from 'next/dynamic'
+
+// Dynamically import AR scanner to avoid SSR issues
+const ARRoomScanner = dynamic(
+  () => import('@/components/ar/ar-room-scanner').then(mod => ({ default: mod.ARRoomScanner })),
+  { ssr: false }
+)
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -54,6 +61,8 @@ export default function FloorplanCreatorPage() {
   const [showDimensions, setShowDimensions] = useState(true)
   const [isScanning, setIsScanning] = useState(false)
   const [scanProgress, setScanProgress] = useState(0)
+  const [showARScanner, setShowARScanner] = useState(false)
+  const [selectedRoomTypeForScan, setSelectedRoomTypeForScan] = useState<string>('living')
   
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
@@ -125,27 +134,36 @@ export default function FloorplanCreatorPage() {
   ]
 
   const startPhoneScan = async () => {
-    setIsScanning(true)
-    setScanProgress(0)
-    
-    // Simulate phone scanning process
-    const interval = setInterval(() => {
-      setScanProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval)
-          setIsScanning(false)
-          // Load sample floor plan
-          setCurrentPlan({
-            ...currentPlan,
-            rooms: sampleRooms,
-            totalArea: calculateTotalArea(sampleRooms)
-          })
-          toast.success('Floor plan created successfully!')
-          return 100
-        }
-        return prev + 10
-      })
-    }, 500)
+    setShowARScanner(true)
+  }
+
+  const handleARScanComplete = (measurements: any) => {
+    // Convert AR measurements to room format
+    const newRoom: Room = {
+      id: Date.now().toString(),
+      name: `${selectedRoomTypeForScan.charAt(0).toUpperCase() + selectedRoomTypeForScan.slice(1)}`,
+      type: selectedRoomTypeForScan as Room['type'],
+      dimensions: {
+        width: measurements.width,
+        height: measurements.length // Use length as room height in 2D view
+      },
+      position: {
+        x: currentPlan.rooms.length * 50 + 50,
+        y: 50
+      },
+      color: roomTypes.find(rt => rt.type === selectedRoomTypeForScan)?.color || 'bg-gray-500',
+      icon: roomTypes.find(rt => rt.type === selectedRoomTypeForScan)?.icon
+    }
+
+    const updatedRooms = [...currentPlan.rooms, newRoom]
+    setCurrentPlan({
+      ...currentPlan,
+      rooms: updatedRooms,
+      totalArea: calculateTotalArea(updatedRooms)
+    })
+
+    setShowARScanner(false)
+    toast.success(`${selectedRoomTypeForScan} scanned successfully! Area: ${measurements.area} sq ft`)
   }
 
   const calculateTotalArea = (rooms: Room[]) => {
@@ -307,18 +325,22 @@ export default function FloorplanCreatorPage() {
                     <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ height: '600px' }}>
                       {currentPlan.rooms.length === 0 && !isScanning ? (
                         <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
-                          <Building className="h-16 w-16 text-gray-600" />
-                          <p className="text-gray-400 text-center">
-                            Start by scanning your home with your phone<br />
+                          <div className="w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-full flex items-center justify-center mb-4">
+                            <Building className="h-8 w-8 text-white" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-white mb-2">Create Your Floor Plan</h3>
+                          <p className="text-gray-400 text-center mb-6">
+                            Use AR scanning for precise measurements<br />
                             or add rooms manually
                           </p>
-                          <div className="flex gap-3">
+                          
+                          <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Button
                               onClick={startPhoneScan}
-                              className="bg-blue-600 hover:bg-blue-700"
+                              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center gap-2"
                             >
-                              <Maximize2 className="h-4 w-4 mr-2" />
-                              Scan with Phone
+                              <Sparkles className="h-4 w-4" />
+                              AR Scan Room
                             </Button>
                             <Button
                               variant="outline"
@@ -326,8 +348,24 @@ export default function FloorplanCreatorPage() {
                               className="bg-gray-700 hover:bg-gray-600"
                             >
                               <Plus className="h-4 w-4 mr-2" />
-                              Add Room
+                              Add Manually
                             </Button>
+                          </div>
+                          
+                          {/* Room Type Selector for AR Scanning */}
+                          <div className="mt-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
+                            <p className="text-sm text-gray-300 mb-2">Room type for AR scan:</p>
+                            <select
+                              value={selectedRoomTypeForScan}
+                              onChange={(e) => setSelectedRoomTypeForScan(e.target.value)}
+                              className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white text-sm"
+                            >
+                              {roomTypes.map(type => (
+                                <option key={type.type} value={type.type}>
+                                  {type.label}
+                                </option>
+                              ))}
+                            </select>
                           </div>
                         </div>
                       ) : (
@@ -443,10 +481,10 @@ export default function FloorplanCreatorPage() {
                     <Button
                       onClick={startPhoneScan}
                       disabled={isScanning}
-                      className="w-full bg-blue-600 hover:bg-blue-700"
+                      className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 flex items-center gap-2"
                     >
-                      <Maximize2 className="h-4 w-4 mr-2" />
-                      {isScanning ? 'Scanning...' : 'Scan with Phone'}
+                      <Sparkles className="h-4 w-4" />
+                      {isScanning ? 'Scanning...' : 'AR Scan Room'}
                     </Button>
                     
                     <Button
@@ -592,6 +630,24 @@ export default function FloorplanCreatorPage() {
           </div>
         </div>
       </DashboardLayout>
+      
+      {/* AR Scanner Modal */}
+      {showARScanner && (
+        <Suspense fallback={
+          <div className="fixed inset-0 z-50 bg-black flex items-center justify-center">
+            <div className="text-white text-center">
+              <div className="w-16 h-16 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+              <p>Loading AR Scanner...</p>
+            </div>
+          </div>
+        }>
+          <ARRoomScanner
+            roomType={selectedRoomTypeForScan}
+            onComplete={handleARScanComplete}
+            onClose={() => setShowARScanner(false)}
+          />
+        </Suspense>
+      )}
     </ProtectedRoute>
   )
 }

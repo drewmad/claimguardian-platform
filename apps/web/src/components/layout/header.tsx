@@ -11,7 +11,7 @@
 import { Bell } from 'lucide-react';
 import Image from 'next/image';
 
-import { MOCK_DATA } from '@/lib/mock-data';
+import { MOCK_DATA } from '../../lib/mock-data';
 
 interface HeaderProps {
   onProfileClick: () => void;

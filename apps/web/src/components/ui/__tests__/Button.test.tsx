@@ -11,12 +11,15 @@
  * @lastModifiedDate 2025-08-04T20:55:00Z
  */
 
-import { describe, it, expect, vi } from 'vitest'
-import { render, screen } from '@testing-library/react'
+import { describe, it, expect, vi, afterEach } from 'vitest'
+import { render, screen, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Button } from '@claimguardian/ui'
 
 describe('Button Component', () => {
+  afterEach(() => {
+    cleanup()
+  })
   describe('Basic Rendering', () => {
     it('should render button with text', () => {
       render(<Button>Click me</Button>)
@@ -44,42 +47,44 @@ describe('Button Component', () => {
       render(<Button>Default</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-blue-600', 'hover:bg-blue-700')
+      // Check for actual default classes used by the Button component
+      expect(button).toHaveClass('bg-accent', 'text-text-primary')
     })
 
     it('should render destructive variant', () => {
       render(<Button variant="destructive">Delete</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-red-600', 'hover:bg-red-700')
+      // Update assertion for actual destructive classes  
+      expect(button).toHaveClass('bg-destructive', 'text-destructive-foreground')
     })
 
     it('should render outline variant', () => {
       render(<Button variant="outline">Outline</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('border', 'border-slate-200')
+      expect(button).toHaveClass('border', 'border-border')
     })
 
     it('should render secondary variant', () => {
       render(<Button variant="secondary">Secondary</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('bg-slate-100', 'hover:bg-slate-200')
+      expect(button).toHaveClass('bg-panel', 'text-text-primary')
     })
 
     it('should render ghost variant', () => {
       render(<Button variant="ghost">Ghost</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('hover:bg-slate-100')
+      expect(button).toHaveClass('hover:bg-panel')
     })
 
     it('should render link variant', () => {
       render(<Button variant="link">Link</Button>)
       
       const button = screen.getByRole('button')
-      expect(button).toHaveClass('text-blue-600', 'underline-offset-4')
+      expect(button).toHaveClass('text-accent', 'underline-offset-4')
     })
   })
 

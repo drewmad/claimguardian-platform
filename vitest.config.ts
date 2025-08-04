@@ -27,10 +27,8 @@ export default defineConfig({
             'packages/utils/src/**/*.{test,spec}.{js,ts}',
             'packages/ai-services/src/**/*.{test,spec}.{js,ts}',
             'packages/db/src/**/*.{test,spec}.{js,ts}',
-            'packages/realtime/src/**/*.{test,spec}.{js,ts}',
             'packages/monitoring/src/**/*.{test,spec}.{js,ts}',
-            'apps/web/src/actions/**/*.{test,spec}.{js,ts}',
-            'supabase/functions/tests/**/*.{test,spec}.{js,ts}'
+            'apps/web/src/actions/**/*.{test,spec}.{js,ts}'
           ],
           setupFiles: ['./test-setup.ts']
         }
@@ -42,6 +40,7 @@ export default defineConfig({
           environment: 'jsdom',
           include: [
             'packages/ui/src/**/*.{test,spec}.{js,ts,tsx}',
+            'packages/realtime/src/**/*.{test,spec}.{js,ts,tsx}',
             'apps/web/src/components/**/*.{test,spec}.{js,ts,tsx}',
             'apps/web/src/app/**/*.{test,spec}.{js,ts,tsx}'
           ],

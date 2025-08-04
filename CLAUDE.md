@@ -688,6 +688,51 @@ Setup: `claude-code hooks install`  # Adds to .git/hooks
 - Retrieve: Use Read to query error log at start; adapt behavior based on previous failures.
 - Refinement: Suggest updates to standards/ based on error patterns and learnings.
 
+## Claude.md File Maintenance
+
+### Periodic Update System
+This main CLAUDE.md file should be updated to synchronize with package-specific claude.md files periodically to maintain consistency and capture latest architectural changes.
+
+#### Update Triggers
+- **Weekly**: Review and sync package-specific claude.md files during development cycles
+- **After major features**: When significant changes are made to any package architecture
+- **Before releases**: Ensure all documentation reflects current state before deployment
+- **When tests are updated**: After major test infrastructure changes or new test patterns
+
+#### Package Claude.md Files to Monitor
+- `packages/ui/CLAUDE.md` - UI component patterns, design system updates
+- `packages/ai-services/CLAUDE.md` - AI orchestration patterns, provider configurations
+- `packages/realtime/CLAUDE.md` - Real-time subscription patterns, WebSocket management
+- `packages/db/CLAUDE.md` - Database patterns, schema management, migration strategies
+- `apps/web/src/app/auth/CLAUDE.md` - Authentication patterns, security practices
+- `supabase/functions/CLAUDE.md` - Edge function patterns, deployment strategies
+
+#### Update Process
+1. **Scan package claude.md files** for architectural changes or new patterns
+2. **Identify inconsistencies** between main file and package-specific documentation
+3. **Merge updates** from packages into relevant sections of main CLAUDE.md
+4. **Update version references** and dependency information if packages were updated
+5. **Refresh examples** to reflect current best practices and patterns
+6. **Validate against current codebase** to ensure accuracy
+
+#### Maintenance Commands
+```bash
+# Check for claude.md files that need syncing
+find . -name "CLAUDE.md" -o -name "claude.md" | head -10
+
+# Review recent changes to package documentation
+git log --oneline --since="1 week ago" -- "*/CLAUDE.md" "*/claude.md"
+
+# Quick consistency check - look for version mismatches
+grep -r "Next.js\|TypeScript\|Node.js" */CLAUDE.md */claude.md | sort | uniq
+```
+
+#### Auto-Sync Integration
+Consider integrating periodic updates into the development workflow:
+- Add claude.md sync check to pre-commit hooks for major changes
+- Create monthly maintenance tasks to review and update documentation
+- Use subagents to detect when package documentation drifts from main file
+
 ## Current Project Status & Recent Improvements
 
 ### Recently Completed (August 2025)

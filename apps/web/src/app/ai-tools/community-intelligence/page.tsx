@@ -1,8 +1,15 @@
 'use client'
 
-import { Calculator, TrendingUp, Users, Shield, BarChart3, Eye, EyeOff, Filter, Calendar, Info } from 'lucide-react'
+import { Calculator, TrendingUp, Users, Shield, BarChart3, Eye, EyeOff, Filter, Calendar, Info, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, Suspense } from 'react'
+import dynamic from 'next/dynamic'
+
+// Dynamically import privacy analytics to avoid SSR issues
+const PrivacyPreservingAnalytics = dynamic(
+  () => import('@/components/community/privacy-preserving-analytics').then(mod => ({ default: mod.PrivacyPreservingAnalytics })),
+  { ssr: false }
+)
 import {
   LineChart,
   Line,
@@ -99,12 +106,18 @@ export default function CommunityIntelligencePage() {
   const [selectedTimeframe, setSelectedTimeframe] = useState<string>('6months')
   const [privacyMode, setPrivacyMode] = useState(true)
   const [isContributing, setIsContributing] = useState(false)
+  const [showRealAnalytics, setShowRealAnalytics] = useState(false)
+  const [realInsights, setRealInsights] = useState<ClaimInsight[]>([])
 
   const contributeData = async () => {
     setIsContributing(true)
     await new Promise(resolve => setTimeout(resolve, 2000))
     setIsContributing(false)
     toast.success('Thank you for contributing! Your data helps the community while maintaining your privacy.')
+  }
+
+  const handleInsightsUpdate = (insights: ClaimInsight[]) => {
+    setRealInsights(insights)
   }
 
   const formatCurrency = (amount: number) => {
@@ -129,14 +142,23 @@ export default function CommunityIntelligencePage() {
               >
                 ← Back to AI Tools
               </Link>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 bg-gradient-to-br from-violet-600/20 to-blue-600/20 rounded-lg">
-                  <Calculator className="h-6 w-6 text-violet-400" />
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-gradient-to-br from-violet-600/20 to-blue-600/20 rounded-lg">
+                    <Calculator className="h-6 w-6 text-violet-400" />
+                  </div>
+                  <h1 className="text-3xl font-bold text-white">Community Intelligence System</h1>
+                  <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
+                    Beta
+                  </Badge>
                 </div>
-                <h1 className="text-3xl font-bold text-white">Community Intelligence System</h1>
-                <Badge className="bg-yellow-600/20 text-yellow-400 border-yellow-600/30">
-                  Beta
-                </Badge>
+                <button 
+                  onClick={() => setShowRealAnalytics(!showRealAnalytics)}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                >
+                  <Sparkles className="w-4 h-4" />
+                  {showRealAnalytics ? 'Show Mock Data' : 'Real Analytics'}
+                </button>
               </div>
               <p className="text-gray-400 max-w-3xl">
                 I know what others in my situation received! Aggregate insights from Florida claims with privacy-preserving analytics.
@@ -173,8 +195,25 @@ export default function CommunityIntelligencePage() {
               </AlertDescription>
             </Alert>
 
-            {/* Filters */}
-            <Card className="bg-gray-800 border-gray-700">
+            {/* Real Analytics Section */}
+            {showRealAnalytics && (
+              <Suspense fallback={
+                <div className="bg-gray-800 border border-gray-700 rounded-lg p-8">
+                  <div className="flex items-center justify-center">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-400 mr-3" />
+                    <span className="text-white">Loading privacy-preserving analytics...</span>
+                  </div>
+                </div>
+              }>
+                <PrivacyPreservingAnalytics onInsightsUpdate={handleInsightsUpdate} />
+              </Suspense>
+            )}
+
+            {/* Mock Data Section (Original) */}
+            {!showRealAnalytics && (
+              <>
+                {/* Filters */}
+                <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Filter className="h-5 w-5 text-blue-400" />
@@ -472,6 +511,9 @@ export default function CommunityIntelligencePage() {
                 </div>
               </CardContent>
             </Card>
+            </Card>
+              </>
+            )}
           </div>
         </div>
       </DashboardLayout>

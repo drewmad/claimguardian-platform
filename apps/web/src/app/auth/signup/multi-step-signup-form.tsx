@@ -5,7 +5,7 @@ import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check } from 'luci
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useCallback, useMemo, useRef } from 'react'
-import { logger } from "@/lib/logger/production-logger"
+import { logger } from "../../../lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Button } from '@/components/ui/button'

@@ -422,3 +422,20 @@ export function useTypingIndicator(
 
   return { typingUsers: Array.from(typingUsers.values()), setTyping }
 }
+
+/**
+ * Subscribe to real-time updates for a subscription
+ * Alias for useRealtimeTable with subscription-specific configuration
+ */
+export function useRealtimeSubscription<T = unknown>(
+  supabase: SupabaseClient,
+  table: string,
+  options?: {
+    onInsert?: (record: T) => void
+    onUpdate?: (data: { old: T; new: T }) => void
+    onDelete?: (record: T) => void
+    enabled?: boolean
+  }
+) {
+  return useRealtimeTable<T>(supabase, table, options)
+}
