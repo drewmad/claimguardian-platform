@@ -205,6 +205,28 @@ const AI_TOOLS: AITool[] = [
     status: 'beta',
     category: 'communication',
     features: ['Email Templates', 'Negotiation Integration', 'Tone Adjustment', 'Follow-up Reminders', 'Response Analysis']
+  },
+  {
+    id: 'claim-swarm',
+    title: 'AI Claim Swarm',
+    description: 'Revolutionary collaborative damage assessment! Multiple users work together with AI to create consensus-based damage reports',
+    icon: Bot,
+    color: 'cyan',
+    href: '/ai-tools/claim-swarm',
+    status: 'beta',
+    category: 'analysis',
+    features: ['Multi-User Collaboration', 'Real-time AI Analysis', 'Consensus Building', 'Live Feedback', 'Quality Assurance']
+  },
+  {
+    id: 'damage-copilot',
+    title: 'Damage Documentation Copilot',
+    description: 'Your AI photography coach! Get real-time guidance to capture perfect damage documentation with optimal quality',
+    icon: Camera,
+    color: 'emerald',
+    href: '/ai-tools/damage-copilot',
+    status: 'beta',
+    category: 'documentation',
+    features: ['Real-time AI Guidance', 'Quality Scoring', 'Progress Tracking', 'Perfect Documentation', 'Professional Results']
   }
 ]
 

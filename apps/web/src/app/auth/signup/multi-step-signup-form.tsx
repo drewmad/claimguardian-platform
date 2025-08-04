@@ -4,7 +4,7 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useState, useCallback, useMemo, useRef } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -15,6 +15,14 @@ import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
 type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer'
+
+// Constants moved outside component to prevent recreation
+const STEPS: readonly Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer'] as const
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const PHONE_DIGITS_REGEX = /^\d{10}$/
+
+// Password strength cache to avoid repeated calculations
+const passwordStrengthCache = new Map<string, ReturnType<typeof getPasswordStrength>>()
 
 export function MultiStepSignupForm() {
   const router = useRouter()
@@ -44,25 +52,29 @@ export function MultiStepSignupForm() {
     residencyType: '' as '' | 'renter' | 'homeowner' | 'landlord' | 'real_estate_pro',
   })
   
-  const supabase = createBrowserSupabaseClient()
+  const supabase = useMemo(() => createBrowserSupabaseClient(), [])
   
-  const formatPhone = (value: string) => {
+  const formatPhone = useCallback((value: string) => {
     const digits = value.replace(/\D/g, '')
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
-  }
+  }, [])
   
-  const validateEmail = (email: string) => {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-  }
+  const validateEmail = useCallback((email: string) => {
+    return EMAIL_REGEX.test(email)
+  }, [])
   
-  const validatePhone = (phone: string) => {
+  const validatePhone = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '')
-    return digits.length === 10
-  }
+    return PHONE_DIGITS_REGEX.test(digits)
+  }, [])
   
-  const getPasswordStrength = (password: string) => {
+  const getPasswordStrength = useCallback((password: string) => {
+    if (passwordStrengthCache.has(password)) {
+      return passwordStrengthCache.get(password)!
+    }
+
     let score = 0
     const feedback = []
     
@@ -89,21 +101,29 @@ export function MultiStepSignupForm() {
       'very-strong': 'text-green-400'
     }[strength]
     
-    return { score, strength, feedback, color }
-  }
+    const result = { score, strength, feedback, color }
+    
+    // Cache result but limit cache size
+    if (passwordStrengthCache.size > 100) {
+      const firstKey = passwordStrengthCache.keys().next().value
+      if (firstKey) passwordStrengthCache.delete(firstKey)
+    }
+    passwordStrengthCache.set(password, result)
+    
+    return result
+  }, [])
   
-  const getStepProgress = () => {
-    const steps: Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer']
-    const currentIndex = steps.indexOf(currentStep)
+  const stepProgress = useMemo(() => {
+    const currentIndex = STEPS.indexOf(currentStep)
     return {
       currentStep: currentIndex + 1,
-      totalSteps: steps.length,
-      percentage: ((currentIndex + 1) / steps.length) * 100
+      totalSteps: STEPS.length,
+      percentage: ((currentIndex + 1) / STEPS.length) * 100
     }
-  }
+  }, [currentStep])
 
-  const isStepValid = (step: Step): boolean => {
-    switch (step) {
+  const isStepValid = useMemo((): boolean => {
+    switch (currentStep) {
       case 'welcome':
         return true
       case 'account':
@@ -123,35 +143,29 @@ export function MultiStepSignupForm() {
       case 'legal':
         return formData.over18 && formData.legalAgreements
       case 'ai-disclaimer':
-        console.log('🤖 AI disclaimer validation:', {
-          aiDisclaimerAccepted: formData.aiDisclaimerAccepted,
-          isValid: formData.aiDisclaimerAccepted
-        })
         return formData.aiDisclaimerAccepted
       default:
         return false
     }
-  }
+  }, [currentStep, formData, validateEmail, validatePhone])
   
-  const handleNext = () => {
-    const steps: Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer']
-    const currentIndex = steps.indexOf(currentStep)
-    if (currentIndex < steps.length - 1) {
-      setCurrentStep(steps[currentIndex + 1])
+  const handleNext = useCallback(() => {
+    const currentIndex = STEPS.indexOf(currentStep)
+    if (currentIndex < STEPS.length - 1) {
+      setCurrentStep(STEPS[currentIndex + 1])
       setError(null)
     }
-  }
+  }, [currentStep])
   
-  const handleBack = () => {
-    const steps: Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer']
-    const currentIndex = steps.indexOf(currentStep)
+  const handleBack = useCallback(() => {
+    const currentIndex = STEPS.indexOf(currentStep)
     if (currentIndex > 0) {
-      setCurrentStep(steps[currentIndex - 1])
+      setCurrentStep(STEPS[currentIndex - 1])
       setError(null)
     }
-  }
+  }, [currentStep])
   
-  const handleSubmit = async () => {
+  const handleSubmit = useCallback(async () => {
     logger.info('🔵 handleSubmit called - starting signup process')
     logger.info('📱 User agent:', navigator.userAgent)
     logger.info('📋 Form data:', formData)
@@ -166,7 +180,7 @@ export function MultiStepSignupForm() {
     })
     
     // Double-check all validations before proceeding
-    if (!isStepValid(currentStep)) {
+    if (!isStepValid) {
       logger.info('⚠️ Step validation failed, aborting submission')
       setError('Please complete all required fields before continuing.')
       return
@@ -243,9 +257,20 @@ export function MultiStepSignupForm() {
       logger.info('🏁 Signup process completed, setting loading to false')
       setIsLoading(false)
     }
-  }
+  }, [isStepValid, supabase, formData, router])
   
-  const renderStepContent = () => {
+  // Optimized form data updater - uses functional update to avoid recreation
+  const updateFormData = useCallback(<K extends keyof typeof formData>(
+    key: K,
+    value: typeof formData[K]
+  ) => {
+    setFormData(prev => {
+      if (prev[key] === value) return prev // Prevent unnecessary updates
+      return { ...prev, [key]: value }
+    })
+  }, [])
+
+  const renderStepContent = useMemo(() => {
     switch (currentStep) {
       case 'welcome':
         return (
@@ -288,7 +313,7 @@ export function MultiStepSignupForm() {
                   <Input
                     id="firstName"
                     value={formData.firstName}
-                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    onChange={(e) => updateFormData('firstName', e.target.value)}
                     className="mt-1 bg-slate-800 border-slate-700 text-white"
                     placeholder="Enter your first name"
                   />
@@ -299,7 +324,7 @@ export function MultiStepSignupForm() {
                   <Input
                     id="lastName"
                     value={formData.lastName}
-                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    onChange={(e) => updateFormData('lastName', e.target.value)}
                     className="mt-1 bg-slate-800 border-slate-700 text-white"
                     placeholder="Enter your last name"
                   />
@@ -312,7 +337,7 @@ export function MultiStepSignupForm() {
                   id="email"
                   type="email"
                   value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  onChange={(e) => updateFormData('email', e.target.value)}
                   className={cn(
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.email && !validateEmail(formData.email) && "border-red-500"
@@ -330,7 +355,10 @@ export function MultiStepSignupForm() {
                   id="phone"
                   type="tel"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: formatPhone(e.target.value) })}
+                  onChange={(e) => {
+                    const formatted = formatPhone(e.target.value)
+                    updateFormData('phone', formatted)
+                  }}
                   className={cn(
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.phone && !validatePhone(formData.phone) && "border-red-500"
@@ -353,7 +381,7 @@ export function MultiStepSignupForm() {
                   id="password"
                   type="password"
                   value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  onChange={(e) => updateFormData('password', e.target.value)}
                   className={cn(
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.password && formData.password.length < 8 && "border-red-500"
@@ -402,7 +430,7 @@ export function MultiStepSignupForm() {
                   id="confirmPassword"
                   type="password"
                   value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  onChange={(e) => updateFormData('confirmPassword', e.target.value)}
                   className={cn(
                     "mt-1 bg-slate-800 border-slate-700 text-white",
                     formData.confirmPassword && formData.password !== formData.confirmPassword && "border-red-500"
@@ -421,7 +449,7 @@ export function MultiStepSignupForm() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, residencyType: 'renter' })}
+                  onClick={() => updateFormData('residencyType', 'renter')}
                   className={cn(
                     "p-3 rounded-lg border text-sm font-medium transition-all",
                     formData.residencyType === 'renter'
@@ -433,7 +461,7 @@ export function MultiStepSignupForm() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, residencyType: 'homeowner' })}
+                  onClick={() => updateFormData('residencyType', 'homeowner')}
                   className={cn(
                     "p-3 rounded-lg border text-sm font-medium transition-all",
                     formData.residencyType === 'homeowner'
@@ -445,7 +473,7 @@ export function MultiStepSignupForm() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, residencyType: 'landlord' })}
+                  onClick={() => updateFormData('residencyType', 'landlord')}
                   className={cn(
                     "p-3 rounded-lg border text-sm font-medium transition-all",
                     formData.residencyType === 'landlord'
@@ -457,7 +485,7 @@ export function MultiStepSignupForm() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData({ ...formData, residencyType: 'real_estate_pro' })}
+                  onClick={() => updateFormData('residencyType', 'real_estate_pro')}
                   className={cn(
                     "p-3 rounded-lg border text-sm font-medium transition-all",
                     formData.residencyType === 'real_estate_pro'
@@ -487,7 +515,7 @@ export function MultiStepSignupForm() {
                 <Checkbox
                   id="over18"
                   checked={formData.over18}
-                  onCheckedChange={(checked: boolean) => setFormData({ ...formData, over18: !!checked })}
+                  onCheckedChange={(checked: boolean) => updateFormData('over18', !!checked)}
                   className="mt-1"
                 />
                 <Label htmlFor="over18" className="text-sm cursor-pointer">
@@ -503,7 +531,7 @@ export function MultiStepSignupForm() {
                 <Checkbox
                   id="legal"
                   checked={formData.legalAgreements}
-                  onCheckedChange={(checked: boolean) => setFormData({ ...formData, legalAgreements: !!checked })}
+                  onCheckedChange={(checked: boolean) => updateFormData('legalAgreements', !!checked)}
                   className="mt-1"
                 />
                 <Label htmlFor="legal" className="text-sm cursor-pointer">
@@ -562,7 +590,7 @@ export function MultiStepSignupForm() {
                 <Checkbox
                   id="ai-disclaimer"
                   checked={formData.aiDisclaimerAccepted}
-                  onCheckedChange={(checked: boolean) => setFormData({ ...formData, aiDisclaimerAccepted: !!checked })}
+                  onCheckedChange={(checked: boolean) => updateFormData('aiDisclaimerAccepted', !!checked)}
                   className="mt-1"
                 />
                 <Label htmlFor="ai-disclaimer" className="text-sm cursor-pointer">
@@ -572,8 +600,11 @@ export function MultiStepSignupForm() {
             </div>
           </div>
         )
+        
+      default:
+        return null
     }
-  }
+  }, [currentStep, formData, getPasswordStrength, updateFormData, formatPhone])
   
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
@@ -589,20 +620,19 @@ export function MultiStepSignupForm() {
           {/* Progress Indicator */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
-              <span>Step {getStepProgress().currentStep} of {getStepProgress().totalSteps}</span>
-              <span>{Math.round(getStepProgress().percentage)}% complete</span>
+              <span>Step {stepProgress.currentStep} of {stepProgress.totalSteps}</span>
+              <span>{Math.round(stepProgress.percentage)}% complete</span>
             </div>
             <div className="w-full bg-slate-800 rounded-full h-2">
               <div 
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
-                style={{ width: `${getStepProgress().percentage}%` }}
+                style={{ width: `${stepProgress.percentage}%` }}
               />
             </div>
             <div className="flex justify-between mt-2">
               {['Welcome', 'Account', 'Legal', 'AI Terms'].map((stepName, index) => {
-                const progress = getStepProgress()
-                const isCompleted = index < progress.currentStep - 1
-                const isCurrent = index === progress.currentStep - 1
+                const isCompleted = index < stepProgress.currentStep - 1
+                const isCurrent = index === stepProgress.currentStep - 1
                 
                 return (
                   <div key={stepName} className="flex flex-col items-center">
@@ -664,40 +694,14 @@ export function MultiStepSignupForm() {
                 {currentStep === 'ai-disclaimer' ? (
                   <Button
                     type="button"
-                    onClick={(e) => {
-                      logger.info('🖱️ Create Account button clicked!', e)
-                      logger.info('📱 Touch or click event:', e.type)
-                      logger.info('🎯 Button disabled?', !isStepValid(currentStep) || isLoading)
-                      logger.info('✅ Step valid?', isStepValid(currentStep))
-                      logger.info('⏳ Loading?', isLoading)
-                      console.log('📋 Current form data valid:', {
-                        aiDisclaimerAccepted: formData.aiDisclaimerAccepted,
-                        firstName: !!formData.firstName,
-                        lastName: !!formData.lastName,
-                        email: !!formData.email && validateEmail(formData.email),
-                        phone: !!formData.phone && validatePhone(formData.phone),
-                        password: !!formData.password && formData.password.length >= 8,
-                        confirmPassword: formData.password === formData.confirmPassword,
-                        residencyType: !!formData.residencyType,
-                        over18: formData.over18,
-                        legalAgreements: formData.legalAgreements
-                      })
-                      
-                      // Prevent double-clicks/taps
-                      if (isLoading) {
-                        logger.info('🚫 Already loading, preventing duplicate submission')
-                        return
-                      }
-                      
-                      handleSubmit()
-                    }}
+                    onClick={handleSubmit}
                     onTouchStart={(e) => {
                       logger.info('👆 Touch start event:', e.type)
                     }}
                     onTouchEnd={(e) => {
                       logger.info('👆 Touch end event:', e.type)
                     }}
-                    disabled={!isStepValid(currentStep) || isLoading}
+                    disabled={!isStepValid || isLoading}
                     className="bg-blue-600 hover:bg-blue-700 a11y-touch-target w-full"
                     style={{ 
                       touchAction: 'manipulation',
@@ -720,7 +724,7 @@ export function MultiStepSignupForm() {
                 ) : (
                   <Button
                     onClick={handleNext}
-                    disabled={!isStepValid(currentStep)}
+                    disabled={!isStepValid}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     Next

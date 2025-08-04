@@ -29,8 +29,22 @@ export const formatCurrency = (amount: number): string => {
   }).format(amount)
 }
 
-export const formatDate = (date: Date | string): string => {
-  const d = typeof date === 'string' ? new Date(date) : date
+export const formatDate = (date: Date | string | number): string => {
+  let d: Date
+  
+  if (typeof date === 'string') {
+    d = new Date(date)
+  } else if (typeof date === 'number') {
+    d = new Date(date)
+  } else {
+    d = date
+  }
+  
+  // Check if date is invalid
+  if (isNaN(d.getTime())) {
+    return 'Invalid Date'
+  }
+  
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',

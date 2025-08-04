@@ -19,11 +19,13 @@ export const validateRequired = (value: any): boolean => {
 }
 
 export const validateEmail = (email: string): boolean => {
+  if (!email || typeof email !== 'string') return false
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
   return emailRegex.test(email)
 }
 
 export const validatePhone = (phone: string): boolean => {
+  if (!phone || typeof phone !== 'string') return false
   const digits = phone.replace(/\D/g, '')
   return digits.length === 10
 }
