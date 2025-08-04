@@ -15,7 +15,7 @@
 
 import { redirect } from 'next/navigation'
 import { createServerSupabaseClient } from '@claimguardian/db'
-import { cookies } from 'next/headers'
+import { cookies, headers } from 'next/headers'
 
 export interface AuthResult {
   success: boolean
@@ -83,7 +83,7 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
     const cookieStore = await cookies()
     const supabase = await createServerSupabaseClient(cookieStore)
     
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { error } = await supabase.auth.signInWithPassword({
       email,
       password
     })

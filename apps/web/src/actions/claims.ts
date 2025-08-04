@@ -295,7 +295,7 @@ export async function uploadClaimDocument({
     const fileName = `${claimId}/${documentType}/${timestamp}-${file.name}`
 
     // Upload file to Supabase Storage
-    const { data: uploadData, error: uploadError } = await supabase.storage
+    const { error: uploadError } = await supabase.storage
       .from('claim-documents')
       .upload(fileName, file)
 
