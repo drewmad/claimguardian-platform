@@ -17,9 +17,8 @@ import {
   Volume2, VolumeX, Maximize, ZoomIn, ZoomOut, AlertCircle
 } from 'lucide-react'
 import { useState, useRef, useEffect, Suspense } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, useGLTF } from '@react-three/drei'
-import * as THREE from 'three'
+import dynamic from 'next/dynamic'
+import type * as THREE from 'three'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -68,24 +67,48 @@ interface ModelViewerProps {
   autoRotate: boolean
 }
 
-function ModelViewer({ url, viewMode, autoRotate }: ModelViewerProps) {
-  const { scene } = useGLTF(url)
-  
-  useEffect(() => {
-    scene.traverse((child) => {
-      if (child instanceof THREE.Mesh) {
-        child.material.wireframe = viewMode === 'wireframe'
-        // For textured vs 3d, assume 3d is shaded, textured is with maps
-      }
-    })
-  }, [viewMode, scene])
+// Dynamic imports for React Three Fiber components with SSR disabled
+const Canvas = dynamic(
+  () => import('@react-three/fiber').then((mod) => mod.Canvas),
+  { ssr: false }
+)
 
+const OrbitControls = dynamic(
+  () => import('@react-three/drei').then((mod) => mod.OrbitControls),
+  { ssr: false }
+)
+
+const ModelViewerContent = dynamic(
+  () => Promise.resolve(({ url, viewMode, autoRotate }: ModelViewerProps) => {
+    const { useGLTF } = require('@react-three/drei')
+    const { scene } = useGLTF(url)
+    const THREE = require('three')
+    
+    useEffect(() => {
+      scene.traverse((child: any) => {
+        if (child instanceof THREE.Mesh) {
+          child.material.wireframe = viewMode === 'wireframe'
+          // For textured vs 3d, assume 3d is shaded, textured is with maps
+        }
+      })
+    }, [viewMode, scene])
+
+    return (
+      <>
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[10, 10, 5]} intensity={1} />
+        <primitive object={scene} />
+        <OrbitControls autoRotate={autoRotate} enablePan={true} enableZoom={true} enableRotate={true} />
+      </>
+    )
+  }),
+  { ssr: false }
+)
+
+function ModelViewer({ url, viewMode, autoRotate }: ModelViewerProps) {
   return (
     <Canvas className="w-full h-full">
-      <ambientLight intensity={0.5} />
-      <directionalLight position={[10, 10, 5]} intensity={1} />
-      <primitive object={scene} />
-      <OrbitControls autoRotate={autoRotate} enablePan={true} enableZoom={true} enableRotate={true} />
+      <ModelViewerContent url={url} viewMode={viewMode} autoRotate={autoRotate} />
     </Canvas>
   )
 }
