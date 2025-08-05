@@ -10,6 +10,7 @@
  */
 import * as Sentry from '@sentry/nextjs'
 import type { Integration, Event, EventHint } from '@sentry/types'
+import { FallbackRenderProps } from '@sentry/react'
 import React from 'react'
 
 import { recordMetric } from './metrics'
@@ -42,7 +43,7 @@ export function initializeSentry(config: SentryConfig) {
     profilesSampleRate: 1.0,
     
     // Custom error filtering
-    beforeSend: config.beforeSend || ((event: Event, _hint: EventHint): Event | null => {
+    beforeSend: config.beforeSend || ((event: Event, _hint: EventHint): any | null => {
       // Filter out non-error logs  
       if ((event as any)?.level === 'log') return null
       
@@ -82,17 +83,16 @@ export function initializeSentry(config: SentryConfig) {
 
 // Error boundary component for React
 export function withErrorBoundary<P extends object>(
-  Component: React.ComponentType<P>,
-  fallback?: React.ComponentType<{ error: Error; resetError: () => void }>
+  Component: React.ComponentType<P>
 ) {
   return Sentry.withErrorBoundary(Component, {
-    fallback: fallback || ErrorFallback,
+    fallback: ErrorFallback,
     showDialog: false
   })
 }
 
 // Default error fallback component
-function ErrorFallback({ error, resetError }: { error: Error; resetError: () => void }) {
+function ErrorFallback({ error, resetError }: FallbackRenderProps) {
   // Return plain object for server-side compatibility
   if (typeof window === 'undefined') {
     return null

@@ -294,11 +294,11 @@ export default function ApplyMigrationPage() {
             <div className="mt-8 p-4 bg-blue-900/20 border border-blue-600/30 rounded-lg">
               <h3 className="text-lg font-semibold text-blue-300 mb-2">Instructions:</h3>
               <ol className="list-decimal list-inside space-y-2 text-sm text-blue-200">
-                <li>Click &quot;Open Supabase SQL Editor&quot; above</li>
+                <li>Click "Open Supabase SQL Editor" above</li>
                 <li>Copy each SQL block using the copy button</li>
-                <li>Paste into the SQL editor and click &quot;Run&quot;</li>
+                <li>Paste into the SQL editor and click "Run"</li>
                 <li>Run each step in order</li>
-                <li>If a step fails with &quot;already exists&quot;, that&apos;s okay - continue to the next</li>
+                <li>If a step fails with "already exists", that's okay - continue to the next</li>
               </ol>
             </div>
 

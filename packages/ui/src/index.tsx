@@ -26,4 +26,4 @@ export { CheckIcon, XIcon } from './icons'
 
 // Mock CameraCapture for build compatibility
 // Note: Use local implementation in apps/web instead
-export const CameraCapture = () => null
+export const CameraCapture = (props: any) => null

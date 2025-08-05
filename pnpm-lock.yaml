@@ -512,6 +512,9 @@ importers:
       '@sentry/nextjs':
         specifier: ^8.46.0
         version: 8.55.0(@opentelemetry/context-async-hooks@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/core@1.30.1(@opentelemetry/api@1.9.0))(@opentelemetry/instrumentation@0.57.2(@opentelemetry/api@1.9.0))(@opentelemetry/sdk-trace-base@1.30.1(@opentelemetry/api@1.9.0))(next@15.3.5(@babel/core@7.28.0)(@opentelemetry/api@1.9.0)(react-dom@18.3.1(react@18.3.1))(react@18.3.1))(react@18.3.1)(webpack@5.101.0)
+      '@sentry/react':
+        specifier: ^8.46.0
+        version: 8.55.0(react@18.3.1)
       '@sentry/types':
         specifier: ^8.46.0
         version: 8.55.0
@@ -656,28 +659,6 @@ importers:
       chokidar:
         specifier: ^3.6.0
         version: 3.6.0
-
-  services/scraper:
-    dependencies:
-      '@supabase/supabase-js':
-        specifier: ^2.39.0
-        version: 2.53.0
-
-  services/world-model:
-    dependencies:
-      chokidar:
-        specifier: ^3.6.0
-        version: 3.6.0
-      fast-glob:
-        specifier: ^3.3.2
-        version: 3.3.3
-      micromatch:
-        specifier: ^4.0.7
-        version: 4.0.8
-    devDependencies:
-      eslint:
-        specifier: ^9.30.1
-        version: 9.32.0(jiti@1.21.7)
 
 packages:
 
