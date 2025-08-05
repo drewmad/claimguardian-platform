@@ -44,6 +44,7 @@ import { AICostsDashboard } from '@/components/admin/ai-costs-dashboard'
 import { ABTestDashboard } from '@/components/admin/ab-test-dashboard'
 import { AICacheDashboard } from '@/components/admin/ai-cache-dashboard'
 import { UsersManagement } from '@/components/admin/users-management'
+import { PermissionsManagement } from '@/components/admin/permissions-management'
 import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
 import { ErrorDashboard } from '@/components/admin/error-dashboard'
 
@@ -67,6 +68,7 @@ const navigationMenu = [
     category: 'User Management',
     items: [
       { id: 'users', label: 'Users', icon: Users },
+      { id: 'permissions', label: 'Permissions', icon: Lock },
       { id: 'compliance', label: 'Compliance', icon: FileCheck },
     ]
   },
@@ -102,7 +104,7 @@ export function AdminDashboardImproved() {
   const [activeTab, setActiveTab] = useState('overview')
   const [searchQuery, setSearchQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'AI & ML'])
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'User Management', 'AI & ML'])
   
   // Handle tab query parameter
   useEffect(() => {
@@ -316,6 +318,14 @@ export function AdminDashboardImproved() {
                     <Button 
                       variant="outline" 
                       className="w-full justify-start"
+                      onClick={() => setActiveTab('permissions')}
+                    >
+                      <Lock className="mr-2 h-4 w-4" />
+                      Permissions
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="w-full justify-start"
                       onClick={() => setActiveTab('ai-models')}
                     >
                       <Brain className="mr-2 h-4 w-4" />
@@ -338,6 +348,9 @@ export function AdminDashboardImproved() {
       
       case 'users':
         return <UsersManagement />
+      
+      case 'permissions':
+        return <PermissionsManagement />
         
       case 'ai-models':
         return <MLOperationsDashboard />
