@@ -68,14 +68,15 @@ interface CustomPrompt {
 
 interface QualityScore {
   id: string
-  feature: string
+  feature_id: string
   model: string
-  prompt: string
-  userFeedback: 'excellent' | 'good' | 'fair' | 'poor'
-  responseTime: number
-  timestamp: string
-  userId: string
-  responseContent?: string
+  rating: 'excellent' | 'good' | 'fair' | 'poor'
+  numeric_rating: number
+  response_time: number
+  created_at: string
+  user_id: string
+  feedback?: string
+  response_content?: string
 }
 
 const AVAILABLE_MODELS: ModelConfig[] = [
@@ -270,6 +271,13 @@ export default function AIModelsAdminPage() {
   const [abTests, setABTests] = useState<ABTestConfig[]>([])
   const [customPrompts, setCustomPrompts] = useState<CustomPrompt[]>([])
   const [qualityScores, setQualityScores] = useState<QualityScore[]>([])
+  const [qualityMetrics, setQualityMetrics] = useState({
+    overall_rating: 4.2,
+    total_ratings: 1247,
+    response_rate: 87,
+    satisfaction_rate: 92,
+    ratings_by_feature: {} as Record<string, any>
+  })
   
   // A/B Test Form State
   const [newABTest, setNewABTest] = useState({
@@ -298,42 +306,84 @@ export default function AIModelsAdminPage() {
 
   const loadAdvancedAIData = async () => {
     try {
-      // Load A/B tests (mock data for now)
-      setABTests([
-        {
-          id: 'ab-1',
-          name: 'GPT-4 vs Gemini for Damage Analysis',
-          feature: 'damage-analyzer',
-          modelA: 'gpt-4-vision',
-          modelB: 'gemini-1.5-pro',
-          status: 'active',
-          trafficSplit: 50,
-          startDate: '2025-01-15',
-          metrics: {
-            modelA: { requests: 245, avgTime: 2.1, successRate: 94.3, userRating: 4.2 },
-            modelB: { requests: 239, avgTime: 1.8, successRate: 91.2, userRating: 3.9 }
-          }
-        }
-      ])
+      setLoading(true)
 
-      // Load custom prompts (mock data for now)
-      setCustomPrompts([
-        {
-          id: 'prompt-1',
-          feature: 'policy-chat',
-          name: 'Florida Hurricane Specialist',
-          systemPrompt: 'You are a Florida hurricane insurance specialist with deep knowledge of wind and flood coverage specific to Florida property insurance laws...',
-          isActive: true,
-          createdAt: '2025-01-10',
-          performance: { avgTime: 1.9, successRate: 96.8, userRating: 4.5, totalUses: 156 }
+      // Load A/B tests from API
+      const abTestsResponse = await fetch('/api/admin/ab-tests')
+      if (abTestsResponse.ok) {
+        const abTestsData = await abTestsResponse.json()
+        if (abTestsData.success && abTestsData.data) {
+          // Convert API response to UI format
+          const convertedTests = abTestsData.data.map((test: any) => ({
+            id: test.id,
+            name: test.name,
+            feature: test.feature_id,
+            modelA: test.model_a,
+            modelB: test.model_b,
+            status: test.status,
+            trafficSplit: test.traffic_split,
+            startDate: test.start_date,
+            endDate: test.end_date,
+            metrics: test.metrics || {
+              modelA: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 },
+              modelB: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 }
+            }
+          }))
+          setABTests(convertedTests)
         }
-      ])
+      }
 
-      // Generate AI recommendations based on performance data
+      // Load custom prompts from API
+      const promptsResponse = await fetch('/api/admin/custom-prompts?include_performance=true')
+      if (promptsResponse.ok) {
+        const promptsData = await promptsResponse.json()
+        if (promptsData.success && promptsData.data?.prompts) {
+          // Convert API response to UI format
+          const convertedPrompts = promptsData.data.prompts.map((prompt: any) => ({
+            id: prompt.id,
+            feature: prompt.feature_id,
+            name: prompt.name,
+            systemPrompt: prompt.system_prompt,
+            isActive: prompt.is_active,
+            createdAt: prompt.created_at.split('T')[0],
+            performance: promptsData.data.performance?.[prompt.id] || {
+              avgTime: 0,
+              successRate: 0,
+              userRating: 0,
+              totalUses: 0
+            }
+          }))
+          setCustomPrompts(convertedPrompts)
+        }
+      }
+
+      // Load AI operations configuration to update feature mappings
+      const operationsResponse = await fetch('/api/admin/ai-operations')
+      if (operationsResponse.ok) {
+        const operationsData = await operationsResponse.json()
+        if (operationsData.success && operationsData.data?.feature_mappings) {
+          setFeatureMappings(operationsData.data.feature_mappings)
+        }
+      }
+
+      // Load quality scores and metrics
+      const qualityResponse = await fetch('/api/admin/quality-scores?days=7')
+      if (qualityResponse.ok) {
+        const qualityData = await qualityResponse.json()
+        if (qualityData.success && qualityData.data) {
+          setQualityMetrics(qualityData.data.summary)
+          setQualityScores(qualityData.data.recent_feedback || [])
+        }
+      }
+
+      // Generate AI recommendations based on real performance data
       generateAIRecommendations()
       
     } catch (error) {
       console.error('Failed to load advanced AI data:', error)
+      toast.error('Failed to load AI operations data')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -473,33 +523,81 @@ export default function AIModelsAdminPage() {
       return
     }
 
-    const abTest: ABTestConfig = {
-      id: `ab-${Date.now()}`,
-      name: newABTest.name,
-      feature: newABTest.feature,
-      modelA: newABTest.modelA,
-      modelB: newABTest.modelB,
-      status: 'active',
-      trafficSplit: newABTest.trafficSplit,
-      startDate: new Date().toISOString().split('T')[0],
-      metrics: {
-        modelA: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 },
-        modelB: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 }
-      }
-    }
+    try {
+      const response = await fetch('/api/admin/ab-tests', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: newABTest.name,
+          feature_id: newABTest.feature,
+          model_a: newABTest.modelA,
+          model_b: newABTest.modelB,
+          traffic_split: newABTest.trafficSplit,
+          start_date: new Date().toISOString().split('T')[0]
+        })
+      })
 
-    setABTests(prev => [...prev, abTest])
-    setNewABTest({ name: '', feature: '', modelA: '', modelB: '', trafficSplit: 50 })
-    toast.success('A/B test created successfully!')
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        // Convert API response to UI format and add to state
+        const newTest: ABTestConfig = {
+          id: result.data.id,
+          name: result.data.name,
+          feature: result.data.feature_id,
+          modelA: result.data.model_a,
+          modelB: result.data.model_b,
+          status: result.data.status,
+          trafficSplit: result.data.traffic_split,
+          startDate: result.data.start_date,
+          endDate: result.data.end_date,
+          metrics: {
+            modelA: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 },
+            modelB: { requests: 0, avgTime: 0, successRate: 0, userRating: 0 }
+          }
+        }
+
+        setABTests(prev => [...prev, newTest])
+        setNewABTest({ name: '', feature: '', modelA: '', modelB: '', trafficSplit: 50 })
+        toast.success('A/B test created successfully!')
+      } else {
+        toast.error(result.error || 'Failed to create A/B test')
+      }
+    } catch (error) {
+      console.error('Error creating A/B test:', error)
+      toast.error('Failed to create A/B test')
+    }
   }
 
-  const toggleABTest = (id: string) => {
-    setABTests(prev => prev.map(test => 
-      test.id === id 
-        ? { ...test, status: test.status === 'active' ? 'paused' : 'active' as any }
-        : test
-    ))
-    toast.success('A/B test status updated')
+  const toggleABTest = async (id: string) => {
+    const test = abTests.find(t => t.id === id)
+    if (!test) return
+
+    const newStatus = test.status === 'active' ? 'paused' : 'active'
+
+    try {
+      const response = await fetch(`/api/admin/ab-tests/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ status: newStatus })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        setABTests(prev => prev.map(test => 
+          test.id === id 
+            ? { ...test, status: newStatus as any }
+            : test
+        ))
+        toast.success('A/B test status updated')
+      } else {
+        toast.error(result.error || 'Failed to update A/B test status')
+      }
+    } catch (error) {
+      console.error('Error updating A/B test:', error)
+      toast.error('Failed to update A/B test status')
+    }
   }
 
   const createCustomPrompt = async () => {
@@ -508,26 +606,70 @@ export default function AIModelsAdminPage() {
       return
     }
 
-    const prompt: CustomPrompt = {
-      id: `prompt-${Date.now()}`,
-      feature: newPrompt.feature,
-      name: newPrompt.name,
-      systemPrompt: newPrompt.systemPrompt,
-      isActive: false,
-      createdAt: new Date().toISOString().split('T')[0],
-      performance: { avgTime: 0, successRate: 0, userRating: 0, totalUses: 0 }
-    }
+    try {
+      const response = await fetch('/api/admin/custom-prompts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          feature_id: newPrompt.feature,
+          name: newPrompt.name,
+          system_prompt: newPrompt.systemPrompt
+        })
+      })
 
-    setCustomPrompts(prev => [...prev, prompt])
-    setNewPrompt({ feature: '', name: '', systemPrompt: '' })
-    toast.success('Custom prompt created successfully!')
+      const result = await response.json()
+      
+      if (result.success && result.data) {
+        // Convert API response to UI format and add to state
+        const newPromptObj: CustomPrompt = {
+          id: result.data.id,
+          feature: result.data.feature_id,
+          name: result.data.name,
+          systemPrompt: result.data.system_prompt,
+          isActive: result.data.is_active,
+          createdAt: result.data.created_at.split('T')[0],
+          performance: { avgTime: 0, successRate: 0, userRating: 0, totalUses: 0 }
+        }
+
+        setCustomPrompts(prev => [...prev, newPromptObj])
+        setNewPrompt({ feature: '', name: '', systemPrompt: '' })
+        toast.success('Custom prompt created successfully!')
+      } else {
+        toast.error(result.error || 'Failed to create custom prompt')
+      }
+    } catch (error) {
+      console.error('Error creating custom prompt:', error)
+      toast.error('Failed to create custom prompt')
+    }
   }
 
-  const togglePrompt = (id: string) => {
-    setCustomPrompts(prev => prev.map(prompt => 
-      prompt.id === id ? { ...prompt, isActive: !prompt.isActive } : prompt
-    ))
-    toast.success('Prompt status updated')
+  const togglePrompt = async (id: string) => {
+    const prompt = customPrompts.find(p => p.id === id)
+    if (!prompt) return
+
+    const newActiveStatus = !prompt.isActive
+
+    try {
+      const response = await fetch(`/api/admin/custom-prompts/${id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ is_active: newActiveStatus })
+      })
+
+      const result = await response.json()
+      
+      if (result.success) {
+        setCustomPrompts(prev => prev.map(p => 
+          p.id === id ? { ...p, isActive: newActiveStatus } : p
+        ))
+        toast.success('Prompt status updated')
+      } else {
+        toast.error(result.error || 'Failed to update prompt status')
+      }
+    } catch (error) {
+      console.error('Error updating prompt:', error)
+      toast.error('Failed to update prompt status')
+    }
   }
 
   const testABModels = async (feature: string, modelA: string, modelB: string) => {
@@ -582,18 +724,21 @@ export default function AIModelsAdminPage() {
   const saveConfiguration = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/ai-models', {
+      const response = await fetch('/api/admin/ai-operations', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ featureMappings })
+        body: JSON.stringify({ feature_mappings: featureMappings })
       })
 
-      if (response.ok) {
+      const result = await response.json()
+
+      if (result.success) {
         toast.success('AI model configuration saved successfully')
       } else {
-        toast.error('Failed to save configuration')
+        toast.error(result.error || 'Failed to save configuration')
       }
     } catch (error) {
+      console.error('Error saving configuration:', error)
       toast.error('Failed to save configuration')
     } finally {
       setLoading(false)
@@ -1287,30 +1432,30 @@ export default function AIModelsAdminPage() {
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">4.2</div>
+                      <div className="text-2xl font-bold text-white mb-1">{qualityMetrics.overall_rating}</div>
                       <div className="text-sm text-gray-400">Average Score</div>
                       <div className="flex justify-center mt-2">
                         {[1,2,3,4,5].map((star) => (
-                          <Star key={star} className={`h-3 w-3 ${star <= 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                          <Star key={star} className={`h-3 w-3 ${star <= Math.round(qualityMetrics.overall_rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
                         ))}
                       </div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">1,247</div>
+                      <div className="text-2xl font-bold text-white mb-1">{qualityMetrics.total_ratings.toLocaleString()}</div>
                       <div className="text-sm text-gray-400">Total Ratings</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">87%</div>
+                      <div className="text-2xl font-bold text-white mb-1">{qualityMetrics.response_rate}%</div>
                       <div className="text-sm text-gray-400">Response Rate</div>
                     </CardContent>
                   </Card>
                   <Card className="bg-gray-700 border-gray-600">
                     <CardContent className="p-4 text-center">
-                      <div className="text-2xl font-bold text-white mb-1">92%</div>
+                      <div className="text-2xl font-bold text-white mb-1">{qualityMetrics.satisfaction_rate}%</div>
                       <div className="text-sm text-gray-400">Satisfaction</div>
                     </CardContent>
                   </Card>
@@ -1320,35 +1465,49 @@ export default function AIModelsAdminPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4">Quality by Feature</h3>
                   <div className="space-y-3">
-                    {featureMappings.map((feature) => (
-                      <div key={feature.featureId} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
-                        <div className="flex items-center justify-between mb-2">
-                          <span className="font-medium text-white">{feature.featureName}</span>
-                          <div className="flex items-center gap-2">
-                            <div className="flex">
-                              {[1,2,3,4,5].map((star) => (
-                                <Star key={star} className={`h-4 w-4 ${star <= 4 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
-                              ))}
+                    {featureMappings.map((feature) => {
+                      const featureMetrics = qualityMetrics.ratings_by_feature[feature.featureId] || {
+                        rating: 4.2,
+                        count: 0,
+                        latest_feedback: ''
+                      }
+                      
+                      return (
+                        <div key={feature.featureId} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <span className="font-medium text-white">{feature.featureName}</span>
+                            <div className="flex items-center gap-2">
+                              <div className="flex">
+                                {[1,2,3,4,5].map((star) => (
+                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round(featureMetrics.rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                ))}
+                              </div>
+                              <span className="text-sm text-gray-400">{featureMetrics.rating}</span>
+                              <span className="text-xs text-gray-500">({featureMetrics.count} ratings)</span>
                             </div>
-                            <span className="text-sm text-gray-400">4.2</span>
                           </div>
+                          <div className="grid grid-cols-3 gap-4 text-sm">
+                            <div>
+                              <span className="text-gray-400">Current Model:</span>
+                              <span className="text-white ml-2">{models.find(m => m.id === feature.currentModel)?.name || 'Unknown'}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Category:</span>
+                              <span className="text-white ml-2 capitalize">{feature.category}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-400">Fallback:</span>
+                              <span className="text-white ml-2">{models.find(m => m.id === feature.fallbackModel)?.name || 'Unknown'}</span>
+                            </div>
+                          </div>
+                          {featureMetrics.latest_feedback && (
+                            <div className="mt-3 p-2 bg-gray-800 rounded text-sm text-gray-300">
+                              <span className="text-gray-400">Latest feedback:</span> {featureMetrics.latest_feedback}
+                            </div>
+                          )}
                         </div>
-                        <div className="grid grid-cols-3 gap-4 text-sm">
-                          <div>
-                            <span className="text-gray-400">Current Model:</span>
-                            <span className="text-white ml-2">{models.find(m => m.id === feature.currentModel)?.name}</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-400">Avg Response:</span>
-                            <span className="text-white ml-2">2.1s</span>
-                          </div>
-                          <div>
-                            <span className="text-gray-400">Success Rate:</span>
-                            <span className="text-white ml-2">94.5%</span>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                   </div>
                 </div>
 
@@ -1356,40 +1515,50 @@ export default function AIModelsAdminPage() {
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-4">Recent User Feedback</h3>
                   <div className="space-y-3">
-                    <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-white">Damage Analyzer</span>
-                            <div className="flex">
-                              {[1,2,3,4,5].map((star) => (
-                                <Star key={star} className={`h-3 w-3 ${star <= 5 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
-                              ))}
+                    {qualityScores.length === 0 ? (
+                      <div className="text-center py-8 text-gray-400">
+                        <Star className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                        <p>No recent feedback available</p>
+                        <p className="text-sm mt-2">Feedback will appear here as users rate AI responses</p>
+                      </div>
+                    ) : (
+                      qualityScores.slice(0, 5).map((score, idx) => {
+                        const featureName = featureMappings.find(f => f.featureId === score.feature_id)?.featureName || score.feature_id
+                        const timeAgo = new Date(score.created_at).toLocaleString()
+                        
+                        return (
+                          <div key={idx} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
+                            <div className="flex items-start justify-between mb-2">
+                              <div>
+                                <div className="flex items-center gap-2">
+                                  <span className="font-medium text-white">{featureName}</span>
+                                  <div className="flex">
+                                    {[1,2,3,4,5].map((star) => (
+                                      <Star key={star} className={`h-3 w-3 ${star <= score.numeric_rating ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                    ))}
+                                  </div>
+                                </div>
+                                <p className="text-sm text-gray-400">{score.model} • {timeAgo}</p>
+                              </div>
+                              <Badge className={`${
+                                score.rating === 'excellent' ? 'bg-green-600/20 text-green-400' :
+                                score.rating === 'good' ? 'bg-blue-600/20 text-blue-400' :
+                                score.rating === 'fair' ? 'bg-yellow-600/20 text-yellow-400' :
+                                'bg-red-600/20 text-red-400'
+                              } capitalize`}>
+                                {score.rating}
+                              </Badge>
+                            </div>
+                            {score.feedback && (
+                              <p className="text-sm text-gray-300">{score.feedback}</p>
+                            )}
+                            <div className="mt-2 text-xs text-gray-500">
+                              Response time: {score.response_time}ms
                             </div>
                           </div>
-                          <p className="text-sm text-gray-400">GPT-4 Vision • 2 minutes ago</p>
-                        </div>
-                        <Badge className="bg-green-600/20 text-green-400">Excellent</Badge>
-                      </div>
-                      <p className="text-sm text-gray-300">Very accurate damage assessment with detailed recommendations</p>
-                    </div>
-                    <div className="bg-gray-700 border border-gray-600 rounded-lg p-4">
-                      <div className="flex items-start justify-between mb-2">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-medium text-white">Policy Chat</span>
-                            <div className="flex">
-                              {[1,2,3,4,5].map((star) => (
-                                <Star key={star} className={`h-3 w-3 ${star <= 3 ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
-                              ))}
-                            </div>
-                          </div>
-                          <p className="text-sm text-gray-400">Gemini 1.5 Pro • 5 minutes ago</p>
-                        </div>
-                        <Badge className="bg-yellow-600/20 text-yellow-400">Good</Badge>
-                      </div>
-                      <p className="text-sm text-gray-300">Helpful but could be more specific about coverage details</p>
-                    </div>
+                        )
+                      })
+                    )}
                   </div>
                 </div>
               </div>
