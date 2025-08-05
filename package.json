@@ -108,22 +108,16 @@
     "@types/react": "18.3.23",
     "@types/react-dom": "18.3.7"
   },
-  "overrides": {
-    "@types/react": "18.3.23",
-    "@types/react-dom": "18.3.7"
-  },
   "pnpm": {
-    "overrides": {
-      "@types/react": "18.3.23",
-      "@types/react-dom": "18.3.7",
-      "@typescript-eslint/eslint-plugin": "8.0.0-alpha.33",
-      "@typescript-eslint/parser": "8.0.0-alpha.33",
-      "typescript-eslint": "8.0.0-alpha.33"
-    },
     "ignoredBuiltDependencies": [
       "@sentry/cli",
       "esbuild",
       "sharp"
-    ]
+    ],
+    "overrides": {
+      "@types/react": "18.3.23",
+      "@types/react-dom": "18.3.7",
+      "openai>zod": "3.23.8"
+    }
   }
 }

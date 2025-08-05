@@ -855,15 +855,16 @@ export default function ARDamageDocumenterPage() {
                                 />
                                 
                                 {/* AR Notes Overlay */}
-                                {arNotes.map((note) => {
-                                  const iconMap: { [key: string]: React.ElementType } = {
+                                {arNotes.map((note: ARNote) => {
+                                  const iconMap = {
                                     equipment: Wrench,
                                     damage: ShieldAlert,
                                     maintenance: StickyNote,
                                     safety: AlertTriangle,
                                     access: Home
-                                  }
-                                  const Icon = iconMap[note.type] || StickyNote
+                                  } as const
+                                  
+                                  const IconComponent = iconMap[note.type] || StickyNote
                                   
                                   return (
                                     <div
@@ -877,7 +878,7 @@ export default function ARDamageDocumenterPage() {
                                     >
                                       <div className="relative group">
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${note.color} cursor-pointer hover:scale-110 transition-transform`}>
-                                          <Icon className="h-5 w-5 text-white" />
+                                          <IconComponent className="h-5 w-5 text-white" />
                                         </div>
                                         
                                         {/* Note Content Tooltip */}

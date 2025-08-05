@@ -335,7 +335,7 @@ function ActiveThreatBanner({ threat }: ActiveThreatBannerProps) {
   const Icon = getSeverityIcon(threat.severity)
   
   return (
-    <div className={`liquid-glass-medium rounded-lg p-6 border ${getSeverityColor(threat.severity)}`}>
+    <div className={`bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border ${getSeverityColor(threat.severity)}`}>
       <div className="flex items-start justify-between">
         <div className="flex items-start gap-4">
           <Icon className={`w-8 h-8 mt-1 ${
@@ -412,7 +412,7 @@ function OverviewDashboard({
     <div className="space-y-6">
       {/* Quick Status Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="liquid-glass-medium border-green-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-green-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <Home className="w-6 h-6 text-green-400" />
@@ -429,7 +429,7 @@ function OverviewDashboard({
           </CardContent>
         </Card>
         
-        <Card className="liquid-glass-medium border-blue-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-blue-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <Shield className="w-6 h-6 text-blue-400" />
@@ -446,7 +446,7 @@ function OverviewDashboard({
           </CardContent>
         </Card>
         
-        <Card className="liquid-glass-medium border-yellow-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-yellow-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <Zap className="w-6 h-6 text-yellow-400" />
@@ -463,7 +463,7 @@ function OverviewDashboard({
           </CardContent>
         </Card>
         
-        <Card className="liquid-glass-medium border-cyan-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-cyan-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
               <Brain className="w-6 h-6 text-cyan-400" />
@@ -528,7 +528,7 @@ function ThreatMonitoringView({ threats }: ThreatMonitoringViewProps) {
         {Object.values(ThreatLevel).map(level => {
           const count = threats.filter(t => t.severity === level && t.isActive).length
           return (
-            <Card key={level} className="liquid-glass-medium border-gray-600/30">
+            <Card key={level} className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
               <CardContent className="p-4 text-center">
                 <div className={`w-3 h-3 rounded-full mx-auto mb-2 ${
                   level === 'emergency' ? 'bg-red-600 animate-pulse' :
@@ -547,7 +547,7 @@ function ThreatMonitoringView({ threats }: ThreatMonitoringViewProps) {
       {/* Active Threats List */}
       <div className="space-y-4">
         {threats.filter(t => t.isActive).map(threat => (
-          <Card key={threat.id} className="liquid-glass-medium border-gray-600/30">
+          <Card key={threat.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
             <CardContent className="p-6">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4">
@@ -612,7 +612,7 @@ function IntelligenceFeedView({ feeds }: IntelligenceFeedViewProps) {
       
       <div className="space-y-4">
         {feeds.map(feed => (
-          <Card key={feed.id} className="liquid-glass-medium border-gray-600/30">
+          <Card key={feed.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
             <CardContent className="p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-3">
@@ -666,7 +666,7 @@ interface CommunityIntelligenceViewProps {
 function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
   if (!data) {
     return (
-      <div className="liquid-glass-medium rounded-2xl p-8 text-center">
+      <div className="bg-gray-800/50 backdrop-blur-sm rounded-2xl p-8 text-center">
         <Users className="w-12 h-12 text-gray-500 mx-auto mb-4" />
         <h3 className="text-lg font-semibold text-white mb-2">Community Intelligence</h3>
         <p className="text-gray-400">Loading community data...</p>
@@ -685,7 +685,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
       
       {/* Community Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Card className="liquid-glass-medium border-blue-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-blue-500/20">
           <CardContent className="p-6 text-center">
             <AlertTriangle className="w-8 h-8 text-orange-400 mx-auto mb-3" />
             <p className="text-2xl font-bold text-white">{data.activeIncidents.length}</p>
@@ -693,7 +693,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardContent>
         </Card>
         
-        <Card className="liquid-glass-medium border-green-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-green-500/20">
           <CardContent className="p-6 text-center">
             <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
             <p className="text-2xl font-bold text-white">{data.contractorAvailability.length}</p>
@@ -701,7 +701,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardContent>
         </Card>
         
-        <Card className="liquid-glass-medium border-purple-500/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-purple-500/20">
           <CardContent className="p-6 text-center">
             <MessageSquare className="w-8 h-8 text-purple-400 mx-auto mb-3" />
             <p className="text-2xl font-bold text-white">{data.communicationChannels.length}</p>
@@ -712,7 +712,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
       
       {/* Recent Incidents */}
       {data.activeIncidents.length > 0 && (
-        <Card className="liquid-glass-medium border-gray-600/30">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
           <CardHeader>
             <CardTitle className="text-white">Recent Incidents</CardTitle>
           </CardHeader>
@@ -756,7 +756,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
       </div>
       
       {emergencyMode && activeThreat && (
-        <Card className="liquid-glass-medium border-red-500/50 bg-red-900/20">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-red-500/50 bg-red-900/20">
           <CardContent className="p-6">
             <div className="flex items-center gap-3 mb-4">
               <Siren className="w-6 h-6 text-red-500 animate-pulse" />
@@ -782,7 +782,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
       )}
       
       {/* Emergency Actions */}
-      <Card className="liquid-glass-medium border-gray-600/30">
+      <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <AlertTriangle className="w-5 h-5 text-orange-400" />
@@ -815,7 +815,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
       </Card>
       
       {/* Emergency Contacts */}
-      <Card className="liquid-glass-medium border-gray-600/30">
+      <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
         <CardHeader>
           <CardTitle className="text-white flex items-center gap-2">
             <Phone className="w-5 h-5 text-green-400" />
@@ -856,7 +856,7 @@ interface ThreatMonitorPanelProps {
 
 function ThreatMonitorPanel({ threats }: ThreatMonitorPanelProps) {
   return (
-    <Card className="liquid-glass-medium border-red-500/20">
+    <Card className="bg-gray-800/50 backdrop-blur-sm border-red-500/20">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <AlertTriangle className="w-5 h-5 text-red-400" />
@@ -899,7 +899,7 @@ interface IntelligenceFeedPanelProps {
 
 function IntelligenceFeedPanel({ feeds }: IntelligenceFeedPanelProps) {
   return (
-    <Card className="liquid-glass-medium border-blue-500/20">
+    <Card className="bg-gray-800/50 backdrop-blur-sm border-blue-500/20">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <Radio className="w-5 h-5 text-blue-400" />
@@ -943,7 +943,7 @@ interface AIRecommendationsPanelProps {
 
 function AIRecommendationsPanel({ recommendations }: AIRecommendationsPanelProps) {
   return (
-    <Card className="liquid-glass-medium border-cyan-500/20">
+    <Card className="bg-gray-800/50 backdrop-blur-sm border-cyan-500/20">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <Brain className="w-5 h-5 text-cyan-400" />
@@ -988,7 +988,7 @@ interface QuickActionsPanelProps {
 
 function QuickActionsPanel({ urgentActions }: QuickActionsPanelProps) {
   return (
-    <Card className="liquid-glass-medium border-orange-500/20">
+    <Card className="bg-gray-800/50 backdrop-blur-sm border-orange-500/20">
       <CardHeader>
         <CardTitle className="text-white flex items-center gap-2">
           <Zap className="w-5 h-5 text-orange-400" />
