@@ -304,7 +304,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('enterprise_organizations')
         .select('*')
         .eq('organization_code', orgCode)
@@ -335,7 +335,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('enterprise_organizations')
         .select('*')
         .or(`domain.eq.${domain},additional_domains.cs.{${domain}}`)
@@ -367,7 +367,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('organization_users')
         .select(`
           organization_id,
@@ -406,7 +406,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('enterprise_organizations')
         .select('*')
         .eq('id', orgId)
@@ -437,7 +437,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('organization_users')
         .select(`
           *,
@@ -477,7 +477,7 @@ class TenantManager {
       }
 
       // Check if user exists
-      const { data: existingUser, error: userError } = await this.supabase
+      const { data: existingUser, error: userError } = await this.supabase!
         .from('auth.users')
         .select('id')
         .eq('email', userEmail)
@@ -494,7 +494,7 @@ class TenantManager {
       }
 
       // Add to organization_users
-      const { error: insertError } = await this.supabase
+      const { error: insertError } = await this.supabase!
         .from('organization_users')
         .insert({
           user_id: userId,
@@ -534,7 +534,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { error } = await this.supabase
+      const { error } = await this.supabase!
         .from('organization_users')
         .update({
           role: newRole,
@@ -568,7 +568,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { error } = await this.supabase
+      const { error } = await this.supabase!
         .from('organization_users')
         .update({
           status: 'deactivated',
@@ -603,7 +603,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('organization_customizations')
         .select('*')
         .eq('organization_id', orgId)
@@ -632,7 +632,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { error } = await this.supabase
+      const { error } = await this.supabase!
         .from('organization_customizations')
         .upsert({
           organization_id: orgId,
@@ -663,7 +663,7 @@ class TenantManager {
       const startOfMonth = new Date(queryMonth.getFullYear(), queryMonth.getMonth(), 1)
       const endOfMonth = new Date(queryMonth.getFullYear(), queryMonth.getMonth() + 1, 0)
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('organization_billing')
         .select('*')
         .eq('organization_id', orgId)
@@ -689,7 +689,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase.rpc('check_organization_limit', {
+      const { data, error } = await this.supabase!.rpc('check_organization_limit', {
         org_id: orgId,
         limit_type: limitType
       })
@@ -714,7 +714,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { error } = await this.supabase.rpc('update_organization_usage', {
+      const { error } = await this.supabase!.rpc('update_organization_usage', {
         org_id: orgId,
         usage_type: usageType,
         increment_by: increment
@@ -739,7 +739,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase.rpc('user_has_permission', {
+      const { data, error } = await this.supabase!.rpc('user_has_permission', {
         permission_name: permission
       })
 
@@ -774,7 +774,7 @@ class TenantManager {
       const fullTableName = `${schemaName}.${tableName}`
 
       // Execute query with tenant-specific table
-      return await this.supabase
+      return await this.supabase!
         .from(fullTableName)
         .select(query.select)
         .match(query.match || {})
@@ -803,7 +803,7 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      await this.supabase
+      await this.supabase!
         .from('organization_audit_log')
         .insert({
           organization_id: orgId,

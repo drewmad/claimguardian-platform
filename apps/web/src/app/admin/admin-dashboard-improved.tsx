@@ -24,7 +24,7 @@ import { PermissionsManagement } from '@/components/admin/permissions-management
 import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
 import { ErrorDashboard } from '@/components/admin/error-dashboard'
 
-import { Button } from '@/components/ui/button'
+import { Button } from '@claimguardian/ui'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { cn } from '@/lib/utils'
@@ -214,7 +214,7 @@ export function AdminDashboardImproved() {
                         <CardTitle>Recent Activity</CardTitle>
                         <CardDescription>Latest system events and user actions</CardDescription>
                       </div>
-                      <Button variant="ghost" size="sm">
+                      <Button>
                         <RefreshCw className="h-4 w-4" />
                       </Button>
                     </div>
@@ -282,7 +282,7 @@ export function AdminDashboardImproved() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <Button 
-                      variant="outline" 
+                      variant="outline"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('users')}
                     >
@@ -290,7 +290,7 @@ export function AdminDashboardImproved() {
                       Manage Users
                     </Button>
                     <Button 
-                      variant="outline" 
+                      variant="outline"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('permissions')}
                     >
@@ -298,7 +298,7 @@ export function AdminDashboardImproved() {
                       Permissions
                     </Button>
                     <Button 
-                      variant="outline" 
+                      variant="outline"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('ai-models')}
                     >
@@ -306,7 +306,7 @@ export function AdminDashboardImproved() {
                       Configure AI
                     </Button>
                     <Button 
-                      variant="outline" 
+                      variant="outline"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('errors')}
                     >
@@ -502,8 +502,8 @@ export function AdminDashboardImproved() {
                 />
               </div>
               <Button 
-                variant="outline" 
-                size="sm" 
+                variant="outline"
+                size="sm"
                 className="border-slate-700"
                 onClick={() => setActiveTab('settings')}
               >

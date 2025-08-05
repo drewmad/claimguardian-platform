@@ -8,13 +8,12 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import type { Database } from '@claimguardian/db'
+import type { Database, ClaimStatus } from '@claimguardian/db'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 // Database types
 type DbClaim = Database['public']['Tables']['claims']['Row']
-type ClaimStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'denied' | 'settled'
 
 // Extended types for the store
 interface ClaimEvidence {
@@ -474,7 +473,7 @@ export const useClaimStore = create<ClaimState>()(
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
-              ? { ...c, status: 'under_review' as ClaimStatus, updated_at: new Date().toISOString() }
+              ? { ...c, status: 'investigating' as ClaimStatus, updated_at: new Date().toISOString() }
               : c
           )
         }))

@@ -21,6 +21,9 @@ export * from './types/legal-compliance'
 export * from './types/maps-intelligence'
 export * from './services/maps-intelligence-service'
 
+// Export core types from types.ts
+export * from './types'
+
 import type { Database } from './types/database.types'
 
 // Export Supabase client factory functions
@@ -39,8 +42,29 @@ export type Tables = Database['public']['Tables']
 export type TablesUpdate = Database['public']['Tables'][keyof Database['public']['Tables']]['Update']
 export type Enums = Database['public']['Enums']
 
+// Import types from the new schema structure
+import type { 
+  CoreProperty, 
+  CoreStructure, 
+  CoreSpace, 
+  CoreScan, 
+  CoreDigitalModel,
+  ReferenceParcel,
+  Database as TypesDatabase 
+} from './types'
+
+// Import asset structure type
+import type { Structure as AssetStructure } from './types/asset'
+
+// Re-export the types with simpler names for backward compatibility
+export type Property = CoreProperty
+export type Structure = AssetStructure // Use Asset Structure type for backward compatibility
+export type Space = CoreSpace
+export type Scan = CoreScan
+export type DigitalModel = CoreDigitalModel
+export type Parcel = ReferenceParcel
+
 // Export specific table types for convenience
-export type Property = Database['public']['Tables']['properties']['Row']
 export type Claim = Database['public']['Tables']['claims']['Row']
 
 // TODO: Fix these once users and profiles tables are added to database types
@@ -64,8 +88,8 @@ export type Profile = {
 }
 
 // Export insert/update types
-export type PropertyInsert = Database['public']['Tables']['properties']['Insert']
-export type PropertyUpdate = Database['public']['Tables']['properties']['Update']
+export type PropertyInsert = Omit<CoreProperty, 'id' | 'created_at' | 'updated_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>
+export type PropertyUpdate = Partial<Omit<CoreProperty, 'id' | 'created_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>>
 export type ClaimInsert = Database['public']['Tables']['claims']['Insert']
 export type ClaimUpdate = Database['public']['Tables']['claims']['Update']
 

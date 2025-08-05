@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { tenantManager, type TenantCustomization } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager } from '@/lib/multi-tenant/tenant-manager'
 
 interface TenantContext {
   organizationId: string
@@ -17,7 +17,7 @@ interface TenantContext {
   subscriptionStatus: string
   allowedStates: string[]
   featureFlags: Record<string, boolean>
-  customizations?: TenantCustomization
+  customizations?: Record<string, unknown>
 }
 
 /**
@@ -99,7 +99,7 @@ export async function checkTenantAccess(
 /**
  * Apply tenant-specific customizations to response
  */
-export function applyTenantCustomizations(
+export function applyCustomizations(
   response: NextResponse,
   tenantContext: TenantContext
 ): NextResponse {
@@ -380,7 +380,7 @@ export async function tenantMiddleware(request: NextRequest): Promise<NextRespon
   
   // Apply tenant customizations if we have context
   if (tenantContext) {
-    response = applyTenantCustomizations(response, tenantContext)
+    response = applyCustomizations(response, tenantContext)
     
     // Add security headers
     response.headers.set('Content-Security-Policy', generateTenantCSPInternal(tenantContext))

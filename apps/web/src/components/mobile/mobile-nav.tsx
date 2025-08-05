@@ -16,8 +16,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
-import { Button } from '@/components/ui/button'
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
+import { Button, Modal } from '@claimguardian/ui'
 import { cn } from '@/lib/utils'
 
 interface NavItem {
@@ -95,17 +94,21 @@ export function MobileNav() {
           })}
           
           {/* More Menu */}
-          <Sheet open={isOpen} onOpenChange={setIsOpen}>
-            <SheetTrigger asChild>
-              <button className="flex flex-col items-center justify-center text-gray-400">
-                <Menu className="w-5 h-5" />
-                <span className="text-xs mt-1">More</span>
-              </button>
-            </SheetTrigger>
-            <SheetContent side="bottom" className="h-[50vh] rounded-t-xl">
-              <SheetHeader className="pb-4">
-                <SheetTitle>More Options</SheetTitle>
-              </SheetHeader>
+          <button 
+            className="flex flex-col items-center justify-center text-gray-400"
+            onClick={() => setIsOpen(true)}
+          >
+            <Menu className="w-5 h-5" />
+            <span className="text-xs mt-1">More</span>
+          </button>
+          
+          <Modal
+            isOpen={isOpen}
+            onClose={() => setIsOpen(false)}
+            title="More Options"
+            className="max-w-sm"
+          >
+            <div className="pb-4">
               <div className="space-y-1">
                 {moreNavItems.map((item) => {
                   const Icon = item.icon
@@ -133,8 +136,8 @@ export function MobileNav() {
                   )
                 })}
               </div>
-            </SheetContent>
-          </Sheet>
+            </div>
+          </Modal>
         </div>
       </nav>
 

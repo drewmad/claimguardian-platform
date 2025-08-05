@@ -119,6 +119,11 @@
       "@typescript-eslint/eslint-plugin": "8.0.0-alpha.33",
       "@typescript-eslint/parser": "8.0.0-alpha.33",
       "typescript-eslint": "8.0.0-alpha.33"
-    }
+    },
+    "ignoredBuiltDependencies": [
+      "@sentry/cli",
+      "esbuild",
+      "sharp"
+    ]
   }
 }

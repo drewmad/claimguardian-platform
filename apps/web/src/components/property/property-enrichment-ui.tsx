@@ -11,13 +11,12 @@
 'use client'
 
 import { useState } from 'react'
-import { 
-  TrendingUp, Shield, MapPin, DollarSign, Users, Home, 
-  AlertTriangle, CheckCircle, Clock, Building, Award,
-  BarChart3, PieChart, Target, Lightbulb
-} from 'lucide-react'
-import { Button, Card, CardContent, CardHeader, CardTitle, Badge, Progress } from '@claimguardian/ui'
-import { enrichProperty, type EnrichedProperty, type RiskFactor } from '@/actions/comprehensive-property-enrichment'
+import { TrendingUp, Shield, AlertTriangle, CheckCircle, Clock, BarChart3, PieChart, Target, Lightbulb } from 'lucide-react'
+import { Button } from '@claimguardian/ui'
+import { Progress } from '@/components/ui/progress'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { enrichProperty } from '@/actions/comprehensive-property-enrichment'
 
 interface PropertyEnrichmentUIProps {
   parcelId: string

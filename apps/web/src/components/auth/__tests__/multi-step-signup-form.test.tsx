@@ -43,8 +43,8 @@ const mockRouter = {
 describe('MultiStepSignupForm', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    (createBrowserSupabaseClient as any).mockReturnValue(mockSupabase);
-    (useRouter as any).mockReturnValue(mockRouter)
+    (createBrowserSupabaseClient as unknown).mockReturnValue(mockSupabase);
+    (useRouter as unknown).mockReturnValue(mockRouter)
   })
 
   describe('Welcome Step', () => {

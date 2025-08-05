@@ -8,9 +8,9 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { clsx, type ClassValue } from 'clsx'
+import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 
-export function cn(...inputs: ClassValue[]) {
+export function cn(...inputs: Parameters<typeof clsx>) {
   return twMerge(clsx(inputs))
 }

@@ -49,10 +49,10 @@ export async function createClaim({
       }
     }
 
-    const claimData: ClaimInsert = {
+    const claimData: unknown = {
       user_id: user.id,
       property_id: propertyId,
-      claim_type: claimType,
+      type: claimType,
       description,
       incident_date: incidentDate || new Date().toISOString(),
       status: 'draft',

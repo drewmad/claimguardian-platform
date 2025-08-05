@@ -69,14 +69,18 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
     }
   }
 
-  const getRiskBadge = (riskWeight: number) => {
-    if (riskWeight >= 0.7) {
-      return <Badge variant="destructive" className="text-xs">High Risk</Badge>
+  const getRiskBadge = (riskLevel: string) => {
+    switch (riskLevel) {
+      case 'extreme':
+      case 'high':
+        return <Badge variant="destructive" className="text-xs">High Risk</Badge>
+      case 'moderate':
+        return <Badge variant="outline" className="text-xs">Medium Risk</Badge>
+      case 'low':
+        return <Badge variant="secondary" className="text-xs">Low Risk</Badge>
+      default:
+        return <Badge variant="outline" className="text-xs">{riskLevel}</Badge>
     }
-    if (riskWeight >= 0.4) {
-      return <Badge variant="outline" className="text-xs">Medium Risk</Badge>
-    }
-    return <Badge variant="secondary" className="text-xs">Low Risk</Badge>
   }
 
   if (hazardZones.length === 0) {
@@ -113,8 +117,8 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                     {getCategoryIcon(zone.category)}
                   </div>
                   <div>
-                    <p className="font-medium text-white">{zone.hazardType}</p>
-                    <p className="text-sm text-gray-400">{zone.zoneName}</p>
+                    <p className="font-medium text-white">{zone.category}</p>
+                    <p className="text-sm text-gray-400">{zone.name}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -124,7 +128,7 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                   >
                     {zone.category}
                   </Badge>
-                  {getRiskBadge(zone.riskWeight)}
+                  {getRiskBadge(zone.riskLevel)}
                 </div>
               </div>
             ))}

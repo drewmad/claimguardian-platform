@@ -14,7 +14,21 @@
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { toError } from '@claimguardian/utils'
-import { getParcelDetails, type ParcelData } from '@/actions/parcel-lookup'
+import { getParcelDetails } from '@/actions/parcel-lookup'
+
+export interface ParcelData {
+  phy_addr1: string
+  phy_city: string
+  lnd_val: number
+  imp_val: number
+  county_fips?: string
+  tot_lvg_area?: number
+  yr_blt?: number
+  act_yr_blt?: number
+  no_bdrm?: number
+  no_bath?: number
+  [key: string]: unknown
+}
 
 export interface MarketAnalysis {
   comparableSales: ComparableSale[]
@@ -163,7 +177,7 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
       throw new Error(`Parcel not found: ${parcelId}`)
     }
     
-    const parcelData = parcelResult.data
+    const parcelData = parcelResult.data as any
     
     // Run all enrichment modules in parallel
     const [
@@ -230,8 +244,8 @@ async function analyzeMarket(parcel: ParcelData): Promise<MarketAnalysis> {
     .select('*')
     .eq('county_fips', parcel.county_fips)
     .ilike('phy_city', parcel.phy_city)
-    .gte('tot_lvg_area', (parcel.tot_lvg_area || 0) * 0.8)
-    .lte('tot_lvg_area', (parcel.tot_lvg_area || 0) * 1.2)
+    .gte('tot_lvg_area', Math.max(0, Number(parcel.tot_lvg_area || 0) * 0.8))
+    .lte('tot_lvg_area', Math.max(0, Number(parcel.tot_lvg_area || 0) * 1.2))
     .limit(20)
   
   const comparableSales: ComparableSale[] = (comparables || []).map(comp => ({
@@ -462,7 +476,7 @@ async function generateAIInsights(data: {
 // Risk assessment helper functions
 function assessFloodRisk(parcel: ParcelData): RiskFactor {
   const coastalCounties = ['12015', '12071', '12081', '12103', '12057']
-  const isCoastal = coastalCounties.includes(parcel.county_fips)
+  const isCoastal = coastalCounties.includes(parcel.county_fips || '')
   
   const score = isCoastal ? 0.7 : 0.3
   const level: RiskFactor['level'] = score > 0.6 ? 'high' : score > 0.4 ? 'moderate' : 'low'

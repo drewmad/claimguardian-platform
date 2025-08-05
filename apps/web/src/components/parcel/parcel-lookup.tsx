@@ -12,8 +12,11 @@
 
 import { useState } from 'react'
 import { Search, MapPin, Home, AlertTriangle } from 'lucide-react'
-import { Button, Card, CardContent, CardHeader, CardTitle, Input, Badge } from '@claimguardian/ui'
-import { searchParcels, assessPropertyRisk, type ParcelData, type ParcelSearchParams } from '@/actions/parcel-lookup'
+import { Button } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Badge } from '@/components/ui/badge'
+import { searchParcels, assessPropertyRisk } from '@/actions/parcel-lookup'
 
 export function ParcelLookup() {
   const [searchParams, setSearchParams] = useState<ParcelSearchParams>({})
@@ -138,7 +141,7 @@ export function ParcelLookup() {
             </Button>
             
             <Button
-              variant="outline"
+              variant="secondary"
               onClick={() => {
                 setSearchParams({})
                 setResults([])

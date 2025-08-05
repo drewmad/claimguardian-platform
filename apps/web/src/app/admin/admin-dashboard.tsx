@@ -27,7 +27,7 @@ import { PartitionMonitorDashboard } from '@/components/admin/partition-monitor-
 import { TimeSeriesAnalyticsDashboard } from '@/components/admin/time-series-analytics-dashboard'
 
 import { Input, Label } from '@claimguardian/ui'
-import { Button } from '@/components/ui/button'
+import { Button } from '@claimguardian/ui'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -144,8 +144,8 @@ export function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
-              variant="ghost"
-              size="sm"
+              
+              
               onClick={() => router.push('/dashboard')}
               className="text-gray-400 hover:text-white"
             >
@@ -168,7 +168,7 @@ export function AdminDashboard() {
                 className="pl-10 w-64 bg-slate-800 border-slate-700"
               />
             </div>
-            <Button variant="outline" size="sm" className="border-slate-700">
+            <Button   className="border-slate-700">
               <Settings className="h-4 w-4" />
             </Button>
           </div>
@@ -300,27 +300,27 @@ export function AdminDashboard() {
                   <CardDescription>Common administrative tasks</CardDescription>
                 </CardHeader>
                 <CardContent className="grid grid-cols-2 gap-3">
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('users')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('users')}>
                     <Users className="mr-2 h-4 w-4" />
                     Manage Users
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-models')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('ai-models')}>
                     <Brain className="mr-2 h-4 w-4" />
                     AI Models
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ab-testing')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('ab-testing')}>
                     <Target className="mr-2 h-4 w-4" />
                     A/B Testing
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-cache')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('ai-cache')}>
                     <Database className="mr-2 h-4 w-4" />
                     AI Cache
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-performance')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('ai-performance')}>
                     <Activity className="mr-2 h-4 w-4" />
                     Performance
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('claude-learning')}>
+                  <Button  className="justify-start" onClick={() => setActiveTab('claude-learning')}>
                     <Zap className="mr-2 h-4 w-4" />
                     Claude Learning
                   </Button>
@@ -337,11 +337,11 @@ export function AdminDashboard() {
                 <p className="text-gray-400">Overview of all users in the system</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" size="sm">
+                <Button  >
                   <Calendar className="mr-2 h-4 w-4" />
                   Export
                 </Button>
-                <Button size="sm">
+                <Button >
                   <Users className="mr-2 h-4 w-4" />
                   Add User
                 </Button>
@@ -404,7 +404,7 @@ export function AdminDashboard() {
                           <p className="text-sm text-gray-400">Joined</p>
                           <p className="text-sm font-medium">{user.joined}</p>
                         </div>
-                        <Badge variant={user.status === 'active' ? 'secondary' : 'outline'}>
+                        <Badge >
                           {user.status}
                         </Badge>
                         <Button variant="ghost" size="sm">
@@ -426,11 +426,11 @@ export function AdminDashboard() {
                 <p className="text-gray-400">Configure and monitor AI models across all features</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" size="sm">
+                <Button  >
                   <Activity className="mr-2 h-4 w-4" />
                   Performance Report
                 </Button>
-                <Button size="sm">
+                <Button >
                   <Settings className="mr-2 h-4 w-4" />
                   Configure Models
                 </Button>
@@ -498,7 +498,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Damage Analyzer</h4>
-                        <Badge variant="secondary">GPT-4 Vision</Badge>
+                        <Badge >GPT-4 Vision</Badge>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
@@ -522,7 +522,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Policy Chat</h4>
-                        <Badge variant="secondary">GPT-4 Turbo</Badge>
+                        <Badge >GPT-4 Turbo</Badge>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
@@ -546,7 +546,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Settlement Analyzer</h4>
-                        <Badge variant="secondary">Claude 3 Opus</Badge>
+                        <Badge >Claude 3 Opus</Badge>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
@@ -570,7 +570,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Inventory Scanner</h4>
-                        <Badge variant="secondary">Gemini 1.5 Pro</Badge>
+                        <Badge >Gemini 1.5 Pro</Badge>
                       </div>
                       <div className="grid grid-cols-3 gap-2 text-sm">
                         <div>
@@ -607,7 +607,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">GPT-4 Turbo</h4>
-                        <Badge variant="outline">OpenAI</Badge>
+                        <Badge >OpenAI</Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -632,7 +632,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Gemini 1.5 Pro</h4>
-                        <Badge variant="outline">Google</Badge>
+                        <Badge >Google</Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -657,7 +657,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Claude 3 Opus</h4>
-                        <Badge variant="outline">Anthropic</Badge>
+                        <Badge >Anthropic</Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -682,7 +682,7 @@ export function AdminDashboard() {
                     <div className="p-4 bg-slate-800 rounded-lg">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="font-medium">Claude 3 Sonnet</h4>
-                        <Badge variant="outline">Anthropic</Badge>
+                        <Badge >Anthropic</Badge>
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         <div>
@@ -812,7 +812,7 @@ export function AdminDashboard() {
                   <div className="p-4 bg-slate-800 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">Damage Assessment Model</h4>
-                      <Badge variant="secondary">Active</Badge>
+                      <Badge >Active</Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
@@ -832,7 +832,7 @@ export function AdminDashboard() {
                   <div className="p-4 bg-slate-800 rounded-lg">
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-medium">Document Extraction Model</h4>
-                      <Badge variant="secondary">Active</Badge>
+                      <Badge >Active</Badge>
                     </div>
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
@@ -862,10 +862,10 @@ export function AdminDashboard() {
                 <p className="text-gray-400">System errors and warnings</p>
               </div>
               <div className="flex gap-3">
-                <Button variant="outline" size="sm">
+                <Button  >
                   Clear Resolved
                 </Button>
-                <Button variant="outline" size="sm">
+                <Button  >
                   Export Log
                 </Button>
               </div>
@@ -939,9 +939,9 @@ export function AdminDashboard() {
                         </div>
                         <div className="flex items-center gap-2">
                           {error.count > 1 && (
-                            <Badge variant="secondary">×{error.count}</Badge>
+                            <Badge >×{error.count}</Badge>
                           )}
-                          <Button variant="ghost" size="sm">
+                          <Button  >
                             View Details
                           </Button>
                         </div>

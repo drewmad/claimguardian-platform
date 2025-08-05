@@ -481,11 +481,11 @@ export default function MapsIntelligencePage() {
                         <div className="text-green-400 font-semibold">✅ Complete Intelligence Gathered Successfully</div>
                         
                         {/* Static Map Preview */}
-                        {(unifiedResults.data as any)?.staticMapUrl && (
+                        {(unifiedResults.data as unknown)?.staticMapUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Property Satellite View:</h4>
                             <img 
-                              src={(unifiedResults.data as any).staticMapUrl} 
+                              src={(unifiedResults.data as unknown).staticMapUrl} 
                               alt="Property satellite view"
                               className="rounded-lg border border-gray-600"
                             />
@@ -493,11 +493,11 @@ export default function MapsIntelligencePage() {
                         )}
 
                         {/* Street View Preview */}
-                        {(unifiedResults.data as any)?.streetViewUrl && (
+                        {(unifiedResults.data as unknown)?.streetViewUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Street View:</h4>
                             <img 
-                              src={(unifiedResults.data as any).streetViewUrl} 
+                              src={(unifiedResults.data as unknown).streetViewUrl} 
                               alt="Property street view"
                               className="rounded-lg border border-gray-600"
                             />

@@ -41,8 +41,8 @@ const mockUser = {
 }
 
 // Mock Supabase client with proper chaining
-const createMockSupabase = (): any => {
-  const mockQuery: any = {
+const createMockSupabase = (): unknown => {
+  const mockQuery: unknown = {
     select: jest.fn().mockReturnThis(),
     insert: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
@@ -336,7 +336,7 @@ describe('Claims Server Actions', () => {
       const result = await generateClaimReport({ claimId: 'claim-456' })
 
       expect(result.success).toBe(true)
-      expect((result.data as any)?.summary?.totalDocuments).toBe(0)
+      expect((result.data as unknown)?.summary?.totalDocuments).toBe(0)
       expect(result.data?.recommendations).toBeInstanceOf(Array)
     })
   })

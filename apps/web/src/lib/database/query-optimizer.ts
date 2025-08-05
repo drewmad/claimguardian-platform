@@ -331,7 +331,7 @@ class FloridaParcelQueryOptimizer {
       const { data, error } = await this.supabase.rpc('execute_raw_sql', {
         query: plan.query,
         params: plan.parameters || []
-      } as any)
+      } as unknown)
       
       if (error) throw error
       

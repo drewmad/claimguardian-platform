@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff, Receipt, Home, Package } from 'lucide-react'
+import { Shield, Camera, FileText, Calculator, FolderOpen, MessageSquare, FileSearch, Sparkles, ChevronRight, Zap, CheckCircle, AlertTriangle, Clock, Lock, Bot, Wifi, WifiOff, Receipt, Home, Package, Globe } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
@@ -237,6 +237,17 @@ const AI_TOOLS: AITool[] = [
     status: 'beta',
     category: 'documentation',
     features: ['Real-time AI Guidance', 'Quality Scoring', 'Progress Tracking', 'Perfect Documentation', 'Professional Results']
+  },
+  {
+    id: 'page-analyzer',
+    title: 'AI Page Analyzer',
+    description: 'Analyze any webpage for SEO, accessibility, performance, and content quality with AI-powered insights',
+    icon: Globe,
+    color: 'purple',
+    href: '/ai-tools/page-analyzer',
+    status: 'active',
+    category: 'analysis',
+    features: ['SEO Analysis', 'Accessibility Check', 'Performance Metrics', 'Content Quality', 'Insurance Relevance Detection']
   }
 ]
 

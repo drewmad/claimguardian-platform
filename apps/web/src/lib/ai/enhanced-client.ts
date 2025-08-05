@@ -351,7 +351,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return messages
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: any) => 
+      const activePrompt = result.data.prompts.find((p: unknown) => 
         p.feature_id === featureId && p.is_active
       )
 
@@ -392,7 +392,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return prompt
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: any) => 
+      const activePrompt = result.data.prompts.find((p: unknown) => 
         p.feature_id === featureId && p.is_active
       )
 

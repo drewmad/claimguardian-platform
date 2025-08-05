@@ -13,16 +13,10 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals'
 import { signUp, signIn, signOut, resetPassword } from '../auth'
+import { createSupabaseMock, type MockSupabaseClient } from '../../__tests__/utils/supabase-mocks'
 
-// Mock Supabase client
-const mockSupabase: any = {
-  auth: {
-    signUp: jest.fn(),
-    signInWithPassword: jest.fn(),
-    signOut: jest.fn(),
-    resetPasswordForEmail: jest.fn()
-  }
-}
+// Create properly typed mock
+const mockSupabase = createSupabaseMock()
 
 // Mock Next.js navigation
 jest.mock('next/navigation', () => ({

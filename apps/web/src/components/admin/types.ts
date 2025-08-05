@@ -59,7 +59,7 @@ export interface TooltipFormatterValue {
 export type TooltipFormatter = (
   value: number | string,
   name?: string,
-  props?: any
+  props?: unknown
 ) => [string, string]
 
 // Time series types

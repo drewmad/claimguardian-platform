@@ -9,7 +9,9 @@
  * @supabase-integration edge-functions
  */
 // Insurance claim types for ClaimGuardian
-import type { ClaimStatus } from './database.types'
+
+// Define ClaimStatus type based on database enum values
+export type ClaimStatus = 'draft' | 'submitted' | 'acknowledged' | 'investigating' | 'approved' | 'denied' | 'settled' | 'closed' | 'reopened' | 'withdrawn'
 
 export interface ClaimEvidence {
   id: string

@@ -590,7 +590,7 @@ class IntelligentPartitionManager {
       const { data, error } = await this.supabase.rpc('execute_raw_sql', {
         query: sql,
         params: [tableName]
-      } as any)
+      } as unknown)
 
       if (error) throw error
 

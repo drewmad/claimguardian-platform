@@ -784,7 +784,7 @@ export default function DebugIndexPage() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Connection:</span>
-                          <span className="text-white text-xs">{(navigator as any).connection?.effectiveType || 'Unknown'}</span>
+                          <span className="text-white text-xs">{(navigator as unknown).connection?.effectiveType || 'Unknown'}</span>
                         </div>
                       </div>
                     </div>

@@ -19,7 +19,14 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RiskScoreCard } from './RiskScoreCard'
 import { HazardZonesList } from './HazardZonesList'
 import { ActiveEventsMap } from './ActiveEventsMap'
-import { getParcelRiskAssessment, getPropertyHazardZones, getActiveEventsNearProperty } from '@/actions/geospatial'
+import { 
+  getParcelRiskAssessment, 
+  getPropertyHazardZones, 
+  getActiveEventsNearProperty,
+  RiskAssessment as GeospatialRiskAssessment,
+  HazardZone as GeospatialHazardZone,
+  ActiveEvent as GeospatialActiveEvent
+} from '@/actions/geospatial'
 import { 
   Building2, 
   MapPin, 
@@ -94,9 +101,9 @@ export function PropertyRiskDashboard({
 }: PropertyRiskDashboardProps) {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  const [riskAssessment, setRiskAssessment] = useState<RiskAssessment | null>(null)
-  const [hazardZones, setHazardZones] = useState<HazardZone[]>([])
-  const [activeEvents, setActiveEvents] = useState<ActiveEvent[]>([])
+  const [riskAssessment, setRiskAssessment] = useState<GeospatialRiskAssessment | null>(null)
+  const [hazardZones, setHazardZones] = useState<GeospatialHazardZone[]>([])
+  const [activeEvents, setActiveEvents] = useState<GeospatialActiveEvent[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {

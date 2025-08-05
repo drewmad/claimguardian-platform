@@ -319,7 +319,7 @@ export default function AIModelsAdminPage() {
         const abTestsData = await abTestsResponse.json()
         if (abTestsData.success && abTestsData.data) {
           // Convert API response to UI format
-          const convertedTests = abTestsData.data.map((test: any) => ({
+          const convertedTests = abTestsData.data.map((test: unknown) => ({
             id: test.id,
             name: test.name,
             feature: test.feature_id,
@@ -344,7 +344,7 @@ export default function AIModelsAdminPage() {
         const promptsData = await promptsResponse.json()
         if (promptsData.success && promptsData.data?.prompts) {
           // Convert API response to UI format
-          const convertedPrompts = promptsData.data.prompts.map((prompt: any) => ({
+          const convertedPrompts = promptsData.data.prompts.map((prompt: unknown) => ({
             id: prompt.id,
             feature: prompt.feature_id,
             name: prompt.name,
@@ -432,13 +432,13 @@ export default function AIModelsAdminPage() {
         setPerformanceData(data)
         
         // Calculate aggregate stats from real data
-        const totalRequests = Object.values(data).reduce((sum: number, model: any) => sum + model.requests, 0)
-        const totalCost = Object.values(data).reduce((sum: number, model: any) => sum + model.cost, 0)
+        const totalRequests = Object.values(data).reduce((sum: number, model: unknown) => sum + model.requests, 0)
+        const totalCost = Object.values(data).reduce((sum: number, model: unknown) => sum + model.cost, 0)
         const avgResponseTime = totalRequests > 0 
-          ? Object.values(data).reduce((sum: number, model: any) => sum + (model.avgTime * model.requests), 0) / totalRequests
+          ? Object.values(data).reduce((sum: number, model: unknown) => sum + (model.avgTime * model.requests), 0) / totalRequests
           : 0
         const avgSuccessRate = Object.keys(data).length > 0
-          ? Object.values(data).reduce((sum: number, model: any) => sum + model.successRate, 0) / Object.keys(data).length
+          ? Object.values(data).reduce((sum: number, model: unknown) => sum + model.successRate, 0) / Object.keys(data).length
           : 0
 
         setStats({
@@ -592,7 +592,7 @@ export default function AIModelsAdminPage() {
       if (result.success) {
         setABTests(prev => prev.map(test => 
           test.id === id 
-            ? { ...test, status: newStatus as any }
+            ? { ...test, status: newStatus as unknown }
             : test
         ))
         toast.success('A/B test status updated')
@@ -709,7 +709,7 @@ export default function AIModelsAdminPage() {
     }
   }
 
-  const applyAIRecommendation = async (recommendation: any) => {
+  const applyAIRecommendation = async (recommendation: unknown) => {
     if (recommendation.type === 'model_switch') {
       // Apply the recommended model switch
       const updatedMappings = featureMappings.map(mapping => 
@@ -1236,7 +1236,7 @@ export default function AIModelsAdminPage() {
                     <p>Analyzing performance data to generate recommendations...</p>
                   </div>
                 ) : (
-                  aiRecommendations.map((rec: any, idx) => (
+                  aiRecommendations.map((rec: unknown, idx) => (
                     <Card key={idx} className="bg-gray-700 border-gray-600">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
@@ -1477,7 +1477,7 @@ export default function AIModelsAdminPage() {
                   <h3 className="text-lg font-semibold text-white mb-4">Quality by Feature</h3>
                   <div className="space-y-3">
                     {featureMappings.map((feature) => {
-                      const featureMetrics = (qualityMetrics.ratings_by_feature as any)[feature.featureId] || {
+                      const featureMetrics = (qualityMetrics.ratings_by_feature as unknown)[feature.featureId] || {
                         rating: 4.2,
                         count: 0,
                         latest_feedback: ''
@@ -1490,11 +1490,11 @@ export default function AIModelsAdminPage() {
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[1,2,3,4,5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as any).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as unknown).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
                                 ))}
                               </div>
-                              <span className="text-sm text-gray-400">{(featureMetrics as any).rating}</span>
-                              <span className="text-xs text-gray-500">({(featureMetrics as any).count} ratings)</span>
+                              <span className="text-sm text-gray-400">{(featureMetrics as unknown).rating}</span>
+                              <span className="text-xs text-gray-500">({(featureMetrics as unknown).count} ratings)</span>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-4 text-sm">
@@ -1511,9 +1511,9 @@ export default function AIModelsAdminPage() {
                               <span className="text-white ml-2">{models.find(m => m.id === feature.fallbackModel)?.name || 'Unknown'}</span>
                             </div>
                           </div>
-                          {(featureMetrics as any).latest_feedback && (
+                          {(featureMetrics as unknown).latest_feedback && (
                             <div className="mt-3 p-2 bg-gray-800 rounded text-sm text-gray-300">
-                              <span className="text-gray-400">Latest feedback:</span> {(featureMetrics as any).latest_feedback}
+                              <span className="text-gray-400">Latest feedback:</span> {(featureMetrics as unknown).latest_feedback}
                             </div>
                           )}
                         </div>

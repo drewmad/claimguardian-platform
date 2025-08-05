@@ -234,12 +234,12 @@ export function ParcelSearch({
                     </Button>
                   </div>
                   
-                  {parcel.assessedValue && (
+                  {parcel.totalValue && (
                     <div className="pt-2 border-t border-gray-800 grid grid-cols-3 gap-2 text-xs">
                       <div>
                         <p className="text-gray-500">Assessed Value</p>
                         <p className="text-gray-300">
-                          ${parcel.assessedValue.toLocaleString()}
+                          ${parcel.totalValue.toLocaleString()}
                         </p>
                       </div>
                       {parcel.livingArea && (

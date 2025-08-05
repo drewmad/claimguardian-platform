@@ -129,12 +129,12 @@ export function ActiveEventsMap({ activeEvents, propertyLocation }: ActiveEvents
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${getEventColor(event.eventType)}`}>
-                      {getEventIcon(event.eventType)}
+                    <div className={`p-2 rounded-lg ${getEventColor(event.type)}`}>
+                      {getEventIcon(event.type)}
                     </div>
                     <div>
-                      <h4 className="font-medium text-white">{event.eventName}</h4>
-                      <p className="text-sm text-gray-400 capitalize">{event.eventType}</p>
+                      <h4 className="font-medium text-white">{event.title}</h4>
+                      <p className="text-sm text-gray-400 capitalize">{event.type}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -151,12 +151,12 @@ export function ActiveEventsMap({ activeEvents, propertyLocation }: ActiveEvents
                 <div className="flex items-center gap-4 text-sm text-gray-400">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>Started {formatDistanceToNow(new Date(event.startTime))} ago</span>
+                    <span>Started {formatDistanceToNow(new Date(event.startDate))} ago</span>
                   </div>
                 </div>
 
                 {/* Event-specific details could go here */}
-                {event.eventType === 'wildfire' && (
+                {event.type === 'wildfire' && (
                   <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-700">
                     <p className="text-xs text-gray-400">
                       Monitor local authorities for evacuation orders and air quality updates.

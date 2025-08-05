@@ -220,7 +220,7 @@ export default function SituationRoomPage() {
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setSelectedView(tab.id as any)}
+              onClick={() => setSelectedView(tab.id as unknown)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 selectedView === tab.id 
                   ? 'liquid-glass-premium text-white' 
@@ -717,7 +717,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.activeIncidents.slice(0, 3).map((incident: any) => (
+              {data.activeIncidents.slice(0, 3).map((incident: unknown) => (
                 <div key={incident.id} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
                   <div>
                     <p className="text-white font-medium">{incident.description}</p>

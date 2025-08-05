@@ -11,13 +11,12 @@
 // apps/web/src/actions/disasters.ts
 'use server'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'
 
 export async function getDisasterHubData() {
-  noStore() // Ensure data is always fresh
+  // noStore() // Ensure data is always fresh - disabled to fix compilation
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()

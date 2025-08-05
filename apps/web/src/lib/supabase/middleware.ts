@@ -8,10 +8,10 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
 
-export function createClient(request: NextRequest, response: NextResponse) {
+export function createClient(request: Request & { cookies: unknown }, response: NextResponse) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -20,11 +20,11 @@ export function createClient(request: NextRequest, response: NextResponse) {
         get(name: string) {
           return request.cookies.get(name)?.value
         },
-        set(name: string, value: string, options: CookieOptions) {
+        set(name: string, value: string, options: Record<string, any>) {
           request.cookies.set({ name, value, ...options })
           response.cookies.set({ name, value, ...options })
         },
-        remove(name: string, options: CookieOptions) {
+        remove(name: string, options: Record<string, any>) {
           request.cookies.set({ name, value: '', ...options })
           response.cookies.set({ name, value: '', ...options })
         },
