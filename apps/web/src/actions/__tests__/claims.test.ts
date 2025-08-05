@@ -24,7 +24,7 @@ import {
 
 // Mock dependencies
 vi.mock('@claimguardian/db', () => ({
-  createServerSupabaseClient: vi.fn()
+  createClient: vi.fn()
 }))
 
 vi.mock('@claimguardian/utils', () => ({
@@ -75,8 +75,8 @@ describe('Claims Server Actions', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     mockSupabase = createMockSupabase()
-    const { createServerSupabaseClient } = await import('@claimguardian/db')
-    ;(createServerSupabaseClient as any).mockResolvedValue(mockSupabase)
+    const { createClient } = await import('@claimguardian/db')
+    ;(createClient as any).mockResolvedValue(mockSupabase)
   })
 
   describe('createClaim', () => {

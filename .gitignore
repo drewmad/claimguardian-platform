@@ -107,6 +107,18 @@ Thumbs.db
 *Cadastral_Statewide.gdb*/
 Cadastral_Statewide.gdb*/
 
+# Florida Parcel Data Downloads
+/data/florida/florida_parcels_*.zip
+/data/florida/Cadastral_Statewide.zip
+/data/florida/florida_parcels_*.gdb/
+/data/florida/Cadastral_Statewide.gdb/
+/data/florida/*.geojson
+/data/florida/*.gdb
+/data/florida/charlotte_parcels_*.geojson
+/data/florida/*_parcels_*.csv
+/data/florida/*_embeddings.npy
+/data/florida/ai_processing_metadata.json
+
 # Large CSV datasets
 CleanedSplit/
 CleanedSplit_imported/

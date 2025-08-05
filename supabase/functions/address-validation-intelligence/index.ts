@@ -88,8 +88,8 @@ async function validateAddressWithGoogle(address: string | object): Promise<any>
       console.log(JSON.stringify({
   level: "warn",
   timestamp: new Date().toISOString(),
-  message: 'Address Validation API error, using mock data:', await response.text(
-}));)
+  message: 'Address Validation API error, using mock data:' + await response.text()
+}));
       return generateMockValidationData(address)
     }
   } catch (error) {
@@ -507,7 +507,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'address-validation-intelligence'
     }

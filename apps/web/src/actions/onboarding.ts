@@ -57,7 +57,7 @@ export interface OnboardingData {
  */
 export async function saveOnboardingProgress(userId: string, data: Partial<OnboardingData>) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Update user preferences with onboarding data
     const updateData: Record<string, unknown> = {
@@ -120,7 +120,7 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
  */
 export async function completeOnboarding(userId: string, finalData: OnboardingData) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const completionData = {
       user_id: userId,

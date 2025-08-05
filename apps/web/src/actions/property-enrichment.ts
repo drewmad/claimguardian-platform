@@ -35,7 +35,7 @@ export async function enrichPropertyData({
   placeId?: string
 }): Promise<PropertyEnrichmentResult> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get the current user
     const { data: { user } } = await supabase.auth.getUser()
@@ -127,7 +127,7 @@ export async function enrichPropertyData({
  */
 export async function getPropertyEnrichmentStatus(propertyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data, error } = await supabase
       .from('property_enrichments')

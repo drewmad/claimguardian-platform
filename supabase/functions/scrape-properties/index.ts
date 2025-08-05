@@ -119,7 +119,7 @@ serve(async (req) => {
           .from('scraper_runs')
           .update({
             status: 'failed',
-            error_message: error.message,
+            error_message: error instanceof Error ? error.message : String(error),
             completed_at: new Date().toISOString(),
           })
           .eq('source', county.name)
@@ -132,7 +132,7 @@ serve(async (req) => {
     )
   } catch (error) {
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 },
     )
   }

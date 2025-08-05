@@ -57,7 +57,7 @@ export async function scrapeArcGIS(
         const json = await response.json();
         
         if (json.error) {
-          throw new Error(`[${config.source}] API error: ${json.error.message || JSON.stringify(json.error)}`);
+          throw new Error(`[${config.source}] API error: ${json.error instanceof Error ? error.message : String(error) || JSON.stringify(json.error)}`);
         }
         
         if (!json.features || json.features.length === 0) {

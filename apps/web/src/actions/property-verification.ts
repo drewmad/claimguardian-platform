@@ -40,7 +40,7 @@ export async function verifyPropertyEnrichment(
   propertyId: string
 ): Promise<{ success: boolean; data?: EnrichmentVerificationResult; error?: string }> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get the current enrichment data
     const { data: enrichment, error } = await supabase
@@ -184,7 +184,7 @@ export async function verifyPropertyEnrichment(
  */
 export async function getUserEnrichmentStats(userId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get all user properties
     const { data: properties, error: propError } = await supabase
@@ -259,7 +259,7 @@ export async function getUserEnrichmentStats(userId: string) {
  */
 export async function checkEnrichmentHealth(userId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get all user properties with enrichment status
     const { data, error } = await supabase

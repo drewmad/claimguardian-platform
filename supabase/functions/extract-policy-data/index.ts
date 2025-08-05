@@ -225,7 +225,7 @@ Deno.serve(async (req) => {
           .from('policy_documents_extended')
           .update({ 
             extraction_status: 'failed',
-            extraction_error: error.message,
+            extraction_error: error instanceof Error ? error.message : String(error),
             updated_at: new Date().toISOString()
           })
           .eq('id', documentId)
@@ -240,7 +240,7 @@ Deno.serve(async (req) => {
 
     return new Response(
       JSON.stringify({ 
-        error: error.message,
+        error: error instanceof Error ? error.message : String(error),
         details: error.toString()
       }),
       { 

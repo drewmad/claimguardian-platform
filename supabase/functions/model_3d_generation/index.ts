@@ -418,7 +418,7 @@ async function processImagesInBackground(
     // Update task as failed
     await supabase.from('model_tasks').update({ 
       status: 'FAILED',
-      error: error.message || 'Processing failed',
+      error: error instanceof Error ? error.message : String(error) || 'Processing failed',
       completed_at: new Date().toISOString()
     }).eq('id', taskId)
   }

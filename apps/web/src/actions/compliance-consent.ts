@@ -48,7 +48,7 @@ interface ConsentRecord {
  */
 export async function recordSignupConsent(data: ConsentData): Promise<ConsentRecord> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     const headersList = await headers()
     
     // Get IP and user agent for audit trail using resilient detection
@@ -168,7 +168,7 @@ export async function validateConsent(
   consentToken: string
 ): Promise<ConsentValidation> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: result, error } = await supabase.rpc('validate_signup_consent', {
       p_email: email,
@@ -217,7 +217,7 @@ export async function linkConsentToUser(
   userId: string
 ): Promise<boolean> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data, error } = await supabase.rpc('link_consent_to_user', {
       p_consent_token: consentToken,

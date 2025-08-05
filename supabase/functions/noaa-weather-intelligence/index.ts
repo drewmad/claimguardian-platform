@@ -658,7 +658,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'noaa-weather-intelligence'
     }

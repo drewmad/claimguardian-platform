@@ -21,7 +21,7 @@ import type {
 
 export async function createPolicy(input: CreatePolicyInput) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -69,7 +69,7 @@ export async function createPolicy(input: CreatePolicyInput) {
 
 export async function getPolicies(propertyId?: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -114,7 +114,7 @@ export async function getPolicies(propertyId?: string) {
 
 export async function getPolicy(policyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -158,7 +158,7 @@ export async function getPolicy(policyId: string) {
 
 export async function updatePolicy(policyId: string, updates: Partial<CreatePolicyInput>) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -204,7 +204,7 @@ export async function updatePolicy(policyId: string, updates: Partial<CreatePoli
 
 export async function getActivePolicies() {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -240,7 +240,7 @@ export async function getActivePolicies() {
 
 export async function deactivatePolicy(policyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -285,7 +285,7 @@ export async function deactivatePolicy(policyId: string) {
 
 export async function getPoliciesByProperty(propertyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {

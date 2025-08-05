@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { GoogleGenerativeAI } from "npm:@google/generative-ai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
     
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : 'An error occurred processing your request',
+        error: error instanceof Error ? error.message : String(error) : 'An error occurred processing your request',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

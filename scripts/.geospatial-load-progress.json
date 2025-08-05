@@ -1,0 +1,46 @@
+{
+  "started_at": "2025-08-05T03:45:01.773Z",
+  "small_datasets": {
+    "fire_stations": {
+      "completed_at": "2025-08-05T03:45:02.301Z",
+      "success": true,
+      "source": "Florida Fire Stations",
+      "processed": 0,
+      "errors": 0,
+      "total": 0
+    },
+    "active_wildfires": {
+      "completed_at": "2025-08-05T03:45:07.673Z",
+      "success": true,
+      "source": "Florida Active Wildfires",
+      "processed": 0,
+      "errors": 0,
+      "total": 0
+    },
+    "fema_flood_zones": {
+      "completed_at": "2025-08-05T03:45:13.306Z",
+      "success": true,
+      "source": "FEMA Flood Zones",
+      "processed": 0,
+      "errors": 0,
+      "total": 0
+    }
+  },
+  "counties": {
+    "Monroe": {
+      "completed_at": "2025-08-05T04:46:57.070Z",
+      "processed": 10933,
+      "errors": 29067
+    },
+    "Charlotte": {
+      "completed_at": "2025-08-05T04:49:23.000Z",
+      "processed": 120,
+      "errors": 5,
+      "layer_id": 8,
+      "fips": "12015",
+      "edge_function": "load-charlotte-simple",
+      "status": "success"
+    }
+  },
+  "errors": []
+}

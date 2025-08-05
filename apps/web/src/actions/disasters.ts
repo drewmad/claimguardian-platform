@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function getDisasterHubData() {
   noStore() // Ensure data is always fresh
-  const supabase = await createClient()
+  const supabase = await await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
   if (!user) {

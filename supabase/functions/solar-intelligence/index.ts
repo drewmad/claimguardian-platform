@@ -141,8 +141,8 @@ async function getSolarData(lat: number, lng: number, options: any = {}): Promis
       console.log(JSON.stringify({
   level: "warn",
   timestamp: new Date().toISOString(),
-  message: 'Solar API error, using mock data:', await response.text(
-}));)
+  message: 'Solar API error, using mock data:' + await response.text()
+}));
       return generateMockSolarData(lat, lng)
     }
   } catch (error) {
@@ -632,7 +632,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'solar-intelligence'
     }

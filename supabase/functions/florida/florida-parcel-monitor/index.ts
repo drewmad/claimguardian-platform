@@ -84,7 +84,7 @@ serve(async (req: Request) => {
     
     return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }), {
       status: 500,
       headers: { ...corsHeaders, "Content-Type": "application/json" }
@@ -172,7 +172,7 @@ async function checkDataSources(targetSource?: string) {
       results.push({
         source,
         status: 'error',
-        message: error.message,
+        message: error instanceof Error ? error.message : String(error),
         last_checked: new Date().toISOString()
       })
     }
@@ -240,7 +240,7 @@ async function triggerIngest(dataSource?: string, forceRefresh = false) {
   })
 
   if (ingestResponse.error) {
-    throw new Error(`Ingest failed: ${ingestResponse.error.message}`)
+    throw new Error(`Ingest failed: ${ingestResponse.error instanceof Error ? error.message : String(error)}`)
   }
 
   return new Response(JSON.stringify({
@@ -278,7 +278,7 @@ async function getStatus(dataSource?: string) {
   const { data: batches, error } = await query.limit(20)
 
   if (error) {
-    throw new Error(`Failed to get status: ${error.message}`)
+    throw new Error(`Failed to get status: ${error instanceof Error ? error.message : String(error)}`)
   }
 
   // Get summary statistics
@@ -385,7 +385,7 @@ async function checkSourceHealth(baseUrl: string): Promise<{
     return {
       accessible: false,
       response_time_ms: Date.now() - startTime,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }
   }
 }

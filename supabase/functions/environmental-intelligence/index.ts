@@ -483,8 +483,8 @@ Deno.serve(async (req: Request) => {
     console.log(JSON.stringify({
   level: "info",
   timestamp: new Date().toISOString(),
-  message: `[Environmental Intelligence] Processing APIs [${apis.join(', '
-}));}] for location: ${location.lat}, ${location.lng}`)
+  message: `[Environmental Intelligence] Processing APIs [${apis.join(', ')}] for location: ${location.lat}, ${location.lng}`
+}));
 
     const intelligence: EnvironmentalIntelligence = {}
 
@@ -564,7 +564,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'environmental-intelligence'
     }

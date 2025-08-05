@@ -57,7 +57,7 @@ Deno.serve(async (req) => {
         status: 0,
         success: false,
         serviceInfo: null,
-        error: error.message
+        error: error instanceof Error ? error.message : String(error)
       });
     }
   }

@@ -220,7 +220,7 @@ serve(async (req: Request) => {
     
     return new Response(JSON.stringify({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : String(error),
       batch_id: null,
       total_records: 0,
       processed_records: 0,

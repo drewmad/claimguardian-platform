@@ -258,7 +258,7 @@ function generateNeighborhoodContext(location: { lat: number, lng: number }): an
   ]
 
   return {
-    contextualMaps,
+    contextMaps,
     nearbyStructures,
     accessPoints,
     landscapeFeatures
@@ -382,17 +382,17 @@ Deno.serve(async (req: Request) => {
       message: `[Maps Static Intelligence] Processing ${analysisType} for location: ${location.lat}, ${location.lng}`
     }));
 
-    const intelligence: StaticMapIntelligence = {}
-
     // Generate primary map
     const primaryMapUrl = analysisType === 'custom' ? 
       generateStaticMapUrl(location, mapType, options) :
       generateStaticMapUrl(location, mapType, { zoom: options.zoom || 17, size: options.size || '800x600', scale: 2 })
 
-    intelligence.primaryMap = {
-      url: primaryMapUrl,
-      analysis: `${analysisType} analysis for ${location.address || `${location.lat}, ${location.lng}`}`,
-      insights: analyzeMapIntelligence(location, analysisType, location.address)
+    const intelligence: StaticMapIntelligence = {
+      primaryMap: {
+        url: primaryMapUrl,
+        analysis: `${analysisType} analysis for ${location.address || `${location.lat}, ${location.lng}`}`,
+        insights: analyzeMapIntelligence(location, analysisType, location.address)
+      }
     }
 
     // Generate contextual maps based on analysis type
@@ -448,7 +448,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'maps-static-intelligence'
     }

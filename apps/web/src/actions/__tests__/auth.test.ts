@@ -33,7 +33,7 @@ vi.mock('next/navigation', () => ({
 
 // Mock Supabase client creation
 vi.mock('@claimguardian/db', () => ({
-  createServerSupabaseClient: vi.fn(() => mockSupabase)
+  createClient: vi.fn(() => mockSupabase)
 }))
 
 // Mock Next.js headers

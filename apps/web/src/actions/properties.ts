@@ -38,7 +38,7 @@ interface PropertyData {
 
 export async function getProperty({ propertyId }: { propertyId: string }) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get authenticated user first
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -80,7 +80,7 @@ interface PropertyRecord {
 
 export async function getProperties(params?: PaginationParams) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError) {
@@ -133,7 +133,7 @@ export async function updateProperty(params: unknown) {
     // Validate input
     const { propertyId, updates } = updatePropertySchema.parse(params)
     
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Debug logging
     logger.info('[UPDATE PROPERTY] Starting update for property', { propertyId })
@@ -233,7 +233,7 @@ export async function updateProperty(params: unknown) {
 
 export async function createProperty({ propertyData }: { propertyData: PropertyData }) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
@@ -265,7 +265,7 @@ export async function createProperty({ propertyData }: { propertyData: PropertyD
 
 export async function deleteProperty({ propertyId }: { propertyId: string }) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')

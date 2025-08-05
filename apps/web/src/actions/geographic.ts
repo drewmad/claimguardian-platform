@@ -54,7 +54,7 @@ interface ZipCode {
 
 export async function getStates() {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     const { data, error } = await supabase
       .from('states')
@@ -73,7 +73,7 @@ export async function getStates() {
 
 export async function getCounties(stateCode?: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     let query = supabase
       .from('counties')
@@ -100,7 +100,7 @@ export async function getCounties(stateCode?: string) {
 
 export async function getCities(countyId?: number, stateCode?: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     let query = supabase
       .from('cities')
@@ -138,7 +138,7 @@ export async function getCities(countyId?: number, stateCode?: string) {
 
 export async function getZipCodes(zipCode?: string, cityId?: number, countyId?: number) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     let query = supabase
       .from('zip_codes')
@@ -222,7 +222,7 @@ export async function validateAddress({
     }
     
     // Fall back to database query
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     let query = supabase
       .from('zip_codes')

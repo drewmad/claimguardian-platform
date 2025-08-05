@@ -58,7 +58,7 @@ serve(async (_req) => {
   message: 'Error fetching tidal data:', error
 }));
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     )
   }

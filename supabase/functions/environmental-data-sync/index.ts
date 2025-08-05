@@ -27,7 +27,7 @@ serve(async (req: Request) => {
       counties: uniqueCounties.length,
       hazardsUpdated: 0,
       sensorsUpdated: 0,
-      errors: []
+      errors: [] as Array<{ county: any; error: string }>
     }
 
     // Process each county
@@ -120,7 +120,7 @@ serve(async (req: Request) => {
       } catch (error) {
         syncResults.errors.push({
           county: countyFips,
-          error: error.message
+          error: error instanceof Error ? error.message : String(error)
         })
       }
     }
@@ -138,7 +138,7 @@ serve(async (req: Request) => {
   } catch (error) {
     return new Response(JSON.stringify({
       success: false,
-      error: error.message
+      error: error instanceof Error ? error.message : String(error)
     }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' }

@@ -25,7 +25,7 @@ interface DeviceData {
 
 export async function trackUserDevice(data: DeviceData) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Use security definer function to track device
     const { error } = await supabase.rpc('track_user_device', {

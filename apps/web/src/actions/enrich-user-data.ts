@@ -29,7 +29,7 @@ interface EnrichmentData {
  */
 export async function enrichDeviceData(data: EnrichmentData) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     if (!data.deviceFingerprint || !data.userAgent) return { success: true }
     
@@ -64,7 +64,7 @@ export async function enrichLocationData(data: EnrichmentData) {
   try {
     if (!data.ipAddress || data.ipAddress === '127.0.0.1') return { success: true }
     
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get location data from IP (using ipapi.co or similar)
     const locationData = await getLocationFromIP(data.ipAddress)

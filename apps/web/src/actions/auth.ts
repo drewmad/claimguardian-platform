@@ -14,7 +14,7 @@
 'use server'
 
 import { redirect } from 'next/navigation'
-import { createServerSupabaseClient } from '@claimguardian/db'
+import { createClient } from '@/lib/supabase/server'
 import { cookies, headers } from 'next/headers'
 
 export interface AuthResult {
@@ -36,8 +36,7 @@ export async function signUp(formData: FormData): Promise<AuthResult> {
       }
     }
 
-    const cookieStore = await cookies()
-    const supabase = await createServerSupabaseClient(cookieStore)
+    const supabase = await createClient()
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -80,8 +79,7 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
       }
     }
 
-    const cookieStore = await cookies()
-    const supabase = await createServerSupabaseClient(cookieStore)
+    const supabase = await createClient()
     
     const { error } = await supabase.auth.signInWithPassword({
       email,
@@ -107,8 +105,7 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
 
 export async function signOut(): Promise<AuthResult> {
   try {
-    const cookieStore = await cookies()
-    const supabase = await createServerSupabaseClient(cookieStore)
+    const supabase = await createClient()
     
     const { error } = await supabase.auth.signOut()
 
@@ -140,8 +137,7 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
       }
     }
 
-    const cookieStore = await cookies()
-    const supabase = await createServerSupabaseClient(cookieStore)
+    const supabase = await createClient()
     const headersList = await headers()
     const origin = headersList.get('origin')
     
@@ -187,8 +183,7 @@ export async function updatePassword(formData: FormData): Promise<AuthResult> {
       }
     }
 
-    const cookieStore = await cookies()
-    const supabase = await createServerSupabaseClient(cookieStore)
+    const supabase = await createClient()
     
     const { error } = await supabase.auth.updateUser({
       password

@@ -35,7 +35,10 @@ const MODEL_COSTS = {
     'grok-2': { input: 0.002, output: 0.008 },
     'grok-1': { input: 0.001, output: 0.004 }
   }
-}
+} as const
+
+type Provider = keyof typeof MODEL_COSTS
+type Model<P extends Provider> = keyof typeof MODEL_COSTS[P]
 
 export class AICostTracker {
   private supabase: any
@@ -58,12 +61,20 @@ export class AICostTracker {
     inputTokens: number,
     outputTokens: number
   ): number {
-    const costs = MODEL_COSTS[provider as keyof typeof MODEL_COSTS]?.[model]
-    if (!costs) {
+    // Type-safe provider check
+    if (!(provider in MODEL_COSTS)) {
+      console.warn(`Unknown provider: ${provider}`)
+      return 0
+    }
+
+    const providerCosts = MODEL_COSTS[provider as Provider]
+    if (!providerCosts || !(model in providerCosts)) {
       console.warn(`Unknown model: ${provider}/${model}`)
       return 0
     }
 
+    // Now TypeScript knows this is safe
+    const costs = (providerCosts as any)[model]
     const inputCost = (inputTokens / 1000) * costs.input
     const outputCost = (outputTokens / 1000) * costs.output
     return inputCost + outputCost
@@ -101,54 +112,53 @@ export class AICostTracker {
       if (error) {
         console.error('Failed to log AI usage:', error)
       }
-    } catch (err) {
-      console.error('Error logging AI usage:', err)
+    } catch (error) {
+      console.error('Error logging AI usage:', error)
     }
   }
 
   /**
-   * Log OpenAI API usage
+   * Track AI operation with automatic logging
    */
-  async logOpenAIUsage(
+  async trackOperation<T>(
     userId: string,
+    provider: AIUsageLog['provider'],
     model: string,
     operationType: string,
-    response: any,
-    success: boolean = true,
-    errorMessage?: string
-  ): Promise<void> {
-    const usage = response?.usage
-    if (!usage) return
+    operation: () => Promise<T>
+  ): Promise<T> {
+    const startTime = Date.now()
+    let success = false
+    let errorMessage: string | undefined
+    let result: T
 
-    const totalTokens = usage.total_tokens || 0
-    const promptTokens = usage.prompt_tokens || 0
-    const completionTokens = usage.completion_tokens || 0
-    
-    const estimatedCost = this.calculateCost(
-      'openai',
-      model,
-      promptTokens,
-      completionTokens
-    )
-
-    await this.logUsage({
-      userId,
-      provider: 'openai',
-      model,
-      operationType,
-      tokensUsed: totalTokens,
-      estimatedCost,
-      success,
-      errorMessage,
-      metadata: {
-        prompt_tokens: promptTokens,
-        completion_tokens: completionTokens
-      }
-    })
+    try {
+      result = await operation()
+      success = true
+      return result
+    } catch (error) {
+      errorMessage = error instanceof Error ? error.message : 'Unknown error'
+      throw error
+    } finally {
+      const responseTimeMs = Date.now() - startTime
+      
+      // Log the usage
+      await this.logUsage({
+        userId,
+        provider,
+        model,
+        operationType,
+        tokensUsed: 0, // Should be set by the operation
+        estimatedCost: 0, // Should be calculated based on actual usage
+        responseTimeMs,
+        success,
+        errorMessage
+      })
+    }
   }
 
   /**
-   * Log Gemini API usage
+   * Helper method for logging Gemini usage
    */
   async logGeminiUsage(
     userId: string,
@@ -156,64 +166,77 @@ export class AICostTracker {
     operationType: string,
     prompt: string,
     response: string,
-    success: boolean = true,
+    success: boolean,
     errorMessage?: string
   ): Promise<void> {
-    // Gemini doesn't return token counts, so we estimate
     const inputTokens = this.estimateTokens(prompt)
     const outputTokens = this.estimateTokens(response)
-    const totalTokens = inputTokens + outputTokens
-    
-    const estimatedCost = this.calculateCost(
-      'gemini',
-      model,
-      inputTokens,
-      outputTokens
-    )
+    const estimatedCost = this.calculateCost('gemini', model, inputTokens, outputTokens)
 
     await this.logUsage({
       userId,
       provider: 'gemini',
       model,
       operationType,
-      tokensUsed: totalTokens,
+      tokensUsed: inputTokens + outputTokens,
       estimatedCost,
       success,
       errorMessage,
       metadata: {
-        estimated_input_tokens: inputTokens,
-        estimated_output_tokens: outputTokens
+        inputTokens,
+        outputTokens
       }
     })
   }
 
   /**
-   * Get response time in milliseconds
+   * Helper method for logging OpenAI usage
    */
-  getResponseTime(): number {
-    return Date.now() - this.startTime
-  }
-}
+  async logOpenAIUsage(
+    userId: string,
+    model: string,
+    operationType: string,
+    usage: { prompt_tokens: number; completion_tokens: number; total_tokens: number },
+    success: boolean,
+    errorMessage?: string
+  ): Promise<void> {
+    const estimatedCost = this.calculateCost('openai', model, usage.prompt_tokens, usage.completion_tokens)
 
-/**
- * Helper function to extract user ID from auth token
- */
-export async function getUserIdFromToken(token: string): Promise<string | null> {
-  try {
-    const supabase = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    )
-    
-    const { data: { user }, error } = await supabase.auth.getUser(token)
-    
-    if (error || !user) {
-      return null
+    await this.logUsage({
+      userId,
+      provider: 'openai',
+      model,
+      operationType,
+      tokensUsed: usage.total_tokens,
+      estimatedCost,
+      success,
+      errorMessage,
+      metadata: {
+        inputTokens: usage.prompt_tokens,
+        outputTokens: usage.completion_tokens
+      }
+    })
+  }
+
+  /**
+   * Get total cost for a user
+   */
+  async getUserTotalCost(userId: string): Promise<number> {
+    try {
+      const { data, error } = await this.supabase
+        .from('ai_usage_logs')
+        .select('estimated_cost')
+        .eq('user_id', userId)
+
+      if (error) {
+        console.error('Failed to get user total cost:', error)
+        return 0
+      }
+
+      return data?.reduce((total: number, log: any) => total + (log.estimated_cost || 0), 0) || 0
+    } catch (error) {
+      console.error('Error getting user total cost:', error)
+      return 0
     }
-    
-    return user.id
-  } catch (err) {
-    console.error('Error extracting user ID:', err)
-    return null
   }
 }

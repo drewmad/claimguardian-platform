@@ -40,7 +40,7 @@ export interface ExtractionRecord {
  */
 export async function processDocumentExtraction(params: ProcessExtractionParams) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -179,7 +179,7 @@ export async function processDocumentExtraction(params: ProcessExtractionParams)
  */
 export async function getExtractionResults(documentId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
@@ -222,7 +222,7 @@ export async function getExtractionResults(documentId: string) {
  */
 export async function applyExtractionToProperty(extractionId: string, propertyId: string) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()

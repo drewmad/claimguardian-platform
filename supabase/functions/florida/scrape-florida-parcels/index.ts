@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
       console.log(JSON.stringify({
   level: "error",
   timestamp: new Date().toISOString(),
-  message: `Scrape failed for a source:`, result.reason || result.value.error
+  message: `Scrape failed for a source: ${result.reason || result.value?.error || 'Unknown error'}`
 }));
       continue;
     }

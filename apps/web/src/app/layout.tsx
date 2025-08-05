@@ -11,7 +11,7 @@
  * @status active
  * @notes Defines the basic HTML structure and imports global CSS.
  */
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 
 import './globals.css'
@@ -31,13 +31,6 @@ export const metadata: Metadata = {
   authors: [{ name: 'ClaimGuardian Family Team' }],
   creator: 'ClaimGuardian',
   publisher: 'ClaimGuardian',
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    maximumScale: 5,
-    userScalable: true,
-  },
-  themeColor: '#0f172a',
   formatDetection: {
     email: false,
     address: false,
@@ -71,6 +64,14 @@ export const metadata: Metadata = {
   verification: {
     google: 'google-site-verification-code',
   }
+}
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: '#0f172a',
 }
 
 export default function RootLayout({

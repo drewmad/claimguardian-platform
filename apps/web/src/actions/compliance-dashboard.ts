@@ -48,7 +48,7 @@ export async function getComplianceDashboardData(): Promise<{
   error: string | null
 }> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
 
     // Get total consent records (proxy for users since we have pre-signup consents)
     const { count: totalConsents } = await supabase
@@ -163,7 +163,7 @@ export async function exportConsentRecords(): Promise<{
   error: string | null
 }> {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
 
     const { data: consents, error } = await supabase
       .from('signup_consents')

@@ -7,7 +7,7 @@ import { logger } from "@/lib/logger/production-logger"
 import { createClient } from '@/lib/supabase/server'
 
 export async function updateUserChecklist({ itemId, completed }: { itemId: string, completed: boolean }) {
-  const supabase = await createClient()
+  const supabase = await await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
@@ -34,7 +34,7 @@ export async function updateUserChecklist({ itemId, completed }: { itemId: strin
 }
 
 export async function getChecklistProgress() {
-  const supabase = await createClient()
+  const supabase = await await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {

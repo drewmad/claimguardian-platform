@@ -77,7 +77,11 @@ describe('Supabase Client Factory', () => {
 
   describe('createServerSupabaseClient', () => {
     it('should create a server client successfully', async () => {
-      const client = await createServerSupabaseClient()
+      const mockCookieStore = {
+        get: () => ({ value: 'test-cookie' }),
+        set: () => {}
+      }
+      const client = createServerSupabaseClient(mockCookieStore)
       
       expect(client).toBeDefined()
       expect(client.auth).toBeDefined()
@@ -87,13 +91,19 @@ describe('Supabase Client Factory', () => {
     })
 
     it('should create server client without throwing errors', async () => {
-      await expect(async () => {
-        await createServerSupabaseClient()
-      }).not.toThrow()
+      const mockCookieStore = {
+        get: () => undefined,
+        set: () => {}
+      }
+      expect(() => createServerSupabaseClient(mockCookieStore)).not.toThrow()
     })
 
     it('should handle server-side configuration', async () => {
-      const client = await createServerSupabaseClient()
+      const mockCookieStore = {
+        get: () => ({ value: 'test-session' }),
+        set: () => {}
+      }
+      const client = createServerSupabaseClient(mockCookieStore)
       
       // Should return a client with the expected interface
       expect(client).toHaveProperty('auth')
@@ -111,7 +121,11 @@ describe('Supabase Client Factory', () => {
     })
 
     it('should provide consistent auth interface for server client', async () => {
-      const client = await createServerSupabaseClient()
+      const mockCookieStore = {
+        get: () => ({ value: 'auth-cookie' }),
+        set: () => {}
+      }
+      const client = createServerSupabaseClient(mockCookieStore)
       
       expect(client.auth).toHaveProperty('getUser')
       expect(client.auth).toHaveProperty('signIn')
@@ -155,10 +169,14 @@ describe('Supabase Client Factory', () => {
     })
 
     it('should handle concurrent client creation', async () => {
+      const mockCookieStore = {
+        get: () => ({ value: 'concurrent-test' }),
+        set: () => {}
+      }
       const promises = [
-        createServerSupabaseClient(),
-        createServerSupabaseClient(),
-        createServerSupabaseClient()
+        createServerSupabaseClient(mockCookieStore),
+        createServerSupabaseClient(mockCookieStore),
+        createServerSupabaseClient(mockCookieStore)
       ]
       
       const clients = await Promise.all(promises)

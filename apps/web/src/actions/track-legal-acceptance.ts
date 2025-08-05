@@ -28,7 +28,7 @@ interface LegalAcceptanceData {
 
 export async function trackLegalAcceptance(data: LegalAcceptanceData) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Use security definer function to track consent
     const { error: consentError } = await supabase.rpc('track_user_consent', {
@@ -121,7 +121,7 @@ export async function trackSignupConsents(data: {
   }
 }) {
   try {
-    const supabase = await createClient()
+    const supabase = await await createClient()
     
     // Use security definer function to update all consent preferences at once
     const { error } = await supabase.rpc('update_user_consent_preferences', {

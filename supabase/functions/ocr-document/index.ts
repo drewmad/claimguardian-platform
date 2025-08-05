@@ -1,6 +1,6 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from 'jsr:@supabase/supabase-js@2'
-import { GoogleGenerativeAI } from "npm:@google/generative-ai"
+import { GoogleGenerativeAI } from "@google/generative-ai"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -268,7 +268,7 @@ async function performOCR(fileUrl: string, documentType: string, extractStructur
       }
     }
   } catch (error) {
-    throw new Error(`OCR processing failed: ${error.message}`)
+    throw new Error(`OCR processing failed: ${error instanceof Error ? error.message : String(error)}`)
   }
 }
 
@@ -416,7 +416,7 @@ Deno.serve(async (req: Request) => {
     return new Response(
       JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : 'Internal server error'
+        error: error instanceof Error ? error.message : String(error) || 'Internal server error'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

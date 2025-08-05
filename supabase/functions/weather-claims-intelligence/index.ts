@@ -76,8 +76,9 @@ async function getHistoricalWeather(lat: number, lng: number, startDate: string,
       console.log(JSON.stringify({
   level: "warn",
   timestamp: new Date().toISOString(),
-  message: `Failed to fetch historical data for ${date.toISOString(
-}));}:`, error)
+  message: `Failed to fetch historical data for ${date.toISOString()}:`,
+  error: error instanceof Error ? error.message : String(error)
+}));
     }
   }
   
@@ -345,7 +346,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'weather-claims-intelligence'
     }

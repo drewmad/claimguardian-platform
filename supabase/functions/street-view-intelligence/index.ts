@@ -159,8 +159,8 @@ async function checkStreetViewAvailability(location: { lat: number, lng: number 
       console.log(JSON.stringify({
   level: "warn",
   timestamp: new Date().toISOString(),
-  message: 'Street View Metadata API error:', await response.text(
-}));)
+  message: 'Street View Metadata API error:' + await response.text()
+}));
       return generateMockMetadata(location)
     }
   } catch (error) {
@@ -520,7 +520,7 @@ Deno.serve(async (req: Request) => {
     
     const errorResponse = {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error',
+      error: error instanceof Error ? error.message : String(error) || 'Unknown error',
       timestamp: new Date().toISOString(),
       apiUsed: 'street-view-intelligence'
     }
