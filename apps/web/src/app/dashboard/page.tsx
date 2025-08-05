@@ -27,6 +27,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useSupabase } from '@/lib/supabase/client'
+import { profileService, UserProfile } from '@/lib/auth/profile-service'
 
 interface QuickAccessItem {
   id: string
@@ -207,6 +208,7 @@ function DashboardContent() {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [onboardingKey] = useState(0) // Force re-render
   const [loading, setLoading] = useState(true)
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   // Mock states for empty state demonstration - in real app, these would come from API calls
   const [hasRecentActivity] = useState(true) // Set to false to see empty state
   const [hasPendingTasks] = useState(true) // Set to false to see empty state
@@ -216,6 +218,12 @@ function DashboardContent() {
       if (!user) return
 
       try {
+        // Fetch user profile
+        const profile = await profileService.getProfile(user.id)
+        if (profile) {
+          setUserProfile(profile)
+        }
+
         const { data, error } = await supabase
           .from('user_preferences')
           .select('onboarding_completed')
@@ -261,7 +269,7 @@ function DashboardContent() {
             {/* Enhanced Header */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 sm:mb-8 gap-4">
               <div>
-                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome back, {user?.user_metadata?.firstName || 'Property Owner'}</h1>
+                <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome back, {userProfile?.firstName || user?.user_metadata?.firstName || 'Property Owner'}</h1>
                 <p className="text-gray-400 text-sm sm:text-base">Your property is protected and monitored 24/7</p>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">

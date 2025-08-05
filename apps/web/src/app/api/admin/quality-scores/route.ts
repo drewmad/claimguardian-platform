@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { 
   AIQualityScore, 
   CreateQualityScoreRequest,
@@ -17,7 +17,7 @@ import type {
 // GET /api/admin/quality-scores - Get quality scores and analytics
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const featureId = searchParams.get('feature_id')
     const model = searchParams.get('model')
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/quality-scores - Create quality score (typically called by AI tools)
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const body: CreateQualityScoreRequest = await request.json()
 
     // Get current user (can be regular user submitting feedback)

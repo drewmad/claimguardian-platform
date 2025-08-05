@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { 
   AIABTest, 
   CreateABTestRequest, 
@@ -18,7 +18,7 @@ import type {
 // GET /api/admin/ab-tests - Get all A/B tests with metrics
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const includeMetrics = searchParams.get('include_metrics') === 'true'
 
@@ -135,7 +135,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/ab-tests - Create new A/B test
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const body: CreateABTestRequest = await request.json()
 
     // Check if user is admin

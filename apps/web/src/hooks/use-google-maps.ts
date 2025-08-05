@@ -60,7 +60,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
 
     // Check if API key is available
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
-    if (!apiKey || apiKey === 'YOUR_GOOGLE_MAPS_API_KEY_HERE') {
+    if (!apiKey) {
       setError('Google Maps API key not configured')
       setLoadError(true)
       return
@@ -114,8 +114,15 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
       // Create global callback
       const callbackName = 'initGoogleMaps'
       ;(window as any)[callbackName] = () => {
-        setIsLoaded(true)
-        setIsLoading(false)
+        // Check if Google Maps loaded successfully
+        if (window.google?.maps) {
+          setIsLoaded(true)
+          setIsLoading(false)
+        } else {
+          setError('Google Maps API loaded but is not available')
+          setLoadError(true)
+          setIsLoading(false)
+        }
         // Clean up callback
         delete (window as any)[callbackName]
       }

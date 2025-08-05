@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { 
   AICustomPrompt, 
   CreateCustomPromptRequest,
@@ -16,7 +16,7 @@ import type {
 // GET /api/admin/custom-prompts - Get all custom prompts with performance data
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const featureId = searchParams.get('feature_id')
     const includePerformance = searchParams.get('include_performance') === 'true'
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/custom-prompts - Create new custom prompt
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const body: CreateCustomPromptRequest = await request.json()
 
     // Check if user is admin

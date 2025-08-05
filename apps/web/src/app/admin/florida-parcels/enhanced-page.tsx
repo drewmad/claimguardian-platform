@@ -350,7 +350,7 @@ export default function EnhancedFloridaParcelsMonitor() {
                   <Checkbox 
                     id="auto-refresh" 
                     checked={autoRefresh}
-                    onCheckedChange={setAutoRefresh}
+                    onCheckedChange={(checked) => setAutoRefresh(checked === true)}
                   />
                   <label htmlFor="auto-refresh" className="text-sm">Auto-refresh</label>
                 </div>

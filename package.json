@@ -54,7 +54,10 @@
     "claude:advanced-demo": "node scripts/claude/advanced-automation-demo.js",
     "claude:stats": "node scripts/claude/show-stats.js",
     "claude:dashboard": "echo '🚀 Opening Claude Learning Dashboard...' && open 'https://claimguardianai.com/admin?tab=claude-learning' || echo 'Visit: https://claimguardianai.com/admin?tab=claude-learning'",
-    "claude:test-system": "node scripts/claude/test-learning-system.js"
+    "claude:test-system": "node scripts/claude/test-learning-system.js",
+    "claude:export": "node scripts/claude/export-learnings.js",
+    "claude:monitor": "node scripts/claude/monitor-production.js",
+    "claude:prepare-llm": "node scripts/claude/prepare-llm-integration.js"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",

@@ -38,10 +38,9 @@ const BarcodeScanner = NextDynamic(
   { ssr: false }
 )
 
-import { AIClientService } from '@/lib/ai/client-service'
+import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { useSupabase } from '@/lib/supabase/client'
-import { aiModelConfigService } from '@/lib/ai/model-config-service'
 
 
 interface InventoryItem {
@@ -86,9 +85,6 @@ const CATEGORY_ICONS = {
 }
 
 export default function InventoryScannerPage() {
-  const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
-  const [configuredModel, setConfiguredModel] = useState<string>('openai')
-  const [fallbackModel, setFallbackModel] = useState<string>('gemini')
   const [scanResult, setScanResult] = useState<ScanResult | null>(null)
   const [editingItems, setEditingItems] = useState<{ [key: string]: InventoryItem }>({})
   const [filterRoom, setFilterRoom] = useState<string>('')
@@ -99,31 +95,8 @@ export default function InventoryScannerPage() {
   const [selectedItemForBarcode, setSelectedItemForBarcode] = useState<string | null>(null)
   const { supabase } = useSupabase()
   const { user } = useAuth()
-  const aiClient = new AIClientService()
-
-  // Load admin-configured model on component mount
-  useEffect(() => {
-    async function loadModelConfig() {
-      try {
-        const modelConfig = await aiModelConfigService.getModelForFeature('inventory-scanner')
-        if (modelConfig) {
-          setConfiguredModel(modelConfig.model)
-          setFallbackModel(modelConfig.fallback)
-          
-          // Update display model for UI consistency
-          const provider = modelConfig.model.includes('gpt') || modelConfig.model.includes('openai') ? 'openai' : 'gemini'
-          setSelectedModel(provider)
-        }
-      } catch (error) {
-        console.warn('Failed to load model configuration, using defaults:', error)
-      }
-    }
-    loadModelConfig()
-  }, [])
 
   const scanImages = async (files: File[]) => {
-    const startTime = Date.now()
-    
     try {
       const allItems: InventoryItem[] = []
       
@@ -151,21 +124,18 @@ Analyze this image and identify all items visible. For each item, provide detail
   ]
 }`
 
-        // Helper to get provider from model name
-        const getProviderFromModel = (modelName: string): 'openai' | 'gemini' => {
-          if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
-          if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
-          return 'openai' // default fallback
-        }
-
-        const primaryProvider = getProviderFromModel(configuredModel)
-
         try {
-          // Try primary model
-          const response = await aiClient.analyzeImage({
+          // Use enhanced AI client with automatic model selection and A/B testing
+          const response = await enhancedAIClient.enhancedImageAnalysis({
             image: base64,
             prompt,
-            model: primaryProvider,
+            featureId: 'inventory-scanner',
+            userId: user?.id,
+            metadata: {
+              imageIndex: i + 1,
+              totalImages: files.length,
+              fileName: files[i].name
+            }
           })
 
           try {
@@ -177,35 +147,12 @@ Analyze this image and identify all items visible. For each item, provide detail
             }))
             allItems.push(...itemsWithIds)
           } catch {
-            logger.error('Parse error')
+            logger.error('Parse error for image', i + 1)
           }
 
-        } catch (primaryError) {
-          // Try fallback model  
-          const fallbackProvider = getProviderFromModel(fallbackModel)
-          
-          try {
-            const response = await aiClient.analyzeImage({
-              image: base64,
-              prompt,
-              model: fallbackProvider,
-            })
-
-            try {
-              const parsed = JSON.parse(response)
-              const itemsWithIds = parsed.items.map((item: Partial<InventoryItem>, idx: number) => ({
-                ...item,
-                id: `item-${Date.now()}-${i}-${idx}`,
-                image_ref: `Image ${i + 1}`,
-              }))
-              allItems.push(...itemsWithIds)
-            } catch {
-              logger.error('Parse error with fallback model')
-            }
-
-          } catch (fallbackError) {
-            logger.error('Both primary and fallback models failed for image analysis')
-          }
+        } catch (error) {
+          logger.error(`Failed to analyze image ${i + 1}:`, toError(error))
+          // Continue with other images even if one fails
         }
       }
 
@@ -242,28 +189,12 @@ Analyze this image and identify all items visible. For each item, provide detail
 
       setScanResult(result)
 
-      // Track performance metrics
-      const responseTime = Date.now() - startTime
-      const totalItems = allItems.length
-      const estimatedTokens = totalItems * 50 + files.length * 100 // Rough estimate for image analysis
-      const costPer1K = configuredModel.includes('gpt') ? 0.04 : 0.005 // Vision models cost more
-      const estimatedCost = (estimatedTokens / 1000) * costPer1K
-
-      await aiModelConfigService.trackModelUsage({
-        featureId: 'inventory-scanner',
-        model: configuredModel,
-        success: true,
-        responseTime,
-        cost: estimatedCost
-      })
-
       // Log the scan
       await supabase.from('audit_logs').insert({
         user_id: user?.id,
         action: 'ai_inventory_scan',
         resource_type: 'inventory',
         metadata: {
-          model: configuredModel,
           images_scanned: files.length,
           items_found: allItems.length,
           total_value: totalValue,
@@ -272,15 +203,6 @@ Analyze this image and identify all items visible. For each item, provide detail
 
       toast.success(`Found ${allItems.length} items worth $${totalValue.toLocaleString()}`)
     } catch (error) {
-      // Track failed usage
-      const responseTime = Date.now() - startTime
-      await aiModelConfigService.trackModelUsage({
-        featureId: 'inventory-scanner',
-        model: configuredModel,
-        success: false,
-        responseTime
-      })
-
       logger.error('Scan error:', toError(error))
       toast.error('Failed to scan images')
       throw error
@@ -427,35 +349,19 @@ Analyze this image and identify all items visible. For each item, provide detail
               </p>
             </div>
 
-            {/* Model Selection */}
+            {/* AI Configuration */}
             <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(234,179,8,0.15)] transition-all duration-300">
               <CardContent className="p-3 sm:p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                   <div className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-yellow-400 drop-shadow-[0_2px_8px_rgba(234,179,8,0.4)]" />
-                    <span className="font-semibold text-white text-sm sm:text-base">AI Model:</span>
+                    <span className="font-semibold text-white text-sm sm:text-base">AI Configuration:</span>
                   </div>
                   <div className="flex gap-2 w-full sm:w-auto">
-                    <Button
-                      size="sm"
-                      variant={selectedModel === 'openai' ? 'default' : 'outline'}
-                      onClick={() => setSelectedModel('openai')}
-                      className={`flex-1 sm:flex-none text-xs sm:text-sm active:scale-95 ${selectedModel === 'openai' 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
-                    >
-                      GPT-4 Vision
-                    </Button>
-                    <Button
-                      size="sm"
-                      variant={selectedModel === 'gemini' ? 'default' : 'outline'}
-                      onClick={() => setSelectedModel('gemini')}
-                      className={`flex-1 sm:flex-none text-xs sm:text-sm active:scale-95 ${selectedModel === 'gemini' 
-                        ? 'bg-blue-600 hover:bg-blue-700' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}`}
-                    >
-                      Gemini Vision
-                    </Button>
+                    <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg px-3 py-2 flex-1 sm:flex-none">
+                      <p className="text-white font-medium text-sm">Database-Driven</p>
+                      <p className="text-blue-300 text-xs">Auto A/B testing & optimization</p>
+                    </div>
                   </div>
                 </div>
               </CardContent>

@@ -385,3 +385,15 @@ cron.yaml.backup
 !/legal/**/*.md
 !/packages/**/README.md
 !/supabase/migrations/README.md
+
+# ==============================================================================
+# AGENT/CLI SPECIFIC
+# ==============================================================================
+# Gemini CLI artifacts
+.gemini-clipboard/
+
+# Temporary commit messages
+commit_message.txt
+
+# Local security logs
+*security-log.txt

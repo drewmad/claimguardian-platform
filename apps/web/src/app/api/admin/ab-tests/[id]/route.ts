@@ -6,17 +6,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { UpdateABTestRequest } from '@/types/ai-operations'
 
 // GET /api/admin/ab-tests/[id] - Get specific A/B test
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerSupabaseClient()
-    const testId = params.id
+    const supabase = await createClient()
+    const { id: testId } = await params
 
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -86,11 +86,11 @@ export async function GET(
 // PATCH /api/admin/ab-tests/[id] - Update A/B test
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerSupabaseClient()
-    const testId = params.id
+    const supabase = await createClient()
+    const { id: testId } = await params
     const body: UpdateABTestRequest = await request.json()
 
     // Check if user is admin
@@ -173,11 +173,11 @@ export async function PATCH(
 // DELETE /api/admin/ab-tests/[id] - Delete A/B test
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerSupabaseClient()
-    const testId = params.id
+    const supabase = await createClient()
+    const { id: testId } = await params
 
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser()

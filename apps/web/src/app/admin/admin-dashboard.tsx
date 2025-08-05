@@ -18,13 +18,27 @@ import {
   Eye,
   Zap,
   Target,
-  TrendingUp
+  DollarSign,
+  TrendingUp,
+  ChevronDown,
+  ChevronRight,
+  Home,
+  Database,
+  Lock,
+  Menu,
+  X as CloseIcon,
+  Layers,
+  Cpu,
+  FileCheck,
+  GraduationCap
 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
 import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dashboard'
+import { AICostsDashboard } from '@/components/admin/ai-costs-dashboard'
+import { ABTestDashboard } from '@/components/admin/ab-test-dashboard'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,6 +47,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
+import { cn } from '@/lib/utils'
 
 
 export function AdminDashboard() {
@@ -44,7 +59,7 @@ export function AdminDashboard() {
   // Handle tab query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab')
-    if (tabParam && ['overview', 'users', 'ai-models', 'ml-operations', 'errors', 'legal-docs', 'compliance', 'claude-learning', 'settings'].includes(tabParam)) {
+    if (tabParam && ['overview', 'users', 'ai-models', 'ab-testing', 'ai-costs', 'ml-operations', 'errors', 'legal-docs', 'compliance', 'claude-learning', 'settings'].includes(tabParam)) {
       setActiveTab(tabParam)
     }
   }, [searchParams])
@@ -128,6 +143,18 @@ export function AdminDashboard() {
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
             <TabsTrigger value="ai-models">AI Models</TabsTrigger>
+            <TabsTrigger value="ab-testing">
+              <div className="flex items-center gap-2">
+                <Target className="h-4 w-4" />
+                A/B Testing
+              </div>
+            </TabsTrigger>
+            <TabsTrigger value="ai-costs">
+              <div className="flex items-center gap-2">
+                <DollarSign className="h-4 w-4" />
+                AI Costs
+              </div>
+            </TabsTrigger>
             <TabsTrigger value="ml-operations">ML Operations</TabsTrigger>
             <TabsTrigger value="errors">Error Dashboard</TabsTrigger>
             <TabsTrigger value="claude-learning">
@@ -242,9 +269,9 @@ export function AdminDashboard() {
                     <Brain className="mr-2 h-4 w-4" />
                     AI Models
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('errors')}>
-                    <AlertCircle className="mr-2 h-4 w-4" />
-                    View Errors
+                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ab-testing')}>
+                    <Target className="mr-2 h-4 w-4" />
+                    A/B Testing
                   </Button>
                   <Button variant="outline" className="justify-start" onClick={() => setActiveTab('claude-learning')}>
                     <Zap className="mr-2 h-4 w-4" />
@@ -633,6 +660,16 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* A/B Testing Tab */}
+          <TabsContent value="ab-testing" className="space-y-6">
+            <ABTestDashboard />
+          </TabsContent>
+
+          {/* AI Costs Tab */}
+          <TabsContent value="ai-costs" className="space-y-6">
+            <AICostsDashboard />
           </TabsContent>
 
           {/* ML Operations Tab */}

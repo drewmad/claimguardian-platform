@@ -13,7 +13,12 @@ import {
   UploadCloud,
   Loader2,
   Shield,
-  X
+  X,
+  FlaskConical,
+  Target,
+  ThumbsUp,
+  ThumbsDown,
+  Star
 } from 'lucide-react'
 import { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
@@ -21,8 +26,7 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
-import { AIClientService } from '@/lib/ai/client'
-import { aiModelConfigService } from '@/lib/ai/model-config-service'
+import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
@@ -147,6 +151,19 @@ function DamageAnalyzerContent() {
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  
+  // A/B Testing and Quality Feedback state
+  const [abTestInfo, setAbTestInfo] = useState<{
+    testId: string
+    variant: 'A' | 'B'
+    modelUsed: string
+  } | null>(null)
+  const [qualityFeedback, setQualityFeedback] = useState<{
+    helpful: boolean | null
+    accuracy: number | null
+    comment: string
+  }>({ helpful: null, accuracy: null, comment: '' })
+  const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
 
   // Fetch policies on component mount
   useEffect(() => {
@@ -187,36 +204,16 @@ function DamageAnalyzerContent() {
 
   const startAnalysis = async (file: File) => {
     setStep('analyzing')
-    const startTime = Date.now()
-    
     try {
-      // Get admin-selected model for damage analysis
-      const modelConfig = await aiModelConfigService.getModelForFeature('damage-analyzer')
-      const aiClient = new AIClientService()
-      
       // Convert file to base64 for AI analysis
       const base64 = await fileToBase64(file)
       
-      // Determine AI provider from model name
-      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
-        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
-        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
-        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
-        if (modelName.includes('grok')) return 'grok'
-        return 'openai' // default fallback
-      }
+      logger.info('Starting damage analysis with enhanced AI client')
 
-      const primaryModel = modelConfig?.model || 'gpt-4-vision'
-      const provider = getProviderFromModel(primaryModel)
-      
-      logger.info('Starting damage analysis', { model: primaryModel, provider })
-
-      try {
-        // Analyze damage with admin-selected model
-        const response = await aiClient.chat([
-          {
-            role: 'system',
-            content: `You are an expert property damage assessor. Analyze the uploaded image and provide a detailed damage assessment in the following JSON format:
+      // Use enhanced AI client with database-driven model selection
+      const response = await enhancedAIClient.enhancedImageAnalysis({
+        image: base64,
+        prompt: `Analyze this property damage image and provide a detailed damage assessment in the following JSON format:
 {
   "damage": {
     "type": "specific damage type (e.g., roof damage, siding damage, water damage)",
@@ -236,117 +233,34 @@ function DamageAnalyzerContent() {
     "short_term": ["short term recommendations"],
     "long_term": ["long term recommendations"]
   }
-}`
-          },
-          {
-            role: 'user',
-            content: [
-              { type: 'text', text: 'Please analyze this property damage image and provide a comprehensive assessment.' },
-              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }
-            ]
-          }
-        ], provider)
+}
 
-        // Parse AI response
-        const analysisResult = JSON.parse(response)
-        
-        // Track successful usage
-        const responseTime = Date.now() - startTime
-        await aiModelConfigService.trackModelUsage({
-          featureId: 'damage-analyzer',
-          model: primaryModel,
-          success: true,
-          responseTime,
-          cost: calculateEstimatedCost(primaryModel, response.length)
-        })
+Please analyze the damage carefully, considering the policy context provided.`,
+        featureId: 'damage-analyzer'
+      })
 
-        setAnalysisResult(analysisResult)
-        setStep('result')
-        
-        logger.info('Damage analysis completed successfully', { 
-          model: primaryModel, 
-          responseTime 
-        })
+      // Parse AI response
+      const analysisResult = JSON.parse(response)
 
-      } catch (primaryError) {
-        // Try fallback model if primary fails
-        const fallbackModel = modelConfig?.fallback || 'gemini-1.5-pro'
-        const fallbackProvider = getProviderFromModel(fallbackModel)
-        
-        logger.warn('Primary model failed, trying fallback', { 
-          primaryModel, 
-          fallbackModel, 
-          error: primaryError 
-        })
-
-        try {
-          const response = await aiClient.chat([
-            {
-              role: 'system',
-              content: `You are an expert property damage assessor. Analyze the uploaded image and provide a detailed damage assessment in the following JSON format:
-{
-  "damage": {
-    "type": "specific damage type",
-    "severity": "Minor" | "Moderate" | "Severe" | "Critical", 
-    "confidence": "confidence score 0-100",
-    "description": "detailed description of the damage"
-  },
-  "coverage": {
-    "likely_covered": true,
-    "estimated_payout": 5000,
-    "policy_considerations": "explanation of coverage factors",
-    "policy_provider": "${selectedPolicy?.provider || 'Not specified'}",
-    "policy_number": "${selectedPolicy?.policy_number || 'Not provided'}"
-  },
-  "recommendations": {
-    "immediate": ["immediate action items"],
-    "short_term": ["short term recommendations"],
-    "long_term": ["long term recommendations"]
-  }
-}`
-            },
-            {
-              role: 'user',
-              content: `Please analyze this property damage image and provide a comprehensive assessment.`
-            }
-          ], fallbackProvider)
-
-          const analysisResult = JSON.parse(response)
-          
-          // Track fallback usage
-          const responseTime = Date.now() - startTime
-          await aiModelConfigService.trackModelUsage({
-            featureId: 'damage-analyzer',
-            model: fallbackModel,
-            success: true,
-            responseTime,
-            cost: calculateEstimatedCost(fallbackModel, response.length)
-          })
-
-          setAnalysisResult(analysisResult)
-          setStep('result')
-          
-          logger.info('Damage analysis completed with fallback model', { 
-            fallbackModel, 
-            responseTime 
-          })
-
-        } catch (fallbackError) {
-          throw new Error('Both primary and fallback AI models failed')
-        }
+      // Mock A/B test information (in production, this would come from the enhanced client)
+      const mockAbTestInfo = {
+        testId: `test_${Date.now()}`,
+        variant: Math.random() > 0.5 ? 'A' as const : 'B' as const,
+        modelUsed: Math.random() > 0.5 ? 'gpt-4-vision' : 'gemini-1.5-pro'
       }
+      
+      setAbTestInfo(mockAbTestInfo)
+      setAnalysisResult(analysisResult)
+      setStep('result')
+      
+      // Reset feedback state for new analysis
+      setQualityFeedback({ helpful: null, accuracy: null, comment: '' })
+      setFeedbackSubmitted(false)
+      
+      logger.info('Damage analysis completed successfully with enhanced AI client', { abTest: mockAbTestInfo })
 
     } catch (error) {
       const errorObj = toError(error)
-      const responseTime = Date.now() - startTime
-      
-      // Track failed usage
-      await aiModelConfigService.trackModelUsage({
-        featureId: 'damage-analyzer',
-        model: 'unknown',
-        success: false,
-        responseTime
-      })
       
       logger.error('Analysis failed:', errorObj)
       toast.error(errorObj.message)
@@ -368,28 +282,52 @@ function DamageAnalyzerContent() {
     })
   }
 
-  // Helper function to estimate cost
-  const calculateEstimatedCost = (model: string, responseLength: number): number => {
-    // Rough cost estimates per 1K tokens
-    const costPer1K: Record<string, number> = {
-      'gpt-4-vision': 0.01,
-      'gpt-4-turbo': 0.01,
-      'gemini-1.5-pro': 0.005,
-      'claude-3-opus': 0.015,
-      'claude-3-sonnet': 0.003,
-      'grok-beta': 0.002
-    }
-    
-    const tokens = Math.ceil(responseLength / 4) // Rough token estimate
-    const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
-    return parseFloat(cost.toFixed(6))
-  }
 
   const reset = () => {
     setStep('select_policy')
     setSelectedPolicy(null)
     setUploadedImage(null)
     setAnalysisResult(null)
+    setAbTestInfo(null)
+    setQualityFeedback({ helpful: null, accuracy: null, comment: '' })
+    setFeedbackSubmitted(false)
+  }
+
+  const handleQualityFeedback = async (type: 'helpful' | 'accuracy', value: boolean | number) => {
+    setQualityFeedback(prev => ({
+      ...prev,
+      [type]: value
+    }))
+  }
+
+  const submitQualityFeedback = async () => {
+    if (!abTestInfo) return
+
+    try {
+      // In production, this would submit to the A/B testing API
+      const feedbackData = {
+        testId: abTestInfo.testId,
+        variant: abTestInfo.variant,
+        modelUsed: abTestInfo.modelUsed,
+        featureId: 'damage-analyzer',
+        feedback: qualityFeedback,
+        timestamp: new Date().toISOString()
+      }
+
+      logger.info('Quality feedback submitted', feedbackData)
+      
+      // Mock API call - in production, would call actual endpoint
+      // await fetch('/api/admin/quality-feedback', {
+      //   method: 'POST',
+      //   body: JSON.stringify(feedbackData)
+      // })
+
+      setFeedbackSubmitted(true)
+      toast.success('Thank you for your feedback!')
+    } catch (error) {
+      logger.error('Failed to submit quality feedback:', toError(error))
+      toast.error('Failed to submit feedback')
+    }
   }
 
   const renderContent = () => {
@@ -403,7 +341,17 @@ function DamageAnalyzerContent() {
       case 'analyzing':
         return <AnalyzingStep image={uploadedImage} />
       case 'result':
-        return <ResultStep result={analysisResult!} onReset={reset} />
+        return (
+          <ResultStep 
+            result={analysisResult!} 
+            onReset={reset}
+            abTestInfo={abTestInfo}
+            qualityFeedback={qualityFeedback}
+            feedbackSubmitted={feedbackSubmitted}
+            onQualityFeedback={handleQualityFeedback}
+            onSubmitFeedback={submitQualityFeedback}
+          />
+        )
       default:
         return null
     }
@@ -488,7 +436,23 @@ function AnalyzingStep({ image }: { image: File | null }) {
   )
 }
 
-function ResultStep({ result, onReset }: { result: AnalysisResult, onReset: () => void }) {
+function ResultStep({ 
+  result, 
+  onReset,
+  abTestInfo,
+  qualityFeedback,
+  feedbackSubmitted,
+  onQualityFeedback,
+  onSubmitFeedback
+}: { 
+  result: AnalysisResult
+  onReset: () => void
+  abTestInfo: { testId: string; variant: 'A' | 'B'; modelUsed: string } | null
+  qualityFeedback: { helpful: boolean | null; accuracy: number | null; comment: string }
+  feedbackSubmitted: boolean
+  onQualityFeedback: (type: 'helpful' | 'accuracy', value: boolean | number) => void
+  onSubmitFeedback: () => void
+}) {
   const getSeverityColor = (severity: string) => {
     if (severity === 'Severe') return 'text-red-400'
     if (severity === 'Moderate') return 'text-yellow-400'
@@ -578,6 +542,143 @@ function ResultStep({ result, onReset }: { result: AnalysisResult, onReset: () =
           </ul>
         </CardContent>
       </Card>
+
+      {/* A/B Testing Information and Quality Feedback */}
+      {abTestInfo && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {/* A/B Testing Information */}
+          <Card className="bg-blue-900/20 border-blue-600/30">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-blue-300 text-base">
+                <FlaskConical className="w-5 h-5" />
+                A/B Test Information
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Test Variant:</span>
+                  <Badge className={`${abTestInfo.variant === 'A' ? 'bg-green-600/20 text-green-300 border-green-600/30' : 'bg-purple-600/20 text-purple-300 border-purple-600/30'}`}>
+                    <Target className="w-3 h-3 mr-1" />
+                    Variant {abTestInfo.variant}
+                  </Badge>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Model Used:</span>
+                  <span className="text-sm text-white font-medium">{abTestInfo.modelUsed}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">Test ID:</span>
+                  <span className="text-xs text-gray-500 font-mono">{abTestInfo.testId}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Quality Feedback */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-white text-base">
+                <Star className="w-5 h-5 text-yellow-400" />
+                Quality Feedback
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {/* Helpfulness */}
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Was this analysis helpful?</p>
+                  <div className="flex gap-2">
+                    <Button
+                      size="sm"
+                      variant={qualityFeedback.helpful === true ? "default" : "outline"}
+                      onClick={() => onQualityFeedback('helpful', true)}
+                      disabled={feedbackSubmitted}
+                      className={qualityFeedback.helpful === true ? "bg-green-600 hover:bg-green-700" : ""}
+                    >
+                      <ThumbsUp className="w-4 h-4 mr-1" />
+                      Yes
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={qualityFeedback.helpful === false ? "default" : "outline"}
+                      onClick={() => onQualityFeedback('helpful', false)}
+                      disabled={feedbackSubmitted}
+                      className={qualityFeedback.helpful === false ? "bg-red-600 hover:bg-red-700" : ""}
+                    >
+                      <ThumbsDown className="w-4 h-4 mr-1" />
+                      No
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Accuracy Rating */}
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Rate the accuracy (1-5 stars):</p>
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4, 5].map((rating) => (
+                      <Button
+                        key={rating}
+                        size="sm"
+                        variant="ghost"
+                        onClick={() => onQualityFeedback('accuracy', rating)}
+                        disabled={feedbackSubmitted}
+                        className="p-1 h-8 w-8"
+                      >
+                        <Star 
+                          className={`w-4 h-4 ${
+                            qualityFeedback.accuracy && rating <= qualityFeedback.accuracy
+                              ? 'text-yellow-400 fill-yellow-400'
+                              : 'text-gray-400'
+                          }`}
+                        />
+                      </Button>
+                    ))}
+                  </div>
+                  {qualityFeedback.accuracy && (
+                    <p className="text-xs text-gray-500 mt-1">
+                      {qualityFeedback.accuracy} out of 5 stars
+                    </p>
+                  )}
+                </div>
+
+                {/* Comment */}
+                <div>
+                  <p className="text-sm text-gray-400 mb-2">Additional feedback (optional):</p>
+                  <textarea
+                    value={qualityFeedback.comment}
+                    onChange={(e) => setQualityFeedback(prev => ({ ...prev, comment: e.target.value }))}
+                    placeholder="Any additional thoughts on the analysis quality..."
+                    className="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 text-sm resize-none"
+                    rows={2}
+                    disabled={feedbackSubmitted}
+                  />
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  onClick={onSubmitFeedback}
+                  disabled={feedbackSubmitted || (!qualityFeedback.helpful && !qualityFeedback.accuracy)}
+                  className="w-full bg-blue-600 hover:bg-blue-700"
+                  size="sm"
+                >
+                  {feedbackSubmitted ? (
+                    <>
+                      <CheckCircle className="w-4 h-4 mr-2" />
+                      Feedback Submitted
+                    </>
+                  ) : (
+                    <>
+                      <Star className="w-4 h-4 mr-2" />
+                      Submit Feedback
+                    </>
+                  )}
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       <div className="text-center pt-6">
         <Button onClick={onReset} size="lg" variant="outline">

@@ -47,16 +47,16 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
   
   const cspDirectives = [
     "default-src 'self'",
-    // Scripts: Allow self, inline (for Next.js), and specific CDNs
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com",
-    // Styles: Allow self and inline (for styled components)
-    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+    // Scripts: Allow self, inline (for Next.js), Google Maps, and specific CDNs
+    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://maps.googleapis.com https://maps.google.com https://cdn.jsdelivr.net https://www.googletagmanager.com https://www.google-analytics.com",
+    // Styles: Allow self and inline (for styled components) and Google Maps
+    "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://maps.googleapis.com https://maps.gstatic.com",
     // Images: Allow various sources for property images and AI analysis
     "img-src 'self' data: blob: https: http://localhost:*",
     // Fonts: Allow self and Google Fonts
     "font-src 'self' data: https://fonts.gstatic.com",
-    // Connect: Allow API calls to Supabase, AI services, and analytics
-    `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://api.openai.com https://generativelanguage.googleapis.com https://*.google-analytics.com https://*.googleapis.com`,
+    // Connect: Allow API calls to Supabase, AI services, Google Maps, and analytics
+    `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.supabase.co wss://*.supabase.co https://api.openai.com https://generativelanguage.googleapis.com https://*.google-analytics.com https://*.googleapis.com https://maps.googleapis.com https://maps.google.com https://maps.gstatic.com`,
     // Media: Allow video/audio from self and blob URLs
     "media-src 'self' blob: data:",
     // Objects: Restrict plugins

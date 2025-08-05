@@ -66,7 +66,7 @@ class AIModelConfigService {
     }
 
     try {
-      const response = await fetch('/api/admin/ai-models', {
+      const response = await fetch('/api/admin/ai-operations', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -77,13 +77,20 @@ class AIModelConfigService {
         throw new Error(`HTTP error! status: ${response.status}`)
       }
 
-      const config = await response.json()
+      const result = await response.json()
       
-      // Cache the config
-      this.configCache = {
-        ...config,
+      if (!result.success || !result.data?.feature_mappings) {
+        throw new Error('Invalid response format from AI operations API')
+      }
+
+      // Convert API response to expected format
+      const config: ModelConfig = {
+        featureMappings: result.data.feature_mappings,
         lastUpdated: new Date().toISOString()
       }
+      
+      // Cache the config
+      this.configCache = config
       this.cacheExpiry = Date.now() + this.CACHE_DURATION
 
       return this.configCache

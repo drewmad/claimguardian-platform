@@ -9,7 +9,8 @@
  * @status active
  */
 
-import { claudeErrorLogger, claudeLearningContext } from './claude-error-logger'
+import { claudeErrorLogger } from './claude-error-logger'
+import { claudeLearningContext } from './claude-learning-context'
 import { logger } from '@/lib/logger'
 
 export interface ReflectionContext {

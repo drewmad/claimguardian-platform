@@ -6,7 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { 
   AIModelConfig, 
   UpdateModelConfigRequest,
@@ -17,7 +17,7 @@ import type {
 // GET /api/admin/ai-operations - Get all AI configurations and metrics
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type') // 'configs', 'metrics', 'all'
 
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/ai-operations - Create or update model configuration
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     const body = await request.json()
     const { feature_mappings } = body
 

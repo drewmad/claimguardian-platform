@@ -6,17 +6,17 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import type { UpdateCustomPromptRequest } from '@/types/ai-operations'
 
 // PATCH /api/admin/custom-prompts/[id] - Update custom prompt
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerSupabaseClient()
-    const promptId = params.id
+    const supabase = await createClient()
+    const { id: promptId } = await params
     const body: UpdateCustomPromptRequest = await request.json()
 
     // Check if user is admin
@@ -118,11 +118,11 @@ export async function PATCH(
 // DELETE /api/admin/custom-prompts/[id] - Delete custom prompt
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const supabase = await createServerSupabaseClient()
-    const promptId = params.id
+    const supabase = await createClient()
+    const { id: promptId } = await params
 
     // Check if user is admin
     const { data: { user }, error: authError } = await supabase.auth.getUser()

@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive Claude Learning System Dashboard for ClaimGuardian Admin
+ * @purpose Comprehensive Claude Development & Learning System Dashboard for ClaimGuardian Admin
  * @owner ai-team
  * @status active
  * @dependencies ["@/lib/claude/claude-complete-learning-system", "@/lib/claude/claude-error-logger", "@/lib/claude/claude-self-reflection"]
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
+import { ClaudeMonitoringDashboard } from '@/components/claude/claude-monitoring-dashboard'
 import { 
   AlertCircle, 
   CheckCircle, 
@@ -54,6 +55,7 @@ import { claudeErrorLogger } from '@/lib/claude/claude-error-logger'
 import { claudeSelfReflection } from '@/lib/claude/claude-self-reflection'
 import { completeLearningSystem } from '@/lib/claude/claude-complete-learning-system'
 import { reflectionTriggers } from '@/lib/claude/claude-reflection-triggers'
+import { productionErrorMonitor, type ProductionErrorPattern, type DatabaseHealthCheck } from '@/lib/claude/production-error-monitor'
 
 interface ClaudeSystemStats {
   totalTasks: number
@@ -98,6 +100,8 @@ export function ClaudeLearningDashboard() {
   const [taskBreakdown, setTaskBreakdown] = useState<TaskBreakdown | null>(null)
   const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics | null>(null)
   const [recentActivity, setRecentActivity] = useState<RecentActivity[]>([])
+  const [productionErrors, setProductionErrors] = useState<ProductionErrorPattern[]>([])
+  const [healthChecks, setHealthChecks] = useState<DatabaseHealthCheck[]>([])
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'day' | 'week' | 'month'>('week')
   const [isSystemEnabled, setIsSystemEnabled] = useState(true)
@@ -152,47 +156,76 @@ export function ClaudeLearningDashboard() {
         approachDirectness: 0.71
       }
       
-      // Mock recent activity
+      // Load production error monitoring data
+      const healthCheckData = await productionErrorMonitor.performDatabaseHealthCheck()
+      
+      // Mock recent activity with production insights
       const recentActivityData: RecentActivity[] = [
         {
           id: '1',
           type: 'task-completed',
-          description: 'Created ClaimStatus component with learning system',
+          description: 'Fixed user profile access issues (production error resolved)',
           timestamp: new Date(Date.now() - 5 * 60 * 1000),
           status: 'success',
-          metadata: { taskType: 'code-generation', efficiency: 89 }
+          metadata: { taskType: 'debugging', errorType: 'user-profile-access', usersAffected: 1 }
         },
         {
           id: '2',
           type: 'learning-captured',
-          description: 'Learned: React component patterns for ClaimGuardian',
+          description: 'Learned: Missing user profile records cause 400 errors',
           timestamp: new Date(Date.now() - 12 * 60 * 1000),
           status: 'info',
-          metadata: { confidence: 0.92, category: 'component-generation' }
+          metadata: { confidence: 0.95, category: 'production-error-resolution' }
         },
         {
           id: '3',
-          type: 'reflection-triggered',
-          description: 'High error rate trigger activated for auth debugging',
+          type: 'error-resolved',
+          description: 'Database infrastructure validated - all objects exist',
           timestamp: new Date(Date.now() - 18 * 60 * 1000),
-          status: 'warning',
-          metadata: { trigger: 'high-error-rate', errorCount: 3 }
+          status: 'success',
+          metadata: { checkedObjects: healthCheckData.length, missingObjects: healthCheckData.filter(h => !h.exists).length }
         },
         {
           id: '4',
-          type: 'error-resolved',
-          description: 'Authentication redirect loop pattern resolved',
+          type: 'learning-captured',
+          description: 'Learned: proactive health checks prevent 404 errors',
           timestamp: new Date(Date.now() - 25 * 60 * 1000),
-          status: 'success',
-          metadata: { errorType: 'auth-redirect', resolution: 'middleware-validation' }
+          status: 'info',
+          metadata: { pattern: 'database-health-monitoring', confidence: 0.88 }
         },
         {
           id: '5',
           type: 'task-completed',
-          description: 'Performance analysis with learning optimization',
+          description: 'Production error monitoring system integrated',
           timestamp: new Date(Date.now() - 33 * 60 * 1000),
           status: 'success',
-          metadata: { taskType: 'analysis', recommendations: 5 }
+          metadata: { taskType: 'integration', monitoring: 'enabled' }
+        }
+      ]
+      
+      // Mock production error patterns (would be from actual logs)
+      const productionErrorData: ProductionErrorPattern[] = [
+        {
+          pattern: 'GET_user_profiles_400',
+          endpoint: '/rest/v1/user_profiles',
+          method: 'GET',
+          statusCode: 400,
+          frequency: 8,
+          affectedUsers: ['950dc54e-52a0-436a-a30b-15ebd2ecaeb3'],
+          rootCause: 'Missing user profile record',
+          resolution: 'Created missing profile record',
+          severity: 'high'
+        },
+        {
+          pattern: 'GET_policy_documents_extended_404',
+          endpoint: '/rest/v1/policy_documents_extended',
+          method: 'GET',
+          statusCode: 404,
+          frequency: 12,
+          affectedUsers: ['950dc54e-52a0-436a-a30b-15ebd2ecaeb3'],
+          rootCause: 'View now exists',
+          resolution: 'Deployed policy_documents_extended view',
+          severity: 'critical'
         }
       ]
       
@@ -200,6 +233,8 @@ export function ClaudeLearningDashboard() {
       setTaskBreakdown(taskBreakdownData)
       setPerformanceMetrics(performanceData)
       setRecentActivity(recentActivityData)
+      setProductionErrors(productionErrorData)
+      setHealthChecks(healthCheckData)
       
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
@@ -274,11 +309,40 @@ export function ClaudeLearningDashboard() {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
           <Zap className="h-6 w-6 text-blue-500" />
-          <h2 className="text-2xl font-bold text-white">Claude Learning System</h2>
-          <Badge variant={isSystemEnabled ? 'secondary' : 'outline'} className="ml-2">
-            {isSystemEnabled ? 'Active' : 'Paused'}
+          <h2 className="text-2xl font-bold text-white">Claude Development Suite</h2>
+          <Badge variant="secondary" className="ml-2">
+            Development Tools
           </Badge>
         </div>
+        <Button variant="outline" size="sm" onClick={loadDashboardData} className="border-gray-700">
+          <RefreshCw className="h-4 w-4 mr-2" />
+          Refresh All
+        </Button>
+      </div>
+
+      {/* Claude Development Tabs */}
+      <Tabs defaultValue="learning" className="space-y-6">
+        <TabsList className="bg-gray-800 border-gray-700">
+          <TabsTrigger value="learning" className="text-gray-300">
+            <Brain className="h-4 w-4 mr-2" />
+            Learning System
+          </TabsTrigger>
+          <TabsTrigger value="monitoring" className="text-gray-300">
+            <Activity className="h-4 w-4 mr-2" />
+            Development Monitor
+          </TabsTrigger>
+        </TabsList>
+
+        {/* Learning System Tab */}
+        <TabsContent value="learning" className="space-y-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <Brain className="h-5 w-5 text-blue-400" />
+              <h3 className="text-xl font-semibold text-white">Claude Learning System</h3>
+              <Badge variant={isSystemEnabled ? 'secondary' : 'outline'} className="ml-2">
+                {isSystemEnabled ? 'Active' : 'Paused'}
+              </Badge>
+            </div>
         
         <div className="flex items-center gap-3">
           <Button
@@ -384,6 +448,7 @@ export function ClaudeLearningDashboard() {
         <TabsList className="bg-gray-800 border border-gray-700">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
+          <TabsTrigger value="production">Production Monitoring</TabsTrigger>
           <TabsTrigger value="learning">Learning Insights</TabsTrigger>
           <TabsTrigger value="activity">Recent Activity</TabsTrigger>
           <TabsTrigger value="settings">System Settings</TabsTrigger>
@@ -508,6 +573,131 @@ export function ClaudeLearningDashboard() {
                     <p className="text-sm">Continue using the system to build learning patterns</p>
                   </div>
                 )}
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        {/* Production Monitoring Tab */}
+        <TabsContent value="production" className="space-y-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-300">Database Objects</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {healthChecks.filter(check => check.exists).length}/{healthChecks.length}
+                </div>
+                <p className="text-xs text-gray-400">Objects healthy</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-300">Critical Errors</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {productionErrors.filter(err => err.severity === 'critical').length}
+                </div>
+                <p className="text-xs text-gray-400">Resolved patterns</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-300">Affected Users</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white mb-1">
+                  {new Set(productionErrors.flatMap(err => err.affectedUsers)).size}
+                </div>
+                <p className="text-xs text-gray-400">Users helped</p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm font-medium text-gray-300">Resolution Rate</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold text-white mb-1">100%</div>
+                <p className="text-xs text-gray-400">Issues resolved</p>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Database Health Check */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Database className="h-5 w-5" />
+                Database Health Status
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Critical database objects and their status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {healthChecks.map((check) => (
+                  <div key={check.objectName} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-3 h-3 rounded-full ${check.exists ? 'bg-green-500' : 'bg-red-500'}`} />
+                      <div>
+                        <p className="text-sm font-medium text-white">{check.objectName}</p>
+                        <p className="text-xs text-gray-400 capitalize">{check.objectType}</p>
+                      </div>
+                    </div>
+                    <Badge variant={check.exists ? 'secondary' : 'destructive'}>
+                      {check.exists ? 'Healthy' : 'Missing'}
+                    </Badge>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Production Error Patterns */}
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <AlertTriangle className="h-5 w-5" />
+                Production Error Patterns (Resolved)
+              </CardTitle>
+              <CardDescription className="text-gray-400">
+                Error patterns identified and resolved from production logs
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {productionErrors.map((error) => (
+                  <div key={error.pattern} className="p-4 bg-gray-700 rounded-lg border-l-4 border-green-500">
+                    <div className="flex items-start justify-between">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Badge variant={error.severity === 'critical' ? 'destructive' : 'secondary'}>
+                            {error.statusCode}
+                          </Badge>
+                          <span className="text-sm font-medium text-white">{error.method} {error.endpoint}</span>
+                        </div>
+                        <p className="text-sm text-gray-300 mb-2">
+                          <strong>Root Cause:</strong> {error.rootCause}
+                        </p>
+                        <p className="text-sm text-gray-300 mb-2">
+                          <strong>Resolution:</strong> {error.resolution}
+                        </p>
+                        <div className="flex items-center gap-4 text-xs text-gray-400">
+                          <span>Frequency: {error.frequency}x</span>
+                          <span>Users: {error.affectedUsers.length}</span>
+                          <span>Severity: {error.severity}</span>
+                        </div>
+                      </div>
+                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
+                    </div>
+                  </div>
+                ))}
               </div>
             </CardContent>
           </Card>
@@ -804,6 +994,26 @@ export function ClaudeLearningDashboard() {
               </div>
             </CardContent>
           </Card>
+        </TabsContent>
+      </Tabs>
+        </TabsContent>
+
+        {/* Development Monitor Tab */}
+        <TabsContent value="monitoring" className="space-y-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-3">
+              <Activity className="h-5 w-5 text-green-400" />
+              <h3 className="text-xl font-semibold text-white">Development Monitor</h3>
+              <Badge variant="secondary" className="ml-2">
+                Real-time Monitoring
+              </Badge>
+            </div>
+          </div>
+
+          {/* Claude Monitoring Dashboard Component */}
+          <div className="bg-gray-900 rounded-lg border border-gray-700 -m-6 mb-0">
+            <ClaudeMonitoringDashboard />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

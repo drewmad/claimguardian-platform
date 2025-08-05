@@ -1,17 +1,28 @@
-# CLAUDE.md
+# CLAUDE.md - ClaimGuardian Development Guide
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository. It also serves as a dynamic config and knowledge base for Claude Code CLI agents, queried via tools for context and learnings. Incorporates Agent OS principles for spec-driven development.
+This file provides comprehensive guidance for Claude Code when working with the ClaimGuardian codebase. It serves as a dynamic knowledge base incorporating Agent OS principles for spec-driven development.
+
+## Table of Contents
+- [User Preferences](#user-preferences-for-ai-assistant)
+- [Claude Learning System](#-claude-learning-system-active---use-immediately)
+- [Project Overview](#project-overview)
+- [Architecture & Patterns](#architecture--code-patterns)
+- [Development Workflow](#development-workflow)
+- [Environment & Deployment](#environment-variables)
+- [Supabase Architecture](#supabase-architecture--backend-setup)
+- [Agent OS Integration](#agent-os-integration-for-spec-driven-workflows)
+- [Project Status](#current-project-status--recent-improvements)
 
 ## User Preferences for AI Assistant
 
-- **Stack multiple improvements together** - Don't just provide one solution, combine optimizations
-- **Holistic problem-solving** - Consider the entire workflow, not just the immediate issue
-- **Layer optimizations** - Combine speed + parallelization + monitoring + verification
-- **Provide complete solutions** - Include automation scripts, progress tracking, and error handling
-- **Build in resilience** - Add recovery options, clear status reporting, and fallback methods
-- **Maximize efficiency** - Think beyond quick fixes to comprehensive, production-ready solutions
+**Holistic Solution Approach**: 
+- Stack multiple improvements together - don't provide single solutions, combine optimizations
+- Consider the entire workflow, not just immediate issues  
+- Layer optimizations: speed + parallelization + monitoring + verification
+- Include automation scripts, progress tracking, and error handling
+- Build in resilience with recovery options and clear status reporting
 
-Example: When asked to speed up imports, don't just make batches bigger. Instead: increase batch size + add parallel processing + create monitoring dashboard + include verification script + provide one-command automation.
+*Example*: For import speed improvements, combine: increased batch size + parallel processing + monitoring dashboard + verification script + one-command automation.
 
 ## 🧠 Claude Learning System (ACTIVE - USE IMMEDIATELY)
 
@@ -209,38 +220,25 @@ import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dash
 
 ## Project Overview
 
-ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners built with:
+ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners.
 
-**Production Domain**: https://claimguardianai.com
+**Production**: https://claimguardianai.com | **Status**: Live, All builds passing
 
-### Frontend Stack
-- **Next.js 15.3.5**: React framework with App Router for file-based routing
-- **TypeScript 5.8.3**: Type safety and enhanced developer experience
-- **Turborepo 2.5.4**: Monorepo structure for scalable package management
-- **pnpm 10.13.1**: Fast, efficient package manager
-- **Node.js 24.3.0**: Modern JavaScript runtime (currently deployed version)
-
-### Backend Architecture (Supabase)
-- **PostgreSQL 17**: Primary database with PostGIS for geographic data
-- **PostgREST**: Auto-generated REST API from database schema
-- **GoTrue**: Authentication service with JWT and RLS integration
-- **Deno Edge Functions**: Serverless functions for AI processing and business logic
-- **Storage API**: S3-compatible file storage with PostgreSQL metadata
-- **Realtime Engine**: WebSocket-based live updates and multiplayer features
-
-### Technology Stack Versions (Current)
-- **Runtime**: Node.js 24.3.0
-- **Package Manager**: pnpm 10.13.1 
-- **Build System**: Turborepo 2.5.4
-- **Frontend**: Next.js 15.3.5 with App Router
-- **Language**: TypeScript 5.8.3
-- **Testing**: Jest (web app), Vitest (packages)
-- **Database**: PostgreSQL 17 with PostGIS
-- **AI Integration**: OpenAI v4.73.0, Google Generative AI v0.24.1
-- **Monitoring**: Sentry 8.46.0, Web Vitals 4.2.4
-- **Styling**: Tailwind CSS 3.4.1
-- **UI Components**: Radix UI, Lucide React 0.525.0
-- **3D Graphics**: React Three Fiber, Three.js (dynamically imported for SSR compatibility)
+### Technology Stack
+| Component | Technology | Version |
+|-----------|------------|----------|
+| **Runtime** | Node.js | 24.3.0 |
+| **Package Manager** | pnpm | 10.13.1 |
+| **Build System** | Turborepo | 2.5.4 |
+| **Frontend** | Next.js (App Router) | 15.3.5 |
+| **Language** | TypeScript | 5.8.3 |
+| **Database** | PostgreSQL + PostGIS | 17.4.1.064 |
+| **Backend** | Supabase (PostgREST, GoTrue, Storage, Realtime) | Latest |
+| **AI Integration** | OpenAI, Google Generative AI | 4.73.0, 0.24.1 |
+| **Testing** | Jest (web), Vitest (packages) | Latest |
+| **Styling** | Tailwind CSS + Radix UI | 3.4.1 |
+| **3D Graphics** | React Three Fiber (SSR-safe) | Latest |
+| **Monitoring** | Sentry, Web Vitals | 8.46.0, 4.2.4 |
 
 ## Repository Structure (Updated)
 
@@ -311,71 +309,47 @@ ClaimGuardian/
 ./scripts/db.sh migrate    # Apply migrations
 ```
 
-### Development
+### Core Development Commands
 ```bash
-pnpm dev            # Start all apps (port 3000)
-pnpm build          # Build all packages
-pnpm test           # Run all tests (Vitest)
-pnpm lint           # ESLint all packages
-pnpm type-check     # TypeScript validation
-pnpm ci:validate    # Run all checks before commit
-```
+# Development
+pnpm dev                           # Start all apps (port 3000)
+pnpm build                         # Build all packages
+pnpm test                          # Run all tests (Vitest)
+pnpm lint                          # ESLint all packages
+pnpm type-check                    # TypeScript validation
+pnpm ci:validate                   # Run all checks before commit
 
-### Dependency Management
-```bash
-pnpm deps:check     # Validate lockfile integrity
-pnpm deps:update    # Update dependencies interactively
-pnpm deps:clean     # Clean reinstall all dependencies
-pnpm clean:all      # Complete cleanup and rebuild
-```
+# Dependency Management
+pnpm deps:check                    # Validate lockfile integrity
+pnpm deps:update                   # Update dependencies interactively
+pnpm deps:clean                    # Clean reinstall all dependencies
+pnpm clean:all                     # Complete cleanup and rebuild
 
-### Git Operations
-```bash
-pnpm cz             # Commit with conventional format
-HUSKY=0 git commit  # Skip pre-commit hooks (use sparingly)
-pnpm prepare        # Setup git hooks
-pnpm lint:smart-fix # Auto-fix lint issues before commit
-```
+# Git Operations
+pnpm cz                            # Commit with conventional format
+HUSKY=0 git commit                 # Skip pre-commit hooks (use sparingly)
+pnpm prepare                       # Setup git hooks
+pnpm lint:smart-fix                # Auto-fix lint issues before commit
+pnpm pre-commit:test               # Test pre-commit hooks manually
 
-### Auto-fix Lint Issues
-The pre-commit hook now automatically attempts to fix lint issues before rejecting commits:
-1. Runs ESLint auto-fix on all fixable issues
-2. Applies targeted fixes for common problems
-3. Re-stages fixed files automatically
-4. Only fails if unfixable issues remain
-
-To test: `pnpm pre-commit:test`
-
-### Testing
-```bash
+# Testing
 pnpm test                          # All tests (Vitest)
 pnpm --filter=web test             # Web app tests only (Jest)
 pnpm --filter=web test:watch       # Watch mode
 pnpm --filter=ai-services test     # AI services tests (Vitest)
 pnpm test path/to/file.test.ts     # Specific test file
-```
 
-### Data Management
-```bash
-# Core Data Operations
+# Data & Database Operations
 ./scripts/data.sh import           # Parallel data import
 ./scripts/data.sh verify           # Verify import status
 ./scripts/data.sh clean            # Clean processed data
-
-# Database Operations
 ./scripts/db.sh schema dump        # Export current schema
 ./scripts/db.sh schema apply       # Apply schema changes
 ./scripts/db.sh backup             # Create database backup
-
-# Advanced Data Processing (in utils)
-./scripts/utils/data-import/run-parallel-import.sh              # Parallel data import
-./scripts/utils/data-import/verify-import-complete.js           # Verify import status
-./scripts/utils/data-import/benchmark-import-performance.sh     # Performance testing
-
-# Property Data Processing
-python ./scripts/utils/data-import/analyze_cadastral_gdb.py     # Analyze GDB files
-node ./scripts/utils/data-import/import_cadastral_gdb.js        # Import cadastral data
+pnpm db:generate-types             # Generate TypeScript types
 ```
+
+**Auto-fix Lint System**: Pre-commit hooks automatically fix lint issues, re-stage files, and only fail on unfixable issues.
 
 ## Architecture & Code Patterns
 
@@ -450,52 +424,25 @@ Unified AI orchestration system with:
 - Status indicators for API key availability
 - Categories: analysis, assistance, documentation, communication
 
-### AI Tools Pages
-1. **Damage Analyzer** (`/ai-augmented/damage-analyzer/`)
-   - Camera capture integration
-   - Image upload with AI analysis
-   
-2. **Policy Chat** (`/ai-augmented/policy-chat/`)
-   - PDF parsing with AI extraction
-   - Interactive document chat
+### AI Tools Suite
+**Central Hub**: `/ai-tools/` with API key status indicators and categorized features
 
-3. **Claim Assistant** (`/ai-tools/claim-assistant/`)
-   - Step-by-step guidance
-   - Progress tracking
+**Analysis Tools**:
+- **Damage Analyzer** - Camera capture, image AI analysis
+- **Settlement Analyzer** - Offer analysis, market comparisons  
+- **3D Model Generator** - AI photogrammetry, React Three Fiber viewer
+- **Proactive Claim Optimizer** - Predictive analysis, recommendations
 
-4. **Document Generator** (`/ai-tools/document-generator/`)
-   - Template-based generation
-   - AI content assistance
+**Assistance Tools**:
+- **Policy Chat** - PDF parsing, interactive document chat
+- **Claim Assistant** - Step-by-step guidance, progress tracking
+- **Communication Helper** - Email templates, tone selection
+- **Evidence Organizer** - Drag-and-drop, auto-categorization
 
-5. **Communication Helper** (`/ai-tools/communication-helper/`)
-   - Email/message templates
-   - Tone selection
-
-6. **Settlement Analyzer** (`/ai-tools/settlement-analyzer/`)
-   - Offer analysis
-   - Market comparisons
-
-7. **Evidence Organizer** (`/ai-tools/evidence-organizer/`)
-   - Drag-and-drop upload
-   - Auto-categorization
-
-8. **AR Damage Documenter** (`/ai-tools/ar-damage-documenter/`)
-   - AR-enhanced damage documentation
-   - Real-time spatial analysis
-
-9. **Receipt Scanner** (`/ai-tools/receipt-scanner/`)
-   - OCR-powered receipt processing
-   - Expense categorization
-
-10. **Proactive Claim Optimizer** (`/ai-tools/proactive-claim-optimizer/`)
-    - Predictive claim analysis
-    - Optimization recommendations
-
-11. **3D Model Generator** (`/ai-tools/3d-model-generator/`)
-    - AI-powered photogrammetry from multiple images
-    - Real-time 3D reconstruction with quality settings
-    - Export to OBJ, FBX, GLTF, STL formats
-    - WebGL-based viewer with React Three Fiber
+**Documentation Tools**:
+- **Document Generator** - Template-based AI generation
+- **Receipt Scanner** - OCR processing, expense categorization
+- **AR Damage Documenter** - AR-enhanced spatial documentation
 
 ### Camera Integration
 - `CameraCapture` component for vision features
@@ -574,53 +521,24 @@ NEXT_PUBLIC_SENTRY_DSN=             # Client-side error tracking
 
 ## Development Workflow
 
-### Getting Started
-```bash
-# Setup development environment
-./scripts/dev.sh setup
-
-# Start all services
-pnpm dev
-
-# Run type checking
-pnpm type-check
-
-# Build all packages
-pnpm build
-```
-
 ### Development Process
-1. **Before Making Changes**
-   - **🧠 REQUIRED**: Query Claude learning context for task type
-   - Check existing patterns in similar files
-   - Verify function signatures before modifying calls
-   - Read actual type definitions, don't assume
-   - Apply recommendations from previous learnings
 
-2. **During Development**
-   - **🧠 REQUIRED**: Log errors with `claudeErrorHelpers` if they occur
-   - Make incremental changes
-   - Run `pnpm type-check` frequently
-   - Test with `pnpm dev` to see changes
-   - Use `pnpm --filter=<package> test:watch` for TDD
+**Setup**: `./scripts/dev.sh setup` → `pnpm dev` → `pnpm type-check` → `pnpm build`
 
-3. **Before Committing**
-   - **🧠 REQUIRED**: Resolve any logged errors with lessons learned
-   - Pre-commit hooks run automatically
-   - Use `pnpm ci:validate` for full validation
-   - Use conventional commits (pnpm cz available)
-   - Ensure `pnpm build` succeeds
+**Workflow Steps**:
+1. **Before Changes**: 🧠 Query Claude learning context, check patterns, verify types, apply learnings
+2. **During Development**: 🧠 Log errors with `claudeErrorHelpers`, incremental changes, frequent type-checking
+3. **Before Committing**: 🧠 Resolve logged errors, validate with `pnpm ci:validate`, use conventional commits
 
-### Key Development Commands
+**Key Commands**:
 ```bash
-pnpm clean:all          # Complete cleanup and rebuild
-pnpm fix:all            # Fix lint issues and rebuild  
-pnpm health:check       # Check lint and type error counts
-pnpm pre-commit:test    # Test pre-commit hooks manually
+pnpm clean:all                     # Complete cleanup and rebuild
+pnpm fix:all                       # Fix lint issues and rebuild  
+pnpm health:check                  # Check lint and type error counts
 
-# Claude Learning System Commands (NEW)
-node -e "import('@/lib/claude/claude-integration-example').then(m => m.showClaudeLearningStats())"  # Show learning stats
-node -e "import('@/lib/claude/claude-integration-example').then(m => m.checkClaudeLearningsBeforeTask('code-generation', {language: 'typescript'}))"  # Check learnings
+# Claude Learning System Commands
+node -e "import('@/lib/claude/claude-integration-example').then(m => m.showClaudeLearningStats())"
+node -e "import('@/lib/claude/claude-integration-example').then(m => m.checkClaudeLearningsBeforeTask('code-generation', {language: 'typescript'}))"
 ```
 
 ## Domain Context
@@ -682,17 +600,13 @@ cat supabase/schema.sql
 pnpm db:generate-types
 ```
 
-#### Key Database Features
-- **Row Level Security (RLS)**: User-based data access control
-- **Real-time Subscriptions**: Live updates for claims and property changes
-- **PostGIS Extension**: Geographic data processing for Florida parcels
-- **Full-text Search**: Document and claim content indexing
-
-### Project Configuration
-- **Project ID**: `tmlrvecuwgppbaynesji`
-- **Schema file**: `supabase/schema.sql` (single source of truth)
-- **No migrations folder**: All archived to avoid CLI conflicts
-- **Region**: US East (closest to Florida data sources)
+#### Database Architecture
+- **Project ID**: `tmlrvecuwgppbaynesji` (US East region)
+- **Schema Management**: Single `supabase/schema.sql` file (no migrations)
+- **Security**: Row Level Security (RLS) for user-based access control
+- **Real-time**: WebSocket subscriptions for live updates
+- **GIS**: PostGIS extension for Florida parcel processing
+- **Search**: Full-text indexing for documents and claims
 
 ### Edge Functions Architecture
 ClaimGuardian leverages Deno Edge Functions for:
@@ -740,12 +654,7 @@ Deno.serve(async (req: Request) => {
 })
 ```
 
-### Service Versions & Compatibility
-- **Auth (GoTrue)**: 2.177.0 - JWT tokens, user management
-- **PostgREST**: 12.2.12 - Auto-generated API from schema
-- **Postgres**: 17.4.1.064 - Latest with PostGIS for GIS operations
-- **Realtime**: Latest - WebSocket connections for live updates
-- **Storage**: Latest - File uploads with metadata in Postgres
+**Service Versions**: Auth (GoTrue) 2.177.0, PostgREST 12.2.12, Postgres 17.4.1.064
 
 ### Schema Change Workflow
 1. **Development**: Test changes in local environment
@@ -949,36 +858,22 @@ Consider integrating periodic updates into the development workflow:
 - Create monthly maintenance tasks to review and update documentation
 - Use subagents to detect when package documentation drifts from main file
 
-## Current Project Status & Recent Improvements
+## Current Project Status
 
-### Latest Deployment Status
-- **Production**: https://claimguardianai.com (Live)
-- **Build Status**: ✅ All builds passing
-- **Last Deploy**: August 4, 2025
-- **Recent Fix**: Resolved React Three Fiber SSR compatibility issue
+**Deployment**: ✅ Live at https://claimguardianai.com (Last: Aug 4, 2025)
 
-### Recently Completed (August 2025)
-- ✅ **ML Operations Infrastructure**: Complete federated learning and model management system
-- ✅ **AI Services Unification**: Centralized AI orchestration with cost tracking and monitoring
-- ✅ **Enhanced Edge Functions**: 20+ specialized functions for AI processing and data management
-- ✅ **Database Schema Consolidation**: Single schema.sql approach with automated type generation
-- ✅ **Progressive Error Handling**: Smart pre-commit hooks with auto-fixing capabilities
-- ✅ **Monitoring Dashboard**: Real-time AI operation visibility and performance tracking
-- ✅ **3D Model Generator**: AI-powered photogrammetry tool with React Three Fiber (SSR-safe)
-- ✅ **React Three Fiber SSR Fix**: Dynamic imports with SSR disabled for 3D components
+**Recent Completions (Aug 2025)**:
+- ML Operations Infrastructure with federated learning
+- AI Services Unification with cost tracking and monitoring  
+- 20+ specialized Edge Functions for AI processing
+- Single schema.sql approach with automated type generation
+- Progressive error handling with smart pre-commit hooks
+- Real-time monitoring dashboard for AI operations
+- 3D Model Generator with SSR-safe React Three Fiber
 
-### Current Focus Areas
-- 🔄 **Type Safety Enhancement**: Progressive TypeScript error elimination
-- 🔄 **Testing Coverage**: Expanding test suites across packages (Jest + Vitest)
-- 🔄 **Performance Optimization**: Bundle analysis and code splitting improvements
-- 🔄 **Documentation**: API documentation and developer guides
+**Current Focus**: Type safety enhancement, testing coverage expansion, bundle optimization
 
-### Architecture Highlights
-- **Monorepo Structure**: 8 specialized packages with clear separation of concerns
-- **AI-First Design**: Multi-provider AI integration with intelligent caching and cost management
-- **Real-time Capabilities**: Full-stack real-time features with Supabase subscriptions
-- **Florida-Specific**: Specialized tools for Florida insurance regulations and property data
-- **3D Visualization**: React Three Fiber integration for 3D model viewing and AR features
+**Architecture Highlights**: 8-package monorepo, AI-first design, real-time capabilities, Florida-specific tools
 
 ### Known Issues & Solutions
 
@@ -998,15 +893,13 @@ const Canvas = dynamic(
 - **Cause**: Next.js 15 requires viewport and themeColor in separate viewport export
 - **Status**: Non-blocking warnings, low priority fix
 
-## Important Instruction Reminders
+## 🧠 Claude Learning System - MANDATORY USAGE
 
-### 🧠 Claude Learning System - MANDATORY USAGE
-**CRITICAL**: Use the Complete Claude Learning System for ALL significant tasks:
+**CRITICAL**: Use Complete Learning System for ALL significant tasks
 
-**PREFERRED METHOD - Complete Learning System:**
+**Preferred Method**:
 ```typescript
 import { withCompleteLearning } from '@/lib/claude/claude-complete-learning-system'
-
 const result = await withCompleteLearning(
   'code-generation', 'Create component', 'Build UI', 'User request',
   { filePath: 'src/file.tsx', codeLanguage: 'typescript' },
@@ -1014,21 +907,16 @@ const result = await withCompleteLearning(
 )()
 ```
 
-**MANUAL METHOD - Individual Systems:**
-1. **BEFORE** any major task: Query `claudeLearningContext.analyzeTask(context)`
-2. **DURING** task execution: Log errors with `claudeErrorHelpers`
-3. **AFTER** completion/error: Resolve errors with `claudeErrorLogger.resolveError()`
-4. **REFLECT** on approach with `claudeSelfReflection` or auto-triggers
+**Manual Method**: 
+1. **BEFORE**: Query `claudeLearningContext.analyzeTask(context)`
+2. **DURING**: Log errors with `claudeErrorHelpers`  
+3. **AFTER**: Resolve with `claudeErrorLogger.resolveError()`
+4. **REFLECT**: Use `claudeSelfReflection` or auto-triggers
 
-**Key Files:**
-- `claude-complete-learning-system.ts` - Complete integration (RECOMMENDED)
-- `claude-error-logger.ts` - Error logging and learning
-- `claude-learning-context.ts` - Pre-task analysis
-- `claude-self-reflection.ts` - Efficiency analysis
-- `claude-reflection-triggers.ts` - Automatic improvement
+**Key Files**: `claude-complete-learning-system.ts`, `claude-error-logger.ts`, `claude-learning-context.ts`, `claude-self-reflection.ts`, `claude-reflection-triggers.ts`
 
-### General Instructions
-Do what has been asked; nothing more, nothing less.
-NEVER create files unless they're absolutely necessary for achieving your goal.
-ALWAYS prefer editing an existing file to creating a new one.
-NEVER proactively create documentation files (*.md) or README files. Only create documentation files if explicitly requested by the User.
+## General Instructions
+- Do what has been asked; nothing more, nothing less
+- NEVER create files unless absolutely necessary
+- ALWAYS prefer editing existing files
+- NEVER proactively create documentation files unless explicitly requested
