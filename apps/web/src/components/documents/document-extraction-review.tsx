@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Component for reviewing and applying AI document extraction results
+ * @purpose "Component for reviewing and applying AI document extraction results"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@claimguardian/ui"]
  * @exports ["DocumentExtractionReview"]
  * @complexity high
  * @tags ["component", "ai", "document-extraction", "review"]
- * @status active
+ * @status stable
  */
 
 'use client'

@@ -1,7 +1,17 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import * as SheetPrimitive from '@radix-ui/react-dialog'
-import { cva, type VariantProps } from 'class-variance-authority'
+import { cva } from 'class-variance-authority'
 import { X } from 'lucide-react'
 import * as React from 'react'
 

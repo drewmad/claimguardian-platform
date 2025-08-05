@@ -1,14 +1,14 @@
 /**
  * @fileMetadata
- * @purpose Server actions for managing user tiers and subscriptions
+ * @purpose "Server actions for managing user tiers and subscriptions"
+ * @dependencies ["@/lib","next"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { headers } from 'next/headers'
 import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'
 import { emailNotificationService } from '@/lib/services/email-notification-service'
 
@@ -181,7 +181,7 @@ export async function updateUserTier({
       .single()
 
     const oldTier = currentSubscription?.tier || 'free'
-    const userEmail = userInfo?.email || (currentSubscription?.users as any)?.email
+    const userEmail = userInfo?.email || 'unknown@example.com'
 
     // Log the tier change
     await supabase

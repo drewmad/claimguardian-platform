@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { AIOrchestrator } from '../../orchestrator/orchestrator';
 import { AIRequest, ClarityCalculation } from '../../types/index';
 
@@ -256,7 +266,7 @@ export class ClarityService {
     // - Type of materials
     // - Maintenance history
     
-    const rate = (this.DEPRECIATION_RATES as any)[claimData.damageType] || this.DEPRECIATION_RATES.general;
+    const rate = (this.DEPRECIATION_RATES as Record<string, number>)[claimData.damageType] || this.DEPRECIATION_RATES.general;
     const years = 5; // Would get from actual property data
     const value = Math.round(replacementCost * rate * years);
     

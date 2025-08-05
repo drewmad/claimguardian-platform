@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Knowledge Export/Import System for Cross-Team Learning Sharing
+ * @purpose "Knowledge Export/Import System for Cross-Team Learning Sharing"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-complete-learning-system", "@/lib/claude/claude-shared-patterns", "@/lib/logger"]
  * @features ["export-learnings", "import-validation", "merge-strategies", "version-control"]
  * @security ["encrypted-exports", "signature-verification", "access-control"]
@@ -131,8 +131,8 @@ export interface ConflictReport {
   type: 'learning' | 'pattern'
   id: string
   reason: string
-  existingValue: any
-  importValue: any
+  existingValue: unknown
+  importValue: unknown
   resolution: 'kept_existing' | 'used_import' | 'merged'
 }
 
@@ -234,7 +234,7 @@ class ClaudeKnowledgeTransfer {
     return exportData
   }
 
-  private async gatherLearnings(options: any): Promise<ExportedLearning[]> {
+  private async gatherLearnings(options: unknown): Promise<ExportedLearning[]> {
     const allLearnings = completeLearningSystem.getAllLearnings()
     
     let filtered = allLearnings
@@ -283,7 +283,7 @@ class ClaudeKnowledgeTransfer {
     }))
   }
 
-  private async gatherPatterns(options: any): Promise<ExportedPattern[]> {
+  private async gatherPatterns(options: unknown): Promise<ExportedPattern[]> {
     const allPatterns = claudeSharedPatterns.getAllPatterns()
     
     let filtered = allPatterns
@@ -594,7 +594,7 @@ class ClaudeKnowledgeTransfer {
     return { imported, skipped, conflicts }
   }
 
-  private areLearningsSimilar(l1: any, l2: any): boolean {
+  private areLearningsSimilar(l1: unknown, l2: unknown): boolean {
     // Simple similarity check based on task description
     const similarity = this.calculateSimilarity(l1.task, l2.task)
     return similarity > 0.8
@@ -611,7 +611,7 @@ class ClaudeKnowledgeTransfer {
     return intersection.size / union.size
   }
 
-  private async mergeLearnings(existing: any, imported: ExportedLearning): Promise<void> {
+  private async mergeLearnings(existing: unknown, imported: ExportedLearning): Promise<void> {
     // Merge logic - combine learnings and update confidence
     const mergedConfidence = (existing.confidence + imported.confidence) / 2
     const mergedLearnings = [...new Set([...existing.learnings, ...imported.learnings])]
@@ -710,7 +710,7 @@ class ClaudeKnowledgeTransfer {
     return `export_${Date.now()}_${randomBytes(8).toString('hex')}`
   }
 
-  private categorizeLearning(learning: any): string {
+  private categorizeLearning(learning: unknown): string {
     // Simple categorization based on patterns
     if (learning.patterns.some((p: string) => p.includes('performance'))) {
       return 'performance'
@@ -722,7 +722,7 @@ class ClaudeKnowledgeTransfer {
     return 'general'
   }
 
-  private extractTags(learning: any): string[] {
+  private extractTags(learning: unknown): string[] {
     // Extract tags from patterns and task description
     const words = [...learning.patterns, learning.task]
       .join(' ')

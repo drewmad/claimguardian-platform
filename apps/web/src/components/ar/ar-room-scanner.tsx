@@ -1,7 +1,17 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useEffect, useRef, useState } from 'react'
-import { X, Target, CheckCircle, AlertCircle, Maximize2 } from 'lucide-react'
+import { X, Target, CheckCircle, Maximize2 } from 'lucide-react'
 import * as THREE from 'three'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -16,7 +26,7 @@ interface ARScanPoint {
 
 interface ARRoomScannerProps {
   roomType: string
-  onComplete: (measurements: any) => void
+  onComplete: (measurements: Record<string, unknown>) => void
   onClose: () => void
 }
 

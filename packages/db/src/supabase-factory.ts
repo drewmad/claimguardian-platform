@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Shared Supabase client factory for consistent client creation
+ * @purpose "Shared Supabase client factory for consistent client creation"
+ * @dependencies ["@supabase/ssr","@supabase/supabase-js"]
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 import { createServerClient, createBrowserClient, type CookieOptions } from '@supabase/ssr'

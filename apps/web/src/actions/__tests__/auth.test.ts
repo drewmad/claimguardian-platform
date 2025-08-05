@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for authentication server actions
+ * @purpose "Tests for authentication server actions"
  * @owner test-team
  * @dependencies ["vitest", "@claimguardian/db"]
  * @exports []
  * @complexity medium
  * @tags ["test", "auth", "server-actions"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:35:00Z
  */
@@ -198,7 +198,7 @@ describe('Auth Server Actions', () => {
       const result = await resetPassword(formData)
 
       expect(result.success).toBe(true)
-      expect(result.data?.message).toContain('reset email sent')
+      expect((result.data as { message?: string })?.message).toContain('reset email sent')
       expect(mockSupabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
         'test@example.com',
         { redirectTo: 'http://localhost:3000/auth/reset-password' }

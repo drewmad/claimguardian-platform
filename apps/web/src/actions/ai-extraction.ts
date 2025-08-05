@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for AI document extraction
+ * @purpose "Server actions for AI document extraction"
  * @owner backend-team
  * @dependencies ["@/lib/supabase/server", "@/lib/services/ai-document-extraction"]
  * @exports ["processDocumentExtraction", "getExtractionResults"]
  * @complexity high
  * @tags ["server-action", "ai", "document-processing"]
- * @status active
+ * @status stable
  */
 
 'use server'

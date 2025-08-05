@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Compliance-grade consent management for GDPR/CCPA
+ * @purpose "Compliance-grade consent management for GDPR/CCPA"
  * @owner compliance-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["recordSignupConsent", "validateConsent", "linkConsentToUser"]
  * @complexity high
  * @tags ["compliance", "gdpr", "consent", "critical"]
- * @status active
+ * @status stable
  */
 
 'use server'

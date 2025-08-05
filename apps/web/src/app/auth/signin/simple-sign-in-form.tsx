@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
@@ -141,7 +151,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don&apos;t have an account?{' '}
+              Don't have an account?{' '}
               <Link
                 href="/auth/signup"
                 className="text-blue-400 hover:text-blue-300 font-medium"

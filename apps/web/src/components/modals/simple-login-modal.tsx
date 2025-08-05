@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Simplified login modal with minimal fields
+ * @purpose "Simplified login modal with minimal fields"
+ * @dependencies ["@/components","@/stores","lucide-react","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 

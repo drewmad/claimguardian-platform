@@ -1,8 +1,18 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { Calculator, TrendingUp, Users, Shield, BarChart3, Eye, EyeOff, Filter, Calendar, Info, Sparkles } from 'lucide-react'
 import Link from 'next/link'
-import { useState, Suspense } from 'react'
+import { useState } from 'react'
 import dynamic from 'next/dynamic'
 
 // Dynamically import privacy analytics to avoid SSR issues

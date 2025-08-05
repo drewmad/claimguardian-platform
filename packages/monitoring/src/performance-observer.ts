@@ -1,3 +1,14 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
+import { isLayoutShift, isFirstInput, isPerformanceEntry, PerformanceEventTiming } from './utils/type-guards'
 import { recordMetric } from './metrics'
 
 interface PerformanceObserverConfig {
@@ -61,7 +72,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
           if (entry.duration > threshold) {
             recordMetric('long-task', entry.duration, {
               startTime: entry.startTime,
-              attribution: (entry as any).attribution?.[0]?.containerType
+              attribution: isPerformanceEntry(entry) ? 'long-task' : 'unknown'
             })
 
             console.warn(`Long task detected: ${entry.duration}ms`)
@@ -83,16 +94,16 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
       
       const layoutShiftObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          const layoutShift = entry as any
-          
-          // Only count shifts without user input
-          if (!layoutShift.hadRecentInput) {
-            cumulativeLayoutShift += layoutShift.value
-            
-            recordMetric('layout-shift', layoutShift.value, {
-              cumulative: cumulativeLayoutShift,
-              sources: layoutShift.sources?.length || 0
-            })
+          if (isLayoutShift(entry)) {
+            // Only count shifts without user input
+            if (!entry.hadRecentInput) {
+              cumulativeLayoutShift += entry.value
+              
+              recordMetric('layout-shift', entry.value, {
+                cumulative: cumulativeLayoutShift,
+                sources: (entry as LayoutShift).sources?.length || 0
+              })
+            }
           }
         }
       })
@@ -109,12 +120,12 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
     try {
       const firstInputObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
-          const firstInput = entry as any
-          
-          recordMetric('first-input-delay', firstInput.processingStart - firstInput.startTime, {
-            eventType: firstInput.name,
-            target: firstInput.target?.tagName
-          })
+          if (isFirstInput(entry)) {
+            recordMetric('first-input-delay', entry.processingStart - entry.startTime, {
+              eventType: entry.name,
+              target: (entry as PerformanceEventTiming).target?.tagName
+            })
+          }
         }
       })
 
@@ -152,7 +163,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
   // Memory usage monitoring (if available)
   if ('memory' in performance) {
     setInterval(() => {
-      const memory = (performance as any).memory
+      const memory = (performance as unknown).memory
       
       recordMetric('memory-usage', memory.usedJSHeapSize, {
         totalJSHeapSize: memory.totalJSHeapSize,

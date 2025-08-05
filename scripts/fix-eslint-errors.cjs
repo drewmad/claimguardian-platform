@@ -168,7 +168,7 @@ const fixAnyTypes = () => {
 // Run fixes
 try {
   removeUnusedImports()
-  fixUnescapedEntities()
+  // fixUnescapedEntities()
   fixAnyTypes()
   fixUseEffectDeps()
   

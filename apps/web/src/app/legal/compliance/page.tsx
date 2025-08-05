@@ -1,12 +1,13 @@
 /**
  * @fileMetadata
- * @purpose Displays the Florida compliance and regulatory information page.
+ * @purpose "Displays the Florida compliance and regulatory information page."
+ * @dependencies []
  * @owner legal-team
  * @status foundation
  */
 /**
  * @fileMetadata
- * @purpose Florida compliance page foundation for regulatory and legal compliance information
+ * @purpose "Florida compliance page foundation for regulatory and legal compliance information"
  * @owner legal-team
  * @dependencies ["react"]
  * @exports ["CompliancePage"]

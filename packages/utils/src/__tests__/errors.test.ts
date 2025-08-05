@@ -1,19 +1,18 @@
 /**
  * @fileMetadata
- * @purpose Tests for error handling utility functions
+ * @purpose "Tests for error handling utility functions"
  * @owner test-team
  * @dependencies ["vitest"]
  * @exports []
  * @complexity high
  * @tags ["test", "error-handling", "utilities"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:18:00Z
  */
 
 import { describe, it, expect } from 'vitest'
 import {
-  BaseError,
   AuthError,
   ValidationError,
   NotFoundError,

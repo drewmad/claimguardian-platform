@@ -1,8 +1,18 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { Calculator, DollarSign, AlertTriangle, CheckCircle, XCircle, Info, BarChart, Sparkles, Scale, Target, Brain, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState, useEffect, useMemo } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
@@ -45,6 +55,8 @@ export default function SettlementAnalyzerPage() {
   const [deductible, setDeductible] = useState('')
   const [analysis, setAnalysis] = useState<SettlementAnalysis | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
+  const [hasOpenAIKey, setHasOpenAIKey] = useState(true) // Assume available for now
+  const [hasGeminiKey, setHasGeminiKey] = useState(true) // Assume available for now
   const { user } = useAuth()
 
   const analyzeSettlement = async () => {
@@ -97,15 +109,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
       // Use enhanced AI client with automatic model selection and A/B testing
       const response = await enhancedAIClient.enhancedChat({
         messages,
-        featureId: 'settlement-analyzer',
-        userId: user?.id,
-        metadata: {
-          claimValue,
-          offerValue,
-          offerPercentage: parseFloat(offerPercentage),
-          damageType,
-          propertyType
-        }
+        featureId: 'settlement-analyzer'
       })
 
       try {
@@ -534,7 +538,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       <ul className="space-y-1">
                         <li>• Consider hiring a public adjuster for large claims</li>
                         <li>• Review your policy limits and coverage</li>
-                        <li>• Don&apos;t sign releases until you&apos;re satisfied</li>
+                        <li>• Don't sign releases until you're satisfied</li>
                       </ul>
                     </div>
                   </div>

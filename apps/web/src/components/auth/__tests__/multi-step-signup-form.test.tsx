@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for the optimized multi-step signup form
+ * @purpose "Tests for the optimized multi-step signup form"
  * @owner test-team
  * @dependencies ["vitest", "@testing-library/react", "@testing-library/user-event", "@claimguardian/db", "next/navigation"]
  * @exports []
  * @complexity high
  * @tags ["test", "auth", "react", "form", "integration"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:20:00Z
  */
@@ -14,22 +14,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import { createBrowserSupabaseClient } from '@claimguardian/db'
+import { useRouter } from 'next/navigation'
 import { MultiStepSignupForm } from '../../../app/auth/signup/multi-step-signup-form'
 
 // Mock dependencies
-vi.mock('@claimguardian/db', () => ({
-  createBrowserSupabaseClient: vi.fn(() => ({
-    auth: {
-      signUp: vi.fn()
-    }
-  }))
-}))
-
-vi.mock('next/navigation', () => ({
-  useRouter: vi.fn(() => ({
-    push: vi.fn()
-  }))
-}))
+vi.mock('@claimguardian/db')
+vi.mock('next/navigation')
 
 vi.mock('@/lib/logger/production-logger', () => ({
   logger: {
@@ -51,8 +42,8 @@ const mockRouter = {
 describe('MultiStepSignupForm', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    ;(require('@claimguardian/db').createBrowserSupabaseClient as any).mockReturnValue(mockSupabase)
-    ;(require('next/navigation').useRouter as any).mockReturnValue(mockRouter)
+    vi.mocked(createBrowserSupabaseClient).mockReturnValue(mockSupabase as vi.Mocked<typeof mockSupabase>)
+    vi.mocked(useRouter).mockReturnValue(mockRouter as vi.Mocked<typeof mockRouter>)
   })
 
   describe('Welcome Step', () => {

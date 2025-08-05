@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Rate limiting hook with countdown timer
+ * @purpose "Rate limiting hook with countdown timer"
  * @owner frontend-team
  * @dependencies ["react"]
  * @exports ["useRateLimit"]
  * @complexity low
  * @tags ["hook", "rate-limit", "timer"]
- * @status active
+ * @status stable
  */
 
 import { useState, useEffect, useCallback } from 'react'

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for geographic data (states, counties, cities, ZIP codes)
+ * @purpose "Server actions for geographic data (states, counties, cities, ZIP codes)"
  * @owner frontend-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["getStates", "getCounties", "getCities", "getZipCodes", "validateAddress"]
  * @complexity medium
  * @tags ["server-action", "geographic", "database"]
- * @status active
+ * @status stable
  */
 'use server'
 

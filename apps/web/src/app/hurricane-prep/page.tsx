@@ -1,11 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Hurricane preparation guide page
+ * @purpose "Hurricane preparation guide page"
+ * @dependencies ["lucide-react","next"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
-import { Shield, Home, ArrowLeft, Download, CheckCircle } from 'lucide-react'
+import { Shield, Home, ArrowLeft, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
 
 export default function HurricanePrepPage() {

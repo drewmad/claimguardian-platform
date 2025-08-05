@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Provides utility functions for formatting data such as phone numbers, currency, and dates.
+ * @purpose "Provides utility functions for formatting data such as phone numbers, currency, and dates."
  * @owner frontend-team
  * @dependencies []
  * @exports ["formatPhoneNumber", "formatCurrency", "formatDate"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-07-03T23:09:02-04:00
  * @complexity low
  * @tags ["utility", "formatting"]
- * @status active
+ * @status stable
  * @notes Includes functions for consistent data presentation.
  */
 export const formatPhoneNumber = (value: string): string => {

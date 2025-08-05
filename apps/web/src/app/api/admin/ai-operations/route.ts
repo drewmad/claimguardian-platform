@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose AI Operations API endpoints for admin panel
+ * @purpose "AI Operations API endpoints for admin panel"
+ * @dependencies ["@/lib","next"]
  * @owner ai-team  
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -44,7 +45,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    let response: any = {}
+    const response: Record<string, unknown> = {}
 
     if (type === 'configs' || type === 'all' || !type) {
       // Get model configurations
@@ -89,7 +90,7 @@ export async function GET(request: NextRequest) {
           if (!featureMetrics[usage.feature_id]) {
             featureMetrics[usage.feature_id] = {
               feature_id: usage.feature_id,
-              feature_name: usage.feature_id.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+              feature_name: usage.feature_id.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
               current_model: usage.model,
               total_requests: 0,
               avg_response_time: 0,
@@ -174,7 +175,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Upsert model configurations
-    const configsToUpsert = feature_mappings.map((mapping: any) => ({
+    const configsToUpsert = feature_mappings.map((mapping: Record<string, unknown>) => ({
       feature_id: mapping.featureId,
       feature_name: mapping.featureName,
       current_model: mapping.currentModel,

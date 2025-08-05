@@ -1,16 +1,17 @@
 /**
  * @fileMetadata
- * @purpose AI Claim Swarm Tool Component - Multi-user collaborative damage assessment interface
+ * @purpose "AI Claim Swarm Tool Component - Multi-user collaborative damage assessment interface"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ui", "react"]
  * @exports ["ToolComponent"]
  * @complexity medium
- * @status active
+ * @status stable
  */
 
-import React from 'react'
 import { Card, CardHeader, CardContent, Button } from '@claimguardian/ui'
 import { CameraCapture } from '@claimguardian/ui'
+import React from 'react'
+
 import { useClaimSwarm } from './useClaimSwarm'
 
 export function ToolComponent() {

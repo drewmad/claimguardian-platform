@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Centralized authentication service with comprehensive error handling
+ * @purpose "Centralized authentication service with comprehensive error handling"
  * @owner auth-team
  * @dependencies ["@supabase/supabase-js", "@/lib/errors"]
  * @exports ["authService", "AuthError"]
  * @complexity high
  * @tags ["auth", "service", "error-handling"]
- * @status active
+ * @status stable
  */
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'

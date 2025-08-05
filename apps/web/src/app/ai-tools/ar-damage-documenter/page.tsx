@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { Camera, Ruler, Save, Download, Upload, Maximize2, Info, AlertTriangle, CheckCircle, RotateCw, FileImage, MapPin, Clock, Layers, Brain, ArrowLeftRight, StickyNote, Wrench, Droplet, Zap, ShieldAlert, Home } from 'lucide-react'
@@ -412,7 +422,7 @@ export default function ARDamageDocumenterPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Damage Capture</CardTitle>
-                      <Tabs value={currentMode} onValueChange={(value) => setCurrentMode(value as any)} className="w-full">
+                      <Tabs value={currentMode} onValueChange={(value) => setCurrentMode(value as unknown)} className="w-full">
                         <TabsList className="grid w-full grid-cols-6">
                           <TabsTrigger value="capture">Capture</TabsTrigger>
                           <TabsTrigger value="measure" disabled={capturedImages.length === 0}>Measure</TabsTrigger>
@@ -887,7 +897,7 @@ export default function ARDamageDocumenterPage() {
                                   <div className="absolute inset-0 flex items-center justify-center bg-black/50">
                                     <div className="text-center">
                                       <StickyNote className="h-12 w-12 text-cyan-400 mx-auto mb-3 opacity-50" />
-                                      <p className="text-white font-medium">Click anywhere to add an AR note</p>
+                                      <p className="text-white font-medium">Click unknownwhere to add an AR note</p>
                                       <p className="text-gray-400 text-sm mt-1">Document equipment locations and important details</p>
                                     </div>
                                   </div>

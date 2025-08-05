@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Fix invalid user sessions by clearing cookies and redirecting to sign in
+ * @purpose "Fix invalid user sessions by clearing cookies and redirecting to sign in"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { cookies } from 'next/headers'

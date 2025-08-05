@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for Button UI component
+ * @purpose "Tests for Button UI component"
  * @owner ui-team
  * @dependencies ["vitest", "@testing-library/react", "@testing-library/user-event"]
  * @exports []
  * @complexity low
  * @tags ["test", "ui", "component", "button"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:55:00Z
  */

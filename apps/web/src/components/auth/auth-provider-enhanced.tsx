@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Enhanced authentication context provider with server state sync
+ * @purpose "Enhanced authentication context provider with server state sync"
+ * @dependencies ["@/app","@/lib","@supabase/supabase-js","next","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 

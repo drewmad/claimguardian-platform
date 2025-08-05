@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Session management with automatic token refresh
+ * @purpose "Session management with automatic token refresh"
  * @owner auth-team
  * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
  * @exports ["sessionManager"]
  * @complexity medium
  * @tags ["auth", "session", "token-refresh"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'

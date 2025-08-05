@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for claims management server actions
+ * @purpose "Tests for claims management server actions"
  * @owner claims-team
  * @dependencies ["vitest", "@claimguardian/db", "@claimguardian/utils"]
  * @exports []
  * @complexity high
  * @tags ["test", "claims", "server-actions", "database"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:40:00Z
  */
@@ -75,16 +75,16 @@ describe('Claims Server Actions', () => {
   beforeEach(async () => {
     vi.clearAllMocks()
     mockSupabase = createMockSupabase()
-    const { createClient } = await import('@claimguardian/db')
-    ;(createClient as any).mockResolvedValue(mockSupabase)
+    const { createServerSupabaseClient } = await import('@claimguardian/db')
+    ;(createServerSupabaseClient as vi.Mock).mockResolvedValue(mockSupabase)
   })
 
   describe('createClaim', () => {
     const validClaimData = {
       propertyId: 'prop-123',
-      damageType: 'water_damage',
+      claimType: 'water_damage',
       description: 'Burst pipe caused flooding in basement',
-      estimatedAmount: 15000
+      incidentDate: '2024-03-15T10:00:00Z'
     }
 
     it('should create a claim successfully', async () => {
@@ -92,9 +92,9 @@ describe('Claims Server Actions', () => {
         id: 'claim-456',
         user_id: 'user-123',
         property_id: 'prop-123',
-        damage_type: 'water_damage',
+        claim_type: 'water_damage',
         description: 'Burst pipe caused flooding in basement',
-        estimated_amount: 15000,
+        incident_date: '2024-03-15T10:00:00Z',
         status: 'draft',
         created_at: '2024-03-15T10:00:00Z'
       }
@@ -126,8 +126,8 @@ describe('Claims Server Actions', () => {
 
     it('should handle unauthenticated users', async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
-        data: { user: null },
-        error: { message: 'Not authenticated' }
+        data: { user: null as unknown },
+        error: null
       })
 
       const result = await createClaim(validClaimData)
@@ -142,7 +142,7 @@ describe('Claims Server Actions', () => {
       claimId: 'claim-456',
       updates: {
         description: 'Updated description',
-        status: 'under_review'
+        status: 'investigating' as const
       }
     }
 
@@ -150,7 +150,7 @@ describe('Claims Server Actions', () => {
       const mockUpdatedClaim = {
         id: 'claim-456',
         description: 'Updated description',
-        status: 'under_review',
+        status: 'investigating',
         updated_at: '2024-03-15T12:00:00Z'
       }
 
@@ -162,7 +162,7 @@ describe('Claims Server Actions', () => {
       const result = await updateClaim(updateData)
 
       expect(result.success).toBe(true)
-      expect(result.data?.status).toBe('under_review')
+      expect(result.data?.status).toBe('investigating')
       expect(mockSupabase._mockQuery.eq).toHaveBeenCalledWith('id', 'claim-456')
       expect(mockSupabase._mockQuery.eq).toHaveBeenCalledWith('user_id', 'user-123')
     })
@@ -337,7 +337,7 @@ describe('Claims Server Actions', () => {
       const result = await generateClaimReport({ claimId: 'claim-456' })
 
       expect(result.success).toBe(true)
-      expect(result.data?.summary.totalDocuments).toBe(0)
+      expect((result.data as unknown)?.summary.totalDocuments).toBe(0)
       expect(result.data?.recommendations).toBeInstanceOf(Array)
     })
   })

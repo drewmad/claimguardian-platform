@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose The main public-facing landing page for the ClaimGuardian application.
+ * @purpose "The main public-facing landing page for the ClaimGuardian application."
+ * @dependencies ["@/components"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Public landing page for ClaimGuardian with comprehensive sections
+ * @purpose "Public landing page for ClaimGuardian with comprehensive sections"
  * @owner frontend-team
  * @dependencies ["react", "@/components/landing/*", "@/components/modals/*"]
  * @exports ["HomePage"]
  * @complexity high
  * @tags ["landing", "public", "home"]
- * @status active
+ * @status stable
  * @notes Main landing page with all marketing sections
  */
 'use client'

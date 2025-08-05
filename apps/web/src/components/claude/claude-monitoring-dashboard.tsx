@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive Monitoring Dashboard for Claude Learning System Health
+ * @purpose "Comprehensive Monitoring Dashboard for Claude Learning System Health"
+ * @dependencies ["@/components","@/lib","react"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 'use client'
@@ -31,46 +32,13 @@ import {
   Legend,
   ResponsiveContainer,
   RadarChart,
-  RadarArea,
+  Radar,
   PolarGrid,
   PolarAngleAxis,
   PolarRadiusAxis
 } from 'recharts'
-import {
-  Activity,
-  AlertCircle,
-  AlertTriangle,
-  ArrowDown,
-  ArrowUp,
-  BarChart3,
-  Brain,
-  CheckCircle,
-  Clock,
-  Database,
-  FileText,
-  GitBranch,
-  Heart,
-  Info,
-  Lightbulb,
-  MonitorCheck,
-  RefreshCw,
-  Server,
-  Settings,
-  Target,
-  TrendingUp,
-  Users,
-  Zap,
-  ChevronRight,
-  Download,
-  Filter,
-  Play,
-  Pause,
-  Shield,
-  Cpu,
-  HardDrive,
-  Gauge
-} from 'lucide-react'
-import { claudeProductionMonitor, type ProductionMetrics } from '@/lib/claude/claude-production-monitor'
+import { AlertCircle, AlertTriangle, ArrowDown, ArrowUp, CheckCircle, Clock, Database, Heart, Info, Lightbulb, MonitorCheck, RefreshCw, Settings, Target, TrendingUp, Download, Play, Pause, Cpu, HardDrive } from 'lucide-react'
+import { claudeProductionMonitor } from '@/lib/claude/claude-production-monitor'
 import { claudeABTesting } from '@/lib/claude/claude-ab-testing'
 import { claudeThresholdTuner } from '@/lib/claude/claude-threshold-tuner'
 import { claudeFeedbackLoops } from '@/lib/claude/claude-feedback-loops'
@@ -152,7 +120,7 @@ export function ClaudeMonitoringDashboard() {
         claudeABTesting.generateABTestReport(selectedTimeframe),
         claudeThresholdTuner.analyzeCurrentThreshold(),
         claudeFeedbackLoops.getFeedbackSystemStatus(),
-        claudeAdvancedAnalytics.generateAnalyticsReport(selectedTimeframe === 'hour' ? 'day' : selectedTimeframe)
+        claudeAdvancedAnalytics.generateAnalyticsReport(selectedTimeframe === 'hour' ? 'week' : selectedTimeframe as 'week' | 'month' | 'quarter')
       ])
 
       // Process and structure the data
@@ -181,7 +149,7 @@ export function ClaudeMonitoringDashboard() {
           recommendation: abTestReport.businessMetrics.recommendation
         },
         learningMetrics: {
-          totalPatterns: analyticsReport.learningStats?.learningPatterns || 0,
+          totalPatterns: (analyticsReport as unknown).learningStats?.learningPatterns || 0,
           activeOptimizations: abTestReport.treatmentGroup.avgOptimizations || 0,
           confidenceThreshold: thresholdAnalysis.analysis.threshold,
           learningApplicationRate: 0.84, // Mock value
@@ -223,9 +191,11 @@ export function ClaudeMonitoringDashboard() {
       const interval = setInterval(fetchDashboardData, refreshInterval)
       return () => clearInterval(interval)
     }
+    
+    return undefined
   }, [fetchDashboardData, autoRefresh, refreshInterval])
 
-  const generateAlerts = (productionStatus: any, feedbackStatus: any): any[] => {
+  const generateAlerts = (productionStatus: unknown, feedbackStatus: unknown): unknown[] => {
     const alerts = []
 
     if (productionStatus.status === 'error') {
@@ -571,7 +541,7 @@ export function ClaudeMonitoringDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
+                      label={({ name, percent }) => `${name}: ${((percent || 0) * 100).toFixed(0)}%`}
                       outerRadius={100}
                       fill="#8884d8"
                       dataKey="value"

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server-side auth callback handler for email verification
+ * @purpose "Server-side auth callback handler for email verification"
+ * @dependencies ["@/lib","next"]
  * @owner auth-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

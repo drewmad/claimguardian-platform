@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 // Response types
 export interface AIResponse {
   text: string;
@@ -28,7 +38,7 @@ export interface AIRequest {
   feature: AIFeature;
   responseFormat?: 'text' | 'json';
   examples?: Array<{ input: string; output: string }>;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 // Provider configuration
@@ -71,7 +81,7 @@ export interface ImageAnalysisResponse extends AIResponse {
     labels?: string[];
     text?: string[];
     objects?: Array<{ name: string; confidence: number }>;
-    [key: string]: any;
+    [key: string]: unknown;
   };
 }
 

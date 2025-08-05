@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive data capture requirements for compliance and user experience
+ * @purpose "Comprehensive data capture requirements for compliance and user experience"
+ * @dependencies []
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 
 export interface ComplianceDataRequirements {

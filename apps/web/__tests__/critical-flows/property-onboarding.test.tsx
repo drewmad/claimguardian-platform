@@ -1,11 +1,12 @@
 import React from 'react'
 /**
  * @fileMetadata
- * @purpose Critical property onboarding flow tests
+ * @purpose "Critical property onboarding flow tests"
+ * @dependencies ["@testing-library/react","@testing-library/user-event","react"]
  * @owner product-team  
  * @complexity high
  * @tags ["testing", "onboarding", "critical-flow", "property"]
- * @status active
+ * @status stable
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'

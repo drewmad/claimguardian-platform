@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive Claude Development & Learning System Dashboard for ClaimGuardian Admin
+ * @purpose "Comprehensive Claude Development & Learning System Dashboard for ClaimGuardian Admin"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-complete-learning-system", "@/lib/claude/claude-error-logger", "@/lib/claude/claude-self-reflection"]
  */
 
@@ -15,47 +15,12 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
 import { ClaudeMonitoringDashboard } from '@/components/claude/claude-monitoring-dashboard'
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
-  TrendingUp, 
-  Brain, 
-  Target,
-  BarChart3,
-  RefreshCw,
-  Download,
-  Settings,
-  Zap,
-  Activity,
-  Eye,
-  ArrowUp,
-  ArrowDown,
-  Minus,
-  Users,
-  FileText,
-  Wrench,
-  Search,
-  BookOpen,
-  Lightbulb,
-  Shield,
-  Star,
-  Calendar,
-  Hash,
-  Cpu,
-  Database,
-  Timer,
-  Code,
-  AlertTriangle,
-  PlayCircle,
-  PauseCircle
-} from 'lucide-react'
+import { AlertCircle, CheckCircle, TrendingUp, Brain, Target, BarChart3, RefreshCw, Download, Settings, Zap, Activity, Eye, ArrowUp, ArrowDown, Minus, Users, Wrench, Search, BookOpen, Lightbulb, Shield, Star, Hash, Cpu, Database, Code, AlertTriangle, PlayCircle, PauseCircle } from 'lucide-react'
 
-import { claudeErrorLogger } from '@/lib/claude/claude-error-logger'
 import { claudeSelfReflection } from '@/lib/claude/claude-self-reflection'
 import { completeLearningSystem } from '@/lib/claude/claude-complete-learning-system'
 import { reflectionTriggers } from '@/lib/claude/claude-reflection-triggers'
-import { productionErrorMonitor, type ProductionErrorPattern, type DatabaseHealthCheck } from '@/lib/claude/production-error-monitor'
+import { productionErrorMonitor } from '@/lib/claude/production-error-monitor'
 
 interface ClaudeSystemStats {
   totalTasks: number
@@ -276,6 +241,7 @@ export function ClaudeLearningDashboard() {
       case 'improving': return <ArrowUp className="h-4 w-4 text-green-500" />
       case 'declining': return <ArrowDown className="h-4 w-4 text-red-500" />
       case 'stable': return <Minus className="h-4 w-4 text-gray-500" />
+      default: return <Minus className="h-4 w-4 text-gray-500" />
     }
   }
 

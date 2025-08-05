@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Bot protection utilities and middleware
+ * @purpose "Bot protection utilities and middleware"
+ * @dependencies ["@/lib","next"]
  * @owner security-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest } from 'next/server'

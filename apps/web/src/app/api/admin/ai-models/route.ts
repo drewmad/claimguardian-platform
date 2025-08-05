@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 
@@ -13,7 +23,7 @@ interface FeatureModelMapping {
 
 export async function GET() {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     const { data, error } = await supabase
       .from('ai_model_configs')
@@ -110,7 +120,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user (admin check could be added here)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -154,7 +164,7 @@ export async function POST(request: NextRequest) {
 // Get model performance stats
 export async function PATCH(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // This would typically query a model_usage_stats table
     // For now, return mock data

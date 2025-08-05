@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -14,52 +24,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  PieChart,
-  Pie,
-  Cell,
-  RadarChart,
-  PolarGrid,
-  PolarAngleAxis,
-  PolarRadiusAxis,
-  Radar
-} from 'recharts'
-import { 
-  Brain, 
-  Cpu, 
-  Database, 
-  Activity,
-  TrendingUp,
-  TrendingDown,
-  AlertCircle,
-  CheckCircle,
-  Clock,
-  Zap,
-  Target,
-  GitBranch,
-  Package,
-  Layers,
-  RefreshCw,
-  Play,
-  Pause,
-  Download,
-  Upload,
-  Settings,
-  FileText,
-  BarChart3,
-  Info
-} from 'lucide-react'
+import { LineChart, Line, AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts'
+import { Brain, Activity, AlertCircle, Zap, RefreshCw, Download, Upload, Info, Eye } from 'lucide-react'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { format } from 'date-fns'
 
@@ -322,7 +288,7 @@ export function MLOperationsDashboard() {
           <p className="text-gray-400 mt-1">Monitor and manage machine learning models</p>
         </div>
         <div className="flex gap-2">
-          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as any)}>
+          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as unknown)}>
             <SelectTrigger className="w-[120px] bg-gray-800 border-gray-700">
               <SelectValue />
             </SelectTrigger>

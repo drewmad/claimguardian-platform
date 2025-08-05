@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Property overview and management dashboard with React Query
+ * @purpose "Property overview and management dashboard with React Query"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react", "@tanstack/react-query"]
  * @exports ["default"]
  * @complexity medium
  * @tags ["dashboard", "property", "page", "react-query"]
- * @status active
+ * @status stable
  */
 'use client'
 

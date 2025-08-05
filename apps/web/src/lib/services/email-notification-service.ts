@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Email notification service for user tier and permission changes
+ * @purpose "Email notification service for user tier and permission changes"
+ * @dependencies ["@/lib"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 
 import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'

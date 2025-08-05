@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Dashboard widget for accessing learning insights
+ * @purpose "Dashboard widget for accessing learning insights"
+ * @dependencies ["@/lib","@claimguardian/ui","lucide-react","react"]
  * @owner dev-tools-team
- * @status active
+ * @status stable
  */
 
 'use client'

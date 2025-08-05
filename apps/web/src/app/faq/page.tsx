@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose FAQ page for common questions
+ * @purpose "FAQ page for common questions"
+ * @dependencies ["lucide-react","next"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'

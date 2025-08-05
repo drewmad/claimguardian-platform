@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 
 'use client'
 
@@ -247,7 +257,7 @@ export function OCRScanner({
                   <AlertCircle className="h-4 w-4" />
                   <AlertTitle>OCR Limit Reached</AlertTitle>
                   <AlertDescription>
-                    You&apos;ve used all your OCR scans for this month. Upgrade your plan for more scans.
+                    You've used all your OCR scans for this month. Upgrade your plan for more scans.
                   </AlertDescription>
                 </Alert>
               )}

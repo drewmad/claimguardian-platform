@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
@@ -114,7 +124,7 @@ export function AccountWizard() {
             <div className="space-y-2">
               <p className="font-medium">Account created successfully! 🎉</p>
               <p className="text-sm">
-                Welcome to ClaimGuardian! Check your email for a confirmation link, then we&apos;ll redirect you to your dashboard.
+                Welcome to ClaimGuardian! Check your email for a confirmation link, then we'll redirect you to your dashboard.
               </p>
             </div>
           </AlertDescription>

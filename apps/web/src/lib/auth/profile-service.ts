@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose User profile management service
+ * @purpose "User profile management service"
  * @owner auth-team
  * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
  * @exports ["profileService"]
  * @complexity medium
  * @tags ["auth", "profile", "user-management"]
- * @status active
+ * @status stable
  */
 
 import { authService } from './auth-service'

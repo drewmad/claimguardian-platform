@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Tooltip component
+ * @purpose "Tooltip component"
+ * @dependencies ["@/lib","@radix-ui/react-tooltip","react"]
  * @owner ui-team
- * @status active
+ * @status stable
  */
 'use client'
 

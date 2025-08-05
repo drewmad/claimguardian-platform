@@ -1,12 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  Camera, Upload, Palette, Home, Sparkles,
-  CheckCircle, Info, Download, Share2, History,
-  Layers, Droplet, Sun, Shield, DollarSign,
-  Clock, AlertTriangle, FileText, ChevronRight,
-  Package, Search, Building, Wrench, Grid
-} from 'lucide-react'
+import { Camera, Upload, Palette, Home, Sparkles, CheckCircle, Info, Download, Layers, Sun, Shield, ChevronRight, Package, Building, Wrench, Grid } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef } from 'react'
 import { toast } from 'sonner'
@@ -18,12 +22,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-
 interface MaterialAnalysis {
   id: string
   imageUrl: string

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Modal component for displaying legal documents
+ * @purpose "Modal component for displaying legal documents"
  * @owner legal-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["LegalDocumentModal"]
  * @complexity medium
  * @tags ["legal", "modal", "document", "ui"]
- * @status active
+ * @status stable
  */
 'use client'
 

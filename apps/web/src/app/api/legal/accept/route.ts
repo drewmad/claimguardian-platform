@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose API route to record legal document acceptance
+ * @purpose "API route to record legal document acceptance"
  * @owner legal-team
  * @dependencies ["next", "@supabase/supabase-js", "@/lib/legal"]
  * @exports ["POST"]
  * @complexity medium
  * @tags ["api", "legal", "consent", "compliance"]
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

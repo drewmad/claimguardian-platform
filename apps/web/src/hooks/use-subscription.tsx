@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Hook for checking subscription status and limits
+ * @purpose "Hook for checking subscription status and limits"
+ * @dependencies ["@/config","@/lib","react","sonner"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 'use client'

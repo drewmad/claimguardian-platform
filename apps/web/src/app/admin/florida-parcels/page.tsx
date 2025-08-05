@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -6,7 +16,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { RefreshCw, Play, Pause, AlertCircle, CheckCircle2, Clock, Database } from 'lucide-react';
+import { RefreshCw, Play, Pause, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
 interface CountyStatus {
   county_code: number;
@@ -37,12 +47,6 @@ export default function FloridaParcelsMonitor() {
   const [selectedView, setSelectedView] = useState<'all' | 'active' | 'errors'>('all');
   const supabase = createClient();
 
-  useEffect(() => {
-    fetchDashboard();
-    const interval = setInterval(fetchDashboard, 10000); // Refresh every 10 seconds
-    return () => clearInterval(interval);
-  }, []);
-
   const fetchDashboard = async () => {
     try {
       const { data, error } = await supabase.functions.invoke('florida-parcels-monitor', {
@@ -60,6 +64,12 @@ export default function FloridaParcelsMonitor() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchDashboard();
+    const interval = setInterval(fetchDashboard, 10000); // Refresh every 10 seconds
+    return () => clearInterval(interval);
+  }, [fetchDashboard]);
 
   const startProcessing = async (mode: 'priority' | 'all') => {
     try {

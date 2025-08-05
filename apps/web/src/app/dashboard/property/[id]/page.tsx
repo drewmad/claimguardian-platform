@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Individual property detail page with subtabs
+ * @purpose "Individual property detail page with subtabs"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "property", "detail", "page"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -156,33 +156,44 @@ function PropertyDetailContent() {
         if (error) throw error
         
         if (data) {
-          // Transform database data to display format
-          const addressString = data.address?.street || ''
+          // Transform new schema data to display format
+          const addressString = data.full_address || `${data.street_address}, ${data.city}, ${data.state} ${data.zip_code}`
           const addressParts = parseAddress(addressString)
           const transformedData = {
             id: data.id,
-            name: data.name || 'Unnamed Property',
+            name: data.metadata?.name || 'Unnamed Property',
             address: addressString,
-            addressParts,
-            type: data.type || 'Single Family Home',
-            value: data.value || 0,
-            sqft: data.square_feet || 0,
+            addressParts: {
+              street1: data.street_address,
+              street2: '',
+              city: data.city,
+              state: data.state,
+              zip: data.zip_code
+            },
+            type: data.property_type?.replace('_', ' ') || 'Single Family Home',
+            value: data.current_value || 0,
+            sqft: data.square_footage || 0,
             yearBuilt: data.year_built || new Date().getFullYear(),
-            bedrooms: data.details?.bedrooms || 0,
-            bathrooms: data.details?.bathrooms || 0,
-            lotSize: data.details?.lot_size || 0,
-            insurabilityScore: data.insurability_score || 0,
-            details: data.details
+            bedrooms: data.bedrooms || 0,
+            bathrooms: data.bathrooms || 0,
+            lotSize: data.lot_size_acres || 0,
+            insurabilityScore: data.metadata?.insurability_score || 0,
+            details: data.metadata,
+            // Temporal information
+            version: data.version,
+            version_id: data.version_id,
+            valid_from: data.valid_from,
+            is_current: data.is_current
           }
           setProperty(transformedData)
           setEditForm({
             name: transformedData.name || '',
-            street1: addressParts.street1 || '',
-            street2: addressParts.street2 || '',
-            city: addressParts.city || '',
-            state: addressParts.state || '',
-            zip: addressParts.zip || '',
-            county: data.details?.county || '',
+            street1: data.street_address || '',
+            street2: '',
+            city: data.city || '',
+            state: data.state || '',
+            zip: data.zip_code || '',
+            county: data.county_name || '',
             type: transformedData.type || '',
             year_built: transformedData.yearBuilt || 0,
             square_feet: transformedData.sqft || 0,

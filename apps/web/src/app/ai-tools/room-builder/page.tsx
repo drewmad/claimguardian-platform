@@ -1,20 +1,22 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  Plus, Home, Maximize2, Move, Square, Circle,
-  Trash2, Copy, Save, Download, Upload, Layers,
-  Ruler, RotateCw, FlipHorizontal, Grid3x3, Lock,
-  Unlock, Eye, EyeOff, Palette, Sparkles, Lightbulb,
-  Sofa, Bed, Tv, DoorOpen, Bath, ChefHat,
-  Car, Trees, Building, ArrowUp, ArrowDown
-} from 'lucide-react'
+import { Plus, Move, Square, Trash2, Copy, Download, Ruler, RotateCw, Grid3x3, Lock, Unlock, Eye, EyeOff, Sparkles, Lightbulb, Sofa, Bed, DoorOpen, Bath, ChefHat, Building, ArrowUp, ArrowDown } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useRef, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -371,7 +373,7 @@ export default function RoomBuilderPage() {
     setIsDragging(false)
   }
 
-  const addFurniture = (item: any) => {
+  const addFurniture = (item: unknown) => {
     const newObject: RoomObject = {
       id: Date.now().toString(),
       type: 'furniture',

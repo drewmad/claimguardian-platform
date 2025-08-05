@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 import { createClient } from '@/lib/supabase/server'
@@ -7,7 +17,7 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url)
     const timeRange = searchParams.get('range') || 'week'
     
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Calculate date range
     const now = new Date()
@@ -81,8 +91,8 @@ export async function GET(request: NextRequest) {
       stats.successRate = stats.requests > 0 ? (stats.successCount / stats.requests) * 100 : 0
       
       // Remove intermediate calculation fields
-      delete (stats as any).totalTime
-      delete (stats as any).successCount
+      delete (stats as Record<string, unknown>).totalTime
+      delete (stats as Record<string, unknown>).successCount
     })
 
     // If no real data, return mock data for demonstration

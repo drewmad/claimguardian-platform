@@ -1,0 +1,126 @@
+#!/bin/bash
+
+# Import Baker County - using exact same approach as Charlotte
+# This is a copy of the working Charlotte script with county code changed
+
+echo "Starting Baker County (12) import..."
+
+# First, extract Baker County (already done, but verify)
+echo "Verifying CSV extraction..."
+if [ ! -f "/tmp/baker_parcels.csv" ]; then
+    ogr2ogr -f CSV /tmp/baker_parcels.csv \
+        "/Users/madengineering/ClaimGuardian/data/florida/Cadastral_Statewide.gdb" \
+        CADASTRAL_DOR \
+        -where "CO_NO = 12" \
+        -progress
+fi
+
+# Check row count
+ROW_COUNT=$(wc -l < /tmp/baker_parcels.csv)
+echo "Total rows in CSV: $ROW_COUNT"
+
+# Extract the columns we need (same 53 columns as Charlotte)
+echo "Extracting required columns..."
+awk -F',' '
+BEGIN {
+    # Column mappings (same as Charlotte)
+    cols["co_no"] = 1
+    cols["parcel_id"] = 2
+    cols["file_t"] = 3
+    cols["asmnt_yr"] = 4
+    cols["bas_strt"] = 5
+    cols["atv_strt"] = 6
+    cols["grp_no"] = 7
+    cols["dor_uc"] = 8
+    cols["pa_uc"] = 9
+    cols["spass_cd"] = 10
+    cols["jv"] = 11
+    cols["jv_chng"] = 12
+    cols["jv_chng_cd"] = 13
+    cols["av_sd"] = 14
+    cols["av_nsd"] = 15
+    cols["tv_sd"] = 16
+    cols["tv_nsd"] = 17
+    cols["jv_hmstd"] = 18
+    cols["av_hmstd"] = 19
+    cols["jv_non_hms"] = 20
+    cols["lnd_val"] = 41
+    cols["imp_val"] = 42
+    cols["own_name"] = 74
+    cols["own_addr1"] = 75
+    cols["own_addr2"] = 76
+    cols["own_city"] = 77
+    cols["own_state"] = 78
+    cols["own_zipcd"] = 79
+    cols["phy_addr1"] = 99
+    cols["phy_addr2"] = 100
+    cols["phy_city"] = 101
+    cols["phy_zipcd"] = 102
+    cols["lnd_sqfoot"] = 52
+    cols["tot_lvg_ar"] = 49
+    cols["no_buldng"] = 53
+    cols["sale_prc1"] = 57
+    cols["sale_yr1"] = 58
+    cols["sale_mo1"] = 59
+    cols["or_book1"] = 60
+    cols["or_page1"] = 61
+    cols["clerk_no1"] = 62
+    cols["qual_cd1"] = 55
+    cols["sale_prc2"] = 67
+    cols["sale_yr2"] = 68
+    cols["sale_mo2"] = 69
+    cols["or_book2"] = 70
+    cols["or_page2"] = 71
+    cols["clerk_no2"] = 72
+    cols["qual_cd2"] = 65
+    cols["s_legal"] = 87
+    cols["twn"] = 88
+    cols["rng"] = 89
+    cols["sec"] = 90
+}
+NR==1 {
+    # Print header
+    print "co_no,parcel_id,file_t,asmnt_yr,bas_strt,atv_strt,grp_no,dor_uc,pa_uc,spass_cd,jv,jv_chng,jv_chng_cd,av_sd,av_nsd,tv_sd,tv_nsd,jv_hmstd,av_hmstd,jv_non_hms,lnd_val,imp_val,own_name,own_addr1,own_addr2,own_city,own_state,own_zipcd,phy_addr1,phy_addr2,phy_city,phy_zipcd,lnd_sqfoot,tot_lvg_ar,no_buldng,sale_prc1,sale_yr1,sale_mo1,or_book1,or_page1,clerk_no1,qual_cd1,sale_prc2,sale_yr2,sale_mo2,or_book2,or_page2,clerk_no2,qual_cd2,s_legal,twn,rng,sec"
+}
+NR>1 {
+    # Output the columns in order
+    printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+        $1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,$17,$18,$19,$20,
+        $41,$42,$74,$75,$76,$77,$78,$79,$99,$100,$101,$102,$52,$49,$53,
+        $57,$58,$59,$60,$61,$62,$55,$67,$68,$69,$70,$71,$72,$65,$87,$88,$89,$90
+}' /tmp/baker_parcels.csv > /tmp/baker_complete.csv
+
+echo "Rows in complete CSV: $(wc -l < /tmp/baker_complete.csv)"
+
+# Remove duplicates
+echo "Removing duplicates..."
+awk -F',' 'NR==1 || !seen[$2]++' /tmp/baker_complete.csv > /tmp/baker_unique.csv
+
+UNIQUE_COUNT=$(wc -l < /tmp/baker_unique.csv)
+echo "Unique parcels: $UNIQUE_COUNT"
+
+# Import to database using COPY
+echo "Importing to database..."
+PGPASSWORD='Hotdam2025a' psql \
+    -h db.tmlrvecuwgppbaynesji.supabase.co \
+    -p 5432 \
+    -U postgres \
+    -d postgres \
+    -c "\COPY florida_parcels(co_no,parcel_id,file_t,asmnt_yr,bas_strt,atv_strt,grp_no,dor_uc,pa_uc,spass_cd,jv,jv_chng,jv_chng_cd,av_sd,av_nsd,tv_sd,tv_nsd,jv_hmstd,av_hmstd,jv_non_hms,lnd_val,imp_val,own_name,own_addr1,own_addr2,own_city,own_state,own_zipcd,phy_addr1,phy_addr2,phy_city,phy_zipcd,lnd_sqfoot,tot_lvg_ar,no_buldng,sale_prc1,sale_yr1,sale_mo1,or_book1,or_page1,clerk_no1,qual_cd1,sale_prc2,sale_yr2,sale_mo2,or_book2,or_page2,clerk_no2,qual_cd2,s_legal,twn,rng,sec) FROM '/tmp/baker_unique.csv' WITH (FORMAT csv, HEADER true);"
+
+# Verify import
+echo "Verifying import..."
+IMPORTED=$(PGPASSWORD='Hotdam2025a' psql -h db.tmlrvecuwgppbaynesji.supabase.co -p 5432 -U postgres -d postgres -t -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = 12;")
+echo "Imported $IMPORTED parcels for Baker County"
+
+# Check completeness
+echo "Checking data completeness..."
+PGPASSWORD='Hotdam2025a' psql -h db.tmlrvecuwgppbaynesji.supabase.co -p 5432 -U postgres -d postgres -c "SELECT 
+    COUNT(*) as total_parcels,
+    COUNT(DISTINCT parcel_id) as unique_parcels,
+    COUNT(sale_prc1) as with_sale_price,
+    COUNT(own_name) as with_owner_name,
+    COUNT(phy_addr1) as with_address
+FROM florida_parcels WHERE co_no = 12;"
+
+echo "Baker County import complete!"

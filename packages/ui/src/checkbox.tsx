@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Provides a customizable checkbox component built on Radix UI Checkbox.
+ * @purpose "Provides a customizable checkbox component built on Radix UI Checkbox."
  * @owner frontend-team
  * @dependencies ["react", "@radix-ui/react-checkbox", "lucide-react", "./utils"]
  * @exports ["Checkbox"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity low
  * @tags ["component", "ui", "form", "checkbox"]
- * @status active
+ * @status stable
  * @notes Used for boolean input and form controls.
  */
 'use client'

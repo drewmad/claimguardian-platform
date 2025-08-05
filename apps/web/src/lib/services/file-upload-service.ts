@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Service for uploading files to Supabase Storage
+ * @purpose "Service for uploading files to Supabase Storage"
  * @owner data-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["fileUploadService"]
  * @complexity medium
  * @tags ["service", "storage", "file-upload"]
- * @status active
+ * @status stable
  */
 
 import type { StorageFile } from './types'

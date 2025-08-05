@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Centralized wrapper for server actions with error handling
+ * @purpose "Centralized wrapper for server actions with error handling"
+ * @dependencies ["@supabase/supabase-js"]
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 import { 

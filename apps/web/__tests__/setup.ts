@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Jest test setup configuration with mocks and utilities
+ * @purpose "Jest test setup configuration with mocks and utilities"
+ * @dependencies []
  * @owner platform-team
  * @complexity medium
  * @tags ["testing", "jest", "setup", "mocks"]
- * @status active
+ * @status stable
  */
 
 import '@testing-library/jest-dom'

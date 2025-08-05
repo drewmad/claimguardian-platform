@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Integration Guide for Claude Advanced Learning System
+ * @purpose "Integration Guide for Claude Advanced Learning System"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-advanced-analytics", "@/lib/claude/claude-enhanced-automation"]
  */
 
@@ -35,9 +35,9 @@ export async function executeTaskWithFullLearning<T>(
 ): Promise<{
   result: T
   analytics: {
-    prediction: any
-    optimizationsApplied: any[]
-    suggestions: any[]
+    prediction: unknown
+    optimizationsApplied: unknown[]
+    suggestions: unknown[]
     executionTime: number
     efficiency: number
   }
@@ -114,12 +114,12 @@ export async function processBatchWithLearning<T>(
     id: string
     type: string
     description: string
-    context: any
+    context: unknown
     function: () => Promise<T>
   }>
 ): Promise<{
   results: T[]
-  batchAnalytics: any
+  batchAnalytics: unknown
   consolidatedLearnings: string[]
 }> {
   logger.info('Starting batch processing with learning', { taskCount: tasks.length })

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Password reset page for users to set a new password
+ * @purpose "Password reset page for users to set a new password"
  * @owner auth-team
  * @dependencies ["react", "@/components/auth", "@/lib/logger"]
  * @exports ["default"]
  * @complexity medium
  * @tags ["auth", "password-reset", "page"]
- * @status active
+ * @status stable
  */
 'use client'
 

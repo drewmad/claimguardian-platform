@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Testing utilities with custom render function and mocks
+ * @purpose "Testing utilities with custom render function and mocks"
+ * @dependencies ["@jest/globals","@testing-library/react","@testing-library/user-event","react"]
  * @owner platform-team
  * @complexity medium
  * @tags ["testing", "utilities", "render", "mocks"]
- * @status active
+ * @status stable
  */
 
 import { jest } from '@jest/globals'

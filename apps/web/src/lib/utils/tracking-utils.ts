@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Utility functions for collecting user tracking data
+ * @purpose "Utility functions for collecting user tracking data"
  * @owner tracking-team
  * @dependencies ["ua-parser-js"]
  * @exports ["collectSignupTrackingData", "getDeviceFingerprint", "getGeolocation"]
  * @complexity medium
  * @tags ["tracking", "analytics", "signup"]
- * @status active
+ * @status stable
  */
 
 import { UAParser } from 'ua-parser-js'

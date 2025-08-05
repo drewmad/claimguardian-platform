@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Property image component with AI generation and fallbacks
+ * @purpose "Property image component with AI generation and fallbacks"
  * @owner frontend-team
  * @dependencies ["react", "next/image"]
  * @exports ["PropertyImage"]
  * @complexity medium
  * @tags ["property", "image", "ai-generated", "ui"]
- * @status active
+ * @status stable
  */
 'use client'
 

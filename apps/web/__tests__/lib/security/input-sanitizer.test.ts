@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for input sanitization security features
+ * @purpose "Tests for input sanitization security features"
+ * @dependencies ["@/lib"]
  * @owner platform-team
  * @complexity medium
  * @tags ["testing", "security", "sanitization", "xss-prevention"]
- * @status active
+ * @status stable
  */
 
 import { inputSanitizer } from '@/lib/security/input-sanitizer'

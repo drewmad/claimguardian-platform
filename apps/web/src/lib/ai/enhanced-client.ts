@@ -1,13 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Enhanced AI Client with database-driven model selection and A/B testing
+ * @purpose "Enhanced AI Client with database-driven model selection and A/B testing"
+ * @dependencies ["@/actions"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { AIClient } from './client'
 import { aiModelConfigService } from './model-config-service'
 import { aiCacheManager } from './ai-cache-manager'
+import { redisAICacheService } from './redis-cache-service'
+import { analyticsStream } from '../analytics/stream-processor'
+import { trackAIMetric } from '@/actions/ai-analytics'
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant'
@@ -57,33 +61,65 @@ export class EnhancedAIClient extends AIClient {
       // Apply custom prompts if configured
       const enhancedMessages = await this.applyCustomPrompts(request.messages, request.featureId)
 
-      // Check cache first
-      const cachedResponse = await aiCacheManager.getCachedResponse(
+      // Check Redis cache first (persistent cache)
+      const redisCachedResponse = await redisAICacheService.get(
         enhancedMessages,
         request.featureId,
-        selectedModel.selectedModel
+        selectedModel.selectedModel,
+        request.userId
       )
 
-      if (cachedResponse) {
-        response = cachedResponse.response
+      if (redisCachedResponse) {
+        response = redisCachedResponse.response
         success = true
         cacheHit = true
-        console.log(`Cache hit for ${request.featureId} with model ${selectedModel.selectedModel}`)
+        console.log(`Redis cache hit for ${request.featureId} with model ${selectedModel.selectedModel}`)
       } else {
-        // Try primary model first
-        try {
+        // Check in-memory cache as fallback
+        const memoryCachedResponse = await aiCacheManager.getCachedResponse(
+          enhancedMessages,
+          request.featureId,
+          selectedModel.selectedModel
+        )
+
+        if (memoryCachedResponse) {
+          response = memoryCachedResponse.response
+          success = true
+          cacheHit = true
+          console.log(`Memory cache hit for ${request.featureId} with model ${selectedModel.selectedModel}`)
+        } else {
+          // Try primary model first
+          try {
           response = await this.chat(enhancedMessages, selectedModel.provider)
           success = true
           
-          // Cache the response for future use
+          // Cache the response in both Redis and memory
           const estimatedCost = this.estimateCost(selectedModel.selectedModel, Date.now() - startTime)
+          const responseTime = Date.now() - startTime
+          const tokensUsed = Math.ceil(response.length / 4) // Rough estimate
+          
+          // Cache in Redis (persistent)
+          await redisAICacheService.set(
+            enhancedMessages,
+            request.featureId,
+            selectedModel.selectedModel,
+            response,
+            {
+              cost: estimatedCost,
+              tokensUsed,
+              responseTime
+            },
+            request.userId
+          )
+          
+          // Cache in memory (fast access)
           await aiCacheManager.cacheResponse(
             enhancedMessages,
             request.featureId,
             selectedModel.selectedModel,
             response,
             estimatedCost,
-            Date.now() - startTime
+            responseTime
           )
         } catch (primaryError) {
           console.warn(`Primary model ${selectedModel.selectedModel} failed, trying fallback:`, primaryError)
@@ -94,15 +130,33 @@ export class EnhancedAIClient extends AIClient {
             response = await this.chat(enhancedMessages, fallbackProvider)
             success = true
             
-            // Cache fallback response
+            // Cache fallback response in both systems
             const estimatedCost = this.estimateCost(selectedModel.fallbackModel, Date.now() - startTime)
+            const responseTime = Date.now() - startTime
+            const tokensUsed = Math.ceil(response.length / 4)
+            
+            // Cache in Redis
+            await redisAICacheService.set(
+              enhancedMessages,
+              request.featureId,
+              selectedModel.fallbackModel,
+              response,
+              {
+                cost: estimatedCost,
+                tokensUsed,
+                responseTime
+              },
+              request.userId
+            )
+            
+            // Cache in memory
             await aiCacheManager.cacheResponse(
               enhancedMessages,
               request.featureId,
               selectedModel.fallbackModel,
               response,
               estimatedCost,
-              Date.now() - startTime
+              responseTime
             )
             
             // Update model selection for next request
@@ -111,6 +165,7 @@ export class EnhancedAIClient extends AIClient {
           } else {
             throw primaryError
           }
+        }
         }
       }
 
@@ -296,7 +351,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return messages
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: any) => 
+      const activePrompt = result.data.prompts.find((p: unknown) => 
         p.feature_id === featureId && p.is_active
       )
 
@@ -337,7 +392,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return prompt
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: any) => 
+      const activePrompt = result.data.prompts.find((p: unknown) => 
         p.feature_id === featureId && p.is_active
       )
 
@@ -432,12 +487,87 @@ export class EnhancedAIClient extends AIClient {
     cacheHit?: boolean
   }): Promise<void> {
     try {
+      const cost = this.estimateCost(data.model, data.responseTime)
+      const provider = this.getProviderFromModel(data.model)
+      
+      // Track to analytics stream for real-time processing
+      analyticsStream.trackAIRequest({
+        featureId: data.featureId,
+        model: data.model,
+        provider,
+        responseTime: data.responseTime,
+        tokensUsed: Math.ceil(data.responseTime / 100) * 50, // Rough estimate
+        cost,
+        cacheHit: data.cacheHit || false,
+        success: data.success,
+        userId: data.userId,
+        error: data.error
+      })
+
+      // Track individual metrics for time-series analysis
+      await Promise.all([
+        trackAIMetric({
+          metricName: 'response_time',
+          metricValue: data.responseTime,
+          featureId: data.featureId,
+          modelName: data.model,
+          provider,
+          operationType: 'request',
+          success: data.success,
+          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          errorMessage: data.error,
+          metadata: {
+            tokensUsed: Math.ceil(data.responseTime / 100) * 50,
+            cacheHit: data.cacheHit || false,
+            cost
+          }
+        }),
+        trackAIMetric({
+          metricName: 'cost',
+          metricValue: cost,
+          featureId: data.featureId,
+          modelName: data.model,
+          provider,
+          operationType: 'request',
+          success: data.success,
+          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          metadata: {
+            responseTime: data.responseTime,
+            tokensUsed: Math.ceil(data.responseTime / 100) * 50
+          }
+        }),
+        data.success ? trackAIMetric({
+          metricName: 'success_rate',
+          metricValue: 1,
+          featureId: data.featureId,
+          modelName: data.model,
+          provider,
+          operationType: 'request',
+          success: true,
+          requestId: (data as unknown).requestId || `req_${Date.now()}`
+        }) : trackAIMetric({
+          metricName: 'error_rate',
+          metricValue: 1,
+          featureId: data.featureId,
+          modelName: data.model,
+          provider,
+          operationType: 'request',
+          success: false,
+          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          errorMessage: data.error
+        })
+      ]).catch(error => {
+        console.error('Failed to track time-series metrics:', error)
+        // Don't throw - continue with normal operation
+      })
+      
+      // Track to model config service for persistence
       await aiModelConfigService.trackModelUsage({
         featureId: data.featureId,
         model: data.model,
         success: data.success,
         responseTime: data.responseTime,
-        cost: this.estimateCost(data.model, data.responseTime),
+        cost,
         userId: data.userId
       })
 

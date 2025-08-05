@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose Semantic similarity matching for better learning application
+ * @purpose "Semantic similarity matching for better learning application"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */

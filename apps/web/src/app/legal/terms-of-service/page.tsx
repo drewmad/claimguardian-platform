@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Terms of Service page
+ * @purpose "Terms of Service page"
+ * @dependencies ["@/components","next"]
  * @owner legal-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'

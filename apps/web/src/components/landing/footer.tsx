@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Footer with comprehensive sitemap and company info
+ * @purpose "Footer with comprehensive sitemap and company info"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants"]
  * @exports ["Footer"]
  * @complexity medium
  * @tags ["landing", "footer", "navigation"]
- * @status active
+ * @status stable
  */
 'use client'
 

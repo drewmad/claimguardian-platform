@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import OpenAI from 'openai';
 
 import type { 
@@ -84,7 +94,7 @@ export class OpenAIProvider extends BaseAIProvider {
       const completion = await this.withRetry(async () => {
         return await this.client.chat.completions.create({
           model,
-          messages: request.messages.map((msg: any) => ({
+          messages: request.messages.map((msg) => ({
             role: msg.role,
             content: msg.content
           })),
@@ -179,13 +189,14 @@ export class OpenAIProvider extends BaseAIProvider {
     return (tokens / 1000) * prices.input; // Base cost for input tokens
   }
   
-  validateResponse(response: any): boolean {
+  validateResponse(response: unknown): boolean {
+    const res = response as OpenAI.Chat.Completions.ChatCompletion;
     return !!(
-      response &&
-      response.choices &&
-      response.choices[0] &&
-      response.choices[0].message &&
-      response.choices[0].message.content
+      res &&
+      res.choices &&
+      res.choices[0] &&
+      res.choices[0].message &&
+      res.choices[0].message.content
     );
   }
   

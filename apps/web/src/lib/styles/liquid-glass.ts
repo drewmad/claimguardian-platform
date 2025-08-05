@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Centralized liquid glass design system for consistent premium visual effects
+ * @purpose "Centralized liquid glass design system for consistent premium visual effects"
+ * @dependencies []
  * @owner frontend-team
- * @status active
+ * @status stable
  * @complexity medium
  */
 

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Login API endpoint with rate limiting and bot protection
+ * @purpose "Login API endpoint with rate limiting and bot protection"
+ * @dependencies ["@/lib","next"]
  * @owner security-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

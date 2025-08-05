@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Simplified cookie consent banner - single choice, fully compliant
+ * @purpose "Simplified cookie consent banner - single choice, fully compliant"
+ * @dependencies ["@/lib","lucide-react","react"]
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 'use client'
 

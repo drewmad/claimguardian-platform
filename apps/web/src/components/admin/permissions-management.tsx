@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Permission Management interface for configuring tier permissions and system access
+ * @purpose "Permission Management interface for configuring tier permissions and system access"
+ * @dependencies ["@/components","@/hooks","@/lib","react"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -37,42 +38,10 @@ import {
 } from '@/components/ui/dialog'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Label } from '@/components/ui/label'
-import { 
-  Shield, 
-  Settings, 
-  Users, 
-  Lock,
-  Unlock,
-  Edit,
-  Save,
-  RefreshCw,
-  Plus,
-  Trash2,
-  Eye,
-  EyeOff,
-  Zap,
-  Database,
-  Home,
-  FileText,
-  Crown,
-  TrendingUp,
-  AlertTriangle,
-  CheckCircle,
-  X,
-  Search,
-  Filter
-} from 'lucide-react'
+import { Shield, Users, Lock, Edit, Save, RefreshCw, Plus, Trash2, Zap, Home, Crown, TrendingUp, AlertTriangle, CheckCircle, X, Search, Filter } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'
-import { 
-  getAllTiers, 
-  createPermissionOverride,
-  getUserTierInfo,
-  updateTierPermissions,
-  getPermissionOverrides,
-  deletePermissionOverride,
-  getUserByEmail
-} from '@/actions/user-tiers'
+import { getAllTiers, createPermissionOverride, updateTierPermissions, getPermissionOverrides, deletePermissionOverride, getUserByEmail } from '@/actions/user-tiers'
 import { PermissionAnalyticsDashboard } from './permission-analytics-dashboard'
 
 interface TierPermissionMatrix {
@@ -416,7 +385,7 @@ export function PermissionsManagement() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: `Failed to update tier permissions: ${error.message}`,
+        description: `Failed to update tier permissions: ${(error as Error).message}`,
         variant: 'destructive'
       })
     }
@@ -440,7 +409,7 @@ export function PermissionsManagement() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: `Failed to delete permission override: ${error.message}`,
+        description: `Failed to delete permission override: ${(error as Error).message}`,
         variant: 'destructive'
       })
     }
@@ -489,7 +458,7 @@ export function PermissionsManagement() {
     } catch (error) {
       toast({
         title: 'Error',
-        description: `Failed to create permission override: ${error.message}`,
+        description: `Failed to create permission override: ${(error as Error).message}`,
         variant: 'destructive'
       })
     }

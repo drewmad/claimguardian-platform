@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { MessageSquare, Copy, RefreshCw, Sparkles, FileText, Phone, Mail, Calendar, AlertTriangle, Edit3, Target, Brain, Loader2 } from 'lucide-react'
@@ -175,7 +185,7 @@ Format as a complete email ready to send.`
         const response = await aiClient.chat([
           { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
           { role: 'user', content: prompt }
-        ], primaryProvider)
+        ], primaryProvider as 'openai' | 'gemini')
 
         // Track successful usage
         const responseTime = Date.now() - startTime
@@ -198,7 +208,7 @@ Format as a complete email ready to send.`
           const response = await aiClient.chat([
             { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
             { role: 'user', content: prompt }
-          ], fallbackProvider)
+          ], fallbackProvider as 'openai' | 'gemini')
 
           // Track fallback usage
           const responseTime = Date.now() - startTime
@@ -526,7 +536,7 @@ Format as a complete email ready to send.`
                         <li>• Always keep records of all communications</li>
                         <li>• Send important messages via certified mail</li>
                         <li>• Include dates, times, and reference numbers</li>
-                        <li>• Be specific about what you&apos;re requesting</li>
+                        <li>• Be specific about what you're requesting</li>
                       </ul>
                       <ul className="space-y-1">
                         <li>• Remain professional even when frustrated</li>

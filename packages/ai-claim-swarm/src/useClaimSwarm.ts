@@ -2,16 +2,17 @@
 
 /**
  * @fileMetadata
- * @purpose AI Claim Swarm Hook - State management for collaborative damage assessment
+ * @purpose "AI Claim Swarm Hook - State management for collaborative damage assessment"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/db", "@claimguardian/realtime", "react", "uuid"]
  * @exports ["useClaimSwarm"]
  * @complexity high
- * @status active
+ * @status stable
  */
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { v4 as uuid } from 'uuid'
+
 import { claimSwarmService } from './claimSwarmService'
 
 export interface SwarmMember {

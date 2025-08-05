@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Global modal state management using Zustand
+ * @purpose "Global modal state management using Zustand"
  * @owner frontend-team
  * @dependencies ["zustand"]
  * @exports ["useModalStore"]
  * @complexity low
  * @tags ["state", "modal", "zustand"]
- * @status active
+ * @status stable
  * @notes Manages modal visibility and data across the application
  */
 import { create } from 'zustand'

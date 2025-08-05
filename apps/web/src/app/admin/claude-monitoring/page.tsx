@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Claude Learning System Monitoring Dashboard Page
+ * @purpose "Claude Learning System Monitoring Dashboard Page"
+ * @dependencies ["@/components","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'

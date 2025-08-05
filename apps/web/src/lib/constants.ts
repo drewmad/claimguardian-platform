@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Defines the color palette for the ClaimGuardian application.
+ * @purpose "Defines the color palette for the ClaimGuardian application."
  * @owner frontend-team
  * @dependencies []
  * @exports ["COLORS"]
  * @complexity low
  * @tags ["constants", "styling", "colors"]
- * @status active
+ * @status stable
  */
 export const COLORS = {
   primary: '#06b6d4', // Cyan 500 - matches dashboard cyan-400

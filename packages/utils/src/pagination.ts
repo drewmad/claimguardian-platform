@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Pagination utilities for database queries
+ * @purpose "Pagination utilities for database queries"
+ * @dependencies []
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 /**

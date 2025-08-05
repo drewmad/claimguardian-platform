@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Renders the contact page with support information and team details.
+ * @purpose "Renders the contact page with support information and team details."
+ * @dependencies ["lucide-react"]
  * @owner support-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Contact support page with team information and support email
+ * @purpose "Contact support page with team information and support email"
  * @owner support-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["ContactPage"]
  * @complexity low
  * @tags ["contact", "support", "team"]
- * @status active
+ * @status stable
  */
 
 import { Mail, MapPin, Clock, Users } from 'lucide-react'

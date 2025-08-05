@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Debug page to diagnose authentication issues
+ * @purpose "Debug page to diagnose authentication issues"
+ * @dependencies ["@/components","@/lib","@claimguardian/ui","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 

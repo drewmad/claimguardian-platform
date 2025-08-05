@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for managing properties
- * @owner frontend-team
- * @dependencies ["@supabase/supabase-js"]
- * @exports ["getProperty", "updateProperty", "createProperty", "deleteProperty"]
- * @complexity medium
- * @tags ["server-action", "properties", "database"]
- * @status active
+ * @owner @frontend-team
+ * @purpose "Server actions for managing properties with temporal digital twin support"
+ * @dependencies ["@supabase/supabase-js", "@claimguardian/db", "@claimguardian/utils"]
+ * @status stable
+ * @supabase-integration database
+ * @insurance-context properties
+ * @agent-hints "Uses new core.properties schema with temporal tracking - updates create new versions"
  */
 'use server'
 
@@ -22,23 +22,29 @@ import { toError } from '@claimguardian/utils'
 
 import { createClient } from '@/lib/supabase/server'
 import { updatePropertySchema } from '@/lib/validation/schemas'
+import type { Database, Property } from '@claimguardian/db'
 
 interface PropertyData {
-  name: string
-  address: string
-  type: string
-  year_built: number
-  square_feet: number
-  details: {
-    bedrooms: number
-    bathrooms: number
-    lot_size: number
-  }
+  street_address: string
+  city: string
+  state?: string
+  zip_code: string
+  county_name?: string
+  property_type: 'single_family' | 'townhouse' | 'condo' | 'multi_family' | 'commercial' | 'land'
+  year_built?: number
+  square_footage?: number
+  bedrooms?: number
+  bathrooms?: number
+  lot_size_acres?: number
+  current_value?: number
+  purchase_price?: number
+  purchase_date?: string
+  metadata?: Record<string, unknown>
 }
 
 export async function getProperty({ propertyId }: { propertyId: string }) {
   try {
-    const supabase = await await createClient()
+    const supabase = await createClient()
     
     // Get authenticated user first
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -46,11 +52,13 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
       throw new Error('Not authenticated')
     }
     
+    // Get current version of the property
     const { data, error } = await supabase
       .from('properties')
       .select('*')
       .eq('id', propertyId)
       .eq('user_id', user.id) // Ensure user owns the property
+      .eq('is_current', true) // Only get current version
       .single()
     
     if (error) throw error
@@ -62,25 +70,63 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
   }
 }
 
-interface PropertyRecord {
-  id: string
-  user_id: string
-  name: string
-  address: string
-  type: string
-  year_built: number
-  square_feet: number
-  value: number | null
-  insurability_score: number | null
-  is_primary: boolean | null
-  details: Record<string, unknown>
-  created_at: string
-  updated_at: string
+// Get property history for temporal tracking
+export async function getPropertyHistory({ propertyId }: { propertyId: string }) {
+  try {
+    const supabase = await createClient()
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      throw new Error('Not authenticated')
+    }
+    
+    // Use the temporal function to get history
+    const { data, error } = await supabase
+      .rpc('get_property_history', { property_id: propertyId })
+    
+    if (error) throw error
+    
+    // Filter to only properties owned by user
+    const userProperties = data?.filter((prop: Property) => prop.user_id === user.id) || []
+    
+    return { data: userProperties, error: null }
+  } catch (error) {
+    logger.error('Error fetching property history:', toError(error))
+    return { data: null, error: error as Error }
+  }
+}
+
+// Get property at specific time
+export async function getPropertyAtTime({ propertyId, queryTime }: { propertyId: string, queryTime: string }) {
+  try {
+    const supabase = await createClient()
+    
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      throw new Error('Not authenticated')
+    }
+    
+    const { data, error } = await supabase
+      .rpc('get_property_at_time', { 
+        property_id: propertyId, 
+        query_time: queryTime 
+      })
+    
+    if (error) throw error
+    
+    // Ensure user owns the property
+    const userProperty = data?.find((prop: Property) => prop.user_id === user.id)
+    
+    return { data: userProperty || null, error: null }
+  } catch (error) {
+    logger.error('Error fetching property at time:', toError(error))
+    return { data: null, error: error as Error }
+  }
 }
 
 export async function getProperties(params?: PaginationParams) {
   try {
-    const supabase = await await createClient()
+    const supabase = await createClient()
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError) {
@@ -96,17 +142,19 @@ export async function getProperties(params?: PaginationParams) {
     // Normalize pagination parameters
     const { page, limit, offset } = normalizePaginationParams(params)
     
-    // Get total count
+    // Get total count of current properties only
     const { count } = await supabase
       .from('properties')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', user.id)
+      .eq('is_current', true)
     
-    // Get paginated data
+    // Get paginated data - current versions only
     const { data, error } = await supabase
       .from('properties')
       .select('*')
       .eq('user_id', user.id)
+      .eq('is_current', true) // Only get current versions
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1)
     
@@ -116,7 +164,7 @@ export async function getProperties(params?: PaginationParams) {
     }
     
     // Create paginated response
-    const paginatedResponse: PaginatedResponse<PropertyRecord> = {
+    const paginatedResponse: PaginatedResponse<Property> = {
       data: data || [],
       meta: createPaginationMeta(page, limit, count || 0)
     }
@@ -133,10 +181,10 @@ export async function updateProperty(params: unknown) {
     // Validate input
     const { propertyId, updates } = updatePropertySchema.parse(params)
     
-    const supabase = await await createClient()
+    const supabase = await createClient()
     
     // Debug logging
-    logger.info('[UPDATE PROPERTY] Starting update for property', { propertyId })
+    logger.info('[UPDATE PROPERTY] Starting temporal update for property', { propertyId })
     logger.info('[UPDATE PROPERTY] Updates', { updates })
     
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -154,7 +202,6 @@ export async function updateProperty(params: unknown) {
     // Handle demo property case - it doesn't exist in database
     if (propertyId === 'demo-property-uuid') {
       logger.info('[UPDATE PROPERTY] Demo property detected - skipping database update')
-      // For demo property, just return success without database operation
       return { 
         data: { 
           id: propertyId, 
@@ -165,12 +212,13 @@ export async function updateProperty(params: unknown) {
       }
     }
     
-    // First check if property exists and user owns it
+    // First check if property exists and user owns it (current version only)
     const { data: existingProperty, error: checkError } = await supabase
       .from('properties')
-      .select('id, user_id, details')
+      .select('id, user_id, metadata')
       .eq('id', propertyId)
       .eq('user_id', user.id)
+      .eq('is_current', true)
       .single()
     
     if (checkError) {
@@ -183,48 +231,57 @@ export async function updateProperty(params: unknown) {
       throw new Error('Property not found or you do not have permission to update it')
     }
     
-    logger.info('[UPDATE PROPERTY] Property found, proceeding with update')
+    logger.info('[UPDATE PROPERTY] Property found, proceeding with temporal update')
     
-    // Format the data for the database
-    const dbUpdates: Record<string, unknown> = {
-      updated_at: new Date().toISOString()
-    }
+    // Format the data for temporal update (only include changed fields)
+    const temporalUpdates: Record<string, any> = {}
     
-    if (updates.name !== undefined) dbUpdates.name = updates.name
-    if (updates.address !== undefined) dbUpdates.address = { street: updates.address }
-    if (updates.type !== undefined) dbUpdates.type = updates.type
-    if (updates.year_built !== undefined) dbUpdates.year_built = updates.year_built
-    if (updates.square_feet !== undefined) dbUpdates.square_feet = updates.square_feet
+    // Map old field names to new schema
+    if (updates.name !== undefined) temporalUpdates.metadata = { ...existingProperty.metadata, name: updates.name }
+    if (updates.address !== undefined) temporalUpdates.street_address = updates.address
+    if (updates.type !== undefined) temporalUpdates.property_type = updates.type
+    if (updates.year_built !== undefined) temporalUpdates.year_built = updates.year_built
+    if (updates.square_feet !== undefined) temporalUpdates.square_footage = updates.square_feet
     
-    // Handle nested details - merge with existing
+    // Handle nested details in metadata
     if (updates.details) {
-      dbUpdates.details = {
-        ...(existingProperty.details || {}),
-        ...updates.details
+      temporalUpdates.metadata = {
+        ...(existingProperty.metadata || {}),
+        details: updates.details
       }
     }
     
-    logger.info('[UPDATE PROPERTY] Database updates:', dbUpdates)
+    logger.info('[UPDATE PROPERTY] Temporal updates:', temporalUpdates)
     
-    const { data, error } = await supabase
-      .from('properties')
-      .update(dbUpdates)
-      .eq('id', propertyId)
-      .eq('user_id', user.id) // Ensure user owns the property
-      .select()
-      .single()
+    // Use the working temporal update function - this creates a new version
+    const { data: versionId, error } = await supabase
+      .rpc('update_property_simple', {
+        property_id: propertyId,
+        new_data: temporalUpdates
+      })
     
     if (error) {
-      logger.error('[UPDATE PROPERTY] Database update error:', error)
+      logger.error('[UPDATE PROPERTY] Temporal update error:', error)
       throw new Error(`Failed to update property: ${error.message}`)
     }
     
-    logger.info('[UPDATE PROPERTY] Update successful:', data)
+    logger.info('[UPDATE PROPERTY] Temporal update successful, new version:', versionId)
+    
+    // Get the new current version to return
+    const { data: updatedProperty, error: fetchError } = await supabase
+      .from('properties')
+      .select('*')
+      .eq('version_id', versionId)
+      .single()
+    
+    if (fetchError) {
+      logger.warn('[UPDATE PROPERTY] Could not fetch updated property:', fetchError)
+    }
     
     revalidatePath('/dashboard/property')
     revalidatePath(`/dashboard/property/${propertyId}`)
     
-    return { data, error: null }
+    return { data: updatedProperty || { id: propertyId, version_id: versionId }, error: null }
   } catch (error) {
     logger.error('[UPDATE PROPERTY] Error updating property:', error)
     return { data: null, error: error as Error }
@@ -233,21 +290,33 @@ export async function updateProperty(params: unknown) {
 
 export async function createProperty({ propertyData }: { propertyData: PropertyData }) {
   try {
-    const supabase = await await createClient()
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     
+    // Insert directly into properties (via view to core.properties)
+    // Initial version will have default temporal fields set by database defaults
     const { data, error } = await supabase
       .from('properties')
       .insert({
         user_id: user.id,
-        name: propertyData.name,
-        address: { street: propertyData.address },
-        type: propertyData.type,
+        street_address: propertyData.street_address,
+        city: propertyData.city,
+        state: propertyData.state || 'FL',
+        zip_code: propertyData.zip_code,
+        county_name: propertyData.county_name,
+        property_type: propertyData.property_type,
         year_built: propertyData.year_built,
-        square_feet: propertyData.square_feet,
-        details: propertyData.details
+        square_footage: propertyData.square_footage,
+        bedrooms: propertyData.bedrooms,
+        bathrooms: propertyData.bathrooms,
+        lot_size_acres: propertyData.lot_size_acres,
+        current_value: propertyData.current_value,
+        purchase_price: propertyData.purchase_price,
+        purchase_date: propertyData.purchase_date,
+        is_current: true, // Set as current version for temporal tracking
+        metadata: {} // Initialize empty metadata
       })
       .select()
       .single()
@@ -265,18 +334,27 @@ export async function createProperty({ propertyData }: { propertyData: PropertyD
 
 export async function deleteProperty({ propertyId }: { propertyId: string }) {
   try {
-    const supabase = await await createClient()
+    const supabase = await createClient()
     
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Not authenticated')
     
+    // In temporal system, we don't physically delete records
+    // Instead, we mark the current version as invalid by setting valid_to = now()
     const { error } = await supabase
-      .from('properties')
-      .delete()
+      .from('properties') 
+      .update({ 
+        valid_to: new Date().toISOString(),
+        is_current: false 
+      })
       .eq('id', propertyId)
       .eq('user_id', user.id) // Ensure user owns the property
+      .eq('is_current', true) // Only update current version
     
     if (error) throw error
+    
+    // Also need to update the materialized view for current properties
+    await supabase.rpc('refresh_current_properties')
     
     revalidatePath('/dashboard/property')
     

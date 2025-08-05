@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose TypeScript types for legal compliance and consent tracking
+ * @purpose "TypeScript types for legal compliance and consent tracking"
+ * @dependencies []
  * @owner legal-team
- * @status active
+ * @status stable
  */
 
 export type LegalDocumentType = 

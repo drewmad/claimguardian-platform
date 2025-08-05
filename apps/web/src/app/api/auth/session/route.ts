@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose API route to check authentication session status
+ * @purpose "API route to check authentication session status"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { NextResponse } from 'next/server'

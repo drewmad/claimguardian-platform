@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Compliance dashboard for monitoring consent and data compliance
+ * @purpose "Compliance dashboard for monitoring consent and data compliance"
+ * @dependencies ["@/actions","@/components","@claimguardian/ui","lucide-react","react"]
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 'use client'
 

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Enhanced signup modal with comprehensive data capture
+ * @purpose "Enhanced signup modal with comprehensive data capture"
+ * @dependencies ["@/components","@/hooks","@/lib","@/stores","@claimguardian/db"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -268,7 +269,7 @@ export function EnhancedSignupModal() {
             
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
               <p className="text-blue-300 font-medium mb-2">
-                ✉️ We&apos;ve sent a confirmation email to:
+                ✉️ We've sent a confirmation email to:
               </p>
               <p className="text-white font-semibold">
                 {formData.email}
@@ -288,7 +289,7 @@ export function EnhancedSignupModal() {
             
             <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
               <p className="text-xs text-slate-400">
-                Can&apos;t find the email? Check your spam folder or click below to resend.
+                Can't find the email? Check your spam folder or click below to resend.
               </p>
               <button
                 onClick={handleResendEmail}
@@ -536,7 +537,7 @@ export function EnhancedSignupModal() {
                 {!hasAllRequiredConsents && (
                   <div className="mb-3 text-xs text-amber-400 flex items-center gap-1">
                     <AlertCircle className="w-3 h-3" />
-                    <span>All documents marked &quot;REQUIRED&quot; must be accepted</span>
+                    <span>All documents marked "REQUIRED" must be accepted</span>
                   </div>
                 )}
                 <LegalConsentForm

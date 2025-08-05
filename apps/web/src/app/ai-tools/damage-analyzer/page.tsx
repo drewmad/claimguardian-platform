@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import {
@@ -32,10 +42,13 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { AIBreadcrumb } from '@/components/ui/breadcrumb'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
+import { FeatureLimitBadge } from '@/components/subscription/subscription-gate'
+import { useSubscription } from '@/hooks/use-subscription'
 
 // --- MOCK DATA AND TYPES ---
 
@@ -145,6 +158,7 @@ const MOCK_ANALYSIS: { [key: string]: AnalysisResult } = {
 // --- UI COMPONENTS ---
 
 function DamageAnalyzerContent() {
+  const subscription = useSubscription()
   const [step, setStep] = useState<'select_policy' | 'upload' | 'capture' | 'analyzing' | 'result'>('select_policy')
   const [policies, setPolicies] = useState<Policy[]>([])
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null)
@@ -203,6 +217,13 @@ function DamageAnalyzerContent() {
   }
 
   const startAnalysis = async (file: File) => {
+    // Check subscription limits before analyzing
+    const access = subscription.checkFeatureAccess('aiRequests', 1)
+    if (!access.allowed) {
+      toast.error(access.message || 'AI request limit reached')
+      return
+    }
+    
     setStep('analyzing')
     try {
       // Convert file to base64 for AI analysis
@@ -257,6 +278,9 @@ Please analyze the damage carefully, considering the policy context provided.`,
       setQualityFeedback({ helpful: null, accuracy: null, comment: '' })
       setFeedbackSubmitted(false)
       
+      // Refresh subscription usage after successful analysis
+      await subscription.refresh()
+      
       logger.info('Damage analysis completed successfully with enhanced AI client', { abTest: mockAbTestInfo })
 
     } catch (error) {
@@ -293,7 +317,7 @@ Please analyze the damage carefully, considering the policy context provided.`,
     setFeedbackSubmitted(false)
   }
 
-  const handleQualityFeedback = async (type: 'helpful' | 'accuracy', value: boolean | number) => {
+  const handleQualityFeedback = async (type: 'helpful' | 'accuracy' | 'comment', value: boolean | number | string) => {
     setQualityFeedback(prev => ({
       ...prev,
       [type]: value
@@ -366,6 +390,9 @@ Please analyze the damage carefully, considering the policy context provided.`,
           <p className="text-lg text-gray-400 mt-2 max-w-3xl mx-auto">
             Upload a photo of property damage for an instant AI analysis, including severity, description, and coverage details from your policy.
           </p>
+          <div className="mt-4">
+            <FeatureLimitBadge feature="aiRequests" className="text-gray-400" />
+          </div>
         </div>
         <Card className="bg-gray-800/50 border border-gray-700 shadow-2xl">
           <CardContent className="p-8">
@@ -450,7 +477,7 @@ function ResultStep({
   abTestInfo: { testId: string; variant: 'A' | 'B'; modelUsed: string } | null
   qualityFeedback: { helpful: boolean | null; accuracy: number | null; comment: string }
   feedbackSubmitted: boolean
-  onQualityFeedback: (type: 'helpful' | 'accuracy', value: boolean | number) => void
+  onQualityFeedback: (type: 'helpful' | 'accuracy' | 'comment', value: boolean | number | string) => void
   onSubmitFeedback: () => void
 }) {
   const getSeverityColor = (severity: string) => {
@@ -647,7 +674,7 @@ function ResultStep({
                   <p className="text-sm text-gray-400 mb-2">Additional feedback (optional):</p>
                   <textarea
                     value={qualityFeedback.comment}
-                    onChange={(e) => setQualityFeedback(prev => ({ ...prev, comment: e.target.value }))}
+                    onChange={(e) => onQualityFeedback('comment', e.target.value)}
                     placeholder="Any additional thoughts on the analysis quality..."
                     className="w-full bg-gray-700 border-gray-600 text-white rounded-md px-3 py-2 text-sm resize-none"
                     rows={2}

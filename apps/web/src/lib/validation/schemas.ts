@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive security-focused validation schemas for all critical flows
+ * @purpose "Comprehensive security-focused validation schemas for all critical flows"
+ * @dependencies ["zod"]
  * @owner security-team
  * @complexity high
  * @tags ["validation", "security", "schemas", "zod"]
- * @status active
+ * @status stable
  */
 
 import { z } from 'zod'

@@ -1,13 +1,13 @@
 // @ts-nocheck
 /**
  * @fileMetadata
- * @purpose Claude-specific error logging and learning system
+ * @purpose "Claude-specific error logging and learning system"
  * @owner ai-team
  * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
  * @exports ["claudeErrorLogger", "ClaudeErrorContext", "ClaudeError"]
  * @complexity high
  * @tags ["claude", "error", "learning", "ai", "optimization"]
- * @status active
+ * @status stable
  */
 
 import { createClient } from '@supabase/supabase-js'
@@ -166,7 +166,7 @@ class ClaudeErrorLogger {
     if (!this.isEnabled || !this.supabase) return
 
     try {
-      const updateData: any = {
+      const updateData: unknown = {
         resolved: true,
         resolution_method: resolutionMethod,
         updated_at: new Date().toISOString()
@@ -430,7 +430,7 @@ class ClaudeErrorLogger {
   /**
    * Analyze error patterns for insights
    */
-  private analyzePatterns(errors: any[]): any[] {
+  private analyzePatterns(errors: unknown[]): unknown[] {
     const patterns = new Map()
     
     errors.forEach(error => {

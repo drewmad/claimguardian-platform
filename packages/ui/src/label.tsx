@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Provides a customizable label component.
+ * @purpose "Provides a customizable label component."
  * @owner frontend-team
  * @dependencies ["react", "./utils"]
  * @exports ["Label"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-07-03T23:07:33-04:00
  * @complexity low
  * @tags ["component", "ui", "form", "label"]
- * @status active
+ * @status stable
  * @notes Used to associate text labels with form controls.
  */
 'use client'

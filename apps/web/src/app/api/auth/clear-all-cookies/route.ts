@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Clear all auth-related cookies to fix refresh token issues
+ * @purpose "Clear all auth-related cookies to fix refresh token issues"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { cookies } from 'next/headers'

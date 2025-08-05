@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server actions for sending emails
+ * @purpose "Server actions for sending emails"
+ * @dependencies ["@/lib"]
  * @owner communications-team
- * @status active
+ * @status stable
  */
 
 'use server'

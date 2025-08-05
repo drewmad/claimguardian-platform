@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Shared configuration constants and utilities
+ * @purpose "Shared configuration constants and utilities"
+ * @dependencies []
  * @owner platform-team
- * @status active
+ * @status stable
  */
 
 // Environment configurations

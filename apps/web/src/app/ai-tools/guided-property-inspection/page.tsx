@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { 
@@ -454,7 +464,7 @@ export default function GuidedPropertyInspectionPage() {
                 <div className="space-y-6">
                   <Card className="bg-gray-800 border-gray-700">
                     <CardHeader>
-                      <CardTitle className="text-white">What You&apos;ll Need</CardTitle>
+                      <CardTitle className="text-white">What You'll Need</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <ul className="space-y-2 text-sm">

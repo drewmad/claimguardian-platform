@@ -1,23 +1,16 @@
 /**
  * @fileMetadata
- * @purpose Home maintenance tracking and scheduling dashboard
+ * @purpose "Home maintenance tracking and scheduling dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "maintenance", "scheduling"]
- * @status active
+ * @status stable
  */
 'use client'
 
-import { 
-  Calendar, Plus, Clock, CheckCircle, AlertCircle, XCircle,
-  Wrench, DollarSign, FileText, User, ChevronRight,
-  Filter, Download, Bell, BarChart,
-  Home, Shield, Edit,
-  Wind, Droplets, Zap, Settings,
-  type LucideIcon
-} from 'lucide-react'
+import { Calendar, Plus, Clock, CheckCircle, AlertCircle, XCircle, Wrench, DollarSign, FileText, User, ChevronRight, Filter, Download, Bell, BarChart, Home, Shield, Edit, Wind, Droplets, Zap, Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 

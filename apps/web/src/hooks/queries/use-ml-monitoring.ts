@@ -1,4 +1,15 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { useQuery, useMutation } from '@tanstack/react-query'
+import { Json } from '@claimguardian/db'
 
 import { createClient } from '@/lib/supabase/client'
 
@@ -37,7 +48,7 @@ interface FederatedLearningRound {
   modelFamily: string
   roundNumber: number
   status: string
-  participatingNodes: any[]
+  participatingNodes: Json[]
   convergenceDelta: number
   startedAt: string
   completedAt?: string
@@ -146,7 +157,7 @@ export function usePromoteModel() {
       trafficPercentage = 100
     }: {
       modelVersionId: string
-      deploymentConfig: any
+      deploymentConfig: Json
       trafficPercentage?: number
     }) => {
       const { data, error } = await supabase

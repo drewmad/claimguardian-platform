@@ -1,10 +1,10 @@
 /*
  * @fileMetadata
- * @purpose ESLint configuration for the utility package.
+ * @purpose "ESLint configuration for the utility package."
  * @owner frontend-team
  * @lastModifiedBy Drew Madison
  * @lastModifiedDate 2025-07-03T21:08:02-04:00
- * @status active
+ * @status stable
  * @notes Defines linting rules specific to utility functions, allowing any types for flexibility.
  */
 import js from '@eslint/js'

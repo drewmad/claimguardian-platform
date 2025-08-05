@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Input sanitization service to prevent XSS and injection attacks
+ * @purpose "Input sanitization service to prevent XSS and injection attacks"
+ * @dependencies ["dompurify","validator"]
  * @owner platform-team
  * @complexity medium
  * @tags ["security", "sanitization", "xss-prevention"]
- * @status active
+ * @status stable
  */
 
 import DOMPurify from 'dompurify'
@@ -68,8 +69,8 @@ class InputSanitizer {
     // Escape dangerous characters
     return input
       .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
       .replace(/"/g, '"')
       .replace(/'/g, '&#x27;')
       .replace(/\//g, '&#x2F;')

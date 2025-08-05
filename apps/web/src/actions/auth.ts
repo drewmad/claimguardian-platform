@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Authentication server actions for user management
+ * @purpose "Authentication server actions for user management"
  * @owner auth-team
  * @dependencies ["@claimguardian/db", "next/headers"]
  * @exports ["signUp", "signIn", "signOut", "resetPassword"]
  * @complexity medium
  * @tags ["server-action", "auth", "user-management"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:00:00Z
  */
@@ -15,12 +15,12 @@
 
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { cookies, headers } from 'next/headers'
+import { headers } from 'next/headers'
 
 export interface AuthResult {
   success: boolean
   error?: string
-  data?: any
+  data?: unknown
 }
 
 export async function signUp(formData: FormData): Promise<AuthResult> {

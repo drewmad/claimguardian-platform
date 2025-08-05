@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { 
@@ -378,7 +388,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-text-primary">Welcome to ClaimGuardian</h1>
-            <p className="text-text-secondary mt-2">Let&apos;s set up your account in just a few steps</p>
+            <p className="text-text-secondary mt-2">Let's set up your account in just a few steps</p>
           </div>
           <button
             onClick={skipOnboarding}
@@ -674,7 +684,7 @@ function UserProfileStep({
         <div className="space-y-8">
           <div className="text-center">
             <h2 className="text-3xl font-bold text-text-primary mb-3">Welcome to ClaimGuardian</h2>
-            <p className="text-text-secondary text-lg">Let&apos;s personalize your experience</p>
+            <p className="text-text-secondary text-lg">Let's personalize your experience</p>
           </div>
 
           <div className="space-y-6">
@@ -1382,8 +1392,8 @@ function QuickStartStep({
   return (
     <div className="space-y-8">
       <div className="text-center">
-        <h2 className="text-3xl font-bold text-text-primary mb-3">You&apos;re all set!</h2>
-        <p className="text-text-secondary text-lg">Here&apos;s what you can do right now</p>
+        <h2 className="text-3xl font-bold text-text-primary mb-3">You're all set!</h2>
+        <p className="text-text-secondary text-lg">Here's what you can do right now</p>
       </div>
 
       <div className="space-y-4">

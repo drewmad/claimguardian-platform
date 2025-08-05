@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Quality Scores API endpoints for admin panel
+ * @purpose "Quality Scores API endpoints for admin panel"
+ * @dependencies ["@/lib","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

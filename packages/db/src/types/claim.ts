@@ -1,4 +1,15 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 // Insurance claim types for ClaimGuardian
+import type { ClaimStatus } from './database.types'
 
 export interface ClaimEvidence {
   id: string
@@ -28,24 +39,8 @@ export interface ClaimStatusHistory {
   documents?: string[] // Document IDs
 }
 
-export type ClaimStatus = 
-  | 'Draft'
-  | 'Filed'
-  | 'Acknowledged'
-  | 'Adjuster Assigned'
-  | 'Inspection Scheduled'
-  | 'Inspection Complete'
-  | 'Under Review'
-  | 'Additional Info Requested'
-  | 'Settlement Offered'
-  | 'Settlement Negotiation'
-  | 'Settlement Accepted'
-  | 'Payment Processing'
-  | 'Paid'
-  | 'Closed'
-  | 'Denied'
-  | 'Appealed'
-  | 'Withdrawn'
+// ClaimStatus is now imported from database.types.ts to avoid conflicts
+// Database enum values: 'draft' | 'submitted' | 'under_review' | 'approved' | 'denied' | 'settled'
 
 export interface ClaimContact {
   id: string

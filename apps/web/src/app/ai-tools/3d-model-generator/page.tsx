@@ -1,24 +1,19 @@
 /**
  * @fileMetadata
- * @purpose 3D model generator from multiple images using AI photogrammetry
+ * @purpose "3D model generator from multiple images using AI photogrammetry"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react", "@react-three/fiber", "@react-three/drei", "three"]
  * @exports ["default"]
  * @complexity high
  * @tags ["ai", "3d-modeling", "image-processing", "reconstruction", "photogrammetry"]
- * @status active
+ * @status stable
  */
 'use client'
 
-import { 
-  Upload, Camera, RotateCcw, Download, Eye, Grid, 
-  Play, Pause, Settings, Info, CheckCircle,
-  X, Move3D, Zap, Sparkles, Target, Layers,
-  Volume2, VolumeX, Maximize, ZoomIn, ZoomOut, AlertCircle
-} from 'lucide-react'
+import { Upload, Camera, Download, Eye, Grid, Play, Pause, Settings, Info, CheckCircle, X, Move3D, Zap, Sparkles, Layers, Maximize, AlertCircle } from 'lucide-react'
 import { useState, useRef, useEffect, Suspense } from 'react'
 import dynamic from 'next/dynamic'
-import type * as THREE from 'three'
+import * as THREE from 'three'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -78,14 +73,14 @@ const OrbitControls = dynamic(
   { ssr: false }
 )
 
+import { useGLTF } from '@react-three/drei'
+
 const ModelViewerContent = dynamic(
   () => Promise.resolve(({ url, viewMode, autoRotate }: ModelViewerProps) => {
-    const { useGLTF } = require('@react-three/drei')
     const { scene } = useGLTF(url)
-    const THREE = require('three')
     
     useEffect(() => {
-      scene.traverse((child: any) => {
+      scene.traverse((child: unknown) => {
         if (child instanceof THREE.Mesh) {
           child.material.wireframe = viewMode === 'wireframe'
           // For textured vs 3d, assume 3d is shaded, textured is with maps

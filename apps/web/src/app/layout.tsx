@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Root layout component for the Next.js application, defining the HTML structure, metadata, and global styles.
+ * @purpose "Root layout component for the Next.js application, defining the HTML structure, metadata, and global styles."
  * @owner frontend-team
  * @dependencies ["next", "react"]
  * @exports ["metadata", "RootLayout"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-07-03T22:58:17-04:00
  * @complexity low
  * @tags ["layout", "root", "nextjs"]
- * @status active
+ * @status stable
  * @notes Defines the basic HTML structure and imports global CSS.
  */
 import type { Metadata, Viewport } from 'next'

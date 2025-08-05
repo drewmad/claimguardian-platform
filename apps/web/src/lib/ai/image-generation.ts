@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose AI image generation service for property images
+ * @purpose "AI image generation service for property images"
  * @owner frontend-team
  * @dependencies ["openai"]
  * @exports ["generatePropertyImage", "getPropertyImagePrompt", "PropertyImageStyle"]
  * @complexity medium
  * @tags ["ai", "image-generation", "property", "openai"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'

@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Production-safe logging system
+ * @purpose "Production-safe logging system"
+ * @dependencies []
  * @owner platform-team
  * @complexity medium
  * @tags ["logging", "production", "monitoring"]
- * @status active
+ * @status stable
  */
 
 type LogLevel = 'debug' | 'info' | 'warn' | 'error'
@@ -138,7 +139,7 @@ class ProductionLogger {
     }
   }
 
-  debug(message: string, context?: any, component?: string): void {
+  debug(message: string, context?: unknown, component?: string): void {
     this.writeLog({
       level: 'debug',
       message,
@@ -148,7 +149,7 @@ class ProductionLogger {
     })
   }
 
-  info(message: string, context?: any, component?: string): void {
+  info(message: string, context?: unknown, component?: string): void {
     this.writeLog({
       level: 'info',
       message,
@@ -158,7 +159,7 @@ class ProductionLogger {
     })
   }
 
-  warn(message: string, context?: any, component?: string): void {
+  warn(message: string, context?: unknown, component?: string): void {
     this.writeLog({
       level: 'warn',
       message,
@@ -168,7 +169,7 @@ class ProductionLogger {
     })
   }
 
-  error(message: string, error?: any, component?: string): void {
+  error(message: string, error?: unknown, component?: string): void {
     // Handle backwards compatibility - error can be Error object or any value
     const actualError = error instanceof Error ? error : (error ? new Error(String(error)) : undefined)
     
@@ -213,7 +214,7 @@ export const logger = new ProductionLogger()
 declare global {
   interface Window {
     Sentry?: {
-      captureException: (error: Error, context?: any) => void
+      captureException: (error: Error, context?: unknown) => void
     }
   }
 }

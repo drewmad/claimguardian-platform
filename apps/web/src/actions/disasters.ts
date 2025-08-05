@@ -1,7 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 // apps/web/src/actions/disasters.ts
 'use server'
 
-import { unstable_noStore as noStore } from 'next/cache'
 import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/server'

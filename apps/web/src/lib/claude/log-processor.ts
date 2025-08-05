@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Process and integrate production error logs into Claude Learning System
+ * @purpose "Process and integrate production error logs into Claude Learning System"
+ * @dependencies ["@/lib"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { logProductionErrorBatch, productionErrorMonitor } from './production-error-monitor'

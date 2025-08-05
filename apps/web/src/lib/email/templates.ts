@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Email templates for transactional emails
+ * @purpose "Email templates for transactional emails"
+ * @dependencies []
  * @owner communications-team
- * @status active
+ * @status stable
  */
 
 export interface EmailTemplate {

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Test endpoint to verify sign-in functionality
+ * @purpose "Test endpoint to verify sign-in functionality"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { NextResponse } from 'next/server'

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose AI Use Agreement page
+ * @purpose "AI Use Agreement page"
+ * @dependencies ["@/components","next"]
  * @owner legal-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'

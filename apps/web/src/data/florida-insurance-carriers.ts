@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Florida insurance carriers list
+ * @purpose "Florida insurance carriers list"
  * @owner data-team
  * @dependencies []
  * @exports ["floridaInsuranceCarriers", "insuranceTypes"]
  * @complexity low
  * @tags ["data", "florida", "insurance"]
- * @status active
+ * @status stable
  */
 
 export interface InsuranceCarrier {

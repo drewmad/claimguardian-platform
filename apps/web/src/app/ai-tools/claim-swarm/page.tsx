@@ -1,19 +1,17 @@
 /**
  * @fileMetadata
- * @purpose AI Claim Swarm page - Multi-user collaborative damage assessment
+ * @purpose "AI Claim Swarm page - Multi-user collaborative damage assessment"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ai-claim-swarm"]
  * @exports ["default"]
  * @complexity medium
- * @status active
+ * @status stable
  */
 
 'use client'
 
 // Temporarily disabled for deployment
-// import { ToolComponent } from '@claimguardian/ai-claim-swarm'
-
-export default function ClaimSwarmPage() {
+// export default function ClaimSwarmPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">

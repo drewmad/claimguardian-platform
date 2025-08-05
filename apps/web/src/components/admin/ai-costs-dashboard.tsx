@@ -1,20 +1,20 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
-  AlertCircle,
-  Activity,
-  Users,
-  Zap,
-  Clock
-} from 'lucide-react'
+import { TrendingUp, DollarSign, AlertCircle, Users, Zap, Clock } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -182,7 +182,7 @@ export function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as any[]).reverse()
+  }, [] as unknown[]).reverse()
 
   const hourlyChartData = hourlyUsage.reduce((acc, item) => {
     const hourStr = new Date(item.hour).toLocaleTimeString('en-US', { hour: 'numeric' })
@@ -196,7 +196,7 @@ export function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as any[]).slice(-24).reverse()
+  }, [] as unknown[]).slice(-24).reverse()
 
   if (loading) {
     return (

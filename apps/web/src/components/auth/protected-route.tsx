@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Higher-order component to protect routes that require authentication.
+ * @purpose "Higher-order component to protect routes that require authentication."
  * @owner frontend-team
  * @dependencies ["react", "@/components/auth/auth-provider"]
  * @exports ["ProtectedRoute"]
  * @complexity low
  * @tags ["auth", "route", "protection"]
- * @status active
+ * @status stable
  * @notes Redirects unauthenticated users to landing page.
  */
 'use client'

@@ -1,6 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle, Loader2 } from 'lucide-react'
+import { FileText, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
@@ -189,7 +199,7 @@ const CLAIM_STEPS: ClaimStep[] = [
       {
         id: 'negotiate',
         title: 'Negotiate if Needed',
-        description: 'Don&apos;t accept the first offer if it&apos;s inadequate',
+        description: 'Don't accept the first offer if it's inadequate',
         completed: false,
         required: false
       }
@@ -327,7 +337,7 @@ Format the summary for submission to an insurance company.`
         const response = await aiClient.chat([
           { role: 'system', content: 'You are a helpful insurance claim assistant.' },
           { role: 'user', content: prompt }
-        ], primaryProvider)
+        ], primaryProvider as 'openai' | 'gemini')
 
         // Track successful usage
         const responseTime = Date.now() - startTime
@@ -349,7 +359,7 @@ Format the summary for submission to an insurance company.`
           const response = await aiClient.chat([
             { role: 'system', content: 'You are a helpful insurance claim assistant.' },
             { role: 'user', content: prompt }
-          ], fallbackProvider)
+          ], fallbackProvider as 'openai' | 'gemini')
 
           // Track fallback usage
           const responseTime = Date.now() - startTime
@@ -407,7 +417,7 @@ Format the summary for submission to an insurance company.`
                 </Badge>
               </div>
               <p className="text-gray-400 max-w-3xl">
-                Step-by-step guidance through the insurance claim process. Follow each step carefully to ensure you don&apos;t miss any critical actions or documentation.
+                Step-by-step guidance through the insurance claim process. Follow each step carefully to ensure you don't miss any critical actions or documentation.
               </p>
             </div>
 
@@ -620,7 +630,7 @@ Format the summary for submission to an insurance company.`
                           <li>• Always document everything - photos, conversations, receipts</li>
                           <li>• Never admit fault or sign anything without reading carefully</li>
                           <li>• Keep a detailed log of all interactions with your insurer</li>
-                          <li>• Don&apos;t throw away damaged items until the adjuster approves</li>
+                          <li>• Don't throw away damaged items until the adjuster approves</li>
                         </ul>
                       </div>
                     </div>

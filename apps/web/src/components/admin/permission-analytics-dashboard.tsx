@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Advanced analytics dashboard for permission usage patterns
+ * @purpose "Advanced analytics dashboard for permission usage patterns"
+ * @dependencies ["@/components","@/lib","react"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -25,22 +26,7 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table'
-import {
-  BarChart3,
-  TrendingUp,
-  TrendingDown,
-  Users,
-  Shield,
-  AlertTriangle,
-  CheckCircle,
-  Clock,
-  RefreshCw,
-  Download,
-  Filter,
-  Calendar,
-  Eye,
-  Activity
-} from 'lucide-react'
+import { BarChart3, TrendingUp, TrendingDown, Users, AlertTriangle, CheckCircle, RefreshCw, Download, Activity } from 'lucide-react'
 import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'
 
 interface PermissionUsageStats {
@@ -309,7 +295,7 @@ export function PermissionAnalyticsDashboard() {
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Select value={timeRange} onValueChange={(value: any) => setTimeRange(value)}>
+          <Select value={timeRange} onValueChange={(value: unknown) => setTimeRange(value)}>
             <SelectTrigger className="w-[120px] bg-gray-900 border-gray-700">
               <SelectValue />
             </SelectTrigger>
@@ -321,7 +307,7 @@ export function PermissionAnalyticsDashboard() {
             </SelectContent>
           </Select>
           
-          <Select value={selectedTier} onValueChange={(value: any) => setSelectedTier(value)}>
+          <Select value={selectedTier} onValueChange={(value: unknown) => setSelectedTier(value)}>
             <SelectTrigger className="w-[140px] bg-gray-900 border-gray-700">
               <SelectValue />
             </SelectTrigger>

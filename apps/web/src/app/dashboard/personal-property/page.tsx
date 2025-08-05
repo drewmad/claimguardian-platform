@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Enhanced personal property inventory management page
+ * @purpose "Enhanced personal property inventory management page"
+ * @dependencies ["@/components","@/lib","next","react","sonner"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -526,12 +527,12 @@ function PersonalPropertyContent() {
                   <div className="space-y-3">
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-                      <p className="text-sm text-gray-300">Added &quot;Kitchen Aid Stand Mixer&quot; to Kitchen</p>
+                      <p className="text-sm text-gray-300">Added "Kitchen Aid Stand Mixer" to Kitchen</p>
                       <span className="text-xs text-gray-500 ml-auto">2 hours ago</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
-                      <p className="text-sm text-gray-300">Updated value for &quot;65&quot; OLED TV&quot;</p>
+                      <p className="text-sm text-gray-300">Updated value for "65" OLED TV"</p>
                       <span className="text-xs text-gray-500 ml-auto">Yesterday</span>
                     </div>
                     <div className="flex items-center gap-3">

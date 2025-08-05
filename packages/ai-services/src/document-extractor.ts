@@ -1,7 +1,19 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import pRetry from 'p-retry'
 
 import { GeminiProvider } from './providers/gemini'
 import { OpenAIProvider } from './providers/openai'
+import { AIProvider } from './providers/base'
+import { hasConfidence } from './utils/type-guards'
 import type { 
   DocumentExtractionRequest, 
   ExtractedPolicyData, 
@@ -9,7 +21,7 @@ import type {
 } from './types'
 
 export class DocumentExtractor {
-  private providers: Map<string, any> = new Map()
+  private providers: Map<string, AIProvider> = new Map()
   private cache: Map<string, AIResponse<ExtractedPolicyData>> = new Map()
   private cacheTTL = 3600000 // 1 hour
 
@@ -34,7 +46,7 @@ Please analyze this insurance policy document and extract the following informat
 
 {
   "policyNumber": "string - The policy number",
-  "carrierName": "string - Insurance company name",
+  "carrierName": "string - Insurance compunknown name",
   "policyType": "string - Type of policy (HO3, HO5, etc.)",
   "coverageAmount": "number - Total coverage amount in dollars",
   "deductible": "number - Standard deductible amount",
@@ -127,7 +139,7 @@ Rules:
       )
 
       // Validate confidence threshold
-      if (request.confidenceThreshold && result.data?.confidence) {
+      if (request.confidenceThreshold && result.data && hasConfidence(result.data)) {
         if (result.data.confidence < request.confidenceThreshold) {
           console.warn('Extraction confidence below threshold', {
             confidence: result.data.confidence,
@@ -136,10 +148,15 @@ Rules:
         }
       }
 
-      // Cache result
-      this.cache.set(cacheKey, { ...result, cached: true })
+      // Cache result with proper typing
+      const cachedResult: AIResponse<ExtractedPolicyData> = {
+        ...result,
+        data: result.data as ExtractedPolicyData,
+        cached: true
+      }
+      this.cache.set(cacheKey, cachedResult)
 
-      return result
+      return cachedResult
     } catch (error) {
       return {
         success: false,

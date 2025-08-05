@@ -1,16 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Tests for real-time subscription React hook
+ * @purpose "Tests for real-time subscription React hook"
  * @owner realtime-team
  * @dependencies ["vitest", "@testing-library/react", "@claimguardian/db"]
  * @exports []
  * @complexity low
  * @tags ["test", "realtime", "hooks", "react"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T21:00:00Z
  */
 
+import { SupabaseClient } from '@supabase/supabase-js'
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { renderHook } from '@testing-library/react'
 import { useRealtimeSubscription } from '../hooks'
@@ -32,7 +33,7 @@ const mockSupabase = {
     unsubscribe: vi.fn()
   })),
   removeChannel: vi.fn()
-} as any
+} as unknown as SupabaseClient
 
 describe('useRealtimeSubscription', () => {
   beforeEach(() => {

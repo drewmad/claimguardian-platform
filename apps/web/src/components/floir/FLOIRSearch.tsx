@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { Button } from '@claimguardian/ui'
@@ -165,7 +175,7 @@ export default function FLOIRSearch() {
                     Found {results.total_results} results in {results.search_time_ms}ms
                   </p>
                   <Badge variant="outline">
-                    Query: &quot;{results.query}&quot;
+                    Query: "{results.query}"
                   </Badge>
                 </div>
               </div>

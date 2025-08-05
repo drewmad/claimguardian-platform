@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { 
   AIRequest, 
   AIResponse, 
@@ -22,7 +32,7 @@ export abstract class BaseAIProvider {
   abstract generateText(request: AIRequest): Promise<AIResponse>;
   abstract chat(request: ChatRequest): Promise<ChatResponse>;
   abstract estimateCost(tokens: number, model: string): number;
-  abstract validateResponse(response: any): boolean;
+  abstract validateResponse(response: unknown): boolean;
   abstract getAvailableModels(): string[];
   
   // Optional methods with default implementations
@@ -85,7 +95,7 @@ export abstract class BaseAIProvider {
     }
   }
   
-  protected trackMetrics(start: number, request: AIRequest | ChatRequest, response: any): void {
+  protected trackMetrics(start: number, request: AIRequest | ChatRequest, response: Partial<AIResponse> & { model?: string }): void {
     const latency = Date.now() - start;
     
     // In production, this would emit to a metrics collector
@@ -168,7 +178,7 @@ export abstract class BaseAIProvider {
   }
   
   protected sanitizeResponse(text: string): string {
-    // Remove any potential harmful content
+    // Remove unknown potential harmful content
     // In production, this would be more sophisticated
     return text
       .replace(/<script[^>]*>.*?<\/script>/gi, '') // Remove scripts
@@ -177,15 +187,16 @@ export abstract class BaseAIProvider {
   }
   
   // Error handling
-  protected handleError(error: any, request: AIRequest | ChatRequest): never {
+  protected handleError(error: unknown, request: AIRequest | ChatRequest): never {
+    const err = error as Error;
     console.error(`[${this.constructor.name}] Error:`, {
-      error: error.message || error,
+      error: err.message || error,
       feature: request.feature,
       userId: request.userId
     });
     
     // Transform provider-specific errors to our error types
-    if (error.message?.includes('rate limit')) {
+    if (err.message?.includes('rate limit')) {
       throw new AIServiceError(
         'Rate limit exceeded',
         'RATE_LIMIT',
@@ -194,7 +205,7 @@ export abstract class BaseAIProvider {
       );
     }
     
-    if (error.message?.includes('timeout')) {
+    if (err.message?.includes('timeout')) {
       throw new AIServiceError(
         'Request timed out',
         'TIMEOUT',
@@ -203,7 +214,7 @@ export abstract class BaseAIProvider {
       );
     }
     
-    if (error.message?.includes('invalid api key')) {
+    if (err.message?.includes('invalid api key')) {
       throw new AIServiceError(
         'Invalid API key',
         'AUTH_ERROR',
@@ -214,7 +225,7 @@ export abstract class BaseAIProvider {
     
     // Generic error
     throw new AIServiceError(
-      error.message || 'Unknown error',
+      err.message || 'Unknown error',
       'PROVIDER_ERROR',
       this.constructor.name,
       true

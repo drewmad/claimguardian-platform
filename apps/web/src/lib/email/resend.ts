@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Email service using Resend for transactional emails
+ * @purpose "Email service using Resend for transactional emails"
+ * @dependencies ["@/lib","resend"]
  * @owner communications-team
- * @status active
+ * @status stable
  */
 
 import { Resend } from 'resend'

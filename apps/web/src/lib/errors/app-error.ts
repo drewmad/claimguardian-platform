@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Base error class and error code definitions
+ * @purpose "Base error class and error code definitions"
  * @owner core-team
  * @dependencies []
  * @exports ["AppError", "ErrorCode", "isAppError"]
  * @complexity low
  * @tags ["error", "base", "types"]
- * @status active
+ * @status stable
  */
 
 export type ErrorCode = 

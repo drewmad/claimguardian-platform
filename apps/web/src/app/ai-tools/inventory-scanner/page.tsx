@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 // Force dynamic rendering to prevent SSG issues with Supabase client
@@ -17,7 +27,7 @@ import {
   Scan
 } from 'lucide-react'
 import NextDynamic from 'next/dynamic'
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
@@ -129,13 +139,7 @@ Analyze this image and identify all items visible. For each item, provide detail
           const response = await enhancedAIClient.enhancedImageAnalysis({
             image: base64,
             prompt,
-            featureId: 'inventory-scanner',
-            userId: user?.id,
-            metadata: {
-              imageIndex: i + 1,
-              totalImages: files.length,
-              fileName: files[i].name
-            }
+            featureId: 'inventory-scanner'
           })
 
           try {

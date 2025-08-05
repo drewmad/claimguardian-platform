@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for document management
+ * @purpose "Server actions for document management"
  * @owner backend-team
  * @dependencies ["@/lib/supabase/server", "@/lib/logger"]
  * @exports ["uploadPolicyDocument", "deletePolicyDocument", "getPolicyDocuments"]
  * @complexity medium
  * @tags ["server-action", "documents", "storage"]
- * @status active
+ * @status stable
  */
 
 'use server'

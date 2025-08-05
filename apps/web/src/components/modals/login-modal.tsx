@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Login modal component
+ * @purpose "Login modal component"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/stores/modal-store", "@/lib/supabase"]
  * @exports ["LoginModal"]
  * @complexity medium
  * @tags ["modal", "auth", "login"]
- * @status active
+ * @status stable
  */
 'use client'
 

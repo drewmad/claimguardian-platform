@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["@sentry/nextjs"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 // This file configures the initialization of Sentry on the edge runtime.
 // The config you add here will be used whenever a user visits an edge route or an edge middleware is invoked.
 // https://docs.sentry.io/platforms/javascript/guides/nextjs/

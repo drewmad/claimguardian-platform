@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Centralized error handling utilities
+ * @purpose "Centralized error handling utilities"
+ * @dependencies []
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 /**

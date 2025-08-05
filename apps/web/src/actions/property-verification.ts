@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server actions for verifying property enrichment data capture
+ * @purpose "Server actions for verifying property enrichment data capture"
+ * @dependencies ["@/lib"]
  * @owner property-team
- * @status active
+ * @status stable
  */
 
 'use server'

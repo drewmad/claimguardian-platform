@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Login activity tracking and monitoring service
+ * @purpose "Login activity tracking and monitoring service"
  * @owner auth-team
  * @dependencies ["@supabase/supabase-js", "ua-parser-js", "@/lib/logger"]
  * @exports ["loginActivityService"]
  * @complexity medium
  * @tags ["auth", "security", "monitoring", "activity"]
- * @status active
+ * @status stable
  */
 
 import * as UAParser from 'ua-parser-js'

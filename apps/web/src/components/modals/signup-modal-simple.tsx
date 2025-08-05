@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Simplified signup modal with proper consent tracking
+ * @purpose "Simplified signup modal with proper consent tracking"
+ * @dependencies ["@/components","@/lib","@/stores","@claimguardian/utils","lucide-react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -154,7 +155,7 @@ export function SignupModalSimple() {
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h2 className="text-2xl font-bold mb-2">Check Your Email!</h2>
           <p className="text-slate-400 mb-6">
-            We&apos;ve sent a verification link to <strong className="text-white">{formData.email}</strong>
+            We've sent a verification link to <strong className="text-white">{formData.email}</strong>
           </p>
           <p className="text-sm text-slate-500 mb-6">
             Please check your inbox and click the link to verify your account.

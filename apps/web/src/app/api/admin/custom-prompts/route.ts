@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Custom Prompts API endpoints for admin panel
+ * @purpose "Custom Prompts API endpoints for admin panel"
+ * @dependencies ["@/lib","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    let response: any = { prompts }
+    const response: Record<string, unknown> = { prompts }
 
     if (includePerformance && prompts?.length > 0) {
       // Get performance data for each prompt
@@ -77,7 +78,7 @@ export async function GET(request: NextRequest) {
 
       if (!perfError && performance) {
         // Aggregate performance by prompt
-        const performanceMap: Record<string, any> = {}
+        const performanceMap: Record<string, Record<string, number>> = {}
 
         prompts.forEach(prompt => {
           performanceMap[prompt.id] = {
@@ -107,7 +108,7 @@ export async function GET(request: NextRequest) {
         })
 
         // Calculate averages
-        Object.values(performanceMap).forEach((metrics: any) => {
+        Object.values(performanceMap).forEach((metrics: Record<string, number>) => {
           if (metrics.total_uses > 0) {
             metrics.avg_time = Math.round(metrics.avg_time / metrics.total_uses) / 1000 // Convert to seconds
             metrics.success_rate = Math.round((metrics.success_rate / metrics.total_uses) * 100)

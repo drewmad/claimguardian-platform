@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Defines TypeScript types and enums for the real-time Situation Room feature.
+ * @purpose "Defines TypeScript types and enums for the real-time Situation Room feature."
+ * @dependencies []
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Type definitions for Situation Room real-time threat monitoring
+ * @purpose "Type definitions for Situation Room real-time threat monitoring"
  * @owner frontend-team
  * @dependencies ["react"]
  * @exports ["ThreatAssessment", "IntelligenceFeed", "SituationRoomState"]
  * @complexity high
  * @tags ["situation-room", "types", "real-time"]
- * @status active
+ * @status stable
  */
 
 // ===== CORE THREAT ASSESSMENT TYPES =====
@@ -382,7 +383,7 @@ export interface RealtimeEvent {
   id: string
   type: EventType
   timestamp: Date
-  data: any
+  data: unknown
   priority: ActionPriority
   requiresAttention: boolean
   autoProcessed: boolean
@@ -514,11 +515,11 @@ export interface SituationRoomResponse {
   situationAssessment: {
     overall: ThreatAssessment
     breakdown: {
-      weather: any
-      market: any
-      property: any
-      community: any
-      predictions: any
+      weather: unknown
+      market: unknown
+      property: unknown
+      community: unknown
+      predictions: unknown
     }
   }
   recommendations: {

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { FolderOpen, Search, Tag, FileText, Image, VideoIcon, Upload, Brain, Sparkles, CheckCircle, Clock, Archive, Grid, List } from 'lucide-react'

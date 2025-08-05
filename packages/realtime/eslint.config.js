@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["@eslint/js","globals","module","path","typescript-eslint","url"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import globals from "globals";
 import tseslint from "typescript-eslint";
 import { createRequire } from 'module';

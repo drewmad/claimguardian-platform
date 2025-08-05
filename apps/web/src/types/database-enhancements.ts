@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Type enhancements for database operations
+ * @purpose "Type enhancements for database operations"
+ * @dependencies []
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 export interface CreatePolicyInput {

@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Provides React hooks for managing real-time WebSocket subscriptions for the Situation Room.
+ * @purpose "Provides React hooks for managing real-time WebSocket subscriptions for the Situation Room."
+ * @dependencies ["@/lib","@supabase/auth-helpers-nextjs","@supabase/supabase-js","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Real-time WebSocket hooks for Situation Room monitoring
+ * @purpose "Real-time WebSocket hooks for Situation Room monitoring"
  * @owner frontend-team
  * @dependencies ["react", "@supabase/supabase-js", "@/types/situation-room"]
  * @exports ["useSituationRoomRealtime", "useRealtimeSubscription"]
  * @complexity high
  * @tags ["situation-room", "realtime", "websockets"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -107,7 +108,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const createRealtimeEvent = useCallback((
     type: EventType,
-    data: any,
+    data: unknown,
     source: string = 'realtime'
   ): RealtimeEvent => ({
     id: `${type}-${Date.now()}-${Math.random()}`,
@@ -120,7 +121,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     source
   }), [])
 
-  const handleThreatUpdate = useCallback((payload: any) => {
+  const handleThreatUpdate = useCallback((payload: unknown) => {
     logger.info('Threat update received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -142,7 +143,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addThreat, addRealtimeEvent, createRealtimeEvent])
 
-  const handleIntelligenceUpdate = useCallback((payload: any) => {
+  const handleIntelligenceUpdate = useCallback((payload: unknown) => {
     logger.info('Intelligence feed received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -154,7 +155,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addIntelligenceFeed, addRealtimeEvent, createRealtimeEvent])
 
-  const handlePropertySystemUpdate = useCallback((payload: any) => {
+  const handlePropertySystemUpdate = useCallback((payload: unknown) => {
     logger.info('Property system update:', payload)
     
     // Refresh property status when systems change
@@ -168,7 +169,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     addRealtimeEvent(event)
   }, [refreshPropertyStatus, addRealtimeEvent, createRealtimeEvent])
 
-  const handleCommunityUpdate = useCallback((payload: any) => {
+  const handleCommunityUpdate = useCallback((payload: unknown) => {
     logger.info('Community update received:', payload)
     
     // Refresh community intelligence
@@ -182,7 +183,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     addRealtimeEvent(event)
   }, [refreshCommunityIntel, addRealtimeEvent, createRealtimeEvent])
 
-  const handleAIRecommendation = useCallback((payload: any) => {
+  const handleAIRecommendation = useCallback((payload: unknown) => {
     logger.info('AI recommendation received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -198,7 +199,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addRecommendation, addRealtimeEvent, createRealtimeEvent])
 
-  const handleEmergencyBroadcast = useCallback((payload: any) => {
+  const handleEmergencyBroadcast = useCallback((payload: unknown) => {
     logger.info('Emergency broadcast received:', payload)
     
     const event = createRealtimeEvent(
@@ -239,12 +240,12 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'ai_analyses',
           filter: `entity_id=eq.${propertyId} AND entity_type=eq.property`
-        }, (payload: any) => {
+        }, (payload: unknown) => {
           if (payload.new?.analysis_type === 'threat_assessment') {
             handleThreatUpdate(payload)
           }
         })
-        .subscribe((status: any) => {
+        .subscribe((status: unknown) => {
           logger.info('Threat channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('threats', threatChannel)
@@ -267,7 +268,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'environmental_data',
           filter: `property_id=eq.${propertyId}`
-        }, (payload: any) => {
+        }, (payload: unknown) => {
           const event = createRealtimeEvent(
             EventType.INTELLIGENCE_FEED,
             { environmentalData: payload.new },
@@ -275,7 +276,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           )
           addRealtimeEvent(event)
         })
-        .subscribe((status: any) => {
+        .subscribe((status: unknown) => {
           logger.info('Intelligence channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('intelligence', intelligenceChannel)
@@ -298,7 +299,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'property_alerts',
           filter: `property_id=eq.${propertyId}`
-        }, (payload: any) => {
+        }, (payload: unknown) => {
           const event = createRealtimeEvent(
             EventType.PROPERTY_ALERT,
             { alert: payload.new },
@@ -306,7 +307,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           )
           addRealtimeEvent(event)
         })
-        .subscribe((status: any) => {
+        .subscribe((status: unknown) => {
           logger.info('Property channel status:', status)
           if (status === 'SUBSCRIBED') {
             channelsRef.current.set('property', propertyChannel)
@@ -507,9 +508,9 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 interface UseRealtimeSubscriptionOptions {
   onThreatUpdate?: (threat: ThreatAssessment) => void
   onIntelUpdate?: (intel: IntelligenceFeed) => void
-  onPropertyAlert?: (alert: any) => void
-  onCommunityUpdate?: (data: any) => void
-  onEmergencyBroadcast?: (emergency: any) => void
+  onPropertyAlert?: (alert: unknown) => void
+  onCommunityUpdate?: (data: unknown) => void
+  onEmergencyBroadcast?: (emergency: unknown) => void
   onError?: (error: Error) => void
 }
 
@@ -547,7 +548,7 @@ export function useRealtimeSubscription(
 
 // ===== HELPER FUNCTIONS =====
 
-function determinePriority(eventType: EventType, data: any): ActionPriority {
+function determinePriority(eventType: EventType, data: unknown): ActionPriority {
   switch (eventType) {
     case EventType.EMERGENCY_BROADCAST:
       return ActionPriority.IMMEDIATE
@@ -570,7 +571,7 @@ function determinePriority(eventType: EventType, data: any): ActionPriority {
   }
 }
 
-function requiresUserAttention(eventType: EventType, data: any): boolean {
+function requiresUserAttention(eventType: EventType, data: unknown): boolean {
   switch (eventType) {
     case EventType.EMERGENCY_BROADCAST:
       return true

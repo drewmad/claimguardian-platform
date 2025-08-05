@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Debug hook for authentication issues
+ * @purpose "Debug hook for authentication issues"
  * @owner platform-team
  * @dependencies ["react", "@/components/auth/auth-provider"]
  * @exports ["useAuthDebug"]

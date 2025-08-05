@@ -1,12 +1,13 @@
 /**
  * @fileMetadata
- * @purpose Serves as the foundation for the Florida property and insurance content blog.
+ * @purpose "Serves as the foundation for the Florida property and insurance content blog."
+ * @dependencies []
  * @owner content-team
  * @status foundation
  */
 /**
  * @fileMetadata
- * @purpose Blog page foundation for Florida property and insurance content
+ * @purpose "Blog page foundation for Florida property and insurance content"
  * @owner content-team
  * @dependencies ["react"]
  * @exports ["BlogPage"]

@@ -1,16 +1,15 @@
 /**
  * @fileMetadata
- * @purpose Automated triggers for Claude self-reflection and continuous improvement
+ * @purpose "Automated triggers for Claude self-reflection and continuous improvement"
  * @owner ai-team
  * @dependencies ["@/lib/claude/claude-self-reflection", "@/lib/logger"]
  * @exports ["ReflectionTriggers", "autoReflect", "reflectionTriggers"]
  * @complexity medium
  * @tags ["claude", "automation", "triggers", "continuous-improvement"]
- * @status active
+ * @status stable
  */
 
 import { claudeSelfReflection, ReflectionContext } from './claude-self-reflection'
-import { claudeErrorLogger } from './claude-error-logger'
 import { logger } from '@/lib/logger'
 
 export interface ReflectionTrigger {
@@ -315,12 +314,12 @@ export const reflectionTriggers = new ReflectionTriggers()
 /**
  * Higher-order function to automatically wrap functions with reflection tracking
  */
-export function autoReflect<T extends (...args: any[]) => Promise<any>>(
+export function autoReflect<T extends (...args: unknown[]) => Promise<any>>(
   taskType: ReflectionContext['taskType'],
   complexity: TaskExecutionContext['complexity'] = 'medium',
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     // Start tracking
     const taskId = reflectionTriggers.startTaskTracking(taskType, complexity)
     
@@ -329,7 +328,7 @@ export function autoReflect<T extends (...args: any[]) => Promise<any>>(
     const originalError = console.error
     let stepCount = 0
     
-    console.log = (...logArgs: any[]) => {
+    console.log = (...logArgs: unknown[]) => {
       stepCount++
       if (stepCount % 5 === 0) { // Log every 5th console.log as a step
         reflectionTriggers.logStep()
@@ -337,7 +336,7 @@ export function autoReflect<T extends (...args: any[]) => Promise<any>>(
       return originalLog.apply(console, logArgs)
     }
     
-    console.error = (...errorArgs: any[]) => {
+    console.error = (...errorArgs: unknown[]) => {
       reflectionTriggers.logError()
       return originalError.apply(console, errorArgs)
     }
@@ -411,12 +410,12 @@ export async function triggerManualReflection(
 /**
  * Smart reflection wrapper that adapts to task complexity
  */
-export function smartReflect<T extends (...args: any[]) => Promise<any>>(
+export function smartReflect<T extends (...args: unknown[]) => Promise<any>>(
   taskType: ReflectionContext['taskType'],
   taskDescription: string,
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     // Determine complexity based on task type and description
     const complexity = determineTaskComplexity(taskType, taskDescription)
     

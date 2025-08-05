@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose AI Claim Swarm - Live multi-user collaborative damage assessment
+ * @purpose "AI Claim Swarm - Live multi-user collaborative damage assessment"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ai-services", "@claimguardian/ui", "@claimguardian/db", "@claimguardian/realtime"]
  * @exports ["ToolComponent", "useClaimSwarm", "claimSwarmService"]

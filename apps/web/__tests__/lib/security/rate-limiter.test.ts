@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for rate limiting service and API protection
+ * @purpose "Tests for rate limiting service and API protection"
+ * @dependencies ["next"]
  * @owner platform-team
  * @complexity medium
  * @tags ["testing", "security", "rate-limiting", "api-protection"]
- * @status active
+ * @status stable
  */
 
 import { NextRequest } from 'next/server'

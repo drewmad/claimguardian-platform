@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Claims management server actions for CRUD operations
+ * @purpose "Claims management server actions for CRUD operations"
  * @owner claims-team
  * @dependencies ["@claimguardian/db", "@claimguardian/utils"]
  * @exports ["createClaim", "updateClaim", "deleteClaim", "getClaim", "getUserClaims", "uploadClaimDocument", "generateClaimReport"]
  * @complexity high
  * @tags ["server-action", "claims", "database", "documents"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:05:00Z
  */
@@ -16,24 +16,26 @@
 import { createClient } from '@/lib/supabase/server'
 import type { ClaimInsert, ClaimUpdate } from '@claimguardian/db'
 import { toError } from '@claimguardian/utils'
-import { cookies } from 'next/headers'
-
 export interface ClaimResult {
   success: boolean
   error?: string
-  data?: any
+  data?: {
+    id?: string
+    status?: string
+    [key: string]: unknown
+  }
 }
 
 export async function createClaim({ 
   propertyId, 
-  damageType, 
+  claimType, 
   description,
-  dateOfLoss
+  incidentDate
 }: {
   propertyId: string
-  damageType: string
+  claimType: string
   description: string
-  dateOfLoss?: string
+  incidentDate?: string
 }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
@@ -50,10 +52,12 @@ export async function createClaim({
     const claimData: ClaimInsert = {
       user_id: user.id,
       property_id: propertyId,
-      damage_type: damageType,
+      claim_type: claimType,
       description,
-      date_of_loss: dateOfLoss || new Date().toISOString(),
-      status: 'draft'
+      incident_date: incidentDate || new Date().toISOString(),
+      status: 'draft',
+      claim_number: `CG-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
+      reported_date: new Date().toISOString()
     }
 
     const { data, error } = await supabase
@@ -253,7 +257,7 @@ export async function getUserClaims(): Promise<ClaimResult> {
 
     return {
       success: true,
-      data
+      data: { claims: data }
     }
   } catch (error) {
     const err = toError(error)

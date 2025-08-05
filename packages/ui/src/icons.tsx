@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Type-safe lucide-react icon exports with React 18 compatibility
+ * @purpose "Type-safe lucide-react icon exports with React 18 compatibility"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["CheckIcon", "XIcon"]
  * @complexity low
  * @tags ["icons", "ui", "type-safety"]
- * @status active
+ * @status stable
  * @notes Provides type assertions for lucide-react icons to ensure React 18 compatibility
  */
 

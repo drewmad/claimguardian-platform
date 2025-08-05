@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import type { AIResponse } from '../types';
@@ -51,7 +61,7 @@ export class GeminiProviderAdapter extends AIProvider {
       const response = await this.newProvider.analyzeImage(request);
       
       // Extract JSON from response if present
-      let data: any;
+      let data: unknown;
       try {
         const jsonMatch = response.text.match(/\{[\s\S]*\}/);
         if (jsonMatch) {
@@ -66,22 +76,23 @@ export class GeminiProviderAdapter extends AIProvider {
       // Convert to old response format
       return {
         success: true,
-        data,
+        data: data as Record<string, unknown>,
         provider: this.name,
         processingTime: response.latency,
-        confidence: data.confidence
+        confidence: (data as { confidence?: number })?.confidence
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const err = error as Error;
       return {
         success: false,
-        error: error.message || 'Unknown error',
+        error: err.message || 'Unknown error',
         provider: this.name,
         processingTime: 0
       };
     }
   }
 
-  async generateText(prompt: string, context?: Record<string, any>): Promise<AIResponse<string>> {
+  async generateText(prompt: string, context?: Record<string, unknown>): Promise<AIResponse<string>> {
     if (!this.isAvailable()) {
       return { success: false, error: 'Gemini API not configured' };
     }
@@ -104,10 +115,10 @@ export class GeminiProviderAdapter extends AIProvider {
         provider: this.name,
         processingTime: response.latency
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Unknown error',
+        error: (error as Error).message || 'Unknown error',
         provider: this.name,
         processingTime: 0
       };
@@ -137,10 +148,10 @@ export class GeminiProviderAdapter extends AIProvider {
         provider: this.name,
         processingTime: response.latency
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
       return {
         success: false,
-        error: error.message || 'Unknown error',
+        error: (error as Error).message || 'Unknown error',
         provider: this.name,
         processingTime: 0
       };

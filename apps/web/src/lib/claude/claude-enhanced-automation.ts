@@ -1,14 +1,13 @@
 /**
  * @fileMetadata
- * @purpose Enhanced Automation - Auto-optimization, Proactive Suggestions, Smart Delegations, and Batch Learning
+ * @purpose "Enhanced Automation - Auto-optimization, Proactive Suggestions, Smart Delegations, and Batch Learning"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-advanced-analytics", "@/lib/claude/claude-complete-learning-system", "@/lib/logger"]
  */
 
-import { claudeAdvancedAnalytics, PredictionModel, BottleneckAnalysis } from './claude-advanced-analytics'
+import { claudeAdvancedAnalytics, PredictionModel } from './claude-advanced-analytics'
 import { completeLearningSystem } from './claude-complete-learning-system'
-import { claudeSelfReflection } from './claude-self-reflection'
 import { logger } from '@/lib/logger'
 
 export interface AutoOptimizationRule {

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Service for fetching property data from external APIs
+ * @purpose "Service for fetching property data from external APIs"
  * @owner data-team
  * @dependencies ["@/lib/logger"]
  * @exports ["propertyDataService"]
  * @complexity medium
  * @tags ["service", "property", "external-api"]
- * @status active
+ * @status stable
  */
 
 import type { GooglePlaceResult } from './types'

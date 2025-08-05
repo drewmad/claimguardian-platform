@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import * as Sentry from '@sentry/nextjs'
 
 import { recordMetric } from './metrics'
@@ -7,8 +17,8 @@ export interface SentryConfig {
   environment: string
   tracesSampleRate?: number
   debug?: boolean
-  integrations?: any[]
-  beforeSend?: (event: any, hint: any) => any
+  integrations?: Sentry.Integration[]
+  beforeSend?: (event: Sentry.ErrorEvent, hint: Sentry.EventHint) => Sentry.ErrorEvent | null
 }
 
 export function initializeSentry(config: SentryConfig) {
@@ -23,14 +33,14 @@ export function initializeSentry(config: SentryConfig) {
         maskAllText: false,
         blockAllMedia: false,
       }),
-      ...(config.integrations || [])
+      ...(config.integrations as Sentry.Integration[] || [])
     ],
     
     // Set up performance monitoring
     profilesSampleRate: 1.0,
     
     // Custom error filtering
-    beforeSend: config.beforeSend || ((event, _hint) => {
+    beforeSend: config.beforeSend || ((event: Sentry.ErrorEvent, _hint: Sentry.EventHint): Sentry.ErrorEvent | null => {
       // Filter out non-error logs
       if (event.level === 'log') return null
       
@@ -74,7 +84,7 @@ export function withErrorBoundary<P extends object>(
   fallback?: React.ComponentType<{ error: Error; resetError: () => void }>
 ) {
   return Sentry.withErrorBoundary(Component, {
-    fallback: (fallback as any) || (ErrorFallback as any),
+    fallback: fallback || ErrorFallback,
     showDialog: false
   })
 }
@@ -117,12 +127,12 @@ export function profileComponent<P extends object>(
 }
 
 // Custom error capture with additional context
-export function captureError(error: Error, context?: Record<string, any>) {
+export function captureError(error: Error, context?: Record<string, unknown>) {
   Sentry.captureException(error, {
     extra: context,
     tags: {
-      component: context?.component || 'unknown',
-      action: context?.action || 'unknown'
+      component: String(context?.component || 'unknown'),
+      action: String(context?.action || 'unknown')
     }
   })
   
@@ -167,7 +177,7 @@ export async function withTransaction<T>(
 }
 
 // User identification
-export function identifyUser(userId: string, userData?: Record<string, any>) {
+export function identifyUser(userId: string, userData?: Record<string, unknown>) {
   Sentry.setUser({
     id: userId,
     ...userData
@@ -183,7 +193,7 @@ export function clearUser() {
 export function addBreadcrumb(
   message: string,
   category: string,
-  data?: Record<string, any>
+  data?: Record<string, unknown>
 ) {
   Sentry.addBreadcrumb({
     message,

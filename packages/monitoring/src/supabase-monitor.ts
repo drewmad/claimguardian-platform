@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { SupabaseClient } from '@supabase/supabase-js'
 
 import { recordDatabaseQuery, recordAPICall } from './metrics'
@@ -29,9 +39,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
     
     methods.forEach(method => {
       if (queryBuilder[method]) {
-        const original = (queryBuilder as any)[method].bind(queryBuilder)
+        const original = (queryBuilder as unknown)[method].bind(queryBuilder)
         
-        ;(queryBuilder as any)[method] = function(...args: any[]) {
+        ;(queryBuilder as unknown)[method] = function(...args: unknown[]) {
           queryInfo.operation = method
           queryInfo.startTime = Date.now()
           
@@ -40,7 +50,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
           // Monitor the promise
           if (result && typeof result.then === 'function') {
             return result
-              .then((response: any) => {
+              .then((response: unknown) => {
                 const duration = Date.now() - queryInfo.startTime
                 
                 recordDatabaseQuery({
@@ -52,7 +62,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                 
                 return response
               })
-              .catch((error: any) => {
+              .catch((error: unknown) => {
                 const duration = Date.now() - queryInfo.startTime
                 
                 recordDatabaseQuery({
@@ -75,8 +85,8 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   }
 
   // Monitor RPC calls
-  const originalRpcTyped = originalRpc as any
-  ;(client as any).rpc = function(fn: string, args?: any, options?: any) {
+  const originalRpcTyped = originalRpc as unknown
+  ;(client as unknown).rpc = function(fn: string, args?: unknown, options?: unknown) {
     const startTime = Date.now()
     
     const queryBuilder = originalRpcTyped(fn, args, options)
@@ -84,9 +94,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
     // Wrap the execute methods for query builders
     if (queryBuilder && typeof queryBuilder.then === 'function') {
       const originalThen = queryBuilder.then.bind(queryBuilder)
-      queryBuilder.then = function(onFulfilled?: any, onRejected?: any) {
+      queryBuilder.then = function(onFulfilled?: unknown, onRejected?: unknown) {
         return originalThen(
-          (response: any) => {
+          (response: unknown) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
               method: 'POST',
@@ -96,7 +106,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
             })
             return onFulfilled ? onFulfilled(response) : response
           },
-          (error: any) => {
+          (error: unknown) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
               method: 'POST',
@@ -118,9 +128,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   
   authMethods.forEach(method => {
     if (originalAuth[method]) {
-      const original = (originalAuth as any)[method].bind(originalAuth)
+      const original = (originalAuth as unknown)[method].bind(originalAuth)
       
-      ;(originalAuth as any)[method] = function(...args: any[]) {
+      ;(originalAuth as unknown)[method] = function(...args: unknown[]) {
         const startTime = Date.now()
         
         const result = original(...args)
@@ -128,7 +138,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
         // Handle both sync and async results
         if (result && typeof result.then === 'function') {
           return result
-            .then((response: any) => {
+            .then((response: unknown) => {
               recordAPICall({
                 endpoint: `/auth/${method}`,
                 method: 'POST',
@@ -139,7 +149,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
               
               return response
             })
-            .catch((error: any) => {
+            .catch((error: unknown) => {
               recordAPICall({
                 endpoint: `/auth/${method}`,
                 method: 'POST',
@@ -161,19 +171,19 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   if (originalStorage) {
     const storageMethods = ['upload', 'download', 'remove', 'list'] as const
     
-    const monitorBucket = (bucket: any) => {
+    const monitorBucket = (bucket: unknown) => {
       storageMethods.forEach(method => {
         if (bucket[method]) {
           const original = bucket[method].bind(bucket)
           
-          bucket[method] = function(...args: any[]) {
+          bucket[method] = function(...args: unknown[]) {
             const startTime = Date.now()
             
             const result = original(...args)
             
             if (result && typeof result.then === 'function') {
               return result
-                .then((response: any) => {
+                .then((response: unknown) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
                     method: method === 'download' ? 'GET' : 'POST',
@@ -185,7 +195,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                   
                   return response
                 })
-                .catch((error: any) => {
+                .catch((error: unknown) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
                     method: method === 'download' ? 'GET' : 'POST',

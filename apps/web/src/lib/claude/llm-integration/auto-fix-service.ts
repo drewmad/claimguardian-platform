@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose Auto-fix service for applying high-confidence patterns
+ * @purpose "Auto-fix service for applying high-confidence patterns"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */

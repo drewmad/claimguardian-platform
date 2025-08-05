@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose AI-powered learning assistant for development insights
+ * @purpose "AI-powered learning assistant for development insights"
+ * @dependencies ["@/lib"]
  * @owner dev-tools-team
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for formatting utility functions
+ * @purpose "Tests for formatting utility functions"
  * @owner test-team
  * @dependencies ["vitest"]
  * @exports []
  * @complexity low
  * @tags ["test", "formatting", "utilities"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:17:00Z
  */

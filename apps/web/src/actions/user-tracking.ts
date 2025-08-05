@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server actions for comprehensive user tracking and data capture
+ * @purpose "Server actions for comprehensive user tracking and data capture"
+ * @dependencies ["@/lib","@claimguardian/db","next"]
  * @owner analytics-team
- * @status active
+ * @status stable
  */
 'use server'
 

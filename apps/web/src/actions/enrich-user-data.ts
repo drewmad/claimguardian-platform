@@ -1,12 +1,12 @@
 /**
  * @fileMetadata  
- * @purpose Async user data enrichment after successful signup
+ * @purpose "Async user data enrichment after successful signup"
  * @owner analytics-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["enrichUserData", "enrichDeviceData", "enrichLocationData"]
  * @complexity medium
  * @tags ["analytics", "enrichment", "async"]
- * @status active
+ * @status stable
  */
 
 'use server'

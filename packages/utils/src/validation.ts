@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Provides utility functions for common form validation patterns.
+ * @purpose "Provides utility functions for common form validation patterns."
  * @owner frontend-team
  * @dependencies []
  * @exports ["validateRequired", "validateEmail", "validatePhone", "validatePassword"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-07-03T19:43:12-04:00
  * @complexity low
  * @tags ["utility", "validation", "form"]
- * @status active
+ * @status stable
  * @notes Used for client-side form validation.
  */
 export const validateRequired = (value: any): boolean => {

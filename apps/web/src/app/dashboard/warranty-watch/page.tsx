@@ -1,11 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  ShieldCheck, Clock, AlertCircle, CheckCircle, 
-  Calendar, FileText, Phone, Mail, ExternalLink,
-  Package, Wrench, Home, Car, Tv, Smartphone,
-  ChevronRight, Plus, Upload
-} from 'lucide-react'
+import { ShieldCheck, Clock, AlertCircle, Calendar, FileText, Phone, Mail, ExternalLink, Package, Home, Car, Tv, Smartphone, ChevronRight, Plus, Upload } from 'lucide-react'
 import { useState } from 'react'
 
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'

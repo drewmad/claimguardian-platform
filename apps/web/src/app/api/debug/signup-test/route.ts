@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Debug endpoint to test signup_consents table permissions
+ * @purpose "Debug endpoint to test signup_consents table permissions"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { NextResponse } from 'next/server'

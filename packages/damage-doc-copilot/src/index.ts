@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Damage Documentation Copilot - AI-guided evidence capture with real-time feedback
+ * @purpose "Damage Documentation Copilot - AI-guided evidence capture with real-time feedback"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ai-services", "@claimguardian/ui", "@claimguardian/db"]
  * @exports ["ToolComponent", "useDamageCopilot", "damageCopilotService"]

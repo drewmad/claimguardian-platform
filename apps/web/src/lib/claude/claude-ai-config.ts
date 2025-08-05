@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Configuration and Setup for AI-Powered Learning Features
+ * @purpose "Configuration and Setup for AI-Powered Learning Features"
+ * @dependencies []
  * @owner ai-team
- * @status active
+ * @status stable
  * @description Central configuration for LLM synthesis, semantic search, and AI features
  */
 
@@ -344,7 +345,7 @@ export function isFeatureEnabled(feature: keyof AIFeatureFlags): boolean {
 }
 
 export function getPromptTemplate(category: string, type: string): string {
-  const templates = AI_PROMPTS as any
+  const templates = AI_PROMPTS as unknown
   return templates[category]?.[type] || ''
 }
 
@@ -353,9 +354,8 @@ export function calculateTokenCost(tokens: number, model: string): number {
   return config ? tokens * config.costPerToken : 0
 }
 
-// Export all configurations
+// Export all configurations (DEFAULT_LLM_CONFIG already exported above)
 export {
-  DEFAULT_LLM_CONFIG,
   ANTHROPIC_CONFIG,
   AI_MODELS,
   AI_FEATURE_FLAGS,

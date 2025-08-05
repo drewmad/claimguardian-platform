@@ -1,13 +1,13 @@
 /**
  * @fileMetadata
- * @purpose Next.js configuration for the web application.
+ * @purpose "Next.js configuration for the web application."
  * @owner frontend-team
  * @dependencies ["next", "@next/bundle-analyzer"]
  * @exports ["nextConfig"]
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-07-28
  * @complexity medium
- * @status active
+ * @status stable
  * @notes Configures standalone output, package transpilation, bundle analysis, and experimental features.
  */
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 // Force dynamic rendering to prevent SSG issues with Supabase client
@@ -10,13 +20,12 @@ import { toast } from 'sonner'
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { LazyAIChatInterface as AIChatInterface } from '@/components/lazy'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 import { AI_PROMPTS } from '@/lib/ai/config'
-import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
+import { aiErrorHelpers } from '@/lib/error-logger'
 import { useSupabase } from '@/lib/supabase/client'
 
 const QUICK_QUESTIONS = [
@@ -120,14 +129,7 @@ function PolicyChatContent() {
       // Use enhanced AI client with automatic model selection and A/B testing
       const response = await enhancedAIClient.enhancedChat({
         messages,
-        featureId: 'policy-chat',
-        userId: user?.id,
-        metadata: {
-          topic: selectedTopic,
-          hasDocuments: uploadedDocuments.length > 0,
-          compareMode,
-          documentCount: uploadedDocuments.length
-        }
+        featureId: 'policy-chat'
       })
 
       // Mock A/B test information (in production, this would come from the enhanced client)

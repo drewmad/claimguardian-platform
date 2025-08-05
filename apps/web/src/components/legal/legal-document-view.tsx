@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Component for displaying legal documents
+ * @purpose "Component for displaying legal documents"
+ * @dependencies ["@/lib","@claimguardian/db","lucide-react","next","react"]
  * @owner legal-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -11,7 +12,6 @@ import { FileText, Calendar, Hash, Shield, ChevronLeft, Download, Printer } from
 import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
-import { legalServiceClientFix as legalService } from '@/lib/legal/legal-service-client-fix'
 import { logger } from '@/lib/logger'
 
 

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Hero section with Guardian shield and animated content
+ * @purpose "Hero section with Guardian shield and animated content"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/stores/modal-store", "@/lib/constants"]
  * @exports ["Hero"]
  * @complexity high
  * @tags ["hero", "landing", "animations"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -147,7 +147,7 @@ export function Hero() {
           
           <AnimatedSection delay={300}>
             <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed">
-              ClaimGuardian guards everything you own, rent, or manage—including that boat you&apos;ve used twice since buying it. Your personal AI <span className="font-semibold text-primary/90">Guardian</span> documents your stuff (even the manatee mailbox), tracks when your AC needs its monthly blessing, and maximizes claims when frozen iguanas damage your roof or love bugs cause $2,000 in paint damage. <span className="italic text-primary/80">Because Florida&apos;s gonna Florida</span>, but with <span className="font-semibold text-primary/90">Guardian</span> watching over you, your assets don&apos;t have to suffer.
+              ClaimGuardian guards everything you own, rent, or manage—including that boat you've used twice since buying it. Your personal AI <span className="font-semibold text-primary/90">Guardian</span> documents your stuff (even the manatee mailbox), tracks when your AC needs its monthly blessing, and maximizes claims when frozen iguanas damage your roof or love bugs cause $2,000 in paint damage. <span className="italic text-primary/80">Because Florida's gonna Florida</span>, but with <span className="font-semibold text-primary/90">Guardian</span> watching over you, your assets don't have to suffer.
             </p>
           </AnimatedSection>
           
@@ -183,7 +183,7 @@ export function Hero() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
               <div>
                 <h3 className="font-slab text-4xl font-bold text-primary">15 Minutes</h3>
-                <p className="mt-1 text-gray-300">To setup your property&apos;s digital twin.</p>
+                <p className="mt-1 text-gray-300">To setup your property's digital twin.</p>
               </div>
               <div>
                 <h3 className="font-slab text-4xl font-bold text-primary">Seconds</h3>

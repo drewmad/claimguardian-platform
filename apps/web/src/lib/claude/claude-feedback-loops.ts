@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Feedback Loops for Continuous Improvement of Claude Learning System
+ * @purpose "Feedback Loops for Continuous Improvement of Claude Learning System"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-production-monitor", "@/lib/claude/claude-threshold-tuner", "@/lib/logger"]
  */
 
@@ -10,7 +10,6 @@ import { claudeProductionMonitor } from './claude-production-monitor'
 import { claudeThresholdTuner } from './claude-threshold-tuner'
 import { claudeABTesting } from './claude-ab-testing'
 import { claudeAdvancedAnalytics } from './claude-advanced-analytics'
-import { completeLearningSystem } from './claude-complete-learning-system'
 import { logger } from '@/lib/logger'
 
 interface FeedbackMetric {

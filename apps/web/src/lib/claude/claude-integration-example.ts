@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Example integration of Claude error logging for learning and improvement
+ * @purpose "Example integration of Claude error logging for learning and improvement"
  * @owner ai-team
  * @dependencies ["@/lib/claude/claude-error-logger"]
  * @exports ["integrateClaudeErrorLogging", "example usage patterns"]
  * @complexity medium
  * @tags ["claude", "integration", "example", "learning"]
- * @status active
+ * @status stable
  */
 
 import { claudeErrorLogger, claudeErrorHelpers } from './claude-error-logger'
@@ -193,12 +193,12 @@ export async function exampleSuccessfulLearningApplication() {
 /**
  * Wrapper function to catch and log Claude errors automatically
  */
-export function withClaudeErrorLogging<T extends (...args: any[]) => Promise<any>>(
+export function withClaudeErrorLogging<T extends (...args: unknown[]) => Promise<any>>(
   taskType: string,
   taskDescription: string,
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     try {
       return await fn(...args)
     } catch (error) {
@@ -206,7 +206,7 @@ export function withClaudeErrorLogging<T extends (...args: any[]) => Promise<any
       await claudeErrorLogger.logError(
         error as Error,
         {
-          taskType: taskType as any,
+          taskType: taskType as unknown,
           taskDescription,
           userIntent: 'Complete task successfully',
           errorType: 'runtime',
@@ -223,7 +223,7 @@ export function withClaudeErrorLogging<T extends (...args: any[]) => Promise<any
 /**
  * Hook for React components to track Claude-generated code issues
  */
-export function useClaudeErrorTracking(componentName: string, codeContext: any) {
+export function useClaudeErrorTracking(componentName: string, codeContext: unknown) {
   const logComponentError = async (error: Error, action: string) => {
     await claudeErrorLogger.logError(error, {
       taskType: 'code-generation',
@@ -259,8 +259,8 @@ export async function checkClaudeLearningsBeforeTask(
   }
 ) {
   const learnings = await claudeErrorLogger.getRelevantLearnings({
-    taskType: taskType as any,
-    errorType: context.errorType as any,
+    taskType: taskType as unknown,
+    errorType: context.errorType as unknown,
     framework: context.framework,
     codeLanguage: context.language
   })

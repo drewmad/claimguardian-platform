@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Email verification callback page
+ * @purpose "Email verification callback page"
  * @owner auth-team
  * @dependencies ["react", "next", "@supabase/supabase-js"]
  * @exports ["default"]
  * @complexity medium
  * @tags ["auth", "verification", "page"]
- * @status active
+ * @status stable
  */
 'use client'
 

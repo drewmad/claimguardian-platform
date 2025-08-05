@@ -2,15 +2,16 @@
 
 /**
  * @fileMetadata
- * @purpose Damage Documentation Copilot Hook - State management for AI-guided documentation
+ * @purpose "Damage Documentation Copilot Hook - State management for AI-guided documentation"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/db", "react"]
  * @exports ["useDamageCopilot"]
  * @complexity high
- * @status active
+ * @status stable
  */
 
 import { useState, useCallback } from 'react'
+
 import { damageCopilotService } from './damageCopilotService'
 
 export interface CapturedImage {

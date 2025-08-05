@@ -1,30 +1,48 @@
-#!/bin/bash
+#\!/bin/bash
+# Load parcels using service account
 
-# Load parcels using service role key
-set -euo pipefail
+SERVICE_URL="https://tmlrvecuwgppbaynesji.supabase.co"
+# Get service key from environment or use default
+SERVICE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRtbHJ2ZWN1d2dwcGJheW5lc2ppIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTcxNzU0MTQzOSwiZXhwIjoyMDMzMTE3NDM5fQ._QLDwkVhXJpPZFPgY3nQvQ-VxUOZ7O7hUNLSCDNhSxk}"
 
-echo "Loading parcels with service role authentication..."
+echo "Testing with 100 rows first..."
 
-# Extract environment variables securely
-SUPABASE_URL=$(grep -E '^NEXT_PUBLIC_SUPABASE_URL=' ../.env.local 2>/dev/null | cut -d'=' -f2- | sed 's/\s*#.*$//' | tr -d '\n' | tr -d '"')
-SERVICE_ROLE_KEY=$(grep -E '^SUPABASE_SERVICE_ROLE_KEY=' ../.env.local 2>/dev/null | cut -d'=' -f2- | sed 's/\s*#.*$//' | tr -d '\n' | tr -d '"')
+# Extract 100 rows with key columns
+head -101 /Users/madengineering/ClaimGuardian/data/florida/charlotte_chunks/charlotte_part_aa.csv | tail -100 > /tmp/test_batch.csv
 
-if [ -z "$SERVICE_ROLE_KEY" ]; then
-  echo "Service role key not found, trying anon key..."
-  ANON_KEY=$(grep -E '^NEXT_PUBLIC_SUPABASE_ANON_KEY=' ../.env.local 2>/dev/null | cut -d'=' -f2- | sed 's/\\n.*$//' | tr -d '\n' | tr -d '"')
-  AUTH_KEY="$ANON_KEY"
-else
-  AUTH_KEY="$SERVICE_ROLE_KEY"
-fi
+# Convert to JSON format
+echo "Converting to JSON..."
+python3 -c "
+import csv
+import json
 
-# Run from project root
-cd "$(dirname "$0")/.."
+rows = []
+with open('/tmp/test_batch.csv', 'r') as f:
+    reader = csv.DictReader(open('/Users/madengineering/ClaimGuardian/data/florida/charlotte_chunks/charlotte_part_aa.csv'))
+    for i, row in enumerate(reader):
+        if i >= 100:
+            break
+        rows.append({
+            'co_no': int(row.get('CO_NO', 18)),
+            'parcel_id': row.get('PARCEL_ID'),
+            'own_name': row.get('OWN_NAME', '').strip() or 'UNKNOWN',
+            'phy_addr1': row.get('PHY_ADDR1', '').strip() or None,
+            'phy_city': row.get('PHY_CITY', '').strip() or None,
+            'lnd_val': float(row.get('LND_VAL', 0)) if row.get('LND_VAL') else None
+        })
 
-echo "Testing with Monroe County, 50 parcels..."
+with open('/tmp/test_batch.json', 'w') as f:
+    json.dump(rows, f)
+"
 
-curl -X POST "${SUPABASE_URL}/functions/v1/load-florida-parcels-fdot" \
-  -H "Authorization: Bearer ${AUTH_KEY}" \
+echo "Uploading batch..."
+curl -X POST \
+  "$SERVICE_URL/rest/v1/florida_parcels" \
+  -H "apikey: $SERVICE_KEY" \
+  -H "Authorization: Bearer $SERVICE_KEY" \
   -H "Content-Type: application/json" \
-  -d '{"county": "Monroe", "offset": 20, "limit": 50}' \
-  -w "\nHTTP Status: %{http_code}\n" \
-  --silent | tail -n +1
+  -H "Prefer: return=minimal" \
+  -d @/tmp/test_batch.json
+
+echo ""
+echo "Check results at: https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/editor/florida_parcels"

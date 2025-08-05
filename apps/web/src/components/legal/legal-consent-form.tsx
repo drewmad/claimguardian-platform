@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Legal consent form component for signup and updates
+ * @purpose "Legal consent form component for signup and updates"
  * @owner legal-team
  * @dependencies ["react", "lucide-react", "@/lib/legal"]
  * @exports ["LegalConsentForm"]
  * @complexity medium
  * @tags ["legal", "consent", "compliance", "form"]
- * @status active
+ * @status stable
  */
 'use client'
 

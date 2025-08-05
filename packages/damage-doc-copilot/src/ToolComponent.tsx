@@ -1,16 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Damage Documentation Copilot UI Component - Real-time AI guidance for damage photography
+ * @purpose "Damage Documentation Copilot UI Component - Real-time AI guidance for damage photography"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ui", "react"]
  * @exports ["ToolComponent"]
  * @complexity medium
- * @status active
+ * @status stable
  */
 
-import React from 'react'
 import { Card, CardHeader, CardContent, Button } from '@claimguardian/ui'
 import { CameraCapture } from '@claimguardian/ui'
+import React from 'react'
+
 import { useDamageCopilot } from './useDamageCopilot'
 
 export function ToolComponent() {

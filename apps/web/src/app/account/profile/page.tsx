@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose User profile management page
+ * @purpose "User profile management page"
  * @owner auth-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["profile", "settings", "account", "page"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -19,7 +19,7 @@ import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { profileService, type UserProfile } from '@/lib/auth/profile-service'
+import { profileService } from '@/lib/auth/profile-service'
 import { logger } from '@/lib/logger'
 import { useModalStore } from '@/stores/modal-store'
 
@@ -149,7 +149,7 @@ export default function ProfilePage() {
     e.preventDefault()
 
     if (newPassword !== confirmPassword) {
-      showMessage('error', 'Passwords do not match')
+      showMessage('error', "Passwords do not match")
       return
     }
 
@@ -194,7 +194,7 @@ export default function ProfilePage() {
       }
     } catch (err) {
       logger.error('Failed to delete account', { userId: user.id }, err instanceof Error ? err : new Error(String(err)))
-      showMessage('error', 'An error occurred')
+      showMessage('error', "An error occurred")
     } finally {
       setSaving(false)
     }
@@ -443,7 +443,7 @@ export default function ProfilePage() {
                 
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-400">
-                    Changing your email will require verification. You&apos;ll receive a confirmation link at your new email address.
+                    Changing your email will require verification. You'll receive a confirmation link at your new email address.
                   </p>
                 </div>
 

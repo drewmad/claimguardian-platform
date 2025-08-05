@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server actions for compliance dashboard data with service role access
+ * @purpose "Server actions for compliance dashboard data with service role access"
+ * @dependencies ["@/lib"]
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 
 'use server'

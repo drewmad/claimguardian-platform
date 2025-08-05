@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Cookie consent banner for GDPR/CCPA compliance
+ * @purpose "Cookie consent banner for GDPR/CCPA compliance"
+ * @dependencies ["@/lib","@claimguardian/utils","lucide-react","react"]
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 'use client'
 

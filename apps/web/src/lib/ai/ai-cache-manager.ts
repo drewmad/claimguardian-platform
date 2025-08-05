@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose AI Response Caching Manager with intelligent cache strategies for cost optimization
+ * @purpose "AI Response Caching Manager with intelligent cache strategies for cost optimization"
+ * @dependencies ["crypto"]
  * @owner ai-team  
- * @status active
+ * @status stable
  */
 
 import { createHash } from 'crypto'
@@ -58,7 +59,7 @@ class AICacheManager {
    * Generate cache key from request parameters
    */
   private generateCacheKey(
-    messages: any[],
+    messages: unknown[],
     featureId: string,
     model: string,
     additionalParams?: Record<string, any>
@@ -77,7 +78,7 @@ class AICacheManager {
    * Get cached response if available and valid
    */
   async getCachedResponse(
-    messages: any[],
+    messages: unknown[],
     featureId: string,
     model: string,
     additionalParams?: Record<string, any>
@@ -118,7 +119,7 @@ class AICacheManager {
    * Cache AI response with intelligent TTL and compression
    */
   async cacheResponse(
-    messages: any[],
+    messages: unknown[],
     featureId: string,
     model: string,
     response: string,
@@ -188,7 +189,7 @@ class AICacheManager {
    * Find semantically similar cached responses
    */
   private async findSimilarCachedResponse(
-    messages: any[],
+    messages: unknown[],
     featureId: string,
     model: string
   ): Promise<CachedResponse | null> {

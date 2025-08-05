@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose Central export for LLM integration services
+ * @purpose "Central export for LLM integration services"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */

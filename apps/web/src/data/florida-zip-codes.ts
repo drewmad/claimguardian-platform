@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Florida ZIP codes with city and county mapping
+ * @purpose "Florida ZIP codes with city and county mapping"
  * @owner data-team
  * @dependencies []
  * @exports ["floridaZipCodes", "getZipCodeInfo"]
  * @complexity low
  * @tags ["data", "florida", "zip-codes"]
- * @status active
+ * @status stable
  */
 
 interface ZipCodeInfo {

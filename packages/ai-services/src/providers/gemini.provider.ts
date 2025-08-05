@@ -1,4 +1,14 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
+import { GoogleGenerativeAI, GenerativeContent } from '@google/generative-ai';
 
 import {
   AIRequest,
@@ -109,7 +119,7 @@ export class GeminiProvider extends BaseAIProvider {
       
       const result = await this.withRetry(async () => {
         return await genAI.generateContent({
-          contents,
+          contents: contents as GenerativeContent[],
           generationConfig: {
             maxOutputTokens: request.maxTokens || 2048,
             temperature: request.temperature || 0.7,
@@ -196,7 +206,7 @@ export class GeminiProvider extends BaseAIProvider {
       
       return {
         text,
-        analysis,
+        analysis: analysis as Record<string, unknown>,
         usage: {
           promptTokens: usage.promptTokens,
           completionTokens: usage.completionTokens,
@@ -234,7 +244,7 @@ export class GeminiProvider extends BaseAIProvider {
     return (tokens / 1000) * modelPricing.input; // Simplified - assumes input tokens
   }
   
-  validateResponse(response: any): boolean {
+  validateResponse(response: unknown): boolean {
     return typeof response === 'string' && response.trim().length > 0;
   }
   
@@ -244,8 +254,8 @@ export class GeminiProvider extends BaseAIProvider {
   
   // Helper methods specific to Gemini
   
-  private convertMessagesToGeminiFormat(messages: ChatMessage[]): any[] {
-    const contents: any[] = [];
+  private convertMessagesToGeminiFormat(messages: ChatMessage[]): unknown[] {
+    const contents: unknown[] = [];
     
     // Gemini doesn't have a system role, so we prepend it to the first user message
     let systemPrompt = '';
@@ -307,7 +317,7 @@ export class GeminiProvider extends BaseAIProvider {
     );
   }
   
-  private parseImageAnalysis(text: string): any {
+  private parseImageAnalysis(text: string): unknown {
     // Try to extract structured data from the response
     try {
       // Look for JSON in the response
@@ -339,7 +349,7 @@ export class GeminiProvider extends BaseAIProvider {
   }
   
   private extractText(text: string): string[] {
-    // Extract any quoted text or text mentions
+    // Extract unknown quoted text or text mentions
     const textMatches = text.match(/"([^"]+)"/g);
     if (textMatches) {
       return textMatches.map(match => match.replace(/"/g, ''));
@@ -359,15 +369,16 @@ export class GeminiProvider extends BaseAIProvider {
   }
   
   // Override error handling for Gemini-specific errors
-  protected handleError(error: any, request: AIRequest | ChatRequest): never {
+  protected handleError(error: unknown, request: AIRequest | ChatRequest): never {
+    const err = error as Error;
     console.error('[GeminiProvider] Error:', {
-      error: error.message || error,
+      error: err.message || error,
       feature: request.feature,
       userId: request.userId
     });
     
     // Handle Gemini-specific errors
-    if (error.message?.includes('API key not valid')) {
+    if (err.message?.includes('API key not valid')) {
       throw new AIServiceError(
         'Invalid Gemini API key',
         'AUTH_ERROR',
@@ -376,7 +387,7 @@ export class GeminiProvider extends BaseAIProvider {
       );
     }
     
-    if (error.message?.includes('Resource has been exhausted')) {
+    if (err.message?.includes('Resource has been exhausted')) {
       throw new AIServiceError(
         'Gemini quota exceeded',
         'QUOTA_EXCEEDED',
@@ -385,7 +396,7 @@ export class GeminiProvider extends BaseAIProvider {
       );
     }
     
-    if (error.message?.includes('SAFETY')) {
+    if (err.message?.includes('SAFETY')) {
       throw new AIServiceError(
         'Content blocked by safety filters',
         'SAFETY_BLOCK',

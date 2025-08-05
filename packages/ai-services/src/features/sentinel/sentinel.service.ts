@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 import { AIOrchestrator } from '../../orchestrator/orchestrator';
@@ -15,7 +25,7 @@ interface ClaimDeadline {
   remindersSent: number;
   lastReminderAt?: Date;
   completedAt?: Date;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 interface ReminderConfig {
@@ -29,6 +39,26 @@ interface DeadlineAnalysis {
   riskLevel: 'low' | 'medium' | 'high' | 'critical';
   recommendations: string[];
   summary: string;
+}
+
+interface SentinelClaimData {
+  claimId: string;
+  damageDate: string;  
+  currentStatus: string;
+  claimType: string;
+  propertyLocation: string;
+}
+
+interface DeadlineResponse {
+  description: string;
+  daysFromNow: number;
+  priority: 'low' | 'medium' | 'high' | 'critical';
+}
+
+interface ReminderMessage {
+  subject: string;
+  message: string;
+  tone: string;
 }
 
 export class SentinelService {
@@ -65,7 +95,14 @@ export class SentinelService {
     userId: string
   ): Promise<DeadlineAnalysis> {
     // 1. Generate applicable deadlines based on claim type
-    const deadlines = await this.generateDeadlines(claimId, claimData, userId);
+    const fullClaimData: SentinelClaimData = {
+      claimId,
+      damageDate: claimData.damageDate.toISOString(),
+      claimType: claimData.claimType,
+      currentStatus: claimData.currentStatus,
+      propertyLocation: claimData.propertyLocation
+    }
+    const deadlines = await this.generateDeadlines(claimId, fullClaimData, userId);
     
     // 2. Save deadlines to database
     await this.saveDeadlines(deadlines);
@@ -76,7 +113,7 @@ export class SentinelService {
     // 4. Generate AI recommendations
     const recommendations = await this.generateRecommendations(
       deadlines,
-      claimData,
+      fullClaimData,
       userId
     );
     
@@ -195,7 +232,7 @@ export class SentinelService {
   
   private async generateDeadlines(
     claimId: string,
-    claimData: any,
+    claimData: SentinelClaimData,
     userId: string
   ): Promise<ClaimDeadline[]> {
     const deadlines: ClaimDeadline[] = [];
@@ -247,7 +284,7 @@ export class SentinelService {
       });
     }
     
-    // Add any custom deadlines from AI analysis
+    // Add unknown custom deadlines from AI analysis
     const aiDeadlines = await this.analyzeForAdditionalDeadlines(claimData, userId);
     deadlines.push(...aiDeadlines);
     
@@ -255,11 +292,11 @@ export class SentinelService {
   }
   
   private async analyzeForAdditionalDeadlines(
-    claimData: any,
+    claimData: SentinelClaimData,
     userId: string
   ): Promise<ClaimDeadline[]> {
     const request: AIRequest = {
-      prompt: `Analyze this insurance claim and identify any additional deadlines:
+      prompt: `Analyze this insurance claim and identify unknown additional deadlines:
         
         Claim Type: ${claimData.claimType}
         Damage Date: ${claimData.damageDate}
@@ -281,7 +318,7 @@ export class SentinelService {
     const response = await this.orchestrator.process(request);
     const additionalDeadlines = JSON.parse(response.text);
     
-    return additionalDeadlines.map((dl: any) => ({
+    return additionalDeadlines.map((dl: DeadlineResponse) => ({
       id: crypto.randomUUID(),
       claimId: claimData.claimId,
       userId,
@@ -322,7 +359,7 @@ export class SentinelService {
   
   private async generateRecommendations(
     deadlines: ClaimDeadline[],
-    claimData: any,
+    claimData: SentinelClaimData,
     userId: string
   ): Promise<string[]> {
     const request: AIRequest = {
@@ -462,7 +499,7 @@ export class SentinelService {
   
   private async sendReminder(
     deadline: ClaimDeadline,
-    reminder: any,
+    reminder: ReminderMessage,
     config: ReminderConfig
   ): Promise<void> {
     // This would integrate with actual notification services

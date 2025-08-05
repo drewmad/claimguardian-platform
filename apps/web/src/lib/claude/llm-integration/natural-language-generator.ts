@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose Natural language generation for learning descriptions
+ * @purpose "Natural language generation for learning descriptions"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */

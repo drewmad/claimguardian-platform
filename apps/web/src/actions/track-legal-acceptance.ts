@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server action to track legal document acceptance
+ * @purpose "Server action to track legal document acceptance"
  * @owner compliance-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["trackLegalAcceptance"]
  * @complexity medium
  * @tags ["legal", "compliance", "tracking"]
- * @status active
+ * @status stable
  */
 
 'use server'

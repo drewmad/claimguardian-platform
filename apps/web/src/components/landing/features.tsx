@@ -1,25 +1,25 @@
 /**
  * @fileMetadata
- * @purpose Displays the value proposition and key features section on the landing page.
+ * @purpose "Displays the value proposition and key features section on the landing page."
+ * @dependencies ["@/lib","lucide-react","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Value proposition section with animated cards
+ * @purpose "Value proposition section with animated cards"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants"]
  * @exports ["Features"]
  * @complexity medium
  * @tags ["landing", "value-props", "animated"]
- * @status active
+ * @status stable
  */
 'use client'
 
 import { Clock, DollarSign, ShieldCheck } from 'lucide-react'
 import { useState, useEffect, useRef } from 'react'
 
-import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 
 // Animation hook reused

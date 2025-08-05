@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Production error monitoring and pattern detection for ClaimGuardian
+ * @purpose "Production error monitoring and pattern detection for ClaimGuardian"
+ * @dependencies ["@/lib","@supabase/supabase-js"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { claudeErrorLogger, claudeErrorHelpers } from './claude-error-logger'
@@ -252,7 +253,7 @@ class ProductionErrorMonitor {
   /**
    * Analyze production error patterns from logs
    */
-  async analyzeProductionErrorPatterns(logEntries: any[]): Promise<ProductionErrorPattern[]> {
+  async analyzeProductionErrorPatterns(logEntries: unknown[]): Promise<ProductionErrorPattern[]> {
     const patterns = new Map<string, ProductionErrorPattern>()
 
     for (const entry of logEntries) {
@@ -372,7 +373,7 @@ export const productionErrorMonitor = new ProductionErrorMonitor()
 /**
  * Helper function to log production errors from your error log data
  */
-export const logProductionErrorBatch = async (errorLogEntries: any[]) => {
+export const logProductionErrorBatch = async (errorLogEntries: unknown[]) => {
   const patterns = await productionErrorMonitor.analyzeProductionErrorPatterns(errorLogEntries)
   
   // Log critical patterns to Claude Learning System

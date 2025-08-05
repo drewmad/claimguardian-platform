@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Forgot password modal component
+ * @purpose "Forgot password modal component"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/stores/modal-store", "@/lib/supabase"]
  * @exports ["ForgotPasswordModal"]
  * @complexity low
  * @tags ["modal", "auth", "password-reset"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -60,7 +60,7 @@ export function ForgotPasswordModal() {
           
           <h2 className="text-2xl font-bold mb-4">Check Your Email</h2>
           <p className="text-slate-300">
-            We&apos;ve sent a password reset link to <strong>{email}</strong>
+            We've sent a password reset link to <strong>{email}</strong>
           </p>
           <p className="text-slate-400 text-sm mt-2">
             Please check your email and follow the instructions to reset your password.
@@ -94,7 +94,7 @@ export function ForgotPasswordModal() {
 
         <h2 className="text-2xl font-bold mb-2">Forgot Your Password?</h2>
         <p className="text-slate-400 mb-6">
-          Enter your email address and we&apos;ll send you a link to reset your password.
+          Enter your email address and we'll send you a link to reset your password.
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-4">

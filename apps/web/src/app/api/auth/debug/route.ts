@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Debug endpoint to check auth configuration
+ * @purpose "Debug endpoint to check auth configuration"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
 import { cookies } from 'next/headers'

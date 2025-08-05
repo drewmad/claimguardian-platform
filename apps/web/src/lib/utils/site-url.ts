@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Utility for getting the correct site URL in different environments
+ * @purpose "Utility for getting the correct site URL in different environments"
+ * @dependencies []
  * @owner frontend-team
  * @complexity low
  * @tags ["utility", "url", "environment"]
- * @status active
+ * @status stable
  */
 
 /**

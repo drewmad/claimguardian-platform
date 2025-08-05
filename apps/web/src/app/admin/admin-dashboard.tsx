@@ -1,37 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  Shield, 
-  ArrowLeft, 
-  Users, 
-  FileText, 
-  AlertCircle, 
-  Settings, 
-  Activity,
-  Brain,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Search,
-  Calendar,
-  Eye,
-  Zap,
-  Target,
-  DollarSign,
-  TrendingUp,
-  ChevronDown,
-  ChevronRight,
-  Home,
-  Database,
-  Lock,
-  Menu,
-  X as CloseIcon,
-  Layers,
-  Cpu,
-  FileCheck,
-  GraduationCap
-} from 'lucide-react'
+import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, BarChart3, Clock, CheckCircle, XCircle, Search, Calendar, Eye, Zap, Target, DollarSign, Home, Database, Layers, Cpu, FileCheck, GraduationCap, Server } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
@@ -39,6 +18,13 @@ import { LegalDocumentsTab } from './legal-documents-tab'
 import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dashboard'
 import { AICostsDashboard } from '@/components/admin/ai-costs-dashboard'
 import { ABTestDashboard } from '@/components/admin/ab-test-dashboard'
+import { AICacheDashboard } from '@/components/admin/ai-cache-dashboard'
+import { RedisCacheDashboard } from '@/components/admin/redis-cache-dashboard'
+import { AIPerformanceMonitor } from '@/components/admin/ai-performance-monitor'
+import { BatchMonitorDashboard } from '@/components/admin/batch-monitor-dashboard'
+import { RealTimeAnalyticsDashboard } from '@/components/admin/real-time-analytics-dashboard'
+import { PartitionMonitorDashboard } from '@/components/admin/partition-monitor-dashboard'
+import { TimeSeriesAnalyticsDashboard } from '@/components/admin/time-series-analytics-dashboard'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -47,22 +33,76 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
-import { cn } from '@/lib/utils'
-
+// Navigation menu structure
+const navigationMenu = [
+  {
+    category: 'Dashboard',
+    items: [
+      { id: 'overview', label: 'Overview', icon: Home },
+    ]
+  },
+  {
+    category: 'User Management',
+    items: [
+      { id: 'users', label: 'Users', icon: Users },
+      { id: 'compliance', label: 'Compliance', icon: FileCheck },
+    ]
+  },
+  {
+    category: 'AI & ML',
+    items: [
+      { id: 'ai-models', label: 'AI Models', icon: Brain },
+      { id: 'ai-costs', label: 'AI Costs', icon: DollarSign },
+      { id: 'ai-cache', label: 'AI Cache', icon: Database },
+      { id: 'redis-cache', label: 'Redis Cache', icon: Server },
+      { id: 'ai-performance', label: 'Performance Monitor', icon: Activity },
+      { id: 'batch-processing', label: 'Batch Processing', icon: Layers },
+      { id: 'ml-operations', label: 'ML Operations', icon: Cpu },
+      { id: 'claude-learning', label: 'Claude Learning', icon: GraduationCap },
+    ]
+  },
+  {
+    category: 'Analytics',
+    items: [
+      { id: 'real-time', label: 'Real-Time Analytics', icon: Activity },
+      { id: 'time-series', label: 'Time-Series Analytics', icon: BarChart3 },
+      { id: 'ab-testing', label: 'A/B Testing', icon: Target },
+      { id: 'errors', label: 'Error Dashboard', icon: AlertCircle },
+    ]
+  },
+  {
+    category: 'System',
+    items: [
+      { id: 'partitions', label: 'Partition Management', icon: Layers },
+      { id: 'legal-docs', label: 'Legal Documents', icon: FileText },
+      { id: 'settings', label: 'Settings', icon: Settings },
+    ]
+  }
+]
 
 export function AdminDashboard() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [activeTab, setActiveTab] = useState('overview')
   const [searchQuery, setSearchQuery] = useState('')
+  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'AI & ML'])
   
   // Handle tab query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab')
-    if (tabParam && ['overview', 'users', 'ai-models', 'ab-testing', 'ai-costs', 'ml-operations', 'errors', 'legal-docs', 'compliance', 'claude-learning', 'settings'].includes(tabParam)) {
+    if (tabParam && ['overview', 'users', 'ai-models', 'ab-testing', 'ai-costs', 'ai-cache', 'ai-performance', 'batch-processing', 'ml-operations', 'real-time', 'time-series', 'partitions', 'errors', 'legal-docs', 'compliance', 'claude-learning', 'settings'].includes(tabParam)) {
       setActiveTab(tabParam)
     }
   }, [searchParams])
+
+  const toggleCategory = (category: string) => {
+    setExpandedCategories(prev => 
+      prev.includes(category)
+        ? prev.filter(c => c !== category)
+        : [...prev, category]
+    )
+  }
 
   // Mock data - replace with real data from your API
   const stats = {
@@ -272,6 +312,14 @@ export function AdminDashboard() {
                   <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ab-testing')}>
                     <Target className="mr-2 h-4 w-4" />
                     A/B Testing
+                  </Button>
+                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-cache')}>
+                    <Database className="mr-2 h-4 w-4" />
+                    AI Cache
+                  </Button>
+                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-performance')}>
+                    <Activity className="mr-2 h-4 w-4" />
+                    Performance
                   </Button>
                   <Button variant="outline" className="justify-start" onClick={() => setActiveTab('claude-learning')}>
                     <Zap className="mr-2 h-4 w-4" />
@@ -662,6 +710,16 @@ export function AdminDashboard() {
             </Card>
           </TabsContent>
 
+          {/* Real-Time Analytics Tab */}
+          <TabsContent value="real-time" className="space-y-6">
+            <RealTimeAnalyticsDashboard />
+          </TabsContent>
+
+          {/* Time-Series Analytics Tab */}
+          <TabsContent value="time-series" className="space-y-6">
+            <TimeSeriesAnalyticsDashboard />
+          </TabsContent>
+
           {/* A/B Testing Tab */}
           <TabsContent value="ab-testing" className="space-y-6">
             <ABTestDashboard />
@@ -670,6 +728,26 @@ export function AdminDashboard() {
           {/* AI Costs Tab */}
           <TabsContent value="ai-costs" className="space-y-6">
             <AICostsDashboard />
+          </TabsContent>
+
+          {/* AI Cache Tab */}
+          <TabsContent value="ai-cache" className="space-y-6">
+            <AICacheDashboard />
+          </TabsContent>
+
+          {/* Redis Cache Tab */}
+          <TabsContent value="redis-cache" className="space-y-6">
+            <RedisCacheDashboard />
+          </TabsContent>
+
+          {/* AI Performance Monitor Tab */}
+          <TabsContent value="ai-performance" className="space-y-6">
+            <AIPerformanceMonitor />
+          </TabsContent>
+
+          {/* Batch Processing Tab */}
+          <TabsContent value="batch-processing" className="space-y-6">
+            <BatchMonitorDashboard />
           </TabsContent>
 
           {/* ML Operations Tab */}
@@ -879,6 +957,11 @@ export function AdminDashboard() {
           {/* Claude Learning Tab */}
           <TabsContent value="claude-learning">
             <ClaudeLearningDashboard />
+          </TabsContent>
+
+          {/* Partition Management Tab */}
+          <TabsContent value="partitions" className="space-y-6">
+            <PartitionMonitorDashboard />
           </TabsContent>
 
           {/* Legal Documents Tab */}

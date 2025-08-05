@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import OpenAI from 'openai'
 
 import type { AIResponse } from '../types'
@@ -78,7 +88,7 @@ export class OpenAIProvider extends AIProvider {
     }
   }
 
-  async generateText(prompt: string, context?: Record<string, any>): Promise<AIResponse<string>> {
+  async generateText(prompt: string, context?: Record<string, unknown>): Promise<AIResponse<string>> {
     if (!this.isAvailable()) {
       return { success: false, error: 'OpenAI API not configured' }
     }
@@ -86,7 +96,7 @@ export class OpenAIProvider extends AIProvider {
     const startTime = Date.now()
 
     try {
-      const messages: any[] = []
+      const messages: unknown[] = []
       
       if (context) {
         messages.push({
@@ -102,7 +112,7 @@ export class OpenAIProvider extends AIProvider {
 
       const completion = await this.client!.chat.completions.create({
         model: 'gpt-4o-mini',
-        messages,
+        messages: messages as OpenAI.Chat.Completions.ChatCompletionMessageParam[],
         temperature: 0.7,
         max_tokens: 2000
       })

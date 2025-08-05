@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose LLM-powered learning synthesis for meta-pattern identification
+ * @purpose "LLM-powered learning synthesis for meta-pattern identification"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Stripe payment integration service
+ * @purpose "Stripe payment integration service"
+ * @dependencies ["@/config","@stripe/stripe-js"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import { loadStripe, Stripe } from '@stripe/stripe-js'

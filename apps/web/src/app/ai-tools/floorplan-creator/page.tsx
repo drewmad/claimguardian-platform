@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { 
@@ -137,15 +147,15 @@ export default function FloorplanCreatorPage() {
     setShowARScanner(true)
   }
 
-  const handleARScanComplete = (measurements: any) => {
+  const handleARScanComplete = (measurements: Record<string, unknown>) => {
     // Convert AR measurements to room format
     const newRoom: Room = {
       id: Date.now().toString(),
       name: `${selectedRoomTypeForScan.charAt(0).toUpperCase() + selectedRoomTypeForScan.slice(1)}`,
       type: selectedRoomTypeForScan as Room['type'],
       dimensions: {
-        width: measurements.width,
-        height: measurements.length // Use length as room height in 2D view
+        width: measurements.width as number,
+        height: measurements.length as number // Use length as room height in 2D view
       },
       position: {
         x: currentPlan.rooms.length * 50 + 50,

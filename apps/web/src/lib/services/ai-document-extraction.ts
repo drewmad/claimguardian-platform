@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose AI service for extracting data from policy documents
+ * @purpose "AI service for extracting data from policy documents"
  * @owner ai-team
  * @dependencies ["@/lib/logger"]
  * @exports ["aiDocumentExtractionService"]
  * @complexity high
  * @tags ["service", "ai", "document-extraction", "ocr"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'

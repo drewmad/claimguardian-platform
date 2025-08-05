@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Enhanced error boundary with proper error classification and recovery
+ * @purpose "Enhanced error boundary with proper error classification and recovery"
+ * @dependencies ["@/lib","@claimguardian/utils","lucide-react","react"]
  * @owner platform-team
  * @complexity medium
  * @tags ["error-handling", "boundary", "recovery"]
- * @status active
+ * @status stable
  */
 
 'use client'

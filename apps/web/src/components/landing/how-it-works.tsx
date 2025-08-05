@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose How It Works section with animated process steps
+ * @purpose "How It Works section with animated process steps"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["HowItWorks"]
  * @complexity medium
  * @tags ["landing", "process", "steps"]
- * @status active
+ * @status stable
  */
 'use client'
 

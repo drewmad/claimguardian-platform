@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Type definitions for services
+ * @purpose "Type definitions for services"
+ * @dependencies []
  * @owner core-team
- * @status active
+ * @status stable
  */
 
 /**

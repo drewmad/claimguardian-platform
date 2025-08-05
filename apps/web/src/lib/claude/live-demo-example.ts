@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose LIVE DEMO - Claude Complete Learning System in Action
+ * @purpose "LIVE DEMO - Claude Complete Learning System in Action"
+ * @dependencies ["@/lib","lucide-react","react"]
  * @owner ai-team
- * @status active
+ * @status stable
  * @tags ["demo", "live-example", "complete-learning"]
  */
 
@@ -304,7 +305,7 @@ export async function demonstrateLearningSystem() {
 /**
  * Template for wrapping your existing functions
  */
-export function wrapExistingFunction<T extends (...args: any[]) => Promise<any>>(
+export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<any>>(
   functionName: string,
   originalFunction: T,
   options: {
@@ -318,8 +319,8 @@ export function wrapExistingFunction<T extends (...args: any[]) => Promise<any>>
   const wrappedFunction = withCompleteLearning(
     options.taskType,
     functionName,
-    \`Execute \${functionName} with learning\`,
-    \`User requested \${functionName}\`,
+    `Execute ${functionName} with learning`,
+    `User requested ${functionName}`,
     {
       filePath: options.filePath,
       codeLanguage: options.language,
@@ -335,7 +336,7 @@ export function wrapExistingFunction<T extends (...args: any[]) => Promise<any>>
 /**
  * Smart wrapper that automatically determines task type
  */
-export function smartWrap<T extends (...args: any[]) => Promise<any>>(
+export function smartWrap<T extends (...args: unknown[]) => Promise<any>>(
   functionName: string,
   originalFunction: T
 ): T {

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Sign out button component with loading state
+ * @purpose "Sign out button component with loading state"
+ * @dependencies ["@/components","@/lib","@claimguardian/ui","lucide-react","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 

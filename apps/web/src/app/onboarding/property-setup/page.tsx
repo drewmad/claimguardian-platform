@@ -1,7 +1,17 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { Shield, Home, MapPin, Search, Loader2, Check, AlertCircle } from 'lucide-react'
+import { Shield, Home, MapPin, Loader2, Check, AlertCircle } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect, useRef } from 'react'

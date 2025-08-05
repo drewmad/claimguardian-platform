@@ -1,12 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Advanced Learning Analytics - Trend Analysis, Success Prediction, and ROI Calculation
+ * @purpose "Advanced Learning Analytics - Trend Analysis, Success Prediction, and ROI Calculation"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-complete-learning-system", "@/lib/logger"]
  */
 
-import { claudeErrorLogger } from './claude-error-logger'
 import { claudeSelfReflection } from './claude-self-reflection'
 import { completeLearningSystem } from './claude-complete-learning-system'
 import { logger } from '@/lib/logger'
@@ -257,7 +256,7 @@ class ClaudeAdvancedAnalytics {
     }
   }
 
-  private async getHistoricalTaskData(taskType: string, complexity: string, context: any) {
+  private async getHistoricalTaskData(taskType: string, complexity: string, context: unknown) {
     // Mock historical data - in production, query actual database
     return {
       sampleSize: Math.floor(Math.random() * 50) + 10,
@@ -283,7 +282,7 @@ class ClaudeAdvancedAnalytics {
     return baseRates[taskType as keyof typeof baseRates]?.[complexity as keyof typeof baseRates.analysis] || 0.70
   }
 
-  private adjustForContext(baseProbability: number, context: any, historicalData: any): number {
+  private adjustForContext(baseProbability: number, context: unknown, historicalData: unknown): number {
     let adjusted = baseProbability
 
     // Framework familiarity
@@ -316,7 +315,7 @@ class ClaudeAdvancedAnalytics {
     return adjusted
   }
 
-  private estimateExecutionTime(taskType: string, complexity: string, context: any): number {
+  private estimateExecutionTime(taskType: string, complexity: string, context: unknown): number {
     const baseTimes = {
       'code-generation': { simple: 180, medium: 360, complex: 720 },
       'file-modification': { simple: 120, medium: 240, complex: 480 },
@@ -339,7 +338,7 @@ class ClaudeAdvancedAnalytics {
     return Math.round(baseTime)
   }
 
-  private identifyRiskFactors(taskType: string, complexity: string, context: any, historicalData: any): string[] {
+  private identifyRiskFactors(taskType: string, complexity: string, context: unknown, historicalData: unknown): string[] {
     const risks: string[] = []
 
     if (complexity === 'complex') {
@@ -365,7 +364,7 @@ class ClaudeAdvancedAnalytics {
     return risks
   }
 
-  private recommendApproach(taskType: string, complexity: string, context: any, historicalData: any): string {
+  private recommendApproach(taskType: string, complexity: string, context: unknown, historicalData: unknown): string {
     const approaches = {
       'code-generation': {
         simple: 'Use established component patterns with quick iteration',
@@ -397,7 +396,7 @@ class ClaudeAdvancedAnalytics {
     return approaches[taskType as keyof typeof approaches]?.[complexity as keyof typeof approaches.analysis] || 'Apply systematic approach with careful validation'
   }
 
-  private calculateConfidenceLevel(sampleSize: number, context: any): number {
+  private calculateConfidenceLevel(sampleSize: number, context: unknown): number {
     let confidence = Math.min(0.95, 0.5 + (sampleSize / 100)) // Base confidence from sample size
 
     // Adjust for context completeness
@@ -673,5 +672,4 @@ class ClaudeAdvancedAnalytics {
 // Export singleton instance
 export const claudeAdvancedAnalytics = new ClaudeAdvancedAnalytics()
 
-// Export types for external use
-export type { TrendDataPoint, PredictionModel, BottleneckAnalysis, ROIMetrics }
+// Types are already exported as interfaces above

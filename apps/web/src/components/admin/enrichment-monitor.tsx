@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Admin component to monitor property enrichment status
+ * @purpose "Admin component to monitor property enrichment status"
+ * @dependencies ["@/actions","@/components","@/lib","@claimguardian/ui","react"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 
 'use client'

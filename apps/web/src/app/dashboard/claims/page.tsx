@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Claims tracking and management dashboard
+ * @purpose "Claims tracking and management dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "claims", "insurance"]
- * @status active
+ * @status stable
  */
 'use client'
 

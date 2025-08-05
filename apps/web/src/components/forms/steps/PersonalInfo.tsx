@@ -1,6 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { User, Mail, Phone as PhoneIcon, Lock, Shield } from 'lucide-react'
+import { User, Phone as PhoneIcon, Shield } from 'lucide-react'
 import React from 'react'
 import { useForm } from 'react-hook-form'
 

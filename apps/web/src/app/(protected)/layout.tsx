@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Protected routes layout with server-side auth validation
+ * @purpose "Protected routes layout with server-side auth validation"
+ * @dependencies ["@/lib","next"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
 import { redirect } from 'next/navigation'

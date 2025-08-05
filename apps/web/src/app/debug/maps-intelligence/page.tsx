@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { googleMapsService } from '@/lib/services/google-maps-unified'
@@ -15,7 +25,7 @@ interface TestResult {
   api: string
   status: 'idle' | 'testing' | 'success' | 'error'
   duration?: number
-  data?: any
+  data?: Record<string, unknown>
   error?: string
   cached?: boolean
 }
@@ -50,7 +60,7 @@ export default function MapsIntelligencePage() {
   
   const [testResults, setTestResults] = useState<Record<string, TestResult>>({})
   const [isRunningAll, setIsRunningAll] = useState(false)
-  const [unifiedResults, setUnifiedResults] = useState<any>(null)
+  const [unifiedResults, setUnifiedResults] = useState<Record<string, unknown> | null>(null)
   const [supabase] = useState(() => createBrowserSupabaseClient())
 
   const updateTestResult = (api: string, update: Partial<TestResult>) => {
@@ -211,10 +221,10 @@ export default function MapsIntelligencePage() {
         cached = false
       } else {
         // Google Maps service response format
-        success = (result as any).success
-        data = (result as any).data
-        error = (result as any).error
-        cached = (result as any).cached
+        success = (result as Record<string, unknown>).success
+        data = (result as Record<string, unknown>).data
+        error = (result as Record<string, unknown>).error
+        cached = (result as Record<string, unknown>).cached
       }
       
       updateTestResult(apiKey, {

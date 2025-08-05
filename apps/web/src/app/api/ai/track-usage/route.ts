@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { NextRequest, NextResponse } from 'next/server'
 import { logger } from "@/lib/logger/production-logger"
 import { createClient } from '@/lib/supabase/server'
@@ -11,7 +21,7 @@ interface UsageTrackingData {
   userId?: string
   timestamp: string
   promptId?: string
-  requestMetadata?: Record<string, any>
+  requestMetadata?: Record<string, unknown>
 }
 
 export async function POST(request: NextRequest) {
@@ -27,7 +37,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const supabase = createClient()
+    const supabase = await createClient()
     
     // Get current user if not provided
     let trackingUserId = userId

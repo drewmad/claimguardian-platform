@@ -1,9 +1,21 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { CacheManager } from './cache/cache.manager';
 import { SemanticCache } from './cache/semantic-cache';
 import { CostTracker } from './monitoring/cost-tracker';
 import { AIMonitoringDashboard } from './monitoring/dashboard';
 import { AIOrchestrator } from './orchestrator/orchestrator';
 import { GeminiProvider } from './providers/gemini.provider';
+import { BaseAIProvider } from './providers/base.provider';
+import type { AIRequest, ChatRequest, ImageAnalysisRequest } from './types/index';
 
 // Singleton instance
 let aiServiceInstance: AIService | null = null;
@@ -28,7 +40,7 @@ export class AIService {
     );
     
     // Initialize providers
-    const providers: Record<string, any> = {};
+    const providers: Record<string, BaseAIProvider> = {};
     
     // Add Gemini if configured
     if (process.env.GEMINI_API_KEY) {
@@ -70,15 +82,15 @@ export class AIService {
   }
   
   // Delegate all methods to orchestrator
-  async process(request: any) {
+  async process(request: AIRequest) {
     return this.orchestrator.process(request);
   }
   
-  async chat(request: any) {
+  async chat(request: ChatRequest) {
     return this.orchestrator.chat(request);
   }
   
-  async analyzeImage(request: any) {
+  async analyzeImage(request: ImageAnalysisRequest) {
     return this.orchestrator.analyzeImage(request);
   }
   

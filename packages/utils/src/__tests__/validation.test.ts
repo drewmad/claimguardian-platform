@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for validation utility functions
+ * @purpose "Tests for validation utility functions"
  * @owner test-team
  * @dependencies ["vitest"]
  * @exports []
  * @complexity low
  * @tags ["test", "validation", "utilities"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:16:00Z
  */

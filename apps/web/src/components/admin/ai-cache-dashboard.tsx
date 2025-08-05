@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -6,20 +16,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Database, 
-  Zap, 
-  TrendingUp, 
-  Clock, 
-  DollarSign,
-  RotateCcw,
-  Trash2,
-  Settings,
-  BarChart3,
-  Activity,
-  HardDrive,
-  Timer
-} from 'lucide-react'
+import { Database, Zap, TrendingUp, DollarSign, RotateCcw, Trash2, Settings, Activity, HardDrive, Timer } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -114,7 +111,7 @@ export function AICacheDashboard() {
   ] : []
 
   const featureUsageData = Object.entries(featureStats).map(([feature, stats]) => ({
-    feature: feature.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase()),
+    feature: feature.replace('-', ' ').replace(/\b\w/g, (l: string) => l.toUpperCase()),
     count: stats.count,
     cost: stats.totalCost,
     avgAge: Math.round(stats.avgAge / (1000 * 60 * 60)) // Convert to hours
@@ -124,7 +121,7 @@ export function AICacheDashboard() {
     .sort((a, b) => a.timestamp - b.timestamp)
     .slice(-24) // Last 24 entries
     .reduce((acc, item, index) => {
-      const existing = acc.find(d => d.hour === Math.floor(index / 4))
+      const existing = acc.find((d: unknown) => d.hour === Math.floor(index / 4))
       const costSaved = item.cost * (item.accessCount - 1) // Saved cost from cache hits
       
       if (existing) {
@@ -137,7 +134,7 @@ export function AICacheDashboard() {
         })
       }
       return acc
-    }, [] as any[])
+    }, [] as unknown[])
 
   if (loading) {
     return (
@@ -272,7 +269,7 @@ export function AICacheDashboard() {
                       cy="50%"
                       labelLine={false}
                       label={({ name, value, percent }) => 
-                        `${name}: ${value} (${(percent * 100).toFixed(1)}%)`
+                        `${name}: ${value} (${((percent || 0) * 100).toFixed(1)}%)`
                       }
                       outerRadius={100}
                       fill="#8884d8"

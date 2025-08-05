@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import type { AIResponse } from '../types'
 
 export abstract class AIProvider {
@@ -18,7 +28,7 @@ export abstract class AIProvider {
   
   abstract generateText(
     prompt: string,
-    context?: Record<string, any>
+    context?: Record<string, unknown>
   ): Promise<AIResponse<string>>
   
   abstract analyzeImage(

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for Supabase client creation and configuration
+ * @purpose "Tests for Supabase client creation and configuration"
  * @owner test-team
  * @dependencies ["vitest", "@supabase/supabase-js", "@supabase/ssr"]
  * @exports []
  * @complexity medium
  * @tags ["test", "database", "supabase", "client"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:20:00Z
  */

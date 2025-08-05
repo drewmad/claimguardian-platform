@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Generic content modal for displaying various information
+ * @purpose "Generic content modal for displaying various information"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/stores/modal-store"]
  * @exports ["ContentModal"]
  * @complexity low
  * @tags ["modal", "content", "generic"]
- * @status active
+ * @status stable
  */
 'use client'
 

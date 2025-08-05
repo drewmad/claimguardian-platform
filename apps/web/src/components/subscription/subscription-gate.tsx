@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Component to gate features based on subscription plan
+ * @purpose "Component to gate features based on subscription plan"
+ * @dependencies ["@/components","@/config","@/hooks","lucide-react","next"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 'use client'

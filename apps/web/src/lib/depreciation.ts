@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Depreciation calculation utilities for personal property
+ * @purpose "Depreciation calculation utilities for personal property"
+ * @dependencies []
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
 export interface DepreciationSchedule {

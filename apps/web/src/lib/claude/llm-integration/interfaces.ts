@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose LLM integration interfaces for Claude Learning System
+ * @purpose "LLM integration interfaces for Claude Learning System"
+ * @dependencies []
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 /**

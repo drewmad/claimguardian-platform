@@ -1,0 +1,5938 @@
+{
+  "generatedAt": "2025-08-05T18:07:15.524Z",
+  "summary": {
+    "totalFiles": 579,
+    "filesWithMetadata": 577,
+    "overallCoverage": 100,
+    "coverageByDirectory": {
+      "apps/web": {
+        "total": 7,
+        "withMetadata": 6,
+        "coverage": 86
+      },
+      "packages/utils": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ui": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/realtime": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/monitoring": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/config": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "packages/ai-services": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ai-config": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/public": {
+        "total": 1,
+        "withMetadata": 0,
+        "coverage": 0
+      },
+      "apps/web/__tests__": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/utils/src": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "packages/ui/src": {
+        "total": 13,
+        "withMetadata": 13,
+        "coverage": 100
+      },
+      "packages/realtime/src": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "packages/monitoring/src": {
+        "total": 6,
+        "withMetadata": 6,
+        "coverage": 100
+      },
+      "packages/db/src": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "packages/damage-doc-copilot/src": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "packages/config/mocks": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ai-services/src": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "packages/ai-config/src": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "packages/ai-claim-swarm/src": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "apps/web/src/types": {
+        "total": 6,
+        "withMetadata": 6,
+        "coverage": 100
+      },
+      "apps/web/src/stores": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/middleware": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/hooks": {
+        "total": 14,
+        "withMetadata": 14,
+        "coverage": 100
+      },
+      "apps/web/src/data": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib": {
+        "total": 11,
+        "withMetadata": 11,
+        "coverage": 100
+      },
+      "apps/web/src/config": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/actions": {
+        "total": 28,
+        "withMetadata": 28,
+        "coverage": 100
+      },
+      "apps/web/src/components": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/components/ui": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/components/ml-ops": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/components/ai-explainability": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/__tests__/utils": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/__tests__/critical-flows": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "packages/utils/src/__tests__": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "packages/realtime/src/__tests__": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/db/src/types": {
+        "total": 7,
+        "withMetadata": 7,
+        "coverage": 100
+      },
+      "packages/db/src/services": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/db/src/__tests__": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/tests/unit": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/tests/integration": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/src/types": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/src/providers": {
+        "total": 7,
+        "withMetadata": 7,
+        "coverage": 100
+      },
+      "packages/ai-services/src/orchestrator": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/src/monitoring": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ai-services/src/cache": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ai-services/src/__tests__": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/hooks/queries": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/lib/webhooks": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/validation": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/utils": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/lib/tracking": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/supabase": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/lib/styles": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/stores": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/services": {
+        "total": 8,
+        "withMetadata": 8,
+        "coverage": 100
+      },
+      "apps/web/src/lib/security": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "apps/web/src/lib/react-query": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/permissions": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/multi-tenant": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/logger": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/expansion": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/learning": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/legal": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/lib/errors": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/email": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/error-handling": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/config": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/compliance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/database": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/claude": {
+        "total": 21,
+        "withMetadata": 21,
+        "coverage": 100
+      },
+      "apps/web/src/lib/auth": {
+        "total": 6,
+        "withMetadata": 6,
+        "coverage": 100
+      },
+      "apps/web/src/lib/analytics": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/api": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/lib/ai": {
+        "total": 17,
+        "withMetadata": 17,
+        "coverage": 100
+      },
+      "apps/web/src/app/pricing": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/onboarding": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/hurricane-prep": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/guides": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/faq": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/debug": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/contact": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/blog": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "apps/web/src/app/(protected)": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/actions/__tests__": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/ui": {
+        "total": 26,
+        "withMetadata": 26,
+        "coverage": 100
+      },
+      "apps/web/src/components/subscription": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/situation-room": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/seo": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/reports": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/providers": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/pricing": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/policy": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/property": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/components/parcels": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/onboarding": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/ocr": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/modals": {
+        "total": 10,
+        "withMetadata": 10,
+        "coverage": 100
+      },
+      "apps/web/src/components/mobile": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/components/risk": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/components/legal": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/components/learning": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/lazy": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/layout": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/landing": {
+        "total": 13,
+        "withMetadata": 13,
+        "coverage": 100
+      },
+      "apps/web/src/components/florida": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/floir": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/documents": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/forms": {
+        "total": 7,
+        "withMetadata": 7,
+        "coverage": 100
+      },
+      "apps/web/src/components/dashboard": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/damage": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/compliance": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/components/community": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/claude": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/claims": {
+        "total": 3,
+        "withMetadata": 3,
+        "coverage": 100
+      },
+      "apps/web/src/components/camera": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/billing": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/auth": {
+        "total": 8,
+        "withMetadata": 8,
+        "coverage": 100
+      },
+      "apps/web/src/components/ar": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/ai": {
+        "total": 5,
+        "withMetadata": 5,
+        "coverage": 100
+      },
+      "apps/web/src/components/admin": {
+        "total": 20,
+        "withMetadata": 20,
+        "coverage": 100
+      },
+      "apps/web/__tests__/lib/security": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/__tests__/lib/logger": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/__tests__/components/auth": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/__tests__/lib/error-handling": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "packages/ai-services/src/features/sentinel": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/src/features/categorizer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "packages/ai-services/src/features/clarity": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/lib/claude/llm-integration": {
+        "total": 7,
+        "withMetadata": 7,
+        "coverage": 100
+      },
+      "apps/web/src/app/onboarding/property-setup": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/mobile/field": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/legal/update": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/legal/terms-of-service": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/legal/privacy-policy": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/legal/compliance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/legal/ai-use-agreement": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/debug/maps-intelligence": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/warranty-watch": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/situation-room": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/properties": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/property": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/personal-property": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/policies": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/ml-operations": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/maintenance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/home-systems": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/insurance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/disaster": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/expenses": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/development": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/contractors": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/community": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/claims": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/billing": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/api-keys": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/verify": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/signup": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/signin": {
+        "total": 4,
+        "withMetadata": 4,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/reset-password": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/recover": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/debug": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/auth/callback": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/verify-db": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/test-signup-flow": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/test-legal-docs": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/test-consent-flow": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/test-auth": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/proxy": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/properties": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/csp-report": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/create-test-account": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/claims": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/settlement-analyzer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/room-builder": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/receipt-scanner": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/policy-chat": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/proactive-claim-optimizer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/material-finish-analyzer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/inventory-scanner": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/floorplan-creator": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/guided-property-inspection": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/evidence-organizer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/donation-assistant": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/document-generator": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/damage-copilot": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/damage-analyzer": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/community-intelligence": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/communication-helper": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/claim-swarm": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/claim-assistant": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/ar-damage-documenter": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/ai-tools/3d-model-generator": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/account/profile": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/account/login-activity": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/performance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/ml-operations": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/florida-parcels": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/errors": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/compliance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/apply-migration": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/claude-monitoring": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/api-keys": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/ai-models": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/admin/ai-costs": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/ui/__tests__": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/components/forms/steps": {
+        "total": 2,
+        "withMetadata": 2,
+        "coverage": 100
+      },
+      "apps/web/src/components/auth/__tests__": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/property/[id]": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/claims/new": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/claims/[id]": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/webhooks/resend": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/stripe/webhook": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/legal/static": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/legal/documents": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/legal/accept": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/legal/[slug]": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/debug/signup-test": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/debug/legal-docs": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/ai/track-usage": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/ai/check-keys": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/ai/chat": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/ai/analyze-image": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/test-signin": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/session": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/login": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/fix-session": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/debug": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/clear-cookies": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/quality-scores": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/monitoring": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/custom-prompts": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/ai-operations": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/auth/clear-all-cookies": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/ab-tests": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/ai-models": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/dashboard/claims/[id]/evidence": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/custom-prompts/[id]": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/ab-tests/[id]": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      },
+      "apps/web/src/app/api/admin/ai-models/performance": {
+        "total": 1,
+        "withMetadata": 1,
+        "coverage": 100
+      }
+    }
+  },
+  "statistics": {
+    "filesByOwner": {
+      "@ai-team": 256,
+      "frontend-team": 92,
+      "test-team": 7,
+      "platform-team": 16,
+      "core-team": 7,
+      "@platform-team": 1,
+      "ai-innovation-team": 10,
+      "ai-team": 51,
+      "enterprise-team": 2,
+      "billing-team": 11,
+      "analytics-team": 5,
+      "auth-team": 14,
+      "data-team": 4,
+      "infrastructure-team": 1,
+      "admin-team": 11,
+      "compliance-team": 8,
+      "security-team": 7,
+      "property-team": 5,
+      "@frontend-team": 1,
+      "onboarding-team": 1,
+      "mobile-team": 5,
+      "communications-team": 4,
+      "backend-team": 11,
+      "claims-team": 3,
+      "api-team": 5,
+      "product-team": 1,
+      "realtime-team": 1,
+      "maps-intelligence-team": 2,
+      "legal-team": 14,
+      "ai-services-team": 3,
+      "webhooks-team": 1,
+      "tracking-team": 1,
+      "expansion-team": 1,
+      "dev-tools-team": 2,
+      "database-team": 2,
+      "ai-categorization-team": 1,
+      "content-team": 2,
+      "support-team": 1,
+      "ui-team": 3,
+      "seo-team": 1,
+      "monitoring-team": 1,
+      "user-dashboard-team": 1
+    },
+    "filesByStatus": {
+      "stable": 258,
+      "active": 306,
+      "unknown": 2,
+      "development": 1,
+      "foundation": 3,
+      "pending-implementation": 6
+    },
+    "filesByAiIntegration": {
+      "multi-provider": 256,
+      "unknown": 320
+    },
+    "filesByInsuranceContext": {
+      "claims": 256,
+      "unknown": 319,
+      "properties": 1
+    },
+    "tagUsage": {
+      "@owner": 576,
+      "@ai": 512,
+      "@purpose": 576,
+      "@dependencies": 395,
+      "@status": 574,
+      "@insurance": 257,
+      "@supabase": 282,
+      "@next": 1,
+      "@exports": 127,
+      "@lastModifiedBy": 27,
+      "@lastModifiedDate": 27,
+      "@complexity": 149,
+      "@notes": 17,
+      "@tags": 140,
+      "@radix": 6,
+      "@platform": 1,
+      "@agent": 2,
+      "@claimguardian": 29,
+      "@buildability": 2,
+      "@frontend": 1,
+      "@testing": 5,
+      "@features": 1,
+      "@security": 1,
+      "@performance": 1,
+      "@description": 2,
+      "@types": 1,
+      "@tanstack": 1,
+      "@react": 2
+    }
+  },
+  "files": [
+    {
+      "file": "apps/web/tailwind.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/sentry.server.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/sentry.edge.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/sentry.client.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/postcss.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/next.config.js",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Next.js configuration for the web application."
+    },
+    {
+      "file": "packages/utils/vitest.config.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Vitest configuration for utils package testing"
+    },
+    {
+      "file": "packages/ui/eslint.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/vitest.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/eslint.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/eslint.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/config/vitest.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/config/test-setup.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/config/index.js",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Shared configuration constants and utilities"
+    },
+    {
+      "file": "packages/ai-services/vitest.config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/eslint.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-config/eslint.config.js",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/middleware.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/jest.setup.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/__tests__/setup.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Jest test setup configuration with mocks and utilities"
+    },
+    {
+      "file": "apps/web/__tests__/basic.test.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Basic test to verify Jest setup is working"
+    },
+    {
+      "file": "packages/utils/src/validation.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides utility functions for common form validation patterns."
+    },
+    {
+      "file": "packages/utils/src/pagination.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Pagination utilities for database queries"
+    },
+    {
+      "file": "packages/utils/src/index.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Exports all utility functions from the package."
+    },
+    {
+      "file": "packages/utils/src/format.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides utility functions for formatting data such as phone numbers, currency, and dates."
+    },
+    {
+      "file": "packages/utils/src/errors.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized error handling utilities"
+    },
+    {
+      "file": "packages/ui/src/utils.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Utility function for conditionally joining CSS class names and merging Tailwind CSS classes."
+    },
+    {
+      "file": "packages/ui/src/tabs.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "UI component for creating tabbed interfaces"
+    },
+    {
+      "file": "packages/ui/src/progress.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a customizable progress component built on Radix UI Progress."
+    },
+    {
+      "file": "packages/ui/src/popover.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a customizable popover component built on Radix UI Popover."
+    },
+    {
+      "file": "packages/ui/src/modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a modal component built on Radix UI Dialog, with various sub-components for header, footer, title, and description, and a simplified `SimpleModal` for common use cases."
+    },
+    {
+      "file": "packages/ui/src/label.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a customizable label component."
+    },
+    {
+      "file": "packages/ui/src/input.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a customizable input component with error display."
+    },
+    {
+      "file": "packages/ui/src/index.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Exports all UI components from the package."
+    },
+    {
+      "file": "packages/ui/src/icons.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Type-safe lucide-react icon exports with React 18 compatibility"
+    },
+    {
+      "file": "packages/ui/src/checkbox.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a customizable checkbox component built on Radix UI Checkbox."
+    },
+    {
+      "file": "packages/ui/src/card.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ui/src/button.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced button component with loading states, icons, and accessibility features"
+    },
+    {
+      "file": "packages/ui/src/badge.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "UI component for displaying a badge"
+    },
+    {
+      "file": "packages/realtime/src/types.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/src/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/src/hooks.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/src/client.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/realtime/src/channels.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/supabase-monitor.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/sentry.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/performance-observer.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/metrics.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/monitoring/src/analytics.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/types.ts",
+      "owner": "@platform-team",
+      "status": "stable",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "TypeScript types for ClaimGuardian database schema with temporal digital twin support"
+    },
+    {
+      "file": "packages/db/src/supabase-factory.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Shared Supabase client factory for consistent client creation"
+    },
+    {
+      "file": "packages/db/src/schema.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/damage-doc-copilot/src/useDamageCopilot.ts",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Damage Documentation Copilot Hook - State management for AI-guided documentation"
+    },
+    {
+      "file": "packages/damage-doc-copilot/src/index.ts",
+      "owner": "ai-innovation-team",
+      "status": "unknown",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Damage Documentation Copilot - AI-guided evidence capture with real-time feedback"
+    },
+    {
+      "file": "packages/damage-doc-copilot/src/damageCopilotService.ts",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Damage Documentation Copilot Service - AI-powered guidance for evidence capture"
+    },
+    {
+      "file": "packages/damage-doc-copilot/src/ToolComponent.tsx",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Damage Documentation Copilot UI Component - Real-time AI guidance for damage photography"
+    },
+    {
+      "file": "packages/config/mocks/server.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/config/mocks/handlers.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/types.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/document-extractor.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/claim-assistant.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-config/src/schemas.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-config/src/prompts.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-config/src/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-claim-swarm/src/useClaimSwarm.ts",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Claim Swarm Hook - State management for collaborative damage assessment"
+    },
+    {
+      "file": "packages/ai-claim-swarm/src/index.ts",
+      "owner": "ai-innovation-team",
+      "status": "unknown",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Claim Swarm - Live multi-user collaborative damage assessment"
+    },
+    {
+      "file": "packages/ai-claim-swarm/src/claimSwarmService.ts",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Claim Swarm Service - Core logic for collaborative damage assessment"
+    },
+    {
+      "file": "packages/ai-claim-swarm/src/ToolComponent.tsx",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Claim Swarm Tool Component - Multi-user collaborative damage assessment interface"
+    },
+    {
+      "file": "apps/web/src/types/ui.d.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/types/situation-room.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Defines TypeScript types and enums for the real-time Situation Room feature."
+    },
+    {
+      "file": "apps/web/src/types/gtag.d.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/types/globals.d.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/types/database-enhancements.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Type enhancements for database operations"
+    },
+    {
+      "file": "apps/web/src/types/ai-operations.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "TypeScript types for AI Operations database entities"
+    },
+    {
+      "file": "apps/web/src/stores/property-store.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/stores/modal-store.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Global modal state management using Zustand"
+    },
+    {
+      "file": "apps/web/src/stores/claim-store.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/middleware/tenant-middleware.ts",
+      "owner": "enterprise-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tenant-aware middleware for multi-tenant routing and authentication"
+    },
+    {
+      "file": "apps/web/src/hooks/use-toast.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Toast hook for showing notifications"
+    },
+    {
+      "file": "apps/web/src/hooks/use-subscription.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Hook for checking subscription status and limits"
+    },
+    {
+      "file": "apps/web/src/hooks/use-situation-room-realtime.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides React hooks for managing real-time WebSocket subscriptions for the Situation Room."
+    },
+    {
+      "file": "apps/web/src/hooks/use-settings-modal.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-rate-limit.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Rate limiting hook with countdown timer"
+    },
+    {
+      "file": "apps/web/src/hooks/use-preload.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-policy-data.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-mobile.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-keyboard-shortcuts.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-google-maps.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized Google Maps API loading and management hook"
+    },
+    {
+      "file": "apps/web/src/hooks/use-florida-compliance.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/use-device-tracking.ts",
+      "owner": "analytics-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Hook for capturing device and location information"
+    },
+    {
+      "file": "apps/web/src/hooks/use-auth.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Custom hook for authentication state"
+    },
+    {
+      "file": "apps/web/src/hooks/use-auth-debug.ts",
+      "owner": "platform-team",
+      "status": "development",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Debug hook for authentication issues"
+    },
+    {
+      "file": "apps/web/src/data/florida-zip-codes.ts",
+      "owner": "data-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Florida ZIP codes with city and county mapping"
+    },
+    {
+      "file": "apps/web/src/data/florida-insurance-carriers.ts",
+      "owner": "data-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Florida insurance carriers list"
+    },
+    {
+      "file": "apps/web/src/lib/utils.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/server-action-wrapper.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized wrapper for server actions with error handling"
+    },
+    {
+      "file": "apps/web/src/lib/real-time-status.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/performance-utils.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/mock-data.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides mock data for initial asset display, user information, and application alerts/activity."
+    },
+    {
+      "file": "apps/web/src/lib/logger.ts",
+      "owner": "infrastructure-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized logging service for application-wide logging"
+    },
+    {
+      "file": "apps/web/src/lib/gemini-api.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a helper function to interact with the Gemini API for AI-powered features."
+    },
+    {
+      "file": "apps/web/src/lib/error-recovery.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/error-logger.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive error logging utility for AI features"
+    },
+    {
+      "file": "apps/web/src/lib/depreciation.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Depreciation calculation utilities for personal property"
+    },
+    {
+      "file": "apps/web/src/lib/constants.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Defines the color palette for the ClaimGuardian application."
+    },
+    {
+      "file": "apps/web/src/config/pricing.ts",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Pricing configuration for ClaimGuardian subscription plans"
+    },
+    {
+      "file": "apps/web/src/app/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "The main public-facing landing page for the ClaimGuardian application."
+    },
+    {
+      "file": "apps/web/src/app/layout.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Root layout component for the Next.js application, defining the HTML structure, metadata, and global styles."
+    },
+    {
+      "file": "apps/web/src/app/error.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/user-tracking.ts",
+      "owner": "analytics-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for comprehensive user tracking and data capture"
+    },
+    {
+      "file": "apps/web/src/actions/user-tiers.ts",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for managing user tiers and subscriptions"
+    },
+    {
+      "file": "apps/web/src/actions/track-legal-acceptance.ts",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server action to track legal document acceptance"
+    },
+    {
+      "file": "apps/web/src/actions/track-device.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server action to track user devices"
+    },
+    {
+      "file": "apps/web/src/actions/stripe.ts",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for Stripe payment processing"
+    },
+    {
+      "file": "apps/web/src/actions/property-verification.ts",
+      "owner": "property-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for verifying property enrichment data capture"
+    },
+    {
+      "file": "apps/web/src/actions/property-enrichment.ts",
+      "owner": "property-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for property data enrichment"
+    },
+    {
+      "file": "apps/web/src/actions/properties.ts",
+      "owner": "@frontend-team",
+      "status": "stable",
+      "aiIntegration": "unknown",
+      "insuranceContext": "properties",
+      "purpose": "Server actions for managing properties with temporal digital twin support"
+    },
+    {
+      "file": "apps/web/src/actions/policies.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for managing insurance policies"
+    },
+    {
+      "file": "apps/web/src/actions/onboarding.ts",
+      "owner": "onboarding-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for onboarding flow data persistence"
+    },
+    {
+      "file": "apps/web/src/actions/multi-tenant.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/legal.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/geospatial.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/geographic.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for geographic data (states, counties, cities, ZIP codes)"
+    },
+    {
+      "file": "apps/web/src/actions/field-documentation.ts",
+      "owner": "mobile-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for mobile field documentation management"
+    },
+    {
+      "file": "apps/web/src/actions/enrich-user-data.ts",
+      "owner": "analytics-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Async user data enrichment after successful signup"
+    },
+    {
+      "file": "apps/web/src/actions/email.ts",
+      "owner": "communications-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for sending emails"
+    },
+    {
+      "file": "apps/web/src/actions/documents.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for document management"
+    },
+    {
+      "file": "apps/web/src/actions/disasters.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/compliance-dashboard.ts",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for compliance dashboard data with service role access"
+    },
+    {
+      "file": "apps/web/src/actions/compliance-consent.ts",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Compliance-grade consent management for GDPR/CCPA"
+    },
+    {
+      "file": "apps/web/src/actions/claims.ts",
+      "owner": "claims-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claims management server actions for CRUD operations"
+    },
+    {
+      "file": "apps/web/src/actions/checklist.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/actions/auth.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Authentication server actions for user management"
+    },
+    {
+      "file": "apps/web/src/actions/api-keys.ts",
+      "owner": "api-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for API key management and rate limiting administration"
+    },
+    {
+      "file": "apps/web/src/actions/ai-services.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for AI prediction, analysis, and smart categorization services"
+    },
+    {
+      "file": "apps/web/src/actions/ai-extraction.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for AI document extraction"
+    },
+    {
+      "file": "apps/web/src/actions/ai-analytics.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/cookie-preferences-modal.tsx",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Cookie preferences modal for granular consent control"
+    },
+    {
+      "file": "apps/web/src/components/cookie-consent-simple.tsx",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Simplified cookie consent banner - single choice, fully compliant"
+    },
+    {
+      "file": "apps/web/src/components/cookie-consent-banner.tsx",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Cookie consent banner for GDPR/CCPA compliance"
+    },
+    {
+      "file": "apps/web/components/ui/card.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/components/ml-ops/ModelMonitoringDashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/components/ai-explainability/ExplainabilityDashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/__tests__/utils/test-utils.tsx",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Testing utilities with custom render function and mocks"
+    },
+    {
+      "file": "apps/web/__tests__/critical-flows/property-onboarding.test.tsx",
+      "owner": "product-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Critical property onboarding flow tests"
+    },
+    {
+      "file": "apps/web/__tests__/critical-flows/claim-filing.test.tsx",
+      "owner": "claims-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Critical claim filing flow tests"
+    },
+    {
+      "file": "apps/web/__tests__/critical-flows/auth-flow.test.tsx",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Critical authentication flow tests"
+    },
+    {
+      "file": "packages/utils/src/__tests__/validation.test.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for validation utility functions"
+    },
+    {
+      "file": "packages/utils/src/__tests__/formatting.test.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for formatting utility functions"
+    },
+    {
+      "file": "packages/utils/src/__tests__/errors.test.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for error handling utility functions"
+    },
+    {
+      "file": "packages/realtime/src/__tests__/useRealtimeSubscription.test.ts",
+      "owner": "realtime-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for real-time subscription React hook"
+    },
+    {
+      "file": "packages/db/src/types/multi-tenant.types.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/types/maps-intelligence.ts",
+      "owner": "maps-intelligence-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "TypeScript type definitions for Google Maps Intelligence database schema"
+    },
+    {
+      "file": "packages/db/src/types/legal-compliance.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "TypeScript types for legal compliance and consent tracking"
+    },
+    {
+      "file": "packages/db/src/types/insurance.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/types/database.types.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/types/claim.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/types/asset.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/db/src/services/maps-intelligence-service.ts",
+      "owner": "maps-intelligence-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Service class for managing Google Maps Intelligence data storage and retrieval"
+    },
+    {
+      "file": "packages/db/src/__tests__/client.test.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for Supabase client creation and configuration"
+    },
+    {
+      "file": "packages/ai-services/tests/unit/gemini.provider.test.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/tests/integration/orchestrator.test.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/types/index.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/openai.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/openai.provider.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/gemini.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/gemini.provider.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/gemini-adapter.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/base.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/providers/base.provider.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/orchestrator/orchestrator.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/monitoring/dashboard.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/monitoring/cost-tracker.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/cache/semantic-cache.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/cache/cache.manager.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/__tests__/orchestrator.test.ts",
+      "owner": "ai-services-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for AI orchestrator service"
+    },
+    {
+      "file": "packages/ai-services/src/__tests__/document-extractor.test.ts",
+      "owner": "ai-services-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for document extractor AI service"
+    },
+    {
+      "file": "packages/ai-services/src/__tests__/claim-assistant.test.ts",
+      "owner": "ai-services-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for claim assistant AI service"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/use-properties.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/use-policies.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/use-ml-monitoring.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/use-documents.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/hooks/queries/use-ai-operations.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/webhooks/webhook-manager.ts",
+      "owner": "webhooks-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive webhook management system for real-time notifications"
+    },
+    {
+      "file": "apps/web/src/lib/validation/schemas.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive security-focused validation schemas for all critical flows"
+    },
+    {
+      "file": "apps/web/src/lib/utils/tracking-utils.ts",
+      "owner": "tracking-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Utility functions for collecting user tracking data"
+    },
+    {
+      "file": "apps/web/src/lib/utils/site-url.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Utility for getting the correct site URL in different environments"
+    },
+    {
+      "file": "apps/web/src/lib/utils/server-ip-detection.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server-side IP detection utility for secure, resilient tracking"
+    },
+    {
+      "file": "apps/web/src/lib/utils/mobile-detection.ts",
+      "owner": "mobile-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Mobile device detection and PWA utilities"
+    },
+    {
+      "file": "apps/web/src/lib/utils/check-env.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Check for required environment variables"
+    },
+    {
+      "file": "apps/web/src/lib/tracking/user-tracker.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/supabase/server.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/supabase/server-auth.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server-side Supabase auth client with secure cookie handling"
+    },
+    {
+      "file": "apps/web/src/lib/supabase/middleware.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/supabase/client.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/supabase/auth-helpers.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Auth helper utilities for handling session errors"
+    },
+    {
+      "file": "apps/web/src/lib/styles/liquid-glass.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized liquid glass design system for consistent premium visual effects"
+    },
+    {
+      "file": "apps/web/src/lib/stores/situation-room-store.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Zustand store for Situation Room state management, handling real-time data and AI assessments."
+    },
+    {
+      "file": "apps/web/src/lib/services/types.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Type definitions for services"
+    },
+    {
+      "file": "apps/web/src/lib/services/stripe-service.ts",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Stripe payment integration service"
+    },
+    {
+      "file": "apps/web/src/lib/services/property-data-service.ts",
+      "owner": "data-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Service for fetching property data from external APIs"
+    },
+    {
+      "file": "apps/web/src/lib/services/ocr-service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/services/google-maps-unified.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Unified Google Maps API service supporting all 11+ APIs"
+    },
+    {
+      "file": "apps/web/src/lib/services/file-upload-service.ts",
+      "owner": "data-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Service for uploading files to Supabase Storage"
+    },
+    {
+      "file": "apps/web/src/lib/services/email-notification-service.ts",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Email notification service for user tier and permission changes"
+    },
+    {
+      "file": "apps/web/src/lib/services/ai-document-extraction.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI service for extracting data from policy documents"
+    },
+    {
+      "file": "apps/web/src/lib/security/rate-limiter.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Rate limiting service to prevent abuse and DoS attacks"
+    },
+    {
+      "file": "apps/web/src/lib/security/input-sanitizer.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Input sanitization service to prevent XSS and injection attacks"
+    },
+    {
+      "file": "apps/web/src/lib/security/file-validator.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/security/bot-protection.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Bot protection utilities and middleware"
+    },
+    {
+      "file": "apps/web/src/lib/react-query/error-handler.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/permissions/permission-checker.ts",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Permission checking utilities for role-based access control"
+    },
+    {
+      "file": "apps/web/src/lib/permissions/mobile-permission-checker.ts",
+      "owner": "mobile-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Mobile-specific permission checking with offline capability"
+    },
+    {
+      "file": "apps/web/src/lib/multi-tenant/tenant-manager.ts",
+      "owner": "enterprise-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enterprise multi-tenant architecture for ClaimGuardian"
+    },
+    {
+      "file": "apps/web/src/lib/logger/production-logger.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Production-safe logging system"
+    },
+    {
+      "file": "apps/web/src/lib/expansion/state-manager.ts",
+      "owner": "expansion-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Multi-state expansion architecture for ClaimGuardian nationwide rollout"
+    },
+    {
+      "file": "apps/web/src/lib/learning/learning-assistant.ts",
+      "owner": "dev-tools-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI-powered learning assistant for development insights"
+    },
+    {
+      "file": "apps/web/src/lib/legal/legal-service.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced legal service for comprehensive consent tracking"
+    },
+    {
+      "file": "apps/web/src/lib/legal/legal-service-server.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server-side legal documents and consent tracking service"
+    },
+    {
+      "file": "apps/web/src/lib/legal/legal-service-client-fix.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/errors/standardized-errors.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/errors/app-error.ts",
+      "owner": "core-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Base error class and error code definitions"
+    },
+    {
+      "file": "apps/web/src/lib/email/templates.ts",
+      "owner": "communications-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Email templates for transactional emails"
+    },
+    {
+      "file": "apps/web/src/lib/email/resend.ts",
+      "owner": "communications-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Email service using Resend for transactional emails"
+    },
+    {
+      "file": "apps/web/src/lib/error-handling/error-boundary.tsx",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced error boundary with proper error classification and recovery"
+    },
+    {
+      "file": "apps/web/src/lib/error-handling/async-error-handler.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Async error handling utilities with retry logic and exponential backoff"
+    },
+    {
+      "file": "apps/web/src/lib/config/server-env.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Secure server-side environment configuration"
+    },
+    {
+      "file": "apps/web/src/lib/compliance/data-capture-requirements.ts",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive data capture requirements for compliance and user experience"
+    },
+    {
+      "file": "apps/web/src/lib/database/query-optimizer.ts",
+      "owner": "database-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Advanced query optimization for Florida parcels GIS data"
+    },
+    {
+      "file": "apps/web/src/lib/database/partition-manager.ts",
+      "owner": "database-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Intelligent data partitioning strategies for scalable database performance"
+    },
+    {
+      "file": "apps/web/src/lib/claude/production-error-monitor.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Production error monitoring and pattern detection for ClaimGuardian"
+    },
+    {
+      "file": "apps/web/src/lib/claude/monitoring-deployment.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Production deployment configuration for Claude error monitoring system"
+    },
+    {
+      "file": "apps/web/src/lib/claude/log-processor.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Process and integrate production error logs into Claude Learning System"
+    },
+    {
+      "file": "apps/web/src/lib/claude/live-demo-example.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "LIVE DEMO - Claude Complete Learning System in Action"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-threshold-tuner.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Confidence Threshold Tuning System for Claude Learning"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-shared-patterns.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Shared Learning Patterns Repository for Cross-Team Knowledge Sharing"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-self-reflection.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claude self-reflection system for analyzing approach efficiency and capturing improvements"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-reflection-triggers.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Automated triggers for Claude self-reflection and continuous improvement"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-production-monitor.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Production Learning System Monitoring and Validation"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-learning-context.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Context system for Claude to query and apply learnings before tasks"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-knowledge-transfer.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Knowledge Export/Import System for Cross-Team Learning Sharing"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-integration-guide.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Integration Guide for Claude Advanced Learning System"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-integration-example.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Example integration of Claude error logging for learning and improvement"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-feedback-loops.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Feedback Loops for Continuous Improvement of Claude Learning System"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-error-logger.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claude-specific error logging and learning system"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-enhanced-automation.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced Automation - Auto-optimization, Proactive Suggestions, Smart Delegations, and Batch Learning"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-complete-learning-system.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Complete Claude learning system integration - errors, learning, and self-reflection"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-ai-interfaces.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Interface Definitions and Base Structures for AI-Powered Learning Features"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-ai-config.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Configuration and Setup for AI-Powered Learning Features"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-advanced-analytics.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Advanced Learning Analytics - Trend Analysis, Success Prediction, and ROI Calculation"
+    },
+    {
+      "file": "apps/web/src/lib/claude/claude-ab-testing.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "A/B Testing Framework for Claude Learning System"
+    },
+    {
+      "file": "apps/web/src/lib/auth/simple-auth-service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/auth/session-manager.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Session management with automatic token refresh"
+    },
+    {
+      "file": "apps/web/src/lib/auth/security-questions-service.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Security questions service for account recovery"
+    },
+    {
+      "file": "apps/web/src/lib/auth/profile-service.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "User profile management service"
+    },
+    {
+      "file": "apps/web/src/lib/auth/login-activity-service.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Login activity tracking and monitoring service"
+    },
+    {
+      "file": "apps/web/src/lib/auth/auth-service.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Centralized authentication service with comprehensive error handling"
+    },
+    {
+      "file": "apps/web/src/lib/analytics/time-series-analyzer.ts",
+      "owner": "analytics-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Advanced time-series analytics for AI performance tracking and optimization"
+    },
+    {
+      "file": "apps/web/src/lib/analytics/stream-processor.ts",
+      "owner": "analytics-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Real-time analytics stream processor for AI operations data"
+    },
+    {
+      "file": "apps/web/src/lib/api/api-middleware.ts",
+      "owner": "api-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API middleware for authentication, rate limiting, and request logging"
+    },
+    {
+      "file": "apps/web/src/lib/api/api-key-manager.ts",
+      "owner": "api-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API key management service with secure generation, validation, and rate limiting"
+    },
+    {
+      "file": "apps/web/src/lib/ai/threat-assessment-engine.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Implements the core logic for the AI Threat Assessment Engine, using multiple AI providers."
+    },
+    {
+      "file": "apps/web/src/lib/ai/smart-categorization.ts",
+      "owner": "ai-categorization-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "ML-powered smart categorization for field documentation and damage assessment"
+    },
+    {
+      "file": "apps/web/src/lib/ai/redis-cache-service.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Redis-based AI response caching system for persistent and scalable caching"
+    },
+    {
+      "file": "apps/web/src/lib/ai/prediction-engine.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Advanced AI prediction and analysis engine for claims, damage assessment, and risk scoring"
+    },
+    {
+      "file": "apps/web/src/lib/ai/pdf-processor.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/pdf-client.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/model-config-service.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Model Configuration Service - fetches admin-selected models for each feature"
+    },
+    {
+      "file": "apps/web/src/lib/ai/image-generation.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI image generation service for property images"
+    },
+    {
+      "file": "apps/web/src/lib/ai/enhanced-client.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced AI Client with database-driven model selection and A/B testing"
+    },
+    {
+      "file": "apps/web/src/lib/ai/enhanced-ai-service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/cost-monitor.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Cost Monitoring System with budget controls and predictive alerts"
+    },
+    {
+      "file": "apps/web/src/lib/ai/config.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/client.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/client-service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/ai/batch-processor.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Request Batching System for bulk operations and cost optimization"
+    },
+    {
+      "file": "apps/web/src/lib/ai/batch-ai-service.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Batch-enabled AI service wrapper for optimized bulk operations"
+    },
+    {
+      "file": "apps/web/src/lib/ai/ai-cache-manager.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Response Caching Manager with intelligent cache strategies for cost optimization"
+    },
+    {
+      "file": "apps/web/src/app/pricing/page.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Pricing page displaying subscription plans"
+    },
+    {
+      "file": "apps/web/src/app/onboarding/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/hurricane-prep/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Hurricane preparation guide page"
+    },
+    {
+      "file": "apps/web/src/app/guides/page.tsx",
+      "owner": "content-team",
+      "status": "foundation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a foundation for the property intelligence guides and resources page."
+    },
+    {
+      "file": "apps/web/src/app/faq/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "FAQ page for common questions"
+    },
+    {
+      "file": "apps/web/src/app/debug/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/contact/page.tsx",
+      "owner": "support-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Renders the contact page with support information and team details."
+    },
+    {
+      "file": "apps/web/src/app/blog/page.tsx",
+      "owner": "content-team",
+      "status": "foundation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Serves as the foundation for the Florida property and insurance content blog."
+    },
+    {
+      "file": "apps/web/src/app/auth/layout.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Auth layout with server-side authentication checks"
+    },
+    {
+      "file": "apps/web/src/app/auth/actions.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server actions for authentication operations"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/legal-documents-tab.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/admin-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/admin-dashboard-improved.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/(protected)/layout.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Protected routes layout with server-side auth validation"
+    },
+    {
+      "file": "apps/web/src/actions/__tests__/claims.test.ts",
+      "owner": "claims-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for claims management server actions"
+    },
+    {
+      "file": "apps/web/src/actions/__tests__/auth.test.ts",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for authentication server actions"
+    },
+    {
+      "file": "apps/web/src/components/ui/tooltip.tsx",
+      "owner": "ui-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tooltip component"
+    },
+    {
+      "file": "apps/web/src/components/ui/textarea.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/tabs.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/table.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Table component for displaying tabular data"
+    },
+    {
+      "file": "apps/web/src/components/ui/switch.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/slider.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/skeleton.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/sheet.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/separator.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/select.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/radio-group.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/property-image.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Property image component with AI generation and fallbacks"
+    },
+    {
+      "file": "apps/web/src/components/ui/progress.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/popover.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Local popover component"
+    },
+    {
+      "file": "apps/web/src/components/ui/loading-states.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/label.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/input.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/dialog.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Dialog component with radix-ui integration"
+    },
+    {
+      "file": "apps/web/src/components/ui/checkbox.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/card.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/button.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/breadcrumb.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/barcode-scanner.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/badge.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/alert.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/accordion.tsx",
+      "owner": "ui-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Accordion UI component using Radix UI"
+    },
+    {
+      "file": "apps/web/src/components/subscription/subscription-gate.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Component to gate features based on subscription plan"
+    },
+    {
+      "file": "apps/web/src/components/situation-room/ai-assessment-panel.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides a UI panel for controlling and viewing AI threat assessments in the Situation Room."
+    },
+    {
+      "file": "apps/web/src/components/seo/structured-data.tsx",
+      "owner": "seo-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Provides components for rendering SEO-related structured data (JSON-LD)."
+    },
+    {
+      "file": "apps/web/src/components/reports/report-generator.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/providers/query-provider.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/pricing/pricing-plans.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Pricing plans display component with Stripe integration"
+    },
+    {
+      "file": "apps/web/src/components/pricing/pricing-faq.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Pricing FAQ accordion component"
+    },
+    {
+      "file": "apps/web/src/components/policy/policy-upload.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/policy/enhanced-policy-chat.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/property/property-wizard.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Modern multi-step property creation wizard with step-by-step guidance"
+    },
+    {
+      "file": "apps/web/src/components/property/property-limit-modal.tsx",
+      "owner": "property-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Property limit enforcement modal for tier-based restrictions"
+    },
+    {
+      "file": "apps/web/src/components/property/property-enrichment-status.tsx",
+      "owner": "property-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Display property enrichment status and captured data"
+    },
+    {
+      "file": "apps/web/src/components/property/depreciation-tracker.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Depreciation tracking component for personal property items"
+    },
+    {
+      "file": "apps/web/src/components/property/depreciation-alerts.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Depreciation alerts component for personal property"
+    },
+    {
+      "file": "apps/web/src/components/parcels/ParcelDashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/onboarding/onboarding-flow.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ocr/ocr-scanner.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/modals/simple-signup-modal.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/modals/simple-login-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Simplified login modal with minimal fields"
+    },
+    {
+      "file": "apps/web/src/components/modals/signup-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Signup modal component"
+    },
+    {
+      "file": "apps/web/src/components/modals/signup-modal-simple.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Simplified signup modal with proper consent tracking"
+    },
+    {
+      "file": "apps/web/src/components/modals/settings-modal.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/modals/login-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Login modal component"
+    },
+    {
+      "file": "apps/web/src/components/modals/legal-document-modal.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/modals/forgot-password-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Forgot password modal component"
+    },
+    {
+      "file": "apps/web/src/components/modals/enhanced-signup-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced signup modal with comprehensive data capture"
+    },
+    {
+      "file": "apps/web/src/components/modals/content-modal.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Generic content modal for displaying various information"
+    },
+    {
+      "file": "apps/web/src/components/mobile/mobile-table.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/mobile/mobile-nav.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/mobile/mobile-image-upload.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/mobile/mobile-field-app.tsx",
+      "owner": "mobile-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Mobile-optimized field documentation app with permission-based access"
+    },
+    {
+      "file": "apps/web/src/components/mobile/mobile-card.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/risk/RiskScoreCard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/risk/PropertyRiskDashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/risk/ParcelSearch.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/risk/HazardZonesList.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/risk/ActiveEventsMap.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/legal/legal-document-view.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Component for displaying legal documents"
+    },
+    {
+      "file": "apps/web/src/components/legal/legal-document-modal.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Modal component for displaying legal documents"
+    },
+    {
+      "file": "apps/web/src/components/legal/legal-consent-form.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Legal consent form component for signup and updates"
+    },
+    {
+      "file": "apps/web/src/components/learning/learning-widget.tsx",
+      "owner": "dev-tools-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Dashboard widget for accessing learning insights"
+    },
+    {
+      "file": "apps/web/src/components/lazy/index.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/layout/header.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Application header component, displaying logo, notifications, and user profile."
+    },
+    {
+      "file": "apps/web/src/components/layout/header.test.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/landing/who-we-serve.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Who We Serve section showcasing target customers"
+    },
+    {
+      "file": "apps/web/src/components/landing/who-we-fight-for.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Who We Fight For section with animated images"
+    },
+    {
+      "file": "apps/web/src/components/landing/testimonials.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Testimonials section with single featured testimonial"
+    },
+    {
+      "file": "apps/web/src/components/landing/pricing.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Renders the pricing section with different plans and a billing cycle toggle."
+    },
+    {
+      "file": "apps/web/src/components/landing/how-it-works.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "How It Works section with animated process steps"
+    },
+    {
+      "file": "apps/web/src/components/landing/hero.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Hero section with Guardian shield and animated content"
+    },
+    {
+      "file": "apps/web/src/components/landing/hero-improved.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "A visually improved and animated hero section component for the landing page."
+    },
+    {
+      "file": "apps/web/src/components/landing/header.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Landing page header with enhanced navigation and branding"
+    },
+    {
+      "file": "apps/web/src/components/landing/header-improved.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Improved landing page header with better branding and navigation"
+    },
+    {
+      "file": "apps/web/src/components/landing/get-started.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Get Started CTA section"
+    },
+    {
+      "file": "apps/web/src/components/landing/footer.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Footer with comprehensive sitemap and company info"
+    },
+    {
+      "file": "apps/web/src/components/landing/features.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Displays the value proposition and key features section on the landing page."
+    },
+    {
+      "file": "apps/web/src/components/landing/faq.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Renders the FAQ section with collapsible questions on the landing page."
+    },
+    {
+      "file": "apps/web/src/components/florida/UnifiedFloridaSearch.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/floir/FLOIRSearch.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/floir/FLOIRDashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/documents/document-extraction-review.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Component for reviewing and applying AI document extraction results"
+    },
+    {
+      "file": "apps/web/src/components/forms/florida-address-form.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Florida-specific address form with dependent dropdowns"
+    },
+    {
+      "file": "apps/web/src/components/forms/TextInput.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/ProgressBar.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/PhoneInput.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/PasswordInput.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/AccountWizard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/Accordion.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/dashboard/dashboard-layout.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Dashboard layout wrapper with sidebar navigation"
+    },
+    {
+      "file": "apps/web/src/components/damage/damage-analyzer-enhanced.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/compliance/florida-residency.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/compliance/florida-disclosures-modal.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/compliance/florida-disclosures-context.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/compliance/cookie-consent.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/compliance/age-verification.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/community/privacy-preserving-analytics.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/claude/claude-monitoring-widget.tsx",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Compact Real-time Monitoring Widget for Claude Learning System"
+    },
+    {
+      "file": "apps/web/src/components/claude/claude-monitoring-dashboard.tsx",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive Monitoring Dashboard for Claude Learning System Health"
+    },
+    {
+      "file": "apps/web/src/components/claims/evidence-manager.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/claims/claim-timeline.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/claims/claim-creation-wizard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/camera/camera-capture.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/billing/billing-dashboard.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Billing dashboard component with subscription management"
+    },
+    {
+      "file": "apps/web/src/components/auth/simple-auth-provider.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/auth/sign-out-button.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Sign out button component with loading state"
+    },
+    {
+      "file": "apps/web/src/components/auth/session-monitor.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/auth/protected-route.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Higher-order component to protect routes that require authentication."
+    },
+    {
+      "file": "apps/web/src/components/auth/client-only-auth.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/auth/auth-provider.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced authentication context provider with error handling and logging"
+    },
+    {
+      "file": "apps/web/src/components/auth/auth-provider-enhanced.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced authentication context provider with server state sync"
+    },
+    {
+      "file": "apps/web/src/components/auth/auth-loading.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ar/ar-room-scanner.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ai/image-upload-analyzer.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ai/enhanced-damage-analyzer.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ai/camera-capture.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ai/api-key-validator.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ai/ai-chat-interface.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/users-management.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/time-series-analytics-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/state-expansion-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/redis-cache-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/real-time-analytics-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/permissions-management.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Permission Management interface for configuring tier permissions and system access"
+    },
+    {
+      "file": "apps/web/src/components/admin/permission-analytics-dashboard.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Advanced analytics dashboard for permission usage patterns"
+    },
+    {
+      "file": "apps/web/src/components/admin/partition-monitor-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/multi-tenant-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/ml-operations-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/error-dashboard.tsx",
+      "owner": "monitoring-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Error dashboard component for viewing and managing errors"
+    },
+    {
+      "file": "apps/web/src/components/admin/enrichment-monitor.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Admin component to monitor property enrichment status"
+    },
+    {
+      "file": "apps/web/src/components/admin/cost-alerts-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/claude-learning-dashboard.tsx",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Comprehensive Claude Development & Learning System Dashboard for ClaimGuardian Admin"
+    },
+    {
+      "file": "apps/web/src/components/admin/batch-monitor-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/ai-performance-monitor.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/ai-costs-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/ai-cache-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/admin/admin-layout.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Admin layout wrapper component"
+    },
+    {
+      "file": "apps/web/src/components/admin/ab-test-dashboard.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/__tests__/lib/security/rate-limiter.test.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for rate limiting service and API protection"
+    },
+    {
+      "file": "apps/web/__tests__/lib/security/input-sanitizer.test.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for input sanitization security features"
+    },
+    {
+      "file": "apps/web/__tests__/lib/logger/index.test.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for logging service"
+    },
+    {
+      "file": "apps/web/__tests__/components/auth/auth-provider.test.tsx",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for AuthProvider component and authentication flows"
+    },
+    {
+      "file": "apps/web/__tests__/lib/error-handling/error-boundary.test.tsx",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for error boundary component and error classification"
+    },
+    {
+      "file": "apps/web/__tests__/lib/error-handling/async-error-handler.test.ts",
+      "owner": "platform-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for async error handling utilities with retry and circuit breaker logic"
+    },
+    {
+      "file": "packages/ai-services/src/features/sentinel/sentinel.service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/features/categorizer/document-categorizer.service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "packages/ai-services/src/features/clarity/clarity.service.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/semantic-similarity.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Semantic similarity matching for better learning application"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/natural-language-generator.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Natural language generation for learning descriptions"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/llm-learning-synthesis.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "LLM-powered learning synthesis for meta-pattern identification"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/interfaces.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "LLM integration interfaces for Claude Learning System"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/index.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Central export for LLM integration services"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/bottleneck-resolver.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI-powered bottleneck resolution suggestions"
+    },
+    {
+      "file": "apps/web/src/lib/claude/llm-integration/auto-fix-service.ts",
+      "owner": "ai-team",
+      "status": "pending-implementation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Auto-fix service for applying high-confidence patterns"
+    },
+    {
+      "file": "apps/web/src/app/onboarding/property-setup/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/mobile/field/page.tsx",
+      "owner": "mobile-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Mobile field documentation app page"
+    },
+    {
+      "file": "apps/web/src/app/legal/update/page.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Legal document update consent page"
+    },
+    {
+      "file": "apps/web/src/app/legal/terms-of-service/page.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Terms of Service page"
+    },
+    {
+      "file": "apps/web/src/app/legal/privacy-policy/page.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Privacy Policy page"
+    },
+    {
+      "file": "apps/web/src/app/legal/compliance/page.tsx",
+      "owner": "legal-team",
+      "status": "foundation",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Displays the Florida compliance and regulatory information page."
+    },
+    {
+      "file": "apps/web/src/app/legal/ai-use-agreement/page.tsx",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Use Agreement page"
+    },
+    {
+      "file": "apps/web/src/app/debug/maps-intelligence/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/warranty-watch/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/situation-room/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "The main page for the Situation Room, providing a real-time threat monitoring dashboard."
+    },
+    {
+      "file": "apps/web/src/app/dashboard/properties/page.tsx",
+      "owner": "property-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Properties dashboard page showing all user properties with enrichment status"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/property/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Property overview and management dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/property/page-with-query.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Property overview and management dashboard with React Query"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/personal-property/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Enhanced personal property inventory management page"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/policies/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/ml-operations/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/maintenance/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Home maintenance tracking and scheduling dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/home-systems/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Home systems tracking and maintenance dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/insurance/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Insurance policies and coverage management dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/disaster/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Disaster Hub Command Center for real-time alerts, preparedness, and recovery."
+    },
+    {
+      "file": "apps/web/src/app/dashboard/expenses/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/development/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/contractors/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Contractors management and directory dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/community/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Community engagement and neighborhood resources dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/claims/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claims tracking and management dashboard"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/billing/page.tsx",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Billing dashboard for subscription management"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/api-keys/page.tsx",
+      "owner": "user-dashboard-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "User dashboard for managing personal API keys and viewing usage statistics"
+    },
+    {
+      "file": "apps/web/src/app/auth/verify/page.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Email verification callback page"
+    },
+    {
+      "file": "apps/web/src/app/auth/signup/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Main signup page with full Florida compliance (consolidated)"
+    },
+    {
+      "file": "apps/web/src/app/auth/signup/multi-step-signup-form.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/auth/signin/simple-sign-in-form.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/auth/signin/sign-in-form.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Client-side sign-in form component with proper error handling"
+    },
+    {
+      "file": "apps/web/src/app/auth/signin/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Sign-in page with simplified authentication flow"
+    },
+    {
+      "file": "apps/web/src/app/auth/signin/loading.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/auth/reset-password/page.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Password reset page for users to set a new password"
+    },
+    {
+      "file": "apps/web/src/app/auth/recover/page.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Account recovery page using security questions"
+    },
+    {
+      "file": "apps/web/src/app/auth/debug/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Debug page to diagnose authentication issues"
+    },
+    {
+      "file": "apps/web/src/app/auth/callback/route.ts",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Server-side auth callback handler for email verification"
+    },
+    {
+      "file": "apps/web/src/app/api/verify-db/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/test-signup-flow/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/test-legal-docs/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/test-consent-flow/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/test-auth/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/proxy/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/properties/route.ts",
+      "owner": "api-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Example API route with rate limiting and authentication middleware"
+    },
+    {
+      "file": "apps/web/src/app/api/csp-report/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/create-test-account/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/claims/route.ts",
+      "owner": "api-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claims API with rate limiting and tier-based access control"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/settlement-analyzer/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/room-builder/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/receipt-scanner/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/policy-chat/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/proactive-claim-optimizer/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/material-finish-analyzer/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/inventory-scanner/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/floorplan-creator/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/guided-property-inspection/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/evidence-organizer/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/donation-assistant/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/document-generator/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/damage-copilot/page.tsx",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Damage Documentation Copilot page - AI-guided evidence capture"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/damage-analyzer/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/community-intelligence/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/communication-helper/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/claim-swarm/page.tsx",
+      "owner": "ai-innovation-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Claim Swarm page - Multi-user collaborative damage assessment"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/claim-assistant/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/ar-damage-documenter/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/ai-tools/3d-model-generator/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "3D model generator from multiple images using AI photogrammetry"
+    },
+    {
+      "file": "apps/web/src/app/account/profile/page.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "User profile management page"
+    },
+    {
+      "file": "apps/web/src/app/account/login-activity/page.tsx",
+      "owner": "auth-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Login activity monitoring page"
+    },
+    {
+      "file": "apps/web/src/app/admin/performance/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/ml-operations/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/florida-parcels/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/errors/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/compliance/page.tsx",
+      "owner": "compliance-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Compliance dashboard for monitoring consent and data compliance"
+    },
+    {
+      "file": "apps/web/src/app/admin/apply-migration/page.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Admin page to apply database migrations"
+    },
+    {
+      "file": "apps/web/src/app/admin/claude-monitoring/page.tsx",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Claude Learning System Monitoring Dashboard Page"
+    },
+    {
+      "file": "apps/web/src/app/admin/api-keys/page.tsx",
+      "owner": "admin-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Admin panel for API key management and rate limiting configuration"
+    },
+    {
+      "file": "apps/web/src/app/admin/ai-models/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/admin/ai-costs/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/ui/__tests__/Button.test.tsx",
+      "owner": "ui-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for Button UI component"
+    },
+    {
+      "file": "apps/web/src/components/forms/steps/PersonalInfo.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/forms/steps/Agreements.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/components/auth/__tests__/multi-step-signup-form.test.tsx",
+      "owner": "test-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Tests for the optimized multi-step signup form"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/property/[id]/page.tsx",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Individual property detail page with subtabs"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/claims/new/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/claims/[id]/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/webhooks/resend/route.ts",
+      "owner": "communications-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Webhook endpoint for Resend email status updates"
+    },
+    {
+      "file": "apps/web/src/app/api/stripe/webhook/route.ts",
+      "owner": "billing-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Stripe webhook handler for subscription events"
+    },
+    {
+      "file": "apps/web/src/app/api/legal/static/route.ts",
+      "owner": "frontend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Static legal document API route - serves markdown files directly"
+    },
+    {
+      "file": "apps/web/src/app/api/legal/documents/route.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API route to fetch active legal documents"
+    },
+    {
+      "file": "apps/web/src/app/api/legal/accept/route.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API route to record legal document acceptance"
+    },
+    {
+      "file": "apps/web/src/app/api/legal/[slug]/route.ts",
+      "owner": "legal-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API route to fetch individual legal document content by slug"
+    },
+    {
+      "file": "apps/web/src/app/api/debug/signup-test/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Debug endpoint to test signup_consents table permissions"
+    },
+    {
+      "file": "apps/web/src/app/api/debug/legal-docs/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/ai/track-usage/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/ai/check-keys/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/ai/chat/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/ai/analyze-image/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/test-signin/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Test endpoint to verify sign-in functionality"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/session/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API route to check authentication session status"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/login/route.ts",
+      "owner": "security-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Login API endpoint with rate limiting and bot protection"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/fix-session/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Fix invalid user sessions by clearing cookies and redirecting to sign in"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/debug/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Debug endpoint to check auth configuration"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/clear-cookies/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/quality-scores/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Quality Scores API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/monitoring/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "API endpoint for Claude monitoring system status and controls"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/custom-prompts/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Custom Prompts API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/ai-operations/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "AI Operations API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/auth/clear-all-cookies/route.ts",
+      "owner": "backend-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Clear all auth-related cookies to fix refresh token issues"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/ab-tests/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "A/B Testing API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/ai-models/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/dashboard/claims/[id]/evidence/page.tsx",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/custom-prompts/[id]/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Individual Custom Prompt API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/ab-tests/[id]/route.ts",
+      "owner": "ai-team",
+      "status": "active",
+      "aiIntegration": "unknown",
+      "insuranceContext": "unknown",
+      "purpose": "Individual A/B Test API endpoints for admin panel"
+    },
+    {
+      "file": "apps/web/src/app/api/admin/ai-models/performance/route.ts",
+      "owner": "@ai-team",
+      "status": "stable",
+      "aiIntegration": "multi-provider",
+      "insuranceContext": "claims",
+      "purpose": "Brief description of file purpose"
+    }
+  ]
+}

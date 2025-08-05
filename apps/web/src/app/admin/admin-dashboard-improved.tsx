@@ -1,42 +1,18 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  Shield, 
-  ArrowLeft, 
-  Users, 
-  FileText, 
-  AlertCircle, 
-  Settings, 
-  Activity,
-  Brain,
-  BarChart3,
-  Clock,
-  CheckCircle,
-  XCircle,
-  Search,
-  Calendar,
-  Eye,
-  Zap,
-  Target,
-  DollarSign,
-  TrendingUp,
-  ChevronDown,
-  ChevronRight,
-  Home,
-  Database,
-  Lock,
-  Menu,
-  X as CloseIcon,
-  Layers,
-  Cpu,
-  FileCheck,
-  GraduationCap,
-  TrendingDown,
-  Info,
-  RefreshCw
-} from 'lucide-react'
+import React, { useState, useEffect } from 'react'
+import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, Search, Target, DollarSign, TrendingUp, ChevronDown, ChevronRight, Home, Database, Lock, Menu, Layers, Cpu, FileCheck, GraduationCap, TrendingDown, Info, RefreshCw, X as CloseIcon } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { useState, useEffect } from 'react'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
 import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dashboard'
@@ -48,11 +24,9 @@ import { PermissionsManagement } from '@/components/admin/permissions-management
 import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
 import { ErrorDashboard } from '@/components/admin/error-dashboard'
 
-import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { Button } from '@claimguardian/ui'
@@ -24,12 +34,8 @@ const PolicyUpload = dynamic(
   }
 )
 import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-policy-data'
-import { usePropertyStore } from '@/stores/property-store'
 
-
-function PoliciesContent() {
-  const { properties } = usePropertyStore()
-  const [selectedPropertyId, setSelectedPropertyId] = useState<string>(properties[0]?.id || '')
+export default function PoliciesPage() {
   const [showUpload, setShowUpload] = useState(false)
   const { policies, activePolicy, refetch } = usePolicyData(selectedPropertyId)
 

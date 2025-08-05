@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Disaster Hub Command Center for real-time alerts, preparedness, and recovery.
+ * @purpose "Disaster Hub Command Center for real-time alerts, preparedness, and recovery."
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "next/link", "@/actions/disasters"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "disaster", "emergency", "preparedness", "map"]
- * @status active
+ * @status stable
  */
 'use client'
 

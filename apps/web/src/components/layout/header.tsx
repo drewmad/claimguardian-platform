@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Application header component, displaying logo, notifications, and user profile.
+ * @purpose "Application header component, displaying logo, notifications, and user profile."
  * @owner frontend-team
  * @dependencies ["lucide-react", "@/lib/mock-data"]
  * @exports ["Header"]
  * @complexity low
  * @tags ["component", "layout", "header", "ui"]
- * @status active
+ * @status stable
  */
 import { Bell } from 'lucide-react';
 import Image from 'next/image';

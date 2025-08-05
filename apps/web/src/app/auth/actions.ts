@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server actions for authentication operations
+ * @purpose "Server actions for authentication operations"
+ * @dependencies ["@/lib","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 'use server'
 

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Florida-specific address form with dependent dropdowns
+ * @purpose "Florida-specific address form with dependent dropdowns"
  * @owner frontend-team
  * @dependencies ["react", "@types/google.maps", "geographic actions"]
  * @exports ["FloridaAddressForm"]
  * @complexity medium
  * @tags ["forms", "address", "florida", "dependent-dropdowns"]
- * @status active
+ * @status stable
  */
 'use client'
 

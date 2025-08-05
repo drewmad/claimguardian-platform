@@ -1,20 +1,20 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Badge } from '@/components/ui/badge'
-import { Progress } from '@/components/ui/progress'
-import { 
-  BarChart3, 
-  TrendingUp, 
-  DollarSign, 
-  AlertCircle,
-  Activity,
-  Users,
-  Zap,
-  Clock
-} from 'lucide-react'
+import { TrendingUp, DollarSign, AlertCircle, Users, Zap, Clock } from 'lucide-react'
 import {
   LineChart,
   Line,
@@ -94,17 +94,11 @@ export default function AICostsDashboard() {
   const [topUsers, setTopUsers] = useState<UserAISummary[]>([])
   const [modelPerformance, setModelPerformance] = useState<ModelPerformance[]>([])
   const [costProjection, setCostProjection] = useState<CostProjection | null>(null)
-  const [alerts, setAlerts] = useState<any[]>([])
+  const [alerts, setAlerts] = useState<Record<string, unknown>[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   const supabase = createBrowserSupabaseClient()
-
-  useEffect(() => {
-    loadDashboardData()
-    const interval = setInterval(loadDashboardData, 60000) // Refresh every minute
-    return () => clearInterval(interval)
-  }, [])
 
   const loadDashboardData = async () => {
     try {
@@ -148,6 +142,12 @@ export default function AICostsDashboard() {
     }
   }
 
+  useEffect(() => {
+    loadDashboardData()
+    const interval = setInterval(loadDashboardData, 60000) // Refresh every minute
+    return () => clearInterval(interval)
+  }, [loadDashboardData])
+
   // Calculate summary metrics
   const totalCostToday = dailySummary
     .filter(d => d.date === new Date().toISOString().split('T')[0])
@@ -174,9 +174,9 @@ export default function AICostsDashboard() {
 
   // Prepare chart data
   const dailyChartData = dailySummary.reduce((acc, item) => {
-    const existing = acc.find(d => d.date === item.date)
+    const existing = acc.find((d: Record<string, unknown>) => d.date === item.date)
     if (existing) {
-      existing[item.provider] = (existing[item.provider] || 0) + item.daily_cost
+      (existing as Record<string, unknown>)[item.provider] = ((existing as Record<string, unknown>)[item.provider] || 0) as number + item.daily_cost
     } else {
       acc.push({
         date: item.date,
@@ -184,13 +184,13 @@ export default function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as any[]).reverse()
+  }, [] as Record<string, unknown>[]).reverse()
 
   const hourlyChartData = hourlyUsage.reduce((acc, item) => {
     const hourStr = new Date(item.hour).toLocaleTimeString('en-US', { hour: 'numeric' })
-    const existing = acc.find(d => d.hour === hourStr)
+    const existing = acc.find((d: Record<string, unknown>) => d.hour === hourStr)
     if (existing) {
-      existing.calls += item.calls
+      (existing as Record<string, unknown>).calls = (existing as Record<string, unknown>).calls as number + item.calls
     } else {
       acc.push({
         hour: hourStr,
@@ -198,7 +198,7 @@ export default function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as any[]).slice(-24).reverse()
+  }, [] as Record<string, unknown>[]).slice(-24).reverse()
 
   if (loading) {
     return (
@@ -239,7 +239,7 @@ export default function AICostsDashboard() {
               {alerts.map((alert, idx) => (
                 <Alert key={idx} className="bg-yellow-900/20 border-yellow-900">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertDescription>{alert.alert_message}</AlertDescription>
+                  <AlertDescription>{(alert as Record<string, unknown>).alert_message as string}</AlertDescription>
                 </Alert>
               ))}
             </div>

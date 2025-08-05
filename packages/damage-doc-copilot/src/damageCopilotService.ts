@@ -1,11 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Damage Documentation Copilot Service - AI-powered guidance for evidence capture
+ * @purpose "Damage Documentation Copilot Service - AI-powered guidance for evidence capture"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ai-services", "@claimguardian/db"]
  * @exports ["damageCopilotService"]
  * @complexity high
- * @status active
+ * @status stable
  */
 
 // Client-side service - simplified for build compatibility

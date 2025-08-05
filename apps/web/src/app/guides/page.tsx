@@ -1,12 +1,13 @@
 /**
  * @fileMetadata
- * @purpose Provides a foundation for the property intelligence guides and resources page.
+ * @purpose "Provides a foundation for the property intelligence guides and resources page."
+ * @dependencies []
  * @owner content-team
  * @status foundation
  */
 /**
  * @fileMetadata
- * @purpose Property guides page foundation for comprehensive property management resources
+ * @purpose "Property guides page foundation for comprehensive property management resources"
  * @owner content-team
  * @dependencies ["react"]
  * @exports ["GuidesPage"]

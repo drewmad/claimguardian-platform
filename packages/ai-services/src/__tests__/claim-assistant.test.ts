@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for claim assistant AI service
+ * @purpose "Tests for claim assistant AI service"
  * @owner ai-services-team
  * @dependencies ["vitest"]
  * @exports []
  * @complexity low
  * @tags ["test", "ai", "claim-assistant"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:35:00Z
  */

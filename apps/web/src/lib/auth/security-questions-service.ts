@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Security questions service for account recovery
+ * @purpose "Security questions service for account recovery"
  * @owner auth-team
  * @dependencies ["@supabase/supabase-js", "bcryptjs", "@/lib/logger"]
  * @exports ["securityQuestionsService"]
  * @complexity medium
  * @tags ["auth", "security", "recovery"]
- * @status active
+ * @status stable
  */
 
 import * as bcrypt from 'bcryptjs'

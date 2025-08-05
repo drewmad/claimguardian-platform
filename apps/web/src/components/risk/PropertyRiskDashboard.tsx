@@ -1,23 +1,25 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useState, useEffect } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
 import { cn } from '@/lib/utils'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RiskScoreCard } from './RiskScoreCard'
 import { HazardZonesList } from './HazardZonesList'
 import { ActiveEventsMap } from './ActiveEventsMap'
-import { 
-  getParcelRiskAssessment, 
-  getPropertyHazardZones,
-  getActiveEventsNearProperty,
-  type RiskAssessment,
-  type HazardZone,
-  type ActiveEvent
-} from '@/actions/geospatial'
+import { getParcelRiskAssessment, getPropertyHazardZones, getActiveEventsNearProperty } from '@/actions/geospatial'
 import { 
   Building2, 
   MapPin, 

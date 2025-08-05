@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Compact Real-time Monitoring Widget for Claude Learning System
+ * @purpose "Compact Real-time Monitoring Widget for Claude Learning System"
+ * @dependencies ["@/components","@/lib","next","react"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 'use client'
@@ -12,18 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import {
-  Activity,
-  AlertCircle,
-  ArrowUp,
-  ArrowDown,
-  CheckCircle,
-  Clock,
-  TrendingUp,
-  Zap,
-  ExternalLink,
-  Minus
-} from 'lucide-react'
+import { Activity, AlertCircle, ArrowUp, ArrowDown, CheckCircle, TrendingUp, Zap, ExternalLink, Minus } from 'lucide-react'
 import Link from 'next/link'
 import { claudeProductionMonitor } from '@/lib/claude/claude-production-monitor'
 import { claudeABTesting } from '@/lib/claude/claude-ab-testing'

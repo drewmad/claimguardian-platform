@@ -1,6 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 interface AnalyticsEvent {
   name: string
-  properties?: Record<string, any>
+  properties?: Record<string, unknown>
   timestamp?: number
   userId?: string
   sessionId?: string
@@ -33,7 +43,7 @@ interface UserProperties {
   role?: string
   plan?: string
   createdAt?: Date
-  [key: string]: any
+  [key: string]: unknown
 }
 
 class Analytics {
@@ -92,7 +102,7 @@ class Analytics {
     this.sendToAnalytics('identify', properties)
   }
 
-  track(name: string, properties?: Record<string, any>) {
+  track(name: string, properties?: Record<string, unknown>) {
     if (!this.isEnabled) return
 
     const event: AnalyticsEvent = {
@@ -122,7 +132,7 @@ class Analytics {
   }
 
   // Feature usage tracking
-  trackFeatureUsage(feature: string, metadata?: Record<string, any>) {
+  trackFeatureUsage(feature: string, metadata?: Record<string, unknown>) {
     this.track('feature_used', {
       feature,
       ...metadata
@@ -130,7 +140,7 @@ class Analytics {
   }
 
   // Error tracking
-  trackError(error: Error, context?: Record<string, any>) {
+  trackError(error: Error, context?: Record<string, unknown>) {
     this.track('error_occurred', {
       errorName: error.name,
       errorMessage: error.message,
@@ -140,7 +150,7 @@ class Analytics {
   }
 
   // Performance tracking
-  trackPerformance(metric: string, value: number, metadata?: Record<string, any>) {
+  trackPerformance(metric: string, value: number, metadata?: Record<string, unknown>) {
     this.track('performance_metric', {
       metric,
       value,
@@ -149,14 +159,14 @@ class Analytics {
   }
 
   // User actions
-  trackClick(element: string, metadata?: Record<string, any>) {
+  trackClick(element: string, metadata?: Record<string, unknown>) {
     this.track('element_clicked', {
       element,
       ...metadata
     })
   }
 
-  trackFormSubmit(formName: string, success: boolean, metadata?: Record<string, any>) {
+  trackFormSubmit(formName: string, success: boolean, metadata?: Record<string, unknown>) {
     this.track('form_submitted', {
       formName,
       success,
@@ -165,7 +175,7 @@ class Analytics {
   }
 
   // E-commerce/conversion events
-  trackConversion(type: string, value?: number, metadata?: Record<string, any>) {
+  trackConversion(type: string, value?: number, metadata?: Record<string, unknown>) {
     this.track('conversion', {
       conversionType: type,
       conversionValue: value,
@@ -220,7 +230,7 @@ class Analytics {
   }
 
   // Send to analytics service (implement based on your provider)
-  private sendToAnalytics(type: string, data: any) {
+  private sendToAnalytics(type: string, data: unknown) {
     // This is where you would integrate with services like:
     // - Google Analytics
     // - Mixpanel
@@ -258,7 +268,7 @@ export function identify(properties: UserProperties) {
   getAnalytics().identify(properties)
 }
 
-export function track(name: string, properties?: Record<string, any>) {
+export function track(name: string, properties?: Record<string, unknown>) {
   getAnalytics().track(name, properties)
 }
 
@@ -266,14 +276,14 @@ export function trackPageView(path: string, title?: string) {
   getAnalytics().trackPageView(path, title)
 }
 
-export function trackFeatureUsage(feature: string, metadata?: Record<string, any>) {
+export function trackFeatureUsage(feature: string, metadata?: Record<string, unknown>) {
   getAnalytics().trackFeatureUsage(feature, metadata)
 }
 
-export function trackError(error: Error, context?: Record<string, any>) {
+export function trackError(error: Error, context?: Record<string, unknown>) {
   getAnalytics().trackError(error, context)
 }
 
-export function trackPerformance(metric: string, value: number, metadata?: Record<string, any>) {
+export function trackPerformance(metric: string, value: number, metadata?: Record<string, unknown>) {
   getAnalytics().trackPerformance(metric, value, metadata)
 }

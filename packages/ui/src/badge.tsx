@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose UI component for displaying a badge
+ * @purpose "UI component for displaying a badge"
  * @owner frontend-team
  * @dependencies ["react", "class-variance-authority", "@/utils"]
  * @exports ["Badge", "badgeVariants"]
  * @complexity low
  * @tags ["component", "ui", "badge"]
- * @status active
+ * @status stable
  */
 import { cva, type VariantProps } from 'class-variance-authority'
 import * as React from 'react'

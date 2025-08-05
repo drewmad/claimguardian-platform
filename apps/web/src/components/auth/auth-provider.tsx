@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Enhanced authentication context provider with error handling and logging
+ * @purpose "Enhanced authentication context provider with error handling and logging"
  * @owner frontend-team
  * @dependencies ["react", "@supabase/supabase-js", "@/lib/auth/auth-service", "@/lib/logger"]
  * @exports ["AuthProvider", "useAuth"]
  * @complexity high
  * @tags ["auth", "context", "provider", "error-handling"]
- * @status active
+ * @status stable
  */
 'use client'
 

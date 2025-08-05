@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
@@ -168,11 +178,11 @@ export function FloridaDisclosuresModal({
                 <h3 className="font-semibold text-lg mb-2">Insurance Policy Cooperation</h3>
                 <Alert className="bg-blue-50 border-blue-200">
                   <AlertDescription className="text-sm text-gray-700">
-                    Your insurance policy requires you to cooperate with your insurance company&apos;s 
+                    Your insurance policy requires you to cooperate with your insurance company's 
                     investigation of your claim. Using ClaimGuardian does not change or eliminate 
                     these obligations. You must continue to:
                     <ul className="list-disc ml-5 mt-2 space-y-1">
-                      <li>Respond to your insurer&apos;s reasonable requests</li>
+                      <li>Respond to your insurer's reasonable requests</li>
                       <li>Provide requested documentation</li>
                       <li>Allow property inspections as required</li>
                       <li>Comply with all policy terms and conditions</li>

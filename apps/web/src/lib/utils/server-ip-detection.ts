@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Server-side IP detection utility for secure, resilient tracking
+ * @purpose "Server-side IP detection utility for secure, resilient tracking"
+ * @dependencies ["@/lib","next"]
  * @owner security-team
- * @status active
+ * @status stable
  */
 
 import { headers } from 'next/headers'

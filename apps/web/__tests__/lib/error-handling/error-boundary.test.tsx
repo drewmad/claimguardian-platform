@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for error boundary component and error classification
+ * @purpose "Tests for error boundary component and error classification"
+ * @dependencies ["@/lib","@testing-library/react","react"]
  * @owner platform-team
  * @complexity high
  * @tags ["testing", "error-handling", "boundary", "classification"]
- * @status active
+ * @status stable
  */
 
 import { render, screen } from '@testing-library/react'

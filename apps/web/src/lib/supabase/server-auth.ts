@@ -1,11 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server-side Supabase auth client with secure cookie handling
+ * @purpose "Server-side Supabase auth client with secure cookie handling"
+ * @dependencies ["@/lib","@supabase/ssr","next"]
  * @owner backend-team
- * @status active
+ * @status stable
  */
 
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 import { authLogger } from '@/lib/logger'

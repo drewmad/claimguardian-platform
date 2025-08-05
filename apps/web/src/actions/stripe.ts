@@ -2,9 +2,10 @@
 
 /**
  * @fileMetadata
- * @purpose Server actions for Stripe payment processing
+ * @purpose "Server actions for Stripe payment processing"
+ * @dependencies ["@/config","@/lib","stripe","zod"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import Stripe from 'stripe'
@@ -182,8 +183,8 @@ export async function getSubscriptionDetails() {
       subscription: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
-        cancelAtPeriodEnd: (subscription as any).cancel_at_period_end,
+        currentPeriodEnd: new Date((subscription as unknown).current_period_end * 1000),
+        cancelAtPeriodEnd: (subscription as Stripe.Subscription).cancel_at_period_end,
         plan: {
           id: profile.subscription_plan,
           name: PRICING_PLANS[profile.subscription_plan]?.name || 'Unknown',
@@ -192,11 +193,11 @@ export async function getSubscriptionDetails() {
         },
         paymentMethod: subscription.default_payment_method ? {
           type: 'card',
-          card: (subscription.default_payment_method as any).card
+          card: (subscription.default_payment_method as Stripe.PaymentMethod).card
         } : null,
         nextInvoice: subscription.latest_invoice ? {
-          amount: (subscription.latest_invoice as any).amount_due,
-          dueDate: new Date((subscription.latest_invoice as any).due_date * 1000)
+          amount: (subscription.latest_invoice as Stripe.Invoice).amount_due,
+          dueDate: new Date((subscription.latest_invoice as Stripe.Invoice).due_date! * 1000)
         } : null
       },
       plan: profile.subscription_plan || 'free'
@@ -314,7 +315,7 @@ export async function getPaymentMethods() {
 
     // Get default payment method
     const customer = await stripe.customers.retrieve(profile.stripe_customer_id)
-    const defaultPaymentMethodId = (customer as any).invoice_settings?.default_payment_method
+    const defaultPaymentMethodId = (customer as Stripe.Customer).invoice_settings?.default_payment_method
 
     return {
       paymentMethods: paymentMethods.data.map(pm => ({

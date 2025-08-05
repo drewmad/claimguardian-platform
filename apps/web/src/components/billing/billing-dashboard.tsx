@@ -2,9 +2,10 @@
 
 /**
  * @fileMetadata
- * @purpose Billing dashboard component with subscription management
+ * @purpose "Billing dashboard component with subscription management"
+ * @dependencies ["@/components","@/config","@/lib","next","react"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import { useEffect, useState } from 'react'
@@ -13,16 +14,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  CreditCard, 
-  Download, 
-  ExternalLink, 
-  Loader2,
-  AlertCircle,
-  CheckCircle,
-  Calendar,
-  DollarSign
-} from 'lucide-react'
+import { CreditCard, Download, ExternalLink, Loader2, AlertCircle, Calendar, DollarSign } from 'lucide-react'
 import { 
   getSubscriptionDetails, 
   createPortalSession,
@@ -41,8 +33,8 @@ interface BillingDashboardProps {
 
 export function BillingDashboard({ userId }: BillingDashboardProps) {
   const [loading, setLoading] = useState(true)
-  const [subscription, setSubscription] = useState<any>(null)
-  const [paymentMethods, setPaymentMethods] = useState<any[]>([])
+  const [subscription, setSubscription] = useState<Stripe.Subscription | null>(null)
+  const [paymentMethods, setPaymentMethods] = useState<Stripe.PaymentMethod[]>([])
   const [currentPlan, setCurrentPlan] = useState('free')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 

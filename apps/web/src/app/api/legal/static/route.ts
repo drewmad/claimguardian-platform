@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Static legal document API route - serves markdown files directly
+ * @purpose "Static legal document API route - serves markdown files directly"
+ * @dependencies ["@/lib","fs","next","path"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

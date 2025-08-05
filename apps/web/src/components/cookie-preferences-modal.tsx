@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Cookie preferences modal for granular consent control
+ * @purpose "Cookie preferences modal for granular consent control"
+ * @dependencies ["@/lib","lucide-react","react"]
  * @owner compliance-team
- * @status active
+ * @status stable
  */
 'use client'
 

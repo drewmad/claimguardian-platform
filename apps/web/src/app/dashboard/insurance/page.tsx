@@ -1,22 +1,16 @@
 /**
  * @fileMetadata
- * @purpose Insurance policies and coverage management dashboard
+ * @purpose "Insurance policies and coverage management dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "insurance", "policies"]
- * @status active
+ * @status stable
  */
 'use client'
 
-import { 
-  Shield, FileText, DollarSign,
-  CheckCircle, TrendingUp, Phone, Download,
-  Plus, ChevronRight, Home, Car, Heart, Umbrella,
-  AlertTriangle, Info, Building, Users, FileCheck, Package,
-  type LucideIcon
-} from 'lucide-react'
+import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Main signup page with full Florida compliance (consolidated)
+ * @purpose "Main signup page with full Florida compliance (consolidated)"
+ * @dependencies []
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 
 import { MultiStepSignupForm } from './multi-step-signup-form'

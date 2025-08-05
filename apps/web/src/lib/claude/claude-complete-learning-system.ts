@@ -1,17 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Complete Claude learning system integration - errors, learning, and self-reflection
+ * @purpose "Complete Claude learning system integration - errors, learning, and self-reflection"
  * @owner ai-team
  * @dependencies ["claude-error-logger", "claude-learning-context", "claude-self-reflection", "claude-reflection-triggers"]
  * @exports ["ClaudeCompleteLearningSystem", "withCompleteLearning", "completeLearningSystem"]
  * @complexity high
  * @tags ["claude", "complete-system", "integration", "meta-learning", "continuous-improvement"]
- * @status active
+ * @status stable
  */
 
-import { claudeErrorLogger, claudeErrorHelpers, ClaudeErrorContext } from './claude-error-logger'
-import { claudeLearningContext, TaskContext } from './claude-learning-context'
-import { claudeSelfReflection, ReflectionContext } from './claude-self-reflection'
+import { claudeErrorLogger, ClaudeErrorContext } from './claude-error-logger'
+import { claudeLearningContext } from './claude-learning-context'
+import { claudeSelfReflection } from './claude-self-reflection'
 import { reflectionTriggers, autoReflect } from './claude-reflection-triggers'
 import { logger } from '@/lib/logger'
 
@@ -42,11 +42,11 @@ export interface CompleteLearningContext {
 export interface LearningSystemResult {
   taskId: string
   success: boolean
-  result?: any
+  result?: unknown
   error?: Error
   
   // Learning insights
-  preTaskLearnings: any[]
+  preTaskLearnings: unknown[]
   errorsLogged: string[]
   reflectionTriggered: boolean
   improvementInsights: string[]
@@ -139,7 +139,7 @@ class ClaudeCompleteLearningSystem {
   ): Promise<LearningSystemResult> {
     let result: T | undefined
     let error: Error | undefined
-    let errorsLogged: string[] = []
+    const errorsLogged: string[] = []
     let reflectionTriggered = false
     
     try {
@@ -348,14 +348,14 @@ class ClaudeCompleteLearningSystem {
     return 'simple'
   }
   
-  private displayLearningInsights(analysis: any, context: CompleteLearningContext) {
+  private displayLearningInsights(analysis: unknown, context: CompleteLearningContext) {
     console.log(`\n🧠 Claude Learning Analysis for ${context.taskType}:`)
     console.log(`   Risk Level: ${analysis.riskLevel}`)
     console.log(`   Success Estimate: ${(analysis.estimatedSuccessRate * 100).toFixed(1)}%`)
     
     if (analysis.recommendations?.length > 0) {
       console.log('   📋 Key Recommendations:')
-      analysis.recommendations.slice(0, 3).forEach((rec: any) => {
+      analysis.recommendations.slice(0, 3).forEach((rec: unknown) => {
         console.log(`     • ${rec.category.toUpperCase()}: ${rec.summary.substring(0, 100)}...`)
       })
     }
@@ -449,7 +449,7 @@ export const completeLearningSystem = new ClaudeCompleteLearningSystem()
 /**
  * Higher-order function for complete learning integration
  */
-export function withCompleteLearning<T extends (...args: any[]) => Promise<any>>(
+export function withCompleteLearning<T extends (...args: unknown[]) => Promise<any>>(
   taskType: ClaudeErrorContext['taskType'],
   description: string,
   userIntent: string,
@@ -464,7 +464,7 @@ export function withCompleteLearning<T extends (...args: any[]) => Promise<any>>
   } = {},
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     // Initialize complete learning system
     const context = await completeLearningSystem.initializeLearning(
       taskType,
@@ -491,7 +491,7 @@ export function withCompleteLearning<T extends (...args: any[]) => Promise<any>>
  * Quick learning wrapper for common tasks
  */
 export const quickLearn = {
-  codeGeneration: <T extends (...args: any[]) => Promise<any>>(
+  codeGeneration: <T extends (...args: unknown[]) => Promise<any>>(
     description: string,
     filePath: string,
     language: string,
@@ -505,7 +505,7 @@ export const quickLearn = {
     fn
   ),
   
-  fileModification: <T extends (...args: any[]) => Promise<any>>(
+  fileModification: <T extends (...args: unknown[]) => Promise<any>>(
     description: string,
     filePath: string,
     fn: T
@@ -518,7 +518,7 @@ export const quickLearn = {
     fn
   ),
   
-  debugging: <T extends (...args: any[]) => Promise<any>>(
+  debugging: <T extends (...args: unknown[]) => Promise<any>>(
     description: string,
     filePath: string,
     fn: T
@@ -531,7 +531,7 @@ export const quickLearn = {
     fn
   ),
   
-  analysis: <T extends (...args: any[]) => Promise<any>>(
+  analysis: <T extends (...args: unknown[]) => Promise<any>>(
     description: string,
     fn: T
   ) => withCompleteLearning(

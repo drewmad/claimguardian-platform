@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Dialog component with radix-ui integration
+ * @purpose "Dialog component with radix-ui integration"
  * @owner frontend-team
  * @dependencies ["react", "@radix-ui/react-dialog"]
  * @exports ["Dialog", "DialogContent", "DialogHeader", "DialogTitle", "DialogDescription"]
  * @complexity medium
  * @tags ["dialog", "modal", "ui"]
- * @status active
+ * @status stable
  */
 'use client'
 

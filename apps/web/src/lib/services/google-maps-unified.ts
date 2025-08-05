@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Unified Google Maps API service supporting all 11+ APIs
+ * @purpose "Unified Google Maps API service supporting all 11+ APIs"
  * @owner backend-team
  * @dependencies ["@/lib/logger", "@/lib/cache"]
  * @exports ["GoogleMapsUnifiedService"]
  * @complexity high
  * @tags ["google-maps", "api-integration", "property-intelligence"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'
@@ -76,15 +76,15 @@ interface EnvironmentalData {
     pollutants: Record<string, number>
   }
   weather: {
-    current: any
-    historical: any[]
-    alerts: any[]
+    current: unknown
+    historical: unknown[]
+    alerts: unknown[]
   }
 }
 
 export class GoogleMapsUnifiedService {
   private config: GoogleMapsConfig
-  private cache: Map<string, { data: any; expires: number }> = new Map()
+  private cache: Map<string, { data: unknown; expires: number }> = new Map()
   private rateLimitTrackers: Map<string, { count: number; resetTime: number }> = new Map()
 
   constructor() {
@@ -419,12 +419,12 @@ export class GoogleMapsUnifiedService {
   // ========== UNIFIED PROPERTY INTELLIGENCE ==========
 
   async getCompletePropertyIntelligence(location: PropertyLocation): Promise<UnifiedResponse<{
-    address: any
+    address: unknown
     roofAnalysis: RoofAnalysis | null
     environmental: EnvironmentalData
     elevation: number | null
     timezone: string | null
-    solarPotential: any
+    solarPotential: unknown
     staticMapUrl: string
     streetViewUrl: string
   }>> {

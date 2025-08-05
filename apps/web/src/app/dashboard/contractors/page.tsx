@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Contractors management and directory dashboard
+ * @purpose "Contractors management and directory dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "contractors", "vendors"]
- * @status active
+ * @status stable
  */
 'use client'
 

@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Async error handling utilities with retry logic and exponential backoff
+ * @purpose "Async error handling utilities with retry logic and exponential backoff"
+ * @dependencies ["@/lib"]
  * @owner platform-team
  * @complexity medium
  * @tags ["error-handling", "async", "retry", "resilience"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger'

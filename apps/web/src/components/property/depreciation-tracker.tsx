@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Depreciation tracking component for personal property items
+ * @purpose "Depreciation tracking component for personal property items"
+ * @dependencies ["@/components","@/lib","lucide-react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 

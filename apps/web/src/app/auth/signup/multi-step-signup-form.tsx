@@ -1,10 +1,20 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
 import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { useState, useCallback, useMemo, useRef } from 'react'
+import { useState, useCallback, useMemo } from 'react'
 import { logger } from "../../../lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -263,7 +273,7 @@ export function MultiStepSignupForm() {
       logger.info('🏁 Signup process completed, setting loading to false')
       setIsLoading(false)
     }
-  }, [isStepValid, supabase, formData, router])
+  }, [isStepValid, supabase, formData, router, currentStep])
   
   // Optimized form data updater - uses functional update to avoid recreation
   const updateFormData = useCallback(<K extends keyof typeof formData>(
@@ -444,7 +454,7 @@ export function MultiStepSignupForm() {
                   placeholder="••••••••"
                 />
                 {formData.confirmPassword && formData.password !== formData.confirmPassword && (
-                  <p className="text-xs text-red-500 mt-1">Passwords don&apos;t match</p>
+                  <p className="text-xs text-red-500 mt-1">Passwords don't match</p>
                 )}
               </div>
             </div>
@@ -569,7 +579,7 @@ export function MultiStepSignupForm() {
             <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
               <div className="bg-amber-950/30 border border-amber-800/50 rounded-lg p-4 mb-4">
                 <p className="text-sm text-amber-200">
-                  ClaimGuardian uses artificial intelligence to help analyze documents, provide suggestions, and guide you through the claims process. While our AI is designed to be helpful and accurate, it&apos;s important to understand its limitations.
+                  ClaimGuardian uses artificial intelligence to help analyze documents, provide suggestions, and guide you through the claims process. While our AI is designed to be helpful and accurate, it's important to understand its limitations.
                 </p>
               </div>
               

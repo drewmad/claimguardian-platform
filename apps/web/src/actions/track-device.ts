@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server action to track user devices
+ * @purpose "Server action to track user devices"
  * @owner security-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["trackUserDevice"]
  * @complexity low
  * @tags ["device", "tracking", "security"]
- * @status active
+ * @status stable
  */
 
 'use server'

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Centralized Google Maps API loading and management hook
+ * @purpose "Centralized Google Maps API loading and management hook"
  * @owner frontend-team
  * @dependencies ["react"]
  * @exports ["useGoogleMaps"]
  * @complexity medium
  * @tags ["hook", "google-maps", "geocoding"]
- * @status active
+ * @status stable
  */
 
 import { useEffect, useState, useCallback } from 'react'
@@ -113,7 +113,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
 
       // Create global callback
       const callbackName = 'initGoogleMaps'
-      ;(window as any)[callbackName] = () => {
+      ;(window as Record<string, unknown>)[callbackName] = () => {
         // Check if Google Maps loaded successfully
         if (window.google?.maps) {
           setIsLoaded(true)
@@ -124,7 +124,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
           setIsLoading(false)
         }
         // Clean up callback
-        delete (window as any)[callbackName]
+        delete (window as Record<string, unknown>)[callbackName]
       }
 
       // Handle script loading errors
@@ -132,7 +132,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
         setError('Failed to load Google Maps API script')
         setLoadError(true)
         setIsLoading(false)
-        delete (window as any)[callbackName]
+        delete (window as Record<string, unknown>)[callbackName]
       }
 
       // Add script to document

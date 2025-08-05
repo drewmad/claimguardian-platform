@@ -1,6 +1,6 @@
 /**
  * @fileMetadata
- * @purpose Enhanced button component with loading states, icons, and accessibility features
+ * @purpose "Enhanced button component with loading states, icons, and accessibility features"
  * @owner frontend-team
  * @dependencies ["react", "class-variance-authority", "./utils"]
  * @exports ["Button", "buttonVariants"]
@@ -8,7 +8,7 @@
  * @lastModifiedDate 2025-08-04T22:00:00Z
  * @complexity medium
  * @tags ["component", "ui", "button", "loading", "icons", "accessibility"]
- * @status active
+ * @status stable
  * @notes Enhanced with loading spinner, icon support, and proper ARIA attributes
  */
 'use client'

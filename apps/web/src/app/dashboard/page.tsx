@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 // Force dynamic rendering to prevent SSG issues with Supabase client
@@ -698,7 +708,7 @@ function DashboardContent() {
                       <h3 className="font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">AI Insights</h3>
                     </div>
                     <p className="text-sm text-gray-300 mb-3">
-                      Based on the approaching hurricane, I recommend documenting your property&apos;s current condition and reviewing your insurance coverage limits.
+                      Based on the approaching hurricane, I recommend documenting your property's current condition and reviewing your insurance coverage limits.
                     </p>
                     <Button size="sm" className="w-full bg-blue-600 hover:bg-blue-700">
                       <Eye className="h-4 w-4 mr-2" />

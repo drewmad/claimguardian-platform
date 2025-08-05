@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for document extractor AI service
+ * @purpose "Tests for document extractor AI service"
  * @owner ai-services-team
  * @dependencies ["vitest"]
  * @exports []
  * @complexity low
  * @tags ["test", "ai", "document-extractor"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:35:00Z
  */

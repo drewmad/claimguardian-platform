@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose API route to fetch active legal documents
+ * @purpose "API route to fetch active legal documents"
  * @owner legal-team
  * @dependencies ["next", "@/lib/legal"]
  * @exports ["GET"]
  * @complexity low
  * @tags ["api", "legal", "documents"]
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'

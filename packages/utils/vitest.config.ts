@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Vitest configuration for utils package testing
+ * @purpose "Vitest configuration for utils package testing"
  * @owner test-team
  * @dependencies ["vitest"]
  * @exports ["default"]
  * @complexity low
  * @tags ["test", "config", "vitest"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T20:25:00Z
  */

@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Shared Learning Patterns Repository for Cross-Team Knowledge Sharing
+ * @purpose "Shared Learning Patterns Repository for Cross-Team Knowledge Sharing"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-complete-learning-system", "@/lib/logger"]
  */
 
@@ -171,7 +171,7 @@ const [file1, file2, file3] = await Promise.all([
         },
         examples: [{
           title: 'API Endpoint Validation',
-          before: `async function updateUser(userId: string, data: any) {
+          before: `async function updateUser(userId: string, data: unknown) {
   const user = await db.getUser(userId)
   const processed = await processData(data)
   // Validation happens after expensive operations
@@ -180,7 +180,7 @@ const [file1, file2, file3] = await Promise.all([
   }
   return await db.updateUser(userId, processed)
 }`,
-          after: `async function updateUser(userId: string, data: any) {
+          after: `async function updateUser(userId: string, data: unknown) {
   // Validate immediately
   if (!userId || typeof userId !== 'string') {
     throw new Error('Invalid userId')
@@ -483,7 +483,7 @@ const testUser2 = new UserBuilder()
     }
   }
 
-  private analyzeCommonality(learnings: any[]): any {
+  private analyzeCommonality(learnings: unknown[]): unknown {
     // Simplified commonality analysis
     const categories = learnings.map(l => this.categorizelearning(l))
     const mostCommonCategory = this.findMostCommon(categories) as PatternCategory
@@ -504,7 +504,7 @@ const testUser2 = new UserBuilder()
     }
   }
 
-  private categorizelearning(learning: any): PatternCategory {
+  private categorizelearning(learning: unknown): PatternCategory {
     // Simple categorization logic
     const taskDescription = learning.task.toLowerCase()
     
@@ -750,7 +750,7 @@ const testUser2 = new UserBuilder()
         return result
       }
 
-      data.patterns.forEach((pattern: any) => {
+      data.patterns.forEach((pattern: unknown) => {
         try {
           // Check if pattern already exists
           if (this.patterns.has(pattern.id)) {

@@ -1,15 +1,15 @@
 /**
  * @fileMetadata
- * @purpose A/B Testing Framework for Claude Learning System
+ * @purpose "A/B Testing Framework for Claude Learning System"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-production-monitor", "@/lib/logger"]
  */
 
 import { claudeProductionMonitor } from './claude-production-monitor'
 import { claudeAdvancedAnalytics } from './claude-advanced-analytics'
 import { claudeEnhancedAutomation } from './claude-enhanced-automation'
-import { completeLearningSystem } from './claude-complete-learning-system'
+import { withCompleteLearning } from './claude-complete-learning-system'
 import { logger } from '@/lib/logger'
 
 interface ABTestSession {
@@ -161,14 +161,14 @@ class ClaudeABTestingFramework {
         confidenceScore = prediction.confidenceLevel
 
         // Execute with complete learning system
-        result = await completeLearningSystem.withCompleteLearning(
-          taskType,
+        result = await withCompleteLearning(
+          taskType as 'code-generation' | 'analysis' | 'debugging' | 'planning' | 'file-modification' | 'other',
           taskDescription,
           taskDescription,
           `A/B Test Treatment - Session: ${sessionId}`,
           context,
           taskFunction
-        )
+        )()
 
         session.learningPatternsApplied += optimizationsCount
         session.confidenceScores.push(confidenceScore)

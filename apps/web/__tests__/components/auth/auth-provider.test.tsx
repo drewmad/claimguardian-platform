@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for AuthProvider component and authentication flows
+ * @purpose "Tests for AuthProvider component and authentication flows"
+ * @dependencies ["@/components","@/lib","@testing-library/react","react"]
  * @owner platform-team
  * @complexity high
  * @tags ["testing", "auth", "provider", "security"]
- * @status active
+ * @status stable
  */
 
 import { act, waitFor } from '@testing-library/react'

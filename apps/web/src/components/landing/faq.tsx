@@ -1,23 +1,24 @@
 /**
  * @fileMetadata
- * @purpose Renders the FAQ section with collapsible questions on the landing page.
+ * @purpose "Renders the FAQ section with collapsible questions on the landing page."
+ * @dependencies ["lucide-react","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose FAQ section with collapsible questions
+ * @purpose "FAQ section with collapsible questions"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["FAQ"]
  * @complexity medium
  * @tags ["landing", "faq", "support"]
- * @status active
+ * @status stable
  */
 'use client'
 
+import React, { useState } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
 
 const faqs = [
   {

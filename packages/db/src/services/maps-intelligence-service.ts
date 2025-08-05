@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Service class for managing Google Maps Intelligence data storage and retrieval
+ * @purpose "Service class for managing Google Maps Intelligence data storage and retrieval"
+ * @dependencies ["@supabase/supabase-js"]
  * @owner maps-intelligence-team
- * @status active
+ * @status stable
  */
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'

@@ -1,5 +1,15 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
-import { NextResponse, type NextRequest } from 'next/server'
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
+import { createServerClient } from '@supabase/ssr'
+import { NextResponse } from 'next/server'
 
 export function createClient(request: NextRequest, response: NextResponse) {
   return createServerClient(

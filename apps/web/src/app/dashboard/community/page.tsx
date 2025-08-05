@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Community engagement and neighborhood resources dashboard
+ * @purpose "Community engagement and neighborhood resources dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "community", "social"]
- * @status active
+ * @status stable
  */
 'use client'
 

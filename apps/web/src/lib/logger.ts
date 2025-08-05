@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Centralized logging service for application-wide logging
+ * @purpose "Centralized logging service for application-wide logging"
  * @owner infrastructure-team
  * @dependencies []
  * @exports ["logger", "LogLevel", "LogContext"]
  * @complexity medium
  * @tags ["logging", "monitoring", "debugging"]
- * @status active
+ * @status stable
  */
 
 export enum LogLevel {

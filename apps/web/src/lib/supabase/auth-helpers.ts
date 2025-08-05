@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Auth helper utilities for handling session errors
+ * @purpose "Auth helper utilities for handling session errors"
+ * @dependencies ["@/lib","@supabase/supabase-js"]
  * @owner auth-team
- * @status active
+ * @status stable
  */
 
 import { SupabaseClient } from '@supabase/supabase-js'

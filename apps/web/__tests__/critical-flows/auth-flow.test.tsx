@@ -1,11 +1,12 @@
 import React from 'react'
 /**
  * @fileMetadata  
- * @purpose Critical authentication flow tests
+ * @purpose "Critical authentication flow tests"
+ * @dependencies ["@claimguardian/db","@tanstack/react-query","@testing-library/react","@testing-library/user-event","react"]
  * @owner security-team
  * @complexity high
  * @tags ["testing", "auth", "critical-flow", "security"]
- * @status active
+ * @status stable
  */
 
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'

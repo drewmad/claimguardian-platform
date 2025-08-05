@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Production Learning System Monitoring and Validation
+ * @purpose "Production Learning System Monitoring and Validation"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-advanced-analytics", "@/lib/claude/claude-enhanced-automation", "@supabase/supabase-js"]
  */
 
@@ -372,7 +372,7 @@ class ClaudeProductionMonitor {
     return numbers.reduce((a, b) => a + b, 0)
   }
 
-  private calculateStatisticalSignificance(control: any, treatment: any): number {
+  private calculateStatisticalSignificance(control: unknown, treatment: unknown): number {
     // Simplified statistical significance calculation
     // In production, would use proper statistical tests
     const sampleSizeEffect = Math.min(control.taskCount, treatment.taskCount) / 100

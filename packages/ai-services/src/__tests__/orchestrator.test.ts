@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Tests for AI orchestrator service
+ * @purpose "Tests for AI orchestrator service"
  * @owner ai-services-team
  * @dependencies ["vitest", "../orchestrator/orchestrator", "../providers/base.provider"]
  * @exports []
  * @complexity low
  * @tags ["test", "ai", "orchestrator"]
- * @status active
+ * @status stable
  * @lastModifiedBy Claude AI Assistant
  * @lastModifiedDate 2025-08-04T22:30:00Z
  */

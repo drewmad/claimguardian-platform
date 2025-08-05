@@ -1,4 +1,14 @@
-import { createServerClient, type CookieOptions } from '@supabase/ssr'
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
+import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
 import { authLogger } from '@/lib/logger'

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Billing dashboard for subscription management
+ * @purpose "Billing dashboard for subscription management"
+ * @dependencies ["@/components","@/lib","next"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'

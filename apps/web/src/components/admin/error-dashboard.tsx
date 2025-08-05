@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Error dashboard component for viewing and managing errors
+ * @purpose "Error dashboard component for viewing and managing errors"
+ * @dependencies ["@/components","@/lib","@claimguardian/ui","date-fns","lucide-react"]
  * @owner monitoring-team
- * @status active
+ * @status stable
  */
 'use client'
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
@@ -12,7 +22,7 @@ export interface ParcelData {
   yearBuilt: number
   livingArea: number
   landArea: number
-  geometry?: any
+  geometry?: unknown
 }
 
 export interface RiskAssessment {
@@ -50,7 +60,7 @@ export interface ActiveEvent {
   status: string
   severity: string
   startTime: string
-  geometry?: any
+  geometry?: unknown
 }
 
 /**
@@ -266,12 +276,12 @@ export async function getPropertyHazardZones({
       return { data: null, error: error.message }
     }
     
-    const hazards: HazardZone[] = (data || []).map((zone: any) => ({
+    const hazards: HazardZone[] = (data || []).map((zone: HazardZone) => ({
       id: zone.id,
-      hazardType: zone.hazard_type,
-      zoneName: zone.zone_name,
+      hazardType: zone.hazardType,
+      zoneName: zone.zoneName,
       category: zone.category,
-      riskWeight: zone.risk_weight
+      riskWeight: zone.riskWeight
     }))
     
     return { data: hazards, error: null }
@@ -317,14 +327,14 @@ export async function getActiveEventsNearProperty({
       return { data: null, error: error.message }
     }
     
-    const events: ActiveEvent[] = (data || []).map((event: any) => ({
+    const events: ActiveEvent[] = (data || []).map((event: ActiveEvent) => ({
       id: event.id,
-      eventType: event.event_type,
-      eventName: event.event_name,
+      eventType: event.eventType,
+      eventName: event.eventName,
       status: event.status,
       severity: event.severity,
-      startTime: event.start_time,
-      geometry: event.geom_geojson
+      startTime: event.startTime,
+      geometry: event.geometry
     }))
     
     return { data: events, error: null }

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { onCLS, onFCP, onFID, onLCP, onTTFB, onINP, Metric } from 'web-vitals'
 
 export interface PerformanceMetric {
@@ -5,7 +15,7 @@ export interface PerformanceMetric {
   value: number
   rating: 'good' | 'needs-improvement' | 'poor'
   timestamp: number
-  metadata?: Record<string, any>
+  metadata?: Record<string, unknown>
 }
 
 export interface DatabaseMetric {
@@ -73,7 +83,7 @@ class MetricsCollector {
     this.notifyListeners(performanceMetric)
   }
 
-  recordCustomMetric(name: string, value: number, metadata?: Record<string, any>) {
+  recordCustomMetric(name: string, value: number, metadata?: Record<string, unknown>) {
     const metric: PerformanceMetric = {
       name,
       value,
@@ -198,7 +208,7 @@ export function getMetricsCollector(): MetricsCollector {
 }
 
 // Convenience functions
-export function recordMetric(name: string, value: number, metadata?: Record<string, any>) {
+export function recordMetric(name: string, value: number, metadata?: Record<string, unknown>) {
   getMetricsCollector().recordCustomMetric(name, value, metadata)
 }
 

@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 // Re-export database types
 export * from './types/database.types'
 
@@ -26,6 +36,7 @@ export type { Database }
 
 // Re-export common types for easier access
 export type Tables = Database['public']['Tables']
+export type TablesUpdate = Database['public']['Tables'][keyof Database['public']['Tables']]['Update']
 export type Enums = Database['public']['Enums']
 
 // Export specific table types for convenience

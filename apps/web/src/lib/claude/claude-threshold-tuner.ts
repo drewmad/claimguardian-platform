@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @purpose Confidence Threshold Tuning System for Claude Learning
+ * @purpose "Confidence Threshold Tuning System for Claude Learning"
  * @owner ai-team
- * @status active
+ * @status stable
  * @dependencies ["@/lib/claude/claude-production-monitor", "@/lib/claude/claude-ab-testing"]
  */
 
@@ -158,7 +158,7 @@ class ClaudeThresholdTuner {
     return metrics
   }
 
-  private analyzeThresholdPerformance(metrics: any[], threshold: number) {
+  private analyzeThresholdPerformance(metrics: unknown[], threshold: number) {
     let truePositives = 0
     let falsePositives = 0
     let trueNegatives = 0
@@ -202,7 +202,7 @@ class ClaudeThresholdTuner {
   private generateThresholdRecommendation(
     currentThreshold: number,
     analyses: ThresholdAnalysis[],
-    productionStatus: any
+    productionStatus: unknown
   ): ThresholdRecommendation {
     // Find optimal threshold based on F1 score
     const optimalAnalysis = analyses[0] // Already sorted by F1 score
@@ -379,8 +379,8 @@ class ClaudeThresholdTuner {
     performanceChange: number
     recommendation: 'keep' | 'rollback' | 'continue_monitoring'
     details: {
-      beforeMetrics: any
-      afterMetrics: any
+      beforeMetrics: unknown
+      afterMetrics: unknown
       significantChange: boolean
     }
   }> {

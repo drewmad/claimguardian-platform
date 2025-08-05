@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Client-side sign-in form component with proper error handling
+ * @purpose "Client-side sign-in form component with proper error handling"
+ * @dependencies ["@/components","@/lib","@claimguardian/ui","lucide-react","next"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -171,7 +172,7 @@ export function SignInForm({ message }: SignInFormProps) {
           {/* Sign Up Link */}
           <div className="mt-6 text-center">
             <p className="text-slate-400">
-              Don&apos;t have an account?{' '}
+              Don't have an account?{' '}
               <Link
                 href="/"
                 className="text-blue-400 hover:text-blue-300"

@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for logging service
+ * @purpose "Tests for logging service"
+ * @dependencies ["@/lib"]
  * @owner platform-team
  * @complexity medium
  * @tags ["testing", "logging"]
- * @status active
+ * @status stable
  */
 
 import { mockConsole } from '../../utils/test-utils'

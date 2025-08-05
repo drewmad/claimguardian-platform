@@ -1,17 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Improved landing page header with better branding and navigation
+ * @purpose "Improved landing page header with better branding and navigation"
  * @owner frontend-team
  * @dependencies ["react", "next/link", "@/lib/constants"]
  * @exports ["Header"]
  * @complexity medium
  * @tags ["header", "navigation", "landing"]
- * @status active
+ * @status stable
  */
 'use client'
 
+import React, { useState } from 'react'
 import Link from 'next/link'
-import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
 import { COLORS } from '@/lib/constants'

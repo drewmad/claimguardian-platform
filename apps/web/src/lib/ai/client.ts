@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import { AI_MODELS, AI_ENDPOINTS } from './config'
 
 interface ChatMessage {
@@ -109,7 +119,7 @@ export class AIClient {
         }
         
         // Only retry on network errors or server errors
-        if (error instanceof TypeError || error.message.includes('fetch')) {
+        if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
@@ -191,7 +201,7 @@ export class AIClient {
         }
         
         // Only retry on network errors or server errors
-        if (error instanceof TypeError || error.message.includes('fetch')) {
+        if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
@@ -337,7 +347,7 @@ export class AIClient {
         }
         
         // Only retry on network errors or server errors
-        if (error instanceof TypeError || error.message.includes('fetch')) {
+        if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
@@ -407,7 +417,7 @@ export class AIClient {
         }
         
         // Only retry on network errors or server errors
-        if (error instanceof TypeError || error.message.includes('fetch')) {
+        if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }

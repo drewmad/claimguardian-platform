@@ -2,9 +2,10 @@
 
 /**
  * @fileMetadata
- * @purpose Pricing plans display component with Stripe integration
+ * @purpose "Pricing plans display component with Stripe integration"
+ * @dependencies ["@/actions","@/components","@/config","@/hooks","@/lib"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import { useState } from 'react'

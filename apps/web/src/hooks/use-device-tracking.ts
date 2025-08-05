@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Hook for capturing device and location information
+ * @purpose "Hook for capturing device and location information"
+ * @dependencies ["@/lib","react"]
  * @owner analytics-team
- * @status active
+ * @status stable
  */
 
 import { useState, useEffect } from 'react'

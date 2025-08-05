@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose TypeScript types for AI Operations database entities
+ * @purpose "TypeScript types for AI Operations database entities"
+ * @dependencies []
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 // Database entity types for AI Operations

@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Display property enrichment status and captured data
+ * @purpose "Display property enrichment status and captured data"
+ * @dependencies ["@/actions","@/components","@/lib","@claimguardian/ui","next"]
  * @owner property-team
- * @status active
+ * @status stable
  */
 
 'use client'

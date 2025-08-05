@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose A/B Testing API endpoints for admin panel
+ * @purpose "A/B Testing API endpoints for admin panel"
+ * @dependencies ["@/lib","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
@@ -59,7 +60,7 @@ export async function GET(request: NextRequest) {
       )
     }
 
-    let response: any = { tests }
+    const response: Record<string, unknown> = { tests }
 
     if (includeMetrics && tests?.length > 0) {
       // Get metrics for each test
@@ -105,7 +106,7 @@ export async function GET(request: NextRequest) {
         // Calculate averages
         Object.values(metricsMap).forEach(metrics => {
           ['model_a_metrics', 'model_b_metrics'].forEach(key => {
-            const m = metrics[key as keyof ABTestMetrics] as any
+            const m = metrics[key as keyof ABTestMetrics] as Record<string, number>
             if (m.requests > 0) {
               m.avg_time = Math.round(m.avg_time / m.requests) / 1000 // Convert to seconds
               m.success_rate = Math.round((m.success_rate / m.requests) * 100 * 10) / 10

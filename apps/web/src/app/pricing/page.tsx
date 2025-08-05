@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Pricing page displaying subscription plans
+ * @purpose "Pricing page displaying subscription plans"
+ * @dependencies ["@/components","lucide-react","next"]
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import { Metadata } from 'next'
@@ -41,7 +42,7 @@ export default function PricingPage() {
             Simple, transparent pricing
           </h1>
           <p className="mt-4 text-xl text-gray-600 max-w-2xl mx-auto">
-            Choose the plan that&apos;s right for you. Upgrade or downgrade at any time.
+            Choose the plan that's right for you. Upgrade or downgrade at any time.
           </p>
           <div className="mt-8 flex items-center justify-center space-x-4">
             <span className="text-sm text-gray-600">Monthly</span>

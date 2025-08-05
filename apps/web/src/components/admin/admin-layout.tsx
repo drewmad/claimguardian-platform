@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Admin layout wrapper component
+ * @purpose "Admin layout wrapper component"
+ * @dependencies ["lucide-react","next"]
  * @owner admin-team
- * @status active
+ * @status stable
  */
 'use client'
 

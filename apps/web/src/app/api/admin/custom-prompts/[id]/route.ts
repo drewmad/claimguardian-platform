@@ -1,14 +1,14 @@
 /**
  * @fileMetadata
- * @purpose Individual Custom Prompt API endpoints for admin panel
+ * @purpose "Individual Custom Prompt API endpoints for admin panel"
+ * @dependencies ["@/lib","@/types","@claimguardian/db","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { UpdateCustomPromptRequest } from '@/types/ai-operations'
-
 // PATCH /api/admin/custom-prompts/[id] - Update custom prompt
 export async function PATCH(
   request: NextRequest,
@@ -71,7 +71,7 @@ export async function PATCH(
     }
 
     // Update custom prompt
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     }
 

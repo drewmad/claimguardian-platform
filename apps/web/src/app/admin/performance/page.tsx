@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useEffect, useState } from 'react'
@@ -44,10 +54,6 @@ export default function PerformanceDashboard() {
 
   const supabase = createBrowserSupabaseClient()
 
-  useEffect(() => {
-    loadPerformanceData()
-  }, [])
-
   const loadPerformanceData = async () => {
     try {
       setLoading(true)
@@ -75,6 +81,10 @@ export default function PerformanceDashboard() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    loadPerformanceData()
+  }, [loadPerformanceData])
 
   const refreshMaterializedViews = async () => {
     try {

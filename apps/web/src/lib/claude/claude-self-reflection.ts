@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Claude self-reflection system for analyzing approach efficiency and capturing improvements
+ * @purpose "Claude self-reflection system for analyzing approach efficiency and capturing improvements"
  * @owner ai-team
  * @dependencies ["@/lib/claude/claude-error-logger", "@/lib/logger"]
  * @exports ["claudeSelfReflection", "ReflectionContext", "ApproachAnalysis"]
  * @complexity high
  * @tags ["claude", "self-reflection", "improvement", "efficiency", "meta-learning"]
- * @status active
+ * @status stable
  */
 
 import { claudeErrorLogger } from './claude-error-logger'
@@ -764,7 +764,7 @@ class ClaudeSelfReflection {
 export const claudeSelfReflection = new ClaudeSelfReflection()
 
 // Convenience wrapper for automatic reflection
-export function withSelfReflection<T extends (...args: any[]) => Promise<any>>(
+export function withSelfReflection<T extends (...args: unknown[]) => Promise<any>>(
   taskType: ReflectionContext['taskType'],
   taskDescription: string,
   userIntent: string,
@@ -772,7 +772,7 @@ export function withSelfReflection<T extends (...args: any[]) => Promise<any>>(
   initialApproach: string,
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     const taskId = claudeSelfReflection.startReflection(
       taskType,
       taskDescription,

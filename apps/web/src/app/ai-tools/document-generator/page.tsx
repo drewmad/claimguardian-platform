@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { FileText, Download, Copy, Sparkles, AlertTriangle, FileSearch, Calendar, Shield, Edit, Loader2 } from 'lucide-react'
@@ -202,7 +212,7 @@ The letter should be ready to send after adding the recipient's information.`
         const response = await aiClient.chat([
           { role: 'system', content: 'You are an expert insurance claim documentation specialist with deep knowledge of Florida property insurance laws and regulations.' },
           { role: 'user', content: prompt }
-        ], primaryProvider)
+        ], primaryProvider as 'openai' | 'gemini')
 
         // Track successful usage
         const responseTime = Date.now() - startTime
@@ -226,7 +236,7 @@ The letter should be ready to send after adding the recipient's information.`
           const response = await aiClient.chat([
             { role: 'system', content: 'You are an expert insurance claim documentation specialist with deep knowledge of Florida property insurance laws and regulations.' },
             { role: 'user', content: prompt }
-          ], fallbackProvider)
+          ], fallbackProvider as 'openai' | 'gemini')
 
           // Track fallback usage
           const responseTime = Date.now() - startTime

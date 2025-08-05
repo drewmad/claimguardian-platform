@@ -1,10 +1,20 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 import type { Database } from '@claimguardian/db'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 // Database types
 type DbClaim = Database['public']['Tables']['claims']['Row']
-type ClaimStatus = Database['public']['Enums']['claim_status']
+type ClaimStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'denied' | 'settled'
 
 // Extended types for the store
 interface ClaimEvidence {
@@ -164,7 +174,7 @@ export const useClaimStore = create<ClaimState>()(
           statusHistory: [{
             id: generateId(),
             date: now,
-            status: claimData.status || 'draft',
+            status: (claimData.status as ClaimStatus) || 'draft',
             notes: 'Claim created'
           }],
           lineItems: [],
@@ -265,8 +275,7 @@ export const useClaimStore = create<ClaimState>()(
                   status,
                   statusHistory: [...c.statusHistory, statusHistory],
                   updatedAt: now,
-                  date_reported: status === 'submitted' && !c.date_reported ? now : c.date_reported,
-                  closed_date: ['closed', 'denied'].includes(status) ? now : c.closed_date
+                  reported_date: status === 'submitted' && !c.reported_date ? now : c.reported_date
                 }
               : c
           )

@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Property overview and management dashboard
+ * @purpose "Property overview and management dashboard"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["default"]
  * @complexity high
  * @tags ["dashboard", "property", "page"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -23,6 +23,8 @@ import { PropertyWizard } from '@/components/property/property-wizard'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { PropertyAvatar } from '@/components/ui/property-image'
+
+type Json = Record<string, unknown> | unknown[] | string | number | boolean | null
 
 interface DisplayProperty {
   id: string
@@ -42,15 +44,23 @@ interface DisplayProperty {
 interface PropertyRecord {
   id: string;
   user_id: string;
-  name: string;
-  address: string;
-  type: string;
-  year_built: number;
-  square_feet: number;
-  value: number | null;
-  insurability_score: number | null;
-  is_primary: boolean | null;
-  details: Record<string, unknown>;
+  street_address: string;
+  city: string;
+  state: string;
+  zip_code: string;
+  full_address: string;
+  property_type: string;
+  year_built: number | null;
+  square_footage: number | null;
+  current_value: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  lot_size_acres: number | null;
+  metadata: Json;
+  // Temporal fields
+  version: number;
+  version_id: string;
+  is_current: boolean;
   created_at: string;
   updated_at: string;
 }
@@ -89,20 +99,20 @@ function PropertyOverviewContent() {
         const propertiesData = result.data?.data || []
         
         if (propertiesData.length > 0) {
-          const prop = propertiesData[0] as PropertyRecord
+          const prop = propertiesData[0] as unknown as PropertyRecord
           const transformedData: DisplayProperty = {
             id: prop.id,
-            name: prop.name || 'Unnamed Property',
-            address: prop.address || 'Address not set',
-            type: prop.type || 'Single Family Home',
-            value: prop.value || 0,
-            sqft: prop.square_feet || 0,
+            name: (prop.metadata as Record<string, unknown>)?.name as string || 'Unnamed Property',
+            address: prop.full_address || 'Address not set',
+            type: prop.property_type?.replace('_', ' ') || 'Single Family Home',
+            value: prop.current_value || 0,
+            sqft: prop.square_footage || 0,
             yearBuilt: prop.year_built || new Date().getFullYear(),
-            bedrooms: (prop.details?.bedrooms as number) || 0,
-            bathrooms: (prop.details?.bathrooms as number) || 0,
-            lotSize: (prop.details?.lot_size as number) || 0,
-            insurabilityScore: prop.insurability_score || 0,
-            isPrimary: prop.is_primary || false
+            bedrooms: prop.bedrooms || 0,
+            bathrooms: prop.bathrooms || 0,
+            lotSize: prop.lot_size_acres || 0,
+            insurabilityScore: (prop.metadata as Record<string, unknown>)?.insurability_score as number || 0,
+            isPrimary: (prop.metadata as Record<string, unknown>)?.is_primary as boolean || false
           }
           setProperty(transformedData)
         } else {
@@ -136,20 +146,20 @@ function PropertyOverviewContent() {
         const propertiesData = result.data?.data || []
         
         if (propertiesData.length > 0) {
-          const prop = propertiesData[0] as PropertyRecord
+          const prop = propertiesData[0] as unknown as PropertyRecord
           const transformedData: DisplayProperty = {
             id: prop.id,
-            name: prop.name || 'Unnamed Property',
-            address: prop.address || 'Address not set',
-            type: prop.type || 'Single Family Home',
-            value: prop.value || 0,
-            sqft: prop.square_feet || 0,
+            name: (prop.metadata as Record<string, unknown>)?.name as string || 'Unnamed Property',
+            address: prop.full_address || 'Address not set',
+            type: prop.property_type?.replace('_', ' ') || 'Single Family Home',
+            value: prop.current_value || 0,
+            sqft: prop.square_footage || 0,
             yearBuilt: prop.year_built || new Date().getFullYear(),
-            bedrooms: (prop.details?.bedrooms as number) || 0,
-            bathrooms: (prop.details?.bathrooms as number) || 0,
-            lotSize: (prop.details?.lot_size as number) || 0,
-            insurabilityScore: prop.insurability_score || 0,
-            isPrimary: prop.is_primary || false
+            bedrooms: prop.bedrooms || 0,
+            bathrooms: prop.bathrooms || 0,
+            lotSize: prop.lot_size_acres || 0,
+            insurabilityScore: (prop.metadata as Record<string, unknown>)?.insurability_score as number || 0,
+            isPrimary: (prop.metadata as Record<string, unknown>)?.is_primary as boolean || false
           }
           setProperty(transformedData)
         }

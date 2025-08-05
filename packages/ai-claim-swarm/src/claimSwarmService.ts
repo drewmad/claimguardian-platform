@@ -1,11 +1,11 @@
 /**
  * @fileMetadata
- * @purpose AI Claim Swarm Service - Core logic for collaborative damage assessment
+ * @purpose "AI Claim Swarm Service - Core logic for collaborative damage assessment"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/ai-services", "@claimguardian/db"]
  * @exports ["claimSwarmService"]
  * @complexity high
- * @status active
+ * @status stable
  */
 
 // Client-side service - simplified for build compatibility

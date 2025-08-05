@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Testimonials section with single featured testimonial
+ * @purpose "Testimonials section with single featured testimonial"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["Testimonials"]
  * @complexity low
  * @tags ["landing", "testimonials", "social-proof"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -67,7 +67,7 @@ export function Testimonials() {
               {[...Array(5)].map((_, i) => <Star key={i} size={24} className="text-yellow-400" fill="currentColor" />)}
             </div>
             <blockquote className="font-slab text-2xl md:text-3xl font-semibold italic text-white">
-              &quot;Documenting everything after the storm used to take weeks. With ClaimGuardian, I had a complete, undeniable evidence package in under an hour. My claim was paid while my neighbors were still taking pictures. It&apos;s a game-changer.&quot;
+              "Documenting everything after the storm used to take weeks. With ClaimGuardian, I had a complete, undeniable evidence package in under an hour. My claim was paid while my neighbors were still taking pictures. It's a game-changer."
             </blockquote>
             <p className="mt-6 font-semibold text-white">- Marissa M., Southwest Florida</p>
             <p className="text-sm text-gray-300">ClaimGuardian User Since 2023</p>

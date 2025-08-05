@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Dashboard layout wrapper with sidebar navigation
+ * @purpose "Dashboard layout wrapper with sidebar navigation"
  * @owner frontend-team
  * @dependencies ["react", "next", "lucide-react"]
  * @exports ["DashboardLayout"]
  * @complexity medium
  * @tags ["dashboard", "layout", "navigation"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -15,7 +15,8 @@ import {
   HardHat, Users, Settings, 
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
-  ShieldCheck, Code, Siren, DollarSign, Wrench
+  ShieldCheck, Code, Siren, DollarSign, Wrench,
+  CreditCard
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -42,6 +43,7 @@ const navigationItems = [
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
   { id: 'situation-room', label: 'Situation Room', icon: Siren, href: '/dashboard/situation-room' },
   { id: 'development', label: 'Development', icon: Code, href: '/dashboard/development' },
+  { id: 'billing', label: 'Billing', icon: CreditCard, href: '/dashboard/billing' },
 ]
 
 const adminFeatures = [

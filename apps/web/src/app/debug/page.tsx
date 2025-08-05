@@ -1,7 +1,17 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { FileText, Bug, TestTube, Settings, User, Key, Database, Shield, AlertCircle, CheckCircle, Clock, Info, Loader2, RefreshCw, Trash2, MapPin, Globe, Play, ExternalLink, Copy, Monitor, Zap, Network } from 'lucide-react'
+import { FileText, Bug, TestTube, Settings, User, Key, Database, Shield, AlertCircle, CheckCircle, Clock, Loader2, RefreshCw, Trash2, MapPin, Globe, Play, ExternalLink, Copy, Monitor, Zap, Network } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
@@ -151,8 +161,8 @@ export default function DebugIndexPage() {
     const scriptExists = !!document.querySelector('script[src*="maps.googleapis.com"]')
     
     // Check API loading status
-    const apiLoaded = !!(window as any).google?.maps
-    const placesLoaded = !!(window as any).google?.maps?.places
+    const apiLoaded = !!(window as Record<string, unknown>).google?.maps
+    const placesLoaded = !!(window as Record<string, unknown>).google?.maps?.places
     
     // Determine hook status
     let hookStatus: 'loading' | 'loaded' | 'error' | 'not-configured' = 'not-configured'
@@ -218,7 +228,7 @@ export default function DebugIndexPage() {
     try {
       // Get auth status
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      const { data: { user }, error: userError } = await supabase.auth.getUser()
+      const { data: { user: _user }, error: userError } = await supabase.auth.getUser()
 
       // Get browser info
       const browserInfo = {
@@ -276,7 +286,7 @@ export default function DebugIndexPage() {
       logger.error('Failed to collect debug info:', error)
     }
     setLoading(false)
-  }, [supabase])
+  }, [supabase, collectGoogleMapsStatus])
 
   const clearAuthData = async () => {
     await supabase.auth.signOut()
@@ -774,7 +784,7 @@ export default function DebugIndexPage() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Connection:</span>
-                          <span className="text-white text-xs">{(navigator as any).connection?.effectiveType || 'Unknown'}</span>
+                          <span className="text-white text-xs">{(navigator as Record<string, unknown>).connection?.effectiveType || 'Unknown'}</span>
                         </div>
                       </div>
                     </div>

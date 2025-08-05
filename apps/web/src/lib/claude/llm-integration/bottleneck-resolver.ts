@@ -1,6 +1,7 @@
 /**
  * @fileMetadata
- * @purpose AI-powered bottleneck resolution suggestions
+ * @purpose "AI-powered bottleneck resolution suggestions"
+ * @dependencies []
  * @owner ai-team
  * @status pending-implementation
  */
@@ -192,7 +193,7 @@ interface DetailedCause {
   description: string
   evidence: string[]
   confidence: number
-  contributing factors: string[]
+  contributingFactors: string[]
   mitigations: string[]
 }
 

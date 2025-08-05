@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Pricing FAQ accordion component
+ * @purpose "Pricing FAQ accordion component"
+ * @dependencies []
  * @owner billing-team
- * @status active
+ * @status stable
  */
 
 import {

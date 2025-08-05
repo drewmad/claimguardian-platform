@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Implements the core logic for the AI Threat Assessment Engine, using multiple AI providers.
+ * @purpose "Implements the core logic for the AI Threat Assessment Engine, using multiple AI providers."
+ * @dependencies ["@/lib","@anthropic-ai/sdk","@claimguardian/utils","@google/generative-ai","openai"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose AI Threat Assessment Engine using Gemini AI for real-time property threat analysis
+ * @purpose "AI Threat Assessment Engine using Gemini AI for real-time property threat analysis"
  * @owner ai-team
  * @dependencies ["@google/generative-ai", "@/types/situation-room", "@/lib/ai/client-service"]
  * @exports ["ThreatAssessmentEngine", "useThreatAssessmentEngine"]
  * @complexity high
  * @tags ["ai", "threat-assessment", "gemini", "situation-room"]
- * @status active
+ * @status stable
  */
 
 'use client'
@@ -23,18 +24,7 @@ import OpenAI from 'openai'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from "@claimguardian/utils"
 
-import { 
-  ThreatAssessment, 
-  ThreatLevel, 
-  ThreatType,
-  AIRecommendation,
-  IntelligenceFeed,
-  PropertyStatus,
-  DataSource,
-  IntelligenceType,
-  ImpactLevel,
-  ActionPriority
-} from '@/types/situation-room'
+import { ThreatAssessment, ThreatLevel, ThreatType, AIRecommendation, IntelligenceFeed, IntelligenceType, ImpactLevel, ActionPriority } from '@/types/situation-room'
 
 interface WeatherData {
   location: string
@@ -104,7 +94,7 @@ type AIProvider = 'openai' | 'grok' | 'claude' | 'gemini'
 
 interface ProviderConfig {
   available: boolean
-  client: any
+  client: unknown
   models: string[]
   priority: number
   costPerToken: number // cost per 1K tokens in USD
@@ -750,7 +740,7 @@ Respond with valid JSON only, no additional text.
       const parsed = JSON.parse(cleanText)
 
       // Validate and transform the response
-      const threats: ThreatAssessment[] = parsed.threats.map((threat: any, index: number) => ({
+      const threats: ThreatAssessment[] = parsed.threats.map((threat: unknown, index: number) => ({
         id: `ai-threat-${Date.now()}-${index}`,
         type: this.validateThreatType(threat.type),
         severity: this.validateThreatLevel(threat.severity),
@@ -799,7 +789,7 @@ Respond with valid JSON only, no additional text.
         isActive: true
       }))
 
-      const recommendations: AIRecommendation[] = parsed.recommendations.map((rec: any, index: number) => ({
+      const recommendations: AIRecommendation[] = parsed.recommendations.map((rec: unknown, index: number) => ({
         id: `ai-rec-${Date.now()}-${index}`,
         title: rec.title || 'Unknown Recommendation',
         description: rec.description || '',
@@ -813,7 +803,7 @@ Respond with valid JSON only, no additional text.
         alternatives: []
       }))
 
-      const intelligenceFeeds: IntelligenceFeed[] = parsed.intelligenceFeeds.map((feed: any, index: number) => ({
+      const intelligenceFeeds: IntelligenceFeed[] = parsed.intelligenceFeeds.map((feed: unknown, index: number) => ({
         id: `ai-intel-${Date.now()}-${index}`,
         source: feed.source || 'AI Analysis',
         type: this.validateIntelligenceType(feed.type),

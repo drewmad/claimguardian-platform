@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server-side legal documents and consent tracking service
+ * @purpose "Server-side legal documents and consent tracking service"
  * @owner legal-team
  * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
  * @exports ["legalServiceServer"]
  * @complexity medium
  * @tags ["legal", "compliance", "consent", "gdpr", "server"]
- * @status active
+ * @status stable
  */
 
 import { createServiceRoleClient } from '@claimguardian/db'

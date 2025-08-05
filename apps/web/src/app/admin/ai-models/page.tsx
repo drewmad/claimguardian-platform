@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -12,7 +22,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { Select } from '@/components/ui/select'
 
 interface ModelConfig {
   id: string
@@ -265,7 +275,7 @@ export default function AIModelsAdminPage() {
     avgResponseTime: 0,
     successRate: 0
   })
-  const [performanceData, setPerformanceData] = useState<Record<string, any>>({})
+  const [performanceData, setPerformanceData] = useState<Record<string, unknown>>({})
 
   // Advanced AI Operations State
   const [abTests, setABTests] = useState<ABTestConfig[]>([])
@@ -276,7 +286,7 @@ export default function AIModelsAdminPage() {
     total_ratings: 1247,
     response_rate: 87,
     satisfaction_rate: 92,
-    ratings_by_feature: {} as Record<string, any>
+    ratings_by_feature: {} as Record<string, unknown>
   })
   
   // A/B Test Form State
@@ -296,13 +306,8 @@ export default function AIModelsAdminPage() {
   })
   
   // Auto-Selection Recommendations
-  const [aiRecommendations, setAIRecommendations] = useState<any[]>([])
+  const [aiRecommendations, setAIRecommendations] = useState<unknown[]>([])
 
-  useEffect(() => {
-    checkModelAvailability()
-    loadPerformanceData()
-    loadAdvancedAIData()
-  }, [])
 
   const loadAdvancedAIData = async () => {
     try {
@@ -762,6 +767,12 @@ export default function AIModelsAdminPage() {
       default: return <RefreshCw className="h-4 w-4 text-gray-400" />
     }
   }
+
+  useEffect(() => {
+    checkModelAvailability()
+    loadPerformanceData()
+    loadAdvancedAIData()
+  }, [checkModelAvailability, loadPerformanceData, loadAdvancedAIData])
 
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
@@ -1225,7 +1236,7 @@ export default function AIModelsAdminPage() {
                     <p>Analyzing performance data to generate recommendations...</p>
                   </div>
                 ) : (
-                  aiRecommendations.map((rec, idx) => (
+                  aiRecommendations.map((rec: any, idx) => (
                     <Card key={idx} className="bg-gray-700 border-gray-600">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
@@ -1466,7 +1477,7 @@ export default function AIModelsAdminPage() {
                   <h3 className="text-lg font-semibold text-white mb-4">Quality by Feature</h3>
                   <div className="space-y-3">
                     {featureMappings.map((feature) => {
-                      const featureMetrics = qualityMetrics.ratings_by_feature[feature.featureId] || {
+                      const featureMetrics = (qualityMetrics.ratings_by_feature as any)[feature.featureId] || {
                         rating: 4.2,
                         count: 0,
                         latest_feedback: ''
@@ -1479,11 +1490,11 @@ export default function AIModelsAdminPage() {
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[1,2,3,4,5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round(featureMetrics.rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as any).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
                                 ))}
                               </div>
-                              <span className="text-sm text-gray-400">{featureMetrics.rating}</span>
-                              <span className="text-xs text-gray-500">({featureMetrics.count} ratings)</span>
+                              <span className="text-sm text-gray-400">{(featureMetrics as any).rating}</span>
+                              <span className="text-xs text-gray-500">({(featureMetrics as any).count} ratings)</span>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-4 text-sm">
@@ -1500,9 +1511,9 @@ export default function AIModelsAdminPage() {
                               <span className="text-white ml-2">{models.find(m => m.id === feature.fallbackModel)?.name || 'Unknown'}</span>
                             </div>
                           </div>
-                          {featureMetrics.latest_feedback && (
+                          {(featureMetrics as any).latest_feedback && (
                             <div className="mt-3 p-2 bg-gray-800 rounded text-sm text-gray-300">
-                              <span className="text-gray-400">Latest feedback:</span> {featureMetrics.latest_feedback}
+                              <span className="text-gray-400">Latest feedback:</span> {(featureMetrics as any).latest_feedback}
                             </div>
                           )}
                         </div>

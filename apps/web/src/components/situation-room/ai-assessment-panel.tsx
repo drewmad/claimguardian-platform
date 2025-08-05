@@ -1,23 +1,24 @@
 /**
  * @fileMetadata
- * @purpose Provides a UI panel for controlling and viewing AI threat assessments in the Situation Room.
+ * @purpose "Provides a UI panel for controlling and viewing AI threat assessments in the Situation Room."
+ * @dependencies ["@/lib","@/types","lucide-react","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose AI Assessment Panel for Situation Room - displays AI threat assessment status and controls
+ * @purpose "AI Assessment Panel for Situation Room - displays AI threat assessment status and controls"
  * @owner frontend-team
  * @dependencies ["react", "zustand", "lucide-react", "@/lib/stores/situation-room-store"]
  * @exports ["AIAssessmentPanel"]
  * @complexity medium
  * @tags ["situation-room", "ai", "threat-assessment", "panel"]
- * @status active
+ * @status stable
  */
 
 'use client'
 
-import { Brain, RefreshCw, CheckCircle, AlertTriangle, Clock, Zap, Settings, ChevronDown } from 'lucide-react'
+import { Brain, RefreshCw, CheckCircle, AlertTriangle, Clock, Zap, Settings } from 'lucide-react'
 import React, { useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 

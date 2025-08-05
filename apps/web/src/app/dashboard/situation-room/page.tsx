@@ -1,22 +1,16 @@
 /**
  * @fileMetadata
- * @purpose The main page for the Situation Room, providing a real-time threat monitoring dashboard.
+ * @purpose "The main page for the Situation Room, providing a real-time threat monitoring dashboard."
+ * @dependencies ["@/components","@/hooks","@/lib","react","sonner"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 'use client'
 
 // Force dynamic rendering to prevent SSG issues with Supabase client
 export const dynamic = 'force-dynamic'
 
-import { 
-  AlertTriangle, Wind, CloudRain, Zap, Home, Shield,
-  CheckCircle, XCircle, Clock, Phone, FileText,
-  Map, Camera, Radio, Users, Siren, Activity,
-  Brain, TrendingUp, Bell, Settings, Wifi, WifiOff,
-  RefreshCw, ChevronRight, Eye, EyeOff, Filter,
-  BarChart3, Navigation, MessageSquare, Gauge
-} from 'lucide-react'
+import { AlertTriangle, Wind, Zap, Home, Shield, CheckCircle, XCircle, Phone, Radio, Users, Siren, Brain, Bell, Wifi, WifiOff, RefreshCw, Eye, Filter, Navigation, MessageSquare, Gauge } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
@@ -226,7 +220,7 @@ export default function SituationRoomPage() {
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setSelectedView(tab.id as any)}
+              onClick={() => setSelectedView(tab.id as unknown)}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 selectedView === tab.id 
                   ? 'liquid-glass-premium text-white' 
@@ -723,7 +717,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.activeIncidents.slice(0, 3).map((incident: any) => (
+              {data.activeIncidents.slice(0, 3).map((incident: unknown) => (
                 <div key={incident.id} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
                   <div>
                     <p className="text-white font-medium">{incident.description}</p>

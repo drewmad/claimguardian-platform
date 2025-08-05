@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Webhook endpoint for Resend email status updates
+ * @purpose "Webhook endpoint for Resend email status updates"
+ * @dependencies ["@/lib","crypto","next"]
  * @owner communications-team
- * @status active
+ * @status stable
  */
 
 import crypto from 'crypto'

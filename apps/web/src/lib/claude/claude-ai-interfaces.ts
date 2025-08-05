@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Interface Definitions and Base Structures for AI-Powered Learning Features
+ * @purpose "Interface Definitions and Base Structures for AI-Powered Learning Features"
+ * @dependencies []
  * @owner ai-team
- * @status active
+ * @status stable
  * @description Defines contracts for LLM synthesis, semantic matching, and AI suggestions
  * @notes These interfaces will be implemented by Opus for advanced AI capabilities
  */
@@ -90,7 +91,7 @@ export interface SimilarityMatch {
   content: string
   similarity: number
   relevanceScore: number
-  context: any
+  context: unknown
 }
 
 export interface SemanticIndex {

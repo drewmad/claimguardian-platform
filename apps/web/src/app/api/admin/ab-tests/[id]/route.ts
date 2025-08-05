@@ -1,14 +1,14 @@
 /**
  * @fileMetadata
- * @purpose Individual A/B Test API endpoints for admin panel
+ * @purpose "Individual A/B Test API endpoints for admin panel"
+ * @dependencies ["@/lib","@/types","@claimguardian/db","next"]
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import type { UpdateABTestRequest } from '@/types/ai-operations'
-
 // GET /api/admin/ab-tests/[id] - Get specific A/B test
 export async function GET(
   request: NextRequest,
@@ -125,7 +125,7 @@ export async function PATCH(
     }
 
     // Update A/B test
-    const updateData: any = {
+    const updateData: Record<string, unknown> = {
       updated_at: new Date().toISOString()
     }
 

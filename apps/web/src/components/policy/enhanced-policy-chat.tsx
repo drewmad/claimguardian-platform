@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
@@ -8,7 +18,7 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
-// import { AIClientService } from '@/lib/ai/client-service' // TODO: Remove if not needed
+// // TODO: Remove if not needed
 
 interface ChatMessage {
   role: 'user' | 'assistant'

@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Tests for async error handling utilities with retry and circuit breaker logic
+ * @purpose "Tests for async error handling utilities with retry and circuit breaker logic"
+ * @dependencies ["@/lib"]
  * @owner platform-team
  * @complexity high
  * @tags ["testing", "async", "error-handling", "retry", "circuit-breaker"]
- * @status active
+ * @status stable
  */
 
 import { mockConsole, delay } from '../../utils/test-utils'

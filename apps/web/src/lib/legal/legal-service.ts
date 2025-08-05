@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose Enhanced legal service for comprehensive consent tracking
+ * @purpose "Enhanced legal service for comprehensive consent tracking"
+ * @dependencies ["@/lib"]
  * @owner legal-team
- * @status active
+ * @status stable
  */
 
 import type {

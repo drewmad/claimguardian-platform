@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Check for required environment variables
+ * @purpose "Check for required environment variables"
+ * @dependencies ["@/lib"]
  * @owner frontend-team
  * @complexity low
  * @tags ["utility", "environment", "validation"]
- * @status active
+ * @status stable
  */
 
 import { logger } from '@/lib/logger/production-logger'

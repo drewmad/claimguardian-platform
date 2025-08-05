@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Landing page header with enhanced navigation and branding
+ * @purpose "Landing page header with enhanced navigation and branding"
  * @owner frontend-team
  * @dependencies ["react", "next/link", "@/lib/constants"]
  * @exports ["Header"]
  * @complexity medium
  * @tags ["header", "navigation", "landing"]
- * @status active
+ * @status stable
  */
 'use client'
 

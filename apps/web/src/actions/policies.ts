@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for managing insurance policies
+ * @purpose "Server actions for managing insurance policies"
  * @owner frontend-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["createPolicy", "getPolicies", "getPolicy", "updatePolicy", "getActivePolicies"]
  * @complexity medium
  * @tags ["server-action", "policies", "database"]
- * @status active
+ * @status stable
  */
 'use server'
 

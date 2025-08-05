@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Secure server-side environment configuration
+ * @purpose "Secure server-side environment configuration"
+ * @dependencies ["@/lib","zod"]
  * @owner security-team
  * @complexity medium
  * @tags ["security", "environment", "server-side"]
- * @status active
+ * @status stable
  */
 
 import { z } from 'zod'

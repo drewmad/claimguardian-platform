@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
 import { useState } from 'react'
@@ -6,11 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  searchParcels, 
-  linkPropertyToParcel,
-  type ParcelData 
-} from '@/actions/geospatial'
+import { searchParcels, linkPropertyToParcel } from '@/actions/geospatial'
 import { 
   Search, 
   Link2, 

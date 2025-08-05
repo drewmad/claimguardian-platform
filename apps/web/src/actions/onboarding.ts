@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Server actions for onboarding flow data persistence
+ * @purpose "Server actions for onboarding flow data persistence"
  * @owner onboarding-team
  * @dependencies ["@supabase/supabase-js"]
  * @exports ["saveOnboardingProgress", "completeOnboarding"]
  * @complexity medium
  * @tags ["onboarding", "server-action", "persistence"]
- * @status active
+ * @status stable
  */
 
 'use server'

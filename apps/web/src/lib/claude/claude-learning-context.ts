@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Context system for Claude to query and apply learnings before tasks
+ * @purpose "Context system for Claude to query and apply learnings before tasks"
  * @owner ai-team
  * @dependencies ["@/lib/claude/claude-error-logger"]
  * @exports ["ClaudeLearningContext", "useLearningContext", "withLearningContext"]
  * @complexity high
  * @tags ["claude", "learning", "context", "prevention", "intelligence"]
- * @status active
+ * @status stable
  */
 
 import { claudeErrorLogger, ClaudeErrorContext, ClaudeLearning } from './claude-error-logger'
@@ -410,11 +410,11 @@ export function useLearningContext(taskContext?: TaskContext) {
 }
 
 // HOF to wrap functions with learning context
-export function withLearningContext<T extends (...args: any[]) => Promise<any>>(
+export function withLearningContext<T extends (...args: unknown[]) => Promise<any>>(
   taskContext: TaskContext,
   fn: T
 ): T {
-  return (async (...args: any[]) => {
+  return (async (...args: unknown[]) => {
     // Analyze context before execution
     const analysis = await claudeLearningContext.analyzeTask(taskContext)
     

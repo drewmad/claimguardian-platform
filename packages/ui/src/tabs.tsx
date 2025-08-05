@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose UI component for creating tabbed interfaces
+ * @purpose "UI component for creating tabbed interfaces"
  * @owner frontend-team
  * @dependencies ["react", "@radix-ui/react-tabs", "class-variance-authority", "@/utils"]
  * @exports ["Tabs", "TabsList", "TabsTrigger", "TabsContent"]
  * @complexity medium
  * @tags ["component", "ui", "tabs"]
- * @status active
+ * @status stable
  */
 'use client'
 

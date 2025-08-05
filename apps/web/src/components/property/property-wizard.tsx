@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Modern multi-step property creation wizard with step-by-step guidance
+ * @purpose "Modern multi-step property creation wizard with step-by-step guidance"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react"]
  * @exports ["PropertyWizard"]
  * @complexity high
  * @tags ["property", "wizard", "form", "multi-step"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -194,17 +194,34 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         dispatch({ type: 'SET_LOADING', payload: true });
         try {
             // Create property with collected data
+            // Parse address components from the Google Places result
+            const addressParts = state.selectedProperty.split(', ')
+            const street_address = addressParts[0] || state.selectedProperty
+            const city = addressParts[1] || 'Unknown'
+            const stateZip = addressParts[2] || 'FL 00000'
+            const [stateCode, zip_code] = stateZip.split(' ')
+            
             const { data: createdProperty, error: propertyError } = await createProperty({
                 propertyData: {
-                    name: state.basicInfo.propertyName || 'My Property',
-                    type: state.basicInfo.propertyType,
-                    address: state.selectedProperty,
+                    street_address,
+                    city,
+                    state: stateCode || 'FL',
+                    zip_code: zip_code || '00000',
+                    property_type: (state.basicInfo.propertyType as 'single_family' | 'condo' | 'townhouse' | 'multi_family' | 'commercial' | 'land') || 'single_family',
                     year_built: new Date().getFullYear(),
-                    square_feet: 0, // Would need to collect this
-                    details: {
-                        bedrooms: parseInt(state.propertyDetails.bedrooms) || 0,
-                        bathrooms: parseFloat(state.propertyDetails.bathrooms) || 0,
-                        lot_size: 0 // Default value
+                    square_footage: 0, // Would need to collect this
+                    bedrooms: parseInt(state.propertyDetails.bedrooms) || 0,
+                    bathrooms: parseFloat(state.propertyDetails.bathrooms) || 0,
+                    lot_size_acres: 0, // Default value
+                    metadata: {
+                        name: state.basicInfo.propertyName || 'My Property',
+                        ownership_status: state.ownershipStatus,
+                        is_hoa: state.propertyDetails.isHOA,
+                        insurance_info: {
+                            has_homeowners_renters: state.insuranceInfo.hasHomeownersRenters,
+                            has_flood: state.insuranceInfo.hasFlood
+                        },
+                        wizard_completed: true
                     }
                 }
             });
@@ -243,7 +260,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     <header className={`flex items-center justify-between p-6 border-b ${COLORS.border} flex-shrink-0`}>
                         <div>
                             <h1 className={`text-xl font-bold ${COLORS.textPrimary}`}>Add New Property</h1>
-                            <p className={COLORS.textSecondary}>Create your primary asset: &quot;My Home&quot;</p>
+                            <p className={COLORS.textSecondary}>Create your primary asset: "My Home"</p>
                         </div>
                         <div className="flex items-center gap-4">
                              <div className={`text-sm ${COLORS.textSecondary} transition-opacity duration-500 ${state.isSaving ? 'opacity-100' : 'opacity-0'}`}>
@@ -500,7 +517,7 @@ const Step3: React.FC<StepProps> = ({ state, onChange }) => (
 
 const Step4: React.FC<StepProps> = ({ state, onChange }) => (
     <div className="space-y-8">
-        <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>Let&apos;s cover the financials.</h2>
+        <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>Let's cover the financials.</h2>
         <div>
             <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Do you have a mortgage or loan on the property?</label>
             <ButtonGroup

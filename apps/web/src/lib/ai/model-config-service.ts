@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose AI Model Configuration Service - fetches admin-selected models for each feature
+ * @purpose "AI Model Configuration Service - fetches admin-selected models for each feature"
+ * @dependencies []
  * @owner ai-team
- * @status active
+ * @status stable
  */
 
 'use client'

@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Renders the pricing section with different plans and a billing cycle toggle.
+ * @purpose "Renders the pricing section with different plans and a billing cycle toggle."
+ * @dependencies ["@/lib","@claimguardian/db","lucide-react","next","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Pricing section with annual/monthly toggle
+ * @purpose "Pricing section with annual/monthly toggle"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants", "@/stores/modal-store"]
  * @exports ["Pricing"]
  * @complexity high
  * @tags ["landing", "pricing", "billing"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -23,9 +24,8 @@ import { useState, useEffect, useRef } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
-import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
-// import { createCheckoutSession, redirectToCheckout } from '@/lib/stripe/client' // Disabled for now
+// // Disabled for now
 
 // Animation hook reused
 const useInView = (options: IntersectionObserverInit) => {
@@ -224,8 +224,8 @@ export function Pricing() {
 
         <div className={`${liquidGlass.cards.info} my-12 p-6 rounded-2xl text-left text-sm`}>
           <h3 className="font-bold text-primary mb-2">Why we charge:</h3>
-          <p className="text-gray-300">Running cutting-edge AI models and secure hosting costs thousands each month. We&apos;re a family-run Florida business, built during late nights while the baby sleeps, because we believe every Floridian deserves access to tools that protect their legacy. That&apos;s why we&apos;re committed to maintaining a free tier - no one should face insurance companies alone.</p>
-          <p className="text-gray-300 mt-2">Living the Florida dream comes with hurricanes, floods, and storms - but protecting your family&apos;s future shouldn&apos;t be another battle. Your subscription helps us keep the servers running and continue building tools for homeowners like you.</p>
+          <p className="text-gray-300">Running cutting-edge AI models and secure hosting costs thousands each month. We're a family-run Florida business, built during late nights while the baby sleeps, because we believe every Floridian deserves access to tools that protect their legacy. That's why we're committed to maintaining a free tier - no one should face insurance companies alone.</p>
+          <p className="text-gray-300 mt-2">Living the Florida dream comes with hurricanes, floods, and storms - but protecting your family's future shouldn't be another battle. Your subscription helps us keep the servers running and continue building tools for homeowners like you.</p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 relative">

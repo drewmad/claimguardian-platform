@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Rate limiting service to prevent abuse and DoS attacks
+ * @purpose "Rate limiting service to prevent abuse and DoS attacks"
+ * @dependencies []
  * @owner platform-team
  * @complexity medium
  * @tags ["security", "rate-limiting", "ddos-prevention"]
- * @status active
+ * @status stable
  */
 
 interface RateLimitEntry {

@@ -1,24 +1,16 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 'use client'
 
-import { 
-  Target, 
-  FlaskConical, 
-  BarChart3, 
-  TrendingUp, 
-  Users, 
-  Clock, 
-  CheckCircle, 
-  XCircle, 
-  Star,
-  ThumbsUp,
-  ThumbsDown,
-  Play,
-  Pause,
-  StopCircle,
-  Settings,
-  Eye,
-  MoreHorizontal
-} from 'lucide-react'
+import { Target, FlaskConical, BarChart3, TrendingUp, Users, CheckCircle, Star, ThumbsUp, ThumbsDown, Play, Pause, Settings, Eye, MoreHorizontal } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 

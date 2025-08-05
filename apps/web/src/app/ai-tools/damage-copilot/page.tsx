@@ -1,19 +1,17 @@
 /**
  * @fileMetadata
- * @purpose Damage Documentation Copilot page - AI-guided evidence capture
+ * @purpose "Damage Documentation Copilot page - AI-guided evidence capture"
  * @owner ai-innovation-team
  * @dependencies ["@claimguardian/damage-doc-copilot"]
  * @exports ["default"]
  * @complexity medium
- * @status active
+ * @status stable
  */
 
 'use client'
 
 // Temporarily disabled for deployment
-// import { ToolComponent } from '@claimguardian/damage-doc-copilot'
-
-export default function DamageCopilotPage() {
+// export default function DamageCopilotPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-5xl mx-auto">

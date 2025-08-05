@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose A visually improved and animated hero section component for the landing page.
+ * @purpose "A visually improved and animated hero section component for the landing page."
+ * @dependencies ["@/lib","lucide-react","next","react"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Improved Hero section with better UI/UX based on critique
+ * @purpose "Improved Hero section with better UI/UX based on critique"
  * @owner frontend-team
  * @dependencies ["react", "lucide-react", "@/lib/constants", "next/link"]
  * @exports ["Hero"]
  * @complexity high
  * @tags ["hero", "landing", "animations"]
- * @status active
+ * @status stable
  */
 'use client'
 

@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Zustand store for Situation Room state management, handling real-time data and AI assessments.
+ * @purpose "Zustand store for Situation Room state management, handling real-time data and AI assessments."
+ * @dependencies ["@/lib","@claimguardian/utils","zustand"]
  * @owner frontend-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Zustand store for Situation Room state management
+ * @purpose "Zustand store for Situation Room state management"
  * @owner frontend-team
  * @dependencies ["zustand", "immer", "@/types/situation-room"]
  * @exports ["useSituationRoom"]
  * @complexity high
  * @tags ["situation-room", "state", "zustand"]
- * @status active
+ * @status stable
  */
 'use client'
 
@@ -89,7 +90,7 @@ interface SituationRoomActions {
   addIntelligenceFeed: (feed: IntelligenceFeed) => void
   markFeedAsRead: (feedId: string) => void
   markAllFeedsAsRead: () => void
-  filterFeeds: (filter: any) => void
+  filterFeeds: (filter: unknown) => void
   
   // AI recommendations
   addRecommendation: (recommendation: AIRecommendation) => void
@@ -450,7 +451,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         })
       },
       
-      filterFeeds(filter: any) {
+      filterFeeds(filter: unknown) {
         // Implementation for feed filtering
         // This would typically filter the displayed feeds without modifying state
         logger.info('Filter feeds:', filter)

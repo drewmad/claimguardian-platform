@@ -1,18 +1,19 @@
 /**
  * @fileMetadata
- * @purpose Provides components for rendering SEO-related structured data (JSON-LD).
+ * @purpose "Provides components for rendering SEO-related structured data (JSON-LD)."
+ * @dependencies []
  * @owner seo-team
- * @status active
+ * @status stable
  */
 /**
  * @fileMetadata
- * @purpose Structured data for AEO/GEO optimization - Answer Engine Optimization
+ * @purpose "Structured data for AEO/GEO optimization - Answer Engine Optimization"
  * @owner seo-team
  * @dependencies ["react"]
  * @exports ["StructuredData", "FAQData", "HowToData", "ProductData"]
  * @complexity medium
  * @tags ["seo", "aeo", "geo", "structured-data", "ai-optimization"]
- * @status active
+ * @status stable
  */
 
 interface FAQ {

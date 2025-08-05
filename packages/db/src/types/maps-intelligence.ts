@@ -1,8 +1,9 @@
 /**
  * @fileMetadata
- * @purpose TypeScript type definitions for Google Maps Intelligence database schema
+ * @purpose "TypeScript type definitions for Google Maps Intelligence database schema"
+ * @dependencies []
  * @owner maps-intelligence-team
- * @status active
+ * @status stable
  */
 
 // =====================================================

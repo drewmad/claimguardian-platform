@@ -1,10 +1,11 @@
 /**
  * @fileMetadata
- * @purpose Basic test to verify Jest setup is working
+ * @purpose "Basic test to verify Jest setup is working"
+ * @dependencies []
  * @owner platform-team
  * @complexity low
  * @tags ["testing", "setup", "basic"]
- * @status active
+ * @status stable
  */
 
 describe('Basic Setup Test', () => {

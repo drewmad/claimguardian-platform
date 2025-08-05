@@ -1,3 +1,13 @@
+/**
+ * @fileMetadata
+ * @owner @ai-team
+ * @purpose "Brief description of file purpose"
+ * @dependencies ["package1", "package2"]
+ * @status stable
+ * @ai-integration multi-provider
+ * @insurance-context claims
+ * @supabase-integration edge-functions
+ */
 export interface ExtractedPolicyData {
   policyNumber?: string
   carrierName?: string
@@ -63,7 +73,7 @@ export interface ClaimAssistantContext {
   }>
 }
 
-export interface AIResponse<T = any> {
+export interface AIResponse<T = unknown> {
   success: boolean
   data?: T
   error?: string

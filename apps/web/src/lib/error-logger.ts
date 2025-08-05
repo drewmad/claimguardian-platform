@@ -1,12 +1,12 @@
 /**
  * @fileMetadata
- * @purpose Comprehensive error logging utility for AI features
+ * @purpose "Comprehensive error logging utility for AI features"
  * @owner frontend-team
  * @dependencies ["@supabase/supabase-js", "sonner"]
  * @exports ["errorLogger", "AIErrorLogger"]
  * @complexity medium
  * @tags ["error", "logging", "monitoring", "ai"]
- * @status active
+ * @status stable
  */
 
 import { createClient } from '@supabase/supabase-js'
