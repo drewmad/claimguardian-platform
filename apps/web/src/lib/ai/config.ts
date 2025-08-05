@@ -4,8 +4,8 @@ export const AI_MODELS = {
     VISION: 'gpt-4-vision-preview',
   },
   GEMINI: {
-    PRO: 'gemini-pro',
-    VISION: 'gemini-pro-vision',
+    PRO: 'gemini-1.5-pro',
+    VISION: 'gemini-1.5-pro-vision',
   },
 } as const
 

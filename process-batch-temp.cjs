@@ -1,35 +1,3 @@
-#\!/bin/bash
-
-# Charlotte County batch loading script
-set -euo pipefail
-
-# Colors
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Configuration
-DATA_FILE="./data/florida/charlotte_parcels_2024.geojson"
-BATCH_SIZE=1000
-START_BATCH=${1:-0}
-END_BATCH=${2:-10}  # Process 10 batches at a time
-
-echo -e "${GREEN}=== Charlotte County Batch Import ===${NC}"
-echo -e "${BLUE}Data file:${NC} ${DATA_FILE}"
-echo -e "${BLUE}Batch size:${NC} ${BATCH_SIZE} records"
-echo -e "${BLUE}Processing batches:${NC} ${START_BATCH} to ${END_BATCH}"
-echo ""
-
-# Check if file exists
-if [ \! -f "$DATA_FILE" ]; then
-    echo -e "${RED}Error: Data file not found\!${NC}"
-    exit 1
-fi
-
-# Create batch extraction script
-cat > /tmp/process-batch.cjs << 'EOJS'
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -197,23 +165,3 @@ async function processBatches() {
 }
 
 processBatches().catch(console.error);
-EOJS
-
-# Copy to current directory
-cp /tmp/process-batch.cjs ./process-batch-temp.cjs
-
-# Run the batch processor
-BATCH_SIZE=$BATCH_SIZE \
-START_BATCH=$START_BATCH \
-END_BATCH=$END_BATCH \
-DATA_FILE="$DATA_FILE" \
-node ./process-batch-temp.cjs
-
-# Clean up
-rm -f ./process-batch-temp.cjs /tmp/process-batch.cjs
-
-echo ""
-echo -e "${GREEN}Batch processing complete\!${NC}"
-echo ""
-echo "To continue with next batches, run:"
-echo "./scripts/load-charlotte-batch.sh $((END_BATCH + 1)) $((END_BATCH + 10))"

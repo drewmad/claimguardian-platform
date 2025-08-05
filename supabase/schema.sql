@@ -3548,6 +3548,197 @@ CREATE TABLE IF NOT EXISTS "public"."audit_logs" (
 
 ALTER TABLE "public"."audit_logs" OWNER TO "postgres";
 
+-- ================================================================
+-- Claude Error Logging and Learning System
+-- ================================================================
+
+CREATE TABLE IF NOT EXISTS "public"."claude_errors" (
+    "id" "text" NOT NULL,
+    "error_message" "text" NOT NULL,
+    "error_stack" "text",
+    "error_details" "text" NOT NULL,
+    "context" "jsonb" NOT NULL,
+    "severity" "text" NOT NULL CHECK (severity IN ('low', 'medium', 'high', 'critical')),
+    "resolved" boolean DEFAULT false,
+    "resolution_method" "text",
+    "learning_applied" boolean DEFAULT false,
+    "pattern_id" "text",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone
+);
+
+ALTER TABLE "public"."claude_errors" OWNER TO "postgres";
+
+CREATE TABLE IF NOT EXISTS "public"."claude_learnings" (
+    "id" "text" NOT NULL,
+    "pattern_name" "text" NOT NULL,
+    "mistake_pattern" "text" NOT NULL,
+    "solution_pattern" "text" NOT NULL,
+    "context_tags" "text"[] DEFAULT '{}',
+    "confidence_score" numeric(3,2) DEFAULT 0.5 CHECK (confidence_score >= 0 AND confidence_score <= 1),
+    "usage_count" integer DEFAULT 0,
+    "success_rate" numeric(3,2) DEFAULT 1.0 CHECK (success_rate >= 0 AND success_rate <= 1),
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"()
+);
+
+ALTER TABLE "public"."claude_learnings" OWNER TO "postgres";
+
+-- Indexes for performance
+CREATE INDEX IF NOT EXISTS "claude_errors_created_at_idx" ON "public"."claude_errors" ("created_at");
+CREATE INDEX IF NOT EXISTS "claude_errors_severity_idx" ON "public"."claude_errors" ("severity");
+CREATE INDEX IF NOT EXISTS "claude_errors_resolved_idx" ON "public"."claude_errors" ("resolved");
+CREATE INDEX IF NOT EXISTS "claude_errors_context_task_type_idx" ON "public"."claude_errors" USING GIN (("context"->>'taskType'));
+CREATE INDEX IF NOT EXISTS "claude_errors_context_error_type_idx" ON "public"."claude_errors" USING GIN (("context"->>'errorType'));
+CREATE INDEX IF NOT EXISTS "claude_errors_context_mistake_category_idx" ON "public"."claude_errors" USING GIN (("context"->>'mistakeCategory'));
+
+CREATE INDEX IF NOT EXISTS "claude_learnings_pattern_name_idx" ON "public"."claude_learnings" ("pattern_name");
+CREATE INDEX IF NOT EXISTS "claude_learnings_context_tags_idx" ON "public"."claude_learnings" USING GIN ("context_tags");
+CREATE INDEX IF NOT EXISTS "claude_learnings_confidence_score_idx" ON "public"."claude_learnings" ("confidence_score");
+CREATE INDEX IF NOT EXISTS "claude_learnings_usage_count_idx" ON "public"."claude_learnings" ("usage_count");
+
+-- Primary keys
+ALTER TABLE "public"."claude_errors" ADD CONSTRAINT "claude_errors_pkey" PRIMARY KEY ("id");
+ALTER TABLE "public"."claude_learnings" ADD CONSTRAINT "claude_learnings_pkey" PRIMARY KEY ("id");
+
+-- Unique constraints
+ALTER TABLE "public"."claude_learnings" ADD CONSTRAINT "claude_learnings_pattern_name_unique" UNIQUE ("pattern_name");
+
+-- Row Level Security (RLS)
+ALTER TABLE "public"."claude_errors" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."claude_learnings" ENABLE ROW LEVEL SECURITY;
+
+-- RLS Policies - Allow all operations for now since these are system/admin tables
+CREATE POLICY "claude_errors_policy" ON "public"."claude_errors" FOR ALL USING (true);
+CREATE POLICY "claude_learnings_policy" ON "public"."claude_learnings" FOR ALL USING (true);
+
+-- Functions for Claude error analysis
+CREATE OR REPLACE FUNCTION analyze_claude_error_patterns(
+    time_range_days integer DEFAULT 7
+) RETURNS TABLE (
+    pattern_key text,
+    error_count bigint,
+    resolved_count bigint,
+    resolution_rate numeric,
+    avg_severity_score numeric,
+    most_common_tools text[]
+) 
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        (context->>'taskType') || '-' || (context->>'errorType') || '-' || (context->>'mistakeCategory') as pattern_key,
+        COUNT(*)::bigint as error_count,
+        COUNT(*) FILTER (WHERE resolved = true)::bigint as resolved_count,
+        ROUND(
+            (COUNT(*) FILTER (WHERE resolved = true)::numeric / NULLIF(COUNT(*)::numeric, 0)) * 100, 
+            2
+        ) as resolution_rate,
+        ROUND(
+            AVG(CASE 
+                WHEN severity = 'low' THEN 1
+                WHEN severity = 'medium' THEN 2  
+                WHEN severity = 'high' THEN 3
+                WHEN severity = 'critical' THEN 4
+                ELSE 2
+            END), 2
+        ) as avg_severity_score,
+        ARRAY_AGG(DISTINCT tool) as most_common_tools
+    FROM public.claude_errors,
+         LATERAL jsonb_array_elements_text(context->'toolsUsed') AS tool
+    WHERE created_at >= NOW() - (time_range_days || ' days')::interval
+    GROUP BY (context->>'taskType'), (context->>'errorType'), (context->>'mistakeCategory')
+    ORDER BY error_count DESC, resolution_rate ASC;
+END;
+$$;
+
+-- Function to get relevant learnings for context
+CREATE OR REPLACE FUNCTION get_relevant_claude_learnings(
+    task_type text DEFAULT NULL,
+    error_type text DEFAULT NULL,
+    framework text DEFAULT NULL,
+    min_confidence numeric DEFAULT 0.7
+) RETURNS TABLE (
+    learning_id text,
+    pattern_name text,
+    mistake_pattern text,
+    solution_pattern text,
+    confidence_score numeric,
+    usage_count integer,
+    success_rate numeric,
+    relevance_score numeric
+)
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        cl.id,
+        cl.pattern_name,
+        cl.mistake_pattern,
+        cl.solution_pattern,
+        cl.confidence_score,
+        cl.usage_count,
+        cl.success_rate,
+        -- Simple relevance scoring based on tag matches
+        (
+            CASE WHEN task_type IS NOT NULL AND ('task:' || task_type) = ANY(cl.context_tags) THEN 0.4 ELSE 0 END +
+            CASE WHEN error_type IS NOT NULL AND ('error:' || error_type) = ANY(cl.context_tags) THEN 0.3 ELSE 0 END +
+            CASE WHEN framework IS NOT NULL AND ('framework:' || framework) = ANY(cl.context_tags) THEN 0.3 ELSE 0 END
+        )::numeric as relevance_score
+    FROM public.claude_learnings cl
+    WHERE 
+        cl.confidence_score >= min_confidence
+        AND (
+            task_type IS NULL OR ('task:' || task_type) = ANY(cl.context_tags) OR
+            error_type IS NULL OR ('error:' || error_type) = ANY(cl.context_tags) OR
+            framework IS NULL OR ('framework:' || framework) = ANY(cl.context_tags)
+        )
+    ORDER BY relevance_score DESC, cl.usage_count DESC, cl.confidence_score DESC
+    LIMIT 10;
+END;
+$$;
+
+-- Function to update learning success rate
+CREATE OR REPLACE FUNCTION update_claude_learning_success(
+    learning_id text,
+    was_successful boolean
+) RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+AS $$
+DECLARE
+    current_success_rate numeric;
+    current_usage_count integer;
+    new_success_rate numeric;
+BEGIN
+    -- Get current values
+    SELECT success_rate, usage_count 
+    INTO current_success_rate, current_usage_count
+    FROM public.claude_learnings 
+    WHERE id = learning_id;
+    
+    IF FOUND THEN
+        -- Calculate new success rate using moving average
+        new_success_rate := (
+            (current_success_rate * current_usage_count + CASE WHEN was_successful THEN 1 ELSE 0 END) 
+            / (current_usage_count + 1)
+        );
+        
+        -- Update the learning record
+        UPDATE public.claude_learnings 
+        SET 
+            usage_count = current_usage_count + 1,
+            success_rate = new_success_rate,
+            updated_at = NOW()
+        WHERE id = learning_id;
+    END IF;
+END;
+$$;
+
 
 CREATE TABLE IF NOT EXISTS "public"."cities" (
     "id" integer NOT NULL,

@@ -1,41 +1,3 @@
-#!/bin/bash
-
-# Simple direct parcel loading script
-set -euo pipefail
-
-# Colors
-GREEN='\033[0;32m'
-YELLOW='\033[1;33m'
-RED='\033[0;31m'
-BLUE='\033[0;34m'
-NC='\033[0m'
-
-# Configuration
-DATA_FILE="./data/florida/charlotte_parcels_2024.geojson"
-BATCH_SIZE=1000
-MAX_RETRIES=3
-
-echo -e "${GREEN}=== Charlotte County Parcel Import ===${NC}"
-echo -e "${BLUE}Data file:${NC} ${DATA_FILE}"
-echo -e "${BLUE}Batch size:${NC} ${BATCH_SIZE} records"
-echo ""
-
-# Check if file exists
-if [ ! -f "$DATA_FILE" ]; then
-    echo -e "${RED}Error: Data file not found!${NC}"
-    exit 1
-fi
-
-# Get total features
-TOTAL_FEATURES=$(jq '.features | length' "$DATA_FILE")
-TOTAL_BATCHES=$(( ($TOTAL_FEATURES + $BATCH_SIZE - 1) / $BATCH_SIZE ))
-
-echo -e "${BLUE}Total parcels:${NC} ${TOTAL_FEATURES}"
-echo -e "${BLUE}Total batches:${NC} ${TOTAL_BATCHES}"
-echo ""
-
-# Create Node.js import script
-cat > /tmp/import-parcels.js << 'EOJS'
 const fs = require('fs');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -232,25 +194,3 @@ async function importParcels() {
 
 // Run import
 importParcels().catch(console.error);
-EOJS
-
-# Install dependencies if needed
-if [ ! -d "node_modules/@supabase/supabase-js" ]; then
-    echo -e "${YELLOW}Installing dependencies...${NC}"
-    npm install @supabase/supabase-js
-fi
-
-# Run the import
-echo -e "${GREEN}Starting import...${NC}"
-echo ""
-
-# Copy script to current directory to access node_modules
-cp /tmp/import-parcels.js ./import-parcels-temp.cjs
-BATCH_SIZE=$BATCH_SIZE node ./import-parcels-temp.cjs
-rm -f ./import-parcels-temp.cjs
-
-# Clean up
-rm -f /tmp/import-parcels.js
-
-echo ""
-echo -e "${GREEN}Done!${NC}"

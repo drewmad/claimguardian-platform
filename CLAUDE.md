@@ -13,6 +13,144 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Example: When asked to speed up imports, don't just make batches bigger. Instead: increase batch size + add parallel processing + create monitoring dashboard + include verification script + provide one-command automation.
 
+## 🧠 Claude Learning System (ACTIVE - USE IMMEDIATELY)
+
+**IMPORTANT**: Claude Code must use this learning system for ALL significant tasks to improve over time.
+
+### **Core Learning Workflow**
+
+**BEFORE every major task:**
+1. Query learning context: `claudeLearningContext.analyzeTask(context)`
+2. Review recommendations and warnings
+3. Apply suggested approaches from previous learnings
+
+**DURING task execution:**
+1. Log errors with full context using `claudeErrorHelpers`
+2. Use appropriate helper functions for task type
+
+**AFTER task completion/error resolution:**
+1. Mark errors as resolved with `claudeErrorLogger.resolveError()`
+2. Record lessons learned for future improvement
+
+### **Mandatory Integration Points**
+
+```typescript
+// apps/web/src/lib/claude/claude-error-logger.ts - MAIN ERROR LOGGING
+import { claudeErrorHelpers, claudeErrorLogger } from '@/lib/claude/claude-error-logger'
+
+// apps/web/src/lib/claude/claude-learning-context.ts - PRE-TASK ANALYSIS  
+import { claudeLearningContext, withLearningContext } from '@/lib/claude/claude-learning-context'
+```
+
+### **Required Usage Patterns**
+
+**1. Code Generation Tasks:**
+```typescript
+// BEFORE: Check for learnings
+const analysis = await claudeLearningContext.analyzeTask({
+  taskType: 'code-generation',
+  description: 'Create React component',
+  codeLanguage: 'typescript',
+  framework: 'react',
+  tools: ['Write', 'Edit'],
+  userIntent: 'Build functional component'
+})
+
+// Log recommendations
+if (analysis.recommendations.length > 0) {
+  console.log('🧠 Applying previous learnings:')
+  analysis.recommendations.forEach(r => console.log(`- ${r.summary}`))
+}
+
+// DURING: If error occurs
+try {
+  // Code generation
+} catch (error) {
+  await claudeErrorHelpers.codeGeneration.syntaxError(
+    error, filePath, 'typescript', taskDescription
+  )
+}
+```
+
+**2. File Modification Tasks:**
+```typescript
+// BEFORE: Always check context
+const analysis = await claudeLearningContext.analyzeTask({
+  taskType: 'file-modification',
+  description: 'Edit component props',
+  filePath: 'src/components/MyComponent.tsx',
+  tools: ['Read', 'Edit'],
+  userIntent: 'Fix prop types'
+})
+
+// DURING: Log edit failures
+try {
+  // File editing
+} catch (error) {
+  await claudeErrorHelpers.fileModification.editError(
+    error, filePath, taskDescription, ['Read', 'Edit']
+  )
+}
+```
+
+**3. Analysis Tasks:**
+```typescript
+// Log analysis mistakes
+await claudeErrorHelpers.analysis.misunderstanding(
+  'Analyze user requirements',
+  'Build correct solution',
+  'assumption-based-error'
+)
+```
+
+### **Error Resolution Protocol**
+
+When fixing any error:
+```typescript
+await claudeErrorLogger.resolveError(
+  errorId,
+  'Specific solution that worked',
+  'General lesson learned for future tasks'
+)
+```
+
+### **Learning Database Schema**
+
+The system uses these database tables (already deployed):
+- `claude_errors` - All Claude errors with full context
+- `claude_learnings` - Learned patterns and solutions
+
+### **Quick Commands**
+
+```typescript
+// Check recent learnings before any task
+const learnings = await claudeErrorLogger.getRelevantLearnings({
+  taskType: 'code-generation',
+  codeLanguage: 'typescript'
+})
+
+// Get error patterns to understand common mistakes
+const patterns = await claudeErrorLogger.getErrorPatterns('week')
+
+// Wrap functions with automatic learning context
+const smartFunction = withLearningContext(taskContext, originalFunction)
+```
+
+### **Dashboard Access**
+
+Admin can monitor Claude's learning progress at:
+```typescript
+import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dashboard'
+```
+
+### **Learning Categories**
+
+- **Task Types**: code-generation, file-modification, debugging, analysis, planning
+- **Error Types**: syntax, logic, type, runtime, build, deployment, integration, assumption
+- **Severity**: low, medium, high, critical
+
+**⚠️ CRITICAL**: This system must be used for ALL significant Claude operations. Failure to log errors and apply learnings will result in repeated mistakes and reduced efficiency.
+
 ## Project Overview
 
 ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida property owners built with:
@@ -397,17 +535,21 @@ pnpm build
 
 ### Development Process
 1. **Before Making Changes**
+   - **🧠 REQUIRED**: Query Claude learning context for task type
    - Check existing patterns in similar files
    - Verify function signatures before modifying calls
    - Read actual type definitions, don't assume
+   - Apply recommendations from previous learnings
 
 2. **During Development**
+   - **🧠 REQUIRED**: Log errors with `claudeErrorHelpers` if they occur
    - Make incremental changes
    - Run `pnpm type-check` frequently
    - Test with `pnpm dev` to see changes
    - Use `pnpm --filter=<package> test:watch` for TDD
 
 3. **Before Committing**
+   - **🧠 REQUIRED**: Resolve any logged errors with lessons learned
    - Pre-commit hooks run automatically
    - Use `pnpm ci:validate` for full validation
    - Use conventional commits (pnpm cz available)
@@ -419,6 +561,10 @@ pnpm clean:all          # Complete cleanup and rebuild
 pnpm fix:all            # Fix lint issues and rebuild  
 pnpm health:check       # Check lint and type error counts
 pnpm pre-commit:test    # Test pre-commit hooks manually
+
+# Claude Learning System Commands (NEW)
+node -e "import('@/lib/claude/claude-integration-example').then(m => m.showClaudeLearningStats())"  # Show learning stats
+node -e "import('@/lib/claude/claude-integration-example').then(m => m.checkClaudeLearningsBeforeTask('code-generation', {language: 'typescript'}))"  # Check learnings
 ```
 
 ## Domain Context
@@ -797,6 +943,16 @@ const Canvas = dynamic(
 - **Status**: Non-blocking warnings, low priority fix
 
 ## Important Instruction Reminders
+
+### 🧠 Claude Learning System - MANDATORY USAGE
+**CRITICAL**: Use the Claude Learning System for ALL significant tasks:
+1. **BEFORE** any major task: Query `claudeLearningContext.analyzeTask(context)`
+2. **DURING** task execution: Log errors with `claudeErrorHelpers` 
+3. **AFTER** completion/error: Resolve errors with `claudeErrorLogger.resolveError()`
+
+Files: `apps/web/src/lib/claude/claude-error-logger.ts` & `claude-learning-context.ts`
+
+### General Instructions
 Do what has been asked; nothing more, nothing less.
 NEVER create files unless they're absolutely necessary for achieving your goal.
 ALWAYS prefer editing an existing file to creating a new one.
