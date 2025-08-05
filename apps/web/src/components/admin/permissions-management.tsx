@@ -67,8 +67,13 @@ import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'
 import { 
   getAllTiers, 
   createPermissionOverride,
-  getUserTierInfo 
+  getUserTierInfo,
+  updateTierPermissions,
+  getPermissionOverrides,
+  deletePermissionOverride,
+  getUserByEmail
 } from '@/actions/user-tiers'
+import { PermissionAnalyticsDashboard } from './permission-analytics-dashboard'
 
 interface TierPermissionMatrix {
   tier: UserTier
@@ -115,6 +120,13 @@ export function PermissionsManagement() {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterRisk, setFilterRisk] = useState<string>('all')
   const [unsavedChanges, setUnsavedChanges] = useState(false)
+  const [newOverride, setNewOverride] = useState({
+    userEmail: '',
+    permission: '',
+    access: '',
+    reason: '',
+    expiresAt: ''
+  })
   
   const { toast } = useToast()
 
@@ -317,9 +329,18 @@ export function PermissionsManagement() {
   }
 
   const loadPermissionOverrides = async () => {
-    // This would load existing permission overrides from the database
-    // For now, we'll use mock data
-    setPermissionOverrides([])
+    try {
+      const result = await getPermissionOverrides()
+      if (result.data) {
+        setPermissionOverrides(result.data)
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Failed to load permission overrides',
+        variant: 'destructive'
+      })
+    }
   }
 
   const getTierIcon = (tier: UserTier) => {
@@ -372,19 +393,103 @@ export function PermissionsManagement() {
 
   const saveTierPermissions = async () => {
     try {
-      // This would call a server action to update tier permissions
-      // await updateTierPermissions(tiers)
+      const tierPermissionsData = tiers.map(tier => ({
+        tier: tier.tier,
+        permissions: tier.permissions
+      }))
+
+      const result = await updateTierPermissions(tierPermissionsData)
       
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
       toast({
         title: 'Success',
         description: 'Tier permissions updated successfully'
       })
       setUnsavedChanges(false)
       setEditingTier(null)
+      
+      // Reload tiers to reflect changes
+      await loadTiers()
     } catch (error) {
       toast({
         title: 'Error',
-        description: 'Failed to update tier permissions',
+        description: `Failed to update tier permissions: ${error.message}`,
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const handleDeleteOverride = async (overrideId: string) => {
+    try {
+      const result = await deletePermissionOverride(overrideId)
+      
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Permission override deleted successfully'
+      })
+      
+      // Reload permission overrides
+      await loadPermissionOverrides()
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `Failed to delete permission override: ${error.message}`,
+        variant: 'destructive'
+      })
+    }
+  }
+
+  const handleCreateOverride = async () => {
+    try {
+      if (!newOverride.userEmail || !newOverride.permission || !newOverride.access) {
+        throw new Error('Please fill in all required fields')
+      }
+
+      // Get user ID from email
+      const userResult = await getUserByEmail(newOverride.userEmail)
+      if (userResult.error || !userResult.data) {
+        throw new Error(`User with email "${newOverride.userEmail}" not found`)
+      }
+
+      const result = await createPermissionOverride(
+        userResult.data.id,
+        newOverride.permission as PermissionType,
+        newOverride.access === 'grant',
+        newOverride.reason,
+        newOverride.expiresAt || undefined
+      )
+      
+      if (result.error) {
+        throw new Error(result.error)
+      }
+
+      toast({
+        title: 'Success',
+        description: 'Permission override created successfully'
+      })
+      
+      setShowOverrideDialog(false)
+      setNewOverride({
+        userEmail: '',
+        permission: '',
+        access: '',
+        reason: '',
+        expiresAt: ''
+      })
+      
+      // Reload permission overrides
+      await loadPermissionOverrides()
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: `Failed to create permission override: ${error.message}`,
         variant: 'destructive'
       })
     }
@@ -737,7 +842,12 @@ export function PermissionsManagement() {
                           {override.expires_at ? new Date(override.expires_at).toLocaleDateString() : 'Never'}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-300">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-300"
+                            onClick={() => handleDeleteOverride(override.id)}
+                          >
                             <Trash2 className="h-4 w-4" />
                           </Button>
                         </TableCell>
@@ -751,53 +861,7 @@ export function PermissionsManagement() {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-4">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-sm">Most Used Permissions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">access_dashboard</span>
-                    <span className="text-sm text-white">100%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">create_properties</span>
-                    <span className="text-sm text-white">85%</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-sm text-gray-400">access_damage_analyzer</span>
-                    <span className="text-sm text-white">72%</span>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-sm">Permission Violations</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-green-500">0</div>
-                  <p className="text-xs text-gray-400">Last 30 days</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-sm">Active Overrides</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center">
-                  <div className="text-2xl font-bold text-blue-500">{permissionOverrides.length}</div>
-                  <p className="text-xs text-gray-400">Custom permissions</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <PermissionAnalyticsDashboard />
         </TabsContent>
       </Tabs>
 
@@ -817,11 +881,13 @@ export function PermissionsManagement() {
                 id="user"
                 placeholder="user@example.com"
                 className="bg-gray-800 border-gray-700"
+                value={newOverride.userEmail}
+                onChange={(e) => setNewOverride(prev => ({ ...prev, userEmail: e.target.value }))}
               />
             </div>
             <div>
               <Label htmlFor="permission">Permission</Label>
-              <Select>
+              <Select value={newOverride.permission} onValueChange={(value) => setNewOverride(prev => ({ ...prev, permission: value }))}>
                 <SelectTrigger className="bg-gray-800 border-gray-700">
                   <SelectValue placeholder="Select permission" />
                 </SelectTrigger>
@@ -836,7 +902,7 @@ export function PermissionsManagement() {
             </div>
             <div>
               <Label htmlFor="access">Access</Label>
-              <Select>
+              <Select value={newOverride.access} onValueChange={(value) => setNewOverride(prev => ({ ...prev, access: value }))}>
                 <SelectTrigger className="bg-gray-800 border-gray-700">
                   <SelectValue placeholder="Grant or deny access" />
                 </SelectTrigger>
@@ -852,6 +918,18 @@ export function PermissionsManagement() {
                 id="reason"
                 placeholder="Reason for this override"
                 className="bg-gray-800 border-gray-700"
+                value={newOverride.reason}
+                onChange={(e) => setNewOverride(prev => ({ ...prev, reason: e.target.value }))}
+              />
+            </div>
+            <div>
+              <Label htmlFor="expires">Expires At (Optional)</Label>
+              <Input
+                id="expires"
+                type="datetime-local"
+                className="bg-gray-800 border-gray-700"
+                value={newOverride.expiresAt}
+                onChange={(e) => setNewOverride(prev => ({ ...prev, expiresAt: e.target.value }))}
               />
             </div>
           </div>
@@ -859,7 +937,7 @@ export function PermissionsManagement() {
             <Button variant="outline" onClick={() => setShowOverrideDialog(false)}>
               Cancel
             </Button>
-            <Button>Add Override</Button>
+            <Button onClick={handleCreateOverride}>Add Override</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
