@@ -7,8 +7,126 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
-export interface EnterpriseOrganization {
+// Database row types (match actual database schema)
+interface OrganizationRow {
+  id: string
+  organization_name: string
+  organization_code: string
+  domain: string
+  additional_domains: string[]
+  subscription_tier: 'standard' | 'professional' | 'enterprise' | 'custom'
+  billing_cycle: 'monthly' | 'quarterly' | 'annual'
+  subscription_status: 'trial' | 'active' | 'suspended' | 'cancelled'
+  user_limit: number
+  property_limit: number
+  claim_limit: number
+  ai_request_limit: number
+  storage_limit_gb: number
+  current_users: number
+  current_properties: number
+  current_claims: number
+  ai_requests_used: number
+  storage_used_gb: number
+  feature_flags: Record<string, boolean>
+  created_at: string
+  updated_at: string
+  configuration?: Record<string, any>
+  branding?: Record<string, any>
+  integrations?: Record<string, any>
+  allowed_states?: string[]
+  primary_state?: string
+  primary_contact_email?: string
+  billing_email?: string
+  technical_contact_email?: string
+  phone?: string
+  address?: Record<string, any>
+  sso_enabled?: boolean
+  sso_provider?: string
+  sso_configuration?: Record<string, any>
+  require_2fa?: boolean
+  ip_whitelist?: string[]
+  data_region?: string
+  compliance_requirements?: string[]
+  data_retention_policy?: Record<string, any>
+  created_by?: string
+  last_modified_by?: string
+  notes?: string
+}
+
+interface OrganizationUserRow {
+  id: string
+  user_id: string
+  organization_id: string
+  role: 'owner' | 'admin' | 'member' | 'viewer'
+  permissions: string[]
+  department?: string
+  cost_center?: string
+  join_date: string
+  last_active: string
+  status: 'active' | 'suspended' | 'invited'
+  deactivated_by?: string
+  invitation_token?: string
+  invitation_expires_at?: string
+  last_login_at?: string
+  login_count?: number
+  last_activity_at?: string
+  joined_at: string
+  invited_by?: string
+  deactivated_at?: string
+}
+
+interface TenantCustomizationRow {
+  id: string
+  organization_id: string
+  theme: Record<string, unknown>
+  logo_url?: string
+  favicon_url?: string
+  custom_css?: string
+  enabled_features: string[]
+  disabled_features?: string[]
+  feature_limits?: Record<string, number>
+  claim_workflow?: Record<string, any>
+  approval_workflows?: Record<string, any>
+  notification_preferences?: Record<string, any>
+  webhook_urls?: Record<string, string>
+  api_keys?: Record<string, string>
+  external_integrations?: Record<string, any>
+  security_policies?: Record<string, any>
+  data_export_settings?: Record<string, any>
+  audit_settings?: Record<string, any>
+  branding_name?: string
+  support_email?: string
+  contact_info?: Record<string, unknown>
+  created_at: string
+  created_by?: string
+  updated_at: string
+}
+
+interface TenantUsageInfoRow {
+  organization_id: string
+  billing_period_start: string
+  billing_period_end: string
+  monthly_fee: number
+  usage_charges: number
+  total_amount: number
+  users_count?: number
+  properties_count?: number
+  claims_count?: number
+  ai_requests_count?: number
+  storage_gb?: number
+  base_cost?: number
+  overage_costs?: number
+  total_cost?: number
+  invoice_status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
+  invoice_number?: string
+  invoice_date?: string
+  due_date?: string
+  paid_date?: string
+}
+
+interface EnterpriseOrganization {
   id: string
   organizationName: string
   organizationCode: string
@@ -76,7 +194,7 @@ export interface EnterpriseOrganization {
   notes?: string
 }
 
-export interface OrganizationUser {
+interface OrganizationUser {
   id: string
   userId: string
   organizationId: string
@@ -94,7 +212,7 @@ export interface OrganizationUser {
   deactivatedBy?: string
 }
 
-export interface TenantCustomization {
+interface TenantCustomization {
   id: string
   organizationId: string
   
@@ -136,7 +254,7 @@ export interface TenantCustomization {
   createdBy: string
 }
 
-export interface TenantUsageInfo {
+interface TenantUsageInfo {
   organizationId: string
   billingPeriodStart: Date
   billingPeriodEnd: Date
@@ -162,7 +280,7 @@ export interface TenantUsageInfo {
 }
 
 class TenantManager {
-  private supabase: unknown
+  private supabase: SupabaseClient | null = null
   private organizationCache = new Map<string, EnterpriseOrganization>()
   private userOrgCache = new Map<string, string>() // userId -> organizationId
   private cacheExpiry = 15 * 60 * 1000 // 15 minutes
@@ -721,7 +839,7 @@ class TenantManager {
   }
 
   // Private parsing methods
-  private parseOrganization(data: unknown): EnterpriseOrganization {
+  private parseOrganization(data: OrganizationRow): EnterpriseOrganization {
     return {
       id: data.id,
       organizationName: data.organization_name,
@@ -746,40 +864,40 @@ class TenantManager {
       branding: data.branding || {},
       integrations: data.integrations || {},
       allowedStates: data.allowed_states || [],
-      primaryState: data.primary_state,
-      primaryContactEmail: data.primary_contact_email,
+      primaryState: data.primary_state || '',
+      primaryContactEmail: data.primary_contact_email || '',
       billingEmail: data.billing_email,
       technicalContactEmail: data.technical_contact_email,
       phone: data.phone,
       address: data.address,
-      ssoEnabled: data.sso_enabled,
+      ssoEnabled: data.sso_enabled || false,
       ssoProvider: data.sso_provider,
       ssoConfiguration: data.sso_configuration,
-      require2fa: data.require_2fa,
+      require2fa: data.require_2fa || false,
       ipWhitelist: data.ip_whitelist,
-      dataRegion: data.data_region,
+      dataRegion: data.data_region || '',
       complianceRequirements: data.compliance_requirements || [],
       dataRetentionPolicy: data.data_retention_policy || {},
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
-      createdBy: data.created_by,
+      createdBy: data.created_by || '' || '',
       lastModifiedBy: data.last_modified_by,
       notes: data.notes
     }
   }
 
-  private parseOrganizationUser(data: unknown): OrganizationUser {
+  private parseOrganizationUser(data: OrganizationUserRow): OrganizationUser {
     return {
       id: data.id,
       userId: data.user_id,
       organizationId: data.organization_id,
       role: data.role,
-      permissions: data.permissions || {},
+      permissions: (data.permissions || []).reduce((acc, perm) => ({ ...acc, [perm]: true }), {}),
       status: data.status,
       invitationToken: data.invitation_token,
       invitationExpiresAt: data.invitation_expires_at ? new Date(data.invitation_expires_at) : undefined,
       lastLoginAt: data.last_login_at ? new Date(data.last_login_at) : undefined,
-      loginCount: data.login_count,
+      loginCount: data.login_count || 0,
       lastActivityAt: data.last_activity_at ? new Date(data.last_activity_at) : undefined,
       joinedAt: new Date(data.joined_at),
       invitedBy: data.invited_by,
@@ -788,7 +906,7 @@ class TenantManager {
     }
   }
 
-  private parseCustomization(data: unknown): TenantCustomization {
+  private parseCustomization(data: TenantCustomizationRow): TenantCustomization {
     return {
       id: data.id,
       organizationId: data.organization_id,
@@ -810,23 +928,23 @@ class TenantManager {
       auditSettings: data.audit_settings || {},
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
-      createdBy: data.created_by
+      createdBy: data.created_by || ''
     }
   }
 
-  private parseUsageInfo(data: unknown): TenantUsageInfo {
+  private parseUsageInfo(data: TenantUsageInfoRow): TenantUsageInfo {
     return {
       organizationId: data.organization_id,
       billingPeriodStart: new Date(data.billing_period_start),
       billingPeriodEnd: new Date(data.billing_period_end),
-      usersCount: data.users_count,
-      propertiesCount: data.properties_count,
-      claimsCount: data.claims_count,
-      aiRequestsCount: data.ai_requests_count,
-      storageGb: data.storage_gb,
-      baseCost: data.base_cost,
+      usersCount: data.users_count || 0,
+      propertiesCount: data.properties_count || 0,
+      claimsCount: data.claims_count || 0,
+      aiRequestsCount: data.ai_requests_count || 0,
+      storageGb: data.storage_gb || 0,
+      baseCost: data.base_cost || 0,
       overageCosts: data.overage_costs || {},
-      totalCost: data.total_cost,
+      totalCost: data.total_cost || 0,
       invoiceStatus: data.invoice_status,
       invoiceNumber: data.invoice_number,
       invoiceDate: data.invoice_date ? new Date(data.invoice_date) : undefined,
@@ -835,7 +953,7 @@ class TenantManager {
     }
   }
 
-  private serializeCustomization(customizations: Partial<TenantCustomization>): unknown {
+  private serializeCustomization(customizations: Partial<TenantCustomization>): Partial<TenantCustomizationRow> {
     return {
       theme: customizations.theme,
       logo_url: customizations.logoUrl,

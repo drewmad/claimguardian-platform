@@ -653,18 +653,18 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         // Auto-process certain event types
         switch (event.type) {
           case EventType.THREAT_UPDATE:
-            if (event.data.threat) {
-              get().addThreat(event.data.threat)
+            if ((event.data as any)?.threat) {
+              get().addThreat((event.data as any).threat)
             }
             break
           case EventType.INTELLIGENCE_FEED:
-            if (event.data.feed) {
-              get().addIntelligenceFeed(event.data.feed)
+            if ((event.data as any)?.feed) {
+              get().addIntelligenceFeed((event.data as any).feed)
             }
             break
           case EventType.AI_RECOMMENDATION:
-            if (event.data.recommendation) {
-              get().addRecommendation(event.data.recommendation)
+            if ((event.data as any)?.recommendation) {
+              get().addRecommendation((event.data as any).recommendation)
             }
             break
           case EventType.EMERGENCY_BROADCAST:

@@ -76,7 +76,7 @@ class PermissionChecker {
         .single()
 
       if (subscription && subscription.user_tiers) {
-        const tierData = subscription.user_tiers as unknown
+        const tierData = subscription.user_tiers as Record<string, any>
         return {
           tier: subscription.tier,
           permissions: tierData.permissions || [],

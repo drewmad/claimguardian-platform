@@ -137,7 +137,7 @@ export class GoogleMapsUnifiedService {
       if (cached && cached.expires > Date.now()) {
         return {
           success: true,
-          data: cached.data,
+          data: cached.data as T,
           apiUsed: apiType,
           timestamp: new Date().toISOString(),
           cached: true
