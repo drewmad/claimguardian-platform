@@ -282,7 +282,7 @@ export function AdminDashboardImproved() {
                   </CardHeader>
                   <CardContent className="space-y-2">
                     <Button 
-                      variant="outline"
+                      variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('users')}
                     >
@@ -290,7 +290,7 @@ export function AdminDashboardImproved() {
                       Manage Users
                     </Button>
                     <Button 
-                      variant="outline"
+                      variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('permissions')}
                     >
@@ -298,7 +298,7 @@ export function AdminDashboardImproved() {
                       Permissions
                     </Button>
                     <Button 
-                      variant="outline"
+                      variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('ai-models')}
                     >
@@ -306,7 +306,7 @@ export function AdminDashboardImproved() {
                       Configure AI
                     </Button>
                     <Button 
-                      variant="outline"
+                      variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('errors')}
                     >
@@ -502,7 +502,7 @@ export function AdminDashboardImproved() {
                 />
               </div>
               <Button 
-                variant="outline"
+                variant="secondary"
                 size="sm"
                 className="border-slate-700"
                 onClick={() => setActiveTab('settings')}

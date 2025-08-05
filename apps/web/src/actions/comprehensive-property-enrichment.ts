@@ -14,21 +14,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { toError } from '@claimguardian/utils'
-import { getParcelDetails } from '@/actions/parcel-lookup'
-
-export interface ParcelData {
-  phy_addr1: string
-  phy_city: string
-  lnd_val: number
-  imp_val: number
-  county_fips?: string
-  tot_lvg_area?: number
-  yr_blt?: number
-  act_yr_blt?: number
-  no_bdrm?: number
-  no_bath?: number
-  [key: string]: unknown
-}
+import { getParcelDetails, type ParcelData } from '@/actions/parcel-lookup'
 
 export interface MarketAnalysis {
   comparableSales: ComparableSale[]
@@ -177,7 +163,7 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
       throw new Error(`Parcel not found: ${parcelId}`)
     }
     
-    const parcelData = parcelResult.data as any
+    const parcelData = parcelResult.data
     
     // Run all enrichment modules in parallel
     const [

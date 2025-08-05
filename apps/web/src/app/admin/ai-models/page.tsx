@@ -15,7 +15,7 @@ import { Save, RefreshCw, TrendingUp, DollarSign, Clock, CheckCircle, AlertTrian
 import { toast } from 'sonner'
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { Button } from '@claimguardian/ui'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -59,6 +59,48 @@ interface ABTestConfig {
     modelA: { requests: number; avgTime: number; successRate: number; userRating: number }
     modelB: { requests: number; avgTime: number; successRate: number; userRating: number }
   }
+}
+
+// API response interface for AB tests
+interface ABTestApiResponse {
+  id: string
+  name: string
+  feature_id: string
+  model_a: string
+  model_b: string
+  status: 'active' | 'paused' | 'completed'
+  traffic_split: number
+  start_date: string
+  end_date?: string
+  metrics?: {
+    modelA: { requests: number; avgTime: number; successRate: number; userRating: number }
+    modelB: { requests: number; avgTime: number; successRate: number; userRating: number }
+  }
+}
+
+// API response interface for custom prompts
+interface CustomPromptApiResponse {
+  id: string
+  feature_id: string
+  name: string
+  system_prompt: string
+  is_active: boolean
+  created_at: string
+}
+
+// Model usage data interface
+interface ModelUsageData {
+  requests: number
+  cost: number
+  avgTime: number
+  successRate: number
+}
+
+// AI Recommendation interface
+interface AIRecommendation {
+  type: 'model_switch' | 'prompt_optimization' | 'ab_test'
+  feature: string
+  recommended: string
 }
 
 interface CustomPrompt {
@@ -319,7 +361,7 @@ export default function AIModelsAdminPage() {
         const abTestsData = await abTestsResponse.json()
         if (abTestsData.success && abTestsData.data) {
           // Convert API response to UI format
-          const convertedTests = abTestsData.data.map((test: unknown) => ({
+          const convertedTests = abTestsData.data.map((test: ABTestApiResponse) => ({
             id: test.id,
             name: test.name,
             feature: test.feature_id,
@@ -344,7 +386,7 @@ export default function AIModelsAdminPage() {
         const promptsData = await promptsResponse.json()
         if (promptsData.success && promptsData.data?.prompts) {
           // Convert API response to UI format
-          const convertedPrompts = promptsData.data.prompts.map((prompt: unknown) => ({
+          const convertedPrompts = promptsData.data.prompts.map((prompt: CustomPromptApiResponse) => ({
             id: prompt.id,
             feature: prompt.feature_id,
             name: prompt.name,
@@ -428,17 +470,17 @@ export default function AIModelsAdminPage() {
     try {
       const response = await fetch('/api/admin/ai-models/performance?range=week')
       if (response.ok) {
-        const data = await response.json()
+        const data = await response.json() as Record<string, ModelUsageData>
         setPerformanceData(data)
         
         // Calculate aggregate stats from real data
-        const totalRequests = Object.values(data).reduce((sum: number, model: unknown) => sum + model.requests, 0)
-        const totalCost = Object.values(data).reduce((sum: number, model: unknown) => sum + model.cost, 0)
+        const totalRequests = Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + model.requests, 0)
+        const totalCost = Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + model.cost, 0)
         const avgResponseTime = totalRequests > 0 
-          ? Object.values(data).reduce((sum: number, model: unknown) => sum + (model.avgTime * model.requests), 0) / totalRequests
+          ? Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + (model.avgTime * model.requests), 0) / totalRequests
           : 0
         const avgSuccessRate = Object.keys(data).length > 0
-          ? Object.values(data).reduce((sum: number, model: unknown) => sum + model.successRate, 0) / Object.keys(data).length
+          ? Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + model.successRate, 0) / Object.keys(data).length
           : 0
 
         setStats({
@@ -592,7 +634,7 @@ export default function AIModelsAdminPage() {
       if (result.success) {
         setABTests(prev => prev.map(test => 
           test.id === id 
-            ? { ...test, status: newStatus as unknown }
+            ? { ...test, status: newStatus }
             : test
         ))
         toast.success('A/B test status updated')
@@ -709,7 +751,7 @@ export default function AIModelsAdminPage() {
     }
   }
 
-  const applyAIRecommendation = async (recommendation: unknown) => {
+  const applyAIRecommendation = async (recommendation: AIRecommendation) => {
     if (recommendation.type === 'model_switch') {
       // Apply the recommended model switch
       const updatedMappings = featureMappings.map(mapping => 
@@ -786,7 +828,7 @@ export default function AIModelsAdminPage() {
         </div>
         <div className="flex gap-3">
           <Button
-            variant="outline"
+            variant="secondary"
             onClick={checkModelAvailability}
             disabled={loading}
             className="bg-gray-700 border-gray-600 text-gray-300"
@@ -896,7 +938,7 @@ export default function AIModelsAdminPage() {
                     </div>
                     <Button
                       size="sm"
-                      variant="outline"
+                      variant="secondary"
                       onClick={() => testModel(model.id)}
                       disabled={!model.available || testingModel === model.id}
                       className="bg-gray-700 border-gray-600 text-gray-300"
@@ -1144,7 +1186,7 @@ export default function AIModelsAdminPage() {
                             </Badge>
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="secondary"
                               onClick={() => toggleABTest(test.id)}
                               className="bg-gray-600 border-gray-500 text-gray-300"
                             >
@@ -1152,7 +1194,7 @@ export default function AIModelsAdminPage() {
                             </Button>
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="secondary"
                               onClick={() => testABModels(test.feature, test.modelA, test.modelB)}
                               className="bg-blue-600 border-blue-500 text-white"
                             >

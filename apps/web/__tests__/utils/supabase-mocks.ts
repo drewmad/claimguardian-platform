@@ -30,11 +30,9 @@ export type MockSupabaseClient = {
   }
 }
 
-export function createSupabaseMock(): MockSupabaseClient {
-  const fromMock = jest.fn() as jest.MockedFunction<SupabaseClient<Database>['from']>
-  
-  // Set up default chain methods for from()
-  fromMock.mockReturnValue({
+export function createSupabaseMock(): MockSupabaseClient & { _mockQuery: any } {
+  // Create a shared mock query object for backward compatibility
+  const mockQuery = {
     select: jest.fn().mockReturnThis(),
     insert: jest.fn().mockReturnThis(),
     update: jest.fn().mockReturnThis(),
@@ -73,8 +71,14 @@ export function createSupabaseMock(): MockSupabaseClient {
     explain: jest.fn().mockReturnThis(),
     rollback: jest.fn().mockReturnThis(),
     returns: jest.fn().mockReturnThis(),
-    then: jest.fn()
-  } as any)
+    then: jest.fn(),
+    remove: jest.fn() // For storage operations
+  }
+
+  const fromMock = jest.fn() as jest.MockedFunction<SupabaseClient<Database>['from']>
+  
+  // Set up default chain methods for from() - return the shared mockQuery
+  fromMock.mockReturnValue(mockQuery as any)
 
   return {
     auth: {
@@ -98,10 +102,12 @@ export function createSupabaseMock(): MockSupabaseClient {
         copy: jest.fn(),
         createSignedUrl: jest.fn(),
         createSignedUrls: jest.fn(),
-        getPublicUrl: jest.fn()
+        getPublicUrl: jest.fn(() => ({ data: { publicUrl: 'https://example.com/file.pdf' } }))
       })
-    }
-  }
+    },
+    // Expose the mock query for backward compatibility
+    _mockQuery: mockQuery
+  } as any
 }
 
 // Export a default mock instance

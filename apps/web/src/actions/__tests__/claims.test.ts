@@ -21,6 +21,7 @@ import {
   uploadClaimDocument,
   generateClaimReport
 } from '../claims'
+import { createSupabaseMock } from '../../__tests__/utils/supabase-mocks'
 
 // Mock dependencies
 jest.mock('@claimguardian/db', () => ({
@@ -40,42 +41,13 @@ const mockUser = {
   role: 'authenticated'
 }
 
-// Mock Supabase client with proper chaining
-const createMockSupabase = (): unknown => {
-  const mockQuery: unknown = {
-    select: jest.fn().mockReturnThis(),
-    insert: jest.fn().mockReturnThis(),
-    update: jest.fn().mockReturnThis(),
-    delete: jest.fn().mockReturnThis(),
-    eq: jest.fn().mockReturnThis(),
-    single: jest.fn(),
-    order: jest.fn().mockReturnThis(),
-    remove: jest.fn()
-  }
-
-  return {
-    from: jest.fn(() => mockQuery),
-    storage: {
-      from: jest.fn(() => ({
-        upload: jest.fn(),
-        getPublicUrl: jest.fn(() => ({ data: { publicUrl: 'https://example.com/file.pdf' } })),
-        remove: jest.fn()
-      }))
-    },
-    auth: {
-      getUser: jest.fn(() => ({ data: { user: mockUser }, error: null }))
-    },
-    // Expose query mock for test setup
-    _mockQuery: mockQuery
-  }
-}
-
-let mockSupabase: ReturnType<typeof createMockSupabase>
+// Create properly typed mock with backward compatibility
+let mockSupabase: MockSupabaseClient & { _mockQuery: unknown }
 
 describe('Claims Server Actions', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    mockSupabase = createMockSupabase()
+    mockSupabase = createSupabaseMock()
   })
 
   describe('createClaim', () => {

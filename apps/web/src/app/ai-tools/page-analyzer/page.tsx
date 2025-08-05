@@ -10,32 +10,12 @@
  */
 'use client'
 
-import {
-  Globe,
-  Search,
-  CheckCircle,
-  AlertCircle,
-  Sparkles,
-  FileText,
-  Download,
-  Loader2,
-  Shield,
-  BarChart,
-  Accessibility,
-  Zap,
-  Target,
-  ThumbsUp,
-  ThumbsDown,
-  Star,
-  ExternalLink,
-  FlaskConical
-} from 'lucide-react'
-import { useState, useCallback } from 'react'
+import { Globe, Search, CheckCircle, Sparkles, FileText, Download, Loader2, Accessibility, Zap, Target, ThumbsUp, ThumbsDown, Star, ExternalLink, FlaskConical } from 'lucide-react'
+import { useState } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
-import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 import { createClient } from '@/lib/supabase/client'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'

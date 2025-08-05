@@ -13,7 +13,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals'
 import { signUp, signIn, signOut, resetPassword } from '../auth'
-import { createSupabaseMock, type MockSupabaseClient } from '../../__tests__/utils/supabase-mocks'
+import { createSupabaseMock } from '../../__tests__/utils/supabase-mocks'
 
 // Create properly typed mock
 const mockSupabase = createSupabaseMock()
