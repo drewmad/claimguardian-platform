@@ -269,7 +269,7 @@ export class SentinelService {
     }
     
     // Proof of loss deadline
-    if (claimData.currentStatus === 'filed' || claimData.currentStatus === 'under_review') {
+    if (claimData.currentStatus === 'submitted' || claimData.currentStatus === 'investigating') {
       const filingDate = new Date(); // Would get from claim data
       deadlines.push({
         id: crypto.randomUUID(),

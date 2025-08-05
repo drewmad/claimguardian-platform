@@ -73,7 +73,7 @@ export default function ClaimDetailPage() {
   const [claim] = useState<ClaimDetails>({
     id: claimId,
     claimNumber: 'CLM-2024-0892',
-    status: 'under_review',
+    status: 'investigating',
     damageType: 'Water Damage',
     dateOfLoss: '2024-10-15',
     dateSubmitted: '2024-10-18',
@@ -152,7 +152,7 @@ export default function ClaimDetailPage() {
     switch(status) {
       case 'draft': return 'bg-gray-600'
       case 'submitted': return 'bg-blue-600'
-      case 'under_review': return 'bg-yellow-600'
+      case 'investigating': return 'bg-yellow-600'
       case 'approved': return 'bg-green-600'
       case 'denied': return 'bg-red-600'
       case 'paid': return 'bg-emerald-600'

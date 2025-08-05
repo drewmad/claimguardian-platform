@@ -99,8 +99,13 @@ interface ModelUsageData {
 // AI Recommendation interface
 interface AIRecommendation {
   type: 'model_switch' | 'prompt_optimization' | 'ab_test'
+  priority: 'high' | 'medium' | 'low'
   feature: string
-  recommended: string
+  current?: string
+  recommended?: string
+  suggestion?: string
+  reason: string
+  confidence: number
 }
 
 interface CustomPrompt {
@@ -348,7 +353,7 @@ export default function AIModelsAdminPage() {
   })
   
   // Auto-Selection Recommendations
-  const [aiRecommendations, setAIRecommendations] = useState<unknown[]>([])
+  const [aiRecommendations, setAIRecommendations] = useState<AIRecommendation[]>([])
 
 
   const loadAdvancedAIData = async () => {
@@ -435,10 +440,10 @@ export default function AIModelsAdminPage() {
   }
 
   const generateAIRecommendations = () => {
-    const recommendations = [
+    const recommendations: AIRecommendation[] = [
       {
-        type: 'model_switch',
-        priority: 'high',
+        type: 'model_switch' as const,
+        priority: 'high' as const,
         feature: 'damage-analyzer',
         current: 'gpt-4-vision',
         recommended: 'gemini-1.5-pro',
@@ -446,8 +451,8 @@ export default function AIModelsAdminPage() {
         confidence: 87
       },
       {
-        type: 'prompt_optimization',
-        priority: 'medium', 
+        type: 'prompt_optimization' as const,
+        priority: 'medium' as const, 
         feature: 'settlement-analyzer',
         current: 'Default system prompt',
         recommended: 'Florida-specific legal prompt',
@@ -455,8 +460,8 @@ export default function AIModelsAdminPage() {
         confidence: 72
       },
       {
-        type: 'ab_test',
-        priority: 'low',
+        type: 'ab_test' as const,
+        priority: 'low' as const,
         feature: 'communication-helper',
         suggestion: 'Test Claude-3-Sonnet vs GPT-4 for formal letters',
         reason: 'Claude may produce more professional tone for legal communications',
@@ -752,11 +757,11 @@ export default function AIModelsAdminPage() {
   }
 
   const applyAIRecommendation = async (recommendation: AIRecommendation) => {
-    if (recommendation.type === 'model_switch') {
+    if (recommendation.type === 'model_switch' && recommendation.recommended) {
       // Apply the recommended model switch
       const updatedMappings = featureMappings.map(mapping => 
         mapping.featureId === recommendation.feature
-          ? { ...mapping, currentModel: recommendation.recommended }
+          ? { ...mapping, currentModel: recommendation.recommended! }
           : mapping
       )
       setFeatureMappings(updatedMappings)
@@ -1278,7 +1283,7 @@ export default function AIModelsAdminPage() {
                     <p>Analyzing performance data to generate recommendations...</p>
                   </div>
                 ) : (
-                  aiRecommendations.map((rec: unknown, idx) => (
+                  aiRecommendations.map((rec, idx) => (
                     <Card key={idx} className="bg-gray-700 border-gray-600">
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
@@ -1424,7 +1429,7 @@ export default function AIModelsAdminPage() {
                             </Badge>
                             <Button
                               size="sm"
-                              variant="outline"
+                              variant="secondary"
                               onClick={() => togglePrompt(prompt.id)}
                               className="bg-gray-600 border-gray-500 text-gray-300"
                             >
@@ -1519,7 +1524,7 @@ export default function AIModelsAdminPage() {
                   <h3 className="text-lg font-semibold text-white mb-4">Quality by Feature</h3>
                   <div className="space-y-3">
                     {featureMappings.map((feature) => {
-                      const featureMetrics = (qualityMetrics.ratings_by_feature as unknown)[feature.featureId] || {
+                      const featureMetrics = (qualityMetrics.ratings_by_feature as any)[feature.featureId] || {
                         rating: 4.2,
                         count: 0,
                         latest_feedback: ''
@@ -1532,11 +1537,11 @@ export default function AIModelsAdminPage() {
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[1,2,3,4,5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as unknown).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as any).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
                                 ))}
                               </div>
-                              <span className="text-sm text-gray-400">{(featureMetrics as unknown).rating}</span>
-                              <span className="text-xs text-gray-500">({(featureMetrics as unknown).count} ratings)</span>
+                              <span className="text-sm text-gray-400">{(featureMetrics as any).rating}</span>
+                              <span className="text-xs text-gray-500">({(featureMetrics as any).count} ratings)</span>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-4 text-sm">

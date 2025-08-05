@@ -326,7 +326,7 @@ class IntelligentPartitionManager {
     
     // For composite partitioning, we need to handle multiple dimensions
     // Example: claims partitioned by status and month
-    const statuses = ['draft', 'submitted', 'under_review', 'approved', 'denied', 'closed']
+    const statuses = ['draft', 'submitted', 'acknowledged', 'investigating', 'approved', 'denied', 'settled', 'closed', 'reopened', 'withdrawn']
     const now = new Date()
     const futureDate = new Date(now.getTime() + aheadDays * 24 * 60 * 60 * 1000)
 

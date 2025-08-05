@@ -26,7 +26,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 
 
-type ClaimStatus = 'draft' | 'submitted' | 'under_review' | 'approved' | 'denied' | 'paid'
+type ClaimStatus = 'draft' | 'submitted' | 'acknowledged' | 'investigating' | 'approved' | 'denied' | 'settled' | 'closed' | 'reopened' | 'withdrawn'
 
 interface Claim {
   id: string
@@ -71,7 +71,7 @@ function ClaimsDashboardContent() {
       claimNumber: 'CLM-2024-0892',
       type: 'Water Damage',
       policy: 'Homeowners - State Farm',
-      status: 'under_review',
+      status: 'investigating',
       dateOfLoss: '2024-10-15',
       dateSubmitted: '2024-10-18',
       description: 'Water damage from burst pipe in master bathroom',
@@ -156,7 +156,7 @@ function ClaimsDashboardContent() {
     switch(status) {
       case 'draft': return 'bg-gray-600'
       case 'submitted': return 'bg-blue-600'
-      case 'under_review': return 'bg-yellow-600'
+      case 'investigating': return 'bg-yellow-600'
       case 'approved': return 'bg-green-600'
       case 'denied': return 'bg-red-600'
       case 'paid': return 'bg-emerald-600'
@@ -168,7 +168,7 @@ function ClaimsDashboardContent() {
     switch(status) {
       case 'draft': return FileText
       case 'submitted': return Clock
-      case 'under_review': return AlertCircle
+      case 'investigating': return AlertCircle
       case 'approved': return CheckCircle
       case 'denied': return XCircle
       case 'paid': return DollarSign
@@ -186,7 +186,7 @@ function ClaimsDashboardContent() {
   }
 
   const totalClaims = claims.length
-  const activeClaims = claims.filter(c => ['submitted', 'under_review', 'approved'].includes(c.status)).length
+  const activeClaims = claims.filter(c => ['submitted', 'investigating', 'approved'].includes(c.status)).length
   const totalEstimated = claims.reduce((sum, claim) => sum + claim.estimatedAmount, 0)
   const totalPaid = claims.reduce((sum, claim) => sum + (claim.paidAmount || 0), 0)
 
