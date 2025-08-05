@@ -7,7 +7,7 @@
 
 'use server'
 
-import { createServerSupabaseClient } from '@claimguardian/db'
+import { createClient } from '@/lib/supabase/server'
 import { headers } from 'next/headers'
 import { UserTier, PermissionType } from '@/lib/permissions/permission-checker'
 import { emailNotificationService } from '@/lib/services/email-notification-service'
@@ -42,7 +42,7 @@ export async function createUserSubscription({
   stripePriceId
 }: CreateSubscriptionParams) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     // First check if user already has an active subscription
     const { data: existingSubscription } = await supabase
@@ -98,7 +98,7 @@ export async function createUserSubscription({
  */
 export async function getUserTierInfo(userId: string) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('user_subscriptions')
@@ -159,7 +159,7 @@ export async function updateUserTier({
   reason
 }: UpdateUserTierParams) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     // Get current tier and user info for email notification
     const { data: currentSubscription } = await supabase
@@ -227,7 +227,7 @@ export async function updateUserTier({
  */
 export async function getAllTiers() {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('user_tiers')
@@ -253,7 +253,7 @@ export async function createPermissionOverride(
   expiresAt?: string
 ) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('user_permission_overrides')
@@ -301,7 +301,7 @@ export async function performBulkUserOperation({
   reason
 }: BulkUserOperation) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
     const results = []
 
     for (const userId of userIds) {
@@ -375,7 +375,7 @@ export async function performBulkUserOperation({
             results.push({ userId, success: false, error: 'Unknown operation' })
         }
       } catch (error) {
-        results.push({ userId, success: false, error: error.message })
+        results.push({ userId, success: false, error: (error as Error).message })
       }
     }
 
@@ -395,7 +395,7 @@ export async function getUserActivityLogs(
   limit: number = 50
 ) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
     const offset = (page - 1) * limit
 
     const { data, error, count } = await supabase
@@ -431,7 +431,7 @@ export async function updateTierPermissions(tierPermissions: Array<{
   permissions: PermissionType[]
 }>) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
     const changedTiers = []
 
     for (const tierData of tierPermissions) {
@@ -458,8 +458,8 @@ export async function updateTierPermissions(tierPermissions: Array<{
       const oldPermissions = currentTier?.permissions || []
       const newPermissions = tierData.permissions
       const changedPermissions = [
-        ...newPermissions.filter(p => !oldPermissions.includes(p)).map(p => ({ permission: p, granted: true })),
-        ...oldPermissions.filter(p => !newPermissions.includes(p)).map(p => ({ permission: p, granted: false }))
+        ...newPermissions.filter((p: PermissionType) => !oldPermissions.includes(p)).map((p: PermissionType) => ({ permission: p, granted: true })),
+        ...oldPermissions.filter((p: PermissionType) => !newPermissions.includes(p)).map((p: PermissionType) => ({ permission: p, granted: false }))
       ]
 
       if (changedPermissions.length > 0) {
@@ -500,7 +500,7 @@ export async function updateTierPermissions(tierPermissions: Array<{
       // Send notifications to each user
       if (users) {
         for (const userRecord of users) {
-          const user = userRecord.users as { id: string; email: string }
+          const user = userRecord.users as unknown as { id: string; email: string }
           if (user?.email) {
             await emailNotificationService.sendPermissionChangeNotification({
               userEmail: user.email,
@@ -525,7 +525,7 @@ export async function updateTierPermissions(tierPermissions: Array<{
  */
 export async function getPermissionOverrides() {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('user_permission_overrides')
@@ -558,7 +558,7 @@ export async function getPermissionOverrides() {
  */
 export async function getUserByEmail(email: string) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { data, error } = await supabase
       .from('users')
@@ -580,7 +580,7 @@ export async function getUserByEmail(email: string) {
  */
 export async function deletePermissionOverride(overrideId: string) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     const { error } = await supabase
       .from('user_permission_overrides')
@@ -611,7 +611,7 @@ export async function createTierCheckoutSession({
   cancelUrl: string
 }) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -666,7 +666,7 @@ export async function createTierCheckoutSession({
  */
 export async function getUserUsageStats(userId: string) {
   try {
-    const supabase = createServerSupabaseClient({})
+    const supabase = await createClient()
 
     // Get current month start
     const now = new Date()
@@ -712,6 +712,168 @@ export async function getUserUsageStats(userId: string) {
     }
   } catch (error) {
     console.error('Error getting user usage stats:', error)
+    return { data: null, error: (error as Error).message }
+  }
+}
+
+/**
+ * Check if user can add more properties based on their tier
+ */
+export async function checkPropertyLimit(userId: string) {
+  try {
+    const supabase = await createClient()
+
+    // Get user's current tier info
+    const tierResult = await getUserTierInfo(userId)
+    if (tierResult.error || !tierResult.data) {
+      return { canAdd: false, error: 'Failed to get user tier information' }
+    }
+
+    const tierInfo = tierResult.data.user_tiers
+    const propertiesLimit = tierInfo?.properties_limit || 3 // Default to 3 for free tier
+
+    // Count current properties
+    const { count: currentCount, error: countError } = await supabase
+      .from('properties')
+      .select('id', { count: 'exact' })
+      .eq('user_id', userId)
+
+    if (countError) throw countError
+
+    const canAdd = (currentCount || 0) < propertiesLimit
+
+    return {
+      data: {
+        canAdd,
+        currentCount: currentCount || 0,
+        limit: propertiesLimit,
+        remaining: Math.max(0, propertiesLimit - (currentCount || 0)),
+        tier: tierResult.data.tier,
+        requiresUpgrade: !canAdd
+      },
+      error: null
+    }
+  } catch (error) {
+    console.error('Error checking property limit:', error)
+    return { data: null, error: (error as Error).message }
+  }
+}
+
+/**
+ * Get property pricing information for additional properties
+ */
+export async function getPropertyPricing(userId: string) {
+  try {
+    const supabase = await createClient()
+
+    // Get user's current tier
+    const tierResult = await getUserTierInfo(userId)
+    if (tierResult.error || !tierResult.data) {
+      return { data: null, error: 'Failed to get user tier information' }
+    }
+
+    const currentTier = tierResult.data.tier
+
+    // Pricing per additional property after tier limit
+    const propertyPricing: Record<UserTier, { pricePerProperty: number; freeLimit: number }> = {
+      free: { pricePerProperty: 15, freeLimit: 3 },
+      renter: { pricePerProperty: 12, freeLimit: 1 },
+      essential: { pricePerProperty: 10, freeLimit: 5 },
+      plus: { pricePerProperty: 8, freeLimit: 15 },
+      pro: { pricePerProperty: 0, freeLimit: 999999 } // Unlimited
+    }
+
+    const pricing = propertyPricing[currentTier as UserTier]
+
+    // Get current property count
+    const { count: currentCount } = await supabase
+      .from('properties')
+      .select('id', { count: 'exact' })
+      .eq('user_id', userId)
+
+    const additionalPropertiesNeeded = Math.max(0, (currentCount || 0) - pricing.freeLimit)
+    const monthlyAdditionalCost = additionalPropertiesNeeded * pricing.pricePerProperty
+
+    return {
+      data: {
+        currentTier,
+        pricePerProperty: pricing.pricePerProperty,
+        freeLimit: pricing.freeLimit,
+        currentCount: currentCount || 0,
+        additionalPropertiesNeeded,
+        monthlyAdditionalCost,
+        nextPropertyCost: pricing.pricePerProperty,
+        isUnlimited: currentTier === 'pro'
+      },
+      error: null
+    }
+  } catch (error) {
+    console.error('Error getting property pricing:', error)
+    return { data: null, error: (error as Error).message }
+  }
+}
+
+/**
+ * Create additional property subscription for per-property billing
+ */
+export async function createAdditionalPropertySubscription({
+  userId,
+  additionalProperties
+}: {
+  userId: string
+  additionalProperties: number
+}) {
+  try {
+    const supabase = await createClient()
+
+    // Get user's current tier and pricing
+    const pricingResult = await getPropertyPricing(userId)
+    if (pricingResult.error || !pricingResult.data) {
+      return { data: null, error: 'Failed to get property pricing' }
+    }
+
+    const { pricePerProperty, currentTier } = pricingResult.data
+
+    if (currentTier === 'pro') {
+      return { data: null, error: 'Pro tier has unlimited properties' }
+    }
+
+    const monthlyCharge = additionalProperties * pricePerProperty
+
+    // Record the additional property subscription
+    const { data, error } = await supabase
+      .from('user_subscriptions')
+      .insert({
+        user_id: userId,
+        tier: currentTier,
+        status: 'active',
+        additional_properties: additionalProperties,
+        additional_monthly_cost: monthlyCharge,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      })
+      .select()
+      .single()
+
+    if (error) throw error
+
+    // Log the property subscription
+    await supabase
+      .from('user_activity_logs')
+      .insert({
+        user_id: userId,
+        action_type: 'property_subscription_created',
+        details: {
+          additional_properties: additionalProperties,
+          monthly_cost: monthlyCharge,
+          price_per_property: pricePerProperty,
+          tier: currentTier
+        }
+      })
+
+    return { data, error: null }
+  } catch (error) {
+    console.error('Error creating additional property subscription:', error)
     return { data: null, error: (error as Error).message }
   }
 }
