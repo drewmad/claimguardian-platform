@@ -2,7 +2,7 @@
 
 import { Suspense } from 'react'
 
-import { AdminDashboard } from './admin-dashboard'
+import { AdminDashboardImproved } from './admin-dashboard-improved'
 
 function AdminDashboardWrapper() {
   return (
@@ -14,7 +14,7 @@ function AdminDashboardWrapper() {
         </div>
       </div>
     }>
-      <AdminDashboard />
+      <AdminDashboardImproved />
     </Suspense>
   )
 }
