@@ -14,7 +14,8 @@
 import { describe, it, expect, afterEach, jest } from '@jest/globals'
 import { render, screen, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { Button } from '@claimguardian/ui'
+import '@testing-library/jest-dom'
+import { Button } from '../button'
 
 describe('Button Component', () => {
   afterEach(() => {

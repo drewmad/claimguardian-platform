@@ -48,13 +48,15 @@ export function ParcelLookup() {
   const [results, setResults] = useState<ParcelData[]>([])
   const [selectedParcel, setSelectedParcel] = useState<ParcelData | null>(null)
   const [riskAssessment, setRiskAssessment] = useState<{
-    overallRisk: 'low' | 'medium' | 'high' | 'critical'
-    riskScore: number
-    factors: Array<{
-      type: string
-      severity: string
-      description: string
-    }>
+    parcelId: string
+    riskFactors: {
+      floodRisk: number
+      hurricaneRisk: number
+      ageRisk: number
+      valueRisk: number
+      locationRisk: number
+    }
+    overallRisk: number
     recommendations: string[]
   } | null>(null)
   const [loading, setLoading] = useState(false)
@@ -90,7 +92,7 @@ export function ParcelLookup() {
     setLoading(true)
     
     try {
-      const riskResult = await assessPropertyRisk(parcel.parcel_id)
+      const riskResult = await assessPropertyRisk(parcel.parcelId)
       if (riskResult.data) {
         setRiskAssessment(riskResult.data)
       }
@@ -208,7 +210,7 @@ export function ParcelLookup() {
             <div className="space-y-4">
               {results.map((parcel) => (
                 <div
-                  key={parcel.parcel_id}
+                  key={parcel.parcelId}
                   className="bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-600 transition-colors"
                   onClick={() => handleParcelSelect(parcel)}
                 >
@@ -217,24 +219,24 @@ export function ParcelLookup() {
                       <div className="flex items-center gap-2">
                         <MapPin className="w-4 h-4 text-blue-400" />
                         <span className="text-white font-medium">
-                          {parcel.phy_addr1}, {parcel.phy_city}
+                          {parcel.address}
                         </span>
                       </div>
                       
                       <div className="flex items-center gap-2 text-gray-300">
                         <Home className="w-4 h-4" />
-                        <span>Owner: {parcel.own_name}</span>
+                        <span>Owner: {parcel.owner}</span>
                       </div>
                       
                       <div className="flex items-center gap-4 text-sm text-gray-400">
-                        <span>Parcel: {parcel.parcel_id}</span>
-                        <span>Built: {parcel.yr_blt || parcel.act_yr_blt || 'Unknown'}</span>
+                        <span>Parcel: {parcel.parcelId}</span>
+                        <span>Built: {parcel.yearBuilt || 'Unknown'}</span>
                       </div>
                     </div>
                     
                     <div className="text-right">
                       <div className="text-white font-semibold">
-                        {formatCurrency((parcel.lnd_val || 0) + (parcel.imp_val || 0))}
+                        {formatCurrency(parcel.totalValue)}
                       </div>
                       <div className="text-sm text-gray-400">
                         Total Value
@@ -260,43 +262,39 @@ export function ParcelLookup() {
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Address:</span>
-                  <p className="text-white">{selectedParcel.phy_addr1}</p>
+                  <p className="text-white">{selectedParcel.address}</p>
                 </div>
                 <div>
-                  <span className="text-gray-400">City:</span>
-                  <p className="text-white">{selectedParcel.phy_city}</p>
+                  <span className="text-gray-400">County:</span>
+                  <p className="text-white">{selectedParcel.county}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Owner:</span>
-                  <p className="text-white">{selectedParcel.own_name}</p>
+                  <p className="text-white">{selectedParcel.owner}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Year Built:</span>
-                  <p className="text-white">{selectedParcel.yr_blt || selectedParcel.act_yr_blt || 'Unknown'}</p>
+                  <p className="text-white">{selectedParcel.yearBuilt || 'Unknown'}</p>
                 </div>
                 <div>
-                  <span className="text-gray-400">Bedrooms:</span>
-                  <p className="text-white">{selectedParcel.no_bdrm || 'N/A'}</p>
-                </div>
-                <div>
-                  <span className="text-gray-400">Bathrooms:</span>
-                  <p className="text-white">{selectedParcel.no_bath || 'N/A'}</p>
+                  <span className="text-gray-400">Land Use:</span>
+                  <p className="text-white">{selectedParcel.landUse}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Living Area:</span>
-                  <p className="text-white">{selectedParcel.tot_lvg_area ? `${selectedParcel.tot_lvg_area.toLocaleString()} sqft` : 'N/A'}</p>
+                  <p className="text-white">{selectedParcel.squareFeet ? `${selectedParcel.squareFeet.toLocaleString()} sqft` : 'N/A'}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Land Value:</span>
-                  <p className="text-white">{formatCurrency(selectedParcel.lnd_val)}</p>
+                  <p className="text-white">{formatCurrency(selectedParcel.landValue)}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Building Value:</span>
-                  <p className="text-white">{formatCurrency(selectedParcel.imp_val)}</p>
+                  <p className="text-white">{formatCurrency(selectedParcel.buildingValue)}</p>
                 </div>
                 <div>
                   <span className="text-gray-400">Total Value:</span>
-                  <p className="text-white font-semibold">{formatCurrency((selectedParcel.lnd_val || 0) + (selectedParcel.imp_val || 0))}</p>
+                  <p className="text-white font-semibold">{formatCurrency(selectedParcel.totalValue)}</p>
                 </div>
               </div>
             </CardContent>

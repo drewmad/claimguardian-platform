@@ -131,7 +131,13 @@ export function ClaudeMonitoringDashboard() {
           lastUpdate: new Date(),
           activeComponents: Object.values(productionStatus.healthCheck).filter(Boolean).length,
           totalComponents: Object.keys(productionStatus.healthCheck).length,
-          alerts: generateAlerts(productionStatus, feedbackStatus as FeedbackStatus)
+          alerts: generateAlerts(productionStatus, {
+            ...feedbackStatus,
+            recentActions: feedbackStatus.recentActions.map((action: any) => ({
+              id: action.id,
+              action: action.description || action.type
+            }))
+          } as FeedbackStatus)
         },
         performanceMetrics: {
           avgExecutionTime: productionStatus.metrics.avgExecutionTime,

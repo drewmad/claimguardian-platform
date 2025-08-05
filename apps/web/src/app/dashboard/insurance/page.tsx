@@ -12,7 +12,7 @@
 
 import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -344,7 +344,7 @@ function InsuranceDashboardContent() {
                       <div key={coverage.type} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            {Icon && <Icon className="w-4 h-4 text-gray-400" />}
+                            {coverage.icon && React.createElement(coverage.icon as React.ComponentType<{ className?: string }>, { className: "w-4 h-4 text-gray-400" })}
                             <span className="text-sm font-medium text-white">{coverage.type}</span>
                           </div>
                           <span className="text-sm text-gray-300">

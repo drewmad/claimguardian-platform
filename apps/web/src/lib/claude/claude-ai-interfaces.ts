@@ -368,28 +368,4 @@ export class MockAILearningService extends AILearningService {
   }
 }
 
-// Export all types
-export type {
-  LLMSynthesisConfig,
-  MetaPattern,
-  CommonalityAnalysis,
-  SynthesisRequest,
-  SynthesisResponse,
-  SemanticEmbedding,
-  SimilaritySearchRequest,
-  SimilarityMatch,
-  SemanticIndex,
-  NLDescription,
-  NLGenerationRequest,
-  NLGenerationResponse,
-  Bottleneck,
-  BottleneckType,
-  BottleneckImpact,
-  ResolutionSuggestion,
-  ResolutionStep,
-  BottleneckAnalysisRequest,
-  BottleneckAnalysisResponse,
-  AIOperationMetrics,
-  AIModelConfig,
-  AIFeatureFlags
-}
+// All types are already exported above with 'export interface' or 'export type'

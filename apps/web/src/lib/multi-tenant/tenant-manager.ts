@@ -48,113 +48,20 @@ interface OrganizationAddress {
 
 interface SSOConfiguration {
   provider: 'oauth' | 'saml' | 'okta' | 'azure'
-  clientId?: string
-  clientSecret?: string
-  domain?: string
-  callbackUrl?: string
+  settings: Record<string, unknown>
+  isEnabled: boolean
 }
 
-interface DataRetentionPolicy {
-  claimsRetentionDays: number
-  documentsRetentionDays: number
-  auditLogsRetentionDays: number
-  personalDataRetentionDays: number
-  backupRetentionDays: number
-}
-
-interface ClaimWorkflow {
-  stages: Array<{
-    id: string
-    name: string
-    required: boolean
-    approvalRequired: boolean
-  }>
-  notifications: {
-    stageChange: boolean
-    approval: boolean
-    completion: boolean
-  }
-}
-
-interface ApprovalWorkflows {
-  claimApproval: {
-    threshold: number
-    approvers: string[]
-    autoApprove: boolean
-  }
-  documentApproval: {
-    required: boolean
-    approvers: string[]
-  }
-}
-
-interface NotificationPreferences {
-  email: {
-    enabled: boolean
-    frequency: 'immediate' | 'daily' | 'weekly'
-  }
-  sms: {
-    enabled: boolean
-    urgentOnly: boolean
-  }
-  push: {
-    enabled: boolean
-    categories: string[]
-  }
-}
-
-interface SecurityPolicies {
-  passwordPolicy: {
-    minLength: number
-    requireUppercase: boolean
-    requireNumbers: boolean
-    requireSymbols: boolean
-  }
-  sessionTimeout: number
-  maxFailedAttempts: number
-  lockoutDuration: number
-}
-
-interface DataExportSettings {
-  allowUserExport: boolean
-  exportFormats: string[]
-  retentionAfterExport: number
-  approvalRequired: boolean
-}
-
-interface AuditSettings {
-  enabledEvents: string[]
-  retentionDays: number
-  realTimeNotifications: boolean
-  webhookUrl?: string
-}
-
-interface OrganizationTheme {
-  primaryColor?: string
-  secondaryColor?: string
-  accentColor?: string
-  backgroundColor?: string
-  textColor?: string
-  font?: string
-}
-
-interface ContactInfo {
-  name: string
-  email: string
-  phone?: string
-  role: string
-}
-
-// Database row types (match actual database schema)
+// Database row types
 interface OrganizationRow {
   id: string
   organization_name: string
   organization_code: string
   domain: string
-  additional_domains: string[]
-  subscription_tier: 'standard' | 'professional' | 'enterprise' | 'custom'
-  billing_cycle: 'monthly' | 'quarterly' | 'annual'
-  subscription_status: 'trial' | 'active' | 'suspended' | 'cancelled'
+  additional_domains?: string[]
+  subscription_tier: 'starter' | 'professional' | 'enterprise'
+  billing_cycle: 'monthly' | 'annual'
+  subscription_status: 'trial' | 'active' | 'past_due' | 'canceled' | 'paused'
   user_limit: number
   property_limit: number
   claim_limit: number
@@ -165,19 +72,23 @@ interface OrganizationRow {
   current_claims: number
   current_ai_requests: number
   current_storage_gb: number
-  feature_flags: Record<string, boolean>
-  created_at: string
-  updated_at: string
   configuration?: OrganizationConfiguration
+  feature_flags?: Record<string, boolean>
   branding?: OrganizationBranding
   integrations?: OrganizationIntegrations
   allowed_states?: string[]
   primary_state?: string
-  primary_contact_email?: string
-  billing_email?: string
-  technical_contact_email?: string
-  phone?: string
   address?: OrganizationAddress
+  phone?: string
+  business_license_number?: string
+  insurance_license_number?: string
+  tax_id?: string
+  is_active: boolean
+  trial_ends_at?: string
+  subscription_id?: string
+  stripe_customer_id?: string
+  billing_email?: string
+  primary_contact_id?: string
   sso_enabled?: boolean
   sso_provider?: string
   sso_configuration?: SSOConfiguration
@@ -185,10 +96,10 @@ interface OrganizationRow {
   ip_whitelist?: string[]
   data_region?: string
   compliance_requirements?: string[]
-  data_retention_policy?: DataRetentionPolicy
-  created_by?: string
+  data_retention_policy?: Record<string, unknown>
+  created_at: string
+  updated_at: string
   last_modified_by?: string
-  notes?: string
 }
 
 interface OrganizationUserRow {
@@ -196,13 +107,8 @@ interface OrganizationUserRow {
   user_id: string
   organization_id: string
   role: 'owner' | 'admin' | 'member' | 'viewer'
-  permissions: string[]
-  department?: string
-  cost_center?: string
-  join_date: string
-  last_active: string
-  status: 'active' | 'suspended' | 'invited'
-  deactivated_by?: string
+  permissions?: string[]
+  status: 'active' | 'inactive' | 'pending' | 'banned'
   invitation_token?: string
   invitation_expires_at?: string
   last_login_at?: string
@@ -211,127 +117,75 @@ interface OrganizationUserRow {
   joined_at: string
   invited_by?: string
   deactivated_at?: string
+  deactivated_by?: string
 }
 
-interface TenantCustomizationRow {
-  id: string
-  organization_id: string
-  theme: OrganizationTheme
-  logo_url?: string
-  favicon_url?: string
-  custom_css?: string
-  enabled_features: string[]
-  disabled_features?: string[]
-  feature_limits?: Record<string, number>
-  claim_workflow?: ClaimWorkflow
-  approval_workflows?: ApprovalWorkflows
-  notification_preferences?: NotificationPreferences
-  webhook_urls?: Record<string, string>
-  api_keys?: Record<string, string>
-  external_integrations?: OrganizationIntegrations
-  security_policies?: SecurityPolicies
-  data_export_settings?: DataExportSettings
-  audit_settings?: AuditSettings
-  branding_name?: string
-  support_email?: string
-  contact_info?: ContactInfo
-  created_at: string
-  created_by?: string
-  updated_at: string
-}
-
-interface TenantUsageInfoRow {
-  organization_id: string
-  billing_period_start: string
-  billing_period_end: string
-  monthly_fee: number
-  usage_charges: number
-  total_amount: number
-  users_count?: number
-  properties_count?: number
-  claims_count?: number
-  ai_requests_count?: number
-  storage_gb?: number
-  base_cost?: number
-  overage_costs?: number
-  total_cost?: number
-  invoice_status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
-  invoice_number?: string
-  invoice_date?: string
-  due_date?: string
-  paid_date?: string
-}
-
-interface EnterpriseOrganization {
+// Application types
+export interface EnterpriseOrganization {
   id: string
   organizationName: string
   organizationCode: string
   domain: string
   additionalDomains: string[]
+  subscriptionTier: 'starter' | 'professional' | 'enterprise'
+  billingCycle: 'monthly' | 'annual'
+  subscriptionStatus: 'trial' | 'active' | 'past_due' | 'canceled' | 'paused'
   
-  // Subscription details
-  subscriptionTier: 'standard' | 'professional' | 'enterprise' | 'custom'
-  billingCycle: 'monthly' | 'quarterly' | 'annual'
-  subscriptionStatus: 'trial' | 'active' | 'suspended' | 'cancelled'
-  
-  // Limits and quotas
+  // Limits and usage
   userLimit: number
   propertyLimit: number
   claimLimit: number
   aiRequestLimit: number
   storageLimitGb: number
-  
-  // Current usage
   currentUsers: number
   currentProperties: number
   currentClaims: number
   currentAiRequests: number
   currentStorageGb: number
   
-  // Configuration
+  // Organization details
   configuration: OrganizationConfiguration
   featureFlags: Record<string, boolean>
   branding: OrganizationBranding
   integrations: OrganizationIntegrations
-  
-  // Geographic scope
   allowedStates: string[]
-  primaryState: string
-  
-  // Contact information
-  primaryContactEmail: string
-  billingEmail?: string
-  technicalContactEmail?: string
-  phone?: string
+  primaryState?: string
   address?: OrganizationAddress
+  phone?: string
+  businessLicenseNumber?: string
+  insuranceLicenseNumber?: string
+  taxId?: string
   
-  // Security settings
-  ssoEnabled: boolean
+  // Security and compliance
+  ssoEnabled?: boolean
   ssoProvider?: string
   ssoConfiguration?: SSOConfiguration
-  require2fa: boolean
+  require2fa?: boolean
   ipWhitelist?: string[]
+  dataRegion?: string
+  complianceRequirements?: string[]
+  dataRetentionPolicy?: Record<string, unknown>
   
-  // Compliance
-  dataRegion: string
-  complianceRequirements: string[]
-  dataRetentionPolicy: DataRetentionPolicy
+  // Status and billing
+  isActive: boolean
+  trialEndsAt?: Date
+  subscriptionId?: string
+  stripeCustomerId?: string
+  billingEmail?: string
+  primaryContactId?: string
   
   // Metadata
   createdAt: Date
   updatedAt: Date
-  createdBy: string
-  lastModifiedBy?: string
-  notes?: string
 }
 
-interface OrganizationUser {
+export interface OrganizationUser {
   id: string
   userId: string
   organizationId: string
-  role: 'owner' | 'admin' | 'manager' | 'member' | 'viewer'
+  role: 'owner' | 'admin' | 'member' | 'viewer'
   permissions: Record<string, boolean>
-  status: 'invited' | 'active' | 'suspended' | 'deactivated'
+  status: 'active' | 'inactive' | 'pending' | 'banned'
   invitationToken?: string
   invitationExpiresAt?: Date
   lastLoginAt?: Date
@@ -343,81 +197,32 @@ interface OrganizationUser {
   deactivatedBy?: string
 }
 
-interface TenantCustomization {
-  id: string
-  organizationId: string
-  
-  // UI Customization
-  theme: OrganizationTheme
-  logoUrl?: string
-  faviconUrl?: string
-  customCss?: string
-  
-  // Feature Configuration
-  enabledFeatures: string[]
-  disabledFeatures: string[]
-  featureLimits: Record<string, number>
-  
-  // Workflow Customization
-  claimWorkflow: ClaimWorkflow
-  approvalWorkflows: ApprovalWorkflows
-  notificationPreferences: NotificationPreferences
-  
-  // Integration Settings
-  webhookUrls: Record<string, string>
-  apiKeys: Record<string, string> // Encrypted
-  externalIntegrations: OrganizationIntegrations
-  
-  // Compliance and Security
-  securityPolicies: SecurityPolicies
-  dataExportSettings: DataExportSettings
-  auditSettings: AuditSettings
-  
-  createdAt: Date
-  updatedAt: Date
-  createdBy: string
-}
-
-interface TenantUsageInfo {
-  organizationId: string
-  billingPeriodStart: Date
-  billingPeriodEnd: Date
-  
-  // Usage counts
-  usersCount: number
-  propertiesCount: number
-  claimsCount: number
-  aiRequestsCount: number
-  storageGb: number
-  
-  // Costs
-  baseCost: number
-  overageCosts: Record<string, number>
-  totalCost: number
-  
-  // Invoice details
-  invoiceStatus: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled'
-  invoiceNumber?: string
-  invoiceDate?: Date
-  dueDate?: Date
-  paidDate?: Date
-}
-
-// Define allowed query structure for tenant queries
-interface TenantQuery {
-  select?: string
-  match?: Record<string, string | number | boolean>
-  order?: {
-    column: string
-    ascending: boolean
+export interface TenantContext {
+  organization: EnterpriseOrganization
+  user: OrganizationUser
+  permissions: Record<string, boolean>
+  features: Record<string, boolean>
+  limits: {
+    users: { current: number; limit: number }
+    properties: { current: number; limit: number }
+    claims: { current: number; limit: number }
+    aiRequests: { current: number; limit: number }
+    storage: { current: number; limit: number }
   }
-  limit?: number
+  customizations: Record<string, unknown>
+}
+
+interface TenantQuery {
+  from: string
+  select: string
+  eq?: { column: string; value: unknown }
+  in?: { column: string; values: unknown[] }
+  organizationId: string
 }
 
 class TenantManager {
   private supabase: SupabaseClient | null = null
-  private organizationCache = new Map<string, EnterpriseOrganization>()
-  private userOrgCache = new Map<string, string>() // userId -> organizationId
+  private contextCache = new Map<string, TenantContext>()
   private cacheExpiry = 15 * 60 * 1000 // 15 minutes
 
   constructor() {
@@ -429,36 +234,29 @@ class TenantManager {
   }
 
   /**
-   * Get organization by code (subdomain)
+   * Get organization by ID
    */
-  async getOrganizationByCode(orgCode: string): Promise<EnterpriseOrganization | null> {
-    const cacheKey = `org_${orgCode}`
-    const cached = this.organizationCache.get(cacheKey)
-    if (cached) return cached
-
+  async getOrganizationById(organizationId: string): Promise<EnterpriseOrganization | null> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
       const { data, error } = await this.supabase!
         .from('enterprise_organizations')
         .select('*')
-        .eq('organization_code', orgCode)
+        .eq('id', organizationId)
+        .eq('is_active', true)
         .single()
 
       if (error) {
-        if (error.code === 'PGRST116') return null
+        if (error.code === 'PGRST116') {
+          return null // No organization found
+        }
         throw error
       }
 
-      const organization = this.parseOrganization(data)
-      
-      // Cache the result
-      this.organizationCache.set(cacheKey, organization)
-      setTimeout(() => this.organizationCache.delete(cacheKey), this.cacheExpiry)
-
-      return organization
+      return this.parseOrganization(data as OrganizationRow)
     } catch (error) {
-      console.error(`Failed to get organization by code ${orgCode}:`, error)
+      console.error(`Failed to get organization ${organizationId}:`, error)
       return null
     }
   }
@@ -474,14 +272,17 @@ class TenantManager {
         .from('enterprise_organizations')
         .select('*')
         .or(`domain.eq.${domain},additional_domains.cs.{${domain}}`)
+        .eq('is_active', true)
         .single()
 
       if (error) {
-        if (error.code === 'PGRST116') return null
+        if (error.code === 'PGRST116') {
+          return null
+        }
         throw error
       }
 
-      return this.parseOrganization(data)
+      return this.parseOrganization(data as OrganizationRow)
     } catch (error) {
       console.error(`Failed to get organization by domain ${domain}:`, error)
       return null
@@ -489,41 +290,24 @@ class TenantManager {
   }
 
   /**
-   * Get user's current organization
+   * Get user's organization
    */
   async getUserOrganization(userId: string): Promise<EnterpriseOrganization | null> {
-    const cacheKey = `user_org_${userId}`
-    const cachedOrgId = this.userOrgCache.get(cacheKey)
-    
-    if (cachedOrgId) {
-      return this.getOrganizationById(cachedOrgId)
-    }
-
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase!
+      const { data: userOrg } = await this.supabase!
         .from('organization_users')
-        .select(`
-          organization_id,
-          enterprise_organizations (*)
-        `)
+        .select('organization_id')
         .eq('user_id', userId)
         .eq('status', 'active')
+        .order('joined_at', { ascending: true })
+        .limit(1)
         .single()
 
-      if (error) {
-        if (error.code === 'PGRST116') return null
-        throw error
-      }
+      if (!userOrg) return null
 
-      const organization = this.parseOrganization(data.enterprise_organizations)
-      
-      // Cache user -> organization mapping
-      this.userOrgCache.set(cacheKey, organization.id)
-      setTimeout(() => this.userOrgCache.delete(cacheKey), this.cacheExpiry)
-
-      return organization
+      return this.getOrganizationById(userOrg.organization_id)
     } catch (error) {
       console.error(`Failed to get user organization for ${userId}:`, error)
       return null
@@ -531,126 +315,160 @@ class TenantManager {
   }
 
   /**
-   * Get organization by ID
+   * Get tenant context for a user
    */
-  async getOrganizationById(orgId: string): Promise<EnterpriseOrganization | null> {
-    const cacheKey = `org_id_${orgId}`
-    const cached = this.organizationCache.get(cacheKey)
-    if (cached) return cached
+  async getTenantContext(userId: string, organizationId?: string): Promise<TenantContext | null> {
+    const cacheKey = `${userId}:${organizationId || 'default'}`
+    const cached = this.contextCache.get(cacheKey)
+    if (cached) {
+      return cached
+    }
 
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase!
-        .from('enterprise_organizations')
-        .select('*')
-        .eq('id', orgId)
-        .single()
+      // If organizationId is not provided, get user's default organization
+      let targetOrgId = organizationId
+      if (!targetOrgId) {
+        const { data: userOrg } = await this.supabase!
+          .from('organization_users')
+          .select('organization_id')
+          .eq('user_id', userId)
+          .eq('status', 'active')
+          .order('joined_at', { ascending: true })
+          .limit(1)
+          .single()
 
-      if (error) {
-        if (error.code === 'PGRST116') return null
-        throw error
+        if (!userOrg) return null
+        targetOrgId = userOrg.organization_id
       }
 
-      const organization = this.parseOrganization(data)
-      
-      // Cache the result
-      this.organizationCache.set(cacheKey, organization)
-      setTimeout(() => this.organizationCache.delete(cacheKey), this.cacheExpiry)
+      // Get organization details
+      const organization = await this.getOrganizationById(targetOrgId)
+      if (!organization) return null
 
-      return organization
+      // Get user's role and permissions in this organization
+      const { data: userRole } = await this.supabase!
+        .from('organization_users')
+        .select('*')
+        .eq('user_id', userId)
+        .eq('organization_id', targetOrgId)
+        .eq('status', 'active')
+        .single()
+
+      if (!userRole) return null
+
+      const user = this.parseOrganizationUser(userRole as OrganizationUserRow)
+      
+      // Build permissions map
+      const permissions = this.buildPermissions(user.role, userRole.permissions || [])
+      
+      // Build features map
+      const features = organization.featureFlags
+
+      // Build limits
+      const limits = {
+        users: { current: organization.currentUsers, limit: organization.userLimit },
+        properties: { current: organization.currentProperties, limit: organization.propertyLimit },
+        claims: { current: organization.currentClaims, limit: organization.claimLimit },
+        aiRequests: { current: organization.currentAiRequests, limit: organization.aiRequestLimit },
+        storage: { current: organization.currentStorageGb, limit: organization.storageLimitGb }
+      }
+
+      const context: TenantContext = {
+        organization,
+        user,
+        permissions,
+        features,
+        limits,
+        customizations: organization.configuration || {}
+      }
+
+      // Cache the context
+      this.contextCache.set(cacheKey, context)
+      setTimeout(() => this.contextCache.delete(cacheKey), this.cacheExpiry)
+
+      return context
     } catch (error) {
-      console.error(`Failed to get organization by ID ${orgId}:`, error)
+      console.error(`Failed to get tenant context for user ${userId}:`, error)
       return null
     }
   }
 
   /**
-   * Get organization users
+   * Check if user has specific permission
    */
-  async getOrganizationUsers(orgId: string): Promise<OrganizationUser[]> {
-    try {
-      if (!this.supabase) await this.initializeSupabase()
+  async hasPermission(userId: string, permission: string, organizationId?: string): Promise<boolean> {
+    const context = await this.getTenantContext(userId, organizationId)
+    return context?.permissions[permission] || false
+  }
 
-      const { data, error } = await this.supabase!
-        .from('organization_users')
-        .select(`
-          *,
-          auth.users (
-            email,
-            created_at
-          )
-        `)
-        .eq('organization_id', orgId)
-        .order('joined_at', { ascending: false })
+  /**
+   * Check if user has specific permission (alias for backward compatibility)
+   */
+  async userHasPermission(userId: string, permission: string, organizationId?: string): Promise<boolean> {
+    return this.hasPermission(userId, permission, organizationId)
+  }
 
-      if (error) throw error
-
-      return (data || []).map(this.parseOrganizationUser)
-    } catch (error) {
-      console.error(`Failed to get organization users for ${orgId}:`, error)
-      return []
-    }
+  /**
+   * Check if feature is enabled for organization
+   */
+  async isFeatureEnabled(feature: string, organizationId: string): Promise<boolean> {
+    const organization = await this.getOrganizationById(organizationId)
+    return organization?.featureFlags[feature] || false
   }
 
   /**
    * Add user to organization
    */
   async addUserToOrganization(
-    orgId: string,
+    organizationId: string,
     userEmail: string,
-    role: OrganizationUser['role'] = 'member',
+    role: 'owner' | 'admin' | 'member' | 'viewer',
     invitedBy: string
   ): Promise<{ success: boolean; userId?: string; invitationToken?: string }> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      // Check organization limits
-      const canAddUser = await this.checkOrganizationLimit(orgId, 'users')
-      if (!canAddUser) {
-        return { success: false }
-      }
+      // Check if user already exists
+      const { data: existingUser } = await this.supabase!.auth.admin.getUserByEmail(userEmail)
 
-      // Check if user exists
-      const { data: existingUser, error: userError } = await this.supabase!
-        .from('auth.users')
-        .select('id')
-        .eq('email', userEmail)
-        .single()
+      if (existingUser.user) {
+        // Add existing user to organization
+        const { error } = await this.supabase!
+          .from('organization_users')
+          .insert({
+            user_id: existingUser.user.id,
+            organization_id: organizationId,
+            role,
+            status: 'active',
+            invited_by: invitedBy,
+            joined_at: new Date().toISOString()
+          })
 
-      let userId: string | undefined
-      let invitationToken: string | undefined
+        if (error) throw error
 
-      if (existingUser) {
-        userId = existingUser.id
+        return { success: true, userId: existingUser.user.id }
       } else {
-        // Generate invitation token for new users
-        invitationToken = crypto.randomUUID()
+        // Create invitation for new user
+        const invitationToken = crypto.randomUUID()
+        const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) // 7 days
+
+        const { error } = await this.supabase!
+          .from('organization_invitations')
+          .insert({
+            organization_id: organizationId,
+            email: userEmail,
+            role,
+            invitation_token: invitationToken,
+            expires_at: expiresAt.toISOString(),
+            invited_by: invitedBy
+          })
+
+        if (error) throw error
+
+        return { success: true, invitationToken }
       }
-
-      // Add to organization_users
-      const { error: insertError } = await this.supabase!
-        .from('organization_users')
-        .insert({
-          user_id: userId,
-          organization_id: orgId,
-          role,
-          status: existingUser ? 'active' : 'invited',
-          invitation_token: invitationToken,
-          invitation_expires_at: invitationToken ? 
-            new Date(Date.now() + 7 * 24 * 60 * 60 * 1000) : null, // 7 days
-          invited_by: invitedBy
-        })
-
-      if (insertError) throw insertError
-
-      // Update organization usage
-      await this.updateOrganizationUsage(orgId, 'users', 1)
-
-      // Clear cache
-      this.clearOrganizationCache(orgId)
-
-      return { success: true, userId, invitationToken }
     } catch (error) {
       console.error('Failed to add user to organization:', error)
       return { success: false }
@@ -661,9 +479,9 @@ class TenantManager {
    * Update user role in organization
    */
   async updateUserRole(
-    orgId: string,
+    organizationId: string,
     userId: string,
-    newRole: OrganizationUser['role'],
+    role: 'owner' | 'admin' | 'member' | 'viewer',
     updatedBy: string
   ): Promise<boolean> {
     try {
@@ -672,18 +490,18 @@ class TenantManager {
       const { error } = await this.supabase!
         .from('organization_users')
         .update({
-          role: newRole,
-          last_activity_at: new Date().toISOString()
+          role,
+          updated_at: new Date().toISOString(),
+          last_modified_by: updatedBy
         })
-        .eq('organization_id', orgId)
+        .eq('organization_id', organizationId)
         .eq('user_id', userId)
 
       if (error) throw error
 
-      // Log audit event
-      await this.logAuditEvent(orgId, updatedBy, 'update', 'user', userId, {
-        role: newRole
-      })
+      // Clear cache for this user
+      this.contextCache.delete(`${userId}:${organizationId}`)
+      this.contextCache.delete(`${userId}:default`)
 
       return true
     } catch (error) {
@@ -696,7 +514,7 @@ class TenantManager {
    * Remove user from organization
    */
   async removeUserFromOrganization(
-    orgId: string,
+    organizationId: string,
     userId: string,
     removedBy: string
   ): Promise<boolean> {
@@ -706,23 +524,18 @@ class TenantManager {
       const { error } = await this.supabase!
         .from('organization_users')
         .update({
-          status: 'deactivated',
+          status: 'inactive',
           deactivated_at: new Date().toISOString(),
           deactivated_by: removedBy
         })
-        .eq('organization_id', orgId)
+        .eq('organization_id', organizationId)
         .eq('user_id', userId)
 
       if (error) throw error
 
-      // Update organization usage
-      await this.updateOrganizationUsage(orgId, 'users', -1)
-
-      // Log audit event
-      await this.logAuditEvent(orgId, removedBy, 'delete', 'user', userId)
-
-      // Clear cache
-      this.clearOrganizationCache(orgId)
+      // Clear cache for this user
+      this.contextCache.delete(`${userId}:${organizationId}`)
+      this.contextCache.delete(`${userId}:default`)
 
       return true
     } catch (error) {
@@ -734,51 +547,35 @@ class TenantManager {
   /**
    * Get organization customizations
    */
-  async getOrganizationCustomizations(orgId: string): Promise<TenantCustomization | null> {
-    try {
-      if (!this.supabase) await this.initializeSupabase()
-
-      const { data, error } = await this.supabase!
-        .from('organization_customizations')
-        .select('*')
-        .eq('organization_id', orgId)
-        .single()
-
-      if (error) {
-        if (error.code === 'PGRST116') return null
-        throw error
-      }
-
-      return this.parseCustomization(data)
-    } catch (error) {
-      console.error('Failed to get organization customizations:', error)
-      return null
-    }
+  async getOrganizationCustomizations(organizationId: string): Promise<Record<string, unknown>> {
+    const org = await this.getOrganizationById(organizationId)
+    return org?.configuration || {}
   }
 
   /**
    * Update organization customizations
    */
   async updateOrganizationCustomizations(
-    orgId: string,
-    customizations: Partial<TenantCustomization>,
+    organizationId: string,
+    customizations: Record<string, unknown>,
     updatedBy: string
   ): Promise<boolean> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
       const { error } = await this.supabase!
-        .from('organization_customizations')
-        .upsert({
-          organization_id: orgId,
-          ...this.serializeCustomization(customizations),
-          updated_at: new Date().toISOString()
+        .from('enterprise_organizations')
+        .update({
+          configuration: customizations,
+          updated_at: new Date().toISOString(),
+          last_modified_by: updatedBy
         })
+        .eq('id', organizationId)
 
       if (error) throw error
 
-      // Log audit event
-      await this.logAuditEvent(orgId, updatedBy, 'update', 'customizations', orgId, customizations)
+      // Clear cache
+      this.contextCache.clear()
 
       return true
     } catch (error) {
@@ -788,194 +585,165 @@ class TenantManager {
   }
 
   /**
-   * Get organization usage information
+   * Get organization usage
    */
-  async getOrganizationUsage(orgId: string, month?: Date): Promise<TenantUsageInfo | null> {
+  async getOrganizationUsage(organizationId: string, month?: Date): Promise<Record<string, unknown>> {
+    const org = await this.getOrganizationById(organizationId)
+    if (!org) return {}
+
+    return {
+      users: { current: org.currentUsers, limit: org.userLimit },
+      properties: { current: org.currentProperties, limit: org.propertyLimit },
+      claims: { current: org.currentClaims, limit: org.claimLimit },
+      aiRequests: { current: org.currentAiRequests, limit: org.aiRequestLimit },
+      storage: { current: org.currentStorageGb, limit: org.storageLimitGb }
+    }
+  }
+
+  /**
+   * Check organization limit
+   */
+  async checkOrganizationLimit(organizationId: string, limitType: string): Promise<boolean> {
+    const org = await this.getOrganizationById(organizationId)
+    if (!org) return false
+
+    switch (limitType) {
+      case 'users':
+        return org.currentUsers < org.userLimit
+      case 'properties':
+        return org.currentProperties < org.propertyLimit
+      case 'claims':
+        return org.currentClaims < org.claimLimit
+      case 'ai_requests':
+        return org.currentAiRequests < org.aiRequestLimit
+      default:
+        return false
+    }
+  }
+
+  /**
+   * Execute tenant-scoped query
+   */
+  async executeTenantQuery<T = unknown>(query: TenantQuery): Promise<T[]>
+  async executeTenantQuery(organizationCode: string, tableName: string, query: unknown): Promise<{ data: unknown[] | null; error: string | null }>
+  async executeTenantQuery<T = unknown>(
+    queryOrOrgCode: TenantQuery | string,
+    tableName?: string,
+    query?: unknown
+  ): Promise<T[] | { data: unknown[] | null; error: string | null }> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const queryMonth = month || new Date()
-      const startOfMonth = new Date(queryMonth.getFullYear(), queryMonth.getMonth(), 1)
-      const endOfMonth = new Date(queryMonth.getFullYear(), queryMonth.getMonth() + 1, 0)
+      // Handle legacy signature
+      if (typeof queryOrOrgCode === 'string' && tableName) {
+        const organizationCode = queryOrOrgCode
+        const org = await this.getOrganizationByDomain(organizationCode)
+        if (!org) {
+          return { data: null, error: 'Organization not found' }
+        }
 
-      const { data, error } = await this.supabase!
-        .from('organization_billing')
-        .select('*')
-        .eq('organization_id', orgId)
-        .eq('billing_period_start', startOfMonth.toISOString().split('T')[0])
-        .single()
+        // Execute basic query - this would need more implementation based on the query structure
+        const { data, error } = await this.supabase!
+          .from(tableName)
+          .select('*')
+          .eq('organization_id', org.id)
 
-      if (error) {
-        if (error.code === 'PGRST116') return null
-        throw error
+        return { data: data || [], error: error?.message || null }
       }
 
-      return this.parseUsageInfo(data)
+      // Handle new signature
+      const tenantQuery = queryOrOrgCode as TenantQuery
+      let queryBuilder = this.supabase!
+        .from(tenantQuery.from)
+        .select(tenantQuery.select)
+
+      // Apply organization filter
+      queryBuilder = queryBuilder.eq('organization_id', tenantQuery.organizationId)
+
+      // Apply additional filters
+      if (tenantQuery.eq) {
+        queryBuilder = queryBuilder.eq(tenantQuery.eq.column, tenantQuery.eq.value)
+      }
+      if (tenantQuery.in) {
+        queryBuilder = queryBuilder.in(tenantQuery.in.column, tenantQuery.in.values)
+      }
+
+      const { data, error } = await queryBuilder
+
+      if (error) throw error
+
+      return data || []
     } catch (error) {
-      console.error('Failed to get organization usage:', error)
-      return null
+      console.error('Failed to execute tenant query:', error)
+      if (typeof queryOrOrgCode === 'string') {
+        return { data: null, error: error instanceof Error ? error.message : 'Unknown error' }
+      }
+      return []
     }
   }
 
   /**
-   * Check if organization is within limits
+   * Update organization usage metrics
    */
-  async checkOrganizationLimit(orgId: string, limitType: 'users' | 'properties' | 'claims' | 'ai_requests'): Promise<boolean> {
+  async updateUsageMetrics(organizationId: string, metrics: {
+    users?: number
+    properties?: number
+    claims?: number
+    aiRequests?: number
+    storage?: number
+  }): Promise<boolean> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase!.rpc('check_organization_limit', {
-        org_id: orgId,
-        limit_type: limitType
-      })
+      const updates: Record<string, unknown> = {}
+      if (metrics.users !== undefined) updates.current_users = metrics.users
+      if (metrics.properties !== undefined) updates.current_properties = metrics.properties
+      if (metrics.claims !== undefined) updates.current_claims = metrics.claims
+      if (metrics.aiRequests !== undefined) updates.current_ai_requests = metrics.aiRequests
+      if (metrics.storage !== undefined) updates.current_storage_gb = metrics.storage
+
+      if (Object.keys(updates).length === 0) return true
+
+      const { error } = await this.supabase!
+        .from('enterprise_organizations')
+        .update(updates)
+        .eq('id', organizationId)
 
       if (error) throw error
 
-      return data as boolean
-    } catch (error) {
-      console.error('Failed to check organization limit:', error)
-      return false
-    }
-  }
-
-  /**
-   * Update organization usage counters
-   */
-  async updateOrganizationUsage(
-    orgId: string,
-    usageType: 'users' | 'properties' | 'claims' | 'ai_requests',
-    increment: number = 1
-  ): Promise<boolean> {
-    try {
-      if (!this.supabase) await this.initializeSupabase()
-
-      const { error } = await this.supabase!.rpc('update_organization_usage', {
-        org_id: orgId,
-        usage_type: usageType,
-        increment_by: increment
-      })
-
-      if (error) throw error
-
-      // Clear organization cache to force refresh
-      this.clearOrganizationCache(orgId)
+      // Clear cache for this organization
+      this.contextCache.clear()
 
       return true
     } catch (error) {
-      console.error('Failed to update organization usage:', error)
+      console.error(`Failed to update usage metrics for ${organizationId}:`, error)
       return false
     }
   }
 
   /**
-   * Check if user has specific permission
+   * Get organization users
    */
-  async userHasPermission(userId: string, permission: string): Promise<boolean> {
+  async getOrganizationUsers(organizationId: string): Promise<OrganizationUser[]> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase!.rpc('user_has_permission', {
-        permission_name: permission
-      })
+      const { data, error } = await this.supabase!
+        .from('organization_users')
+        .select('*')
+        .eq('organization_id', organizationId)
+        .order('joined_at', { ascending: false })
 
       if (error) throw error
 
-      return data as boolean
+      return (data || []).map((row: OrganizationUserRow) => this.parseOrganizationUser(row))
     } catch (error) {
-      console.error('Failed to check user permission:', error)
-      return false
+      console.error(`Failed to get users for organization ${organizationId}:`, error)
+      return []
     }
   }
 
-  /**
-   * Get tenant-specific database schema name
-   */
-  getTenantSchema(orgCode: string): string {
-    return `org_${orgCode}`
-  }
-
-  /**
-   * Execute query in tenant context
-   */
-  async executeTenantQuery(
-    orgCode: string,
-    tableName: string,
-    query: TenantQuery
-  ): Promise<{ data: unknown; error: string | null }> {
-    try {
-      if (!this.supabase) await this.initializeSupabase()
-
-      const schemaName = this.getTenantSchema(orgCode)
-      const fullTableName = `${schemaName}.${tableName}`
-
-      // Execute query with tenant-specific table
-      const result = await this.supabase!
-        .from(fullTableName)
-        .select(query.select || '*')
-        .match(query.match || {})
-        .order(query.order?.column || 'created_at', { 
-          ascending: query.order?.ascending || false 
-        })
-        .limit(query.limit || 1000)
-
-      return { data: result.data, error: result.error?.message || null }
-
-    } catch (error) {
-      console.error(`Failed to execute tenant query for ${orgCode}:`, error)
-      return { data: null, error: (error as Error).message }
-    }
-  }
-
-  /**
-   * Log audit event
-   */
-  private async logAuditEvent(
-    orgId: string,
-    userId: string,
-    action: string,
-    resourceType: string,
-    resourceId: string,
-    changes?: Record<string, unknown>
-  ): Promise<void> {
-    try {
-      if (!this.supabase) await this.initializeSupabase()
-
-      await this.supabase!
-        .from('organization_audit_log')
-        .insert({
-          organization_id: orgId,
-          user_id: userId,
-          action,
-          resource_type: resourceType,
-          resource_id: resourceId,
-          new_values: changes,
-          timestamp: new Date().toISOString()
-        })
-    } catch (error) {
-      console.error('Failed to log audit event:', error)
-    }
-  }
-
-  /**
-   * Clear organization cache
-   */
-  private clearOrganizationCache(orgId: string): void {
-    // Clear all cache entries related to this organization
-    for (const key of this.organizationCache.keys()) {
-      if (key.includes(orgId)) {
-        this.organizationCache.delete(key)
-      }
-    }
-    
-    // Clear user organization mappings
-    for (const [userId, cachedOrgId] of this.userOrgCache.entries()) {
-      if (cachedOrgId === orgId) {
-        this.userOrgCache.delete(userId)
-      }
-    }
-  }
-
-  // Private parsing methods
+  // Private helper methods
   private parseOrganization(data: OrganizationRow): EnterpriseOrganization {
     return {
       id: data.id,
@@ -986,6 +754,7 @@ class TenantManager {
       subscriptionTier: data.subscription_tier,
       billingCycle: data.billing_cycle,
       subscriptionStatus: data.subscription_status,
+      
       userLimit: data.user_limit,
       propertyLimit: data.property_limit,
       claimLimit: data.claim_limit,
@@ -996,36 +765,37 @@ class TenantManager {
       currentClaims: data.current_claims,
       currentAiRequests: data.current_ai_requests,
       currentStorageGb: data.current_storage_gb,
+      
       configuration: data.configuration || {},
       featureFlags: data.feature_flags || {},
       branding: data.branding || {},
       integrations: data.integrations || {},
       allowedStates: data.allowed_states || [],
-      primaryState: data.primary_state || '',
-      primaryContactEmail: data.primary_contact_email || '',
-      billingEmail: data.billing_email,
-      technicalContactEmail: data.technical_contact_email,
-      phone: data.phone,
+      primaryState: data.primary_state,
       address: data.address,
-      ssoEnabled: data.sso_enabled || false,
+      phone: data.phone,
+      businessLicenseNumber: data.business_license_number,
+      insuranceLicenseNumber: data.insurance_license_number,
+      taxId: data.tax_id,
+      
+      ssoEnabled: data.sso_enabled,
       ssoProvider: data.sso_provider,
       ssoConfiguration: data.sso_configuration,
-      require2fa: data.require_2fa || false,
+      require2fa: data.require_2fa,
       ipWhitelist: data.ip_whitelist,
-      dataRegion: data.data_region || '',
-      complianceRequirements: data.compliance_requirements || [],
-      dataRetentionPolicy: data.data_retention_policy || {
-        claimsRetentionDays: 2555, // 7 years
-        documentsRetentionDays: 2555,
-        auditLogsRetentionDays: 365,
-        personalDataRetentionDays: 1095, // 3 years
-        backupRetentionDays: 90
-      },
+      dataRegion: data.data_region,
+      complianceRequirements: data.compliance_requirements,
+      dataRetentionPolicy: data.data_retention_policy,
+      
+      isActive: data.is_active,
+      trialEndsAt: data.trial_ends_at ? new Date(data.trial_ends_at) : undefined,
+      subscriptionId: data.subscription_id,
+      stripeCustomerId: data.stripe_customer_id,
+      billingEmail: data.billing_email,
+      primaryContactId: data.primary_contact_id,
+      
       createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
-      createdBy: data.created_by || '',
-      lastModifiedBy: data.last_modified_by,
-      notes: data.notes
+      updatedAt: new Date(data.updated_at)
     }
   }
 
@@ -1035,7 +805,7 @@ class TenantManager {
       userId: data.user_id,
       organizationId: data.organization_id,
       role: data.role,
-      permissions: (data.permissions || []).reduce((acc, perm) => ({ ...acc, [perm]: true }), {}),
+      permissions: this.buildPermissions(data.role, data.permissions || []),
       status: data.status,
       invitationToken: data.invitation_token,
       invitationExpiresAt: data.invitation_expires_at ? new Date(data.invitation_expires_at) : undefined,
@@ -1049,136 +819,57 @@ class TenantManager {
     }
   }
 
-  private parseCustomization(data: TenantCustomizationRow): TenantCustomization {
-    return {
-      id: data.id,
-      organizationId: data.organization_id,
-      theme: data.theme || {},
-      logoUrl: data.logo_url,
-      faviconUrl: data.favicon_url,
-      customCss: data.custom_css,
-      enabledFeatures: data.enabled_features || [],
-      disabledFeatures: data.disabled_features || [],
-      featureLimits: data.feature_limits || {},
-      claimWorkflow: data.claim_workflow || {
-        stages: [],
-        notifications: {
-          stageChange: true,
-          approval: true,
-          completion: true
-        }
-      },
-      approvalWorkflows: data.approval_workflows || {
-        claimApproval: {
-          threshold: 1000,
-          approvers: [],
-          autoApprove: false
-        },
-        documentApproval: {
-          required: false,
-          approvers: []
-        }
-      },
-      notificationPreferences: data.notification_preferences || {
-        email: { enabled: true, frequency: 'immediate' },
-        sms: { enabled: false, urgentOnly: true },
-        push: { enabled: true, categories: [] }
-      },
-      webhookUrls: data.webhook_urls || {},
-      apiKeys: data.api_keys || {},
-      externalIntegrations: data.external_integrations || {},
-      securityPolicies: data.security_policies || {
-        passwordPolicy: {
-          minLength: 8,
-          requireUppercase: true,
-          requireNumbers: true,
-          requireSymbols: false
-        },
-        sessionTimeout: 3600,
-        maxFailedAttempts: 5,
-        lockoutDuration: 900
-      },
-      dataExportSettings: data.data_export_settings || {
-        allowUserExport: true,
-        exportFormats: ['csv', 'json'],
-        retentionAfterExport: 30,
-        approvalRequired: false
-      },
-      auditSettings: data.audit_settings || {
-        enabledEvents: ['login', 'logout', 'data_access', 'data_modification'],
-        retentionDays: 365,
-        realTimeNotifications: false
-      },
-      createdAt: new Date(data.created_at),
-      updatedAt: new Date(data.updated_at),
-      createdBy: data.created_by || ''
-    }
-  }
+  private buildPermissions(role: string, customPermissions: string[]): Record<string, boolean> {
+    const permissions: Record<string, boolean> = {}
 
-  private parseUsageInfo(data: TenantUsageInfoRow): TenantUsageInfo {
-    return {
-      organizationId: data.organization_id,
-      billingPeriodStart: new Date(data.billing_period_start),
-      billingPeriodEnd: new Date(data.billing_period_end),
-      usersCount: data.users_count || 0,
-      propertiesCount: data.properties_count || 0,
-      claimsCount: data.claims_count || 0,
-      aiRequestsCount: data.ai_requests_count || 0,
-      storageGb: data.storage_gb || 0,
-      baseCost: data.base_cost || 0,
-      overageCosts: data.overage_costs ? { total: data.overage_costs } : {},
-      totalCost: data.total_cost || 0,
-      invoiceStatus: data.invoice_status,
-      invoiceNumber: data.invoice_number,
-      invoiceDate: data.invoice_date ? new Date(data.invoice_date) : undefined,
-      dueDate: data.due_date ? new Date(data.due_date) : undefined,
-      paidDate: data.paid_date ? new Date(data.paid_date) : undefined
+    // Base permissions by role
+    const rolePermissions: Record<string, string[]> = {
+      owner: [
+        'organization.read', 'organization.update', 'organization.delete',
+        'users.read', 'users.create', 'users.update', 'users.delete', 'users.invite',
+        'properties.read', 'properties.create', 'properties.update', 'properties.delete',
+        'claims.read', 'claims.create', 'claims.update', 'claims.delete',
+        'ai.read', 'ai.create', 'ai.update',
+        'billing.read', 'billing.update', 'billing.view',
+        'settings.read', 'settings.update',
+        'audit.read', 'organization.customize'
+      ],
+      admin: [
+        'organization.read',
+        'users.read', 'users.create', 'users.update', 'users.invite',
+        'properties.read', 'properties.create', 'properties.update', 'properties.delete',
+        'claims.read', 'claims.create', 'claims.update', 'claims.delete',
+        'ai.read', 'ai.create', 'ai.update',
+        'settings.read', 'settings.update'
+      ],
+      member: [
+        'organization.read',
+        'properties.read', 'properties.create', 'properties.update',
+        'claims.read', 'claims.create', 'claims.update',
+        'ai.read', 'ai.create'
+      ],
+      viewer: [
+        'organization.read',
+        'properties.read',
+        'claims.read',
+        'ai.read'
+      ]
     }
-  }
 
-  private serializeCustomization(customizations: Partial<TenantCustomization>): Partial<TenantCustomizationRow> {
-    return {
-      theme: customizations.theme,
-      logo_url: customizations.logoUrl,
-      favicon_url: customizations.faviconUrl,
-      custom_css: customizations.customCss,
-      enabled_features: customizations.enabledFeatures,
-      disabled_features: customizations.disabledFeatures,
-      feature_limits: customizations.featureLimits,
-      claim_workflow: customizations.claimWorkflow,
-      approval_workflows: customizations.approvalWorkflows,
-      notification_preferences: customizations.notificationPreferences,
-      webhook_urls: customizations.webhookUrls,
-      api_keys: customizations.apiKeys,
-      external_integrations: customizations.externalIntegrations,
-      security_policies: customizations.securityPolicies,
-      data_export_settings: customizations.dataExportSettings,
-      audit_settings: customizations.auditSettings
-    }
+    // Set role-based permissions
+    const basePermissions = rolePermissions[role] || []
+    basePermissions.forEach(permission => {
+      permissions[permission] = true
+    })
+
+    // Apply custom permissions
+    customPermissions.forEach(permission => {
+      permissions[permission] = true
+    })
+
+    return permissions
   }
 }
 
 // Export singleton instance
 export const tenantManager = new TenantManager()
-
-export type {
-  EnterpriseOrganization,
-  OrganizationUser,
-  TenantCustomization,
-  TenantUsageInfo,
-  OrganizationConfiguration,
-  OrganizationBranding,
-  OrganizationIntegrations,
-  OrganizationAddress,
-  SSOConfiguration,
-  DataRetentionPolicy,
-  ClaimWorkflow,
-  ApprovalWorkflows,
-  NotificationPreferences,
-  SecurityPolicies,
-  DataExportSettings,
-  AuditSettings,
-  OrganizationTheme,
-  ContactInfo,
-  TenantQuery
-}

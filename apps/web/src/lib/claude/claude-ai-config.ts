@@ -354,18 +354,4 @@ export function calculateTokenCost(tokens: number, model: string): number {
   return config ? tokens * config.costPerToken : 0
 }
 
-// Export all configurations (DEFAULT_LLM_CONFIG already exported above)
-export {
-  ANTHROPIC_CONFIG,
-  AI_MODELS,
-  AI_FEATURE_FLAGS,
-  EMBEDDING_CONFIG,
-  SEMANTIC_SEARCH_CONFIG,
-  NL_GENERATION_CONFIG,
-  BOTTLENECK_CONFIG,
-  AI_PROMPTS,
-  AI_QUOTAS,
-  AI_ERROR_CONFIG,
-  AI_METRICS_CONFIG,
-  AI_SECURITY_CONFIG
-}
+// All configurations are already exported above with 'export const'

@@ -18,6 +18,66 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { enrichProperty } from '@/actions/comprehensive-property-enrichment'
 
+// Type definitions for property enrichment
+interface RiskFactor {
+  score: number
+  level: 'low' | 'medium' | 'high'
+  description: string
+}
+
+interface ComparableSale {
+  address: string
+  salePrice: number
+  pricePerSqft: number
+  sqft: number
+  distance: number
+}
+
+interface EnrichedProperty {
+  parcelData: {
+    phy_addr1: string
+    phy_city: string
+    lnd_val?: number
+    imp_val?: number
+  }
+  dataQualityScore: number
+  riskProfile: {
+    overallRiskScore: number
+    [key: string]: RiskFactor | number
+  }
+  marketAnalysis: {
+    medianPrice: number
+    pricePerSqft: number
+    appreciationRate: number
+    daysOnMarket: number
+    comparableSales: ComparableSale[]
+  }
+  investmentMetrics: {
+    estimatedRentalYield: number
+    capitalizationRate: number
+    renovationROI: number
+  }
+  insuranceRecommendations: {
+    estimatedPremium: {
+      homeowners: number
+      flood: number
+      windstorm: number
+    }
+    discountOpportunities: string[]
+  }
+  aiInsights: {
+    investmentRecommendation: string
+    confidenceScore: number
+    strengthsWeaknessesOpportunitiesThreats: {
+      strengths: string[]
+      weaknesses: string[]
+      opportunities: string[]
+      threats: string[]
+    }
+    actionItems: string[]
+  }
+}
+
 interface PropertyEnrichmentUIProps {
   parcelId: string
   onEnrichmentComplete?: (result: EnrichedProperty) => void
@@ -165,7 +225,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                 Property Analysis Complete
               </h2>
               <p className="text-gray-300">
-                {enrichedData.parcelData.phy_addr1}, {enrichedData.parcelData.phy_city}
+                {enrichedData.parcelData.address}
               </p>
               <div className="flex items-center gap-4 mt-4">
                 <Badge variant="secondary">
@@ -181,7 +241,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-white">
-                {formatCurrency((enrichedData.parcelData.lnd_val || 0) + (enrichedData.parcelData.imp_val || 0))}
+                {formatCurrency(enrichedData.parcelData.totalValue)}
               </div>
               <div className="text-gray-400">Property Value</div>
             </div>

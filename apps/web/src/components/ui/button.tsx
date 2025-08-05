@@ -2,10 +2,10 @@
  * @fileMetadata
  * @purpose "Enhanced button component with loading states, icons, and accessibility features"
  * @owner frontend-team
- * @dependencies ["react", "class-variance-authority", "./utils"]
+ * @dependencies ["react", "class-variance-authority", "@/lib/utils"]
  * @exports ["Button", "buttonVariants"]
  * @lastModifiedBy Claude AI Assistant
- * @lastModifiedDate 2025-08-04T22:00:00Z
+ * @lastModifiedDate 2025-08-05T20:00:00Z
  * @complexity medium
  * @tags ["component", "ui", "button", "loading", "icons", "accessibility"]
  * @status stable
@@ -121,9 +121,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     return React.createElement(
       Component,
       {
-        type,
+        type: asChild ? undefined : type,
         className: cn(buttonVariants({ variant, size, className })),
-        disabled: isDisabled,
+        disabled: asChild ? undefined : isDisabled,
         'aria-disabled': isDisabled,
         'aria-busy': loading,
         ref,
@@ -148,3 +148,4 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }
+

@@ -221,7 +221,7 @@ export default function SituationRoomPage() {
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setSelectedView(tab.id as typeof selectedView)}
+              onClick={() => setSelectedView(tab.id as 'overview' | 'threats' | 'intelligence' | 'community' | 'emergency')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 selectedView === tab.id 
                   ? 'liquid-glass-premium text-white' 
@@ -718,12 +718,12 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {data.activeIncidents.slice(0, 3).map((incident) => (
+              {data.activeIncidents.slice(0, 3).map((incident: any) => (
                 <div key={incident.id} className="flex items-center justify-between p-3 bg-black/20 rounded-lg">
                   <div>
                     <p className="text-white font-medium">{incident.description}</p>
                     <p className="text-sm text-gray-400">
-                      {incident.location.address} • {new Date(incident.timestamp).toLocaleString()}
+                      {incident.location?.address || 'Unknown location'} • {incident.timestamp ? new Date(incident.timestamp).toLocaleString() : 'Unknown time'}
                     </p>
                   </div>
                   <Badge variant={incident.verified ? 'default' : 'secondary'}>

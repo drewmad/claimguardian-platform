@@ -42,7 +42,7 @@ const mockUser = {
 }
 
 // Create properly typed mock with backward compatibility
-let mockSupabase: MockSupabaseClient & { _mockQuery: unknown }
+let mockSupabase: MockSupabaseClient & { _mockQuery: any }
 
 describe('Claims Server Actions', () => {
   beforeEach(() => {
@@ -232,7 +232,8 @@ describe('Claims Server Actions', () => {
       }
 
       // Mock storage upload
-      const mockUpload = jest.fn().mockResolvedValue({
+      const mockUpload = jest.fn()
+      mockUpload.mockResolvedValue({
         data: { path: 'claim-456/repair_estimate/123-test.pdf' },
         error: null
       })
@@ -316,7 +317,9 @@ describe('Claims Server Actions', () => {
   describe('deleteClaim', () => {
     it('should delete claim successfully', async () => {
       // Create a separate chainable object
-      const chainableEq = { eq: jest.fn().mockResolvedValue({ error: null }) }
+      const mockEqResult = jest.fn()
+      mockEqResult.mockResolvedValue({ error: null })
+      const chainableEq = { eq: mockEqResult }
       const mockEq = jest.fn().mockReturnValue(chainableEq)
       
       const mockDelete = jest.fn().mockReturnValue({ eq: mockEq })

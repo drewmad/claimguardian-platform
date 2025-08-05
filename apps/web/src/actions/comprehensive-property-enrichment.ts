@@ -224,18 +224,29 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
 async function analyzeMarket(parcel: ParcelData): Promise<MarketAnalysis> {
   const supabase = await createClient()
   
-  // Find comparable sales in the area
+  // First get the raw parcel data using the parcel ID
+  const { data: rawParcel } = await supabase
+    .from('florida_parcels')
+    .select('*')
+    .eq('parcel_id', parcel.parcelId)
+    .single()
+  
+  if (!rawParcel) {
+    throw new Error('Raw parcel data not found')
+  }
+  
+  // Find comparable sales in the area using raw database fields
   const { data: comparables } = await supabase
     .from('florida_parcels')
     .select('*')
-    .eq('county_fips', parcel.county_fips)
-    .ilike('phy_city', parcel.phy_city)
-    .gte('tot_lvg_area', Math.max(0, Number(parcel.tot_lvg_area || 0) * 0.8))
-    .lte('tot_lvg_area', Math.max(0, Number(parcel.tot_lvg_area || 0) * 1.2))
+    .eq('county_fips', rawParcel.county_fips)
+    .ilike('phy_city', rawParcel.phy_city)
+    .gte('tot_lvg_area', Math.max(0, Number(rawParcel.tot_lvg_area || 0) * 0.8))
+    .lte('tot_lvg_area', Math.max(0, Number(rawParcel.tot_lvg_area || 0) * 1.2))
     .limit(20)
   
   const comparableSales: ComparableSale[] = (comparables || []).map(comp => ({
-    address: `${comp.phy_addr1}, ${comp.phy_city}`,
+    address: comp.phy_addr1 ? `${comp.phy_addr1}, ${comp.phy_city}` : parcel.address,
     salePrice: (comp.lnd_val || 0) + (comp.imp_val || 0),
     saleDate: '2024-01-01', // Mock date
     sqft: comp.tot_lvg_area || 0,
@@ -290,7 +301,7 @@ async function assessRisks(parcel: ParcelData): Promise<RiskProfile> {
  * Generate insurance recommendations
  */
 async function generateInsuranceRecommendations(parcel: ParcelData): Promise<InsuranceRecommendations> {
-  const totalValue = (parcel.lnd_val || 0) + (parcel.imp_val || 0)
+  const totalValue = parcel.totalValue || 0
   const baseRate = 0.008 // 0.8% of property value
   
   return {
@@ -335,7 +346,7 @@ async function analyzeNeighborhood(parcel: ParcelData): Promise<NeighborhoodAnal
       hospitals: 2,
       shoppingCenters: 3,
       parks: 5,
-      beachAccess: parcel.phy_city?.toLowerCase().includes('beach') || false
+      beachAccess: parcel.address?.toLowerCase().includes('beach') || false
     },
     transportation: {
       walkScore: 55,
@@ -350,7 +361,7 @@ async function analyzeNeighborhood(parcel: ParcelData): Promise<NeighborhoodAnal
  * Calculate investment metrics
  */
 async function calculateInvestmentMetrics(parcel: ParcelData): Promise<InvestmentMetrics> {
-  const totalValue = (parcel.lnd_val || 0) + (parcel.imp_val || 0)
+  const totalValue = parcel.totalValue || 0
   const estimatedRent = totalValue * 0.008 // 0.8% monthly rent to value ratio
   
   return {
@@ -419,7 +430,7 @@ async function generateAIInsights(data: {
   
   // Analyze weaknesses
   if (riskProfile.floodRisk.score > 0.7) weaknesses.push('High flood risk exposure')
-  if (parcelData.yr_blt && parcelData.yr_blt < 1980) weaknesses.push('Older construction may need updates')
+  if (parcelData.yearBuilt && parcelData.yearBuilt < 1980) weaknesses.push('Older construction may need updates')
   
   // Identify opportunities
   if (marketAnalysis.marketTrend === 'rising') opportunities.push('Market appreciation trend')
@@ -462,7 +473,14 @@ async function generateAIInsights(data: {
 // Risk assessment helper functions
 function assessFloodRisk(parcel: ParcelData): RiskFactor {
   const coastalCounties = ['12015', '12071', '12081', '12103', '12057']
-  const isCoastal = coastalCounties.includes(parcel.county_fips || '')
+  // Extract county FIPS from county name or use a lookup if available
+  const isCoastal = parcel.county && (
+    parcel.county.toLowerCase().includes('charlotte') ||
+    parcel.county.toLowerCase().includes('collier') ||
+    parcel.county.toLowerCase().includes('lee') ||
+    parcel.county.toLowerCase().includes('manatee') ||
+    parcel.county.toLowerCase().includes('monroe')
+  )
   
   const score = isCoastal ? 0.7 : 0.3
   const level: RiskFactor['level'] = score > 0.6 ? 'high' : score > 0.4 ? 'moderate' : 'low'
@@ -539,11 +557,11 @@ function calculateDataQualityScore(
   
   // Parcel data completeness
   maxScore += 5
-  if (parcel.phy_addr1) score += 1
-  if (parcel.yr_blt || parcel.act_yr_blt) score += 1
-  if (parcel.tot_lvg_area) score += 1
-  if (parcel.lnd_val && parcel.imp_val) score += 1
-  if (parcel.no_bdrm && parcel.no_bath) score += 1
+  if (parcel.address) score += 1
+  if (parcel.yearBuilt) score += 1
+  if (parcel.squareFeet) score += 1
+  if (parcel.landValue && parcel.buildingValue) score += 1
+  if (parcel.totalValue > 0) score += 1
   
   // Market data quality
   maxScore += 3

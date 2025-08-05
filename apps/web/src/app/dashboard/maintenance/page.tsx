@@ -12,7 +12,7 @@
 
 import { Calendar, Plus, Clock, CheckCircle, AlertCircle, XCircle, Wrench, DollarSign, FileText, User, ChevronRight, Filter, Download, Bell, BarChart, Home, Shield, Edit, Wind, Droplets, Zap, Settings } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import React, { useState } from 'react'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -265,7 +265,7 @@ function MaintenanceDashboardContent() {
                 return (
                   <Card key={category.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
                     <CardContent className="p-4 text-center">
-                      {Icon && <Icon className={`w-8 h-8 mx-auto mb-2 ${category.color}`} />}
+                      {category.icon && React.createElement(category.icon as React.ComponentType<{ className?: string }>, { className: `w-8 h-8 mx-auto mb-2 ${category.color}` })}
                       <p className="text-sm font-medium text-white">{category.name}</p>
                       <p className="text-xs text-gray-400 mt-1">{category.taskCount} tasks</p>
                     </CardContent>

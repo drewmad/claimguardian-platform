@@ -25,7 +25,7 @@ export interface CreateOrganizationParams {
 
 export interface UpdateOrganizationParams {
   organizationId: string
-  updates: Partial<EnterpriseOrganization>
+  updates: Partial<EnterpriseOrganization> & Record<string, any>
 }
 
 export interface InviteUserParams {
@@ -131,7 +131,7 @@ export async function updateOrganization({
     }
 
     // Check if user has permission to update this organization
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'organization.update')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'organization.update')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -144,9 +144,8 @@ export async function updateOrganization({
 
     if (updates.organizationName) dbUpdates.organization_name = updates.organizationName
     if (updates.domain) dbUpdates.domain = updates.domain
-    if (updates.primaryContactEmail) dbUpdates.primary_contact_email = updates.primaryContactEmail
+    if (updates.primaryContactId) dbUpdates.primary_contact_id = updates.primaryContactId
     if (updates.billingEmail) dbUpdates.billing_email = updates.billingEmail
-    if (updates.technicalContactEmail) dbUpdates.technical_contact_email = updates.technicalContactEmail
     if (updates.phone) dbUpdates.phone = updates.phone
     if (updates.address) dbUpdates.address = updates.address
     if (updates.subscriptionTier) dbUpdates.subscription_tier = updates.subscriptionTier
@@ -156,7 +155,6 @@ export async function updateOrganization({
     if (updates.claimLimit) dbUpdates.claim_limit = updates.claimLimit
     if (updates.aiRequestLimit) dbUpdates.ai_request_limit = updates.aiRequestLimit
     if (updates.allowedStates) dbUpdates.allowed_states = updates.allowedStates
-    if (updates.primaryState) dbUpdates.primary_state = updates.primaryState
     if (updates.ssoEnabled !== undefined) dbUpdates.sso_enabled = updates.ssoEnabled
     if (updates.ssoProvider) dbUpdates.sso_provider = updates.ssoProvider
     if (updates.ssoConfiguration) dbUpdates.sso_configuration = updates.ssoConfiguration
@@ -218,7 +216,8 @@ export async function getCurrentUserOrganization() {
       return { data: null, error: 'Unauthorized' }
     }
 
-    const organization = await tenantManager.getUserOrganization(user.id)
+    const context = await tenantManager.getTenantContext(user.id)
+    const organization = context ? context.organization : null
     return { data: organization, error: null }
   } catch (error) {
     console.error('Failed to get user organization:', error)

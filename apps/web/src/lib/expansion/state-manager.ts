@@ -15,15 +15,15 @@ interface StateConfigurationRow {
   state_code: string
   state_name: string
   is_active: boolean
-  insurance_regulations: Record<string, any>
-  data_sources: Record<string, any>
-  market_data: Record<string, any>
-  operations: Record<string, any>
-  features: Record<string, any>
+  insurance_regulations: InsuranceRegulations
+  data_sources: DataSources
+  market_data: MarketData
+  operations: Operations
+  features: Features
   deployment_status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
   launch_date?: string
   migration_complete: boolean
-  data_load_status: Record<string, any>
+  data_load_status: DataLoadStatus
   created_at: string
   updated_at: string
   created_by: string
@@ -37,26 +37,94 @@ interface ExpansionPlanRow {
   states: string[]
   timeline_start: string
   timeline_end: string
-  milestones: Array<{
-    name: string
-    date: string
-    dependencies: string[]
-    status: 'pending' | 'in_progress' | 'completed' | 'blocked'
-  }>
-  resources: {
-    engineeringEffort: number
-    dataAcquisitionCost: number
-    complianceCost: number
-    operationalCost: number
-  }
-  risks: Array<{
-    risk: string
-    impact: 'low' | 'medium' | 'high'
-    probability: 'low' | 'medium' | 'high'
-    mitigation: string
-  }>
+  milestones: Milestone[]
+  resources: Resources
+  risks: Risk[]
   created_at: string
   updated_at: string
+}
+
+// Strongly typed configuration interfaces
+interface InsuranceRegulations {
+  requiresLicense: boolean
+  regulatoryBody: string
+  complianceRequirements: string[]
+  fillingDeadlines: Record<string, number> // days
+}
+
+interface DataSources {
+  parcelData: {
+    provider: string
+    apiEndpoint?: string
+    updateFrequency: 'daily' | 'weekly' | 'monthly'
+    dataFormat: 'api' | 'ftp' | 'manual'
+    cost: number // per record or monthly
+  }
+  courthouseData: {
+    available: boolean
+    provider?: string
+    integrationMethod: 'api' | 'scraping' | 'manual'
+  }
+  weatherData: {
+    provider: 'noaa' | 'weatherapi' | 'accuweather'
+    regionCode: string
+  }
+}
+
+interface MarketData {
+  majorCarriers: string[]
+  averagePremium: number
+  marketPenetration: number
+  catastropheRisk: string[] // hurricane, tornado, earthquake, flood, wildfire
+  seasonalPatterns: Record<string, number> // month -> claim volume multiplier
+}
+
+interface Operations {
+  timezone: string
+  businessHours: {
+    start: string // HH:mm
+    end: string   // HH:mm
+    timezone: string
+  }
+  supportLanguages: string[]
+  localOffice?: {
+    address: string
+    phone: string
+    email: string
+  }
+}
+
+interface Features {
+  enabledFeatures: string[]
+  disabledFeatures: string[]
+  customizations: Record<string, unknown>
+}
+
+interface DataLoadStatus {
+  parcels: 'pending' | 'loading' | 'complete'
+  historical: 'pending' | 'loading' | 'complete'
+  integrations: 'pending' | 'testing' | 'complete'
+}
+
+interface Milestone {
+  name: string
+  date: string
+  dependencies: string[]
+  status: 'pending' | 'in_progress' | 'completed' | 'blocked'
+}
+
+interface Risk {
+  risk: string
+  impact: 'low' | 'medium' | 'high'
+  probability: 'low' | 'medium' | 'high'
+  mitigation: string
+}
+
+interface Resources {
+  engineeringEffort: number // person-weeks
+  dataAcquisitionCost: number
+  complianceCost: number
+  operationalCost: number
 }
 
 export interface StateConfiguration {
@@ -65,75 +133,26 @@ export interface StateConfiguration {
   isActive: boolean
   
   // Legal and regulatory configuration
-  insuranceRegulations: {
-    requiresLicense: boolean
-    regulatoryBody: string
-    complianceRequirements: string[]
-    fillingDeadlines: Record<string, number> // days
-  }
+  insuranceRegulations: InsuranceRegulations
   
   // Data sources and integrations
-  dataSources: {
-    parcelData: {
-      provider: string
-      apiEndpoint?: string
-      updateFrequency: 'daily' | 'weekly' | 'monthly'
-      dataFormat: 'api' | 'ftp' | 'manual'
-      cost: number // per record or monthly
-    }
-    courthouseData: {
-      available: boolean
-      provider?: string
-      integrationMethod: 'api' | 'scraping' | 'manual'
-    }
-    weatherData: {
-      provider: 'noaa' | 'weatherapi' | 'accuweather'
-      regionCode: string
-    }
-  }
+  dataSources: DataSources
   
   // Insurance market characteristics
-  marketData: {
-    majorCarriers: string[]
-    averagePremium: number
-    marketPenetration: number
-    catastropheRisk: string[] // hurricane, tornado, earthquake, flood, wildfire
-    seasonalPatterns: Record<string, number> // month -> claim volume multiplier
-  }
+  marketData: MarketData
   
   // Operational configuration
-  operations: {
-    timezone: string
-    businessHours: {
-      start: string // HH:mm
-      end: string   // HH:mm
-      timezone: string
-    }
-    supportLanguages: string[]
-    localOffice?: {
-      address: string
-      phone: string
-      email: string
-    }
-  }
+  operations: Operations
   
   // Feature flags and customizations
-  features: {
-    enabledFeatures: string[]
-    disabledFeatures: string[]
-    customizations: Record<string, any>
-  }
+  features: Features
   
   // Deployment configuration
   deployment: {
     status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
     launchDate?: Date
     migrationComplete: boolean
-    dataLoadStatus: {
-      parcels: 'pending' | 'loading' | 'complete'
-      historical: 'pending' | 'loading' | 'complete'
-      integrations: 'pending' | 'testing' | 'complete'
-    }
+    dataLoadStatus: DataLoadStatus
   }
   
   metadata: {
@@ -158,18 +177,42 @@ export interface StateExpansionPlan {
       status: 'pending' | 'in_progress' | 'completed' | 'blocked'
     }>
   }
-  resources: {
-    engineeringEffort: number // person-weeks
-    dataAcquisitionCost: number
-    complianceCost: number
-    operationalCost: number
-  }
-  risks: Array<{
-    risk: string
-    impact: 'low' | 'medium' | 'high'
-    probability: 'low' | 'medium' | 'high'
-    mitigation: string
-  }>
+  resources: Resources
+  risks: Risk[]
+}
+
+// Type guards for better runtime safety
+function isValidInsuranceRegulations(obj: unknown): obj is InsuranceRegulations {
+  if (typeof obj !== 'object' || obj === null) return false
+  const reg = obj as InsuranceRegulations
+  return (
+    typeof reg.requiresLicense === 'boolean' &&
+    typeof reg.regulatoryBody === 'string' &&
+    Array.isArray(reg.complianceRequirements) &&
+    typeof reg.fillingDeadlines === 'object'
+  )
+}
+
+function isValidDataSources(obj: unknown): obj is DataSources {
+  if (typeof obj !== 'object' || obj === null) return false
+  const ds = obj as DataSources
+  return (
+    typeof ds.parcelData === 'object' &&
+    typeof ds.courthouseData === 'object' &&
+    typeof ds.weatherData === 'object'
+  )
+}
+
+function isValidMarketData(obj: unknown): obj is MarketData {
+  if (typeof obj !== 'object' || obj === null) return false
+  const md = obj as MarketData
+  return (
+    Array.isArray(md.majorCarriers) &&
+    typeof md.averagePremium === 'number' &&
+    typeof md.marketPenetration === 'number' &&
+    Array.isArray(md.catastropheRisk) &&
+    typeof md.seasonalPatterns === 'object'
+  )
 }
 
 class StateExpansionManager {
@@ -726,20 +769,33 @@ class StateExpansionManager {
 
   // Private helper methods
   private parseStateConfiguration(data: StateConfigurationRow): StateConfiguration {
+    // Validate data types with proper fallbacks
+    const insuranceRegulations = isValidInsuranceRegulations(data.insurance_regulations) 
+      ? data.insurance_regulations 
+      : this.getDefaultInsuranceRegulations()
+
+    const dataSources = isValidDataSources(data.data_sources)
+      ? data.data_sources
+      : this.getDefaultDataSources()
+
+    const marketData = isValidMarketData(data.market_data)
+      ? data.market_data
+      : this.getDefaultMarketData()
+
     return {
       stateCode: data.state_code,
       stateName: data.state_name,
       isActive: data.is_active,
-      insuranceRegulations: data.insurance_regulations || {},
-      dataSources: data.data_sources || {},
-      marketData: data.market_data || {},
-      operations: data.operations || {},
-      features: data.features || {},
+      insuranceRegulations,
+      dataSources,
+      marketData,
+      operations: data.operations || this.getDefaultOperations(),
+      features: data.features || this.getDefaultFeatures(),
       deployment: {
         status: data.deployment_status || 'planning',
         launchDate: data.launch_date ? new Date(data.launch_date) : undefined,
         migrationComplete: data.migration_complete || false,
-        dataLoadStatus: data.data_load_status || {}
+        dataLoadStatus: data.data_load_status || this.getDefaultDataLoadStatus()
       },
       metadata: {
         createdAt: new Date(data.created_at),
@@ -785,12 +841,7 @@ class StateExpansionManager {
           date: new Date(milestone.date)
         }))
       },
-      resources: {
-        engineeringEffort: data.resources?.engineeringEffort || 0,
-        dataAcquisitionCost: data.resources?.dataAcquisitionCost || 0,
-        complianceCost: data.resources?.complianceCost || 0,
-        operationalCost: data.resources?.operationalCost || 0
-      },
+      resources: data.resources || this.getDefaultResources(),
       risks: data.risks || []
     }
   }
@@ -817,6 +868,82 @@ class StateExpansionManager {
       if (error) throw error
     } catch (error) {
       console.error(`Failed to save expansion plan for phase ${plan.phase}:`, error)
+    }
+  }
+
+  // Default value generators for fallback scenarios
+  private getDefaultInsuranceRegulations(): InsuranceRegulations {
+    return {
+      requiresLicense: true,
+      regulatoryBody: 'TBD',
+      complianceRequirements: [],
+      fillingDeadlines: {}
+    }
+  }
+
+  private getDefaultDataSources(): DataSources {
+    return {
+      parcelData: {
+        provider: 'TBD',
+        updateFrequency: 'monthly',
+        dataFormat: 'manual',
+        cost: 0
+      },
+      courthouseData: {
+        available: false,
+        integrationMethod: 'manual'
+      },
+      weatherData: {
+        provider: 'noaa',
+        regionCode: 'us'
+      }
+    }
+  }
+
+  private getDefaultMarketData(): MarketData {
+    return {
+      majorCarriers: [],
+      averagePremium: 0,
+      marketPenetration: 0,
+      catastropheRisk: [],
+      seasonalPatterns: {}
+    }
+  }
+
+  private getDefaultOperations(): Operations {
+    return {
+      timezone: 'America/New_York',
+      businessHours: {
+        start: '09:00',
+        end: '17:00',
+        timezone: 'America/New_York'
+      },
+      supportLanguages: ['en']
+    }
+  }
+
+  private getDefaultFeatures(): Features {
+    return {
+      enabledFeatures: [],
+      disabledFeatures: [],
+      customizations: {}
+    }
+  }
+
+  private getDefaultDataLoadStatus(): DataLoadStatus {
+    return {
+      parcels: 'pending',
+      historical: 'pending',
+      integrations: 'pending'
+    }
+  }
+
+  private getDefaultResources(): Resources {
+    return {
+      engineeringEffort: 0,
+      dataAcquisitionCost: 0,
+      complianceCost: 0,
+      operationalCost: 0
     }
   }
 }
