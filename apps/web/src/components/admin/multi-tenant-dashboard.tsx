@@ -16,17 +16,36 @@ import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@claimguardian/ui'
 import { Plus, Settings, Users, Building, DollarSign, BarChart3, Shield, Globe } from 'lucide-react'
-import { tenantManager, EnterpriseOrganization, OrganizationUser, TenantUsageInfo } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager, EnterpriseOrganization, OrganizationUser } from '@/lib/multi-tenant/tenant-manager'
 
 interface MultiTenantDashboardProps {
   currentUser?: { id: string; email?: string }
+}
+
+interface OrganizationUsage {
+  users: { current: number; limit: number }
+  properties: { current: number; limit: number }
+  claims: { current: number; limit: number }
+  aiRequests: { current: number; limit: number }
+  storage: { current: number; limit: number }
+  billingPeriodStart?: Date | string
+  billingPeriodEnd?: Date | string
+  baseCost?: number
+  overageCosts?: Record<string, number>
+  totalCost?: number
+  invoiceStatus?: string
+  usersCount?: number
+  propertiesCount?: number
+  claimsCount?: number
+  aiRequestsCount?: number
+  storageGb?: number
 }
 
 export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps) {
   const [organizations, setOrganizations] = useState<EnterpriseOrganization[]>([])
   const [selectedOrg, setSelectedOrg] = useState<EnterpriseOrganization | null>(null)
   const [orgUsers, setOrgUsers] = useState<OrganizationUser[]>([])
-  const [orgUsage, setOrgUsage] = useState<TenantUsageInfo | null>(null)
+  const [orgUsage, setOrgUsage] = useState<OrganizationUsage | null>(null)
   const [loading, setLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'overview' | 'users' | 'billing' | 'settings'>('overview')
 
@@ -63,7 +82,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
       ])
       
       setOrgUsers(users)
-      setOrgUsage(usage)
+      setOrgUsage(usage as unknown as OrganizationUsage)
     } catch (error) {
       console.error('Failed to load organization details:', error)
     }
@@ -361,7 +380,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                     <div>
                       <p className="text-sm text-gray-400 mb-2">Compliance Requirements</p>
                       <div className="space-y-2">
-                        {selectedOrg.complianceRequirements.length > 0 ? (
+                        {selectedOrg.complianceRequirements && selectedOrg.complianceRequirements.length > 0 ? (
                           selectedOrg.complianceRequirements.map((req) => (
                             <Badge key={req} className="bg-green-100 text-green-800 mr-2">
                               {req}
@@ -427,14 +446,14 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                         <Badge className={
                           user.role === 'owner' ? 'bg-gold-100 text-gold-800' :
                           user.role === 'admin' ? 'bg-purple-100 text-purple-800' :
-                          user.role === 'manager' ? 'bg-blue-100 text-blue-800' :
+                          user.role === 'member' ? 'bg-blue-100 text-blue-800' :
                           'bg-gray-100 text-gray-800'
                         }>
                           {user.role}
                         </Badge>
                         <Badge className={
                           user.status === 'active' ? 'bg-green-100 text-green-800' :
-                          user.status === 'invited' ? 'bg-yellow-100 text-yellow-800' :
+                          user.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
                           'bg-red-100 text-red-800'
                         }>
                           {user.status}
@@ -456,24 +475,24 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                 <CardHeader>
                   <CardTitle className="text-white">Current Billing Period</CardTitle>
                   <p className="text-gray-400">
-                    {orgUsage.billingPeriodStart.toLocaleDateString()} - {orgUsage.billingPeriodEnd.toLocaleDateString()}
+                    {(orgUsage.billingPeriodStart as Date)?.toLocaleDateString()} - {(orgUsage.billingPeriodEnd as Date)?.toLocaleDateString()}
                   </p>
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Base Cost</p>
-                      <p className="text-2xl font-bold text-white">${orgUsage.baseCost.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-white">${orgUsage.baseCost?.toFixed(2) || '0.00'}</p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Overage Costs</p>
                       <p className="text-2xl font-bold text-white">
-                        ${Object.values(orgUsage.overageCosts).reduce((sum, cost) => sum + cost, 0).toFixed(2)}
+                        ${Object.values(orgUsage.overageCosts || {}).reduce((sum, cost) => sum + (cost as number), 0).toFixed(2)}
                       </p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Total Cost</p>
-                      <p className="text-2xl font-bold text-white">${orgUsage.totalCost.toFixed(2)}</p>
+                      <p className="text-2xl font-bold text-white">${orgUsage.totalCost?.toFixed(2) || '0.00'}</p>
                     </div>
                     <div className="p-4 bg-gray-700 rounded-lg">
                       <p className="text-gray-400 text-sm">Invoice Status</p>
@@ -483,7 +502,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                         orgUsage.invoiceStatus === 'overdue' ? 'bg-red-100 text-red-800' :
                         'bg-gray-100 text-gray-800'
                       }>
-                        {orgUsage.invoiceStatus}
+                        {orgUsage.invoiceStatus || 'pending'}
                       </Badge>
                     </div>
                   </div>
@@ -493,23 +512,23 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Users</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.usersCount}</p>
+                        <p className="text-xl font-bold text-white">{orgUsage.users?.current || 0}</p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Properties</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.propertiesCount}</p>
+                        <p className="text-xl font-bold text-white">{orgUsage.properties.current}</p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Claims</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.claimsCount}</p>
+                        <p className="text-xl font-bold text-white">{orgUsage.claims.current}</p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">AI Requests</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.aiRequestsCount.toLocaleString()}</p>
+                        <p className="text-xl font-bold text-white">{orgUsage.aiRequests?.current?.toLocaleString() || '0'}</p>
                       </div>
                       <div className="p-4 bg-gray-700 rounded-lg">
                         <p className="text-gray-400 text-sm">Storage (GB)</p>
-                        <p className="text-xl font-bold text-white">{orgUsage.storageGb.toFixed(2)}</p>
+                        <p className="text-xl font-bold text-white">{orgUsage.storage?.current?.toFixed(2) || '0.00'}</p>
                       </div>
                     </div>
                   </div>
@@ -567,7 +586,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
                         </label>
                         <input
                           type="email"
-                          value={selectedOrg.primaryContactEmail}
+                          value={selectedOrg.billingEmail || 'Not set'}
                           className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white"
                           readOnly
                         />

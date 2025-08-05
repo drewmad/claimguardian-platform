@@ -51,16 +51,16 @@ describe('MultiStepSignupForm', () => {
     it('should render welcome step initially', () => {
       render(<MultiStepSignupForm />)
       
-      expect(screen.getByText('Welcome to ClaimGuardian')).toBeInTheDocument()
-      expect(screen.getByText(/AI-powered insurance claim advocate/)).toBeInTheDocument()
-      expect(screen.getByText('Next')).toBeInTheDocument()
+      ;(expect(screen.getByText('Welcome to ClaimGuardian')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/AI-powered insurance claim advocate/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('Next')) as unknown).toBeInTheDocument()
     })
 
     it('should show correct step progress', () => {
       render(<MultiStepSignupForm />)
       
-      expect(screen.getByText('Step 1 of 4')).toBeInTheDocument()
-      expect(screen.getByText('25% complete')).toBeInTheDocument()
+      ;(expect(screen.getByText('Step 1 of 4')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('25% complete')) as unknown).toBeInTheDocument()
     })
 
     it('should navigate to account step on Next click', async () => {
@@ -69,8 +69,8 @@ describe('MultiStepSignupForm', () => {
       
       await user.click(screen.getByText('Next'))
       
-      expect(screen.getByText('Create Account')).toBeInTheDocument()
-      expect(screen.getByText('Step 2 of 4')).toBeInTheDocument()
+      ;(expect(screen.getByText('Create Account')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('Step 2 of 4')) as unknown).toBeInTheDocument()
     })
   })
 
@@ -82,12 +82,12 @@ describe('MultiStepSignupForm', () => {
     })
 
     it('should render all form fields', () => {
-      expect(screen.getByLabelText(/First Name/)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Last Name/)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Email/)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Phone Number/)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Password/)).toBeInTheDocument()
-      expect(screen.getByLabelText(/Confirm Password/)).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/First Name/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/Last Name/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/Email/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/Phone Number/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/Password/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByLabelText(/Confirm Password/)) as unknown).toBeInTheDocument()
     })
 
     it('should validate email format', async () => {
@@ -97,7 +97,7 @@ describe('MultiStepSignupForm', () => {
       await user.type(emailInput, 'invalid-email')
       await user.tab() // Trigger blur
       
-      expect(screen.getByText('Please enter a valid email')).toBeInTheDocument()
+      ;(expect(screen.getByText('Please enter a valid email')) as unknown).toBeInTheDocument()
     })
 
     it('should format phone number automatically', async () => {
@@ -106,7 +106,7 @@ describe('MultiStepSignupForm', () => {
       
       await user.type(phoneInput, '5551234567')
       
-      expect(phoneInput).toHaveValue('(555) 123-4567')
+      ;(expect(phoneInput) as unknown).toHaveValue('(555) 123-4567')
     })
 
     it('should validate password strength', async () => {
@@ -115,12 +115,12 @@ describe('MultiStepSignupForm', () => {
       
       await user.type(passwordInput, 'weak')
       
-      expect(screen.getByText(/weak/i)).toBeInTheDocument()
+      ;(expect(screen.getByText(/weak/i)) as unknown).toBeInTheDocument()
       
       await user.clear(passwordInput)
       await user.type(passwordInput, 'StrongPassword123!')
       
-      expect(screen.getByText(/strong/i)).toBeInTheDocument()
+      ;(expect(screen.getByText(/strong/i)) as unknown).toBeInTheDocument()
     })
 
     it('should validate password confirmation', async () => {
@@ -131,19 +131,19 @@ describe('MultiStepSignupForm', () => {
       await user.type(passwordInput, 'password123')
       await user.type(confirmInput, 'different123')
       
-      expect(screen.getByText(/Passwords don't match/)).toBeInTheDocument()
+      ;(expect(screen.getByText(/Passwords don't match/)) as unknown).toBeInTheDocument()
     })
 
     it('should require residency type selection', () => {
-      expect(screen.getByText('Renter')).toBeInTheDocument()
-      expect(screen.getByText('Homeowner')).toBeInTheDocument()
-      expect(screen.getByText('Landlord')).toBeInTheDocument()
-      expect(screen.getByText('Real Estate Pro')).toBeInTheDocument()
+      ;(expect(screen.getByText('Renter')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('Homeowner')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('Landlord')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText('Real Estate Pro')) as unknown).toBeInTheDocument()
     })
 
     it('should disable Next button when form is invalid', () => {
       const nextButton = screen.getByText('Next')
-      expect(nextButton).toBeDisabled()
+      ;(expect(nextButton) as unknown).toBeDisabled()
     })
 
     it('should enable Next button when form is valid', async () => {
@@ -158,7 +158,7 @@ describe('MultiStepSignupForm', () => {
       await user.click(screen.getByText('Homeowner'))
       
       await waitFor(() => {
-        expect(screen.getByText('Next')).not.toBeDisabled()
+        ;(expect(screen.getByText('Next')) as unknown).not.toBeDisabled()
       })
     })
   })
@@ -185,25 +185,25 @@ describe('MultiStepSignupForm', () => {
     })
 
     it('should render legal agreements', () => {
-      expect(screen.getByText('Legal Agreements')).toBeInTheDocument()
-      expect(screen.getByText(/I confirm that I am 18 years or older/)).toBeInTheDocument()
-      expect(screen.getByText(/Terms of Service/)).toBeInTheDocument()
-      expect(screen.getByText(/Privacy Policy/)).toBeInTheDocument()
+      ;(expect(screen.getByText('Legal Agreements')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/I confirm that I am 18 years or older/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/Terms of Service/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/Privacy Policy/)) as unknown).toBeInTheDocument()
     })
 
     it('should require age verification', async () => {
       const user = userEvent.setup()
       const nextButton = screen.getByText('Next')
       
-      expect(nextButton).toBeDisabled()
+      ;(expect(nextButton) as unknown).toBeDisabled()
       
       // Accept legal agreements but not age
       await user.click(screen.getByLabelText(/Terms of Service/))
-      expect(nextButton).toBeDisabled()
+      ;(expect(nextButton) as unknown).toBeDisabled()
       
       // Accept age verification
       await user.click(screen.getByLabelText(/18 years or older/))
-      expect(nextButton).not.toBeDisabled()
+      ;(expect(nextButton) as unknown).not.toBeDisabled()
     })
 
     it('should require legal agreements acceptance', async () => {
@@ -212,11 +212,11 @@ describe('MultiStepSignupForm', () => {
       
       // Accept age but not legal agreements
       await user.click(screen.getByLabelText(/18 years or older/))
-      expect(nextButton).toBeDisabled()
+      ;(expect(nextButton) as unknown).toBeDisabled()
       
       // Accept legal agreements
       await user.click(screen.getByLabelText(/Terms of Service/))
-      expect(nextButton).not.toBeDisabled()
+      ;(expect(nextButton) as unknown).not.toBeDisabled()
     })
   })
 
@@ -248,24 +248,24 @@ describe('MultiStepSignupForm', () => {
     })
 
     it('should render AI disclaimer content', () => {
-      expect(screen.getByText('AI Disclaimer')).toBeInTheDocument()
-      expect(screen.getByText(/AI can make mistakes/)).toBeInTheDocument()
-      expect(screen.getByText(/verify important information/)).toBeInTheDocument()
+      ;(expect(screen.getByText('AI Disclaimer')) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/AI can make mistakes/)) as unknown).toBeInTheDocument()
+      ;(expect(screen.getByText(/verify important information/)) as unknown).toBeInTheDocument()
     })
 
     it('should show Create Account button', () => {
-      expect(screen.getByText('Create Account')).toBeInTheDocument()
+      ;(expect(screen.getByText('Create Account')) as unknown).toBeInTheDocument()
     })
 
     it('should disable Create Account button until disclaimer is accepted', async () => {
       const user = userEvent.setup()
       const createButton = screen.getByText('Create Account')
       
-      expect(createButton).toBeDisabled()
+      ;(expect(createButton) as unknown).toBeDisabled()
       
       await user.click(screen.getByLabelText(/AI can make mistakes/))
       
-      expect(createButton).not.toBeDisabled()
+      ;(expect(createButton) as unknown).not.toBeDisabled()
     })
   })
 
@@ -304,7 +304,7 @@ describe('MultiStepSignupForm', () => {
       
       await user.click(screen.getByText('Create Account'))
       
-      expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
+      ;(expect(mockSupabase.auth.signUp) as unknown).toHaveBeenCalledWith({
         email: 'john@example.com',
         password: 'StrongPassword123!',
         options: {
@@ -327,7 +327,7 @@ describe('MultiStepSignupForm', () => {
       await user.click(screen.getByText('Create Account'))
       
       await waitFor(() => {
-        expect(mockRouter.push).toHaveBeenCalledWith('/onboarding/property-setup')
+        ;(expect(mockRouter.push) as unknown).toHaveBeenCalledWith('/onboarding/property-setup')
       })
     })
 
@@ -341,7 +341,7 @@ describe('MultiStepSignupForm', () => {
       await user.click(screen.getByText('Create Account'))
       
       await waitFor(() => {
-        expect(screen.getByText('Email already registered')).toBeInTheDocument()
+        ;(expect(screen.getByText('Email already registered')) as unknown).toBeInTheDocument()
       })
     })
 
@@ -353,7 +353,7 @@ describe('MultiStepSignupForm', () => {
       
       await user.click(screen.getByText('Create Account'))
       
-      expect(screen.getByText('Creating Account...')).toBeInTheDocument()
+      ;(expect(screen.getByText('Creating Account...')) as unknown).toBeInTheDocument()
     })
   })
 
@@ -363,10 +363,10 @@ describe('MultiStepSignupForm', () => {
       render(<MultiStepSignupForm />)
       
       await user.click(screen.getByText('Next')) // To account step
-      expect(screen.getByText('Create Account')).toBeInTheDocument()
+      ;(expect(screen.getByText('Create Account')) as unknown).toBeInTheDocument()
       
       await user.click(screen.getByText('Previous'))
-      expect(screen.getByText('Welcome to ClaimGuardian')).toBeInTheDocument()
+      ;(expect(screen.getByText('Welcome to ClaimGuardian')) as unknown).toBeInTheDocument()
     })
 
     it('should show correct step indicators', async () => {
@@ -375,10 +375,10 @@ describe('MultiStepSignupForm', () => {
       
       // Check initial indicators
       const indicators = screen.getAllByText(/Welcome|Account|Legal|AI Terms/)
-      expect(indicators).toHaveLength(4)
+      ;(expect(indicators) as unknown).toHaveLength(4)
       
       await user.click(screen.getByText('Next'))
-      expect(screen.getByText('Step 2 of 4')).toBeInTheDocument()
+      ;(expect(screen.getByText('Step 2 of 4')) as unknown).toBeInTheDocument()
     })
   })
 
@@ -389,9 +389,9 @@ describe('MultiStepSignupForm', () => {
       // Navigate to account step to test form labels
       fireEvent.click(screen.getByText('Next'))
       
-      expect(screen.getByLabelText(/First Name/)).toBeRequired()
-      expect(screen.getByLabelText(/Last Name/)).toBeRequired()
-      expect(screen.getByLabelText(/Email/)).toBeRequired()
+      ;(expect(screen.getByLabelText(/First Name/)) as unknown).toBeRequired()
+      ;(expect(screen.getByLabelText(/Last Name/)) as unknown).toBeRequired()
+      ;(expect(screen.getByLabelText(/Email/)) as unknown).toBeRequired()
     })
 
     it('should provide proper error announcements', async () => {
@@ -405,7 +405,7 @@ describe('MultiStepSignupForm', () => {
       await user.tab()
       
       const errorMessage = screen.getByText('Please enter a valid email')
-      expect(errorMessage).toHaveAttribute('role', 'alert')
+      ;(expect(errorMessage) as unknown).toHaveAttribute('role', 'alert')
     })
   })
 })

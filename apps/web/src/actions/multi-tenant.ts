@@ -25,19 +25,19 @@ export interface CreateOrganizationParams {
 
 export interface UpdateOrganizationParams {
   organizationId: string
-  updates: Partial<EnterpriseOrganization> & Record<string, any>
+  updates: Partial<EnterpriseOrganization> & Record<string, unknown>
 }
 
 export interface InviteUserParams {
   organizationId: string
   userEmail: string
-  role: 'admin' | 'manager' | 'member' | 'viewer'
+  role: 'admin' | 'member' | 'viewer'
 }
 
 export interface UpdateUserRoleParams {
   organizationId: string
   userId: string
-  role: 'admin' | 'manager' | 'member' | 'viewer'
+  role: 'admin' | 'member' | 'viewer'
 }
 
 /**
@@ -155,6 +155,7 @@ export async function updateOrganization({
     if (updates.claimLimit) dbUpdates.claim_limit = updates.claimLimit
     if (updates.aiRequestLimit) dbUpdates.ai_request_limit = updates.aiRequestLimit
     if (updates.allowedStates) dbUpdates.allowed_states = updates.allowedStates
+    if (updates.primaryState) dbUpdates.primary_state = updates.primaryState
     if (updates.ssoEnabled !== undefined) dbUpdates.sso_enabled = updates.ssoEnabled
     if (updates.ssoProvider) dbUpdates.sso_provider = updates.ssoProvider
     if (updates.ssoConfiguration) dbUpdates.sso_configuration = updates.ssoConfiguration
@@ -242,7 +243,7 @@ export async function getOrganizationUsers(organizationId: string) {
     }
 
     // Check if user has permission to view organization users
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'users.read')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'users.read')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -276,7 +277,7 @@ export async function inviteUserToOrganization({
     }
 
     // Check if user has permission to invite users
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'users.invite')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'users.invite')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -329,7 +330,7 @@ export async function updateUserRole({
     }
 
     // Check if user has permission to update user roles
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'users.update')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'users.update')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -372,7 +373,7 @@ export async function removeUserFromOrganization(
     }
 
     // Check if user has permission to remove users
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'users.delete')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'users.delete')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -443,7 +444,7 @@ export async function updateOrganizationCustomizations(
     }
 
     // Check if user has permission to update customizations
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'organization.customize')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'organization.customize')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -482,7 +483,7 @@ export async function getOrganizationUsage(organizationId: string, month?: Date)
     }
 
     // Check if user has permission to view billing
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'billing.view')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'billing.view')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -554,7 +555,7 @@ export async function getOrganizationAuditLog(
     }
 
     // Check if user has permission to view audit log
-    const hasPermission = await tenantManager.userHasPermission(user.id, 'audit.read')
+    const hasPermission = await tenantManager.hasPermission(user.id, 'audit.read')
     if (!hasPermission) {
       return { data: null, error: 'Insufficient permissions' }
     }
@@ -604,7 +605,7 @@ export async function executeTenantQuery(
     const result = await tenantManager.executeTenantQuery(
       organizationCode,
       tableName,
-      query as any
+      query
     )
 
     return result

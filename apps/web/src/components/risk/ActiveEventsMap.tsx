@@ -22,23 +22,9 @@ import {
   Activity
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { ActiveEvent } from '@/actions/geospatial'
 
-interface ActiveEvent {
-  id: string
-  type: 'wildfire' | 'flood' | 'hurricane' | 'tornado' | 'earthquake'
-  title: string
-  description: string
-  severity: 'low' | 'medium' | 'high' | 'critical'
-  location: {
-    latitude: number
-    longitude: number
-    address?: string
-  }
-  startDate: Date
-  endDate?: Date
-  status: 'active' | 'warning' | 'ended'
-  affectedRadius: number // in miles
-}
+// Using ActiveEvent from geospatial actions
 
 interface ActiveEventsMapProps {
   activeEvents: ActiveEvent[]
@@ -129,12 +115,12 @@ export function ActiveEventsMap({ activeEvents, propertyLocation }: ActiveEvents
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-start gap-3">
-                    <div className={`p-2 rounded-lg ${getEventColor(event.type)}`}>
-                      {getEventIcon(event.type)}
+                    <div className={`p-2 rounded-lg ${getEventColor(event.eventType)}`}>
+                      {getEventIcon(event.eventType)}
                     </div>
                     <div>
-                      <h4 className="font-medium text-white">{event.title}</h4>
-                      <p className="text-sm text-gray-400 capitalize">{event.type}</p>
+                      <h4 className="font-medium text-white">{event.eventName}</h4>
+                      <p className="text-sm text-gray-400 capitalize">{event.eventType}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
@@ -151,12 +137,12 @@ export function ActiveEventsMap({ activeEvents, propertyLocation }: ActiveEvents
                 <div className="flex items-center gap-4 text-sm text-gray-400">
                   <div className="flex items-center gap-1">
                     <Clock className="h-3 w-3" />
-                    <span>Started {formatDistanceToNow(new Date(event.startDate))} ago</span>
+                    <span>Started {formatDistanceToNow(new Date(event.startTime))} ago</span>
                   </div>
                 </div>
 
                 {/* Event-specific details could go here */}
-                {event.type === 'wildfire' && (
+                {event.eventType === 'wildfire' && (
                   <div className="mt-3 p-3 bg-gray-800 rounded border border-gray-700">
                     <p className="text-xs text-gray-400">
                       Monitor local authorities for evacuation orders and air quality updates.

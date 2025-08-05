@@ -16,7 +16,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { searchParcels, linkPropertyToParcel } from '@/actions/geospatial'
+import { searchParcels, linkPropertyToParcel, ParcelData } from '@/actions/geospatial'
 import { 
   Search, 
   Link2, 
@@ -26,28 +26,7 @@ import {
   Calendar
 } from 'lucide-react'
 
-interface ParcelData {
-  id: string
-  parcelId: string
-  address: string
-  city: string
-  county: string
-  state: string
-  zipCode: string
-  ownerName: string
-  propertyType: string
-  landUse: string
-  totalValue: number
-  landValue: number
-  buildingValue: number
-  yearBuilt?: number
-  lotSize?: number
-  livingArea?: number
-  coordinates?: {
-    latitude: number
-    longitude: number
-  }
-}
+// Using ParcelData type from geospatial actions
 
 interface ParcelSearchProps {
   propertyId: string
@@ -199,10 +178,10 @@ export function ParcelSearch({
                         Parcel ID: {parcel.parcelId}
                       </p>
                       <div className="space-y-1 text-sm text-gray-400">
-                        {parcel.address && (
+                        {parcel.propertyAddress && (
                           <p className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            {parcel.address}
+                            {parcel.propertyAddress}
                           </p>
                         )}
                         {parcel.ownerName && (
@@ -213,7 +192,7 @@ export function ParcelSearch({
                         )}
                         <p className="flex items-center gap-1">
                           <Home className="h-3 w-3" />
-                          {parcel.county} County
+                          {parcel.countyName} County
                         </p>
                         {parcel.yearBuilt && (
                           <p className="flex items-center gap-1">
@@ -234,12 +213,12 @@ export function ParcelSearch({
                     </Button>
                   </div>
                   
-                  {parcel.totalValue && (
+                  {parcel.assessedValue && (
                     <div className="pt-2 border-t border-gray-800 grid grid-cols-3 gap-2 text-xs">
                       <div>
                         <p className="text-gray-500">Assessed Value</p>
                         <p className="text-gray-300">
-                          ${parcel.totalValue.toLocaleString()}
+                          ${parcel.assessedValue.toLocaleString()}
                         </p>
                       </div>
                       {parcel.livingArea && (
@@ -250,11 +229,11 @@ export function ParcelSearch({
                           </p>
                         </div>
                       )}
-                      {parcel.lotSize && (
+                      {parcel.landArea && (
                         <div>
                           <p className="text-gray-500">Land Area</p>
                           <p className="text-gray-300">
-                            {parcel.lotSize} acres
+                            {parcel.landArea} acres
                           </p>
                         </div>
                       )}

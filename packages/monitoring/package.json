@@ -11,15 +11,15 @@
     "test": "vitest"
   },
   "dependencies": {
-    "@sentry/nextjs": "^8.46.0",
-    "@sentry/react": "^8.46.0",
-    "@sentry/types": "^8.46.0",
-    "web-vitals": "^4.2.4"
+    "@sentry/nextjs": "^10.1.0",
+    "@sentry/react": "^10.1.0",
+    "@sentry/types": "^10.1.0",
+    "web-vitals": "^5.1.0"
   },
   "devDependencies": {
     "@claimguardian/config": "workspace:*",
-    "@types/node": "^24.0.10",
-    "typescript": "^5.8.3",
-    "vitest": "^2.1.8"
+    "@types/node": "^24.2.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
   }
 }

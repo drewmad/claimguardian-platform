@@ -38,6 +38,12 @@ interface ModelSelectionResult {
   isABTest?: boolean
 }
 
+interface CustomPrompt {
+  feature_id: string;
+  is_active: boolean;
+  system_prompt: string;
+}
+
 export class EnhancedAIClient extends AIClient {
   /**
    * Chat with database-driven model selection and intelligent caching
@@ -351,7 +357,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return messages
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: unknown) => 
+      const activePrompt = result.data.prompts.find((p: CustomPrompt) => 
         p.feature_id === featureId && p.is_active
       )
 
@@ -392,7 +398,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return prompt
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: unknown) => 
+      const activePrompt = result.data.prompts.find((p: CustomPrompt) => 
         p.feature_id === featureId && p.is_active
       )
 
@@ -485,6 +491,7 @@ export class EnhancedAIClient extends AIClient {
     abTestId?: string
     error?: string
     cacheHit?: boolean
+    requestId?: string
   }): Promise<void> {
     try {
       const cost = this.estimateCost(data.model, data.responseTime)
@@ -514,7 +521,7 @@ export class EnhancedAIClient extends AIClient {
           provider,
           operationType: 'request',
           success: data.success,
-          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          requestId: data.requestId || `req_${Date.now()}`,
           errorMessage: data.error,
           metadata: {
             tokensUsed: Math.ceil(data.responseTime / 100) * 50,
@@ -530,7 +537,7 @@ export class EnhancedAIClient extends AIClient {
           provider,
           operationType: 'request',
           success: data.success,
-          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          requestId: data.requestId || `req_${Date.now()}`,
           metadata: {
             responseTime: data.responseTime,
             tokensUsed: Math.ceil(data.responseTime / 100) * 50
@@ -544,7 +551,7 @@ export class EnhancedAIClient extends AIClient {
           provider,
           operationType: 'request',
           success: true,
-          requestId: (data as unknown).requestId || `req_${Date.now()}`
+          requestId: data.requestId || `req_${Date.now()}`
         }) : trackAIMetric({
           metricName: 'error_rate',
           metricValue: 1,
@@ -553,7 +560,7 @@ export class EnhancedAIClient extends AIClient {
           provider,
           operationType: 'request',
           success: false,
-          requestId: (data as unknown).requestId || `req_${Date.now()}`,
+          requestId: data.requestId || `req_${Date.now()}`,
           errorMessage: data.error
         })
       ]).catch(error => {

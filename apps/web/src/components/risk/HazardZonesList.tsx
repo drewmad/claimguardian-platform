@@ -19,20 +19,9 @@ import {
   Waves,
   AlertTriangle
 } from 'lucide-react'
+import { HazardZone } from '@/actions/geospatial'
 
-interface HazardZone {
-  id: string
-  name: string
-  category: 'flood' | 'fire' | 'wind' | 'surge' | 'earthquake'
-  riskLevel: 'low' | 'moderate' | 'high' | 'extreme'
-  description: string
-  geometry?: {
-    type: 'polygon' | 'circle'
-    coordinates: number[][]
-  }
-  affectedProperties?: number
-  lastUpdated: Date
-}
+// Using HazardZone from geospatial actions
 
 interface HazardZonesListProps {
   hazardZones: HazardZone[]
@@ -118,7 +107,7 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                   </div>
                   <div>
                     <p className="font-medium text-white">{zone.category}</p>
-                    <p className="text-sm text-gray-400">{zone.name}</p>
+                    <p className="text-sm text-gray-400">{zone.zoneName}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -128,7 +117,7 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                   >
                     {zone.category}
                   </Badge>
-                  {getRiskBadge(zone.riskLevel)}
+                  {getRiskBadge(zone.riskWeight > 0.7 ? 'high' : zone.riskWeight > 0.4 ? 'moderate' : 'low')}
                 </div>
               </div>
             ))}

@@ -11,14 +11,14 @@
   },
   "dependencies": {
     "@claimguardian/ai-services": "workspace:*",
-    "@claimguardian/ui": "workspace:*",
     "@claimguardian/db": "workspace:*",
-    "react": "^18.0.0"
+    "@claimguardian/ui": "workspace:*",
+    "react": "^19.1.1"
   },
   "devDependencies": {
-    "@types/react": "^18.0.0",
-    "typescript": "^5.8.3",
-    "tsup": "^8.5.0"
+    "@types/react": "18.3.23",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.2"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm",

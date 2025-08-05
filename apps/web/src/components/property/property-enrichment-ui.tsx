@@ -16,7 +16,7 @@ import { Button } from '@claimguardian/ui'
 import { Progress } from '@/components/ui/progress'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { enrichProperty } from '@/actions/comprehensive-property-enrichment'
+import { enrichProperty, EnrichedProperty } from '@/actions/comprehensive-property-enrichment'
 
 // Type definitions for property enrichment
 interface RiskFactor {
@@ -33,50 +33,7 @@ interface ComparableSale {
   distance: number
 }
 
-interface EnrichedProperty {
-  parcelData: {
-    phy_addr1: string
-    phy_city: string
-    lnd_val?: number
-    imp_val?: number
-  }
-  dataQualityScore: number
-  riskProfile: {
-    overallRiskScore: number
-    [key: string]: RiskFactor | number
-  }
-  marketAnalysis: {
-    medianPrice: number
-    pricePerSqft: number
-    appreciationRate: number
-    daysOnMarket: number
-    comparableSales: ComparableSale[]
-  }
-  investmentMetrics: {
-    estimatedRentalYield: number
-    capitalizationRate: number
-    renovationROI: number
-  }
-  insuranceRecommendations: {
-    estimatedPremium: {
-      homeowners: number
-      flood: number
-      windstorm: number
-    }
-    discountOpportunities: string[]
-  }
-  aiInsights: {
-    investmentRecommendation: string
-    confidenceScore: number
-    strengthsWeaknessesOpportunitiesThreats: {
-      strengths: string[]
-      weaknesses: string[]
-      opportunities: string[]
-      threats: string[]
-    }
-    actionItems: string[]
-  }
-}
+// Remove duplicate interface - using the one from comprehensive-property-enrichment
 
 interface PropertyEnrichmentUIProps {
   parcelId: string

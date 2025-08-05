@@ -21,7 +21,7 @@ import {
   uploadClaimDocument,
   generateClaimReport
 } from '../claims'
-import { createSupabaseMock, type MockSupabaseClient } from '../../../__tests__/utils/supabase-mocks'
+import { createSupabaseMock } from '../../../__tests__/utils/supabase-mocks'
 
 // Mock dependencies
 jest.mock('@claimguardian/db', () => ({
@@ -42,7 +42,7 @@ const mockUser = {
 }
 
 // Create properly typed mock with backward compatibility
-let mockSupabase: MockSupabaseClient & { _mockQuery: any }
+let mockSupabase: MockSupabaseClient & { _mockQuery: unknown }
 
 describe('Claims Server Actions', () => {
   beforeEach(() => {
@@ -99,7 +99,7 @@ describe('Claims Server Actions', () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
         error: null
-      } as any)
+      } as unknown)
 
       const result = await createClaim(validClaimData)
 
@@ -231,12 +231,11 @@ describe('Claims Server Actions', () => {
         file_url: 'https://example.com/file.pdf'
       }
 
-      // Mock storage upload
-      const mockUpload = jest.fn()
-      mockUpload.mockResolvedValue({
+      // Mock storage upload - use proper any typing for mocks
+      const mockUpload = jest.fn().mockResolvedValue({
         data: { path: 'claim-456/repair_estimate/123-test.pdf' },
         error: null
-      })
+      }) as unknown
 
       const mockStorageFrom = jest.fn().mockReturnValue({
         upload: mockUpload,
@@ -309,18 +308,16 @@ describe('Claims Server Actions', () => {
       const result = await generateClaimReport({ claimId: 'claim-456' })
 
       expect(result.success).toBe(true)
-      expect((result.data as any)?.summary?.totalDocuments).toBe(0)
+      expect((result.data as unknown)?.summary?.totalDocuments).toBe(0)
       expect(result.data?.recommendations).toBeInstanceOf(Array)
     })
   })
 
   describe('deleteClaim', () => {
     it('should delete claim successfully', async () => {
-      // Create a separate chainable object
-      const mockEqResult = jest.fn()
-      mockEqResult.mockResolvedValue({ error: null })
-      const chainableEq = { eq: mockEqResult }
-      const mockEq = jest.fn().mockReturnValue(chainableEq)
+      // Create a proper chainable mock for delete operations
+      const mockEqResult = jest.fn().mockResolvedValue({ error: null }) as unknown
+      const mockEq = jest.fn().mockReturnValue({ eq: mockEqResult }) as unknown
       
       const mockDelete = jest.fn().mockReturnValue({ eq: mockEq })
       ;(mockSupabase._mockQuery.delete as jest.Mock) = mockDelete
@@ -331,7 +328,7 @@ describe('Claims Server Actions', () => {
       expect(result.data?.message).toBe('Claim deleted successfully')
       expect(mockDelete).toHaveBeenCalled()
       expect(mockEq).toHaveBeenCalledWith('id', 'claim-456')
-      expect(chainableEq.eq).toHaveBeenCalledWith('user_id', 'user-123')
+      expect(mockEqResult).toHaveBeenCalledWith('user_id', 'user-123')
     })
   })
 })

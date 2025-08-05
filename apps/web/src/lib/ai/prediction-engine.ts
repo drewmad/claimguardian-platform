@@ -253,13 +253,13 @@ export class PredictionEngine {
         .limit(100)
 
       // Market data analysis
-      const marketData = await this.analyzeMarketData(property.city, property.state)
+      const marketData = await this.analyzeMarketData((property as unknown).city, (property as unknown).state)
       
       // Cost calculation with ML model
       const baseCost = this.calculateBaseCost(damageType, severity, property)
       const adjustedCost = this.applyMarketFactors(baseCost, marketData)
       const costFactors = this.identifyCostFactors(damageType, severity, property)
-      const timeline = this.estimateTimeline(damageType, severity, property)
+      const timeline: DamageCostEstimation['timeline_estimate'] = this.estimateTimeline(damageType, severity, property)
 
       const estimation: DamageCostEstimation = {
         id: crypto.randomUUID(),
@@ -439,14 +439,14 @@ export class PredictionEngine {
   }
 
   // Private helper methods for AI calculations
-  private async analyzeRiskFactors(property: unknown, claims: unknown[], similarProperties: unknown[]): Promise<RiskFactor[]> {
+  private async analyzeRiskFactors(property: any, claims: any[], similarProperties: any[]): Promise<RiskFactor[]> {
     const factors: RiskFactor[] = []
     
     // Environmental factors
-    if (property.metadata?.flood_zone && property.metadata.flood_zone !== 'X') {
+    if ((property as unknown).metadata?.flood_zone && (property as unknown).metadata.flood_zone !== 'X') {
       factors.push({
         type: 'environmental',
-        description: `Property in flood zone ${property.metadata.flood_zone}`,
+        description: `Property in flood zone ${(property as unknown).metadata.flood_zone}`,
         impact_score: 75,
         mitigation_suggestions: ['Consider flood insurance', 'Install flood barriers', 'Elevate utilities']
       })
@@ -464,7 +464,7 @@ export class PredictionEngine {
     }
 
     // Age-based structural factors
-    const propertyAge = new Date().getFullYear() - (property.year_built || 2000)
+    const propertyAge = new Date().getFullYear() - ((property as unknown).year_built || 2000)
     if (propertyAge > 30) {
       factors.push({
         type: 'structural',
@@ -477,7 +477,7 @@ export class PredictionEngine {
     return factors
   }
 
-  private async calculateLikelihoodScore(property: unknown, riskFactors: RiskFactor[], context?: unknown): Promise<number> {
+  private async calculateLikelihoodScore(property: any, riskFactors: RiskFactor[], context?: unknown): Promise<number> {
     let baseScore = 20
     
     // Risk factor contributions
@@ -492,18 +492,18 @@ export class PredictionEngine {
       'mobile_home': 1.4
     }
     
-    baseScore *= propertyTypeMultipliers[property.property_type as keyof typeof propertyTypeMultipliers] || 1.0
+    baseScore *= propertyTypeMultipliers[(property as unknown).property_type as keyof typeof propertyTypeMultipliers] || 1.0
     
     // Cap at 95 to maintain realism
     return Math.min(Math.round(baseScore), 95)
   }
 
-  private async estimateClaimCost(property: unknown, riskFactors: RiskFactor[]): Promise<number> {
+  private async estimateClaimCost(property: any, riskFactors: RiskFactor[]): Promise<number> {
     let baseCost = 5000 // Base claim cost
     
     // Property value factor
-    if (property.current_value) {
-      baseCost = property.current_value * 0.05 // 5% of property value
+    if ((property as any).current_value) {
+      baseCost = (property as any).current_value * 0.05 // 5% of property value
     }
     
     // Risk factor adjustments
@@ -514,7 +514,7 @@ export class PredictionEngine {
     return Math.round(baseCost * riskMultiplier)
   }
 
-  private generateRecommendedActions(riskFactors: RiskFactor[], property: unknown): RecommendedAction[] {
+  private generateRecommendedActions(riskFactors: RiskFactor[], property: any): RecommendedAction[] {
     const actions: RecommendedAction[] = []
     
     // Generate actions based on risk factors
@@ -540,7 +540,7 @@ export class PredictionEngine {
     return 'low'
   }
 
-  private calculateBaseCost(damageType: string, severity: string, property: unknown): number {
+  private calculateBaseCost(damageType: string, severity: string, property: any): number {
     const baseCosts = {
       'water': { minor: 2000, moderate: 8000, major: 25000, severe: 60000 },
       'fire': { minor: 5000, moderate: 15000, major: 50000, severe: 150000 },
@@ -551,13 +551,13 @@ export class PredictionEngine {
     return (baseCosts as unknown)[damageType]?.[severity] || 10000
   }
 
-  private applyMarketFactors(baseCost: number, marketData: unknown): number {
+  private applyMarketFactors(baseCost: number, marketData: any): number {
     // Apply regional cost adjustments
     const regionalMultiplier = marketData?.cost_index || 1.0
     return Math.round(baseCost * regionalMultiplier)
   }
 
-  private identifyCostFactors(damageType: string, severity: string, property: unknown): CostFactor[] {
+  private identifyCostFactors(damageType: string, severity: string, property: any): CostFactor[] {
     // Generate cost factors based on damage type and property characteristics
     return [
       {
@@ -575,7 +575,7 @@ export class PredictionEngine {
     ]
   }
 
-  private estimateTimeline(damageType: string, severity: string, property: unknown): unknown {
+  private estimateTimeline(damageType: string, severity: string, property: any): { inspection_days: number; repair_days: number; total_days: number; } {
     const timelines = {
       'water': { minor: 3, moderate: 7, major: 14, severe: 30 },
       'fire': { minor: 7, moderate: 21, major: 60, severe: 120 },
@@ -592,7 +592,7 @@ export class PredictionEngine {
     }
   }
 
-  private formatComparableClaims(claims: unknown[]): ComparableClaim[] {
+  private formatComparableClaims(claims: any[]): ComparableClaim[] {
     return claims.map(claim => ({
       claim_id: claim.id,
       similarity_score: Math.random() * 0.3 + 0.7, // Mock similarity
@@ -634,13 +634,13 @@ export class PredictionEngine {
     }
   }
 
-  private async calculateOptimalSettlement(claim: unknown, comparables: unknown[], market: MarketAnalysis): Promise<number> {
+  private async calculateOptimalSettlement(claim: any, comparables: any[], market: MarketAnalysis): Promise<number> {
     const baseCost = claim.amount || 10000
     const marketMultiplier = market.cost_inflation_rate + 1
     return Math.round(baseCost * marketMultiplier * 1.1) // 10% buffer
   }
 
-  private generateJustification(claim: unknown, amount: number, market: MarketAnalysis): string[] {
+  private generateJustification(claim: any, amount: number, market: MarketAnalysis): string[] {
     return [
       `Based on ${claim.property_damage?.length || 0} documented damage items`,
       `Regional market analysis shows ${(market.cost_inflation_rate * 100).toFixed(1)}% cost increase`,
@@ -649,7 +649,7 @@ export class PredictionEngine {
     ]
   }
 
-  private identifyNegotiationPoints(claim: unknown, market: MarketAnalysis): string[] {
+  private identifyNegotiationPoints(claim: any, market: MarketAnalysis): string[] {
     return [
       'Documented evidence supports full damage assessment',
       'Property maintenance history shows proper care',
@@ -658,7 +658,7 @@ export class PredictionEngine {
     ]
   }
 
-  private assessSettlementRisk(claim: unknown, amount: number): unknown {
+  private assessSettlementRisk(claim: any, amount: number): { litigation_risk: number; settlement_probability: number; delay_risk: number; } {
     return {
       litigation_risk: 0.15,
       settlement_probability: 0.85,
@@ -666,7 +666,7 @@ export class PredictionEngine {
     }
   }
 
-  private formatComparableSettlements(settlements: unknown[]): Settlement[] {
+  private formatComparableSettlements(settlements: any[]): Settlement[] {
     return settlements.map(settlement => ({
       amount: settlement.amount || 0,
       similarity_score: Math.random() * 0.3 + 0.7,
@@ -675,7 +675,7 @@ export class PredictionEngine {
     }))
   }
 
-  private async analyzeSystemMaintenance(property: unknown, system: string, history: unknown[]): Promise<MaintenancePrediction | null> {
+  private async analyzeSystemMaintenance(property: any, system: string, history: any[]): Promise<MaintenancePrediction | null> {
     const systemAge = this.calculateSystemAge(property, system)
     const lastMaintenance = this.getLastMaintenanceDate(history, system)
     
@@ -686,7 +686,7 @@ export class PredictionEngine {
     
     return {
       id: crypto.randomUUID(),
-      property_id: property.id,
+      property_id: (property as any).id,
       system_type: system,
       predicted_failure_date: predictedDate,
       confidence_score: failureProbability,
@@ -696,12 +696,12 @@ export class PredictionEngine {
     }
   }
 
-  private calculateSystemAge(property: unknown, system: string): number {
-    const installDate = property.details?.[`${system}_install_date`] || property.year_built
+  private calculateSystemAge(property: any, system: string): number {
+    const installDate = (property as any).details?.[`${system}_install_date`] || property.year_built
     return new Date().getFullYear() - (installDate || 2000)
   }
 
-  private getLastMaintenanceDate(history: unknown[], system: string): Date | null {
+  private getLastMaintenanceDate(history: any[], system: string): Date | null {
     const systemMaintenance = history.filter(h => 
       h.description?.toLowerCase().includes(system) || 
       h.tags?.includes(system)
@@ -732,7 +732,7 @@ export class PredictionEngine {
     return new Date(Date.now() + (monthsUntilFailure * 30 * 24 * 60 * 60 * 1000))
   }
 
-  private estimateSystemRepairCost(system: string, property: unknown): number {
+  private estimateSystemRepairCost(system: string, property: any): number {
     const baseCosts = {
       'hvac': 4500,
       'roofing': 8000,
@@ -742,7 +742,7 @@ export class PredictionEngine {
     }
     
     const baseCost = (baseCosts as unknown)[system] || 5000
-    const propertyValueMultiplier = (property.current_value || 200000) / 200000
+    const propertyValueMultiplier = ((property as any).current_value || 200000) / 200000
     
     return Math.round(baseCost * propertyValueMultiplier)
   }

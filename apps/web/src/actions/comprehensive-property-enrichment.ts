@@ -14,7 +14,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger'
 import { toError } from '@claimguardian/utils'
-import { getParcelDetails, type ParcelData } from '@/actions/parcel-lookup'
+import { getParcelDetails, ParcelData } from '@/actions/parcel-lookup'
 
 export interface MarketAnalysis {
   comparableSales: ComparableSale[]

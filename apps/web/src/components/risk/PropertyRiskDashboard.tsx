@@ -19,14 +19,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RiskScoreCard } from './RiskScoreCard'
 import { HazardZonesList } from './HazardZonesList'
 import { ActiveEventsMap } from './ActiveEventsMap'
-import { 
-  getParcelRiskAssessment, 
-  getPropertyHazardZones, 
-  getActiveEventsNearProperty,
-  RiskAssessment as GeospatialRiskAssessment,
-  HazardZone as GeospatialHazardZone,
-  ActiveEvent as GeospatialActiveEvent
-} from '@/actions/geospatial'
+import { getParcelRiskAssessment, getPropertyHazardZones, getActiveEventsNearProperty, RiskAssessment as GeospatialRiskAssessment, HazardZone, ActiveEvent } from '@/actions/geospatial'
 import { 
   Building2, 
   MapPin, 
@@ -55,36 +48,9 @@ interface RiskAssessment {
   confidence: number
 }
 
-interface HazardZone {
-  id: string
-  name: string
-  category: 'flood' | 'fire' | 'wind' | 'surge' | 'earthquake'
-  riskLevel: 'low' | 'moderate' | 'high' | 'extreme'
-  description: string
-  geometry?: {
-    type: 'polygon' | 'circle'
-    coordinates: number[][]
-  }
-  affectedProperties?: number
-  lastUpdated: Date
-}
+// Using GeospatialHazardZone from geospatial actions
 
-interface ActiveEvent {
-  id: string
-  type: 'wildfire' | 'flood' | 'hurricane' | 'tornado' | 'earthquake'
-  title: string
-  description: string
-  severity: 'low' | 'medium' | 'high' | 'critical'
-  location: {
-    latitude: number
-    longitude: number
-    address?: string
-  }
-  startDate: Date
-  endDate?: Date
-  status: 'active' | 'warning' | 'ended'
-  affectedRadius: number // in miles
-}
+// Using GeospatialActiveEvent from geospatial actions
 
 interface PropertyRiskDashboardProps {
   propertyId: string
@@ -102,8 +68,8 @@ export function PropertyRiskDashboard({
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const [riskAssessment, setRiskAssessment] = useState<GeospatialRiskAssessment | null>(null)
-  const [hazardZones, setHazardZones] = useState<GeospatialHazardZone[]>([])
-  const [activeEvents, setActiveEvents] = useState<GeospatialActiveEvent[]>([])
+  const [hazardZones, setHazardZones] = useState<HazardZone[]>([])
+  const [activeEvents, setActiveEvents] = useState<ActiveEvent[]>([])
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {

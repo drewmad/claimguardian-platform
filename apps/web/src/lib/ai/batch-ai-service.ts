@@ -155,9 +155,9 @@ class BatchAIService {
    * Determine if batching should be used based on system state
    */
   private shouldUseBatching(
-    metrics: unknown, 
-    queueStatus: unknown, 
-    priority?: string, 
+    metrics: ReturnType<typeof aiBatchProcessor.getMetrics>,
+    queueStatus: ReturnType<typeof aiBatchProcessor.getQueueStatus>,
+    priority?: string,
     isImageRequest = false
   ): boolean {
     // Always batch image requests for cost optimization

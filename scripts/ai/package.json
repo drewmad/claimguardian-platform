@@ -4,6 +4,6 @@
   "private": true,
   "description": "A collection of AI-powered scripts and agents.",
   "dependencies": {
-    "chokidar": "^3.6.0"
+    "chokidar": "^4.0.3"
   }
 }

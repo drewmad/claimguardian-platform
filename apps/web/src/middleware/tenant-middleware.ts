@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { tenantManager, type TenantCustomization } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager } from '@/lib/multi-tenant/tenant-manager'
 
 interface TenantContext {
   organizationId: string
@@ -136,15 +136,15 @@ export function applyCustomizations(
   
   // Add customizations for client-side theming
   if (tenantContext.customizations) {
-    const theme = (tenantContext.customizations as any).theme || {}
+    const theme = (tenantContext.customizations as unknown).theme || {}
     response.headers.set('X-Tenant-Theme', JSON.stringify(theme))
     
-    const logoUrl = (tenantContext.customizations as any).logoUrl
+    const logoUrl = (tenantContext.customizations as unknown).logoUrl
     if (logoUrl && typeof logoUrl === 'string') {
       response.headers.set('X-Tenant-Logo', logoUrl)
     }
     
-    const customCss = (tenantContext.customizations as any).customCss
+    const customCss = (tenantContext.customizations as unknown).customCss
     if (customCss && typeof customCss === 'string') {
       response.headers.set('X-Tenant-CSS', customCss)
     }
@@ -372,7 +372,7 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
   // Add tenant-specific domains
   const tenantDomains = [tenantContext.domain]
   if (tenantContext.customizations) {
-    const webhookUrls = (tenantContext.customizations as any).webhookUrls
+    const webhookUrls = (tenantContext.customizations as unknown).webhookUrls
     if (webhookUrls && typeof webhookUrls === 'object') {
       Object.values(webhookUrls).forEach((url: unknown) => {
         if (typeof url === 'string') {

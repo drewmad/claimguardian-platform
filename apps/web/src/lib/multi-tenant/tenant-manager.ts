@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
 // Specific configuration types
-interface OrganizationConfiguration {
+interface OrganizationConfiguration extends Record<string, unknown> {
   customFields?: string[]
   allowedFileTypes?: string[]
   maxFileSize?: number
@@ -262,6 +262,33 @@ class TenantManager {
   }
 
   /**
+   * Get organization by code
+   */
+  async getOrganizationByCode(code: string): Promise<EnterpriseOrganization | null> {
+    try {
+      if (!this.supabase) await this.initializeSupabase()
+      const { data, error } = await this.supabase!
+        .from('enterprise_organizations')
+        .select('*')
+        .eq('org_code', code)
+        .eq('is_active', true)
+        .single()
+
+      if (error) {
+        if (error.code === 'PGRST116') {
+          return null // No organization found
+        }
+        throw error
+      }
+
+      return this.parseOrganization(data as OrganizationRow)
+    } catch (error) {
+      console.error(`Failed to get organization by code ${code}:`, error)
+      return null
+    }
+  }
+
+  /**
    * Get organization by domain
    */
   async getOrganizationByDomain(domain: string): Promise<EnterpriseOrganization | null> {
@@ -430,15 +457,16 @@ class TenantManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      // Check if user already exists
-      const { data: existingUser } = await this.supabase!.auth.admin.getUserByEmail(userEmail)
+      // Check if user already exists - use listUsers with email filter
+      const { data: existingUsers } = await this.supabase!.auth.admin.listUsers()
+      const existingUser = existingUsers?.users?.find(user => user.email === userEmail)
 
-      if (existingUser.user) {
+      if (existingUser) {
         // Add existing user to organization
         const { error } = await this.supabase!
           .from('organization_users')
           .insert({
-            user_id: existingUser.user.id,
+            user_id: existingUser.id,
             organization_id: organizationId,
             role,
             status: 'active',

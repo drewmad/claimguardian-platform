@@ -36,6 +36,11 @@ interface CacheConfig {
   similarityThreshold: number
 }
 
+interface Message {
+  role: string
+  content: string
+}
+
 class AICacheManager {
   private cache = new Map<string, CachedResponse>()
   private metrics: CacheMetrics = {
@@ -59,7 +64,7 @@ class AICacheManager {
    * Generate cache key from request parameters
    */
   private generateCacheKey(
-    messages: unknown[],
+    messages: Message[],
     featureId: string,
     model: string,
     additionalParams?: Record<string, any>
@@ -78,7 +83,7 @@ class AICacheManager {
    * Get cached response if available and valid
    */
   async getCachedResponse(
-    messages: unknown[],
+    messages: Message[],
     featureId: string,
     model: string,
     additionalParams?: Record<string, any>
@@ -119,7 +124,7 @@ class AICacheManager {
    * Cache AI response with intelligent TTL and compression
    */
   async cacheResponse(
-    messages: unknown[],
+    messages: Message[],
     featureId: string,
     model: string,
     response: string,
@@ -189,7 +194,7 @@ class AICacheManager {
    * Find semantically similar cached responses
    */
   private async findSimilarCachedResponse(
-    messages: unknown[],
+    messages: Message[],
     featureId: string,
     model: string
   ): Promise<CachedResponse | null> {

@@ -15,9 +15,25 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { createClient } from '@/lib/supabase/client'
 
-type Property = Database['public']['Tables']['properties']['Row']
-type PropertyInsert = Database['public']['Tables']['properties']['Insert']
-type PropertyUpdate = Database['public']['Tables']['properties']['Update']
+// Temporary types until properties table is created
+interface Property {
+  id: string
+  user_id: string
+  name: string
+  address?: string
+  created_at: string
+  updated_at: string
+}
+
+interface PropertyInsert {
+  name: string
+  address?: string
+}
+
+interface PropertyUpdate {
+  name?: string
+  address?: string
+}
 
 // Query keys factory
 export const propertyKeys = {

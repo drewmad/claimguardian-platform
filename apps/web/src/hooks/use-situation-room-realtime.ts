@@ -184,15 +184,15 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     addRealtimeEvent(event)
   }, [refreshPropertyStatus, addRealtimeEvent, createRealtimeEvent])
 
-  const handleCommunityUpdate = useCallback((payload: SupabasePayload) => {
+  const handleCommunityUpdate = useCallback((payload: unknown) => {
     logger.info('Community update received:', payload)
-    
+
     // Refresh community intelligence
     refreshCommunityIntel()
-    
+
     const event = createRealtimeEvent(
       EventType.COMMUNITY_UPDATE,
-      { communityData: payload.new },
+      { communityData: payload },
       'community-network'
     )
     addRealtimeEvent(event)
@@ -214,12 +214,12 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addRecommendation, addRealtimeEvent, createRealtimeEvent])
 
-  const handleEmergencyBroadcast = useCallback((payload: SupabasePayload) => {
+  const handleEmergencyBroadcast = useCallback((payload: RealtimeEventData) => {
     logger.info('Emergency broadcast received:', payload)
-    
+
     const event = createRealtimeEvent(
       EventType.EMERGENCY_BROADCAST,
-      payload,
+      { emergency: true, ...payload },
       'emergency-system'
     )
     addRealtimeEvent(event)
@@ -244,20 +244,25 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.THREAT_UPDATE)) {
       const threatChannel = supabase
         .channel(`threats:${propertyId}`)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: '*',
           schema: 'public',
           table: 'threat_assessments',
           filter: `property_id=eq.${propertyId}`
         }, handleThreatUpdate)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: '*',
           schema: 'public',
           table: 'ai_analyses',
           filter: `entity_id=eq.${propertyId} AND entity_type=eq.property`
-        }, (payload: SupabasePayload<ThreatAssessment>) => {
+        }, (payload: SupabasePayload<{ analysis_type: string; output_data: ThreatAssessment }>) => {
           if (payload.new?.analysis_type === 'threat_assessment') {
-            handleThreatUpdate(payload)
+            const threatUpdatePayload: SupabasePayload<ThreatAssessment> = {
+              ...payload,
+              new: payload.new.output_data,
+              old: undefined,
+            };
+            handleThreatUpdate(threatUpdatePayload);
           }
         })
         .subscribe((status: unknown) => {
@@ -272,13 +277,13 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.INTELLIGENCE_FEED)) {
       const intelligenceChannel = supabase
         .channel(`intelligence:${propertyId}`)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: 'INSERT',
           schema: 'public',
           table: 'intelligence_feeds',
           filter: `property_id=eq.${propertyId}`
         }, handleIntelligenceUpdate)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: 'INSERT',
           schema: 'public',
           table: 'environmental_data',
@@ -303,13 +308,13 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.PROPERTY_ALERT)) {
       const propertyChannel = supabase
         .channel(`property:${propertyId}`)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: '*',
           schema: 'public',
           table: 'property_systems',
           filter: `property_id=eq.${propertyId}`
         }, handlePropertySystemUpdate)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: '*',
           schema: 'public',
           table: 'property_alerts',
@@ -317,7 +322,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
         }, (payload: SupabasePayload) => {
           const event = createRealtimeEvent(
             EventType.PROPERTY_ALERT,
-            { alert: payload.new },
+            { alert: payload.new as { severity: ThreatLevel } },
             'property-monitoring'
           )
           addRealtimeEvent(event)
@@ -358,7 +363,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.AI_RECOMMENDATION)) {
       const aiChannel = supabase
         .channel(`ai:${propertyId}`)
-        .on('postgres_changes', {
+        .on('postgres_changes' as unknown, {
           event: 'INSERT',
           schema: 'public',
           table: 'ai_recommendations',
@@ -578,9 +583,9 @@ function determinePriority(eventType: EventType, data: RealtimeEventData): Actio
     case EventType.PROPERTY_ALERT:
       return ActionPriority.HIGH
     case EventType.AI_RECOMMENDATION:
-      return data.recommendation?.priority || ActionPriority.MEDIUM
+      return (data.recommendation?.priority as unknown as ActionPriority) || ActionPriority.MEDIUM
     case EventType.INTELLIGENCE_FEED:
-      return data.feed?.urgency || ActionPriority.MEDIUM
+      return (data.feed?.urgency as unknown as ActionPriority) || ActionPriority.MEDIUM
     default:
       return ActionPriority.MEDIUM
   }
