@@ -28,14 +28,29 @@ import {
   ThreatLevel,
   ActionPriority
 } from '@/types/situation-room'
-import type {
-  RealtimeEvent,
+import type { 
   ThreatAssessment,
   IntelligenceFeed,
-  PropertyStatus,
-  CommunityIntelligence,
-  AIRecommendation
+  AIRecommendation,
+  RealtimeEvent
 } from '@/types/situation-room'
+
+interface SupabasePayload<T = Record<string, unknown>> {
+  eventType: 'INSERT' | 'UPDATE' | 'DELETE'
+  new?: T
+  old?: T
+  table: string
+  schema: string
+}
+
+interface RealtimeEventData {
+  threat?: ThreatAssessment
+  feed?: IntelligenceFeed
+  recommendation?: AIRecommendation
+  alert?: { severity: ThreatLevel }
+  emergency?: boolean
+  [key: string]: unknown
+}
 
 interface RealtimeSubscriptionConfig {
   propertyId: string
@@ -108,7 +123,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const createRealtimeEvent = useCallback((
     type: EventType,
-    data: unknown,
+    data: RealtimeEventData,
     source: string = 'realtime'
   ): RealtimeEvent => ({
     id: `${type}-${Date.now()}-${Math.random()}`,
@@ -121,7 +136,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     source
   }), [])
 
-  const handleThreatUpdate = useCallback((payload: unknown) => {
+  const handleThreatUpdate = useCallback((payload: SupabasePayload<ThreatAssessment>) => {
     logger.info('Threat update received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -143,7 +158,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addThreat, addRealtimeEvent, createRealtimeEvent])
 
-  const handleIntelligenceUpdate = useCallback((payload: unknown) => {
+  const handleIntelligenceUpdate = useCallback((payload: SupabasePayload<IntelligenceFeed>) => {
     logger.info('Intelligence feed received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -155,7 +170,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addIntelligenceFeed, addRealtimeEvent, createRealtimeEvent])
 
-  const handlePropertySystemUpdate = useCallback((payload: unknown) => {
+  const handlePropertySystemUpdate = useCallback((payload: SupabasePayload) => {
     logger.info('Property system update:', payload)
     
     // Refresh property status when systems change
@@ -169,7 +184,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     addRealtimeEvent(event)
   }, [refreshPropertyStatus, addRealtimeEvent, createRealtimeEvent])
 
-  const handleCommunityUpdate = useCallback((payload: unknown) => {
+  const handleCommunityUpdate = useCallback((payload: SupabasePayload) => {
     logger.info('Community update received:', payload)
     
     // Refresh community intelligence
@@ -183,7 +198,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     addRealtimeEvent(event)
   }, [refreshCommunityIntel, addRealtimeEvent, createRealtimeEvent])
 
-  const handleAIRecommendation = useCallback((payload: unknown) => {
+  const handleAIRecommendation = useCallback((payload: SupabasePayload<AIRecommendation>) => {
     logger.info('AI recommendation received:', payload)
     
     if (payload.new && payload.eventType === 'INSERT') {
@@ -199,7 +214,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
   }, [addRecommendation, addRealtimeEvent, createRealtimeEvent])
 
-  const handleEmergencyBroadcast = useCallback((payload: unknown) => {
+  const handleEmergencyBroadcast = useCallback((payload: SupabasePayload) => {
     logger.info('Emergency broadcast received:', payload)
     
     const event = createRealtimeEvent(
@@ -240,7 +255,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'ai_analyses',
           filter: `entity_id=eq.${propertyId} AND entity_type=eq.property`
-        }, (payload: unknown) => {
+        }, (payload: SupabasePayload<ThreatAssessment>) => {
           if (payload.new?.analysis_type === 'threat_assessment') {
             handleThreatUpdate(payload)
           }
@@ -268,7 +283,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'environmental_data',
           filter: `property_id=eq.${propertyId}`
-        }, (payload: unknown) => {
+        }, (payload: SupabasePayload) => {
           const event = createRealtimeEvent(
             EventType.INTELLIGENCE_FEED,
             { environmentalData: payload.new },
@@ -299,7 +314,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
           schema: 'public',
           table: 'property_alerts',
           filter: `property_id=eq.${propertyId}`
-        }, (payload: unknown) => {
+        }, (payload: SupabasePayload) => {
           const event = createRealtimeEvent(
             EventType.PROPERTY_ALERT,
             { alert: payload.new },
@@ -548,7 +563,7 @@ export function useRealtimeSubscription(
 
 // ===== HELPER FUNCTIONS =====
 
-function determinePriority(eventType: EventType, data: unknown): ActionPriority {
+function determinePriority(eventType: EventType, data: RealtimeEventData): ActionPriority {
   switch (eventType) {
     case EventType.EMERGENCY_BROADCAST:
       return ActionPriority.IMMEDIATE
@@ -571,7 +586,7 @@ function determinePriority(eventType: EventType, data: unknown): ActionPriority 
   }
 }
 
-function requiresUserAttention(eventType: EventType, data: unknown): boolean {
+function requiresUserAttention(eventType: EventType, data: RealtimeEventData): boolean {
   switch (eventType) {
     case EventType.EMERGENCY_BROADCAST:
       return true

@@ -92,7 +92,7 @@ function ClaimsDashboardContent() {
       claimNumber: 'CLM-2024-0456',
       type: 'Wind Damage',
       policy: 'Homeowners - State Farm',
-      status: 'paid',
+      status: 'settled',
       dateOfLoss: '2024-03-10',
       dateSubmitted: '2024-03-12',
       description: 'Roof damage from severe thunderstorm',
@@ -159,7 +159,7 @@ function ClaimsDashboardContent() {
       case 'investigating': return 'bg-yellow-600'
       case 'approved': return 'bg-green-600'
       case 'denied': return 'bg-red-600'
-      case 'paid': return 'bg-emerald-600'
+      case 'settled': return 'bg-emerald-600'
       default: return 'bg-gray-600'
     }
   }
@@ -171,7 +171,7 @@ function ClaimsDashboardContent() {
       case 'investigating': return AlertCircle
       case 'approved': return CheckCircle
       case 'denied': return XCircle
-      case 'paid': return DollarSign
+      case 'settled': return DollarSign
       default: return FileText
     }
   }

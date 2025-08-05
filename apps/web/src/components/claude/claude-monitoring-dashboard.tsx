@@ -131,7 +131,7 @@ export function ClaudeMonitoringDashboard() {
           lastUpdate: new Date(),
           activeComponents: Object.values(productionStatus.healthCheck).filter(Boolean).length,
           totalComponents: Object.keys(productionStatus.healthCheck).length,
-          alerts: generateAlerts(productionStatus, feedbackStatus as unknown)
+          alerts: generateAlerts(productionStatus, feedbackStatus as FeedbackStatus)
         },
         performanceMetrics: {
           avgExecutionTime: productionStatus.metrics.avgExecutionTime,
@@ -149,7 +149,7 @@ export function ClaudeMonitoringDashboard() {
           recommendation: abTestReport.businessMetrics.recommendation
         },
         learningMetrics: {
-          totalPatterns: (analyticsReport as unknown).learningStats?.learningPatterns || 0,
+          totalPatterns: (analyticsReport as { learningStats?: { learningPatterns: number } })?.learningStats?.learningPatterns || 0,
           activeOptimizations: abTestReport.treatmentGroup.avgOptimizations || 0,
           confidenceThreshold: thresholdAnalysis.analysis.threshold,
           learningApplicationRate: 0.84, // Mock value

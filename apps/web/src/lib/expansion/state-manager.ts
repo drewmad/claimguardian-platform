@@ -43,7 +43,12 @@ interface ExpansionPlanRow {
     dependencies: string[]
     status: 'pending' | 'in_progress' | 'completed' | 'blocked'
   }>
-  resources: Record<string, any>
+  resources: {
+    engineeringEffort: number
+    dataAcquisitionCost: number
+    complianceCost: number
+    operationalCost: number
+  }
   risks: Array<{
     risk: string
     impact: 'low' | 'medium' | 'high'
@@ -780,7 +785,12 @@ class StateExpansionManager {
           date: new Date(milestone.date)
         }))
       },
-      resources: data.resources || {},
+      resources: {
+        engineeringEffort: data.resources?.engineeringEffort || 0,
+        dataAcquisitionCost: data.resources?.dataAcquisitionCost || 0,
+        complianceCost: data.resources?.complianceCost || 0,
+        operationalCost: data.resources?.operationalCost || 0
+      },
       risks: data.risks || []
     }
   }

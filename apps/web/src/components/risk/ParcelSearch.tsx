@@ -199,10 +199,10 @@ export function ParcelSearch({
                         Parcel ID: {parcel.parcelId}
                       </p>
                       <div className="space-y-1 text-sm text-gray-400">
-                        {parcel.propertyAddress && (
+                        {parcel.address && (
                           <p className="flex items-center gap-1">
                             <MapPin className="h-3 w-3" />
-                            {parcel.propertyAddress}
+                            {parcel.address}
                           </p>
                         )}
                         {parcel.ownerName && (
@@ -213,7 +213,7 @@ export function ParcelSearch({
                         )}
                         <p className="flex items-center gap-1">
                           <Home className="h-3 w-3" />
-                          {parcel.countyName} County
+                          {parcel.county} County
                         </p>
                         {parcel.yearBuilt && (
                           <p className="flex items-center gap-1">
@@ -250,11 +250,11 @@ export function ParcelSearch({
                           </p>
                         </div>
                       )}
-                      {parcel.landArea && (
+                      {parcel.lotSize && (
                         <div>
                           <p className="text-gray-500">Land Area</p>
                           <p className="text-gray-300">
-                            {parcel.landArea} acres
+                            {parcel.lotSize} acres
                           </p>
                         </div>
                       )}

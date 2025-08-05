@@ -131,8 +131,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
   }
 
   // Get the subscription details to determine the tier
-  const subscription = await stripe.subscriptions.retrieve(session.subscription as string)
-  const priceId = subscription.items.data[0]?.price.id
+  const subscriptionData = await stripe.subscriptions.retrieve(session.subscription as string)
+  const priceId = subscriptionData.items.data[0]?.price.id
   const tier = mapPriceIdToTier(priceId)
 
   // Create or update user subscription in our user_subscriptions table
@@ -145,8 +145,8 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
       stripe_subscription_id: session.subscription as string,
       stripe_price_id: priceId,
       started_at: new Date().toISOString(),
-      trial_ends_at: (subscription as Stripe.Subscription).trial_end ? new Date((subscription as Stripe.Subscription).trial_end! * 1000).toISOString() : null,
-      current_period_end: (subscription as unknown).current_period_end ? new Date((subscription as unknown).current_period_end * 1000).toISOString() : new Date().toISOString(),
+      trial_ends_at: subscriptionData.trial_end ? new Date(subscriptionData.trial_end * 1000).toISOString() : null,
+      current_period_end: (subscriptionData as any).current_period_end ? new Date((subscriptionData as any).current_period_end * 1000).toISOString() : new Date().toISOString(),
       created_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }, {
@@ -169,7 +169,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
         stripe_subscription_id: session.subscription,
         amount: session.amount_total,
         currency: session.currency,
-        trial_end: subscription.trial_end
+        trial_end: subscriptionData.trial_end
       }
     })
 
@@ -179,7 +179,7 @@ async function handleCheckoutSessionCompleted(session: Stripe.Checkout.Session) 
 async function handleSubscriptionUpdate(subscription: Stripe.Subscription) {
   const priceId = subscription.items.data[0]?.price.id
   const tier = mapPriceIdToTier(priceId)
-  const currentPeriodEnd = new Date((subscription as unknown).current_period_end * 1000).toISOString()
+  const currentPeriodEnd = new Date((subscription as any).current_period_end * 1000).toISOString()
 
   // Update subscription details in user_subscriptions table
   const { error } = await supabase
@@ -255,10 +255,11 @@ async function handleSubscriptionDeleted(subscription: Stripe.Subscription) {
 }
 
 async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
-  if (!(invoice as unknown).subscription) return
+  const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : (invoice as any).subscription?.id
+  if (!subscriptionId) return
 
   // Get subscription details to find user
-  const subscription = await stripe.subscriptions.retrieve((invoice as unknown).subscription as string)
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const userId = subscription.metadata?.user_id
 
   if (userId) {
@@ -272,7 +273,7 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
           invoice_id: invoice.id,
           amount: invoice.amount_paid,
           currency: invoice.currency,
-          subscription_id: (invoice as unknown).subscription
+          subscription_id: subscriptionId
         }
       })
 
@@ -281,10 +282,11 @@ async function handleInvoicePaymentSucceeded(invoice: Stripe.Invoice) {
 }
 
 async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
-  if (!(invoice as unknown).subscription) return
+  const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : (invoice as any).subscription?.id
+  if (!subscriptionId) return
 
   // Get subscription details to find user  
-  const subscription = await stripe.subscriptions.retrieve((invoice as unknown).subscription as string)
+  const subscription = await stripe.subscriptions.retrieve(subscriptionId)
   const userId = subscription.metadata?.user_id
 
   // Update subscription status to past_due
@@ -294,7 +296,7 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
       status: 'past_due',
       updated_at: new Date().toISOString()
     })
-    .eq('stripe_subscription_id', (invoice as unknown).subscription)
+    .eq('stripe_subscription_id', subscriptionId)
 
   if (error) {
     console.error('Error updating subscription status:', error)
@@ -311,8 +313,10 @@ async function handleInvoicePaymentFailed(invoice: Stripe.Invoice) {
           invoice_id: invoice.id,
           amount: invoice.amount_due,
           currency: invoice.currency,
-          subscription_id: (invoice as unknown).subscription,
-          failure_reason: ((invoice as unknown).charge as unknown)?.failure_message || 'Payment failed'
+          subscription_id: subscriptionId,
+          failure_reason: 'charge' in invoice && typeof (invoice as any).charge === 'object' && (invoice as any).charge?.failure_message
+            ? (invoice as any).charge.failure_message
+            : 'Payment failed'
         }
       })
 

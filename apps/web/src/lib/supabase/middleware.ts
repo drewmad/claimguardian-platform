@@ -1,32 +1,44 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "Supabase middleware for Next.js with proper cookie handling"
+ * @dependencies ["@supabase/ssr", "next"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
 import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
-export function createClient(request: Request & { cookies: unknown }, response: NextResponse) {
+interface CookieStore {
+  get(name: string): { value: string } | undefined
+  set(options: { name: string; value: string; [key: string]: unknown }): void
+}
+
+interface RequestWithCookies extends NextRequest {
+  cookies: CookieStore
+}
+
+export function createClient(request: RequestWithCookies, response: NextResponse) {
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       cookies: {
         get(name: string) {
-          return request.cookies.get(name)?.value
+          const cookie = request.cookies.get(name)
+          return cookie?.value
         },
-        set(name: string, value: string, options: Record<string, any>) {
-          request.cookies.set({ name, value, ...options })
-          response.cookies.set({ name, value, ...options })
+        set(name: string, value: string, options: Record<string, unknown>) {
+          const cookieOptions = { name, value, ...options }
+          request.cookies.set(cookieOptions)
+          response.cookies.set(cookieOptions)
         },
-        remove(name: string, options: Record<string, any>) {
-          request.cookies.set({ name, value: '', ...options })
-          response.cookies.set({ name, value: '', ...options })
+        remove(name: string, options: Record<string, unknown>) {
+          const cookieOptions = { name, value: '', ...options }
+          request.cookies.set(cookieOptions)
+          response.cookies.set(cookieOptions)
         },
       },
     }

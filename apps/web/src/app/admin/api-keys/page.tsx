@@ -196,7 +196,7 @@ export default function AdminAPIKeysPage() {
           </Select>
           <Dialog open={tierLimitsOpen} onOpenChange={setTierLimitsOpen}>
             <DialogTrigger asChild>
-              <Button variant="outline">
+              <Button variant="secondary">
                 <Settings className="h-4 w-4 mr-2" />
                 Configure Limits
               </Button>
@@ -373,7 +373,7 @@ export default function AdminAPIKeysPage() {
                       <TableCell>
                         {key.is_active && (
                           <Button
-                            variant="outline"
+                            variant="secondary"
                             size="sm"
                             onClick={() => handleRevokeKey(key.id, key.name)}
                             className="text-red-400 border-red-400 hover:bg-red-400 hover:text-white"

@@ -45,7 +45,7 @@ interface MaintenanceTask {
 interface MaintenanceCategory {
   id: string
   name: string
-  icon: unknown
+  icon: React.ComponentType<{ className?: string }>
   color: string
   taskCount: number
 }
@@ -261,11 +261,11 @@ function MaintenanceDashboardContent() {
             <h2 className="text-xl font-semibold text-white mb-4">Task Categories</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
               {categories.map((category) => {
-                const Icon = category.icon
+                const Icon = category.icon as React.ComponentType<{ className?: string }>
                 return (
                   <Card key={category.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
                     <CardContent className="p-4 text-center">
-                      <Icon className={`w-8 h-8 mx-auto mb-2 ${category.color}`} />
+                      {Icon && <Icon className={`w-8 h-8 mx-auto mb-2 ${category.color}`} />}
                       <p className="text-sm font-medium text-white">{category.name}</p>
                       <p className="text-xs text-gray-400 mt-1">{category.taskCount} tasks</p>
                     </CardContent>

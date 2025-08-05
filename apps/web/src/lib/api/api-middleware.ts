@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { APIKeyManager } from './api-key-manager'
+import { APIKeyManager, type RateLimitResult } from './api-key-manager'
 import { logger } from '@/lib/logger/production-logger'
 import { createClient } from '@/lib/supabase/server'
 
@@ -308,7 +308,7 @@ export class APIMiddleware {
    * Create rate limit exceeded response
    */
   private createRateLimitResponse(
-    rateLimitResult: unknown,
+    rateLimitResult: RateLimitResult,
     requestInfo: APIRequestInfo,
     startTime: number,
     context: APIContext
@@ -338,7 +338,7 @@ export class APIMiddleware {
   /**
    * Add rate limit headers to response
    */
-  private addRateLimitHeaders(response: NextResponse, rateLimitResult: unknown): void {
+  private addRateLimitHeaders(response: NextResponse, rateLimitResult: RateLimitResult): void {
     response.headers.set('X-RateLimit-Limit', rateLimitResult.limit_value.toString())
     response.headers.set('X-RateLimit-Remaining', 
       Math.max(0, rateLimitResult.limit_value - rateLimitResult.current_usage).toString())

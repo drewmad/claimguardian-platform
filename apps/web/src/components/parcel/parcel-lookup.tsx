@@ -18,11 +18,45 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { searchParcels, assessPropertyRisk } from '@/actions/parcel-lookup'
 
+interface ParcelSearchParams {
+  address?: string
+  owner?: string
+  parcelId?: string
+  county?: string
+}
+
+interface ParcelData {
+  id: string
+  parcelId: string
+  address: string
+  owner: string
+  county: string
+  landUse: string
+  totalValue: number
+  buildingValue: number
+  landValue: number
+  yearBuilt?: number
+  squareFeet?: number
+  acreage?: number
+  floodZone?: string
+  hurricaneZone?: string
+  riskFactors?: string[]
+}
+
 export function ParcelLookup() {
   const [searchParams, setSearchParams] = useState<ParcelSearchParams>({})
   const [results, setResults] = useState<ParcelData[]>([])
   const [selectedParcel, setSelectedParcel] = useState<ParcelData | null>(null)
-  const [riskAssessment, setRiskAssessment] = useState<any>(null)
+  const [riskAssessment, setRiskAssessment] = useState<{
+    overallRisk: 'low' | 'medium' | 'high' | 'critical'
+    riskScore: number
+    factors: Array<{
+      type: string
+      severity: string
+      description: string
+    }>
+    recommendations: string[]
+  } | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 

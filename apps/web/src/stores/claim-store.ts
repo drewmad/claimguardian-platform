@@ -273,8 +273,8 @@ export const useClaimStore = create<ClaimState>()(
                   ...c,
                   status,
                   statusHistory: [...c.statusHistory, statusHistory],
-                  updatedAt: now,
-                  reported_date: status === 'submitted' && !c.reported_date ? now : c.reported_date
+                  updated_at: now,
+                  date_reported: status === 'submitted' && !c.date_reported ? now : c.date_reported
                 }
               : c
           )

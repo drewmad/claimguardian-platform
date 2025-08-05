@@ -181,7 +181,10 @@ export function MobileFieldApp() {
   const getBatteryInfo = async (): Promise<number> => {
     try {
       if ('getBattery' in navigator) {
-        const battery = await (navigator as unknown).getBattery()
+        const navigatorWithBattery = navigator as Navigator & {
+          getBattery(): Promise<{ level: number }>
+        }
+        const battery = await navigatorWithBattery.getBattery()
         return Math.round(battery.level * 100)
       }
     } catch {

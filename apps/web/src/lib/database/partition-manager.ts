@@ -603,7 +603,7 @@ class IntelligentPartitionManager {
         last_accessed?: string
       }
 
-      const partitions: PartitionInfo[] = (data || []).map((row: PartitionRow) => ({
+      const partitions: PartitionInfo[] = (data as PartitionRow[] || []).map((row: PartitionRow) => ({
         name: row.partition_name,
         parent: row.parent_name,
         type: this.strategies.get(tableName)?.type || 'unknown',

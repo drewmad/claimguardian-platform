@@ -9,6 +9,142 @@
 import { createClient } from '@/lib/supabase/server'
 import type { SupabaseClient } from '@supabase/supabase-js'
 
+// Specific configuration types
+interface OrganizationConfiguration {
+  customFields?: string[]
+  allowedFileTypes?: string[]
+  maxFileSize?: number
+  timezone?: string
+  locale?: string
+  notifications?: {
+    email?: boolean
+    sms?: boolean
+    push?: boolean
+  }
+}
+
+interface OrganizationBranding {
+  logoUrl?: string
+  primaryColor?: string
+  secondaryColor?: string
+  customCss?: string
+  faviconUrl?: string
+}
+
+interface OrganizationIntegrations {
+  stripe?: { accountId: string; webhookSecret: string }
+  mailgun?: { apiKey: string; domain: string }
+  twilio?: { accountSid: string; authToken: string }
+  slack?: { webhookUrl: string }
+}
+
+interface OrganizationAddress {
+  street: string
+  city: string
+  state: string
+  zipCode: string
+  country?: string
+}
+
+interface SSOConfiguration {
+  provider: 'oauth' | 'saml' | 'okta' | 'azure'
+  clientId?: string
+  clientSecret?: string
+  domain?: string
+  callbackUrl?: string
+}
+
+interface DataRetentionPolicy {
+  claimsRetentionDays: number
+  documentsRetentionDays: number
+  auditLogsRetentionDays: number
+  personalDataRetentionDays: number
+  backupRetentionDays: number
+}
+
+interface ClaimWorkflow {
+  stages: Array<{
+    id: string
+    name: string
+    required: boolean
+    approvalRequired: boolean
+  }>
+  notifications: {
+    stageChange: boolean
+    approval: boolean
+    completion: boolean
+  }
+}
+
+interface ApprovalWorkflows {
+  claimApproval: {
+    threshold: number
+    approvers: string[]
+    autoApprove: boolean
+  }
+  documentApproval: {
+    required: boolean
+    approvers: string[]
+  }
+}
+
+interface NotificationPreferences {
+  email: {
+    enabled: boolean
+    frequency: 'immediate' | 'daily' | 'weekly'
+  }
+  sms: {
+    enabled: boolean
+    urgentOnly: boolean
+  }
+  push: {
+    enabled: boolean
+    categories: string[]
+  }
+}
+
+interface SecurityPolicies {
+  passwordPolicy: {
+    minLength: number
+    requireUppercase: boolean
+    requireNumbers: boolean
+    requireSymbols: boolean
+  }
+  sessionTimeout: number
+  maxFailedAttempts: number
+  lockoutDuration: number
+}
+
+interface DataExportSettings {
+  allowUserExport: boolean
+  exportFormats: string[]
+  retentionAfterExport: number
+  approvalRequired: boolean
+}
+
+interface AuditSettings {
+  enabledEvents: string[]
+  retentionDays: number
+  realTimeNotifications: boolean
+  webhookUrl?: string
+}
+
+interface OrganizationTheme {
+  primaryColor?: string
+  secondaryColor?: string
+  accentColor?: string
+  backgroundColor?: string
+  textColor?: string
+  font?: string
+}
+
+interface ContactInfo {
+  name: string
+  email: string
+  phone?: string
+  role: string
+}
+
 // Database row types (match actual database schema)
 interface OrganizationRow {
   id: string
@@ -27,29 +163,29 @@ interface OrganizationRow {
   current_users: number
   current_properties: number
   current_claims: number
-  ai_requests_used: number
-  storage_used_gb: number
+  current_ai_requests: number
+  current_storage_gb: number
   feature_flags: Record<string, boolean>
   created_at: string
   updated_at: string
-  configuration?: Record<string, any>
-  branding?: Record<string, any>
-  integrations?: Record<string, any>
+  configuration?: OrganizationConfiguration
+  branding?: OrganizationBranding
+  integrations?: OrganizationIntegrations
   allowed_states?: string[]
   primary_state?: string
   primary_contact_email?: string
   billing_email?: string
   technical_contact_email?: string
   phone?: string
-  address?: Record<string, any>
+  address?: OrganizationAddress
   sso_enabled?: boolean
   sso_provider?: string
-  sso_configuration?: Record<string, any>
+  sso_configuration?: SSOConfiguration
   require_2fa?: boolean
   ip_whitelist?: string[]
   data_region?: string
   compliance_requirements?: string[]
-  data_retention_policy?: Record<string, any>
+  data_retention_policy?: DataRetentionPolicy
   created_by?: string
   last_modified_by?: string
   notes?: string
@@ -80,25 +216,25 @@ interface OrganizationUserRow {
 interface TenantCustomizationRow {
   id: string
   organization_id: string
-  theme: Record<string, unknown>
+  theme: OrganizationTheme
   logo_url?: string
   favicon_url?: string
   custom_css?: string
   enabled_features: string[]
   disabled_features?: string[]
   feature_limits?: Record<string, number>
-  claim_workflow?: Record<string, any>
-  approval_workflows?: Record<string, any>
-  notification_preferences?: Record<string, any>
+  claim_workflow?: ClaimWorkflow
+  approval_workflows?: ApprovalWorkflows
+  notification_preferences?: NotificationPreferences
   webhook_urls?: Record<string, string>
   api_keys?: Record<string, string>
-  external_integrations?: Record<string, any>
-  security_policies?: Record<string, any>
-  data_export_settings?: Record<string, any>
-  audit_settings?: Record<string, any>
+  external_integrations?: OrganizationIntegrations
+  security_policies?: SecurityPolicies
+  data_export_settings?: DataExportSettings
+  audit_settings?: AuditSettings
   branding_name?: string
   support_email?: string
-  contact_info?: Record<string, unknown>
+  contact_info?: ContactInfo
   created_at: string
   created_by?: string
   updated_at: string
@@ -153,15 +289,10 @@ interface EnterpriseOrganization {
   currentStorageGb: number
   
   // Configuration
-  configuration: Record<string, any>
+  configuration: OrganizationConfiguration
   featureFlags: Record<string, boolean>
-  branding: {
-    logoUrl?: string
-    primaryColor?: string
-    secondaryColor?: string
-    customCss?: string
-  }
-  integrations: Record<string, any>
+  branding: OrganizationBranding
+  integrations: OrganizationIntegrations
   
   // Geographic scope
   allowedStates: string[]
@@ -172,19 +303,19 @@ interface EnterpriseOrganization {
   billingEmail?: string
   technicalContactEmail?: string
   phone?: string
-  address?: Record<string, any>
+  address?: OrganizationAddress
   
   // Security settings
   ssoEnabled: boolean
   ssoProvider?: string
-  ssoConfiguration?: Record<string, any>
+  ssoConfiguration?: SSOConfiguration
   require2fa: boolean
   ipWhitelist?: string[]
   
   // Compliance
   dataRegion: string
   complianceRequirements: string[]
-  dataRetentionPolicy: Record<string, any>
+  dataRetentionPolicy: DataRetentionPolicy
   
   // Metadata
   createdAt: Date
@@ -217,14 +348,7 @@ interface TenantCustomization {
   organizationId: string
   
   // UI Customization
-  theme: {
-    primaryColor?: string
-    secondaryColor?: string
-    accentColor?: string
-    backgroundColor?: string
-    textColor?: string
-    font?: string
-  }
+  theme: OrganizationTheme
   logoUrl?: string
   faviconUrl?: string
   customCss?: string
@@ -235,19 +359,19 @@ interface TenantCustomization {
   featureLimits: Record<string, number>
   
   // Workflow Customization
-  claimWorkflow: Record<string, any>
-  approvalWorkflows: Record<string, any>
-  notificationPreferences: Record<string, any>
+  claimWorkflow: ClaimWorkflow
+  approvalWorkflows: ApprovalWorkflows
+  notificationPreferences: NotificationPreferences
   
   // Integration Settings
   webhookUrls: Record<string, string>
   apiKeys: Record<string, string> // Encrypted
-  externalIntegrations: Record<string, any>
+  externalIntegrations: OrganizationIntegrations
   
   // Compliance and Security
-  securityPolicies: Record<string, any>
-  dataExportSettings: Record<string, any>
-  auditSettings: Record<string, any>
+  securityPolicies: SecurityPolicies
+  dataExportSettings: DataExportSettings
+  auditSettings: AuditSettings
   
   createdAt: Date
   updatedAt: Date
@@ -277,6 +401,17 @@ interface TenantUsageInfo {
   invoiceDate?: Date
   dueDate?: Date
   paidDate?: Date
+}
+
+// Define allowed query structure for tenant queries
+interface TenantQuery {
+  select?: string
+  match?: Record<string, string | number | boolean>
+  order?: {
+    column: string
+    ascending: boolean
+  }
+  limit?: number
 }
 
 class TenantManager {
@@ -483,7 +618,7 @@ class TenantManager {
         .eq('email', userEmail)
         .single()
 
-      let userId: string
+      let userId: string | undefined
       let invitationToken: string | undefined
 
       if (existingUser) {
@@ -765,8 +900,8 @@ class TenantManager {
   async executeTenantQuery(
     orgCode: string,
     tableName: string,
-    query: unknown
-  ): Promise<any> {
+    query: TenantQuery
+  ): Promise<{ data: unknown; error: string | null }> {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
@@ -774,18 +909,20 @@ class TenantManager {
       const fullTableName = `${schemaName}.${tableName}`
 
       // Execute query with tenant-specific table
-      return await this.supabase!
+      const result = await this.supabase!
         .from(fullTableName)
-        .select(query.select)
+        .select(query.select || '*')
         .match(query.match || {})
         .order(query.order?.column || 'created_at', { 
           ascending: query.order?.ascending || false 
         })
         .limit(query.limit || 1000)
 
+      return { data: result.data, error: result.error?.message || null }
+
     } catch (error) {
       console.error(`Failed to execute tenant query for ${orgCode}:`, error)
-      return { data: null, error: error.message }
+      return { data: null, error: (error as Error).message }
     }
   }
 
@@ -798,7 +935,7 @@ class TenantManager {
     action: string,
     resourceType: string,
     resourceId: string,
-    changes?: unknown
+    changes?: Record<string, unknown>
   ): Promise<void> {
     try {
       if (!this.supabase) await this.initializeSupabase()
@@ -877,10 +1014,16 @@ class TenantManager {
       ipWhitelist: data.ip_whitelist,
       dataRegion: data.data_region || '',
       complianceRequirements: data.compliance_requirements || [],
-      dataRetentionPolicy: data.data_retention_policy || {},
+      dataRetentionPolicy: data.data_retention_policy || {
+        claimsRetentionDays: 2555, // 7 years
+        documentsRetentionDays: 2555,
+        auditLogsRetentionDays: 365,
+        personalDataRetentionDays: 1095, // 3 years
+        backupRetentionDays: 90
+      },
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
-      createdBy: data.created_by || '' || '',
+      createdBy: data.created_by || '',
       lastModifiedBy: data.last_modified_by,
       notes: data.notes
     }
@@ -917,15 +1060,55 @@ class TenantManager {
       enabledFeatures: data.enabled_features || [],
       disabledFeatures: data.disabled_features || [],
       featureLimits: data.feature_limits || {},
-      claimWorkflow: data.claim_workflow || {},
-      approvalWorkflows: data.approval_workflows || {},
-      notificationPreferences: data.notification_preferences || {},
+      claimWorkflow: data.claim_workflow || {
+        stages: [],
+        notifications: {
+          stageChange: true,
+          approval: true,
+          completion: true
+        }
+      },
+      approvalWorkflows: data.approval_workflows || {
+        claimApproval: {
+          threshold: 1000,
+          approvers: [],
+          autoApprove: false
+        },
+        documentApproval: {
+          required: false,
+          approvers: []
+        }
+      },
+      notificationPreferences: data.notification_preferences || {
+        email: { enabled: true, frequency: 'immediate' },
+        sms: { enabled: false, urgentOnly: true },
+        push: { enabled: true, categories: [] }
+      },
       webhookUrls: data.webhook_urls || {},
       apiKeys: data.api_keys || {},
       externalIntegrations: data.external_integrations || {},
-      securityPolicies: data.security_policies || {},
-      dataExportSettings: data.data_export_settings || {},
-      auditSettings: data.audit_settings || {},
+      securityPolicies: data.security_policies || {
+        passwordPolicy: {
+          minLength: 8,
+          requireUppercase: true,
+          requireNumbers: true,
+          requireSymbols: false
+        },
+        sessionTimeout: 3600,
+        maxFailedAttempts: 5,
+        lockoutDuration: 900
+      },
+      dataExportSettings: data.data_export_settings || {
+        allowUserExport: true,
+        exportFormats: ['csv', 'json'],
+        retentionAfterExport: 30,
+        approvalRequired: false
+      },
+      auditSettings: data.audit_settings || {
+        enabledEvents: ['login', 'logout', 'data_access', 'data_modification'],
+        retentionDays: 365,
+        realTimeNotifications: false
+      },
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at),
       createdBy: data.created_by || ''
@@ -943,7 +1126,7 @@ class TenantManager {
       aiRequestsCount: data.ai_requests_count || 0,
       storageGb: data.storage_gb || 0,
       baseCost: data.base_cost || 0,
-      overageCosts: data.overage_costs || {},
+      overageCosts: data.overage_costs ? { total: data.overage_costs } : {},
       totalCost: data.total_cost || 0,
       invoiceStatus: data.invoice_status,
       invoiceNumber: data.invoice_number,
@@ -982,5 +1165,20 @@ export type {
   EnterpriseOrganization,
   OrganizationUser,
   TenantCustomization,
-  TenantUsageInfo
+  TenantUsageInfo,
+  OrganizationConfiguration,
+  OrganizationBranding,
+  OrganizationIntegrations,
+  OrganizationAddress,
+  SSOConfiguration,
+  DataRetentionPolicy,
+  ClaimWorkflow,
+  ApprovalWorkflows,
+  NotificationPreferences,
+  SecurityPolicies,
+  DataExportSettings,
+  AuditSettings,
+  OrganizationTheme,
+  ContactInfo,
+  TenantQuery
 }

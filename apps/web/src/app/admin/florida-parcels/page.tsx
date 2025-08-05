@@ -14,7 +14,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
+import { Button } from '@claimguardian/ui';
 import { Badge } from '@/components/ui/badge';
 import { RefreshCw, Play, Pause, AlertCircle, CheckCircle2, Clock } from 'lucide-react';
 
@@ -139,7 +139,7 @@ export default function FloridaParcelsMonitor() {
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Florida Parcels Import Monitor</h1>
         <div className="flex gap-2">
-          <Button onClick={fetchDashboard} variant="outline" size="sm">
+          <Button onClick={fetchDashboard} variant="secondary" size="sm">
             <RefreshCw className="w-4 h-4 mr-2" />
             Refresh
           </Button>
@@ -155,7 +155,7 @@ export default function FloridaParcelsMonitor() {
               </Button>
             </>
           ) : (
-            <Button onClick={stopProcessing} variant="destructive" size="sm">
+            <Button onClick={stopProcessing} variant="secondary" size="sm">
               <Pause className="w-4 h-4 mr-2" />
               Stop Processing
             </Button>
@@ -243,21 +243,21 @@ export default function FloridaParcelsMonitor() {
       {/* View Filter */}
       <div className="flex gap-2 mb-4">
         <Button
-          variant={selectedView === 'all' ? 'default' : 'outline'}
+          variant={selectedView === 'all' ? 'default' : 'secondary'}
           size="sm"
           onClick={() => setSelectedView('all')}
         >
           All Counties ({counties.length})
         </Button>
         <Button
-          variant={selectedView === 'active' ? 'default' : 'outline'}
+          variant={selectedView === 'active' ? 'default' : 'secondary'}
           size="sm"
           onClick={() => setSelectedView('active')}
         >
           Active ({counties.filter(c => c.status === 'processing').length})
         </Button>
         <Button
-          variant={selectedView === 'errors' ? 'default' : 'outline'}
+          variant={selectedView === 'errors' ? 'default' : 'secondary'}
           size="sm"
           onClick={() => setSelectedView('errors')}
         >

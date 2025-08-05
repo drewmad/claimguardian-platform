@@ -113,7 +113,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
 
       // Create global callback
       const callbackName = 'initGoogleMaps'
-      ;(window as Record<string, unknown>)[callbackName] = () => {
+      ;(window as typeof window & Record<string, unknown>)[callbackName] = () => {
         // Check if Google Maps loaded successfully
         if (window.google?.maps) {
           setIsLoaded(true)
@@ -124,7 +124,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
           setIsLoading(false)
         }
         // Clean up callback
-        delete (window as Record<string, unknown>)[callbackName]
+        delete (window as typeof window & Record<string, unknown>)[callbackName]
       }
 
       // Handle script loading errors
@@ -132,7 +132,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
         setError('Failed to load Google Maps API script')
         setLoadError(true)
         setIsLoading(false)
-        delete (window as Record<string, unknown>)[callbackName]
+        delete (window as typeof window & Record<string, unknown>)[callbackName]
       }
 
       // Add script to document

@@ -605,7 +605,7 @@ export async function executeTenantQuery(
     const result = await tenantManager.executeTenantQuery(
       organizationCode,
       tableName,
-      query
+      query as any
     )
 
     return result

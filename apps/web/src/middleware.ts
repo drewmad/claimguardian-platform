@@ -17,8 +17,34 @@ import { rateLimiter, RateLimiter } from '@/lib/security/rate-limiter'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
+// Type guards for middleware safety
+type MiddlewareRequest = NextRequest & {
+  cookies: {
+    getAll(): Array<{ name: string; value: string }>
+  }
+}
+
+type MiddlewareResponse = NextResponse & {
+  cookies: {
+    set(name: string, value: string, options?: Record<string, unknown>): void
+  }
+}
+
+function isValidRequest(request: NextRequest): request is MiddlewareRequest {
+  return 'cookies' in request && typeof request.cookies.getAll === 'function'
+}
+
+function isValidResponse(response: NextResponse): response is MiddlewareResponse {
+  return 'cookies' in response && typeof response.cookies.set === 'function'
+}
+
 // Helper to clear all auth cookies
 function clearAuthCookies(request: NextRequest, response: NextResponse) {
+  if (!isValidRequest(request) || !isValidResponse(response)) {
+    logger.warn('[MIDDLEWARE] Invalid request or response objects for cookie clearing')
+    return
+  }
+  
   const cookies = request.cookies.getAll()
   
   cookies.forEach(cookie => {

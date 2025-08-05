@@ -42,7 +42,7 @@ interface Coverage {
   limit: number
   used: number
   deductible: number
-  icon: unknown
+  icon: React.ComponentType<{ className?: string }>
 }
 
 function InsuranceDashboardContent() {
@@ -337,14 +337,14 @@ function InsuranceDashboardContent() {
               <CardContent>
                 <div className="space-y-4">
                   {coverages.map((coverage) => {
-                    const Icon = coverage.icon
+                    const Icon = coverage.icon as React.ComponentType<{ className?: string }>
                     const utilization = (coverage.used / coverage.limit) * 100
                     
                     return (
                       <div key={coverage.type} className="space-y-2">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
-                            <Icon className="w-4 h-4 text-gray-400" />
+                            {Icon && <Icon className="w-4 h-4 text-gray-400" />}
                             <span className="text-sm font-medium text-white">{coverage.type}</span>
                           </div>
                           <span className="text-sm text-gray-300">

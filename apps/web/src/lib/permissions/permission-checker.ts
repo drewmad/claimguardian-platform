@@ -49,6 +49,38 @@ export interface PermissionCheckResult {
   limit?: number
 }
 
+interface UserTierData {
+  permissions: PermissionType[]
+  ai_requests_limit: number
+  storage_limit_mb: number
+  properties_limit: number
+  claims_limit: number
+}
+
+interface UserSubscription {
+  tier: UserTier
+  status: string
+  user_tiers: UserTierData
+}
+
+interface UserPermissionOverride {
+  user_id: string
+  permission_type: PermissionType
+  granted: boolean
+  is_active: boolean
+}
+
+interface ActivityLog {
+  user_id: string
+  action_type: string
+  details?: Record<string, unknown>
+  created_at: string
+}
+
+interface FileData {
+  file_size?: number
+}
+
 class PermissionChecker {
   private supabase = createClient()
 
@@ -76,7 +108,7 @@ class PermissionChecker {
         .single()
 
       if (subscription && subscription.user_tiers) {
-        const tierData = subscription.user_tiers as Record<string, any>
+        const tierData = subscription.user_tiers as UserTierData
         return {
           tier: subscription.tier,
           permissions: tierData.permissions || [],
@@ -136,9 +168,10 @@ class PermissionChecker {
         .single()
 
       if (override) {
+        const overrideData = override as UserPermissionOverride
         return {
-          hasPermission: override.granted,
-          reason: override.granted ? 'Permission granted via override' : 'Permission denied via override'
+          hasPermission: overrideData.granted,
+          reason: overrideData.granted ? 'Permission granted via override' : 'Permission denied via override'
         }
       }
 
@@ -200,7 +233,7 @@ class PermissionChecker {
             .select('file_size')
             .eq('user_id', userId)
 
-          currentUsage = files?.reduce((total, file) => total + (file.file_size || 0), 0) || 0
+          currentUsage = (files as FileData[])?.reduce((total, file) => total + (file.file_size || 0), 0) || 0
           currentUsage = Math.round(currentUsage / (1024 * 1024)) // Convert to MB
           limit = userPermissions.storageLimit
           break
@@ -295,7 +328,7 @@ class PermissionChecker {
   /**
    * Log user activity for tracking and analytics
    */
-  async logActivity(userId: string, actionType: string, details?: Record<string, any>): Promise<void> {
+  async logActivity(userId: string, actionType: string, details?: Record<string, unknown>): Promise<void> {
     try {
       await this.supabase
         .from('user_activity_logs')
@@ -329,7 +362,7 @@ export function usePermissions(userId: string) {
     return await permissionChecker.getUserPermissions(userId)
   }
 
-  const logActivity = async (actionType: string, details?: Record<string, any>) => {
+  const logActivity = async (actionType: string, details?: Record<string, unknown>) => {
     return await permissionChecker.logActivity(userId, actionType, details)
   }
 

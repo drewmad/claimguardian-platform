@@ -137,8 +137,7 @@ function PageAnalyzerContent() {
       const { data, error } = await supabase.functions.invoke('page-analyzer', {
         body: {
           url,
-          analysisType,
-          userId: subscription.userId
+          analysisType
         }
       })
 
@@ -172,12 +171,12 @@ function PageAnalyzerContent() {
     }
 
     const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' })
-    const url = URL.createObjectURL(blob)
+    const downloadUrl = URL.createObjectURL(blob)
     const a = document.createElement('a')
-    a.href = url
+    a.href = downloadUrl
     a.download = `page-analysis-${new Date().toISOString().split('T')[0]}.json`
     a.click()
-    URL.revokeObjectURL(url)
+    URL.revokeObjectURL(downloadUrl)
     
     toast.success('Analysis results exported!')
   }
@@ -197,7 +196,7 @@ function PageAnalyzerContent() {
           helpful: qualityFeedback.helpful,
           accuracy: qualityFeedback.accuracy,
           comment: qualityFeedback.comment,
-          user_id: subscription.userId
+          user_id: null
         })
       })
       
@@ -213,10 +212,8 @@ function PageAnalyzerContent() {
     <div className="container mx-auto p-6 max-w-7xl space-y-8">
       <div className="mb-8">
         <AIBreadcrumb
-          items={[
-            { label: 'AI Tools', href: '/ai-tools' },
-            { label: 'Page Analyzer', href: '/ai-tools/page-analyzer' }
-          ]}
+          section="AI Tools"
+          page="Page Analyzer"
         />
         
         <div className="flex items-center justify-between mt-4">
@@ -229,7 +226,7 @@ function PageAnalyzerContent() {
               Analyze any webpage for SEO, accessibility, performance, and content quality
             </p>
           </div>
-          <FeatureLimitBadge featureName="aiRequests" />
+          <FeatureLimitBadge feature="aiRequests" />
         </div>
       </div>
 

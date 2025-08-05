@@ -21,7 +21,7 @@ import {
   uploadClaimDocument,
   generateClaimReport
 } from '../claims'
-import { createSupabaseMock } from '../../__tests__/utils/supabase-mocks'
+import { createSupabaseMock, type MockSupabaseClient } from '../../../__tests__/utils/supabase-mocks'
 
 // Mock dependencies
 jest.mock('@claimguardian/db', () => ({
@@ -99,7 +99,7 @@ describe('Claims Server Actions', () => {
       mockSupabase.auth.getUser.mockResolvedValue({
         data: { user: null },
         error: null
-      })
+      } as any)
 
       const result = await createClaim(validClaimData)
 
@@ -244,7 +244,7 @@ describe('Claims Server Actions', () => {
         })
       })
 
-      mockSupabase.storage.from = mockStorageFrom
+      ;(mockSupabase.storage.from as jest.Mock) = mockStorageFrom
 
       // Mock database insert for document record
       mockSupabase._mockQuery.single.mockResolvedValue({
@@ -308,7 +308,7 @@ describe('Claims Server Actions', () => {
       const result = await generateClaimReport({ claimId: 'claim-456' })
 
       expect(result.success).toBe(true)
-      expect((result.data as unknown)?.summary?.totalDocuments).toBe(0)
+      expect((result.data as any)?.summary?.totalDocuments).toBe(0)
       expect(result.data?.recommendations).toBeInstanceOf(Array)
     })
   })
@@ -320,7 +320,7 @@ describe('Claims Server Actions', () => {
       const mockEq = jest.fn().mockReturnValue(chainableEq)
       
       const mockDelete = jest.fn().mockReturnValue({ eq: mockEq })
-      mockSupabase._mockQuery.delete = mockDelete
+      ;(mockSupabase._mockQuery.delete as jest.Mock) = mockDelete
 
       const result = await deleteClaim({ claimId: 'claim-456' })
 

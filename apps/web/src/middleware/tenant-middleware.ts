@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { tenantManager } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager, type TenantCustomization } from '@/lib/multi-tenant/tenant-manager'
 
 interface TenantContext {
   organizationId: string
@@ -76,7 +76,29 @@ export async function extractTenantContext(request: NextRequest): Promise<Tenant
     subscriptionStatus: organization.subscriptionStatus,
     allowedStates: organization.allowedStates,
     featureFlags: organization.featureFlags,
-    customizations: customizations || undefined
+    customizations: customizations ? {
+      id: customizations.id,
+      organizationId: customizations.organizationId,
+      theme: customizations.theme,
+      logoUrl: customizations.logoUrl,
+      faviconUrl: customizations.faviconUrl,
+      customCss: customizations.customCss,
+      enabledFeatures: customizations.enabledFeatures,
+      disabledFeatures: customizations.disabledFeatures,
+      featureLimits: customizations.featureLimits,
+      claimWorkflow: customizations.claimWorkflow,
+      approvalWorkflows: customizations.approvalWorkflows,
+      notificationPreferences: customizations.notificationPreferences,
+      webhookUrls: customizations.webhookUrls,
+      apiKeys: customizations.apiKeys,
+      externalIntegrations: customizations.externalIntegrations,
+      securityPolicies: customizations.securityPolicies,
+      dataExportSettings: customizations.dataExportSettings,
+      auditSettings: customizations.auditSettings,
+      createdAt: customizations.createdAt,
+      updatedAt: customizations.updatedAt,
+      createdBy: customizations.createdBy
+    } : undefined
   }
 }
 
@@ -114,12 +136,17 @@ export function applyCustomizations(
   
   // Add customizations for client-side theming
   if (tenantContext.customizations) {
-    response.headers.set('X-Tenant-Theme', JSON.stringify(tenantContext.customizations.theme || {}))
-    if (tenantContext.customizations.logoUrl) {
-      response.headers.set('X-Tenant-Logo', tenantContext.customizations.logoUrl)
+    const theme = (tenantContext.customizations as any).theme || {}
+    response.headers.set('X-Tenant-Theme', JSON.stringify(theme))
+    
+    const logoUrl = (tenantContext.customizations as any).logoUrl
+    if (logoUrl && typeof logoUrl === 'string') {
+      response.headers.set('X-Tenant-Logo', logoUrl)
     }
-    if (tenantContext.customizations.customCss) {
-      response.headers.set('X-Tenant-CSS', tenantContext.customizations.customCss)
+    
+    const customCss = (tenantContext.customizations as any).customCss
+    if (customCss && typeof customCss === 'string') {
+      response.headers.set('X-Tenant-CSS', customCss)
     }
   }
   
@@ -344,15 +371,20 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
   
   // Add tenant-specific domains
   const tenantDomains = [tenantContext.domain]
-  if (tenantContext.customizations?.webhookUrls) {
-    Object.values(tenantContext.customizations.webhookUrls).forEach(url => {
-      try {
-        const domain = new URL(url as string).hostname
-        tenantDomains.push(domain)
-      } catch (error) {
-        // Invalid URL, skip
-      }
-    })
+  if (tenantContext.customizations) {
+    const webhookUrls = (tenantContext.customizations as any).webhookUrls
+    if (webhookUrls && typeof webhookUrls === 'object') {
+      Object.values(webhookUrls).forEach((url: unknown) => {
+        if (typeof url === 'string') {
+          try {
+            const domain = new URL(url).hostname
+            tenantDomains.push(domain)
+          } catch (error) {
+            // Invalid URL, skip
+          }
+        }
+      })
+    }
   }
   
   if (tenantDomains.length > 0) {

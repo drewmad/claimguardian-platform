@@ -322,7 +322,7 @@ export default function AIModelsAdminPage() {
     avgResponseTime: 0,
     successRate: 0
   })
-  const [performanceData, setPerformanceData] = useState<Record<string, unknown>>({})
+  const [performanceData, setPerformanceData] = useState<Record<string, ModelUsageData>>({})
 
   // Advanced AI Operations State
   const [abTests, setABTests] = useState<ABTestConfig[]>([])
@@ -333,7 +333,7 @@ export default function AIModelsAdminPage() {
     total_ratings: 1247,
     response_rate: 87,
     satisfaction_rate: 92,
-    ratings_by_feature: {} as Record<string, unknown>
+    ratings_by_feature: {} as Record<string, { rating: number; count: number; latest_feedback: string }>
   })
   
   // A/B Test Form State
@@ -1524,7 +1524,7 @@ export default function AIModelsAdminPage() {
                   <h3 className="text-lg font-semibold text-white mb-4">Quality by Feature</h3>
                   <div className="space-y-3">
                     {featureMappings.map((feature) => {
-                      const featureMetrics = (qualityMetrics.ratings_by_feature as any)[feature.featureId] || {
+                      const featureMetrics = qualityMetrics.ratings_by_feature[feature.featureId] || {
                         rating: 4.2,
                         count: 0,
                         latest_feedback: ''
@@ -1537,11 +1537,11 @@ export default function AIModelsAdminPage() {
                             <div className="flex items-center gap-2">
                               <div className="flex">
                                 {[1,2,3,4,5].map((star) => (
-                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round((featureMetrics as any).rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
+                                  <Star key={star} className={`h-4 w-4 ${star <= Math.round(featureMetrics.rating) ? 'text-yellow-400 fill-current' : 'text-gray-600'}`} />
                                 ))}
                               </div>
-                              <span className="text-sm text-gray-400">{(featureMetrics as any).rating}</span>
-                              <span className="text-xs text-gray-500">({(featureMetrics as any).count} ratings)</span>
+                              <span className="text-sm text-gray-400">{featureMetrics.rating}</span>
+                              <span className="text-xs text-gray-500">({featureMetrics.count} ratings)</span>
                             </div>
                           </div>
                           <div className="grid grid-cols-3 gap-4 text-sm">
@@ -1558,9 +1558,9 @@ export default function AIModelsAdminPage() {
                               <span className="text-white ml-2">{models.find(m => m.id === feature.fallbackModel)?.name || 'Unknown'}</span>
                             </div>
                           </div>
-                          {(featureMetrics as unknown).latest_feedback && (
+                          {featureMetrics.latest_feedback && (
                             <div className="mt-3 p-2 bg-gray-800 rounded text-sm text-gray-300">
-                              <span className="text-gray-400">Latest feedback:</span> {(featureMetrics as unknown).latest_feedback}
+                              <span className="text-gray-400">Latest feedback:</span> {featureMetrics.latest_feedback}
                             </div>
                           )}
                         </div>

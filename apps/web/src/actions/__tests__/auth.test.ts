@@ -13,7 +13,7 @@
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals'
 import { signUp, signIn, signOut, resetPassword } from '../auth'
-import { createSupabaseMock } from '../../__tests__/utils/supabase-mocks'
+import { createSupabaseMock, mockAuthSuccess, mockAuthError } from '../../../__tests__/utils/supabase-mocks'
 
 // Create properly typed mock
 const mockSupabase = createSupabaseMock()
@@ -52,11 +52,8 @@ describe('Auth Server Actions', () => {
 
   describe('signUp', () => {
     it('should successfully sign up a user with valid data', async () => {
-      const mockUser = { id: 'user-123', email: 'test@example.com' }
-      mockSupabase.auth.signUp.mockResolvedValue({
-        data: { user: mockUser, session: null },
-        error: null
-      })
+      const mockResponse = mockAuthSuccess()
+      mockSupabase.auth.signUp.mockResolvedValue(mockResponse)
 
       const formData = createFormData({
         email: 'test@example.com',
@@ -67,7 +64,7 @@ describe('Auth Server Actions', () => {
       const result = await signUp(formData)
 
       expect(result.success).toBe(true)
-      expect(result.data).toEqual(mockUser)
+      expect(result.data).toEqual(mockResponse.data.user)
       expect(mockSupabase.auth.signUp).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'SecurePass123!',
@@ -80,10 +77,8 @@ describe('Auth Server Actions', () => {
     })
 
     it('should handle signup errors', async () => {
-      mockSupabase.auth.signUp.mockResolvedValue({
-        data: { user: null, session: null },
-        error: { message: 'Email already registered' }
-      })
+      const mockResponse = mockAuthError('Email already registered')
+      mockSupabase.auth.signUp.mockResolvedValue(mockResponse)
 
       const formData = createFormData({
         email: 'existing@example.com',
@@ -111,11 +106,8 @@ describe('Auth Server Actions', () => {
 
   describe('signIn', () => {
     it('should successfully sign in with valid credentials', async () => {
-      const mockUser = { id: 'user-123', email: 'test@example.com' }
-      mockSupabase.auth.signInWithPassword.mockResolvedValue({
-        data: { user: mockUser, session: { access_token: 'token' } },
-        error: null
-      })
+      const mockResponse = mockAuthSuccess()
+      mockSupabase.auth.signInWithPassword.mockResolvedValue(mockResponse)
 
       const formData = createFormData({
         email: 'test@example.com',
@@ -136,10 +128,8 @@ describe('Auth Server Actions', () => {
     })
 
     it('should handle signin errors', async () => {
-      mockSupabase.auth.signInWithPassword.mockResolvedValue({
-        data: { user: null, session: null },
-        error: { message: 'Invalid credentials' }
-      })
+      const mockResponse = mockAuthError('Invalid credentials')
+      mockSupabase.auth.signInWithPassword.mockResolvedValue(mockResponse)
 
       const formData = createFormData({
         email: 'test@example.com',

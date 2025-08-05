@@ -43,6 +43,30 @@ import type {
   ThreatMonitoringConfig
 } from '@/types/situation-room'
 
+// Extended types for type safety
+interface ExtendedThreatAssessment extends ThreatAssessment {
+  aiAnalysis: ThreatAssessment['aiAnalysis'] & {
+    acknowledged?: boolean
+    acknowledgedAt?: Date
+  }
+}
+
+interface ExtendedIntelligenceFeed extends IntelligenceFeed {
+  read?: boolean
+}
+
+interface ExtendedAIRecommendation extends AIRecommendation {
+  executed?: boolean
+  executedAt?: Date
+  dismissed?: boolean
+  dismissedAt?: Date
+}
+
+interface ExtendedRealtimeEvent extends RealtimeEvent {
+  processed?: boolean
+  processedAt?: Date
+}
+
 interface SituationRoomActions {
   // Data loading actions
   loadSituationData: (propertyId: string) => Promise<void>
@@ -90,7 +114,7 @@ interface SituationRoomActions {
   addIntelligenceFeed: (feed: IntelligenceFeed) => void
   markFeedAsRead: (feedId: string) => void
   markAllFeedsAsRead: () => void
-  filterFeeds: (filter: unknown) => void
+  filterFeeds: (filter: { type?: string; urgency?: ThreatLevel; source?: string }) => void
   
   // AI recommendations
   addRecommendation: (recommendation: AIRecommendation) => void
@@ -232,7 +256,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           const response = await fetchIntelligenceFeeds(getCurrentPropertyId())
           set(state => {
             state.intelligenceFeeds = response.feeds
-            state.unreadFeedCount = response.feeds.filter((f: IntelligenceFeed) => !f.actionRequired).length
+            state.unreadFeedCount = response.feeds.filter((f: ExtendedIntelligenceFeed) => !f.actionRequired).length
           })
         } catch (error) {
           logger.error('Failed to refresh intelligence feeds:', toError(error))
@@ -398,15 +422,12 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
           if (index !== -1) {
-            // Add acknowledged flag to threat
-            state.threats[index] = {
-              ...state.threats[index],
-              aiAnalysis: {
-                ...state.threats[index].aiAnalysis,
-                // @ts-expect-error - adding acknowledged property
-                acknowledged: true,
-                acknowledgedAt: new Date()
-              }
+            // Cast to extended type to add acknowledged properties
+            const extendedThreat = state.threats[index] as ExtendedThreatAssessment
+            extendedThreat.aiAnalysis = {
+              ...extendedThreat.aiAnalysis,
+              acknowledged: true,
+              acknowledgedAt: new Date()
             }
           }
         })
@@ -432,8 +453,9 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.intelligenceFeeds.findIndex(f => f.id === feedId)
           if (index !== -1 && !state.intelligenceFeeds[index].actionRequired) {
-            // @ts-expect-error - adding read property
-            state.intelligenceFeeds[index].read = true
+            // Cast to extended type to add read property
+            const extendedFeed = state.intelligenceFeeds[index] as ExtendedIntelligenceFeed
+            extendedFeed.read = true
             state.unreadFeedCount = Math.max(0, state.unreadFeedCount - 1)
           }
         })
@@ -443,15 +465,16 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           state.intelligenceFeeds.forEach(feed => {
             if (!feed.actionRequired) {
-              // @ts-expect-error - adding read property
-              feed.read = true
+              // Cast to extended type to add read property
+              const extendedFeed = feed as ExtendedIntelligenceFeed
+              extendedFeed.read = true
             }
           })
           state.unreadFeedCount = 0
         })
       },
       
-      filterFeeds(filter: unknown) {
+      filterFeeds(filter: { type?: string; urgency?: ThreatLevel; source?: string }) {
         // Implementation for feed filtering
         // This would typically filter the displayed feeds without modifying state
         logger.info('Filter feeds:', filter)
@@ -487,9 +510,10 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           set(state => {
             const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
             if (index !== -1) {
-              // @ts-expect-error - adding executed property
-              state.aiRecommendations[index].executed = true
-              state.aiRecommendations[index].executedAt = new Date()
+              // Cast to extended type to add executed properties
+              const extendedRec = state.aiRecommendations[index] as ExtendedAIRecommendation
+              extendedRec.executed = true
+              extendedRec.executedAt = new Date()
             }
           })
         } catch (error) {
@@ -504,9 +528,10 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
           if (index !== -1) {
-            // @ts-expect-error - adding dismissed property
-            state.aiRecommendations[index].dismissed = true
-            state.aiRecommendations[index].dismissedAt = new Date()
+            // Cast to extended type to add dismissed properties
+            const extendedRec = state.aiRecommendations[index] as ExtendedAIRecommendation
+            extendedRec.dismissed = true
+            extendedRec.dismissedAt = new Date()
           }
         })
       },
@@ -580,17 +605,21 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         set(state => {
           const index = state.realtimeEvents.findIndex(e => e.id === eventId)
           if (index !== -1) {
-            // @ts-expect-error - adding processed property
-            state.realtimeEvents[index].processed = true
-            state.realtimeEvents[index].processedAt = new Date()
+            // Cast to extended type to add processed properties
+            const extendedEvent = state.realtimeEvents[index] as ExtendedRealtimeEvent
+            extendedEvent.processed = true
+            extendedEvent.processedAt = new Date()
           }
         })
       },
       
       clearProcessedEvents() {
         set(state => {
-          // @ts-expect-error - filtering by processed property
-          state.realtimeEvents = state.realtimeEvents.filter(e => !e.processed)
+          // Filter events based on processed property
+          state.realtimeEvents = state.realtimeEvents.filter(e => {
+            const extendedEvent = e as ExtendedRealtimeEvent
+            return !extendedEvent.processed
+          })
         })
       },
       
@@ -653,22 +682,25 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
         // Auto-process certain event types
         switch (event.type) {
           case EventType.THREAT_UPDATE:
-            if ((event.data as unknown)?.threat) {
-              get().addThreat((event.data as unknown).threat)
+            if (isValidEventData(event.data) && 'threat' in event.data && event.data.threat) {
+              const threatData = event.data.threat as ThreatAssessment
+              get().addThreat(threatData)
             }
             break
           case EventType.INTELLIGENCE_FEED:
-            if ((event.data as unknown)?.feed) {
-              get().addIntelligenceFeed((event.data as unknown).feed)
+            if (isValidEventData(event.data) && 'feed' in event.data && event.data.feed) {
+              const feedData = event.data.feed as IntelligenceFeed
+              get().addIntelligenceFeed(feedData)
             }
             break
           case EventType.AI_RECOMMENDATION:
-            if ((event.data as unknown)?.recommendation) {
-              get().addRecommendation((event.data as unknown).recommendation)
+            if (isValidEventData(event.data) && 'recommendation' in event.data && event.data.recommendation) {
+              const recommendationData = event.data.recommendation as AIRecommendation
+              get().addRecommendation(recommendationData)
             }
             break
           case EventType.EMERGENCY_BROADCAST:
-            if (event.data.emergency) {
+            if (isValidEventData(event.data) && 'emergency' in event.data && event.data.emergency) {
               get().activateEmergencyMode()
             }
             break
@@ -681,6 +713,10 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
 export const useSituationRoom: () => SituationRoomStore = createSituationRoomStore()
 
 // ===== HELPER FUNCTIONS =====
+
+function isValidEventData(data: unknown): data is Record<string, unknown> {
+  return typeof data === 'object' && data !== null
+}
 
 function getThreatLevelValue(level: ThreatLevel): number {
   switch (level) {
