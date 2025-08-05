@@ -31,7 +31,7 @@ export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth()
   const { openModal } = useModalStore()
   const [activeTab, setActiveTab] = useState<ActiveTab>('profile')
-  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [profile, setProfile] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [message, setMessage] = useState({ type: '', text: '' })

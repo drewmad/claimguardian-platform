@@ -163,15 +163,15 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
   // Memory usage monitoring (if available)
   if ('memory' in performance) {
     setInterval(() => {
-      const memory = (performance as unknown).memory
+      const memory = (performance as any).memory
       
-      recordMetric('memory-usage', memory.usedJSHeapSize, {
-        totalJSHeapSize: memory.totalJSHeapSize,
-        jsHeapSizeLimit: memory.jsHeapSizeLimit
+      recordMetric('memory-usage', memory?.usedJSHeapSize || 0, {
+        totalJSHeapSize: memory?.totalJSHeapSize || 0,
+        jsHeapSizeLimit: memory?.jsHeapSizeLimit || 0
       })
 
       // Alert on high memory usage
-      const usage = memory.usedJSHeapSize / memory.jsHeapSizeLimit
+      const usage = (memory?.usedJSHeapSize || 0) / (memory?.jsHeapSizeLimit || 1)
       if (usage > 0.9) {
         console.warn(`High memory usage detected: ${(usage * 100).toFixed(1)}%`)
       }

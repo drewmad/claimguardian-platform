@@ -8,7 +8,7 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { GoogleGenerativeAI, GenerativeContent } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import {
   AIRequest,
@@ -119,7 +119,7 @@ export class GeminiProvider extends BaseAIProvider {
       
       const result = await this.withRetry(async () => {
         return await genAI.generateContent({
-          contents: contents as GenerativeContent[],
+          contents: contents as any[],
           generationConfig: {
             maxOutputTokens: request.maxTokens || 2048,
             temperature: request.temperature || 0.7,

@@ -318,7 +318,7 @@ export function AIPerformanceMonitor() {
               className="h-2 mt-2" 
             />
             <p className="text-xs text-gray-500 mt-1">
-              Target: <{thresholds.responseTime}ms
+              Target: &lt;{thresholds.responseTime}ms
             </p>
           </CardContent>
         </Card>
@@ -352,7 +352,7 @@ export function AIPerformanceMonitor() {
               className="h-2 mt-2" 
             />
             <p className="text-xs text-gray-500 mt-1">
-              Target: <{thresholds.errorRate}%
+              Target: &lt;{thresholds.errorRate}%
             </p>
           </CardContent>
         </Card>
@@ -371,7 +371,7 @@ export function AIPerformanceMonitor() {
               className="h-2 mt-2" 
             />
             <p className="text-xs text-gray-500 mt-1">
-              Target: >{thresholds.cacheHitRate}%
+              Target: &gt;{thresholds.cacheHitRate}%
             </p>
           </CardContent>
         </Card>

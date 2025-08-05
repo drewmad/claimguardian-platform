@@ -37,7 +37,7 @@ import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-pol
 
 function PoliciesContent() {
   const [showUpload, setShowUpload] = useState(false)
-  const { policies, activePolicy, refetch } = usePolicyData(selectedPropertyId)
+  const { policies, activePolicy, refetch, properties, selectedPropertyId, setSelectedPropertyId } = usePolicyData()
 
   const getCoverageIcon = (type: string) => {
     if (type.toLowerCase().includes('flood')) return <Droplets className="w-4 h-4" />

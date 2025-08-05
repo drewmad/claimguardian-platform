@@ -17,6 +17,7 @@ import { Shield, FileText, AlertCircle, Sparkles, DollarSign, Clock, BookOpen, C
 import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 
+import { AIChatInterface } from '@/components/ai/ai-chat-interface'
 import { useAuth } from '@/components/auth/auth-provider'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -76,7 +77,7 @@ function PolicyChatContent() {
     comment: string
   }>({ helpful: null, accuracy: null, comment: '' })
   const [feedbackSubmitted, setFeedbackSubmitted] = useState(false)
-  const { supabase } = useSupabase()
+  const {supabase} = useSupabase()
   const { user } = useAuth()
 
   const handleSendMessage = async (message: string, history: Array<{role: string; content: string}>) => {
@@ -85,7 +86,7 @@ function PolicyChatContent() {
         user_id: user?.id,
         action: 'ai_policy_chat',
         resource_type: 'ai_interaction',
-        metadata: { 
+        metadata: {
           topic: selectedTopic,
           message_length: message.length,
           has_documents: uploadedDocuments.length,
@@ -280,19 +281,19 @@ function PolicyChatContent() {
             <AIChatInterface
               systemPrompt={AI_PROMPTS.POLICY_CHAT.SYSTEM}
               placeholder="Ask about your insurance policy, coverage, deductibles, or claim procedures..."
-              welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${
+              welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${ 
                 uploadedDocuments.length > 0 
                   ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}` 
-                  : '\n\nYou can upload policy documents for specific answers or compare multiple policies.'
+                  : '\nYou can upload policy documents for specific answers or compare multiple policies.'
               } What would you like to know?`}
               onSendMessage={handleSendMessage}
               className="h-[600px]"
             />
 
-            {/* A/B Testing Information and Quality Feedback */}
+            {/* A/B Testing Information and Quality Feedback */} 
             {lastAbTestInfo && (
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* A/B Testing Information */}
+                {/* A/B Testing Information */} 
                 <Card className="bg-blue-900/20 border-blue-600/30">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
@@ -319,7 +320,7 @@ function PolicyChatContent() {
                   </CardContent>
                 </Card>
 
-                {/* Quality Feedback */}
+                {/* Quality Feedback */} 
                 <Card className="bg-gray-800 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
@@ -327,7 +328,7 @@ function PolicyChatContent() {
                       <h3 className="text-white font-semibold text-sm">Quality Feedback</h3>
                     </div>
                     <div className="space-y-3">
-                      {/* Helpfulness */}
+                      {/* Helpfulness */} 
                       <div>
                         <p className="text-xs text-gray-400 mb-1">Was this response helpful?</p>
                         <div className="flex gap-1">
@@ -354,7 +355,7 @@ function PolicyChatContent() {
                         </div>
                       </div>
 
-                      {/* Accuracy Rating */}
+                      {/* Accuracy Rating */} 
                       <div>
                         <p className="text-xs text-gray-400 mb-1">Rate accuracy (1-5 stars):</p>
                         <div className="flex gap-1">
@@ -368,7 +369,7 @@ function PolicyChatContent() {
                               className="p-0 h-6 w-6"
                             >
                               <Star 
-                                className={`w-3 h-3 ${
+                                className={`w-3 h-3 ${ 
                                   qualityFeedback.accuracy && rating <= qualityFeedback.accuracy
                                     ? 'text-yellow-400 fill-yellow-400'
                                     : 'text-gray-400'
@@ -379,7 +380,7 @@ function PolicyChatContent() {
                         </div>
                       </div>
 
-                      {/* Submit Button */}
+                      {/* Submit Button */} 
                       <Button
                         onClick={submitQualityFeedback}
                         disabled={feedbackSubmitted || (!qualityFeedback.helpful && !qualityFeedback.accuracy)}

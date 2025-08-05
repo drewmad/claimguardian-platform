@@ -422,7 +422,7 @@ export default function ARDamageDocumenterPage() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Damage Capture</CardTitle>
-                      <Tabs value={currentMode} onValueChange={(value) => setCurrentMode(value as unknown)} className="w-full">
+                      <Tabs value={currentMode} onValueChange={(value) => setCurrentMode(value as 'capture' | 'measure' | 'annotate' | 'ar-notes' | 'compare' | 'ai-analysis')} className="w-full">
                         <TabsList className="grid w-full grid-cols-6">
                           <TabsTrigger value="capture">Capture</TabsTrigger>
                           <TabsTrigger value="measure" disabled={capturedImages.length === 0}>Measure</TabsTrigger>

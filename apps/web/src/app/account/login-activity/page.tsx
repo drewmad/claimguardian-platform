@@ -21,8 +21,8 @@ import { logger } from '@/lib/logger'
 export default function LoginActivityPage() {
   const router = useRouter()
   const { user, loading: authLoading } = useAuth()
-  const [activities, setActivities] = useState<LoginActivity[]>([])
-  const [stats, setStats] = useState<LoginActivityStats | null>(null)
+  const [activities, setActivities] = useState<any[]>([])
+  const [stats, setStats] = useState<any | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -74,4 +74,20 @@ export default function LoginActivityPage() {
       </div>
     )
   }
+
+  return (
+    <div className="min-h-screen bg-slate-900 text-white p-6">
+      <div className="max-w-4xl mx-auto">
+        <h1 className="text-2xl font-bold mb-6">Login Activity</h1>
+        {error && (
+          <div className="bg-red-800 text-red-200 p-4 rounded-lg mb-6">
+            {error}
+          </div>
+        )}
+        <div className="bg-slate-800 rounded-lg p-6">
+          <p className="text-gray-400">Login activity tracking is temporarily disabled.</p>
+        </div>
+      </div>
+    </div>
+  )
 }

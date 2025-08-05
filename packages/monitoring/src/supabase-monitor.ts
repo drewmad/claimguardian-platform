@@ -39,9 +39,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
     
     methods.forEach(method => {
       if (queryBuilder[method]) {
-        const original = (queryBuilder as Record<string, Function>)[method]
+        const original = (queryBuilder as any)[method]
         
-        ;(queryBuilder as Record<string, Function>)[method] = function(...args: unknown[]) {
+        ;(queryBuilder as any)[method] = function(...args: unknown[]) {
           queryInfo.operation = method
           queryInfo.startTime = Date.now()
           
@@ -86,7 +86,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
 
   // Monitor RPC calls
   const originalRpcTyped = originalRpc as Function
-  ;(client as Record<string, Function>).rpc = function(fn: string, args?: unknown, options?: unknown) {
+  ;(client as any).rpc = function(fn: string, args?: unknown, options?: unknown) {
     const startTime = Date.now()
     
     const queryBuilder = originalRpcTyped.call(client, fn, args, options)
@@ -104,17 +104,17 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
               duration: Date.now() - startTime,
               timestamp: Date.now()
             })
-            return onFulfilled ? onFulfilled(response) : response
+            return onFulfilled ? (onFulfilled as any)(response) : response
           },
           (error: Error) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
               method: 'POST',
-              statusCode: error.status || 500,
+              statusCode: (error as any).status || 500,
               duration: Date.now() - startTime,
               timestamp: Date.now()
             })
-            return onRejected ? onRejected(error) : Promise.reject(error)
+            return onRejected ? (onRejected as any)(error) : Promise.reject(error)
           }
         )
       }
@@ -128,9 +128,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   
   authMethods.forEach(method => {
     if (originalAuth[method]) {
-      const original = (originalAuth as unknown)[method].bind(originalAuth)
+      const original = (originalAuth as any)[method]
       
-      ;(originalAuth as unknown)[method] = function(...args: unknown[]) {
+      ;(originalAuth as any)[method] = function(...args: unknown[]) {
         const startTime = Date.now()
         
         const result = original(...args)
@@ -153,7 +153,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
               recordAPICall({
                 endpoint: `/auth/${method}`,
                 method: 'POST',
-                statusCode: error.status || 500,
+                statusCode: (error as any).status || 500,
                 duration: Date.now() - startTime,
                 timestamp: Date.now()
               })
@@ -171,7 +171,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   if (originalStorage) {
     const storageMethods = ['upload', 'download', 'remove', 'list'] as const
     
-    const monitorBucket = (bucket: Record<string, Function>) => {
+    const monitorBucket = (bucket: any) => {
       storageMethods.forEach(method => {
         if (bucket[method]) {
           const original = bucket[method]
@@ -199,7 +199,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
                     method: method === 'download' ? 'GET' : 'POST',
-                    statusCode: error.status || 500,
+                    statusCode: (error as any).status || 500,
                     duration: Date.now() - startTime,
                     timestamp: Date.now()
                   })
@@ -218,7 +218,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
 
     const originalFromStorage = originalStorage.from.bind(originalStorage)
     originalStorage.from = function(bucket: string) {
-      return monitorBucket(originalFromStorage(bucket) as Record<string, Function>)
+      return monitorBucket(originalFromStorage(bucket))
     }
   }
 

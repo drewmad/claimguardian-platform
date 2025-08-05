@@ -9,6 +9,8 @@
  * @supabase-integration edge-functions
  */
 import * as Sentry from '@sentry/nextjs'
+import type { Integration, Event, EventHint } from '@sentry/types'
+import React from 'react'
 
 import { recordMetric } from './metrics'
 
@@ -17,8 +19,8 @@ export interface SentryConfig {
   environment: string
   tracesSampleRate?: number
   debug?: boolean
-  integrations?: Sentry.Integration[]
-  beforeSend?: (event: Sentry.ErrorEvent, hint: Sentry.EventHint) => Sentry.ErrorEvent | null
+  integrations?: Integration[]
+  beforeSend?: (event: Event, hint: EventHint) => Event | null
 }
 
 export function initializeSentry(config: SentryConfig) {
@@ -33,21 +35,21 @@ export function initializeSentry(config: SentryConfig) {
         maskAllText: false,
         blockAllMedia: false,
       }),
-      ...(config.integrations as Sentry.Integration[] || [])
+      ...(config.integrations || [])
     ],
     
     // Set up performance monitoring
     profilesSampleRate: 1.0,
     
     // Custom error filtering
-    beforeSend: config.beforeSend || ((event: Sentry.ErrorEvent, _hint: Sentry.EventHint): Sentry.ErrorEvent | null => {
-      // Filter out non-error logs
-      if (event.level === 'log') return null
+    beforeSend: config.beforeSend || ((event: Event, _hint: EventHint): Event | null => {
+      // Filter out non-error logs  
+      if ((event as any)?.level === 'log') return null
       
       // Add custom context
       if (typeof window !== 'undefined') {
-        event.contexts = {
-          ...event.contexts,
+        (event as any).contexts = {
+          ...(event as any).contexts,
           browser: {
             viewport: {
               width: window.innerWidth,
@@ -89,7 +91,6 @@ export function withErrorBoundary<P extends object>(
   })
 }
 
-import React from 'react';
 // Default error fallback component
 function ErrorFallback({ error, resetError }: { error: Error; resetError: () => void }) {
   // Return plain object for server-side compatibility

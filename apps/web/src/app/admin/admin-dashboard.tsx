@@ -26,12 +26,7 @@ import { RealTimeAnalyticsDashboard } from '@/components/admin/real-time-analyti
 import { PartitionMonitorDashboard } from '@/components/admin/partition-monitor-dashboard'
 import { TimeSeriesAnalyticsDashboard } from '@/components/admin/time-series-analytics-dashboard'
 
-import { Badge } from '@/components/ui/badge'
-import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '@claimguardian/ui'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 // Navigation menu structure
 const navigationMenu = [

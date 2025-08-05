@@ -1,4 +1,3 @@
-// @ts-nocheck
 /**
  * @fileMetadata
  * @purpose "Claude-specific error logging and learning system"
@@ -140,10 +139,12 @@ class ClaudeErrorLogger {
       try {
         const { error: dbError } = await this.supabase
           .from('claude_errors')
-          .insert([{
-            ...claudeError,
-            created_at: new Date().toISOString()
-          }])
+          .insert([
+            {
+              ...claudeError,
+              created_at: new Date().toISOString()
+            }
+          ])
 
         if (dbError) {
           logger.error('Failed to save Claude error to database', {}, dbError)
@@ -166,7 +167,7 @@ class ClaudeErrorLogger {
     if (!this.isEnabled || !this.supabase) return
 
     try {
-      const updateData: unknown = {
+      const updateData: any = {
         resolved: true,
         resolution_method: resolutionMethod,
         updated_at: new Date().toISOString()
@@ -314,18 +315,20 @@ class ClaudeErrorLogger {
         // Create new learning
         await this.supabase
           .from('claude_learnings')
-          .insert([{
-            id: `learning-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-            pattern_name: patternName,
-            mistake_pattern: mistakePattern,
-            solution_pattern: solutionPattern,
-            context_tags: contextTags,
-            confidence_score: confidenceScore,
-            usage_count: 1,
-            success_rate: 1.0,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          }])
+          .insert([
+            {
+              id: `learning-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              pattern_name: patternName,
+              mistake_pattern: mistakePattern,
+              solution_pattern: solutionPattern,
+              context_tags: contextTags,
+              confidence_score: confidenceScore,
+              usage_count: 1,
+              success_rate: 1.0,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }
+          ])
       }
 
       // Clear cache to refresh learnings
@@ -430,7 +433,7 @@ class ClaudeErrorLogger {
   /**
    * Analyze error patterns for insights
    */
-  private analyzePatterns(errors: unknown[]): unknown[] {
+  private analyzePatterns(errors: any[]): any[] {
     const patterns = new Map()
     
     errors.forEach(error => {

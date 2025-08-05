@@ -78,7 +78,7 @@ export function useDamageCopilot() {
       // Update progress
       if (result.completedAngle) {
         setProgress(prev => {
-          const newCompleted = [...prev.completedAngles, result.completedAngle]
+          const newCompleted = [...prev.completedAngles, result.completedAngle].filter((angle): angle is string => angle !== undefined)
           const newCurrent = newCompleted.length
           
           return {

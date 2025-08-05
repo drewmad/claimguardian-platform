@@ -183,7 +183,7 @@ export async function getSubscriptionDetails() {
       subscription: {
         id: subscription.id,
         status: subscription.status,
-        currentPeriodEnd: new Date((subscription as unknown).current_period_end * 1000),
+        currentPeriodEnd: new Date((subscription as any).current_period_end * 1000),
         cancelAtPeriodEnd: (subscription as Stripe.Subscription).cancel_at_period_end,
         plan: {
           id: profile.subscription_plan,

@@ -5,6 +5,10 @@
     "outDir": "./dist",
     "declarationDir": "./dist",
     "baseUrl": ".",
+    "jsx": "react-jsx",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "target": "es2020",
+    "module": "esnext",
     "paths": {
       "@claimguardian/*": ["../../*"]
     }
