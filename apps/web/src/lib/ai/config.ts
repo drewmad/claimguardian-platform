@@ -2,10 +2,20 @@ export const AI_MODELS = {
   OPENAI: {
     CHAT: 'gpt-4-turbo-preview',
     VISION: 'gpt-4-vision-preview',
+    TURBO: 'gpt-3.5-turbo',
   },
   GEMINI: {
     PRO: 'gemini-1.5-pro',
     VISION: 'gemini-1.5-pro-vision',
+    FLASH: 'gemini-1.5-flash',
+  },
+  CLAUDE: {
+    OPUS: 'claude-3-opus-20240229',
+    SONNET: 'claude-3-sonnet-20240229',
+    HAIKU: 'claude-3-haiku-20240307',
+  },
+  GROK: {
+    BETA: 'grok-beta',
   },
 } as const
 

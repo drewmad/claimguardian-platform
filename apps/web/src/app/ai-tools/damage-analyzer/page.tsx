@@ -21,6 +21,9 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
+import { AIClientService } from '@/lib/ai/client'
+import { aiModelConfigService } from '@/lib/ai/model-config-service'
+
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -184,36 +187,202 @@ function DamageAnalyzerContent() {
 
   const startAnalysis = async (file: File) => {
     setStep('analyzing')
+    const startTime = Date.now()
+    
     try {
-      // TODO: Replace with actual AI service call
-      // const result = await aiService.analyzeDamage(file, selectedPolicy)
+      // Get admin-selected model for damage analysis
+      const modelConfig = await aiModelConfigService.getModelForFeature('damage-analyzer')
+      const aiClient = new AIClientService()
       
-      // Simulate AI analysis with error handling
-      const result = await new Promise<typeof MOCK_ANALYSIS.roof_leak>((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate occasional failures for testing
-          if (Math.random() < 0.1) {
-            reject(new Error('AI analysis service temporarily unavailable'))
-            return
+      // Convert file to base64 for AI analysis
+      const base64 = await fileToBase64(file)
+      
+      // Determine AI provider from model name
+      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
+        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
+        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
+        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
+        if (modelName.includes('grok')) return 'grok'
+        return 'openai' // default fallback
+      }
+
+      const primaryModel = modelConfig?.model || 'gpt-4-vision'
+      const provider = getProviderFromModel(primaryModel)
+      
+      logger.info('Starting damage analysis', { model: primaryModel, provider })
+
+      try {
+        // Analyze damage with admin-selected model
+        const response = await aiClient.chat([
+          {
+            role: 'system',
+            content: `You are an expert property damage assessor. Analyze the uploaded image and provide a detailed damage assessment in the following JSON format:
+{
+  "damage": {
+    "type": "specific damage type (e.g., roof damage, siding damage, water damage)",
+    "severity": "Minor" | "Moderate" | "Severe" | "Critical",
+    "confidence": "confidence score 0-100",
+    "description": "detailed description of the damage"
+  },
+  "coverage": {
+    "likely_covered": boolean,
+    "estimated_payout": number,
+    "policy_considerations": "explanation of coverage factors",
+    "policy_provider": "${selectedPolicy?.provider || 'Not specified'}",
+    "policy_number": "${selectedPolicy?.policy_number || 'Not provided'}"
+  },
+  "recommendations": {
+    "immediate": ["immediate action items"],
+    "short_term": ["short term recommendations"],
+    "long_term": ["long term recommendations"]
+  }
+}`
+          },
+          {
+            role: 'user',
+            content: [
+              { type: 'text', text: 'Please analyze this property damage image and provide a comprehensive assessment.' },
+              { type: 'image_url', image_url: { url: `data:image/jpeg;base64,${base64}` } }
+            ]
           }
+        ], provider)
+
+        // Parse AI response
+        const analysisResult = JSON.parse(response)
+        
+        // Track successful usage
+        const responseTime = Date.now() - startTime
+        await aiModelConfigService.trackModelUsage({
+          featureId: 'damage-analyzer',
+          model: primaryModel,
+          success: true,
+          responseTime,
+          cost: calculateEstimatedCost(primaryModel, response.length)
+        })
+
+        setAnalysisResult(analysisResult)
+        setStep('result')
+        
+        logger.info('Damage analysis completed successfully', { 
+          model: primaryModel, 
+          responseTime 
+        })
+
+      } catch (primaryError) {
+        // Try fallback model if primary fails
+        const fallbackModel = modelConfig?.fallback || 'gemini-1.5-pro'
+        const fallbackProvider = getProviderFromModel(fallbackModel)
+        
+        logger.warn('Primary model failed, trying fallback', { 
+          primaryModel, 
+          fallbackModel, 
+          error: primaryError 
+        })
+
+        try {
+          const response = await aiClient.chat([
+            {
+              role: 'system',
+              content: `You are an expert property damage assessor. Analyze the uploaded image and provide a detailed damage assessment in the following JSON format:
+{
+  "damage": {
+    "type": "specific damage type",
+    "severity": "Minor" | "Moderate" | "Severe" | "Critical", 
+    "confidence": "confidence score 0-100",
+    "description": "detailed description of the damage"
+  },
+  "coverage": {
+    "likely_covered": true,
+    "estimated_payout": 5000,
+    "policy_considerations": "explanation of coverage factors",
+    "policy_provider": "${selectedPolicy?.provider || 'Not specified'}",
+    "policy_number": "${selectedPolicy?.policy_number || 'Not provided'}"
+  },
+  "recommendations": {
+    "immediate": ["immediate action items"],
+    "short_term": ["short term recommendations"],
+    "long_term": ["long term recommendations"]
+  }
+}`
+            },
+            {
+              role: 'user',
+              content: `Please analyze this property damage image and provide a comprehensive assessment.`
+            }
+          ], fallbackProvider)
+
+          const analysisResult = JSON.parse(response)
           
-          const mockResultKey = file.name.includes('roof') ? 'roof-leak' : 'siding-damage'
-          const result = MOCK_ANALYSIS[mockResultKey]
-          if (selectedPolicy) {
-            result.coverage.policy_provider = selectedPolicy.provider
-            result.coverage.policy_number = selectedPolicy.policy_number
-          }
-          resolve(result)
-        }, 3000)
+          // Track fallback usage
+          const responseTime = Date.now() - startTime
+          await aiModelConfigService.trackModelUsage({
+            featureId: 'damage-analyzer',
+            model: fallbackModel,
+            success: true,
+            responseTime,
+            cost: calculateEstimatedCost(fallbackModel, response.length)
+          })
+
+          setAnalysisResult(analysisResult)
+          setStep('result')
+          
+          logger.info('Damage analysis completed with fallback model', { 
+            fallbackModel, 
+            responseTime 
+          })
+
+        } catch (fallbackError) {
+          throw new Error('Both primary and fallback AI models failed')
+        }
+      }
+
+    } catch (error) {
+      const errorObj = toError(error)
+      const responseTime = Date.now() - startTime
+      
+      // Track failed usage
+      await aiModelConfigService.trackModelUsage({
+        featureId: 'damage-analyzer',
+        model: 'unknown',
+        success: false,
+        responseTime
       })
       
-      setAnalysisResult(result)
-      setStep('result')
-    } catch (error) {
-      logger.error('Analysis failed:', toError(error))
-      toast.error(error instanceof Error ? error.message : 'Analysis failed. Please try again.')
+      logger.error('Analysis failed:', errorObj)
+      toast.error(errorObj.message)
       setStep('upload')
     }
+  }
+
+  // Helper function to convert file to base64
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const result = reader.result as string
+        const base64 = result.split(',')[1] // Remove data:image/jpeg;base64, prefix
+        resolve(base64)
+      }
+      reader.onerror = error => reject(error)
+    })
+  }
+
+  // Helper function to estimate cost
+  const calculateEstimatedCost = (model: string, responseLength: number): number => {
+    // Rough cost estimates per 1K tokens
+    const costPer1K: Record<string, number> = {
+      'gpt-4-vision': 0.01,
+      'gpt-4-turbo': 0.01,
+      'gemini-1.5-pro': 0.005,
+      'claude-3-opus': 0.015,
+      'claude-3-sonnet': 0.003,
+      'grok-beta': 0.002
+    }
+    
+    const tokens = Math.ceil(responseLength / 4) // Rough token estimate
+    const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
+    return parseFloat(cost.toFixed(6))
   }
 
   const reset = () => {

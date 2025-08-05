@@ -17,6 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
+import { aiModelConfigService } from '@/lib/ai/model-config-service'
 
 
 interface CommunicationTemplate {
@@ -88,26 +89,38 @@ export default function CommunicationHelperPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [hasOpenAIKey, setHasOpenAIKey] = useState(false)
   const [hasGeminiKey, setHasGeminiKey] = useState(false)
+  const [configuredModel, setConfiguredModel] = useState<string>('openai')
+  const [fallbackModel, setFallbackModel] = useState<string>('gemini')
   const { user } = useAuth()
   const aiClient = useMemo(() => new AIClientService(), [])
 
   useEffect(() => {
-    const checkKeys = async () => {
+    const initializeComponent = async () => {
       try {
+        // Load model configuration
+        const modelConfig = await aiModelConfigService.getModelForFeature('communication-helper')
+        if (modelConfig) {
+          setConfiguredModel(modelConfig.model)
+          setFallbackModel(modelConfig.fallback)
+        }
+
+        // Check API keys
         const keysStatus = await aiClient.checkKeys()
         setHasOpenAIKey(keysStatus.hasOpenAIKey)
         setHasGeminiKey(keysStatus.hasGeminiKey)
       } catch (error) {
-        logger.error('Failed to check API keys:', toError(error))
+        logger.error('Failed to initialize communication helper:', toError(error))
       }
     }
-    checkKeys()
+    initializeComponent()
   }, [aiClient])
 
   const generateMessage = async () => {
     if (!selectedTemplate || !keyPoints.trim() || (!hasOpenAIKey && !hasGeminiKey)) return
 
     setIsGenerating(true)
+    const startTime = Date.now()
+    
     try {
       const prompt = `Write a ${tone} email for the following situation:
 
@@ -130,14 +143,91 @@ Guidelines:
 
 Format as a complete email ready to send.`
 
-      const response = await aiClient.chat([
-        { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
-        { role: 'user', content: prompt }
-      ], hasOpenAIKey ? 'openai' : 'gemini')
+      // Helper to get provider from model name
+      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
+        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
+        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
+        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
+        if (modelName.includes('grok')) return 'grok'
+        return 'openai' // default fallback
+      }
 
-      setGeneratedMessage(response)
-      toast.success('Message generated successfully!')
+      // Helper to calculate estimated cost
+      const calculateEstimatedCost = (model: string, responseLength: number): number => {
+        const costPer1K: Record<string, number> = {
+          'gpt-4-turbo': 0.01,
+          'gpt-4': 0.03,
+          'gemini-1.5-pro': 0.005,
+          'claude-3-opus': 0.015,
+          'claude-3-sonnet': 0.003,
+          'grok-beta': 0.002
+        }
+        
+        const tokens = Math.ceil(responseLength / 4) // Rough token estimate
+        const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
+        return parseFloat(cost.toFixed(6))
+      }
+
+      const primaryProvider = getProviderFromModel(configuredModel)
+
+      try {
+        // Try primary model
+        const response = await aiClient.chat([
+          { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
+          { role: 'user', content: prompt }
+        ], primaryProvider)
+
+        // Track successful usage
+        const responseTime = Date.now() - startTime
+        await aiModelConfigService.trackModelUsage({
+          featureId: 'communication-helper',
+          model: configuredModel,
+          success: true,
+          responseTime,
+          cost: calculateEstimatedCost(configuredModel, response.length)
+        })
+
+        setGeneratedMessage(response)
+        toast.success('Message generated successfully!')
+
+      } catch (primaryError) {
+        // Try fallback model
+        const fallbackProvider = getProviderFromModel(fallbackModel)
+        
+        try {
+          const response = await aiClient.chat([
+            { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
+            { role: 'user', content: prompt }
+          ], fallbackProvider)
+
+          // Track fallback usage
+          const responseTime = Date.now() - startTime
+          await aiModelConfigService.trackModelUsage({
+            featureId: 'communication-helper',
+            model: fallbackModel,
+            success: true,
+            responseTime,
+            cost: calculateEstimatedCost(fallbackModel, response.length)
+          })
+
+          setGeneratedMessage(response)
+          toast.success('Message generated successfully (using fallback model)!')
+
+        } catch (fallbackError) {
+          throw new Error('Both primary and fallback AI models failed')
+        }
+      }
+
     } catch (error) {
+      // Track failed usage
+      const responseTime = Date.now() - startTime
+      await aiModelConfigService.trackModelUsage({
+        featureId: 'communication-helper',
+        model: configuredModel,
+        success: false,
+        responseTime
+      })
+
       logger.error('Error generating message:', toError(error))
       toast.error('Failed to generate message')
     } finally {

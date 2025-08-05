@@ -4,7 +4,7 @@
 export const dynamic = 'force-dynamic'
 
 import { Shield, FileText, AlertCircle, Sparkles, DollarSign, Clock, BookOpen, ChevronRight } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 
 import { useAuth } from '@/components/auth/auth-provider'
@@ -18,6 +18,7 @@ import { AIClientService } from '@/lib/ai/client-service'
 import { AI_PROMPTS } from '@/lib/ai/config'
 import { aiErrorHelpers, performanceTimer } from '@/lib/error-logger'
 import { useSupabase } from '@/lib/supabase/client'
+import { aiModelConfigService } from '@/lib/ai/model-config-service'
 
 const QUICK_QUESTIONS = [
   {
@@ -52,7 +53,9 @@ interface UploadedDocument {
 }
 
 function PolicyChatContent() {
-  const [selectedModel, setSelectedModel] = useState<'openai' | 'gemini'>('openai')
+  const [configuredModel, setConfiguredModel] = useState<string>('openai')
+  const [fallbackModel, setFallbackModel] = useState<string>('gemini')
+  const [isLoadingConfig, setIsLoadingConfig] = useState(true)
   const [selectedTopic] = useState<string | null>(null)
   const [uploadedDocuments] = useState<UploadedDocument[]>([])
   const [compareMode] = useState(false)
@@ -61,8 +64,26 @@ function PolicyChatContent() {
   const { user } = useAuth()
   const aiClient = new AIClientService()
 
+  // Load admin-configured model on component mount
+  useEffect(() => {
+    async function loadModelConfig() {
+      try {
+        const modelConfig = await aiModelConfigService.getModelForFeature('policy-chat')
+        if (modelConfig) {
+          setConfiguredModel(modelConfig.model)
+          setFallbackModel(modelConfig.fallback)
+        }
+      } catch (error) {
+        console.warn('Failed to load model configuration, using defaults:', error)
+      } finally {
+        setIsLoadingConfig(false)
+      }
+    }
+    loadModelConfig()
+  }, [])
+
   const handleSendMessage = async (message: string, history: Array<{role: string; content: string}>) => {
-    const timer = performanceTimer.start('PolicyChat', 'AI Response')
+    const startTime = Date.now()
     
     try {
       await supabase.from('audit_logs').insert({
@@ -70,7 +91,7 @@ function PolicyChatContent() {
         action: 'ai_policy_chat',
         resource_type: 'ai_interaction',
         metadata: { 
-          model: selectedModel,
+          model: configuredModel,
           topic: selectedTopic,
           message_length: message.length,
           has_documents: uploadedDocuments.length,
@@ -111,16 +132,83 @@ function PolicyChatContent() {
         messages[0].content += `\n\nThe user is specifically asking about: ${selectedTopic}`
       }
 
-      const response = await aiClient.chat(messages, selectedModel)
-      
-      await timer.end({ feature: 'PolicyChat', action: 'AI Response', userId: user?.id, model: selectedModel }, {
-        messageLength: message.length,
-        responseLength: response.length,
-        hasDocuments: uploadedDocuments.length > 0
+      // Helper to get provider from model name
+      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
+        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
+        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
+        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
+        if (modelName.includes('grok')) return 'grok'
+        return 'openai' // default fallback
+      }
+
+      // Helper to calculate estimated cost
+      const calculateEstimatedCost = (model: string, responseLength: number): number => {
+        const costPer1K: Record<string, number> = {
+          'gpt-4-turbo': 0.01,
+          'gpt-4': 0.03,
+          'gemini-1.5-pro': 0.005,
+          'claude-3-opus': 0.015,
+          'claude-3-sonnet': 0.003,
+          'grok-beta': 0.002
+        }
+        
+        const tokens = Math.ceil(responseLength / 4) // Rough token estimate
+        const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
+        return parseFloat(cost.toFixed(6))
+      }
+
+      const primaryProvider = getProviderFromModel(configuredModel)
+
+      try {
+        // Try primary model
+        const response = await aiClient.chat(messages, primaryProvider)
+        
+        // Track successful usage
+        const responseTime = Date.now() - startTime
+        await aiModelConfigService.trackModelUsage({
+          featureId: 'policy-chat',
+          model: configuredModel,
+          success: true,
+          responseTime,
+          cost: calculateEstimatedCost(configuredModel, response.length)
+        })
+        
+        return response
+
+      } catch (primaryError) {
+        // Try fallback model
+        const fallbackProvider = getProviderFromModel(fallbackModel)
+        
+        try {
+          const response = await aiClient.chat(messages, fallbackProvider)
+          
+          // Track fallback usage
+          const responseTime = Date.now() - startTime
+          await aiModelConfigService.trackModelUsage({
+            featureId: 'policy-chat',
+            model: fallbackModel,
+            success: true,
+            responseTime,
+            cost: calculateEstimatedCost(fallbackModel, response.length)
+          })
+          
+          return response
+
+        } catch (fallbackError) {
+          throw new Error('Both primary and fallback AI models failed')
+        }
+      }
+
+    } catch (error) {
+      // Track failed usage
+      const responseTime = Date.now() - startTime
+      await aiModelConfigService.trackModelUsage({
+        featureId: 'policy-chat',
+        model: configuredModel,
+        success: false,
+        responseTime
       })
       
-      return response
-    } catch (error) {
       await aiErrorHelpers.policyChat.log(error as Error, 'AI Response')
       toast.error('Failed to get AI response')
       throw error
@@ -150,32 +238,31 @@ function PolicyChatContent() {
               <CardContent className="p-6">
                 <h3 className="font-semibold mb-3 flex items-center gap-2 text-white">
                   <Sparkles className="h-4 w-4 text-cyan-400" />
-                  AI Model
+                  AI Model Configuration
                 </h3>
-                <div className="space-y-2">
-                  <Button
-                    variant={selectedModel === 'openai' ? 'default' : 'outline'}
-                    className={`w-full justify-start ${
-                      selectedModel === 'openai' 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
-                    }`}
-                    onClick={() => setSelectedModel('openai')}
-                  >
-                    GPT-4 (OpenAI)
-                  </Button>
-                  <Button
-                    variant={selectedModel === 'gemini' ? 'default' : 'outline'}
-                    className={`w-full justify-start ${
-                      selectedModel === 'gemini' 
-                        ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                        : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'
-                    }`}
-                    onClick={() => setSelectedModel('gemini')}
-                  >
-                    Gemini Pro (Google)
-                  </Button>
-                </div>
+                {isLoadingConfig ? (
+                  <div className="flex items-center gap-2 text-gray-400">
+                    <div className="w-4 h-4 border-2 border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                    Loading configuration...
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Primary Model</p>
+                      <div className="bg-blue-600/20 border border-blue-500/30 rounded-lg p-3">
+                        <p className="text-white font-medium">{configuredModel}</p>
+                        <p className="text-blue-300 text-xs">Configured by admin</p>
+                      </div>
+                    </div>
+                    <div>
+                      <p className="text-sm text-gray-400 mb-1">Fallback Model</p>
+                      <div className="bg-gray-700 border border-gray-600 rounded-lg p-3">
+                        <p className="text-gray-300 text-sm">{fallbackModel}</p>
+                        <p className="text-gray-500 text-xs">Used if primary fails</p>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </CardContent>
             </Card>
 

@@ -2,7 +2,7 @@
 
 import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
@@ -17,6 +17,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Textarea } from '@/components/ui/textarea'
 import { AIClientService } from '@/lib/ai/client-service'
+import { aiModelConfigService } from '@/lib/ai/model-config-service'
 
 
 interface ClaimStep {
@@ -203,8 +204,26 @@ export default function ClaimAssistantPage() {
   const [, setHasAPIKeys] = useState(false)
   const [expandedCompletedSteps, setExpandedCompletedSteps] = useState<Set<number>>(new Set())
   const [isGenerating, setIsGenerating] = useState(false)
+  const [configuredModel, setConfiguredModel] = useState<string>('openai')
+  const [fallbackModel, setFallbackModel] = useState<string>('gemini')
   const { } = useAuth()
   const aiClient = new AIClientService()
+
+  // Load admin-configured model on component mount
+  useEffect(() => {
+    async function loadModelConfig() {
+      try {
+        const modelConfig = await aiModelConfigService.getModelForFeature('claim-assistant')
+        if (modelConfig) {
+          setConfiguredModel(modelConfig.model)
+          setFallbackModel(modelConfig.fallback)
+        }
+      } catch (error) {
+        console.warn('Failed to load model configuration, using defaults:', error)
+      }
+    }
+    loadModelConfig()
+  }, [])
 
   const toggleTask = (stepId: string, taskId: string) => {
     setSteps(prevSteps => 
@@ -262,6 +281,8 @@ export default function ClaimAssistantPage() {
 
   const generateClaimSummary = async () => {
     setIsGenerating(true)
+    const startTime = Date.now()
+    
     try {
       const completedTasks = steps.flatMap(step => 
         step.tasks.filter(task => task.completed).map(task => `${step.title}: ${task.title}`)
@@ -274,13 +295,90 @@ Additional notes: ${claimNotes}
 
 Format the summary for submission to an insurance company.`
 
-      const response = await aiClient.chat([
-        { role: 'system', content: 'You are a helpful insurance claim assistant.' },
-        { role: 'user', content: prompt }
-      ], 'openai')
+      // Helper to get provider from model name
+      const getProviderFromModel = (modelName: string): 'openai' | 'gemini' | 'claude' | 'grok' => {
+        if (modelName.includes('gpt') || modelName.includes('openai')) return 'openai'
+        if (modelName.includes('gemini') || modelName.includes('google')) return 'gemini'
+        if (modelName.includes('claude') || modelName.includes('anthropic')) return 'claude'
+        if (modelName.includes('grok')) return 'grok'
+        return 'openai' // default fallback
+      }
 
-      return response
+      // Helper to calculate estimated cost
+      const calculateEstimatedCost = (model: string, responseLength: number): number => {
+        const costPer1K: Record<string, number> = {
+          'gpt-4-turbo': 0.01,
+          'gpt-4': 0.03,
+          'gemini-1.5-pro': 0.005,
+          'claude-3-opus': 0.015,
+          'claude-3-sonnet': 0.003,
+          'grok-beta': 0.002
+        }
+        
+        const tokens = Math.ceil(responseLength / 4) // Rough token estimate
+        const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
+        return parseFloat(cost.toFixed(6))
+      }
+
+      const primaryProvider = getProviderFromModel(configuredModel)
+
+      try {
+        // Try primary model
+        const response = await aiClient.chat([
+          { role: 'system', content: 'You are a helpful insurance claim assistant.' },
+          { role: 'user', content: prompt }
+        ], primaryProvider)
+
+        // Track successful usage
+        const responseTime = Date.now() - startTime
+        await aiModelConfigService.trackModelUsage({
+          featureId: 'claim-assistant',
+          model: configuredModel,
+          success: true,
+          responseTime,
+          cost: calculateEstimatedCost(configuredModel, response.length)
+        })
+
+        return response
+
+      } catch (primaryError) {
+        // Try fallback model
+        const fallbackProvider = getProviderFromModel(fallbackModel)
+        
+        try {
+          const response = await aiClient.chat([
+            { role: 'system', content: 'You are a helpful insurance claim assistant.' },
+            { role: 'user', content: prompt }
+          ], fallbackProvider)
+
+          // Track fallback usage
+          const responseTime = Date.now() - startTime
+          await aiModelConfigService.trackModelUsage({
+            featureId: 'claim-assistant',
+            model: fallbackModel,
+            success: true,
+            responseTime,
+            cost: calculateEstimatedCost(fallbackModel, response.length)
+          })
+
+          toast.success('Claim summary generated (using fallback model)!')
+          return response
+
+        } catch (fallbackError) {
+          throw new Error('Both primary and fallback AI models failed')
+        }
+      }
+
     } catch (error) {
+      // Track failed usage
+      const responseTime = Date.now() - startTime
+      await aiModelConfigService.trackModelUsage({
+        featureId: 'claim-assistant',
+        model: configuredModel,
+        success: false,
+        responseTime
+      })
+
       logger.error('Error generating summary:', toError(error))
       toast.error('Failed to generate claim summary')
       return null

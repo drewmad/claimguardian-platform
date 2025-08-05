@@ -8,11 +8,15 @@ export async function GET() {
     
     const hasOpenAIKey = !!process.env.OPENAI_API_KEY
     const hasGeminiKey = !!process.env.GEMINI_API_KEY
+    const hasClaudeKey = !!process.env.ANTHROPIC_API_KEY
+    const hasGrokKey = !!process.env.XAI_API_KEY
 
     return NextResponse.json({
       hasOpenAIKey,
       hasGeminiKey,
-      hasAnyKey: hasOpenAIKey || hasGeminiKey
+      hasClaudeKey,
+      hasGrokKey,
+      hasAnyKey: hasOpenAIKey || hasGeminiKey || hasClaudeKey || hasGrokKey
     })
   } catch (error) {
     logger.error('API Keys check error', {}, error instanceof Error ? error : new Error(String(error)))

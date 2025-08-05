@@ -114,6 +114,62 @@ await claudeErrorLogger.resolveError(
 )
 ```
 
+### **🔍 Self-Reflection System - AUTOMATIC IMPROVEMENT**
+
+Claude now has advanced self-reflection capabilities that automatically analyze approach efficiency:
+
+**Core Self-Reflection Features:**
+- **Efficiency Metrics**: Execution time, tool usage, error rates, resource utilization
+- **Approach Analysis**: Identifies inefficiencies, better approaches, wasted steps
+- **Learning Insights**: Extracts patterns, confirms/challenges assumptions
+- **Automatic Triggers**: Reflects when errors > 2, time > 5min, tools > 5, etc.
+- **Meta Learning**: Learns about learning - how to improve improvement
+
+**Required Integration:**
+```typescript
+// METHOD 1: Complete Learning System (RECOMMENDED)
+import { withCompleteLearning } from '@/lib/claude/claude-complete-learning-system'
+
+const smartFunction = withCompleteLearning(
+  'code-generation',
+  'Create React component',
+  'Build functional component',
+  'User wants new component',
+  { filePath: 'src/components/MyComponent.tsx', codeLanguage: 'typescript' },
+  async () => {
+    // Your code here
+  }
+)
+
+// METHOD 2: Manual Reflection
+import { claudeSelfReflection } from '@/lib/claude/claude-self-reflection'
+
+const taskId = claudeSelfReflection.startReflection(
+  'code-generation',
+  'Create component',
+  'Build UI',
+  'User request',
+  'Standard React approach'
+)
+
+// ... do work, log steps and errors ...
+
+await claudeSelfReflection.completeReflection(true, 'excellent', 'high')
+
+// METHOD 3: Auto-Reflection Triggers
+import { autoReflect } from '@/lib/claude/claude-reflection-triggers'
+
+const autoFunction = autoReflect('debugging', 'complex', originalFunction)
+```
+
+**Automatic Reflection Triggers:**
+- High error rate (>2 errors)
+- Long execution time (>5 minutes)  
+- Many tools used (>5 tools)
+- Complex task failures
+- Excessive file access (>10 files)
+- Successful but inefficient tasks
+
 ### **Learning Database Schema**
 
 The system uses these database tables (already deployed):
@@ -945,12 +1001,31 @@ const Canvas = dynamic(
 ## Important Instruction Reminders
 
 ### 🧠 Claude Learning System - MANDATORY USAGE
-**CRITICAL**: Use the Claude Learning System for ALL significant tasks:
-1. **BEFORE** any major task: Query `claudeLearningContext.analyzeTask(context)`
-2. **DURING** task execution: Log errors with `claudeErrorHelpers` 
-3. **AFTER** completion/error: Resolve errors with `claudeErrorLogger.resolveError()`
+**CRITICAL**: Use the Complete Claude Learning System for ALL significant tasks:
 
-Files: `apps/web/src/lib/claude/claude-error-logger.ts` & `claude-learning-context.ts`
+**PREFERRED METHOD - Complete Learning System:**
+```typescript
+import { withCompleteLearning } from '@/lib/claude/claude-complete-learning-system'
+
+const result = await withCompleteLearning(
+  'code-generation', 'Create component', 'Build UI', 'User request',
+  { filePath: 'src/file.tsx', codeLanguage: 'typescript' },
+  async () => { /* your work */ }
+)()
+```
+
+**MANUAL METHOD - Individual Systems:**
+1. **BEFORE** any major task: Query `claudeLearningContext.analyzeTask(context)`
+2. **DURING** task execution: Log errors with `claudeErrorHelpers`
+3. **AFTER** completion/error: Resolve errors with `claudeErrorLogger.resolveError()`
+4. **REFLECT** on approach with `claudeSelfReflection` or auto-triggers
+
+**Key Files:**
+- `claude-complete-learning-system.ts` - Complete integration (RECOMMENDED)
+- `claude-error-logger.ts` - Error logging and learning
+- `claude-learning-context.ts` - Pre-task analysis
+- `claude-self-reflection.ts` - Efficiency analysis
+- `claude-reflection-triggers.ts` - Automatic improvement
 
 ### General Instructions
 Do what has been asked; nothing more, nothing less.

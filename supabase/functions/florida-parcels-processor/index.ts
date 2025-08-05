@@ -1,7 +1,5 @@
-import { serve } from "https://deno.land/std@0.177.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.208.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.0";
-import { extract } from "https://deno.land/x/zip@v1.2.5/mod.ts";
-import { ensureDir } from "https://deno.land/std@0.177.0/fs/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -9,7 +7,7 @@ const corsHeaders = {
 };
 
 // Florida county codes and names mapping
-const FLORIDA_COUNTIES = {
+const FLORIDA_COUNTIES: Record<number, string> = {
   1: "ALACHUA", 2: "BAKER", 3: "BAY", 4: "BRADFORD", 5: "BREVARD",
   6: "BROWARD", 7: "CALHOUN", 8: "CHARLOTTE", 9: "CITRUS", 10: "CLAY",
   11: "COLLIER", 12: "COLUMBIA", 13: "DADE", 14: "DESOTO", 15: "DIXIE",
@@ -30,17 +28,7 @@ interface ProcessingRequest {
   action: 'status' | 'process' | 'verify';
   county_code?: number;
   batch_size?: number;
-  resume_from?: number;
-}
-
-interface ProcessingStatus {
-  county_code: number;
-  county_name: string;
-  total_parcels: number;
-  processed_parcels: number;
-  status: 'pending' | 'processing' | 'completed' | 'error';
-  last_updated: string;
-  error_message?: string;
+  storage_path?: string; // Path to GeoJSON file in storage
 }
 
 serve(async (req) => {
@@ -54,7 +42,8 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { action, county_code, batch_size = 1000, resume_from = 0 } = await req.json() as ProcessingRequest;
+    const body = await req.json() as ProcessingRequest;
+    const { action, county_code, batch_size = 1000, storage_path } = body;
 
     switch (action) {
       case 'status':
@@ -64,7 +53,10 @@ serve(async (req) => {
         if (!county_code || !FLORIDA_COUNTIES[county_code]) {
           throw new Error(`Invalid county code: ${county_code}`);
         }
-        return await processCounty(supabase, county_code, batch_size, resume_from);
+        if (!storage_path) {
+          throw new Error('Storage path is required for processing');
+        }
+        return await processCounty(supabase, county_code, batch_size, storage_path);
       
       case 'verify':
         return await verifyData(supabase, county_code);
@@ -73,7 +65,7 @@ serve(async (req) => {
         throw new Error(`Invalid action: ${action}`);
     }
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
@@ -86,47 +78,54 @@ serve(async (req) => {
 });
 
 async function getProcessingStatus(supabase: any): Promise<Response> {
-  // Get processing status for all counties
-  const statuses: ProcessingStatus[] = [];
-  
-  for (const [code, name] of Object.entries(FLORIDA_COUNTIES)) {
-    const countyCode = parseInt(code);
-    
-    // Check processing log
-    const { data: logData } = await supabase
-      .from('florida_parcels_processing_log')
-      .select('*')
-      .eq('county_code', countyCode)
-      .order('created_at', { ascending: false })
-      .limit(1);
-    
-    // Count parcels
-    const { count } = await supabase
-      .from('florida_parcels')
-      .select('*', { count: 'exact', head: true })
-      .eq('CO_NO', countyCode);
-    
-    const log = logData?.[0];
-    
-    statuses.push({
-      county_code: countyCode,
-      county_name: name,
-      total_parcels: log?.total_parcels || 0,
-      processed_parcels: count || 0,
-      status: log?.status || 'pending',
-      last_updated: log?.updated_at || new Date().toISOString(),
-      error_message: log?.error_message
+  // Get processing logs for all counties
+  const { data: logs, error } = await supabase
+    .from('florida_parcels_processing_log')
+    .select('*')
+    .order('county_code');
+
+  if (error) throw error;
+
+  // Count existing parcels by county
+  const { data: counts } = await supabase
+    .from('florida_parcels')
+    .select('CO_NO')
+    .is('CO_NO', 'not.null');
+
+  const countsByCounty = new Map<number, number>();
+  if (counts) {
+    counts.forEach((row: any) => {
+      const code = row.CO_NO;
+      countsByCounty.set(code, (countsByCounty.get(code) || 0) + 1);
     });
   }
-  
-  // Summary statistics
+
+  // Build status for all counties
+  const statuses = Object.entries(FLORIDA_COUNTIES).map(([code, name]) => {
+    const countyCode = parseInt(code);
+    const log = logs?.find((l: any) => l.county_code === countyCode);
+    const count = countsByCounty.get(countyCode) || 0;
+    
+    return {
+      county_code: countyCode,
+      county_name: name,
+      status: log?.status || 'pending',
+      total_parcels: log?.total_parcels || 0,
+      processed_parcels: count,
+      progress: log?.total_parcels > 0 ? Math.round((count / log.total_parcels) * 100) : 0,
+      last_updated: log?.updated_at || null,
+      error_message: log?.error_message
+    };
+  });
+
+  // Summary
   const summary = {
     total_counties: Object.keys(FLORIDA_COUNTIES).length,
     completed_counties: statuses.filter(s => s.status === 'completed').length,
     processing_counties: statuses.filter(s => s.status === 'processing').length,
     pending_counties: statuses.filter(s => s.status === 'pending').length,
     error_counties: statuses.filter(s => s.status === 'error').length,
-    total_parcels_processed: statuses.reduce((sum, s) => sum + s.processed_parcels, 0)
+    total_parcels_processed: Array.from(countsByCounty.values()).reduce((sum, count) => sum + count, 0)
   };
   
   return new Response(
@@ -139,10 +138,10 @@ async function processCounty(
   supabase: any, 
   countyCode: number, 
   batchSize: number,
-  resumeFrom: number
+  storagePath: string
 ): Promise<Response> {
   const countyName = FLORIDA_COUNTIES[countyCode];
-  console.log(`Processing ${countyName} County (${countyCode})`);
+  console.log(`Processing ${countyName} County (${countyCode}) from ${storagePath}`);
   
   // Update processing log
   await supabase.from('florida_parcels_processing_log').upsert({
@@ -154,94 +153,43 @@ async function processCounty(
   });
   
   try {
-    // Download and extract ZIP if not already done
-    const tempDir = `/tmp/cadastral_${countyCode}`;
-    await ensureDir(tempDir);
+    // Download GeoJSON from Storage
+    console.log('Downloading GeoJSON from Storage...');
+    const { data: fileData, error: downloadError } = await supabase.storage
+      .from('parcels')
+      .download(storagePath);
     
-    // Check if ZIP is already extracted
-    const extractedFlag = `${tempDir}/.extracted`;
-    let needsExtraction = true;
-    
-    try {
-      await Deno.stat(extractedFlag);
-      needsExtraction = false;
-      console.log('Using previously extracted data');
-    } catch {
-      // File doesn't exist, need to extract
+    if (downloadError) {
+      throw new Error(`Storage download failed: ${downloadError.message}`);
     }
     
-    if (needsExtraction) {
-      console.log('Downloading ZIP from Storage...');
-      
-      // Download ZIP from Storage
-      const { data: fileData, error: downloadError } = await supabase.storage
-        .from('parcels')
-        .download('Cadastral_Statewide.zip');
-      
-      if (downloadError) throw downloadError;
-      
-      // Save to temp file
-      const zipPath = `${tempDir}/cadastral.zip`;
-      const arrayBuffer = await fileData.arrayBuffer();
-      await Deno.writeFile(zipPath, new Uint8Array(arrayBuffer));
-      
-      console.log('Extracting ZIP...');
-      await extract(zipPath, { dir: tempDir });
-      
-      // Mark as extracted
-      await Deno.writeTextFile(extractedFlag, new Date().toISOString());
-    }
+    // Parse GeoJSON
+    console.log('Parsing GeoJSON data...');
+    const text = await fileData.text();
+    const geoJson = JSON.parse(text);
     
-    // Convert GDB to GeoJSON for specific county
-    const geoJsonPath = `${tempDir}/county_${countyCode}.geojson`;
-    
-    if (resumeFrom === 0) {
-      console.log(`Converting File Geodatabase for county ${countyCode}...`);
-      
-      const ogr2ogrCmd = new Deno.Command("ogr2ogr", {
-        args: [
-          "-f", "GeoJSON",
-          geoJsonPath,
-          `${tempDir}/Cadastral_Statewide.gdb`,
-          "CADASTRAL_DOR",
-          "-where", `CO_NO = ${countyCode}`,
-          "-t_srs", "EPSG:4326",
-          "-progress"
-        ]
-      });
-      
-      const { success, stderr } = await ogr2ogrCmd.output();
-      if (!success) {
-        throw new Error(`ogr2ogr failed: ${new TextDecoder().decode(stderr)}`);
-      }
-    }
-    
-    // Read and process GeoJSON
-    console.log('Processing GeoJSON data...');
-    const geoJsonText = await Deno.readTextFile(geoJsonPath);
-    const geoJson = JSON.parse(geoJsonText);
-    const features = geoJson.features;
+    // Filter features for this county
+    const features = geoJson.features.filter((f: any) => f.properties.CO_NO === countyCode);
     const totalFeatures = features.length;
     
-    console.log(`Total features for ${countyName}: ${totalFeatures}`);
+    console.log(`Found ${totalFeatures} features for ${countyName} County`);
     
-    // Update log with total count
+    // Update total count
     await supabase.from('florida_parcels_processing_log').upsert({
       county_code: countyCode,
       county_name: countyName,
       status: 'processing',
-      total_parcels: totalFeatures,
-      processed_parcels: resumeFrom
+      total_parcels: totalFeatures
     });
     
     // Process in batches
-    let processed = resumeFrom;
+    let processed = 0;
     const errors: string[] = [];
     
-    for (let i = resumeFrom; i < totalFeatures; i += batchSize) {
+    for (let i = 0; i < totalFeatures; i += batchSize) {
       const batch = features.slice(i, Math.min(i + batchSize, totalFeatures));
       
-      // Transform batch
+      // Transform batch to database records
       const records = batch.map((feature: any) => {
         const props = feature.properties;
         const geom = feature.geometry;
@@ -263,26 +211,22 @@ async function processCounty(
           wkt = `SRID=4326;MULTIPOLYGON(${polygons})`;
         }
         
-        // Map all DOR fields
+        // Return all 138 fields
         return {
           // Core identifiers
           CO_NO: props.CO_NO,
           PARCEL_ID: props.PARCEL_ID,
           county_fips: `12${String(props.CO_NO).padStart(3, '0')}`,
           
-          // File and assessment info
+          // All DOR fields...
           FILE_T: props.FILE_T,
           ASMNT_YR: props.ASMNT_YR,
           BAS_STRT: props.BAS_STRT,
           ATV_STRT: props.ATV_STRT,
-          
-          // Use codes
           GRP_NO: props.GRP_NO,
           DOR_UC: props.DOR_UC,
           PA_UC: props.PA_UC,
           SPASS_CD: props.SPASS_CD,
-          
-          // Values - all 138 fields from schema
           JV: props.JV,
           JV_CHNG: props.JV_CHNG,
           JV_CHNG_CD: props.JV_CHNG_CD,
@@ -308,8 +252,6 @@ async function processCounty(
           AV_HIST_SI: props.AV_HIST_SI,
           JV_WRKNG_W: props.JV_WRKNG_W,
           AV_WRKNG_W: props.AV_WRKNG_W,
-          
-          // Land and improvements
           LND_VAL: props.LND_VAL,
           LND_UNTS_C: props.LND_UNTS_C,
           NO_LND_UNT: props.NO_LND_UNT,
@@ -324,8 +266,6 @@ async function processCounty(
           NO_BULDNG: props.NO_BULDNG,
           NO_RES_UNT: props.NO_RES_UNT,
           SPEC_FEAT_: props.SPEC_FEAT_,
-          
-          // Sales data (2 sales)
           M_PAR_SAL1: props.M_PAR_SAL1,
           QUAL_CD1: props.QUAL_CD1,
           VI_CD1: props.VI_CD1,
@@ -336,7 +276,6 @@ async function processCounty(
           OR_PAGE1: props.OR_PAGE1,
           CLERK_NO1: props.CLERK_NO1,
           S_CHNG_CD1: props.S_CHNG_CD1,
-          
           M_PAR_SAL2: props.M_PAR_SAL2,
           QUAL_CD2: props.QUAL_CD2,
           VI_CD2: props.VI_CD2,
@@ -347,16 +286,12 @@ async function processCounty(
           OR_PAGE2: props.OR_PAGE2,
           CLERK_NO2: props.CLERK_NO2,
           S_CHNG_CD2: props.S_CHNG_CD2,
-          
-          // Owner information
           OWN_NAME: props.OWN_NAME,
           OWN_ADDR1: props.OWN_ADDR1,
           OWN_ADDR2: props.OWN_ADDR2,
           OWN_CITY: props.OWN_CITY,
           OWN_STATE: props.OWN_STATE,
           OWN_ZIPCD: props.OWN_ZIPCD,
-          
-          // Fiduciary
           FIDU_NAME: props.FIDU_NAME,
           FIDU_ADDR1: props.FIDU_ADDR1,
           FIDU_ADDR2: props.FIDU_ADDR2,
@@ -364,8 +299,6 @@ async function processCounty(
           FIDU_STATE: props.FIDU_STATE,
           FIDU_ZIPCD: props.FIDU_ZIPCD,
           FIDU_CD: props.FIDU_CD,
-          
-          // Legal and location
           S_LEGAL: props.S_LEGAL,
           APP_STAT: props.APP_STAT,
           CO_APP_STA: props.CO_APP_STA,
@@ -373,20 +306,14 @@ async function processCounty(
           NBRHD_CD: props.NBRHD_CD,
           PUBLIC_LND: props.PUBLIC_LND,
           TAX_AUTH_C: props.TAX_AUTH_C,
-          
-          // Township/Range/Section
           TWN: props.TWN,
           RNG: props.RNG,
           SEC: props.SEC,
           CENSUS_BK: props.CENSUS_BK,
-          
-          // Physical address
           PHY_ADDR1: props.PHY_ADDR1,
           PHY_ADDR2: props.PHY_ADDR2,
           PHY_CITY: props.PHY_CITY,
           PHY_ZIPCD: props.PHY_ZIPCD,
-          
-          // Other fields
           ALT_KEY: props.ALT_KEY,
           ASS_TRNSFR: props.ASS_TRNSFR,
           PREV_HMSTD: props.PREV_HMSTD,
@@ -400,6 +327,16 @@ async function processCounty(
           SPC_CIR_CD: props.SPC_CIR_CD,
           SPC_CIR_YR: props.SPC_CIR_YR,
           SPC_CIR_TX: props.SPC_CIR_TX,
+          NCONST_VAL: props.NCONST_VAL,
+          DEL_VAL: props.DEL_VAL,
+          PAR_SPLT: props.PAR_SPLT,
+          DISTR_CD: props.DISTR_CD,
+          DISTR_YR: props.DISTR_YR,
+          
+          // Additional columns
+          PARCEL_ID_: props.PARCEL_ID_,
+          OWN_STATE_: props.OWN_STATE_,
+          OWN_ZIPCDA: props.OWN_ZIPCDA,
           
           // Shape fields
           Shape_Area: props.Shape_Area,
@@ -412,8 +349,8 @@ async function processCounty(
           
           // Metadata
           data_source: 'FLORIDA_DOR_2024',
-          import_batch: `edge_function_${countyCode}_${new Date().toISOString()}`,
-          source_file: 'Cadastral_Statewide.zip',
+          import_batch: `edge_${countyCode}_${new Date().toISOString()}`,
+          source_file: storagePath,
           data_version: '2024.0',
           import_date: new Date().toISOString(),
           processed_by: 'florida-parcels-processor'
@@ -442,7 +379,7 @@ async function processCounty(
           county_name: countyName,
           status: 'processing',
           processed_parcels: processed,
-          last_batch_index: i + batchSize
+          updated_at: new Date().toISOString()
         });
       }
     }
@@ -460,15 +397,6 @@ async function processCounty(
       error_message: errors.length > 0 ? errors.join('; ') : null
     });
     
-    // Clean up temp files if completed
-    if (processed === totalFeatures) {
-      try {
-        await Deno.remove(tempDir, { recursive: true });
-      } catch (e) {
-        console.error('Cleanup error:', e);
-      }
-    }
-    
     return new Response(
       JSON.stringify({
         county_code: countyCode,
@@ -482,7 +410,7 @@ async function processCounty(
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
     
-  } catch (error) {
+  } catch (error: any) {
     // Log error
     await supabase.from('florida_parcels_processing_log').upsert({
       county_code: countyCode,
@@ -497,44 +425,27 @@ async function processCounty(
 }
 
 async function verifyData(supabase: any, countyCode?: number): Promise<Response> {
-  const conditions: any = {};
+  let query = supabase
+    .from('florida_parcels')
+    .select('CO_NO', { count: 'exact' });
+    
   if (countyCode) {
-    conditions.CO_NO = countyCode;
+    query = query.eq('CO_NO', countyCode);
   }
   
-  // Get counts by county
-  const { data: countData, error } = await supabase
-    .from('florida_parcels')
-    .select('CO_NO, county_fips')
-    .eq(countyCode ? 'CO_NO' : '', countyCode || '');
+  const { count, error } = await query;
   
   if (error) throw error;
   
-  // Aggregate counts
-  const countsByCounty = countData.reduce((acc: any, row: any) => {
-    const code = row.CO_NO;
-    acc[code] = (acc[code] || 0) + 1;
-    return acc;
-  }, {});
-  
-  // Build verification report
-  const verificationReport = Object.entries(countsByCounty).map(([code, count]) => ({
-    county_code: parseInt(code),
-    county_name: FLORIDA_COUNTIES[parseInt(code)],
-    parcel_count: count,
-    county_fips: `12${code.padStart(3, '0')}`
-  }));
-  
-  // Get total count
-  const totalParcels = Object.values(countsByCounty).reduce((sum: number, count: any) => sum + count, 0);
+  const response = {
+    total_parcels: count || 0,
+    county_code: countyCode,
+    county_name: countyCode ? FLORIDA_COUNTIES[countyCode] : 'All Counties',
+    verification_date: new Date().toISOString()
+  };
   
   return new Response(
-    JSON.stringify({
-      total_parcels: totalParcels,
-      counties_loaded: verificationReport.length,
-      verification_date: new Date().toISOString(),
-      counties: verificationReport
-    }),
+    JSON.stringify(response),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
   );
 }

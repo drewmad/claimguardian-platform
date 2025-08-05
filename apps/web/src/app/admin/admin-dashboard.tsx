@@ -15,12 +15,16 @@ import {
   XCircle,
   Search,
   Calendar,
-  Eye
+  Eye,
+  Zap,
+  Target,
+  TrendingUp
 } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
+import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dashboard'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -40,7 +44,7 @@ export function AdminDashboard() {
   // Handle tab query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab')
-    if (tabParam && ['overview', 'users', 'ml-operations', 'errors', 'legal-docs', 'compliance', 'settings'].includes(tabParam)) {
+    if (tabParam && ['overview', 'users', 'ai-models', 'ml-operations', 'errors', 'legal-docs', 'compliance', 'claude-learning', 'settings'].includes(tabParam)) {
       setActiveTab(tabParam)
     }
   }, [searchParams])
@@ -123,8 +127,15 @@ export function AdminDashboard() {
           <TabsList className="bg-slate-900 border border-slate-800">
             <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="users">Users</TabsTrigger>
+            <TabsTrigger value="ai-models">AI Models</TabsTrigger>
             <TabsTrigger value="ml-operations">ML Operations</TabsTrigger>
             <TabsTrigger value="errors">Error Dashboard</TabsTrigger>
+            <TabsTrigger value="claude-learning">
+              <div className="flex items-center gap-2">
+                <Zap className="h-4 w-4" />
+                Claude Learning
+              </div>
+            </TabsTrigger>
             <TabsTrigger value="legal-docs">Legal Documents</TabsTrigger>
             <TabsTrigger value="compliance">Compliance</TabsTrigger>
             <TabsTrigger value="settings">Settings</TabsTrigger>
@@ -227,17 +238,17 @@ export function AdminDashboard() {
                     <Users className="mr-2 h-4 w-4" />
                     Manage Users
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ml-operations')}>
+                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('ai-models')}>
                     <Brain className="mr-2 h-4 w-4" />
-                    ML Dashboard
+                    AI Models
                   </Button>
                   <Button variant="outline" className="justify-start" onClick={() => setActiveTab('errors')}>
                     <AlertCircle className="mr-2 h-4 w-4" />
                     View Errors
                   </Button>
-                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('legal-docs')}>
-                    <FileText className="mr-2 h-4 w-4" />
-                    Legal Docs
+                  <Button variant="outline" className="justify-start" onClick={() => setActiveTab('claude-learning')}>
+                    <Zap className="mr-2 h-4 w-4" />
+                    Claude Learning
                   </Button>
                 </CardContent>
               </Card>
@@ -328,6 +339,297 @@ export function AdminDashboard() {
                       </div>
                     </div>
                   ))}
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* AI Models Tab */}
+          <TabsContent value="ai-models" className="space-y-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-2xl font-bold text-white">AI Model Management</h2>
+                <p className="text-gray-400">Configure and monitor AI models across all features</p>
+              </div>
+              <div className="flex gap-3">
+                <Button variant="outline" size="sm">
+                  <Activity className="mr-2 h-4 w-4" />
+                  Performance Report
+                </Button>
+                <Button size="sm">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Configure Models
+                </Button>
+              </div>
+            </div>
+
+            {/* Model Status Overview */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card className={liquidGlass.cards.default}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Active Models</CardTitle>
+                  <Brain className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">8</div>
+                  <p className="text-xs text-muted-foreground">
+                    <span className="text-green-500">6 online</span>, 2 fallback
+                  </p>
+                </CardContent>
+              </Card>
+
+              <Card className={liquidGlass.cards.default}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Requests</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">15.4K</div>
+                  <p className="text-xs text-muted-foreground">Last 30 days</p>
+                </CardContent>
+              </Card>
+
+              <Card className={liquidGlass.cards.default}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
+                  <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">$234.50</div>
+                  <p className="text-xs text-muted-foreground">This month</p>
+                </CardContent>
+              </Card>
+
+              <Card className={liquidGlass.cards.default}>
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium">Avg Response</CardTitle>
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                </CardHeader>
+                <CardContent>
+                  <div className="text-2xl font-bold">1.2s</div>
+                  <p className="text-xs text-muted-foreground">All models</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Feature Model Assignments */}
+            <Card className={liquidGlass.cards.default}>
+              <CardHeader>
+                <CardTitle>Feature Model Assignments</CardTitle>
+                <CardDescription>Current AI model assignments for each feature</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Damage Analyzer</h4>
+                        <Badge variant="secondary">GPT-4 Vision</Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Status</p>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                            <span className="text-green-500">Online</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">2.3K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$67.89</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Policy Chat</h4>
+                        <Badge variant="secondary">GPT-4 Turbo</Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Status</p>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                            <span className="text-green-500">Online</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">4.1K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$89.23</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Settlement Analyzer</h4>
+                        <Badge variant="secondary">Claude 3 Opus</Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Status</p>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                            <span className="text-green-500">Online</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">1.8K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$31.23</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Inventory Scanner</h4>
+                        <Badge variant="secondary">Gemini 1.5 Pro</Badge>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Status</p>
+                          <div className="flex items-center gap-1">
+                            <CheckCircle className="h-3 w-3 text-green-500" />
+                            <span className="text-green-500">Online</span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">987</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$12.45</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Model Performance Comparison */}
+            <Card className={liquidGlass.cards.default}>
+              <CardHeader>
+                <CardTitle>Model Performance Metrics</CardTitle>
+                <CardDescription>Performance comparison across all AI providers</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">GPT-4 Turbo</h4>
+                        <Badge variant="outline">OpenAI</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">6.5K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Avg Time</p>
+                          <p className="font-semibold">1.5s</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Success Rate</p>
+                          <p className="font-semibold text-green-500">99.2%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$123.45</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Gemini 1.5 Pro</h4>
+                        <Badge variant="outline">Google</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">4.3K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Avg Time</p>
+                          <p className="font-semibold">0.9s</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Success Rate</p>
+                          <p className="font-semibold text-green-500">98.8%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$67.89</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Claude 3 Opus</h4>
+                        <Badge variant="outline">Anthropic</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">2.9K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Avg Time</p>
+                          <p className="font-semibold">1.8s</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Success Rate</p>
+                          <p className="font-semibold text-green-500">97.5%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$31.23</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="p-4 bg-slate-800 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <h4 className="font-medium">Claude 3 Sonnet</h4>
+                        <Badge variant="outline">Anthropic</Badge>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2 text-sm">
+                        <div>
+                          <p className="text-gray-400">Requests</p>
+                          <p className="font-semibold">1.7K</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Avg Time</p>
+                          <p className="font-semibold">1.1s</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Success Rate</p>
+                          <p className="font-semibold text-green-500">98.1%</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-400">Cost</p>
+                          <p className="font-semibold">$11.93</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -535,6 +837,11 @@ export function AdminDashboard() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          {/* Claude Learning Tab */}
+          <TabsContent value="claude-learning">
+            <ClaudeLearningDashboard />
           </TabsContent>
 
           {/* Legal Documents Tab */}

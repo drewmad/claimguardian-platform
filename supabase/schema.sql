@@ -3535,6 +3535,34 @@ CREATE TABLE IF NOT EXISTS "public"."ai_models" (
 ALTER TABLE "public"."ai_models" OWNER TO "postgres";
 
 
+-- AI Model Configuration Table (for admin model selection)
+CREATE TABLE IF NOT EXISTS "public"."ai_model_configs" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "config" "jsonb" NOT NULL,
+    "updated_by" "uuid",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"()
+);
+
+ALTER TABLE "public"."ai_model_configs" OWNER TO "postgres";
+
+-- AI Usage Tracking Table (for performance monitoring)
+CREATE TABLE IF NOT EXISTS "public"."ai_usage_tracking" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "model_name" "text" NOT NULL,
+    "success" boolean NOT NULL,
+    "response_time_ms" integer NOT NULL,
+    "cost_usd" numeric(10,6) DEFAULT 0,
+    "user_id" "text",
+    "error_message" "text",
+    "metadata" "jsonb" DEFAULT '{}'::"jsonb",
+    "created_at" timestamp with time zone DEFAULT "now"()
+);
+
+ALTER TABLE "public"."ai_usage_tracking" OWNER TO "postgres";
+
+
 CREATE TABLE IF NOT EXISTS "public"."audit_logs" (
     "id" "uuid" DEFAULT "extensions"."uuid_generate_v4"() NOT NULL,
     "user_id" "uuid",
@@ -7080,6 +7108,14 @@ ALTER TABLE ONLY "public"."ai_feedback"
 
 ALTER TABLE ONLY "public"."ai_models"
     ADD CONSTRAINT "ai_models_pkey" PRIMARY KEY ("id");
+
+
+ALTER TABLE ONLY "public"."ai_model_configs"
+    ADD CONSTRAINT "ai_model_configs_pkey" PRIMARY KEY ("id");
+
+
+ALTER TABLE ONLY "public"."ai_usage_tracking"
+    ADD CONSTRAINT "ai_usage_tracking_pkey" PRIMARY KEY ("id");
 
 
 
@@ -16189,6 +16225,14 @@ GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public".
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_models" TO "authenticated";
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_models" TO "service_role";
 
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_model_configs" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_model_configs" TO "authenticated";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_model_configs" TO "service_role";
+
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_usage_tracking" TO "anon";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_usage_tracking" TO "authenticated";
+GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."ai_usage_tracking" TO "service_role";
+
 
 
 GRANT SELECT,INSERT,REFERENCES,DELETE,TRIGGER,TRUNCATE,UPDATE ON TABLE "public"."audit_logs" TO "anon";
@@ -19419,6 +19463,290 @@ WHERE s.idx_scan = 0
   AND i.indisunique = false
   AND i.indisprimary = false
 ORDER BY pg_relation_size(s.indexrelid) DESC;
+$$;
+
+-- ============================================
+-- PART 7B: Advanced AI Operations Tables
+-- ============================================
+
+-- AI Model Configurations Table
+CREATE TABLE IF NOT EXISTS "public"."ai_model_configs" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "feature_name" "text" NOT NULL,
+    "current_model" "text" NOT NULL,
+    "fallback_model" "text" NOT NULL,
+    "category" "text" NOT NULL CHECK (category IN ('analysis', 'generation', 'vision', 'reasoning')),
+    "is_active" boolean DEFAULT true,
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    "created_by" "uuid" REFERENCES "auth"."users"("id"),
+    CONSTRAINT "ai_model_configs_pkey" PRIMARY KEY ("id"),
+    CONSTRAINT "ai_model_configs_feature_id_unique" UNIQUE ("feature_id")
+);
+
+-- AI Usage Tracking Table
+CREATE TABLE IF NOT EXISTS "public"."ai_usage_tracking" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "model" "text" NOT NULL,
+    "user_id" "uuid" REFERENCES "auth"."users"("id"),
+    "success" boolean NOT NULL,
+    "response_time" integer NOT NULL, -- milliseconds
+    "cost" numeric(10,6) DEFAULT 0,
+    "tokens_used" integer,
+    "error_message" "text",
+    "request_metadata" "jsonb",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_usage_tracking_pkey" PRIMARY KEY ("id")
+);
+
+-- A/B Testing Framework Tables
+CREATE TABLE IF NOT EXISTS "public"."ai_ab_tests" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "name" "text" NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "model_a" "text" NOT NULL,
+    "model_b" "text" NOT NULL,
+    "status" "text" DEFAULT 'active' CHECK (status IN ('active', 'paused', 'completed')),
+    "traffic_split" integer DEFAULT 50 CHECK (traffic_split >= 10 AND traffic_split <= 90),
+    "start_date" timestamp with time zone DEFAULT "now"(),
+    "end_date" timestamp with time zone,
+    "created_by" "uuid" REFERENCES "auth"."users"("id"),
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_ab_tests_pkey" PRIMARY KEY ("id")
+);
+
+-- A/B Test Results Table
+CREATE TABLE IF NOT EXISTS "public"."ai_ab_test_results" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "test_id" "uuid" REFERENCES "public"."ai_ab_tests"("id") ON DELETE CASCADE,
+    "model" "text" NOT NULL, -- 'model_a' or 'model_b'
+    "user_id" "uuid" REFERENCES "auth"."users"("id"),
+    "response_time" integer NOT NULL,
+    "success" boolean NOT NULL,
+    "user_rating" integer CHECK (user_rating >= 1 AND user_rating <= 5),
+    "feedback" "text",
+    "request_metadata" "jsonb",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_ab_test_results_pkey" PRIMARY KEY ("id")
+);
+
+-- Custom Prompts Table
+CREATE TABLE IF NOT EXISTS "public"."ai_custom_prompts" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "name" "text" NOT NULL,
+    "system_prompt" "text" NOT NULL,
+    "is_active" boolean DEFAULT false,
+    "version" integer DEFAULT 1,
+    "created_by" "uuid" REFERENCES "auth"."users"("id"),
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    "updated_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_custom_prompts_pkey" PRIMARY KEY ("id")
+);
+
+-- Custom Prompt Performance Table
+CREATE TABLE IF NOT EXISTS "public"."ai_prompt_performance" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "prompt_id" "uuid" REFERENCES "public"."ai_custom_prompts"("id") ON DELETE CASCADE,
+    "user_id" "uuid" REFERENCES "auth"."users"("id"),
+    "response_time" integer NOT NULL,
+    "success" boolean NOT NULL,
+    "user_rating" integer CHECK (user_rating >= 1 AND user_rating <= 5),
+    "feedback" "text",
+    "cost" numeric(10,6) DEFAULT 0,
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_prompt_performance_pkey" PRIMARY KEY ("id")
+);
+
+-- Quality Scores Table
+CREATE TABLE IF NOT EXISTS "public"."ai_quality_scores" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "feature_id" "text" NOT NULL,
+    "model" "text" NOT NULL,
+    "prompt_id" "uuid" REFERENCES "public"."ai_custom_prompts"("id"),
+    "user_id" "uuid" REFERENCES "auth"."users"("id"),
+    "rating" "text" NOT NULL CHECK (rating IN ('excellent', 'good', 'fair', 'poor')),
+    "numeric_rating" integer NOT NULL CHECK (numeric_rating >= 1 AND numeric_rating <= 5),
+    "response_time" integer NOT NULL,
+    "feedback" "text",
+    "response_content" "text",
+    "request_metadata" "jsonb",
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_quality_scores_pkey" PRIMARY KEY ("id")
+);
+
+-- AI Recommendations Table
+CREATE TABLE IF NOT EXISTS "public"."ai_recommendations" (
+    "id" "uuid" DEFAULT "gen_random_uuid"() NOT NULL,
+    "type" "text" NOT NULL CHECK (type IN ('model_switch', 'prompt_optimization', 'ab_test', 'cost_optimization')),
+    "priority" "text" NOT NULL CHECK (priority IN ('high', 'medium', 'low')),
+    "feature_id" "text" NOT NULL,
+    "current_config" "jsonb",
+    "recommended_config" "jsonb",
+    "reason" "text" NOT NULL,
+    "confidence" integer NOT NULL CHECK (confidence >= 0 AND confidence <= 100),
+    "potential_impact" "jsonb", -- cost savings, performance improvement, etc.
+    "status" "text" DEFAULT 'pending' CHECK (status IN ('pending', 'applied', 'dismissed')),
+    "applied_by" "uuid" REFERENCES "auth"."users"("id"),
+    "applied_at" timestamp with time zone,
+    "created_at" timestamp with time zone DEFAULT "now"(),
+    CONSTRAINT "ai_recommendations_pkey" PRIMARY KEY ("id")
+);
+
+-- Indexes for AI Operations Tables
+CREATE INDEX IF NOT EXISTS "idx_ai_usage_tracking_feature_id" ON "public"."ai_usage_tracking" ("feature_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_usage_tracking_model" ON "public"."ai_usage_tracking" ("model");
+CREATE INDEX IF NOT EXISTS "idx_ai_usage_tracking_user_id" ON "public"."ai_usage_tracking" ("user_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_usage_tracking_created_at" ON "public"."ai_usage_tracking" ("created_at");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_ab_tests_feature_id" ON "public"."ai_ab_tests" ("feature_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_ab_tests_status" ON "public"."ai_ab_tests" ("status");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_ab_test_results_test_id" ON "public"."ai_ab_test_results" ("test_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_ab_test_results_model" ON "public"."ai_ab_test_results" ("model");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_custom_prompts_feature_id" ON "public"."ai_custom_prompts" ("feature_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_custom_prompts_is_active" ON "public"."ai_custom_prompts" ("is_active");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_prompt_performance_prompt_id" ON "public"."ai_prompt_performance" ("prompt_id");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_quality_scores_feature_id" ON "public"."ai_quality_scores" ("feature_id");
+CREATE INDEX IF NOT EXISTS "idx_ai_quality_scores_model" ON "public"."ai_quality_scores" ("model");
+CREATE INDEX IF NOT EXISTS "idx_ai_quality_scores_created_at" ON "public"."ai_quality_scores" ("created_at");
+
+CREATE INDEX IF NOT EXISTS "idx_ai_recommendations_type" ON "public"."ai_recommendations" ("type");
+CREATE INDEX IF NOT EXISTS "idx_ai_recommendations_priority" ON "public"."ai_recommendations" ("priority");
+CREATE INDEX IF NOT EXISTS "idx_ai_recommendations_status" ON "public"."ai_recommendations" ("status");
+
+-- Row Level Security Policies for AI Operations Tables
+ALTER TABLE "public"."ai_model_configs" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_usage_tracking" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_ab_tests" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_ab_test_results" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_custom_prompts" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_prompt_performance" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_quality_scores" ENABLE ROW LEVEL SECURITY;
+ALTER TABLE "public"."ai_recommendations" ENABLE ROW LEVEL SECURITY;
+
+-- Admin-only access for configuration tables
+CREATE POLICY "ai_model_configs_admin_only" ON "public"."ai_model_configs"
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles 
+            WHERE id = auth.uid() 
+            AND role = 'admin'
+        )
+    );
+
+CREATE POLICY "ai_ab_tests_admin_only" ON "public"."ai_ab_tests"
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles 
+            WHERE id = auth.uid() 
+            AND role = 'admin'
+        )
+    );
+
+CREATE POLICY "ai_custom_prompts_admin_only" ON "public"."ai_custom_prompts"
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles 
+            WHERE id = auth.uid() 
+            AND role = 'admin'
+        )
+    );
+
+CREATE POLICY "ai_recommendations_admin_only" ON "public"."ai_recommendations"
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles 
+            WHERE id = auth.uid() 
+            AND role = 'admin'
+        )
+    );
+
+-- User access for tracking and feedback tables
+CREATE POLICY "ai_usage_tracking_user_own" ON "public"."ai_usage_tracking"
+    FOR ALL USING (user_id = auth.uid());
+
+CREATE POLICY "ai_ab_test_results_user_own" ON "public"."ai_ab_test_results"
+    FOR ALL USING (user_id = auth.uid());
+
+CREATE POLICY "ai_prompt_performance_user_own" ON "public"."ai_prompt_performance"
+    FOR ALL USING (user_id = auth.uid());
+
+CREATE POLICY "ai_quality_scores_user_own" ON "public"."ai_quality_scores"
+    FOR ALL USING (user_id = auth.uid());
+
+-- Functions for AI Operations
+CREATE OR REPLACE FUNCTION get_ai_model_config(p_feature_id text)
+RETURNS TABLE (
+    feature_id text,
+    current_model text,
+    fallback_model text,
+    category text
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT 
+        amc.feature_id,
+        amc.current_model,
+        amc.fallback_model,
+        amc.category
+    FROM ai_model_configs amc
+    WHERE amc.feature_id = p_feature_id
+    AND amc.is_active = true;
+$$;
+
+CREATE OR REPLACE FUNCTION track_ai_usage(
+    p_feature_id text,
+    p_model text,
+    p_user_id uuid,
+    p_success boolean,
+    p_response_time integer,
+    p_cost numeric DEFAULT 0,
+    p_tokens_used integer DEFAULT NULL,
+    p_error_message text DEFAULT NULL,
+    p_request_metadata jsonb DEFAULT '{}'::jsonb
+)
+RETURNS uuid
+LANGUAGE sql
+AS $$
+    INSERT INTO ai_usage_tracking (
+        feature_id, model, user_id, success, response_time, 
+        cost, tokens_used, error_message, request_metadata
+    )
+    VALUES (
+        p_feature_id, p_model, p_user_id, p_success, p_response_time,
+        p_cost, p_tokens_used, p_error_message, p_request_metadata
+    )
+    RETURNING id;
+$$;
+
+CREATE OR REPLACE FUNCTION get_ab_test_for_feature(p_feature_id text)
+RETURNS TABLE (
+    test_id uuid,
+    model_a text,
+    model_b text,
+    traffic_split integer
+)
+LANGUAGE sql
+STABLE
+AS $$
+    SELECT 
+        id,
+        model_a,
+        model_b,
+        traffic_split
+    FROM ai_ab_tests
+    WHERE feature_id = p_feature_id
+    AND status = 'active'
+    ORDER BY created_at DESC
+    LIMIT 1;
 $$;
 
 -- ============================================

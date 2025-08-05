@@ -48,7 +48,13 @@
     "ci:local": "pnpm install --frozen-lockfile && pnpm lint && pnpm type-check && pnpm test && pnpm build",
     "ci:validate": "pnpm deps:check && pnpm lint && pnpm type-check && pnpm test:ci",
     "fix:all": "pnpm lint:smart-fix && pnpm db:generate-types && pnpm build",
-    "health:check": "pnpm lint:list | grep -E '(error|warning)' | wc -l && echo 'lint issues' && pnpm type-check 2>&1 | grep error | wc -l && echo 'type errors'"
+    "health:check": "pnpm lint:list | grep -E '(error|warning)' | wc -l && echo 'lint issues' && pnpm type-check 2>&1 | grep error | wc -l && echo 'type errors'",
+    "claude:learning-mode": "node scripts/claude/learning-mode.js",
+    "claude:demo": "node scripts/claude/run-demo.js",
+    "claude:advanced-demo": "node scripts/claude/advanced-automation-demo.js",
+    "claude:stats": "node scripts/claude/show-stats.js",
+    "claude:dashboard": "echo '🚀 Opening Claude Learning Dashboard...' && open 'https://claimguardianai.com/admin?tab=claude-learning' || echo 'Visit: https://claimguardianai.com/admin?tab=claude-learning'",
+    "claude:test-system": "node scripts/claude/test-learning-system.js"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
