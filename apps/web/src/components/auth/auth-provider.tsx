@@ -152,11 +152,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             })
             logger.info('Session started', { userId: session.user.id, event: 'session_start' })
             
-            // Only start session monitoring if session has sufficient time left
-            if (timeUntilExpiry > 60) {
+            // Only start session monitoring if session has sufficient time left and not already monitoring
+            if (timeUntilExpiry > 300) { // 5 minutes minimum to avoid rapid refresh cycles
               sessionManager.startMonitoring()
             } else {
-              logger.warn('Session expires very soon, skipping monitoring to avoid immediate logout')
+              logger.warn('Session expires soon, skipping monitoring to avoid immediate logout', { timeUntilExpiry })
             }
           } else {
             logger.info('No active session found during initialization')
@@ -237,15 +237,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
               
-              // Check session validity before starting monitoring
+              // Check session validity before starting monitoring - avoid duplicate monitoring
               if (session) {
                 const now = Date.now() / 1000
                 const timeUntilExpiry = session.expires_at! - now
                 
-                if (timeUntilExpiry > 60) {
+                // Stop any existing monitoring first to prevent duplicates
+                sessionManager.stopMonitoring()
+                
+                if (timeUntilExpiry > 300) { // 5 minutes minimum
                   sessionManager.startMonitoring()
                 } else {
-                  logger.warn('New session expires very soon, skipping monitoring')
+                  logger.warn('New session expires very soon, skipping monitoring', { timeUntilExpiry })
                 }
               }
               
@@ -288,7 +291,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       sessionManager.stopMonitoring()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [supabase.auth, user?.id]) // Add dependencies to prevent re-initialization
+  }, []) // Run only once on mount - removing user?.id to prevent infinite loops
 
   // Sign in handler
   const handleSignIn = useCallback(async (email: string, password: string) => {

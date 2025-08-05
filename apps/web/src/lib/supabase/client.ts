@@ -11,12 +11,15 @@ export function createClient() {
   if (!browserClient) {
     try {
       browserClient = createBrowserSupabaseClient()
-      authLogger.info('Supabase client initialized')
+      authLogger.info('Supabase browser client initialized (singleton)')
     } catch (error) {
       authLogger.error('Failed to initialize Supabase client', {}, error as Error)
       // Re-throw to prevent silent failures
       throw error
     }
+  } else {
+    // Reusing existing client to prevent multiple auth listeners
+    authLogger.debug('Reusing existing Supabase browser client')
   }
   return browserClient
 }

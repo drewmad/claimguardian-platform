@@ -24,6 +24,8 @@ class SessionManager {
   private refreshTimer?: NodeJS.Timeout
   private warningTimer?: NodeJS.Timeout
   private supabase = createClient()
+  private refreshInProgress = false
+  private lastRefreshAttempt = 0
   public config: SessionManagerConfig
 
   constructor(config: SessionManagerConfig = {}) {
@@ -48,6 +50,12 @@ class SessionManager {
    * Start monitoring the session
    */
   async startMonitoring() {
+    // Prevent multiple concurrent monitoring instances
+    if (this.refreshTimer || this.warningTimer) {
+      logger.warn('Session monitoring already active, skipping duplicate start')
+      return
+    }
+    
     logger.info('Starting session monitoring')
     
     // Clear any existing timers
@@ -126,20 +134,30 @@ class SessionManager {
       }, timeUntilWarning * 1000)
     }
     
-    // Only schedule refresh if there's enough time (at least 2 minutes)
-    if (timeUntilRefresh > 120) {
+    // Only schedule refresh if there's enough time (at least 5 minutes to prevent refresh storms)
+    if (timeUntilRefresh > 300) {
       this.refreshTimer = setTimeout(async () => {
         await this.refreshSession()
       }, timeUntilRefresh * 1000)
-    } else if (timeUntilExpiry > 120) {
+      logger.info('Scheduled token refresh', { 
+        refreshIn: Math.round(timeUntilRefresh / 60),
+        refreshAt: new Date(Date.now() + timeUntilRefresh * 1000).toISOString()
+      })
+    } else if (timeUntilExpiry > 300) {
       // If we can't refresh with the normal threshold, try refreshing with a shorter threshold
-      const shortRefreshTime = Math.max(60, timeUntilExpiry - 60) // 1 minute before expiry
+      const shortRefreshTime = Math.max(180, timeUntilExpiry - 120) // 2 minutes before expiry, minimum 3 minutes from now
       this.refreshTimer = setTimeout(async () => {
         await this.refreshSession()
       }, shortRefreshTime * 1000)
+      logger.info('Scheduled emergency token refresh', { 
+        refreshIn: Math.round(shortRefreshTime / 60),
+        refreshAt: new Date(Date.now() + shortRefreshTime * 1000).toISOString()
+      })
     } else {
       // Session will expire very soon, don't attempt refresh to avoid logout loops
-      logger.warn('Session expires very soon, skipping refresh to avoid logout loop')
+      logger.warn('Session expires very soon, skipping refresh to avoid logout loop', {
+        timeUntilExpiry: Math.round(timeUntilExpiry / 60)
+      })
     }
   }
 
@@ -147,6 +165,24 @@ class SessionManager {
    * Refresh the current session
    */
   private async refreshSession() {
+    // Prevent concurrent refresh requests
+    const now = Date.now()
+    if (this.refreshInProgress) {
+      logger.warn('Refresh already in progress, skipping duplicate request')
+      return
+    }
+    
+    // Rate limiting: don't allow refresh attempts more than once per minute
+    if (now - this.lastRefreshAttempt < 60000) {
+      logger.warn('Refresh attempted too soon, rate limiting', {
+        timeSinceLastAttempt: Math.round((now - this.lastRefreshAttempt) / 1000)
+      })
+      return
+    }
+    
+    this.refreshInProgress = true
+    this.lastRefreshAttempt = now
+    
     try {
       logger.info('Attempting to refresh session')
       
@@ -203,6 +239,8 @@ class SessionManager {
       logger.error('Unexpected error refreshing session', {}, err instanceof Error ? err : new Error(String(err)))
       // Don't automatically logout on unexpected errors to avoid logout loops
       logger.warn('Session refresh failed, will retry on next scheduled refresh')
+    } finally {
+      this.refreshInProgress = false
     }
   }
 
