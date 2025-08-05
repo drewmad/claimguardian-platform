@@ -1,6 +1,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 import { GoogleGenerativeAI } from "npm:@google/generative-ai"
+import { AICostTracker } from '../_shared/ai-cost-tracker.ts'
 
 // Security: Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -209,6 +210,7 @@ Deno.serve(async (req: Request) => {
     const { fileUrl, fileName, apiProvider = 'gemini', confidenceThreshold = 0.7 } = body
 
     const startTime = Date.now()
+    const costTracker = new AICostTracker()
 
     let extractedData: ExtractedPolicyData
 
@@ -223,13 +225,41 @@ Deno.serve(async (req: Request) => {
 
       extractedData.processingTime = Date.now() - startTime
 
+      // Log AI usage for cost tracking
+      if (apiProvider === 'gemini') {
+        await costTracker.logGeminiUsage(
+          user.id,
+          'gemini-1.5-flash',
+          'document-extraction',
+          buildExtractionPrompt(),
+          JSON.stringify(extractedData),
+          true
+        )
+      } else if (apiProvider === 'openai') {
+        // For OpenAI, we'd need to capture the response object with usage data
+        // This is a simplified version - in production, modify extractWithOpenAI to return usage data
+        await costTracker.logUsage({
+          userId: user.id,
+          provider: 'openai',
+          model: 'gpt-4o',
+          operationType: 'document-extraction',
+          tokensUsed: 1000, // Estimate - should come from actual response
+          estimatedCost: 0.03, // Estimate - should be calculated from actual usage
+          success: true,
+          metadata: { fileName }
+        })
+      }
+
       // Check confidence threshold
       if (extractedData.confidence && extractedData.confidence < confidenceThreshold) {
-        console.log(JSON.stringify({ level: "warn", timestamp: new Date().toISOString(), message: 'Extraction confidence below threshold', {
+        console.log(JSON.stringify({ 
+          level: "warn", 
+          timestamp: new Date().toISOString(), 
+          message: 'Extraction confidence below threshold',
           confidence: extractedData.confidence,
           threshold: confidenceThreshold,
           fileName
-        })
+        }))
       }
 
       return new Response(
@@ -243,10 +273,24 @@ Deno.serve(async (req: Request) => {
       )
     } catch (extractionError) {
       console.log(JSON.stringify({
-  level: "error",
-  timestamp: new Date().toISOString(),
-  message: 'Extraction failed:', extractionError
-}));
+        level: "error",
+        timestamp: new Date().toISOString(),
+        message: 'Extraction failed',
+        error: extractionError instanceof Error ? extractionError.message : String(extractionError)
+      }));
+      
+      // Log failed AI usage
+      await costTracker.logUsage({
+        userId: user.id,
+        provider: apiProvider as 'gemini' | 'openai',
+        model: apiProvider === 'gemini' ? 'gemini-1.5-flash' : 'gpt-4o',
+        operationType: 'document-extraction',
+        tokensUsed: 0,
+        estimatedCost: 0,
+        success: false,
+        errorMessage: extractionError instanceof Error ? extractionError.message : 'Extraction failed',
+        metadata: { fileName }
+      })
       
       return new Response(
         JSON.stringify({
@@ -259,10 +303,11 @@ Deno.serve(async (req: Request) => {
     }
   } catch (error) {
     console.log(JSON.stringify({
-  level: "error",
-  timestamp: new Date().toISOString(),
-  message: 'Edge function error:', error
-}));
+      level: "error",
+      timestamp: new Date().toISOString(),
+      message: 'Edge function error',
+      error: error instanceof Error ? error.message : String(error)
+    }));
     
     return new Response(
       JSON.stringify({

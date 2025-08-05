@@ -1,14 +1,41 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2"
+import "jsr:@supabase/functions-js/edge-runtime.d.ts"
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+
+// Security: Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://claimguardianai.com',
+  'https://app.claimguardianai.com',
+  Deno.env.get('ENVIRONMENT') === 'development' ? 'http://localhost:3000' : null
+].filter(Boolean)
 
 interface SpatialAPIRequest {
   action: 'analyze_property' | 'generate_embeddings' | 'find_similar' | 'assess_risk' | 'environmental_data'
   data: Record<string, unknown>
 }
 
-serve(async (req: Request) => {
+Deno.serve(async (req: Request) => {
+  const origin = req.headers.get('origin')
+  
+  const corsHeaders = {
+    'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'X-Content-Type-Options': 'nosniff',
+    'X-Frame-Options': 'DENY',
+    'X-XSS-Protection': '1; mode=block',
+    'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
+  }
+  
+  // Handle CORS
+  if (req.method === 'OPTIONS') {
+    return new Response('ok', { headers: corsHeaders })
+  }
+
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { status: 405 })
+    return new Response('Method not allowed', { 
+      status: 405,
+      headers: corsHeaders 
+    })
   }
 
   try {
@@ -48,149 +75,29 @@ serve(async (req: Request) => {
             }
           },
           riskAssessment: {
-            propertyId: propertyId as string,
-            riskScores: {
-              flood: 0.2,
-              wind: 0.3,
-              fire: 0.1
-            },
-            confidence: 0.85
+            overallRiskScore: 0.25,
+            riskFactors: ['flood_zone', 'hurricane_exposure'],
+            recommendedActions: ['flood_insurance', 'wind_mitigation']
           }
         }
 
-        return new Response(JSON.stringify({
-          success: true,
-          data: analysisResult
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
+        return new Response(
+          JSON.stringify(analysisResult),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
       }
-
-      case 'environmental_data': {
-        const { address } = data
-        
-        // Mock environmental data
-        const envData = {
-          parcel: {
-            parcelId: 'FL-001-2024',
-            address: address as string,
-            coordinates: [-80.1918, 25.7617],
-            propertyValue: 450000,
-            yearBuilt: 2010
-          },
-          floodRisk: {
-            floodZone: 'AE',
-            baseFloodElevation: 9.0,
-            annualChanceFlood: 0.01
-          },
-          weather: {
-            currentConditions: {
-              temperature: 78,
-              humidity: 65,
-              windSpeed: 12
-            },
-            alerts: []
-          },
-          hazards: {
-            airQuality: { aqi: 45 },
-            wildFireRisk: { riskLevel: 'low' }
-          },
-          dataQuality: {
-            completeness: 0.92,
-            reliability: 0.88,
-            lastUpdated: new Date().toISOString()
-          }
-        }
-        
-        return new Response(JSON.stringify({
-          success: true,
-          data: envData
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      case 'generate_embeddings': {
-        // Generate mock embeddings
-        const embeddings = {
-          spatial: new Array(512).fill(0).map(() => Math.random() - 0.5),
-          risk: new Array(256).fill(0).map(() => Math.random() - 0.5),
-          visual: new Array(512).fill(0).map(() => Math.random() - 0.5),
-          structural: new Array(256).fill(0).map(() => Math.random() - 0.5)
-        }
-        
-        return new Response(JSON.stringify({
-          success: true,
-          data: { embeddings }
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      case 'find_similar': {
-        const { embedding, threshold, maxResults } = data
-        
-        // Mock similar properties
-        const similar = [
-          {
-            propertyId: 'prop-123',
-            similarity: 0.92,
-            features: { bedrooms: 3, bathrooms: 2, sqft: 2100 }
-          },
-          {
-            propertyId: 'prop-456',
-            similarity: 0.87,
-            features: { bedrooms: 3, bathrooms: 2, sqft: 2200 }
-          }
-        ]
-        
-        return new Response(JSON.stringify({
-          success: true,
-          data: { similar }
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
-      case 'assess_risk': {
-        const { propertyId } = data
-        
-        // Mock risk assessment
-        const riskAssessment = {
-          propertyId: propertyId as string,
-          overallRisk: 0.35,
-          riskFactors: {
-            location: 0.4,
-            construction: 0.2,
-            age: 0.3,
-            maintenance: 0.1
-          },
-          recommendations: [
-            'Install hurricane straps',
-            'Update roof to meet current codes',
-            'Improve drainage around foundation'
-          ]
-        }
-        
-        return new Response(JSON.stringify({
-          success: true,
-          data: riskAssessment
-        }), {
-          headers: { 'Content-Type': 'application/json' }
-        })
-      }
-
+      
       default:
-        return new Response('Invalid action', { status: 400 })
+        return new Response(
+          JSON.stringify({ error: 'Unknown action' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
     }
-
   } catch (error) {
-    return new Response(JSON.stringify({
-      success: false,
-      error: error.message
-    }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' }
-    })
+    console.error('Spatial AI API error:', error)
+    return new Response(
+      JSON.stringify({ error: error.message }),
+      { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    )
   }
 })

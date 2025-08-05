@@ -228,6 +228,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Admin</span>
               </div>
               <div className="space-y-1">
+                {/* AI Cost Tracking */}
+                <Link
+                  href="/admin/ai-costs"
+                  onClick={() => {
+                    if (isMobile) setIsSidebarOpen(false)
+                  }}
+                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                    pathname === '/admin/ai-costs'
+                      ? 'bg-red-600/20 text-red-300'
+                      : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                  }`}
+                >
+                  <DollarSign className="w-4 h-4" />
+                  <span>AI Cost Tracking</span>
+                </Link>
+                
                 {adminFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = pathname.startsWith(feature.href)
