@@ -365,9 +365,11 @@ function DashboardContent() {
                       <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
                       <span className="text-xs text-orange-400 animate-pulse">Action needed</span>
                     </div>
-                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
+                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{hasPendingTasks ? '3' : '0'}</p>
                     <p className="text-sm text-gray-400">Pending Tasks</p>
-                    <p className="text-xs text-orange-400 mt-2">2 urgent, 1 routine</p>
+                    <p className={`text-xs mt-2 ${hasPendingTasks ? 'text-orange-400' : 'text-green-400'}`}>
+                      {hasPendingTasks ? '2 urgent, 1 routine' : 'All caught up!'}
+                    </p>
                   </CardContent>
                 </Card>
               </button>
@@ -613,7 +615,11 @@ function DashboardContent() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Upcoming Tasks</CardTitle>
-                      <Badge className="bg-orange-600/25 backdrop-blur-sm text-orange-400 border-orange-600/40">3 pending</Badge>
+                      {hasPendingTasks ? (
+                        <Badge className="bg-orange-600/25 backdrop-blur-sm text-orange-400 border-orange-600/40">3 pending</Badge>
+                      ) : (
+                        <Badge className="bg-green-600/25 backdrop-blur-sm text-green-400 border-green-600/40">All done</Badge>
+                      )}
                     </div>
                   </CardHeader>
                   <CardContent>
