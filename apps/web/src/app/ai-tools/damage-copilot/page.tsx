@@ -11,7 +11,7 @@
 'use client'
 
 // Temporarily disabled for deployment
-// export default function DamageCopilotPage() {
+export default function DamageCopilotPage() {
   return (
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-5xl mx-auto">

@@ -199,7 +199,7 @@ const CLAIM_STEPS: ClaimStep[] = [
       {
         id: 'negotiate',
         title: 'Negotiate if Needed',
-        description: 'Don't accept the first offer if it's inadequate',
+        description: "Don't accept the first offer if it's inadequate",
         completed: false,
         required: false
       }
@@ -216,7 +216,7 @@ export default function ClaimAssistantPage() {
   const [isGenerating, setIsGenerating] = useState(false)
   const [configuredModel, setConfiguredModel] = useState<string>('openai')
   const [fallbackModel, setFallbackModel] = useState<string>('gemini')
-  const { } = useAuth()
+  const {} = useAuth()
   const aiClient = new AIClientService()
 
   // Load admin-configured model on component mount

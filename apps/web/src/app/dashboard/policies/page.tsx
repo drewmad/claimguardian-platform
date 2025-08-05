@@ -35,7 +35,7 @@ const PolicyUpload = dynamic(
 )
 import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-policy-data'
 
-export default function PoliciesPage() {
+function PoliciesContent() {
   const [showUpload, setShowUpload] = useState(false)
   const { policies, activePolicy, refetch } = usePolicyData(selectedPropertyId)
 

@@ -39,9 +39,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
     
     methods.forEach(method => {
       if (queryBuilder[method]) {
-        const original = (queryBuilder as unknown)[method].bind(queryBuilder)
+        const original = (queryBuilder as Record<string, Function>)[method]
         
-        ;(queryBuilder as unknown)[method] = function(...args: unknown[]) {
+        ;(queryBuilder as Record<string, Function>)[method] = function(...args: unknown[]) {
           queryInfo.operation = method
           queryInfo.startTime = Date.now()
           
@@ -50,19 +50,19 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
           // Monitor the promise
           if (result && typeof result.then === 'function') {
             return result
-              .then((response: unknown) => {
+              .then((response: { data?: unknown[] }) => {
                 const duration = Date.now() - queryInfo.startTime
                 
                 recordDatabaseQuery({
                   queryName: `${queryInfo.table}.${queryInfo.operation}`,
                   duration,
-                  rowCount: response.data?.length,
+                  rowCount: response?.data?.length,
                   timestamp: Date.now()
                 })
                 
                 return response
               })
-              .catch((error: unknown) => {
+              .catch((error: Error) => {
                 const duration = Date.now() - queryInfo.startTime
                 
                 recordDatabaseQuery({
@@ -85,11 +85,11 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   }
 
   // Monitor RPC calls
-  const originalRpcTyped = originalRpc as unknown
-  ;(client as unknown).rpc = function(fn: string, args?: unknown, options?: unknown) {
+  const originalRpcTyped = originalRpc as Function
+  ;(client as Record<string, Function>).rpc = function(fn: string, args?: unknown, options?: unknown) {
     const startTime = Date.now()
     
-    const queryBuilder = originalRpcTyped(fn, args, options)
+    const queryBuilder = originalRpcTyped.call(client, fn, args, options)
     
     // Wrap the execute methods for query builders
     if (queryBuilder && typeof queryBuilder.then === 'function') {
@@ -106,7 +106,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
             })
             return onFulfilled ? onFulfilled(response) : response
           },
-          (error: unknown) => {
+          (error: Error) => {
             recordAPICall({
               endpoint: `/rpc/${fn}`,
               method: 'POST',
@@ -171,10 +171,10 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   if (originalStorage) {
     const storageMethods = ['upload', 'download', 'remove', 'list'] as const
     
-    const monitorBucket = (bucket: unknown) => {
+    const monitorBucket = (bucket: Record<string, Function>) => {
       storageMethods.forEach(method => {
         if (bucket[method]) {
-          const original = bucket[method].bind(bucket)
+          const original = bucket[method]
           
           bucket[method] = function(...args: unknown[]) {
             const startTime = Date.now()
@@ -183,19 +183,19 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
             
             if (result && typeof result.then === 'function') {
               return result
-                .then((response: unknown) => {
+                .then((response: { data?: { size?: number } }) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
                     method: method === 'download' ? 'GET' : 'POST',
                     statusCode: 200,
                     duration: Date.now() - startTime,
-                    size: response.data?.size,
+                    size: response?.data?.size,
                     timestamp: Date.now()
                   })
                   
                   return response
                 })
-                .catch((error: unknown) => {
+                .catch((error: Error) => {
                   recordAPICall({
                     endpoint: `/storage/${method}`,
                     method: method === 'download' ? 'GET' : 'POST',
@@ -218,7 +218,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
 
     const originalFromStorage = originalStorage.from.bind(originalStorage)
     originalStorage.from = function(bucket: string) {
-      return monitorBucket(originalFromStorage(bucket))
+      return monitorBucket(originalFromStorage(bucket) as Record<string, Function>)
     }
   }
 
