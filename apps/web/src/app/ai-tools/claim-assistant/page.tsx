@@ -1,6 +1,6 @@
 'use client'
 
-import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle } from 'lucide-react'
+import { FileText, ChevronRight, CheckCircle, Circle, AlertTriangle, Camera, Phone, FileCheck, DollarSign, Sparkles, Download, Send, HelpCircle, Loader2 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { toast } from 'sonner'
@@ -201,6 +201,8 @@ export default function ClaimAssistantPage() {
   const [steps, setSteps] = useState(CLAIM_STEPS)
   const [claimNotes, setClaimNotes] = useState('')
   const [, setHasAPIKeys] = useState(false)
+  const [expandedCompletedSteps, setExpandedCompletedSteps] = useState<Set<number>>(new Set())
+  const [isGenerating, setIsGenerating] = useState(false)
   const { } = useAuth()
   const aiClient = new AIClientService()
 
@@ -246,7 +248,20 @@ export default function ClaimAssistantPage() {
     }
   }
 
+  const toggleCompletedStepExpansion = (stepIndex: number) => {
+    setExpandedCompletedSteps(prev => {
+      const newSet = new Set(prev)
+      if (newSet.has(stepIndex)) {
+        newSet.delete(stepIndex)
+      } else {
+        newSet.add(stepIndex)
+      }
+      return newSet
+    })
+  }
+
   const generateClaimSummary = async () => {
+    setIsGenerating(true)
     try {
       const completedTasks = steps.flatMap(step => 
         step.tasks.filter(task => task.completed).map(task => `${step.title}: ${task.title}`)
@@ -269,6 +284,8 @@ Format the summary for submission to an insurance company.`
       logger.error('Error generating summary:', toError(error))
       toast.error('Failed to generate claim summary')
       return null
+    } finally {
+      setIsGenerating(false)
     }
   }
 
@@ -333,53 +350,70 @@ Format the summary for submission to an insurance company.`
                         const Icon = step.icon
                         const isActive = index === currentStep
                         const isCompleted = step.status === 'completed'
+                        const isExpanded = expandedCompletedSteps.has(index)
                         
                         return (
-                          <button
-                            key={step.id}
-                            onClick={() => setCurrentStep(index)}
-                            className={`w-full text-left p-3 rounded-lg transition-all ${
-                              isActive
-                                ? 'bg-blue-600/20 border border-blue-600/30'
-                                : isCompleted
-                                ? 'bg-green-600/10 border border-green-600/20'
-                                : 'hover:bg-gray-700'
-                            }`}
-                          >
-                            <div className="flex items-start gap-3">
-                              <div className={`p-2 rounded-lg ${
-                                isActive
-                                  ? 'bg-blue-600/20'
-                                  : isCompleted
-                                  ? 'bg-green-600/20'
-                                  : 'bg-gray-700'
-                              }`}>
-                                <Icon className={`h-4 w-4 ${
-                                  isActive
-                                    ? 'text-blue-400'
-                                    : isCompleted
-                                    ? 'text-green-400'
-                                    : 'text-gray-400'
-                                }`} />
+                          <div key={step.id}>
+                            <button
+                              onClick={() => setCurrentStep(index)}
+                              className={`w-full text-left p-3 rounded-lg transition-all ${isActive ? 'bg-blue-600/20 border border-blue-600/30' : isCompleted ? 'bg-green-600/10 border border-green-600/20' : 'hover:bg-gray-700'}`}
+                            >
+                              <div className="flex items-start gap-3">
+                                <div className={`p-2 rounded-lg ${isActive ? 'bg-blue-600/20' : isCompleted ? 'bg-green-600/20' : 'bg-gray-700'}`}>
+                                  <Icon className={`h-4 w-4 ${isActive ? 'text-blue-400' : isCompleted ? 'text-green-400' : 'text-gray-400'}`} />
+                                </div>
+                                <div className="flex-1">
+                                  <h4 className={`font-semibold ${isActive ? 'text-white' : 'text-gray-300'}`}>
+                                    {step.title}
+                                  </h4>
+                                  {(!isCompleted || isExpanded) && (
+                                    <p className="text-xs text-gray-400 mt-1">
+                                      {step.description}
+                                    </p>
+                                  )}
+                                  {isCompleted && (
+                                    <div className="mt-2 flex items-center justify-between">
+                                      <Badge className="bg-green-600/20 text-green-400 border-green-600/30">
+                                        <CheckCircle className="h-3 w-3 mr-1" />
+                                        Completed
+                                      </Badge>
+                                      {!isActive && (
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={(e) => {
+                                            e.stopPropagation()
+                                            toggleCompletedStepExpansion(index)
+                                          }}
+                                          className="text-xs text-gray-400 hover:text-white p-1 h-auto"
+                                        >
+                                          {isExpanded ? 'Hide Details' : 'View Details'}
+                                        </Button>
+                                      )}
+                                    </div>
+                                  )}
+                                </div>
                               </div>
-                              <div className="flex-1">
-                                <h4 className={`font-semibold ${
-                                  isActive ? 'text-white' : 'text-gray-300'
-                                }`}>
-                                  {step.title}
-                                </h4>
-                                <p className="text-xs text-gray-400 mt-1">
-                                  {step.description}
-                                </p>
-                                {isCompleted && (
-                                  <Badge className="mt-2 bg-green-600/20 text-green-400 border-green-600/30">
-                                    <CheckCircle className="h-3 w-3 mr-1" />
-                                    Completed
-                                  </Badge>
-                                )}
+                            </button>
+                            {isCompleted && isExpanded && !isActive && (
+                              <div className="ml-12 mt-2 p-3 bg-gray-700/30 rounded-lg">
+                                <div className="space-y-2">
+                                  {step.tasks.map((task) => (
+                                    <div key={task.id} className="flex items-center gap-2 text-sm">
+                                      {task.completed ? (
+                                        <CheckCircle className="h-3 w-3 text-green-400" />
+                                      ) : (
+                                        <Circle className="h-3 w-3 text-gray-400" />
+                                      )}
+                                      <span className={task.completed ? 'text-gray-400 line-through' : 'text-gray-300'}>
+                                        {task.title}
+                                      </span>
+                                    </div>
+                                  ))}
+                                </div>
                               </div>
-                            </div>
-                          </button>
+                            )}
+                          </div>
                         )
                       })}
                     </div>
@@ -410,16 +444,6 @@ Format the summary for submission to an insurance company.`
                           </p>
                         </div>
                       </div>
-                      {currentStep < steps.length - 1 && (
-                        <Button
-                          onClick={moveToNextStep}
-                          size="sm"
-                          className="bg-blue-600 hover:bg-blue-700 text-white"
-                        >
-                          Next Step
-                          <ChevronRight className="h-4 w-4 ml-1" />
-                        </Button>
-                      )}
                     </div>
                   </CardHeader>
                   <CardContent>
@@ -427,11 +451,7 @@ Format the summary for submission to an insurance company.`
                       {steps[currentStep].tasks.map((task) => (
                         <div
                           key={task.id}
-                          className={`p-4 rounded-lg border transition-all ${
-                            task.completed
-                              ? 'bg-green-900/20 border-green-600/30'
-                              : 'bg-gray-700/50 border-gray-600'
-                          }`}
+                          className={`p-4 rounded-lg border transition-all ${task.completed ? 'bg-green-900/20 border-green-600/30' : 'bg-gray-700/50 border-gray-600'}`}
                         >
                           <div className="flex items-start gap-3">
                             <button
@@ -446,9 +466,7 @@ Format the summary for submission to an insurance company.`
                             </button>
                             <div className="flex-1">
                               <div className="flex items-center gap-2">
-                                <h4 className={`font-medium ${
-                                  task.completed ? 'text-gray-300 line-through' : 'text-white'
-                                }`}>
+                                <h4 className={`font-medium ${task.completed ? 'text-gray-300 line-through' : 'text-white'}`}>
                                   {task.title}
                                 </h4>
                                 {task.required && (
@@ -526,9 +544,17 @@ Format the summary for submission to an insurance company.`
                       }
                     }}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
+                    disabled={isGenerating}
                   >
-                    <FileText className="h-4 w-4 mr-2" />
-                    Generate Claim Summary
+                    {isGenerating ? (
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Generating...
+                      </>
+                    ) : (
+                      <><FileText className="h-4 w-4 mr-2" />
+                        Generate Claim Summary
+                      </>
+                    )}
                   </Button>
                   <Button
                     variant="outline"

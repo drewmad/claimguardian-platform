@@ -28,6 +28,178 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useSupabase } from '@/lib/supabase/client'
 
+interface QuickAccessItem {
+  id: string
+  title: string
+  path: string
+  icon: React.ComponentType<{ className?: string }>
+  hoverColor: string
+  isPrimary?: boolean
+}
+
+const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
+  {
+    id: 'personal-property',
+    title: 'Personal Property',
+    path: '/dashboard/personal-property',
+    icon: Package,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(147,51,234,0.15)]',
+    isPrimary: true
+  },
+  {
+    id: 'expenses',
+    title: 'Expenses',
+    path: '/dashboard/expenses',
+    icon: DollarSign,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]',
+    isPrimary: true
+  },
+  {
+    id: 'claims',
+    title: 'Claims',
+    path: '/dashboard/claims',
+    icon: FileText,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(59,130,246,0.15)]',
+    isPrimary: true
+  },
+  {
+    id: 'maintenance',
+    title: 'Maintenance',
+    path: '/dashboard/maintenance',
+    icon: Wrench,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(6,182,212,0.15)]',
+    isPrimary: true
+  },
+  {
+    id: 'warranty-watch',
+    title: 'Warranty Watch',
+    path: '/dashboard/warranty-watch',
+    icon: ShieldCheck,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(234,179,8,0.15)]'
+  },
+  {
+    id: 'contractors',
+    title: 'Contractors',
+    path: '/dashboard/contractors',
+    icon: HardHat,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(251,146,60,0.15)]'
+  },
+  {
+    id: 'situation-room',
+    title: 'Situation Room',
+    path: '/dashboard/situation-room',
+    icon: Siren,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]'
+  },
+  {
+    id: 'development',
+    title: 'Development',
+    path: '/dashboard/development',
+    icon: Code,
+    hoverColor: 'hover:shadow-[0_8px_24px_rgba(99,102,241,0.15)]'
+  }
+]
+
+function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
+  const [showAll, setShowAll] = useState(false)
+  
+  const primaryItems = QUICK_ACCESS_ITEMS.filter(item => item.isPrimary)
+  const secondaryItems = QUICK_ACCESS_ITEMS.filter(item => !item.isPrimary)
+  
+  const displayItems = showAll ? QUICK_ACCESS_ITEMS : primaryItems
+  
+  return (
+    <>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+        {displayItems.map((item) => {
+          const Icon = item.icon
+          return (
+            <button
+              key={item.id}
+              onClick={() => router.push(item.path)}
+              data-quick-access={item.id}
+              className={`p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] ${item.hoverColor}`}
+            >
+              <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 group-hover:scale-110 transition-transform" />
+              <span className="text-xs sm:text-sm text-center">{item.title}</span>
+            </button>
+          )
+        })}
+      </div>
+      
+      {!showAll && secondaryItems.length > 0 && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAll(true)}
+            className="text-gray-400 hover:text-white hover:bg-gray-700"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            Show {secondaryItems.length} More
+          </Button>
+        </div>
+      )}
+      
+      {showAll && (
+        <div className="flex justify-center mt-4">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowAll(false)}
+            className="text-gray-400 hover:text-white hover:bg-gray-700"
+          >
+            Show Less
+          </Button>
+        </div>
+      )}
+    </>
+  )
+}
+
+// Empty state components
+function EmptyRecentActivity() {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 text-center">
+      <div className="w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center mb-3">
+        <Activity className="h-6 w-6 text-blue-400" />
+      </div>
+      <h4 className="text-white font-medium mb-2">No recent activity</h4>
+      <p className="text-sm text-gray-400 mb-4">
+        Start managing your property to see activity here
+      </p>
+      <Button
+        size="sm"
+        onClick={() => document.querySelector<HTMLButtonElement>('[data-quick-access="personal-property"]')?.click()}
+        className="bg-blue-600 hover:bg-blue-700"
+      >
+        Add Property Items
+      </Button>
+    </div>
+  )
+}
+
+function EmptyUpcomingTasks() {
+  return (
+    <div className="flex flex-col items-center justify-center py-8 text-center">
+      <div className="w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center mb-3">
+        <CheckCircle className="h-6 w-6 text-green-400" />
+      </div>
+      <h4 className="text-white font-medium mb-2">You're all caught up!</h4>
+      <p className="text-sm text-gray-400 mb-4">
+        No pending tasks at the moment
+      </p>
+      <Button
+        size="sm"
+        variant="outline"
+        className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+      >
+        View Completed Tasks
+      </Button>
+    </div>
+  )
+}
+
 function DashboardContent() {
   const { user } = useAuth()
   const router = useRouter()
@@ -35,6 +207,9 @@ function DashboardContent() {
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [onboardingKey] = useState(0) // Force re-render
   const [loading, setLoading] = useState(true)
+  // Mock states for empty state demonstration - in real app, these would come from API calls
+  const [hasRecentActivity] = useState(true) // Set to false to see empty state
+  const [hasPendingTasks] = useState(true) // Set to false to see empty state
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -109,34 +284,44 @@ function DashboardContent() {
 
             {/* Enhanced Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <Home className="h-6 w-6 sm:h-7 sm:w-7 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]" />
-                    <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs backdrop-blur-sm">
-                      Active
-                    </Badge>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$485,000</p>
-                  <p className="text-sm text-gray-400">Property Value</p>
-                  <div className="flex items-center gap-1 mt-2">
-                    <ArrowUpRight className="h-3 w-3 text-green-400" />
-                    <span className="text-xs text-green-400">+5.2% YoY</span>
-                  </div>
-                </CardContent>
-              </Card>
+              <button 
+                onClick={() => router.push('/dashboard/property')}
+                className="w-full text-left"
+              >
+                <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Home className="h-6 w-6 sm:h-7 sm:w-7 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]" />
+                      <Badge className="bg-green-600/20 text-green-400 border-green-600/30 text-xs backdrop-blur-sm">
+                        Active
+                      </Badge>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">$485,000</p>
+                    <p className="text-sm text-gray-400">Property Value</p>
+                    <div className="flex items-center gap-1 mt-2">
+                      <ArrowUpRight className="h-3 w-3 text-green-400" />
+                      <span className="text-xs text-green-400">+5.2% YoY</span>
+                    </div>
+                  </CardContent>
+                </Card>
+              </button>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <Package className="h-6 w-6 sm:h-7 sm:w-7 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
-                    <span className="text-xs text-gray-500 hidden sm:inline">Updated 2h ago</span>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">247</p>
-                  <p className="text-sm text-gray-400">Items Tracked</p>
-                  <p className="text-xs text-purple-400 mt-2">$45,320 total value</p>
-                </CardContent>
-              </Card>
+              <button 
+                onClick={() => router.push('/dashboard/personal-property')}
+                className="w-full text-left"
+              >
+                <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <Package className="h-6 w-6 sm:h-7 sm:w-7 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]" />
+                      <span className="text-xs text-gray-500 hidden sm:inline">Updated 2h ago</span>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">247</p>
+                    <p className="text-sm text-gray-400">Items Tracked</p>
+                    <p className="text-xs text-purple-400 mt-2">$45,320 total value</p>
+                  </CardContent>
+                </Card>
+              </button>
 
               <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
                 <CardContent className="p-4 sm:p-6">
@@ -165,17 +350,27 @@ function DashboardContent() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
-                <CardContent className="p-4 sm:p-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
-                    <span className="text-xs text-orange-400 animate-pulse">Action needed</span>
-                  </div>
-                  <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
-                  <p className="text-sm text-gray-400">Pending Tasks</p>
-                  <p className="text-xs text-orange-400 mt-2">2 urgent, 1 routine</p>
-                </CardContent>
-              </Card>
+              <button 
+                onClick={() => {
+                  const upcomingTasksSection = document.getElementById('upcoming-tasks')
+                  if (upcomingTasksSection) {
+                    upcomingTasksSection.scrollIntoView({ behavior: 'smooth' })
+                  }
+                }}
+                className="w-full text-left"
+              >
+                <Card className="bg-gray-800/80 backdrop-blur-sm border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 hover:bg-gray-800/90 active:scale-95 cursor-pointer">
+                  <CardContent className="p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-2">
+                      <AlertCircle className="h-6 w-6 sm:h-7 sm:w-7 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]" />
+                      <span className="text-xs text-orange-400 animate-pulse">Action needed</span>
+                    </div>
+                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">3</p>
+                    <p className="text-sm text-gray-400">Pending Tasks</p>
+                    <p className="text-xs text-orange-400 mt-2">2 urgent, 1 routine</p>
+                  </CardContent>
+                </Card>
+              </button>
             </div>
 
             {/* Main Content Grid */}
@@ -260,74 +455,17 @@ function DashboardContent() {
                 </Card>
 
                 {/* Quick Access Grid */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
                   <CardHeader>
                     <CardTitle className="text-white">Quick Access</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                      <button 
-                        onClick={() => router.push('/dashboard/personal-property')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(147,51,234,0.15)]"
-                      >
-                        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Personal Property</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/expenses')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(34,197,94,0.15)]"
-                      >
-                        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Expenses</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/warranty-watch')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(234,179,8,0.15)]"
-                      >
-                        <ShieldCheck className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Warranty Watch</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/contractors')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(251,146,60,0.15)]"
-                      >
-                        <HardHat className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Contractors</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/situation-room')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(239,68,68,0.15)]"
-                      >
-                        <Siren className="h-6 w-6 sm:h-8 sm:w-8 text-red-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Situation Room</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/claims')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(59,130,246,0.15)]"
-                      >
-                        <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Claims</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/maintenance')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(6,182,212,0.15)]"
-                      >
-                        <Wrench className="h-6 w-6 sm:h-8 sm:w-8 text-cyan-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Maintenance</span>
-                      </button>
-                      <button 
-                        onClick={() => router.push('/dashboard/development')}
-                        className="p-3 sm:p-4 bg-gray-700/70 backdrop-blur-sm hover:bg-gray-600/80 active:scale-95 rounded-lg transition-all flex flex-col items-center gap-2 group shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_24px_rgba(99,102,241,0.15)]"
-                      >
-                        <Code className="h-6 w-6 sm:h-8 sm:w-8 text-indigo-400 group-hover:scale-110 transition-transform" />
-                        <span className="text-xs sm:text-sm text-center">Development</span>
-                      </button>
-                    </div>
+                    <QuickAccessGrid router={router} />
                   </CardContent>
                 </Card>
 
                 {/* Property Status */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)]">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Property Status</CardTitle>
@@ -412,62 +550,66 @@ function DashboardContent() {
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 bg-green-600/20 rounded-full flex items-center justify-center">
-                            <Plus className="h-4 w-4 text-green-400" />
+                    {hasRecentActivity ? (
+                      <div className="space-y-3">
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 bg-green-600/20 rounded-full flex items-center justify-center">
+                              <Plus className="h-4 w-4 text-green-400" />
+                            </div>
+                            <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
                           </div>
-                          <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
-                        </div>
-                        <div className="flex-1 -mt-0.5">
-                          <p className="text-sm text-white">Added 3 items to inventory</p>
-                          <p className="text-xs text-gray-400">Kitchen appliances - $2,400</p>
-                          <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 bg-blue-600/20 rounded-full flex items-center justify-center">
-                            <Camera className="h-4 w-4 text-blue-400" />
+                          <div className="flex-1 -mt-0.5">
+                            <p className="text-sm text-white">Added 3 items to inventory</p>
+                            <p className="text-xs text-gray-400">Kitchen appliances - $2,400</p>
+                            <p className="text-xs text-gray-500 mt-1">2 hours ago</p>
                           </div>
-                          <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
                         </div>
-                        <div className="flex-1 -mt-0.5">
-                          <p className="text-sm text-white">Documented roof condition</p>
-                          <p className="text-xs text-gray-400">5 photos uploaded</p>
-                          <p className="text-xs text-gray-500 mt-1">Yesterday</p>
-                        </div>
-                      </div>
-                      <div className="flex items-start gap-3">
-                        <div className="relative">
-                          <div className="w-8 h-8 bg-yellow-600/20 rounded-full flex items-center justify-center">
-                            <Receipt className="h-4 w-4 text-yellow-400" />
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 bg-blue-600/20 rounded-full flex items-center justify-center">
+                              <Camera className="h-4 w-4 text-blue-400" />
+                            </div>
+                            <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
                           </div>
-                          <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
+                          <div className="flex-1 -mt-0.5">
+                            <p className="text-sm text-white">Documented roof condition</p>
+                            <p className="text-xs text-gray-400">5 photos uploaded</p>
+                            <p className="text-xs text-gray-500 mt-1">Yesterday</p>
+                          </div>
                         </div>
-                        <div className="flex-1 -mt-0.5">
-                          <p className="text-sm text-white">Expense logged</p>
-                          <p className="text-xs text-gray-400">HVAC service - $185</p>
-                          <p className="text-xs text-gray-500 mt-1">2 days ago</p>
+                        <div className="flex items-start gap-3">
+                          <div className="relative">
+                            <div className="w-8 h-8 bg-yellow-600/20 rounded-full flex items-center justify-center">
+                              <Receipt className="h-4 w-4 text-yellow-400" />
+                            </div>
+                            <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
+                          </div>
+                          <div className="flex-1 -mt-0.5">
+                            <p className="text-sm text-white">Expense logged</p>
+                            <p className="text-xs text-gray-400">HVAC service - $185</p>
+                            <p className="text-xs text-gray-500 mt-1">2 days ago</p>
+                          </div>
+                        </div>
+                        <div className="flex items-start gap-3">
+                          <div className="w-8 h-8 bg-purple-600/20 rounded-full flex items-center justify-center">
+                            <CheckCircle className="h-4 w-4 text-purple-400" />
+                          </div>
+                          <div className="flex-1 -mt-0.5">
+                            <p className="text-sm text-white">Warranty registered</p>
+                            <p className="text-xs text-gray-400">Samsung Refrigerator - 5yr</p>
+                            <p className="text-xs text-gray-500 mt-1">3 days ago</p>
+                          </div>
                         </div>
                       </div>
-                      <div className="flex items-start gap-3">
-                        <div className="w-8 h-8 bg-purple-600/20 rounded-full flex items-center justify-center">
-                          <CheckCircle className="h-4 w-4 text-purple-400" />
-                        </div>
-                        <div className="flex-1 -mt-0.5">
-                          <p className="text-sm text-white">Warranty registered</p>
-                          <p className="text-xs text-gray-400">Samsung Refrigerator - 5yr</p>
-                          <p className="text-xs text-gray-500 mt-1">3 days ago</p>
-                        </div>
-                      </div>
-                    </div>
+                    ) : (
+                      <EmptyRecentActivity />
+                    )}
                   </CardContent>
                 </Card>
 
                 {/* Upcoming Tasks */}
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(251,146,60,0.1)] transition-all duration-500">
+                <Card id="upcoming-tasks" className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(251,146,60,0.1)] transition-all duration-500">
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Upcoming Tasks</CardTitle>
@@ -475,56 +617,60 @@ function DashboardContent() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-3">
-                      <div className="p-3 bg-orange-900/25 backdrop-blur-sm border border-orange-600/40 rounded-lg shadow-[0_4px_16px_rgba(251,146,60,0.15)]">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-white">Prepare for Hurricane</p>
-                            <p className="text-xs text-gray-400 mt-1">Review checklist and secure property</p>
+                    {hasPendingTasks ? (
+                      <div className="space-y-3">
+                        <div className="p-3 bg-orange-900/25 backdrop-blur-sm border border-orange-600/40 rounded-lg shadow-[0_4px_16px_rgba(251,146,60,0.15)]">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-white">Prepare for Hurricane</p>
+                              <p className="text-xs text-gray-400 mt-1">Review checklist and secure property</p>
+                            </div>
+                            <Badge className="bg-red-600/25 backdrop-blur-sm text-red-400 text-xs border-red-600/40">Urgent</Badge>
                           </div>
-                          <Badge className="bg-red-600/25 backdrop-blur-sm text-red-400 text-xs border-red-600/40">Urgent</Badge>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <Clock className="h-3 w-3" />
+                              Due in 2 days
+                            </span>
+                            <Button size="sm" className="h-6 px-2 text-xs bg-orange-600 hover:bg-orange-700">
+                              Start
+                            </Button>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-gray-500 flex items-center gap-1">
-                            <Clock className="h-3 w-3" />
-                            Due in 2 days
-                          </span>
-                          <Button size="sm" className="h-6 px-2 text-xs bg-orange-600 hover:bg-orange-700">
-                            Start
-                          </Button>
+                        <div className="p-3 bg-gray-700/50 rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-white">Schedule roof inspection</p>
+                              <p className="text-xs text-gray-400 mt-1">Annual maintenance check</p>
+                            </div>
+                            <Badge className="bg-yellow-600/20 text-yellow-400 text-xs">Due Soon</Badge>
+                          </div>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Due in 30 days
+                            </span>
+                          </div>
+                        </div>
+                        <div className="p-3 bg-gray-700/50 rounded-lg">
+                          <div className="flex items-start justify-between">
+                            <div>
+                              <p className="text-sm font-medium text-white">Review insurance coverage</p>
+                              <p className="text-xs text-gray-400 mt-1">Policy renewal coming up</p>
+                            </div>
+                            <Badge className="bg-gray-600/20 text-gray-400 text-xs">Routine</Badge>
+                          </div>
+                          <div className="flex items-center gap-3 mt-2">
+                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                              <Calendar className="h-3 w-3" />
+                              Due in 60 days
+                            </span>
+                          </div>
                         </div>
                       </div>
-                      <div className="p-3 bg-gray-700/50 rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-white">Schedule roof inspection</p>
-                            <p className="text-xs text-gray-400 mt-1">Annual maintenance check</p>
-                          </div>
-                          <Badge className="bg-yellow-600/20 text-yellow-400 text-xs">Due Soon</Badge>
-                        </div>
-                        <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-gray-500 flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Due in 30 days
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-3 bg-gray-700/50 rounded-lg">
-                        <div className="flex items-start justify-between">
-                          <div>
-                            <p className="text-sm font-medium text-white">Review insurance coverage</p>
-                            <p className="text-xs text-gray-400 mt-1">Policy renewal coming up</p>
-                          </div>
-                          <Badge className="bg-gray-600/20 text-gray-400 text-xs">Routine</Badge>
-                        </div>
-                        <div className="flex items-center gap-3 mt-2">
-                          <span className="text-xs text-gray-500 flex items-center gap-1">
-                            <Calendar className="h-3 w-3" />
-                            Due in 60 days
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                    ) : (
+                      <EmptyUpcomingTasks />
+                    )}
                   </CardContent>
                 </Card>
 
