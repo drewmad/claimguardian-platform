@@ -43,6 +43,9 @@ import { ClaudeLearningDashboard } from '@/components/admin/claude-learning-dash
 import { AICostsDashboard } from '@/components/admin/ai-costs-dashboard'
 import { ABTestDashboard } from '@/components/admin/ab-test-dashboard'
 import { AICacheDashboard } from '@/components/admin/ai-cache-dashboard'
+import { UsersManagement } from '@/components/admin/users-management'
+import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
+import { ErrorDashboard } from '@/components/admin/error-dashboard'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -333,17 +336,29 @@ export function AdminDashboardImproved() {
           </div>
         )
       
+      case 'users':
+        return <UsersManagement />
+        
+      case 'ai-models':
+        return <MLOperationsDashboard />
+        
       case 'ai-costs':
         return <AICostsDashboard />
       
       case 'ai-cache':
         return <AICacheDashboard />
+        
+      case 'ml-operations':
+        return <MLOperationsDashboard />
       
       case 'claude-learning':
         return <ClaudeLearningDashboard />
       
       case 'ab-testing':
         return <ABTestDashboard />
+        
+      case 'errors':
+        return <ErrorDashboard />
       
       case 'legal-docs':
         return <LegalDocumentsTab />
