@@ -11,7 +11,7 @@
  * @lastModifiedDate 2025-08-04T22:40:00Z
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, jest } from '@jest/globals'
 import { 
   createClaim, 
   updateClaim, 
@@ -23,12 +23,13 @@ import {
 } from '../claims'
 
 // Mock dependencies
-vi.mock('@claimguardian/db', () => ({
-  createClient: vi.fn()
+jest.mock('@claimguardian/db', () => ({
+  createClient: jest.fn(),
+  createServerSupabaseClient: jest.fn()
 }))
 
-vi.mock('@claimguardian/utils', () => ({
-  toError: vi.fn((error) => error instanceof Error ? error : new Error(String(error)))
+jest.mock('@claimguardian/utils', () => ({
+  toError: jest.fn((error) => error instanceof Error ? error : new Error(String(error)))
 }))
 
 // Create mock user
@@ -40,29 +41,29 @@ const mockUser = {
 }
 
 // Mock Supabase client with proper chaining
-const createMockSupabase = () => {
-  const mockQuery = {
-    select: vi.fn().mockReturnThis(),
-    insert: vi.fn().mockReturnThis(),
-    update: vi.fn().mockReturnThis(),
-    delete: vi.fn().mockReturnThis(),
-    eq: vi.fn().mockReturnThis(),
-    single: vi.fn(),
-    order: vi.fn().mockReturnThis(),
-    remove: vi.fn()
+const createMockSupabase = (): any => {
+  const mockQuery: any = {
+    select: jest.fn().mockReturnThis(),
+    insert: jest.fn().mockReturnThis(),
+    update: jest.fn().mockReturnThis(),
+    delete: jest.fn().mockReturnThis(),
+    eq: jest.fn().mockReturnThis(),
+    single: jest.fn(),
+    order: jest.fn().mockReturnThis(),
+    remove: jest.fn()
   }
 
   return {
-    from: vi.fn(() => mockQuery),
+    from: jest.fn(() => mockQuery),
     storage: {
-      from: vi.fn(() => ({
-        upload: vi.fn(),
-        getPublicUrl: vi.fn(() => ({ data: { publicUrl: 'https://example.com/file.pdf' } })),
-        remove: vi.fn()
+      from: jest.fn(() => ({
+        upload: jest.fn(),
+        getPublicUrl: jest.fn(() => ({ data: { publicUrl: 'https://example.com/file.pdf' } })),
+        remove: jest.fn()
       }))
     },
     auth: {
-      getUser: vi.fn(() => ({ data: { user: mockUser }, error: null }))
+      getUser: jest.fn(() => ({ data: { user: mockUser }, error: null }))
     },
     // Expose query mock for test setup
     _mockQuery: mockQuery
@@ -72,11 +73,9 @@ const createMockSupabase = () => {
 let mockSupabase: ReturnType<typeof createMockSupabase>
 
 describe('Claims Server Actions', () => {
-  beforeEach(async () => {
-    vi.clearAllMocks()
+  beforeEach(() => {
+    jest.clearAllMocks()
     mockSupabase = createMockSupabase()
-    const { createServerSupabaseClient } = await import('@claimguardian/db')
-    ;(createServerSupabaseClient as vi.Mock).mockResolvedValue(mockSupabase)
   })
 
   describe('createClaim', () => {
@@ -126,7 +125,7 @@ describe('Claims Server Actions', () => {
 
     it('should handle unauthenticated users', async () => {
       mockSupabase.auth.getUser.mockResolvedValue({
-        data: { user: null as unknown },
+        data: { user: null },
         error: null
       })
 
@@ -261,14 +260,14 @@ describe('Claims Server Actions', () => {
       }
 
       // Mock storage upload
-      const mockUpload = vi.fn().mockResolvedValue({
+      const mockUpload = jest.fn().mockResolvedValue({
         data: { path: 'claim-456/repair_estimate/123-test.pdf' },
         error: null
       })
 
-      const mockStorageFrom = vi.fn().mockReturnValue({
+      const mockStorageFrom = jest.fn().mockReturnValue({
         upload: mockUpload,
-        getPublicUrl: vi.fn().mockReturnValue({ 
+        getPublicUrl: jest.fn().mockReturnValue({ 
           data: { publicUrl: 'https://example.com/file.pdf' } 
         })
       })
@@ -337,7 +336,7 @@ describe('Claims Server Actions', () => {
       const result = await generateClaimReport({ claimId: 'claim-456' })
 
       expect(result.success).toBe(true)
-      expect((result.data as unknown)?.summary.totalDocuments).toBe(0)
+      expect((result.data as any)?.summary?.totalDocuments).toBe(0)
       expect(result.data?.recommendations).toBeInstanceOf(Array)
     })
   })
@@ -345,10 +344,10 @@ describe('Claims Server Actions', () => {
   describe('deleteClaim', () => {
     it('should delete claim successfully', async () => {
       // Create a separate chainable object
-      const chainableEq = { eq: vi.fn().mockResolvedValue({ error: null }) }
-      const mockEq = vi.fn().mockReturnValue(chainableEq)
+      const chainableEq = { eq: jest.fn().mockResolvedValue({ error: null }) }
+      const mockEq = jest.fn().mockReturnValue(chainableEq)
       
-      const mockDelete = vi.fn().mockReturnValue({ eq: mockEq })
+      const mockDelete = jest.fn().mockReturnValue({ eq: mockEq })
       mockSupabase._mockQuery.delete = mockDelete
 
       const result = await deleteClaim({ claimId: 'claim-456' })

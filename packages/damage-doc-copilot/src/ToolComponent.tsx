@@ -122,6 +122,7 @@ export function ToolComponent() {
               {capturedImages.map((image, index) => (
                 <div key={index} className="relative">
                   <div className="aspect-square bg-gray-700 rounded-md overflow-hidden">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img 
                       src={URL.createObjectURL(image.file)} 
                       alt={`Damage evidence ${index + 1}`}

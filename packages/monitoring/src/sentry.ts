@@ -10,7 +10,7 @@
  */
 import * as Sentry from '@sentry/nextjs'
 import type { Integration, Event, EventHint } from '@sentry/types'
-import { FallbackRenderProps } from '@sentry/react'
+import { FallbackRender } from '@sentry/react'
 import React from 'react'
 
 import { recordMetric } from './metrics'
@@ -92,10 +92,10 @@ export function withErrorBoundary<P extends object>(
 }
 
 // Default error fallback component
-function ErrorFallback({ error, resetError }: FallbackRenderProps) {
-  // Return plain object for server-side compatibility
+const ErrorFallback: FallbackRender = ({ error, resetError }) => {
+  // Return empty element for server-side compatibility  
   if (typeof window === 'undefined') {
-    return null
+    return React.createElement('div', {}, '')
   }
   
   // Client-side React component
@@ -110,7 +110,7 @@ function ErrorFallback({ error, resetError }: FallbackRenderProps) {
       }, 'Something went wrong'),
       React.createElement('p', {
         className: 'text-gray-600 dark:text-gray-300 mb-4'
-      }, error.message || 'An unexpected error occurred'),
+      }, error instanceof Error ? error.message : 'An unexpected error occurred'),
       React.createElement('button', {
         onClick: resetError,
         className: 'w-full bg-blue-600 text-white rounded-md py-2 px-4 hover:bg-blue-700 transition-colors'

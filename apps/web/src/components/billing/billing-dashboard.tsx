@@ -26,6 +26,7 @@ import { PRICING_PLANS } from '@/config/pricing'
 import { formatCurrency, getSubscriptionStatus } from '@/lib/services/stripe-service'
 import { toast } from 'sonner'
 import Link from 'next/link'
+import { Stripe } from 'stripe'
 
 interface BillingDashboardProps {
   userId: string
@@ -33,8 +34,8 @@ interface BillingDashboardProps {
 
 export function BillingDashboard({ userId }: BillingDashboardProps) {
   const [loading, setLoading] = useState(true)
-  const [subscription, setSubscription] = useState<Stripe.Subscription | null>(null)
-  const [paymentMethods, setPaymentMethods] = useState<Stripe.PaymentMethod[]>([])
+  const [subscription, setSubscription] = useState<any | null>(null)
+  const [paymentMethods, setPaymentMethods] = useState<any[]>([])
   const [currentPlan, setCurrentPlan] = useState('free')
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 

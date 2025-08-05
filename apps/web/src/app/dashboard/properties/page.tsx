@@ -466,8 +466,8 @@ export default function PropertiesPage() {
               </h2>
               <PropertyEnrichmentStatus
                 propertyId={selectedProperty.id}
-                latitude={selectedProperty.location ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[1] : undefined}
-                longitude={selectedProperty.location ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[0] : undefined}
+                latitude={selectedProperty.location && typeof selectedProperty.location === 'string' ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[1] : undefined}
+                longitude={selectedProperty.location && typeof selectedProperty.location === 'string' ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[0] : undefined}
                 address={selectedProperty.street_address}
               />
             </div>

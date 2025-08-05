@@ -602,9 +602,15 @@ class AICostMonitor {
    * Import data from backup
    */
   importData(data: unknown) {
-    if (data.budgets) {
+    const importData = data as {
+      budgets?: CostBudget[]
+      alerts?: (CostAlert & { timestamp: string | Date; resolvedAt?: string | Date })[]
+      spendingHistory?: (any & { timestamp: string | Date })[]
+    }
+
+    if (importData.budgets) {
       this.budgets.clear()
-      data.budgets.forEach((budget: CostBudget) => {
+      importData.budgets.forEach((budget: CostBudget) => {
         this.budgets.set(budget.id, {
           ...budget,
           resetDate: new Date(budget.resetDate)
@@ -612,16 +618,16 @@ class AICostMonitor {
       })
     }
 
-    if (data.alerts) {
-      this.alerts = data.alerts.map((alert: unknown) => ({
+    if (importData.alerts) {
+      this.alerts = importData.alerts.map((alert) => ({
         ...alert,
         timestamp: new Date(alert.timestamp),
         resolvedAt: alert.resolvedAt ? new Date(alert.resolvedAt) : undefined
       }))
     }
 
-    if (data.spendingHistory) {
-      this.spendingHistory = data.spendingHistory.map((entry: unknown) => ({
+    if (importData.spendingHistory) {
+      this.spendingHistory = importData.spendingHistory.map((entry) => ({
         ...entry,
         timestamp: new Date(entry.timestamp)
       }))

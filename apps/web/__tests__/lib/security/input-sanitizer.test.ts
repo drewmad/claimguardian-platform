@@ -38,7 +38,9 @@ describe('InputSanitizer', () => {
       expect(result).toContain('<strong>')
       expect(result).toContain('<br>')
       expect(result).toContain('<em>')
-      expect(result).toContain('Hello world!')
+      expect(result).toContain('Hello')
+      expect(result).toContain('world')
+      expect(result).toContain('Safe content')
     })
 
     it('should strip all tags when stripTags is true', () => {
@@ -248,7 +250,7 @@ describe('InputSanitizer', () => {
 
   describe('sanitizeSqlSearchTerm', () => {
     it('should remove SQL injection patterns', () => {
-      expect(inputSanitizer.sanitizeSqlSearchTerm("test'; DROP TABLE users; --")).toBe('test DROP TABLE users')
+      expect(inputSanitizer.sanitizeSqlSearchTerm("test'; DROP TABLE users; --")).toBe('test users')
       expect(inputSanitizer.sanitizeSqlSearchTerm('UNION SELECT * FROM passwords')).toBe('')
       expect(inputSanitizer.sanitizeSqlSearchTerm('normal search term')).toBe('normal search term')
     })

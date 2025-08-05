@@ -11,7 +11,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, Search, Target, DollarSign, TrendingUp, ChevronDown, ChevronRight, Home, Database, Lock, Menu, Layers, Cpu, FileCheck, GraduationCap, TrendingDown, Info, RefreshCw, X as CloseIcon } from 'lucide-react'
+import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, Search, Target, DollarSign, TrendingUp, ChevronDown, ChevronRight, Home, Database, Lock, Menu, Layers, Cpu, FileCheck, GraduationCap, TrendingDown, Info, RefreshCw, X } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
@@ -385,7 +385,7 @@ export function AdminDashboardImproved() {
               onClick={() => setSidebarOpen(!sidebarOpen)}
               className="text-gray-400 hover:text-white"
             >
-              {sidebarOpen ? <CloseIcon className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+              {sidebarOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </Button>
           </div>
         </div>

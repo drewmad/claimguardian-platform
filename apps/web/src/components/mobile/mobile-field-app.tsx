@@ -181,7 +181,7 @@ export function MobileFieldApp() {
   const getBatteryInfo = async (): Promise<number> => {
     try {
       if ('getBattery' in navigator) {
-        const battery = await (navigator as unknown).getBattery()
+        const battery = await (navigator as any).getBattery()
         return Math.round(battery.level * 100)
       }
     } catch {
@@ -666,7 +666,7 @@ export function MobileFieldApp() {
                       ? 'bg-gray-800 border-gray-700 hover:border-blue-500' 
                       : 'bg-gray-900 border-gray-800 opacity-50'
                   }`}
-                  onClick={() => canAccess && startDocumentation(type as unknown)}
+                  onClick={() => canAccess && startDocumentation(type as any)}
                 >
                   <CardContent className="p-4 text-center">
                     <div className="flex flex-col items-center gap-2">

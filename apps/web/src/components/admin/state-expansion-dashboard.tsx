@@ -21,6 +21,7 @@ import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, Cart
 import { stateExpansionManager } from '@/lib/expansion/state-manager'
 import type { StateConfiguration, StateExpansionPlan } from '@/lib/expansion/state-manager'
 import { toast } from 'sonner'
+import type { StateData, RegionData, TooltipFormatter } from './types'
 
 const DEPLOYMENT_STATUS_COLORS = {
   planning: '#64748B',
@@ -46,7 +47,7 @@ const REGION_COLORS = {
   West: '#8B5CF6'
 }
 
-const US_STATES_DATA = [
+const US_STATES_DATA: StateData[] = [
   // This would typically be loaded from the database
   { code: 'FL', name: 'Florida', region: 'Southeast', population: 21538187, marketSize: 54200000000, status: 'production' },
   { code: 'TX', name: 'Texas', region: 'Southwest', population: 29145505, marketSize: 78200000000, status: 'planning' },
@@ -124,7 +125,7 @@ export function StateExpansionDashboard() {
     return `$${size.toLocaleString()}`
   }
 
-  const getExpansionPriority = (state: unknown) => {
+  const getExpansionPriority = (state: StateData) => {
     const marketScore = Math.min(state.marketSize / 1e9 / 100, 1) * 40
     const populationScore = Math.min(state.population / 40e6, 1) * 30
     const readinessScore = (readinessScores[state.code] || 0) * 0.3
@@ -149,7 +150,7 @@ export function StateExpansionDashboard() {
       })
     }
     return acc
-  }, [] as unknown[])
+  }, [] as RegionData[])
 
   const expansionOpportunityData = US_STATES_DATA
     .filter(state => state.code !== 'FL')
@@ -272,7 +273,7 @@ export function StateExpansionDashboard() {
         </Card>
       </div>
 
-      <Tabs value={activeView} onValueChange={(value) => setActiveView(value as unknown)} className="space-y-6">
+      <Tabs value={activeView} onValueChange={(value) => setActiveView(value as 'overview' | 'states' | 'plans' | 'analytics')} className="space-y-6">
         <TabsList className="bg-slate-900 border border-slate-800">
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="states">States</TabsTrigger>
@@ -308,7 +309,7 @@ export function StateExpansionDashboard() {
                       ))}
                     </Pie>
                     <Tooltip
-                      formatter={(value: unknown) => [formatMarketSize(value), 'Market Size']}
+                      formatter={(value: number) => [formatMarketSize(value), 'Market Size']}
                     />
                   </PieChart>
                 </ResponsiveContainer>

@@ -131,7 +131,7 @@ export function ClaudeMonitoringDashboard() {
           lastUpdate: new Date(),
           activeComponents: Object.values(productionStatus.healthCheck).filter(Boolean).length,
           totalComponents: Object.keys(productionStatus.healthCheck).length,
-          alerts: generateAlerts(productionStatus, feedbackStatus)
+          alerts: generateAlerts(productionStatus, feedbackStatus as any)
         },
         performanceMetrics: {
           avgExecutionTime: productionStatus.metrics.avgExecutionTime,
@@ -149,7 +149,7 @@ export function ClaudeMonitoringDashboard() {
           recommendation: abTestReport.businessMetrics.recommendation
         },
         learningMetrics: {
-          totalPatterns: (analyticsReport as unknown).learningStats?.learningPatterns || 0,
+          totalPatterns: (analyticsReport as any).learningStats?.learningPatterns || 0,
           activeOptimizations: abTestReport.treatmentGroup.avgOptimizations || 0,
           confidenceThreshold: thresholdAnalysis.analysis.threshold,
           learningApplicationRate: 0.84, // Mock value
@@ -195,8 +195,27 @@ export function ClaudeMonitoringDashboard() {
     return undefined
   }, [fetchDashboardData, autoRefresh, refreshInterval])
 
-  const generateAlerts = (productionStatus: unknown, feedbackStatus: unknown): unknown[] => {
-    const alerts = []
+  interface ProductionStatus {
+    status: 'healthy' | 'warning' | 'error'
+    metrics: {
+      successRate: number
+      avgExecutionTime: number
+      totalTasks: number
+    }
+    healthCheck: Record<string, boolean>
+  }
+
+  interface FeedbackStatus {
+    systemHealth: 'healthy' | 'warning' | 'critical'
+    userFeedbackSummary: {
+      avgRating: number
+      unresolved: number
+    }
+    recentActions: Array<{ id: string; action: string }>
+  }
+
+  const generateAlerts = (productionStatus: ProductionStatus, feedbackStatus: FeedbackStatus): { id: string; type: "error" | "info" | "warning"; message: string; timestamp: Date; }[] => {
+    const alerts: { id: string; type: "error" | "info" | "warning"; message: string; timestamp: Date; }[] = []
 
     if (productionStatus.status === 'error') {
       alerts.push({

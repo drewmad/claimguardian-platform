@@ -295,7 +295,7 @@ export function PermissionAnalyticsDashboard() {
       {/* Controls */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Select value={timeRange} onValueChange={(value: unknown) => setTimeRange(value)}>
+          <Select value={timeRange} onValueChange={(value: '24h' | '7d' | '30d' | '90d') => setTimeRange(value)}>
             <SelectTrigger className="w-[120px] bg-gray-900 border-gray-700">
               <SelectValue />
             </SelectTrigger>
@@ -307,7 +307,7 @@ export function PermissionAnalyticsDashboard() {
             </SelectContent>
           </Select>
           
-          <Select value={selectedTier} onValueChange={(value: unknown) => setSelectedTier(value)}>
+          <Select value={selectedTier} onValueChange={(value: UserTier | 'all') => setSelectedTier(value)}>
             <SelectTrigger className="w-[140px] bg-gray-900 border-gray-700">
               <SelectValue />
             </SelectTrigger>

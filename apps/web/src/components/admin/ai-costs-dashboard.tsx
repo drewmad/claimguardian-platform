@@ -50,6 +50,16 @@ interface AIHourlyUsage {
   cost: number
 }
 
+interface ChartDataItem {
+  date: string
+  [provider: string]: number | string
+}
+
+interface HourlyChartDataItem {
+  hour: string
+  calls: number
+}
+
 interface UserAISummary {
   user_id: string
   email: string
@@ -172,9 +182,9 @@ export function AICostsDashboard() {
 
   // Prepare chart data
   const dailyChartData = dailySummary.reduce((acc, item) => {
-    const existing = acc.find(d => d.date === item.date)
+    const existing = acc.find((d: ChartDataItem) => d.date === item.date)
     if (existing) {
-      existing[item.provider] = (existing[item.provider] || 0) + item.daily_cost
+      existing[item.provider] = (existing[item.provider] as number || 0) + item.daily_cost
     } else {
       acc.push({
         date: item.date,
@@ -182,11 +192,11 @@ export function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as unknown[]).reverse()
+  }, [] as ChartDataItem[]).reverse()
 
   const hourlyChartData = hourlyUsage.reduce((acc, item) => {
     const hourStr = new Date(item.hour).toLocaleTimeString('en-US', { hour: 'numeric' })
-    const existing = acc.find(d => d.hour === hourStr)
+    const existing = acc.find((d: HourlyChartDataItem) => d.hour === hourStr)
     if (existing) {
       existing.calls += item.calls
     } else {
@@ -196,7 +206,7 @@ export function AICostsDashboard() {
       })
     }
     return acc
-  }, [] as unknown[]).slice(-24).reverse()
+  }, [] as HourlyChartDataItem[]).slice(-24).reverse()
 
   if (loading) {
     return (

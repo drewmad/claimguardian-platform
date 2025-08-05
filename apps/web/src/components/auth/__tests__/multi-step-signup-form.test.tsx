@@ -11,7 +11,8 @@
  * @lastModifiedDate 2025-08-04T20:20:00Z
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import '@testing-library/jest-dom'
+import { describe, it, expect, beforeEach } from '@jest/globals'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createBrowserSupabaseClient } from '@claimguardian/db'
@@ -19,31 +20,31 @@ import { useRouter } from 'next/navigation'
 import { MultiStepSignupForm } from '../../../app/auth/signup/multi-step-signup-form'
 
 // Mock dependencies
-vi.mock('@claimguardian/db')
-vi.mock('next/navigation')
+jest.mock('@claimguardian/db')
+jest.mock('next/navigation')
 
-vi.mock('@/lib/logger/production-logger', () => ({
+jest.mock('@/lib/logger/production-logger', () => ({
   logger: {
-    info: vi.fn(),
-    error: vi.fn()
+    info: jest.fn(),
+    error: jest.fn()
   }
 }))
 
 const mockSupabase = {
   auth: {
-    signUp: vi.fn()
+    signUp: jest.fn()
   }
 }
 
 const mockRouter = {
-  push: vi.fn()
+  push: jest.fn()
 }
 
 describe('MultiStepSignupForm', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
-    vi.mocked(createBrowserSupabaseClient).mockReturnValue(mockSupabase as vi.Mocked<typeof mockSupabase>)
-    vi.mocked(useRouter).mockReturnValue(mockRouter as vi.Mocked<typeof mockRouter>)
+    jest.clearAllMocks();
+    (createBrowserSupabaseClient as any).mockReturnValue(mockSupabase);
+    (useRouter as any).mockReturnValue(mockRouter)
   })
 
   describe('Welcome Step', () => {

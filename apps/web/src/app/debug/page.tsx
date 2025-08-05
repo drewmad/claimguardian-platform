@@ -161,8 +161,8 @@ export default function DebugIndexPage() {
     const scriptExists = !!document.querySelector('script[src*="maps.googleapis.com"]')
     
     // Check API loading status
-    const apiLoaded = !!(window as Record<string, unknown>).google?.maps
-    const placesLoaded = !!(window as Record<string, unknown>).google?.maps?.places
+    const apiLoaded = !!((window as unknown) as Record<string, any>).google?.maps
+    const placesLoaded = !!((window as unknown) as Record<string, any>).google?.maps?.places
     
     // Determine hook status
     let hookStatus: 'loading' | 'loaded' | 'error' | 'not-configured' = 'not-configured'
@@ -784,7 +784,7 @@ export default function DebugIndexPage() {
                         </div>
                         <div className="flex justify-between">
                           <span className="text-gray-400">Connection:</span>
-                          <span className="text-white text-xs">{(navigator as Record<string, unknown>).connection?.effectiveType || 'Unknown'}</span>
+                          <span className="text-white text-xs">{(navigator as any).connection?.effectiveType || 'Unknown'}</span>
                         </div>
                       </div>
                     </div>

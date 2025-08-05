@@ -45,7 +45,7 @@ interface MaintenanceTask {
 interface MaintenanceCategory {
   id: string
   name: string
-  icon: LucideIcon
+  icon: any
   color: string
   taskCount: number
 }

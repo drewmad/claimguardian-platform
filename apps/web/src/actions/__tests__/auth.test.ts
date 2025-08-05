@@ -11,41 +11,41 @@
  * @lastModifiedDate 2025-08-04T22:35:00Z
  */
 
-import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { describe, it, expect, beforeEach, jest } from '@jest/globals'
 import { signUp, signIn, signOut, resetPassword } from '../auth'
 
 // Mock Supabase client
-const mockSupabase = {
+const mockSupabase: any = {
   auth: {
-    signUp: vi.fn(),
-    signInWithPassword: vi.fn(),
-    signOut: vi.fn(),
-    resetPasswordForEmail: vi.fn()
+    signUp: jest.fn(),
+    signInWithPassword: jest.fn(),
+    signOut: jest.fn(),
+    resetPasswordForEmail: jest.fn()
   }
 }
 
 // Mock Next.js navigation
-vi.mock('next/navigation', () => ({
-  redirect: vi.fn(() => {
+jest.mock('next/navigation', () => ({
+  redirect: jest.fn(() => {
     throw new Error('NEXT_REDIRECT') // Next.js throws on redirect
   })
 }))
 
 // Mock Supabase client creation
-vi.mock('@claimguardian/db', () => ({
-  createClient: vi.fn(() => mockSupabase)
+jest.mock('@claimguardian/db', () => ({
+  createClient: jest.fn(() => mockSupabase)
 }))
 
 // Mock Next.js headers
-vi.mock('next/headers', () => ({
-  headers: vi.fn(() => ({
-    get: vi.fn(() => 'http://localhost:3000')
+jest.mock('next/headers', () => ({
+  headers: jest.fn(() => ({
+    get: jest.fn(() => 'http://localhost:3000')
   }))
 }))
 
 describe('Auth Server Actions', () => {
   beforeEach(() => {
-    vi.clearAllMocks()
+    jest.clearAllMocks()
   })
 
   function createFormData(data: Record<string, string>) {

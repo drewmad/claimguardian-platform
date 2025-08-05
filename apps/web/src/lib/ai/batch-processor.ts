@@ -9,11 +9,16 @@
 import { aiCacheManager } from './ai-cache-manager'
 import { enhancedAIClient } from './enhanced-client'
 
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
 interface BatchRequest {
   id: string
   featureId: string
   userId?: string
-  messages?: unknown[]
+  messages?: ChatMessage[]
   imageAnalysis?: {
     image: string
     prompt: string

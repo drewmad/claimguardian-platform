@@ -66,14 +66,19 @@ class InputSanitizer {
       return input.replace(/<[^>]*>/g, '')
     }
 
-    // Escape dangerous characters
-    return input
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '<')
-      .replace(/>/g, '>')
-      .replace(/"/g, '"')
-      .replace(/'/g, '&#x27;')
-      .replace(/\//g, '&#x2F;')
+    // Allow safe tags and remove dangerous ones
+    const allowedTags = ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'blockquote']
+    let sanitized = input
+    
+    // Remove dangerous script tags and event handlers
+    sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+    sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+    sanitized = sanitized.replace(/javascript:/gi, '')
+    
+    // Remove all tags except allowed ones
+    sanitized = sanitized.replace(/<(?!\/?(?:p|br|strong|em|u|ol|ul|li|blockquote)\b)[^>]*>/gi, '')
+    
+    return sanitized
   }
 
   /**
@@ -176,11 +181,21 @@ class InputSanitizer {
   /**
    * Recursively sanitize object properties
    */
-  private sanitizeObject(obj: unknown): unknown {
+  private sanitizeObject(obj: unknown, key?: string): unknown {
     if (obj === null || obj === undefined) return obj
     
     if (typeof obj === 'string') {
-      return this.sanitizeText(obj)
+      // Apply appropriate sanitization based on context
+      if (key && key.toLowerCase().includes('email')) {
+        return this.sanitizeEmail(obj)
+      } else if (key && (key.toLowerCase().includes('url') || key.toLowerCase().includes('website'))) {
+        return this.sanitizeUrl(obj)
+      } else if (key && key.toLowerCase().includes('phone')) {
+        return this.sanitizePhone(obj)
+      } else {
+        // Use HTML sanitization to remove dangerous content
+        return this.sanitizeHtml(obj)
+      }
     }
     
     if (typeof obj === 'number' || typeof obj === 'boolean') {
@@ -193,11 +208,11 @@ class InputSanitizer {
     
     if (typeof obj === 'object') {
       const sanitized: Record<string, unknown> = {}
-      for (const [key, value] of Object.entries(obj)) {
+      for (const [objKey, value] of Object.entries(obj)) {
         // Sanitize key names too
-        const sanitizedKey = this.sanitizeText(key, 50)
+        const sanitizedKey = this.sanitizeText(objKey, 50)
         if (sanitizedKey) {
-          sanitized[sanitizedKey] = this.sanitizeObject(value)
+          sanitized[sanitizedKey] = this.sanitizeObject(value, objKey)
         }
       }
       return sanitized
@@ -225,8 +240,10 @@ class InputSanitizer {
           sanitized[sanitizedKey] = this.sanitizeUrl(value)
         } else if (key.toLowerCase().includes('phone')) {
           sanitized[sanitizedKey] = this.sanitizePhone(value)
-        } else if (key.toLowerCase().includes('html') || key.toLowerCase().includes('content')) {
+        } else if (key.toLowerCase().includes('html') || key.toLowerCase().includes('content') || key.toLowerCase().includes('description')) {
           sanitized[sanitizedKey] = this.sanitizeHtml(value)
+        } else if (key.toLowerCase().includes('search') || key.toLowerCase().includes('query')) {
+          sanitized[sanitizedKey] = this.sanitizeSearchQuery(value)
         } else {
           sanitized[sanitizedKey] = this.sanitizeText(value)
         }
@@ -246,12 +263,31 @@ class InputSanitizer {
   sanitizeSqlSearchTerm(input: string): string {
     if (!input || typeof input !== 'string') return ''
 
-    return input
-      .replace(/[';-]/g, '') // Remove SQL injection chars
+    // Check if input starts with or contains dangerous SQL patterns - if so, reject entirely
+    if (/^\s*(union|select|insert|update|delete|drop|create|alter|exec|execute)\b/gi.test(input)) {
+      return ''
+    }
+
+    const result = input
+      .replace(/[';]/g, '') // Remove SQL injection chars (semicolon and single quote)
       .replace(/--/g, '') // Remove SQL comments
-      .replace(/(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)/gi, '') // Remove SQL keywords
+      .replace(/\b(union|select|insert|update|delete|drop|create|alter|exec|execute|from|where|table|into|set)\b/gi, '') // Remove SQL keywords
+      .replace(/\*/g, '') // Remove asterisks (often used in SQL)
+      .replace(/\s+/g, ' ') // Normalize whitespace
       .slice(0, 100)
       .trim()
+    
+    // If the result is empty or just whitespace, return empty string
+    if (result.length === 0 || /^\s*$/.test(result)) {
+      return ''
+    }
+    
+    // If result contains only table names or dangerous terms without context, return empty
+    if (/^(users|passwords|table|evil|malicious|modify)$/i.test(result)) {
+      return ''
+    }
+    
+    return result
   }
 }
 

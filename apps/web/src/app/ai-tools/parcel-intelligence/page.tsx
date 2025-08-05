@@ -11,7 +11,8 @@
 
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { ParcelLookup } from '@/components/parcel/parcel-lookup'
-import { Card, CardContent, CardHeader, CardTitle, Badge } from '@claimguardian/ui'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Database, MapPin, TrendingUp, Shield } from 'lucide-react'
 
 export default function ParcelIntelligencePage() {

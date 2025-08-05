@@ -26,6 +26,7 @@ import type {
   ComparisonAnalysis 
 } from '@/lib/analytics/time-series-analyzer'
 import { toast } from 'sonner'
+import type { TooltipFormatter } from './types'
 
 const METRIC_COLORS = {
   responseTime: '#3B82F6',
@@ -396,7 +397,7 @@ export function TimeSeriesAnalyticsDashboard() {
                           border: '1px solid #374151',
                           borderRadius: '6px'
                         }}
-                        formatter={(value: unknown) => [formatMetricValue(metricName, value), 'Value']}
+                        formatter={(value: number) => [formatMetricValue(metricName, value), 'Value']}
                       />
                       <Area
                         type="monotone"

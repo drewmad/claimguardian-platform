@@ -20,6 +20,20 @@ import {
   AlertTriangle
 } from 'lucide-react'
 
+interface HazardZone {
+  id: string
+  name: string
+  category: 'flood' | 'fire' | 'wind' | 'surge' | 'earthquake'
+  riskLevel: 'low' | 'moderate' | 'high' | 'extreme'
+  description: string
+  geometry?: {
+    type: 'polygon' | 'circle'
+    coordinates: number[][]
+  }
+  affectedProperties?: number
+  lastUpdated: Date
+}
+
 interface HazardZonesListProps {
   hazardZones: HazardZone[]
 }

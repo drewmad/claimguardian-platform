@@ -42,7 +42,7 @@ interface Coverage {
   limit: number
   used: number
   deductible: number
-  icon: LucideIcon
+  icon: any
 }
 
 function InsuranceDashboardContent() {

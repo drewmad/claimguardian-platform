@@ -23,6 +23,23 @@ import {
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
+interface ActiveEvent {
+  id: string
+  type: 'wildfire' | 'flood' | 'hurricane' | 'tornado' | 'earthquake'
+  title: string
+  description: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  location: {
+    latitude: number
+    longitude: number
+    address?: string
+  }
+  startDate: Date
+  endDate?: Date
+  status: 'active' | 'warning' | 'ended'
+  affectedRadius: number // in miles
+}
+
 interface ActiveEventsMapProps {
   activeEvents: ActiveEvent[]
   propertyLocation?: string

@@ -30,6 +30,55 @@ import {
 } from 'lucide-react'
 import { format } from 'date-fns'
 
+interface RiskAssessment {
+  id: string
+  propertyId: string
+  overallRiskScore: number
+  riskLevel: 'low' | 'moderate' | 'high' | 'extreme'
+  factors: {
+    flood: number
+    fire: number
+    wind: number
+    earthquake: number
+    surge: number
+  }
+  recommendations: string[]
+  lastUpdated: Date
+  methodology: string
+  confidence: number
+}
+
+interface HazardZone {
+  id: string
+  name: string
+  category: 'flood' | 'fire' | 'wind' | 'surge' | 'earthquake'
+  riskLevel: 'low' | 'moderate' | 'high' | 'extreme'
+  description: string
+  geometry?: {
+    type: 'polygon' | 'circle'
+    coordinates: number[][]
+  }
+  affectedProperties?: number
+  lastUpdated: Date
+}
+
+interface ActiveEvent {
+  id: string
+  type: 'wildfire' | 'flood' | 'hurricane' | 'tornado' | 'earthquake'
+  title: string
+  description: string
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  location: {
+    latitude: number
+    longitude: number
+    address?: string
+  }
+  startDate: Date
+  endDate?: Date
+  status: 'active' | 'warning' | 'ended'
+  affectedRadius: number // in miles
+}
+
 interface PropertyRiskDashboardProps {
   propertyId: string
   propertyName: string

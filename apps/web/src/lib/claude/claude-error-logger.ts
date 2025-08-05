@@ -167,7 +167,7 @@ class ClaudeErrorLogger {
     if (!this.isEnabled || !this.supabase) return
 
     try {
-      const updateData: any = {
+      const updateData: unknown = {
         resolved: true,
         resolution_method: resolutionMethod,
         updated_at: new Date().toISOString()
@@ -433,7 +433,7 @@ class ClaudeErrorLogger {
   /**
    * Analyze error patterns for insights
    */
-  private analyzePatterns(errors: any[]): any[] {
+  private analyzePatterns(errors: unknown[]): unknown[] {
     const patterns = new Map()
     
     errors.forEach(error => {

@@ -13,7 +13,7 @@ import Link from 'next/link'
 import { useState, useEffect } from 'react'
 
 import { logger } from '@/lib/logger'
-
+import { legalService } from '@/lib/legal/legal-service'
 
 interface LegalDocumentViewProps {
   documentType: LegalDocumentType

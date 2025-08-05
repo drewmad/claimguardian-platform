@@ -101,8 +101,7 @@ export class SemanticSimilarityService {
    * Detect duplicate or redundant learnings
    */
   async detectDuplicates(
-    learnings: Learning[],
-    threshold: number = 0.9
+    learnings: Learning[]
   ): Promise<DuplicateGroup[]> {
     // TODO: Implement duplicate detection
     throw new Error('Duplicate detection requires Opus model. Implementation pending.')
@@ -139,7 +138,7 @@ export class SemanticSimilarityService {
     let totalMatches = 0
     const topPairs: Array<{ item1: string; item2: string; score: number }> = []
 
-    this.similarityCache.forEach((matches, key) => {
+    this.similarityCache.forEach((matches) => {
       matches.forEach(match => {
         totalScore += match.score
         totalMatches++

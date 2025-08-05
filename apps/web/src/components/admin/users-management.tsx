@@ -946,7 +946,7 @@ export function UsersManagement() {
           <div className="space-y-4">
             <div>
               <Label htmlFor="operation">Operation</Label>
-              <Select value={bulkOperation} onValueChange={(v) => setBulkOperation(v as unknown)}>
+              <Select value={bulkOperation} onValueChange={(v) => setBulkOperation(v as 'change_tier' | 'suspend' | 'activate' | 'delete')}>
                 <SelectTrigger className="bg-gray-800 border-gray-700">
                   <SelectValue />
                 </SelectTrigger>

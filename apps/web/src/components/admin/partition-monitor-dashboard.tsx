@@ -507,7 +507,7 @@ export function PartitionMonitorDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  {maintenanceTaskData.map((task: unknown, index: number) => (
+                  {maintenanceTaskData.map((task: MaintenanceTask, index: number) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <Badge variant={
@@ -517,7 +517,7 @@ export function PartitionMonitorDashboard() {
                         }>
                           {task.status}
                         </Badge>
-                        <span className="text-white">{task.type} - {task.name}</span>
+                        <span className="text-white">{task.type} - {task.target}</span>
                       </div>
                       <Badge variant="outline" className="text-xs">
                         {task.priority}

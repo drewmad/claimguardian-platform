@@ -7,6 +7,52 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
+
+// Database row types - match actual Supabase schema
+interface StateConfigurationRow {
+  id: string
+  state_code: string
+  state_name: string
+  is_active: boolean
+  insurance_regulations: Record<string, any>
+  data_sources: Record<string, any>
+  market_data: Record<string, any>
+  operations: Record<string, any>
+  features: Record<string, any>
+  deployment_status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
+  launch_date?: string
+  migration_complete: boolean
+  data_load_status: Record<string, any>
+  created_at: string
+  updated_at: string
+  created_by: string
+  last_modified_by?: string
+  notes?: string
+}
+
+interface ExpansionPlanRow {
+  id: string
+  phase: number
+  states: string[]
+  timeline_start: string
+  timeline_end: string
+  milestones: Array<{
+    name: string
+    date: string
+    dependencies: string[]
+    status: 'pending' | 'in_progress' | 'completed' | 'blocked'
+  }>
+  resources: Record<string, any>
+  risks: Array<{
+    risk: string
+    impact: 'low' | 'medium' | 'high'
+    probability: 'low' | 'medium' | 'high'
+    mitigation: string
+  }>
+  created_at: string
+  updated_at: string
+}
 
 export interface StateConfiguration {
   stateCode: string
@@ -122,7 +168,7 @@ export interface StateExpansionPlan {
 }
 
 class StateExpansionManager {
-  private supabase: unknown
+  private supabase: SupabaseClient | null = null
   private configCache = new Map<string, StateConfiguration>()
   private cacheExpiry = 30 * 60 * 1000 // 30 minutes
 
@@ -148,7 +194,7 @@ class StateExpansionManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('state_configurations')
         .select('*')
         .eq('state_code', stateCode.toUpperCase())
@@ -162,7 +208,9 @@ class StateExpansionManager {
         throw error
       }
 
-      const config = this.parseStateConfiguration(data)
+      if (!data) return null
+
+      const config = this.parseStateConfiguration(data as StateConfigurationRow)
       
       // Cache the result
       this.configCache.set(cacheKey, config)
@@ -182,7 +230,7 @@ class StateExpansionManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('state_configurations')
         .select('*')
         .eq('is_active', true)
@@ -190,7 +238,7 @@ class StateExpansionManager {
 
       if (error) throw error
 
-      return (data || []).map(this.parseStateConfiguration)
+      return (data || []).map((row: StateConfigurationRow) => this.parseStateConfiguration(row))
     } catch (error) {
       console.error('Failed to get active states:', error)
       return []
@@ -204,7 +252,7 @@ class StateExpansionManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('state_configurations')
         .select('*')
         .eq('deployment_status', status)
@@ -212,7 +260,7 @@ class StateExpansionManager {
 
       if (error) throw error
 
-      return (data || []).map(this.parseStateConfiguration)
+      return (data || []).map((row: StateConfigurationRow) => this.parseStateConfiguration(row))
     } catch (error) {
       console.error(`Failed to get states with status ${status}:`, error)
       return []
@@ -228,7 +276,7 @@ class StateExpansionManager {
 
       const dbRecord = this.serializeStateConfiguration(config)
 
-      const { error } = await this.supabase
+      const { error } = await this.supabase!
         .from('state_configurations')
         .upsert(dbRecord)
 
@@ -440,14 +488,14 @@ class StateExpansionManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { data, error } = await this.supabase
+      const { data, error } = await this.supabase!
         .from('expansion_plans')
         .select('*')
         .order('phase')
 
       if (error) throw error
 
-      return (data || []).map(this.parseExpansionPlan)
+      return (data || []).map((row: ExpansionPlanRow) => this.parseExpansionPlan(row))
     } catch (error) {
       console.error('Failed to get expansion plan:', error)
       return []
@@ -672,7 +720,7 @@ class StateExpansionManager {
   }
 
   // Private helper methods
-  private parseStateConfiguration(data: unknown): StateConfiguration {
+  private parseStateConfiguration(data: StateConfigurationRow): StateConfiguration {
     return {
       stateCode: data.state_code,
       stateName: data.state_name,
@@ -692,13 +740,13 @@ class StateExpansionManager {
         createdAt: new Date(data.created_at),
         updatedAt: new Date(data.updated_at),
         createdBy: data.created_by,
-        lastModifiedBy: data.last_modified_by,
+        lastModifiedBy: data.last_modified_by || data.created_by,
         notes: data.notes
       }
     }
   }
 
-  private serializeStateConfiguration(config: StateConfiguration): unknown {
+  private serializeStateConfiguration(config: StateConfiguration): Partial<StateConfigurationRow> {
     return {
       state_code: config.stateCode,
       state_name: config.stateName,
@@ -720,14 +768,17 @@ class StateExpansionManager {
     }
   }
 
-  private parseExpansionPlan(data: unknown): StateExpansionPlan {
+  private parseExpansionPlan(data: ExpansionPlanRow): StateExpansionPlan {
     return {
       phase: data.phase,
       states: data.states || [],
       timeline: {
         start: new Date(data.timeline_start),
         end: new Date(data.timeline_end),
-        milestones: data.milestones || []
+        milestones: (data.milestones || []).map(milestone => ({
+          ...milestone,
+          date: new Date(milestone.date)
+        }))
       },
       resources: data.resources || {},
       risks: data.risks || []
@@ -738,14 +789,17 @@ class StateExpansionManager {
     try {
       if (!this.supabase) await this.initializeSupabase()
 
-      const { error } = await this.supabase
+      const { error } = await this.supabase!
         .from('expansion_plans')
         .upsert({
           phase: plan.phase,
           states: plan.states,
           timeline_start: plan.timeline.start.toISOString(),
           timeline_end: plan.timeline.end.toISOString(),
-          milestones: plan.timeline.milestones,
+          milestones: plan.timeline.milestones.map(milestone => ({
+            ...milestone,
+            date: milestone.date.toISOString()
+          })),
           resources: plan.resources,
           risks: plan.risks
         })
@@ -759,8 +813,3 @@ class StateExpansionManager {
 
 // Export singleton instance
 export const stateExpansionManager = new StateExpansionManager()
-
-export type {
-  StateConfiguration,
-  StateExpansionPlan
-}

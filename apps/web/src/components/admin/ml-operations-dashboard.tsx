@@ -288,7 +288,7 @@ export function MLOperationsDashboard() {
           <p className="text-gray-400 mt-1">Monitor and manage machine learning models</p>
         </div>
         <div className="flex gap-2">
-          <Select value={timeRange} onValueChange={(v) => setTimeRange(v as unknown)}>
+          <Select value={timeRange} onValueChange={(v: '24h' | '7d' | '30d') => setTimeRange(v)}>
             <SelectTrigger className="w-[120px] bg-gray-800 border-gray-700">
               <SelectValue />
             </SelectTrigger>

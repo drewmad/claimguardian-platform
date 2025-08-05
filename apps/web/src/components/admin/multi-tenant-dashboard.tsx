@@ -19,7 +19,7 @@ import { Plus, Settings, Users, Building, DollarSign, BarChart3, Shield, Globe }
 import { tenantManager, EnterpriseOrganization, OrganizationUser, TenantUsageInfo } from '@/lib/multi-tenant/tenant-manager'
 
 interface MultiTenantDashboardProps {
-  currentUser?: unknown
+  currentUser?: { id: string; email?: string }
 }
 
 export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps) {
@@ -43,7 +43,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
   const loadInitialData = async () => {
     try {
       // Load user's organization (for now, we'll simulate multiple orgs)
-      const userOrg = await tenantManager.getUserOrganization(currentUser?.id)
+      const userOrg = currentUser?.id ? await tenantManager.getUserOrganization(currentUser.id!) : null
       if (userOrg) {
         setOrganizations([userOrg])
         setSelectedOrg(userOrg)
@@ -199,7 +199,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
             ].map((tab) => (
               <button
                 key={tab.id}
-                onClick={() => setActiveTab(tab.id as unknown)}
+                onClick={() => setActiveTab(tab.id as 'overview' | 'users' | 'billing' | 'settings')}
                 className={`flex items-center px-4 py-2 rounded-md transition-all ${
                   activeTab === tab.id
                     ? 'bg-blue-600 text-white'

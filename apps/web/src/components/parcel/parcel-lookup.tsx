@@ -11,7 +11,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, MapPin, Home, DollarSign, Calendar, AlertTriangle } from 'lucide-react'
+import { Search, MapPin, Home, AlertTriangle } from 'lucide-react'
 import { Button, Card, CardContent, CardHeader, CardTitle, Input, Badge } from '@claimguardian/ui'
 import { searchParcels, assessPropertyRisk, type ParcelData, type ParcelSearchParams } from '@/actions/parcel-lookup'
 
@@ -53,7 +53,7 @@ export function ParcelLookup() {
     setLoading(true)
     
     try {
-      const riskResult = await assessPropertyRisk(parcel.PARCEL_ID)
+      const riskResult = await assessPropertyRisk(parcel.parcel_id)
       if (riskResult.data) {
         setRiskAssessment(riskResult.data)
       }
@@ -171,7 +171,7 @@ export function ParcelLookup() {
             <div className="space-y-4">
               {results.map((parcel) => (
                 <div
-                  key={parcel.PARCEL_ID}
+                  key={parcel.parcel_id}
                   className="bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-600 transition-colors"
                   onClick={() => handleParcelSelect(parcel)}
                 >

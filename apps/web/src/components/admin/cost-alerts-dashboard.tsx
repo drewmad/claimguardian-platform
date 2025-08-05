@@ -76,9 +76,15 @@ export function CostAlertsDashboard() {
   const [loading, setLoading] = useState(true)
   const [showCreateBudget, setShowCreateBudget] = useState(false)
   const [editingBudget, setEditingBudget] = useState<CostBudget | null>(null)
-  const [newBudget, setNewBudget] = useState({
+  const [newBudget, setNewBudget] = useState<{
+    name: string
+    type: 'daily' | 'weekly' | 'monthly' | 'yearly'
+    amount: number
+    featureId: string
+    alertThresholds: { warning: number; critical: number }
+  }>({
     name: '',
-    type: 'monthly' as const,
+    type: 'monthly' as 'daily' | 'weekly' | 'monthly' | 'yearly',
     amount: 100,
     featureId: '',
     alertThresholds: { warning: 75, critical: 90 }
@@ -761,7 +767,7 @@ export function CostAlertsDashboard() {
                 <Label>Budget Type</Label>
                 <Select
                   value={newBudget.type}
-                  onValueChange={(value: unknown) => setNewBudget(prev => ({ ...prev, type: value }))}
+                  onValueChange={(value: 'daily' | 'weekly' | 'monthly' | 'yearly') => setNewBudget(prev => ({ ...prev, type: value }))}
                 >
                   <SelectTrigger className="bg-slate-700 border-slate-600">
                     <SelectValue />

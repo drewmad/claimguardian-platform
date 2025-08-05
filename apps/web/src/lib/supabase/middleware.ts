@@ -8,8 +8,8 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { createServerClient } from '@supabase/ssr'
-import { NextResponse } from 'next/server'
+import { createServerClient, type CookieOptions } from '@supabase/ssr'
+import { NextResponse, type NextRequest } from 'next/server'
 
 export function createClient(request: NextRequest, response: NextResponse) {
   return createServerClient(

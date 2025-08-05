@@ -20,7 +20,7 @@ import { AlertCircle, CheckCircle, TrendingUp, Brain, Target, BarChart3, Refresh
 import { claudeSelfReflection } from '@/lib/claude/claude-self-reflection'
 import { completeLearningSystem } from '@/lib/claude/claude-complete-learning-system'
 import { reflectionTriggers } from '@/lib/claude/claude-reflection-triggers'
-import { productionErrorMonitor } from '@/lib/claude/production-error-monitor'
+import { productionErrorMonitor, DatabaseHealthCheck } from '@/lib/claude/production-error-monitor'
 
 interface ClaudeSystemStats {
   totalTasks: number
@@ -59,6 +59,22 @@ interface RecentActivity {
   status: 'success' | 'warning' | 'error' | 'info'
   metadata?: Record<string, any>
 }
+
+interface ProductionErrorPattern {
+  id: string
+  pattern: string
+  occurrences: number
+  severity: 'low' | 'medium' | 'high' | 'critical'
+  lastSeen: Date
+  resolution?: string
+  endpoint?: string
+  method?: string
+  statusCode?: number
+  frequency?: number
+  affectedUsers?: number
+  rootCause?: string
+}
+
 
 export function ClaudeLearningDashboard() {
   const [stats, setStats] = useState<ClaudeSystemStats | null>(null)
@@ -171,23 +187,29 @@ export function ClaudeLearningDashboard() {
       // Mock production error patterns (would be from actual logs)
       const productionErrorData: ProductionErrorPattern[] = [
         {
+          id: '1',
           pattern: 'GET_user_profiles_400',
+          occurrences: 8,
+          lastSeen: new Date(),
           endpoint: '/rest/v1/user_profiles',
           method: 'GET',
           statusCode: 400,
           frequency: 8,
-          affectedUsers: ['950dc54e-52a0-436a-a30b-15ebd2ecaeb3'],
+          affectedUsers: 1,
           rootCause: 'Missing user profile record',
           resolution: 'Created missing profile record',
           severity: 'high'
         },
         {
+          id: '2',
           pattern: 'GET_policy_documents_extended_404',
+          occurrences: 12,
+          lastSeen: new Date(),
           endpoint: '/rest/v1/policy_documents_extended',
           method: 'GET',
           statusCode: 404,
           frequency: 12,
-          affectedUsers: ['950dc54e-52a0-436a-a30b-15ebd2ecaeb3'],
+          affectedUsers: 1,
           rootCause: 'View now exists',
           resolution: 'Deployed policy_documents_extended view',
           severity: 'critical'
@@ -577,7 +599,7 @@ export function ClaudeLearningDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="text-2xl font-bold text-white mb-1">
-                  {new Set(productionErrors.flatMap(err => err.affectedUsers)).size}
+                  {productionErrors.reduce((sum, err) => sum + (err.affectedUsers || 0), 0)}
                 </div>
                 <p className="text-xs text-gray-400">Users helped</p>
               </CardContent>
@@ -656,7 +678,7 @@ export function ClaudeLearningDashboard() {
                         </p>
                         <div className="flex items-center gap-4 text-xs text-gray-400">
                           <span>Frequency: {error.frequency}x</span>
-                          <span>Users: {error.affectedUsers.length}</span>
+                          <span>Users: {error.affectedUsers}</span>
                           <span>Severity: {error.severity}</span>
                         </div>
                       </div>

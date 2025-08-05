@@ -25,7 +25,7 @@ export default function RecoverAccountPage() {
   const [step, setStep] = useState<RecoveryStep>('email')
   const [email, setEmail] = useState('')
   const [userId, setUserId] = useState('')
-  const [userQuestions, setUserQuestions] = useState<UserSecurityAnswer[]>([])
+  const [userQuestions, setUserQuestions] = useState<any[]>([])
   const [answers, setAnswers] = useState<{ [key: string]: string }>({})
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -240,7 +240,7 @@ export default function RecoverAccountPage() {
               </div>
 
               {userQuestions.map((q) => (
-                <div key={q.question_id}>
+                <div key={q.id}>
                   <label className="block text-sm font-medium mb-2">
                     {q.question?.question}
                   </label>

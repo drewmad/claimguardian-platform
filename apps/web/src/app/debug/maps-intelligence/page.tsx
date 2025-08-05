@@ -30,6 +30,13 @@ interface TestResult {
   cached?: boolean
 }
 
+interface UnifiedResults {
+  status?: 'loading'
+  success?: boolean
+  error?: string
+  data?: Record<string, unknown>
+}
+
 const API_TESTS = [
   // Google Maps APIs
   { key: 'address-validation', name: 'Address Validation', icon: MapPin, color: 'blue', category: 'Google Maps' },
@@ -60,7 +67,7 @@ export default function MapsIntelligencePage() {
   
   const [testResults, setTestResults] = useState<Record<string, TestResult>>({})
   const [isRunningAll, setIsRunningAll] = useState(false)
-  const [unifiedResults, setUnifiedResults] = useState<Record<string, unknown> | null>(null)
+  const [unifiedResults, setUnifiedResults] = useState<UnifiedResults | null>(null)
   const [supabase] = useState(() => createBrowserSupabaseClient())
 
   const updateTestResult = (api: string, update: Partial<TestResult>) => {
@@ -221,10 +228,10 @@ export default function MapsIntelligencePage() {
         cached = false
       } else {
         // Google Maps service response format
-        success = (result as Record<string, unknown>).success
-        data = (result as Record<string, unknown>).data
-        error = (result as Record<string, unknown>).error
-        cached = (result as Record<string, unknown>).cached
+        success = (result as unknown as Record<string, unknown>).success
+        data = (result as unknown as Record<string, unknown>).data
+        error = (result as unknown as Record<string, unknown>).error
+        cached = (result as unknown as Record<string, unknown>).cached as boolean
       }
       
       updateTestResult(apiKey, {
@@ -267,7 +274,7 @@ export default function MapsIntelligencePage() {
     
     try {
       const result = await googleMapsService.getCompletePropertyIntelligence(testLocation)
-      setUnifiedResults(result)
+      setUnifiedResults(result as UnifiedResults)
     } catch (error) {
       setUnifiedResults({
         success: false,
@@ -474,11 +481,11 @@ export default function MapsIntelligencePage() {
                         <div className="text-green-400 font-semibold">✅ Complete Intelligence Gathered Successfully</div>
                         
                         {/* Static Map Preview */}
-                        {unifiedResults.data?.staticMapUrl && (
+                        {(unifiedResults.data as any)?.staticMapUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Property Satellite View:</h4>
                             <img 
-                              src={unifiedResults.data.staticMapUrl} 
+                              src={(unifiedResults.data as any).staticMapUrl} 
                               alt="Property satellite view"
                               className="rounded-lg border border-gray-600"
                             />
@@ -486,11 +493,11 @@ export default function MapsIntelligencePage() {
                         )}
 
                         {/* Street View Preview */}
-                        {unifiedResults.data?.streetViewUrl && (
+                        {(unifiedResults.data as any)?.streetViewUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Street View:</h4>
                             <img 
-                              src={unifiedResults.data.streetViewUrl} 
+                              src={(unifiedResults.data as any).streetViewUrl} 
                               alt="Property street view"
                               className="rounded-lg border border-gray-600"
                             />

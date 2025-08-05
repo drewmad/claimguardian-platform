@@ -37,7 +37,7 @@ import { usePolicyData, formatCoverage, formatDeductible } from '@/hooks/use-pol
 
 function PoliciesContent() {
   const [showUpload, setShowUpload] = useState(false)
-  const { policies, activePolicy, refetch, properties, selectedPropertyId, setSelectedPropertyId } = usePolicyData()
+  const { policies, activePolicy, refetch } = usePolicyData()
 
   const getCoverageIcon = (type: string) => {
     if (type.toLowerCase().includes('flood')) return <Droplets className="w-4 h-4" />
@@ -65,35 +65,7 @@ function PoliciesContent() {
             </Button>
           </div>
 
-          {/* Property Selector */}
-          {properties.length > 1 && (
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white text-lg">Select Property</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  {properties.map(property => (
-                    <button
-                      key={property.id}
-                      onClick={() => setSelectedPropertyId(property.id)}
-                      className={`p-4 rounded-lg border transition-all ${
-                        selectedPropertyId === property.id
-                          ? 'bg-cyan-500/20 border-cyan-500 text-white'
-                          : 'bg-gray-700/50 border-gray-600 text-gray-300 hover:border-gray-500'
-                      }`}
-                    >
-                      <Home className="w-5 h-5 mb-2" />
-                      <p className="font-medium">{property.name}</p>
-                      <p className="text-sm opacity-75">
-                        {property.address?.street || 'No address'}
-                      </p>
-                    </button>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-          )}
+          {/* Property Selector - Removed as properties data not available */}
 
           {/* Active Policy Overview */}
           {activePolicy ? (
@@ -301,7 +273,7 @@ function PoliciesContent() {
                     </button>
                   </div>
                   <PolicyUpload
-                    propertyId={selectedPropertyId}
+                    propertyId=""
                     onUploadComplete={() => {
                       setShowUpload(false)
                       refetch()

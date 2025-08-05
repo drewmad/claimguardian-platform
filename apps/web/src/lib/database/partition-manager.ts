@@ -52,7 +52,7 @@ interface MaintenanceTask {
 }
 
 class IntelligentPartitionManager {
-  private supabase: unknown
+  private supabase: ReturnType<typeof createClient<Database>> | null = null
   private strategies = new Map<string, PartitionStrategy>()
   private partitionCache = new Map<string, PartitionInfo[]>()
   private maintenanceTasks: MaintenanceTask[] = []
@@ -66,7 +66,7 @@ class IntelligentPartitionManager {
 
   private initializeSupabase(): void {
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      this.supabase = createClient(
+      this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.SUPABASE_SERVICE_ROLE_KEY
       )
@@ -590,11 +590,20 @@ class IntelligentPartitionManager {
       const { data, error } = await this.supabase.rpc('execute_raw_sql', {
         query: sql,
         params: [tableName]
-      })
+      } as any)
 
       if (error) throw error
 
-      const partitions: PartitionInfo[] = (data || []).map((row: unknown) => ({
+      interface PartitionRow {
+        partition_name: string
+        parent_name: string
+        boundaries: unknown
+        row_count: string
+        size_bytes: string
+        last_accessed?: string
+      }
+
+      const partitions: PartitionInfo[] = (data || []).map((row: PartitionRow) => ({
         name: row.partition_name,
         parent: row.parent_name,
         type: this.strategies.get(tableName)?.type || 'unknown',

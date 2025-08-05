@@ -373,7 +373,7 @@ export default function RoomBuilderPage() {
     setIsDragging(false)
   }
 
-  const addFurniture = (item: unknown) => {
+  const addFurniture = (item: { type: string; width: number; height: number; name?: string; label?: string }) => {
     const newObject: RoomObject = {
       id: Date.now().toString(),
       type: 'furniture',

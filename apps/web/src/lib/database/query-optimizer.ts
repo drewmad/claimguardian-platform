@@ -63,7 +63,7 @@ interface QueryStats {
 }
 
 class FloridaParcelQueryOptimizer {
-  private supabase: unknown
+  private supabase: ReturnType<typeof createClient<Database>> | null = null
   private queryCache = new Map<string, { result: unknown; timestamp: number }>()
   private cacheTTL = 300000 // 5 minutes
   private queryStats = new Map<string, QueryStats[]>()
@@ -74,7 +74,7 @@ class FloridaParcelQueryOptimizer {
 
   private initializeSupabase(): void {
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      this.supabase = createClient(
+      this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.SUPABASE_SERVICE_ROLE_KEY
       )
@@ -98,11 +98,12 @@ class FloridaParcelQueryOptimizer {
     const cacheKey = this.generateCacheKey('searchParcels', options)
     const cached = this.getFromCache(cacheKey)
     if (cached) {
+      const cachedData = cached as unknown[]
       return {
-        data: cached,
+        data: cachedData,
         stats: {
           executionTime: Date.now() - startTime,
-          rowsReturned: cached.length,
+          rowsReturned: cachedData.length,
           cacheHit: true,
           indexesUsed: [],
           partitionsAccessed: []
@@ -191,7 +192,6 @@ class FloridaParcelQueryOptimizer {
       estimatedCost += 20
     } else if (options.center && options.radius) {
       // Use PostGIS for radius queries if available
-      const radiusInDegrees = options.radius / 111000 // Rough conversion
       whereConditions.push(
         `earth_distance(ll_to_earth(lat, lng), ll_to_earth($${parameters.length + 1}, $${parameters.length + 2})) <= $${parameters.length + 3}`
       )
@@ -327,11 +327,11 @@ class FloridaParcelQueryOptimizer {
     const startTime = Date.now()
     
     try {
-      // Execute query
+      // Execute query using typed RPC call
       const { data, error } = await this.supabase.rpc('execute_raw_sql', {
         query: plan.query,
-        params: plan.parameters
-      })
+        params: plan.parameters || []
+      } as any)
       
       if (error) throw error
       
@@ -442,11 +442,9 @@ class FloridaParcelQueryOptimizer {
     // Find slow queries (> 1 second)
     const slowQueries = allStats
       .filter(s => s.executionTime > 1000)
-      .map(s => 'slow_query') // Would map to actual queries in production
+      .map(() => 'slow_query') // Would map to actual queries in production
     
     // Find frequently used patterns
-    const queryPatterns = new Map<string, number>()
-    // Analysis logic would go here
     
     return {
       slowQueries,
@@ -489,7 +487,7 @@ class FloridaParcelQueryOptimizer {
   /**
    * Cache management
    */
-  private generateCacheKey(operation: string, params: unknown): string {
+  private generateCacheKey(operation: string, params: unknown): string { 
     return `${operation}:${JSON.stringify(params)}`
   }
 

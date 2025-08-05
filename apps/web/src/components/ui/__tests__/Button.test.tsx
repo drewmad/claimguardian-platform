@@ -11,7 +11,7 @@
  * @lastModifiedDate 2025-08-04T20:55:00Z
  */
 
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, afterEach, jest } from '@jest/globals'
 import { render, screen, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Button } from '@claimguardian/ui'
@@ -35,7 +35,7 @@ describe('Button Component', () => {
     })
 
     it('should forward ref correctly', () => {
-      const ref = vi.fn()
+      const ref = jest.fn()
       render(<Button ref={ref}>Test</Button>)
       
       expect(ref).toHaveBeenCalledWith(expect.any(HTMLButtonElement))
@@ -121,7 +121,7 @@ describe('Button Component', () => {
   describe('Button States', () => {
     it('should be clickable when enabled', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button onClick={handleClick}>Click me</Button>)
       
@@ -131,7 +131,7 @@ describe('Button Component', () => {
     })
 
     it('should be disabled when disabled prop is true', () => {
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button disabled onClick={handleClick}>Disabled</Button>)
       
@@ -142,7 +142,7 @@ describe('Button Component', () => {
 
     it('should not call onClick when disabled', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button disabled onClick={handleClick}>Disabled</Button>)
       
@@ -237,7 +237,7 @@ describe('Button Component', () => {
 
     it('should be activatable with Enter key', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button onClick={handleClick}>Press Enter</Button>)
       
@@ -250,7 +250,7 @@ describe('Button Component', () => {
 
     it('should be activatable with Space key', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button onClick={handleClick}>Press Space</Button>)
       
@@ -315,7 +315,7 @@ describe('Button Component', () => {
   describe('Event Handling', () => {
     it('should handle onClick events', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn()
+      const handleClick = jest.fn()
       
       render(<Button onClick={handleClick}>Click me</Button>)
       
@@ -326,7 +326,7 @@ describe('Button Component', () => {
 
     it('should handle onFocus events', async () => {
       const user = userEvent.setup()
-      const handleFocus = vi.fn()
+      const handleFocus = jest.fn()
       
       render(<Button onFocus={handleFocus}>Focus me</Button>)
       
@@ -337,7 +337,7 @@ describe('Button Component', () => {
 
     it('should handle onBlur events', async () => {
       const user = userEvent.setup()
-      const handleBlur = vi.fn()
+      const handleBlur = jest.fn()
       
       render(
         <>
@@ -355,7 +355,7 @@ describe('Button Component', () => {
 
     it('should prevent double-clicks when processing', async () => {
       const user = userEvent.setup()
-      const handleClick = vi.fn(() => {
+      const handleClick = jest.fn(() => {
         // Simulate async operation
         return new Promise(resolve => setTimeout(resolve, 100))
       })
@@ -373,7 +373,7 @@ describe('Button Component', () => {
   describe('Form Integration', () => {
     it('should submit form when type="submit"', async () => {
       const user = userEvent.setup()
-      const handleSubmit = vi.fn(e => e.preventDefault())
+      const handleSubmit = jest.fn(e => e.preventDefault())
       
       render(
         <form onSubmit={handleSubmit}>

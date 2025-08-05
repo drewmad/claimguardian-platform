@@ -26,6 +26,29 @@ import {
   Calendar
 } from 'lucide-react'
 
+interface ParcelData {
+  id: string
+  parcelId: string
+  address: string
+  city: string
+  county: string
+  state: string
+  zipCode: string
+  ownerName: string
+  propertyType: string
+  landUse: string
+  totalValue: number
+  landValue: number
+  buildingValue: number
+  yearBuilt?: number
+  lotSize?: number
+  livingArea?: number
+  coordinates?: {
+    latitude: number
+    longitude: number
+  }
+}
+
 interface ParcelSearchProps {
   propertyId: string
   currentParcelId?: string

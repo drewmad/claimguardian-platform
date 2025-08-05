@@ -35,6 +35,12 @@ import { aiCacheManager } from '@/lib/ai/ai-cache-manager'
 import type { CacheMetrics } from '@/lib/ai/ai-cache-manager'
 import { toast } from 'sonner'
 
+interface CostSavingsData {
+  hour: number
+  saved: number
+  label: string
+}
+
 const FEATURE_COLORS = {
   'damage-analyzer': '#3B82F6',
   'policy-chat': '#8B5CF6',
@@ -121,7 +127,7 @@ export function AICacheDashboard() {
     .sort((a, b) => a.timestamp - b.timestamp)
     .slice(-24) // Last 24 entries
     .reduce((acc, item, index) => {
-      const existing = acc.find((d: unknown) => d.hour === Math.floor(index / 4))
+      const existing = acc.find((d: CostSavingsData) => d.hour === Math.floor(index / 4))
       const costSaved = item.cost * (item.accessCount - 1) // Saved cost from cache hits
       
       if (existing) {
@@ -134,7 +140,7 @@ export function AICacheDashboard() {
         })
       }
       return acc
-    }, [] as unknown[])
+    }, [] as CostSavingsData[])
 
   if (loading) {
     return (

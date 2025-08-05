@@ -16,8 +16,8 @@ import { throwError, mockConsole } from '../../utils/test-utils'
 import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
 
 
-// Mock the logger
-jest.mock('@/lib/logger', () => ({
+// Mock the production logger
+jest.mock('@/lib/logger/production-logger', () => ({
   logger: {
     error: jest.fn(),
     info: jest.fn(),
@@ -203,7 +203,7 @@ describe('ErrorBoundary', () => {
 
   describe('Error Logging', () => {
     it('should log critical errors', async () => {
-      const { logger } = await import('@/lib/logger')
+      const { logger } = await import('@/lib/logger/production-logger')
       const criticalError = new Error('Critical system failure')
 
       render(
@@ -229,13 +229,13 @@ describe('ErrorBoundary', () => {
     it('should not log low-severity errors in production', async () => {
       const originalEnv = process.env.NODE_ENV
       Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',
+        value: 'production',  
         writable: true,
         enumerable: true,
         configurable: true
       })
 
-      const { logger } = await import('@/lib/logger')
+      const { logger } = await import('@/lib/logger/production-logger')
       const minorError = new Error('Minor validation issue')
 
       render(

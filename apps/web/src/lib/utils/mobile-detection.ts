@@ -6,6 +6,40 @@
  * @status stable
  */
 
+// PWA and Mobile API type definitions
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: ReadonlyArray<string>
+  readonly userChoice: Promise<{
+    outcome: 'accepted' | 'dismissed'
+    platform: string
+  }>
+  prompt(): Promise<void>
+}
+
+interface IOSNavigator extends Navigator {
+  standalone?: boolean
+}
+
+interface NetworkConnection {
+  type?: string
+  effectiveType?: string
+  downlink?: number
+  rtt?: number
+  saveData?: boolean
+}
+
+interface NavigatorWithConnection extends Navigator {
+  connection?: NetworkConnection
+  mozConnection?: NetworkConnection
+  webkitConnection?: NetworkConnection
+}
+
+declare global {
+  interface WindowEventMap {
+    beforeinstallprompt: BeforeInstallPromptEvent
+  }
+}
+
 export interface MobileDeviceInfo {
   isMobile: boolean
   isTablet: boolean
@@ -58,7 +92,7 @@ export class MobileDetectionService {
 
     // PWA detection
     const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
-                  (window.navigator as unknown).standalone === true
+                  (window.navigator as IOSNavigator).standalone === true
 
     // Capability detection
     const hasCamera = 'mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices
@@ -208,7 +242,7 @@ export class MobileDetectionService {
    * Install PWA prompt
    */
   static setupPWAInstall() {
-    let deferredPrompt: unknown = null
+    let deferredPrompt: BeforeInstallPromptEvent | null = null
 
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault()
@@ -226,7 +260,7 @@ export class MobileDetectionService {
     })
   }
 
-  private static showPWAInstallBanner(deferredPrompt: unknown) {
+  private static showPWAInstallBanner(deferredPrompt: BeforeInstallPromptEvent | null) {
     const banner = document.createElement('div')
     banner.id = 'pwa-install-banner'
     banner.className = 'fixed bottom-4 left-4 right-4 bg-blue-600 text-white p-4 rounded-lg shadow-lg z-50 flex items-center justify-between'
@@ -250,7 +284,7 @@ export class MobileDetectionService {
     // Handle install button click
     document.getElementById('pwa-install-btn')?.addEventListener('click', async () => {
       if (deferredPrompt) {
-        deferredPrompt.prompt()
+        await deferredPrompt.prompt()
         const { outcome } = await deferredPrompt.userChoice
         console.log('PWA install outcome:', outcome)
         deferredPrompt = null
@@ -319,7 +353,9 @@ export class MobileDetectionService {
     downlink: number
     rtt: number
   } {
-    const connection = (navigator as unknown).connection || (navigator as unknown).mozConnection || (navigator as unknown).webkitConnection
+    const connection = (navigator as NavigatorWithConnection).connection || 
+                      (navigator as NavigatorWithConnection).mozConnection || 
+                      (navigator as NavigatorWithConnection).webkitConnection
 
     return {
       online: navigator.onLine,

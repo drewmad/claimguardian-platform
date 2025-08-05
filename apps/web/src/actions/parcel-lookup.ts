@@ -37,7 +37,7 @@ export interface ParcelData {
   no_bdrm: number
   no_bath: number
   tot_lvg_area: number
-  geometry?: any
+  geometry?: unknown
 }
 
 /**
@@ -156,7 +156,7 @@ export async function assessPropertyRisk(parcelId: string) {
     const parcel = parcelResult.data
     
     // AI risk analysis based on parcel data
-    const riskFactors = {
+    const riskFactors: RiskFactors = {
       floodRisk: calculateFloodRisk(parcel.county_fips),
       hurricaneRisk: calculateHurricaneRisk(parcel.county_fips),
       ageRisk: calculateAgeRisk(parcel.yr_blt || parcel.act_yr_blt),
@@ -221,7 +221,15 @@ function calculateLocationRisk(city: string): number {
   return coastalCities.some(coastal => city?.toUpperCase().includes(coastal)) ? 0.7 : 0.3
 }
 
-function generateRiskRecommendations(riskFactors: any): string[] {
+interface RiskFactors {
+  floodRisk: number
+  hurricaneRisk: number
+  ageRisk: number
+  valueRisk: number
+  locationRisk: number
+}
+
+function generateRiskRecommendations(riskFactors: RiskFactors): string[] {
   const recommendations = []
   
   if (riskFactors.floodRisk > 0.6) {

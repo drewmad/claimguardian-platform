@@ -4,7 +4,10 @@
     "composite": true,
     "outDir": "./dist",
     "declarationDir": "./dist",
-    "rootDir": "./src"
+    "rootDir": "./src",
+    "paths": {
+      "@claimguardian/ui/*": ["../ui/src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]

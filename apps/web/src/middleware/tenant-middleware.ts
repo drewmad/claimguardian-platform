@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { tenantManager } from '@/lib/multi-tenant/tenant-manager'
+import { tenantManager, type TenantCustomization } from '@/lib/multi-tenant/tenant-manager'
 
 interface TenantContext {
   organizationId: string
@@ -17,7 +17,7 @@ interface TenantContext {
   subscriptionStatus: string
   allowedStates: string[]
   featureFlags: Record<string, boolean>
-  customizations?: unknown
+  customizations?: TenantCustomization
 }
 
 /**
@@ -76,7 +76,7 @@ export async function extractTenantContext(request: NextRequest): Promise<Tenant
     subscriptionStatus: organization.subscriptionStatus,
     allowedStates: organization.allowedStates,
     featureFlags: organization.featureFlags,
-    customizations: customizations
+    customizations: customizations || undefined
   }
 }
 

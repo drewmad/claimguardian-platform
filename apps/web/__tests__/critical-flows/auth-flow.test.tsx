@@ -109,14 +109,14 @@ describe('Authentication Flow - Critical Tests', () => {
       
       // Test invalid email
       await userEvent.type(getByTestId('email-input'), 'invalid-email')
-      fireEvent.click(getByTestId('login-button'))
+      fireEvent.submit(getByTestId('email-input').closest('form')!)
       
       expect(getByTestId('error-message')).toHaveTextContent('Please enter a valid email address')
       
       // Test valid email  
       await userEvent.clear(getByTestId('email-input'))
       await userEvent.type(getByTestId('email-input'), 'user@example.com')
-      fireEvent.click(getByTestId('login-button'))
+      fireEvent.submit(getByTestId('email-input').closest('form')!)
       
       expect(queryByTestId('error-message')).not.toBeInTheDocument()
     })
@@ -273,13 +273,13 @@ describe('Authentication Flow - Critical Tests', () => {
         return input
           .trim()
           .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
-          .replace(/[<>]/g, '') // Remove angle brackets
+          .replace(/<[^>]*>/g, '') // Remove all HTML tags
           .substring(0, 100) // Limit length
       }
 
       expect(sanitizeInput('  John Doe  ')).toBe('John Doe')
       expect(sanitizeInput('<script>alert("xss")</script>John')).toBe('John')
-      expect(sanitizeInput('Name<dangerous>content</dangerous>')).toBe('Namedangerouscontent')
+      expect(sanitizeInput('Name<dangerous>content</dangerous>')).toBe('Namecontent')
       
       // Test length limiting
       const longString = 'a'.repeat(150)

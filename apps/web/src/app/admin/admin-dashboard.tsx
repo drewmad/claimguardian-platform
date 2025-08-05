@@ -26,7 +26,11 @@ import { RealTimeAnalyticsDashboard } from '@/components/admin/real-time-analyti
 import { PartitionMonitorDashboard } from '@/components/admin/partition-monitor-dashboard'
 import { TimeSeriesAnalyticsDashboard } from '@/components/admin/time-series-analytics-dashboard'
 
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, Tabs, TabsContent, TabsList, TabsTrigger } from '@claimguardian/ui'
+import { Input, Label } from '@claimguardian/ui'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
 // Navigation menu structure
 const navigationMenu = [

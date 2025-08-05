@@ -490,9 +490,9 @@ export function RealTimeAnalyticsDashboard() {
                       </Pie>
                       <Tooltip 
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
-                        formatter={(value: number, name: string, props: unknown) => [
+                        formatter={(value: number, name: string, props: { payload?: { cost?: number } }) => [
                           `Requests: ${value}`,
-                          `Cost: $${props.payload.cost.toFixed(2)}`
+                          `Cost: $${props.payload?.cost?.toFixed(2) || '0.00'}`
                         ]}
                       />
                     </PieChart>

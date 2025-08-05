@@ -8,8 +8,13 @@
 
 import { aiBatchProcessor } from './batch-processor'
 import { enhancedAIClient } from './enhanced-client'
+interface ChatMessage {
+  role: 'user' | 'assistant' | 'system'
+  content: string
+}
+
 interface BatchChatRequest {
-  messages: unknown[]
+  messages: ChatMessage[]
   featureId: string
   userId?: string
   priority?: 'low' | 'normal' | 'high'
