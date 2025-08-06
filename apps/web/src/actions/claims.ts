@@ -52,12 +52,16 @@ export async function createClaim({
     const claimData: ClaimInsert = {
       user_id: user.id,
       property_id: propertyId,
-      damage_type: claimType,
+      claim_type: claimType as 'property' | 'casualty' | 'liability' | 'other',
       description,
-      date_of_loss: incidentDate || new Date().toISOString(),
+      incident_date: incidentDate || new Date().toISOString(),
       status: 'draft',
       claim_number: `CG-${Date.now()}-${Math.random().toString(36).substr(2, 4).toUpperCase()}`,
-      date_reported: new Date().toISOString()
+      reported_date: new Date().toISOString(),
+      estimated_amount: null,
+      adjuster_name: null,
+      adjuster_phone: null,
+      adjuster_email: null
     }
 
     const { data, error } = await supabase

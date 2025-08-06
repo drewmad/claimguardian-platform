@@ -12,8 +12,25 @@ import type { Database, ClaimStatus } from '@claimguardian/db'
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
-// Database types
-type DbClaim = Database['public']['Tables']['claims']['Row']
+// Database types (temporarily commented out until claims table exists in schema)
+// type DbClaim = Database['public']['Tables']['claims']['Row']
+type DbClaim = {
+  id: string
+  user_id: string
+  property_id: string
+  claim_number: string
+  status: string
+  claim_type: string
+  incident_date: string
+  reported_date: string
+  description: string
+  estimated_amount: number | null
+  adjuster_name: string | null
+  adjuster_phone: string | null
+  adjuster_email: string | null
+  created_at: string
+  updated_at: string
+}
 
 // Extended types for the store
 interface ClaimEvidence {

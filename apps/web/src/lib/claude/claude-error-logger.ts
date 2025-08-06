@@ -137,22 +137,23 @@ class ClaudeErrorLogger {
 
     // Save to database
     if (this.isEnabled && this.supabase) {
-      try {
-        const { error: dbError } = await this.supabase
-          .from('claude_errors')
-          .insert([
-            {
-              ...claudeError,
-              created_at: new Date().toISOString()
-            }
-          ])
+      // TODO: Create claude_errors table in database schema
+      // try {
+      //   const { error: dbError } = await this.supabase
+      //     .from('claude_errors')
+      //     .insert([
+      //       {
+      //         ...claudeError,
+      //         created_at: new Date().toISOString()
+      //       }
+      //     ])
 
-        if (dbError) {
-          logger.error('Failed to save Claude error to database', {}, dbError)
-        }
-      } catch (dbError) {
-        logger.error('Database error while saving Claude error', {}, dbError instanceof Error ? dbError : new Error(String(dbError)))
-      }
+      //   if (dbError) {
+      //     logger.error('Failed to save Claude error to database', {}, dbError)
+      //   }
+      // } catch (dbError) {
+      //   logger.error('Database error while saving Claude error', {}, dbError instanceof Error ? dbError : new Error(String(dbError)))
+      // }
     }
 
     // Analyze for patterns and create learning
@@ -174,32 +175,32 @@ class ClaudeErrorLogger {
         updated_at: new Date().toISOString()
       }
 
-      // Update context with lesson learned if provided
-      if (lessonLearned) {
-        const { data: errorData } = await this.supabase
-          .from('claude_errors')
-          .select('context')
-          .eq('id', errorId)
-          .single()
+      // TODO: Update context with lesson learned when claude_errors table exists
+      // if (lessonLearned) {
+      //   const { data: errorData } = await this.supabase
+      //     .from('claude_errors')
+      //     .select('context')
+      //     .eq('id', errorId)
+      //     .single()
 
-        if (errorData && errorData.context) {
-          updateData.context = {
-            ...(errorData.context as Record<string, unknown>),
-            lessonLearned,
-            correctApproach: resolutionMethod
-          }
-        } else {
-          updateData.context = {
-            lessonLearned,
-            correctApproach: resolutionMethod
-          }
-        }
-      }
+      //   if (errorData && errorData.context) {
+      //     updateData.context = {
+      //       ...(errorData.context as Record<string, unknown>),
+      //       lessonLearned,
+      //       correctApproach: resolutionMethod
+      //     }
+      //   } else {
+      //     updateData.context = {
+      //       lessonLearned,
+      //       correctApproach: resolutionMethod
+      //     }
+      //   }
+      // }
 
-      await this.supabase
-        .from('claude_errors')
-        .update(updateData)
-        .eq('id', errorId)
+      // await this.supabase
+      //   .from('claude_errors')
+      //   .update(updateData)
+      //   .eq('id', errorId)
 
       logger.info('Claude error resolved', { errorId, resolutionMethod })
     } catch (error) {
@@ -222,24 +223,27 @@ class ClaudeErrorLogger {
     }
 
     try {
-      // Query learnings based on context similarity
-      const { data: learnings, error } = await this.supabase
-        .from('claude_learnings')
-        .select('*')
-        .contains('context_tags', this.extractContextTags(context))
-        .gte('confidence_score', 0.7)
-        .order('usage_count', { ascending: false })
-        .limit(10)
+      // TODO: Query learnings when claude_learnings table exists
+      // const { data: learnings, error } = await this.supabase
+      //   .from('claude_learnings')
+      //   .select('*')
+      //   .contains('context_tags', this.extractContextTags(context))
+      //   .gte('confidence_score', 0.7)
+      //   .order('usage_count', { ascending: false })
+      //   .limit(10)
 
-      if (error) {
-        logger.error('Failed to fetch Claude learnings', {}, error)
-        return []
-      }
+      // if (error) {
+      //   logger.error('Failed to fetch Claude learnings', {}, error)
+      //   return []
+      // }
 
       // Cache the results  
-      const typedLearnings = (learnings || []) as unknown as ClaudeLearning[]
-      this.learningCache.set(cacheKey, typedLearnings)
-      return typedLearnings
+      // const typedLearnings = (learnings || []) as unknown as ClaudeLearning[]
+      // this.learningCache.set(cacheKey, typedLearnings)
+      // return typedLearnings
+      
+      // Return empty for now
+      return []
     } catch (error) {
       logger.error('Error fetching Claude learnings', {}, error instanceof Error ? error : new Error(String(error)))
       return []
@@ -255,25 +259,27 @@ class ClaudeErrorLogger {
     const timeFilter = this.getTimeFilter(timeRange)
 
     try {
-      const { data, error } = await this.supabase
-        .from('claude_errors')
-        .select(`
-          context->taskType,
-          context->errorType,
-          context->mistakeCategory,
-          severity,
-          resolved,
-          created_at
-        `)
-        .gte('created_at', timeFilter)
-        .order('created_at', { ascending: false })
+      // TODO: Implement when claude_errors table exists
+      // const { data, error } = await this.supabase
+      //   .from('claude_errors')
+      //   .select(`
+      //     context->taskType,
+      //     context->errorType,
+      //     context->mistakeCategory,
+      //     severity,
+      //     resolved,
+      //     created_at
+      //   `)
+      //   .gte('created_at', timeFilter)
+      //   .order('created_at', { ascending: false })
 
-      if (error) {
-        logger.error('Failed to fetch Claude error patterns', {}, error)
-        return []
-      }
-
-      return this.analyzePatterns(data || [])
+      // if (error) {
+      //   logger.error('Failed to fetch Claude error patterns', {}, error)
+      //   return []
+      // }
+      
+      // Return empty patterns for now
+      return []
     } catch (error) {
       logger.error('Error analyzing Claude error patterns', {}, error instanceof Error ? error : new Error(String(error)))
       return []
@@ -293,44 +299,44 @@ class ClaudeErrorLogger {
     if (!this.isEnabled || !this.supabase) return
 
     try {
-      // Check if learning already exists
-      const { data: existing } = await this.supabase
-        .from('claude_learnings')
-        .select('*')
-        .eq('pattern_name', patternName)
-        .single()
+      // TODO: Create learning entries when claude_learnings table exists
+      // const { data: existing } = await this.supabase
+      //   .from('claude_learnings')
+      //   .select('*')
+      //   .eq('pattern_name', patternName)
+      //   .single()
 
-      if (existing) {
-        // Update existing learning
-        await this.supabase
-          .from('claude_learnings')
-          .update({
-            solution_pattern: solutionPattern,
-            context_tags: contextTags,
-            confidence_score: Math.max(existing.confidence_score || 0, confidenceScore),
-            usage_count: (existing.usage_count || 0) + 1,
-            updated_at: new Date().toISOString()
-          })
-          .eq('id', existing.id)
-      } else {
-        // Create new learning
-        await this.supabase
-          .from('claude_learnings')
-          .insert([
-            {
-              id: `learning-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              pattern_name: patternName,
-              mistake_pattern: mistakePattern,
-              solution_pattern: solutionPattern,
-              context_tags: contextTags,
-              confidence_score: confidenceScore,
-              usage_count: 1,
-              success_rate: 1.0,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }
-          ])
-      }
+      // if (existing) {
+      //   // Update existing learning
+      //   await this.supabase
+      //     .from('claude_learnings')
+      //     .update({
+      //       solution_pattern: solutionPattern,
+      //       context_tags: contextTags,
+      //       confidence_score: Math.max(existing.confidence_score || 0, confidenceScore),
+      //       usage_count: (existing.usage_count || 0) + 1,
+      //       updated_at: new Date().toISOString()
+      //     })
+      //     .eq('id', existing.id)
+      // } else {
+      //   // Create new learning
+      //   await this.supabase
+      //     .from('claude_learnings')
+      //     .insert([
+      //       {
+      //         id: `learning-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      //         pattern_name: patternName,
+      //         mistake_pattern: mistakePattern,
+      //         solution_pattern: solutionPattern,
+      //         context_tags: contextTags,
+      //         confidence_score: confidenceScore,
+      //         usage_count: 1,
+      //         success_rate: 1.0,
+      //         created_at: new Date().toISOString(),
+      //         updated_at: new Date().toISOString()
+      //       }
+      //     ])
+      // }
 
       // Clear cache to refresh learnings
       this.learningCache.clear()
