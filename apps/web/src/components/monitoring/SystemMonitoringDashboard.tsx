@@ -139,6 +139,7 @@ export function SystemMonitoringDashboard() {
       const interval = setInterval(loadMonitoringData, refreshInterval);
       return () => clearInterval(interval);
     }
+    return undefined;
   }, [autoRefresh, refreshInterval]);
 
   const loadMonitoringData = async () => {

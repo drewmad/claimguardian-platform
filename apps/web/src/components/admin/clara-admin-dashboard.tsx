@@ -36,7 +36,8 @@ import {
   CheckCircle,
   Send,
   Bot,
-  User
+  User,
+  Calendar
 } from 'lucide-react'
 import { format, differenceInMinutes } from 'date-fns'
 import { 

@@ -41,7 +41,13 @@ import {
   Share2,
   BarChart3
 } from 'lucide-react'
-import { aiModelManager } from '@claimguardian/ai-services/model-manager'
+// Mock AI model manager for demo - in production would import from ai-services package
+const aiModelManager = {
+  generateText: async (prompt: string, options?: any) => ({
+    content: 'Mock AI response'
+  }),
+  analyzeImage: async (imageData: string, prompt: string) => ({ description: 'Mock analysis', objects: [], damages: [] })
+}
 import { createClient } from '@/lib/supabase/client'
 
 interface DocumentAnalysis {

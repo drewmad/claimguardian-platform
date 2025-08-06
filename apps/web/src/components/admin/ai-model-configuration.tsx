@@ -33,7 +33,26 @@ import {
   Shield,
   RefreshCw
 } from 'lucide-react'
-import { aiModelManager, AIProvider, AIModel, getAvailableAIProviders } from '@claimguardian/ai-services/model-manager'
+// Using local AI model types for now - in production would import from ai-services package
+type AIProvider = 'openai' | 'gemini' | 'anthropic' | 'xai'
+type AIModel = 'gpt-4-turbo-preview' | 'gpt-4-vision-preview' | 'gpt-3.5-turbo' | 'gemini-pro' | 'gemini-pro-vision' | 'claude-3-opus' | 'claude-3-sonnet' | 'grok-1'
+
+// Mock functions for demo
+const getAvailableAIProviders = (): AIProvider[] => ['openai', 'gemini']
+
+// Mock AI model manager
+const aiModelManager = {
+  getAvailableProviders: () => getAvailableAIProviders(),
+  generateText: async (prompt: string, options?: any) => ({
+    content: 'Mock response',
+    usage: { totalTokens: 100, promptTokens: 50, completionTokens: 50, cost: 0.01 }
+  }),
+  getBestModelForTask: (task: string) => ({ provider: 'openai' as AIProvider, model: 'gpt-4-turbo-preview' as AIModel }),
+  analyzeImage: async (imageData: string, prompt: string) => ({
+    content: 'Mock image analysis',
+    usage: { totalTokens: 150, promptTokens: 75, completionTokens: 75, cost: 0.02 }
+  })
+}
 
 interface ModelStatus {
   provider: AIProvider

@@ -173,7 +173,7 @@ export function PropertyMapDashboard({
     const totalClaims = filteredProperties.reduce((sum, prop) => sum + prop.claimsCount, 0)
     
     const statusCounts = filteredProperties.reduce((acc, prop) => {
-      acc[prop.status] = (acc[prop.status] || 0) + 1
+      acc[prop.insuranceStatus] = (acc[prop.insuranceStatus] || 0) + 1
       return acc
     }, {} as Record<string, number>)
 

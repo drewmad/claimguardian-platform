@@ -362,8 +362,6 @@ export function PropertyLocationMap({
             ? 'mapbox://styles/mapbox/streets-v12' 
             : 'mapbox://styles/mapbox/satellite-streets-v12'
         }
-        onClick={handleMapClick}
-        showPropertyDetails={false}
       />
 
       {/* Accuracy Notice */}

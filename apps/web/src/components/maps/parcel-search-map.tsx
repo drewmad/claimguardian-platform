@@ -580,7 +580,6 @@ export function ParcelSearchMap({
           mapStyle === 'satellite' ? 'mapbox://styles/mapbox/satellite-streets-v12' :
           'mapbox://styles/mapbox/streets-v12'
         }
-        showPropertyDetails={false}
       />
     </div>
   )

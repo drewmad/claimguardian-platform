@@ -21,7 +21,6 @@ import {
   PieChart,
   Pie,
   Cell,
-  ScatterPlot,
   Scatter,
   RadarChart,
   PolarGrid,
@@ -52,7 +51,6 @@ import {
   PieChart as PieChartIcon,
   Radar as RadarIcon,
   Download,
-  Refresh,
   Calendar,
   Filter,
   Search,
@@ -68,7 +66,6 @@ import {
   XCircle,
   RefreshCw,
   Sparkles,
-  Lightning
 } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
 
@@ -806,7 +803,8 @@ export function PredictiveAnalyticsDashboard() {
                       </p>
                     </div>
                   </div>
-                </Card>
+                </CardContent>
+              </Card>
 
               <Card>
                 <CardContent className="p-6">
@@ -820,12 +818,13 @@ export function PredictiveAnalyticsDashboard() {
                       </p>
                     </div>
                   </div>
-                </Card>
+                </CardContent>
+              </Card>
 
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-start space-x-3">
-                    <Lightning className="h-5 w-5 text-yellow-500 mt-1" />
+                    <Zap className="h-5 w-5 text-yellow-500 mt-1" />
                     <div>
                       <h4 className="font-semibold">Seasonal Pattern Alert</h4>
                       <p className="text-sm text-gray-600">
@@ -834,7 +833,8 @@ export function PredictiveAnalyticsDashboard() {
                       </p>
                     </div>
                   </div>
-                </Card>
+                </CardContent>
+              </Card>
               </div>
             </div>
         </TabsContent>

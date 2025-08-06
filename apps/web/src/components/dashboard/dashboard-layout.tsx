@@ -16,7 +16,7 @@ import {
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
-  CreditCard, MapPin, Clock, Brain
+  CreditCard, MapPin, Clock, Brain, Cloud
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -45,6 +45,7 @@ const navigationItems = [
   { id: 'warranty-watch', label: 'Warranty Watch', icon: ShieldCheck, href: '/dashboard/warranty-watch' },
   { id: 'contractors', label: 'Contractor Connect', icon: HardHat, href: '/dashboard/contractors' },
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
+  { id: 'weather', label: 'Weather Intelligence', icon: Cloud, href: '/dashboard/weather' },
   { id: 'situation-room', label: 'Situation Room', icon: Siren, href: '/dashboard/situation-room' },
   { id: 'development', label: 'Development', icon: Code, href: '/dashboard/development' },
   { id: 'billing', label: 'Membership & Billing', icon: CreditCard, href: '/dashboard/billing' },

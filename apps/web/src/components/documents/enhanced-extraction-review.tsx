@@ -1,19 +1,22 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@claimguardian/ui'
-import { Button } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
-import { Alert, AlertDescription } from '@claimguardian/ui'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@claimguardian/ui'
-import { Progress } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Alert, AlertDescription } from '@/components/ui/alert'
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Progress } from '@/components/ui/progress'
 import { 
   CheckCircle, XCircle, AlertCircle, FileText, DollarSign, 
   Calendar, Shield, Home, User, Building, AlertTriangle,
   Edit, Save, X, ChevronDown, ChevronUp, Sparkles
 } from 'lucide-react'
 import { ExtractedPolicyDataEnhanced } from '@/lib/services/enhanced-document-extraction'
-import { formatCurrency, formatDate } from '@claimguardian/utils'
+// import { formatCurrency, formatDate } from '@claimguardian/utils'
+// Temporary fix - define inline
+const formatCurrency = (amount: number) => `$${amount.toLocaleString()}`
+const formatDate = (date: string) => new Date(date).toLocaleDateString()
 
 interface EnhancedExtractionReviewProps {
   extractedData: ExtractedPolicyDataEnhanced
