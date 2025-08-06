@@ -21,7 +21,9 @@ export function createClient() {
   if (!browserClient) {
     try {
       browserClient = createBrowserSupabaseClient()
-      authLogger.info('Supabase browser client initialized (singleton)')
+      if (process.env.NODE_ENV === 'development') {
+        authLogger.info('Supabase browser client initialized (singleton)')
+      }
     } catch (error) {
       authLogger.error('Failed to initialize Supabase client', {}, error as Error)
       // Re-throw to prevent silent failures
@@ -29,7 +31,9 @@ export function createClient() {
     }
   } else {
     // Reusing existing client to prevent multiple auth listeners
-    authLogger.debug('Reusing existing Supabase browser client')
+    if (process.env.NODE_ENV === 'development' && process.env.VERBOSE_LOGS === 'true') {
+      authLogger.debug('Reusing existing Supabase browser client')
+    }
   }
   return browserClient
 }

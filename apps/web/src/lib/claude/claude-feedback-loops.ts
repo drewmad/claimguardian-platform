@@ -386,9 +386,11 @@ class ClaudeFeedbackLoops {
       await this.runMonitoringCycle()
     }, this.config.monitoringIntervalMinutes * 60 * 1000)
 
-    logger.info('Feedback loop monitoring started', {
-      interval: this.config.monitoringIntervalMinutes
-    })
+    if (process.env.NODE_ENV === 'development') {
+      logger.info('Feedback loop monitoring started', {
+        interval: this.config.monitoringIntervalMinutes
+      })
+    }
   }
 
   private async runMonitoringCycle(): Promise<void> {

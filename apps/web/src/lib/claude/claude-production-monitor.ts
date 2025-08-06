@@ -191,7 +191,9 @@ class ClaudeProductionMonitor {
       this.detectAnomalies(metrics)
     }, this.config.anomalyDetectionWindowMinutes * 60 * 1000)
 
-    logger.info('Production monitoring started')
+    if (process.env.NODE_ENV === 'development') {
+      logger.info('Production monitoring started')
+    }
   }
 
   /**
@@ -201,7 +203,9 @@ class ClaudeProductionMonitor {
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval)
       this.monitoringInterval = undefined
-      logger.info('Production monitoring stopped')
+      if (process.env.NODE_ENV === 'development') {
+        logger.info('Production monitoring stopped')
+      }
     }
   }
 

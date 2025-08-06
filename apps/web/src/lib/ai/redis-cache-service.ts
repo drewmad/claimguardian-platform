@@ -77,7 +77,9 @@ class RedisAICacheService {
     try {
       // In a real implementation, this would connect to Redis
       // For now, we'll use a mock implementation that stores in memory
-      console.log('🔧 Redis AI Cache Service initialized (mock mode)')
+      if (process.env.NODE_ENV === 'development') {
+        console.log('🔧 Redis AI Cache Service initialized (mock mode)')
+      }
       this.isEnabled = true
     } catch (error) {
       console.warn('Redis not available, falling back to in-memory cache:', error)
