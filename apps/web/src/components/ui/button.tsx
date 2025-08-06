@@ -5,11 +5,11 @@
  * @dependencies ["react", "class-variance-authority", "@/lib/utils"]
  * @exports ["Button", "buttonVariants"]
  * @lastModifiedBy Claude AI Assistant
- * @lastModifiedDate 2025-08-05T20:00:00Z
+ * @lastModifiedDate 2025-08-06T00:00:00Z
  * @complexity medium
  * @tags ["component", "ui", "button", "loading", "icons", "accessibility"]
  * @status stable
- * @notes Enhanced with loading spinner, icon support, and proper ARIA attributes
+ * @notes Enhanced with loading spinner, icon support, and proper ARIA attributes. Updated for WCAG 2.1 AA compliance.
  */
 'use client'
 
@@ -19,7 +19,7 @@ import * as React from 'react'
 import { cn } from '@/lib/utils'
 
 const buttonVariants = cva(
-  'inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  'inline-flex items-center justify-center rounded-lg text-sm font-medium backdrop-blur-sm transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent-border focus-visible:ring-offset-2 focus:ring-2 focus:ring-accent-border focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 touch-manipulation',
   {
     variants: {
       variant: {
@@ -33,10 +33,10 @@ const buttonVariants = cva(
         destructive: 'bg-destructive text-destructive-foreground hover:bg-destructive/90 shadow-lg'
       },
       size: {
-        default: 'h-10 px-4 py-2',
-        sm: 'h-9 rounded-lg px-3',
-        lg: 'h-11 rounded-lg px-8 text-base',
-        icon: 'h-10 w-10'
+        default: 'h-10 px-4 py-2 min-h-[44px]', // Updated for minimum touch target
+        sm: 'h-9 rounded-lg px-3 min-h-[44px]', // Updated for minimum touch target
+        lg: 'h-11 rounded-lg px-8 text-base min-h-[48px]', // Updated for minimum touch target
+        icon: 'h-10 w-10 min-h-[44px] min-w-[44px]' // Updated for minimum touch target
       }
     },
     defaultVariants: {
@@ -46,7 +46,7 @@ const buttonVariants = cva(
   }
 )
 
-// Loading spinner component
+// Loading spinner component with accessibility attributes
 const LoadingSpinner = ({ className }: { className?: string }) => (
   <svg
     data-testid="loading-spinner"
@@ -54,6 +54,9 @@ const LoadingSpinner = ({ className }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     fill="none"
     viewBox="0 0 24 24"
+    aria-hidden="true"
+    role="img"
+    aria-label="Loading"
   >
     <circle
       className="opacity-25"
@@ -79,6 +82,7 @@ export interface ButtonProps
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
   asChild?: boolean
+  'data-testid'?: string
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>( 
@@ -95,6 +99,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     disabled,
     onClick,
     type = 'button',
+    'aria-label': ariaLabel,
+    'aria-describedby': ariaDescribedby,
+    'data-testid': testId,
     ...props 
   }, ref) => {
     const [isProcessing, setIsProcessing] = React.useState(false)
@@ -116,6 +123,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       setTimeout(() => setIsProcessing(false), 300)
     }, [onClick, isProcessing, loading, type])
 
+    // Handle keyboard navigation
+    const handleKeyDown = React.useCallback((e: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault()
+        if (!isDisabled) {
+          handleClick(e as unknown as React.MouseEvent<HTMLButtonElement>)
+        }
+      }
+    }, [handleClick, isDisabled])
+
     const Component = asChild ? 'span' : 'button'
     
     return React.createElement(
@@ -126,20 +143,26 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         disabled: asChild ? undefined : isDisabled,
         'aria-disabled': isDisabled,
         'aria-busy': loading,
+        'aria-label': ariaLabel,
+        'aria-describedby': ariaDescribedby,
+        'data-testid': testId,
         ref,
         onClick: handleClick,
+        onKeyDown: asChild ? undefined : handleKeyDown,
+        role: asChild ? 'button' : undefined,
+        tabIndex: asChild ? 0 : undefined,
         ...props
       },
       loading && React.createElement(LoadingSpinner, { className: "mr-2" }),
       !loading && leftIcon && React.createElement(
         'span',
-        { className: "mr-2" },
+        { className: "mr-2", 'aria-hidden': 'true' },
         leftIcon
       ),
-      loading ? (loadingText || null) : children,
+      loading ? (loadingText || 'Loading...') : children,
       !loading && rightIcon && React.createElement(
         'span',
-        { className: "ml-2" },
+        { className: "ml-2", 'aria-hidden': 'true' },
         rightIcon
       )
     )
@@ -148,4 +171,3 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
 Button.displayName = 'Button'
 
 export { Button, buttonVariants }
-

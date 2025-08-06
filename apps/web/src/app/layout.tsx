@@ -4,12 +4,12 @@
  * @owner frontend-team
  * @dependencies ["next", "react"]
  * @exports ["metadata", "RootLayout"]
- * @lastModifiedBy Drew Madison
- * @lastModifiedDate 2025-07-03T22:58:17-04:00
+ * @lastModifiedBy Claude AI Assistant
+ * @lastModifiedDate 2025-08-06T00:00:00Z
  * @complexity low
- * @tags ["layout", "root", "nextjs"]
+ * @tags ["layout", "root", "nextjs", "accessibility"]
  * @status stable
- * @notes Defines the basic HTML structure and imports global CSS.
+ * @notes Defines the basic HTML structure, imports global CSS, and includes accessibility enhancements.
  */
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
@@ -82,15 +82,55 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.className} antialiased bg-gray-900 text-white`}>
+        {/* Skip to main content link for accessibility */}
+        <a 
+          href="#main-content" 
+          className="skip-link sr-only-focusable focus:ring-2 focus:ring-accent-border focus:ring-offset-2"
+          aria-label="Skip to main content"
+        >
+          Skip to main content
+        </a>
+
         <ErrorBoundary>
           <QueryProvider>
             <AuthProvider>
-              {children}
-              <Toaster position="top-right" richColors />
-              <CookieConsentSimple />
+              {/* Main content wrapper with proper semantic structure */}
+              <div id="main-content" role="main" tabIndex={-1}>
+                {children}
+              </div>
+              
+              {/* Toast notifications with accessibility attributes */}
+              <div aria-live="polite" aria-atomic="true">
+                <Toaster 
+                  position="top-right" 
+                  richColors 
+                  closeButton
+                  toastOptions={{
+                    duration: 5000,
+                    role: 'status',
+                    ariaProps: {
+                      role: 'status',
+                      'aria-live': 'polite',
+                    },
+                  }}
+                />
+              </div>
+              
+              {/* Cookie consent with proper ARIA attributes */}
+              <div role="complementary" aria-label="Cookie consent">
+                <CookieConsentSimple />
+              </div>
             </AuthProvider>
           </QueryProvider>
         </ErrorBoundary>
+
+        {/* Hidden screen reader announcement area */}
+        <div 
+          id="screen-reader-announcements" 
+          aria-live="assertive" 
+          aria-atomic="true" 
+          className="sr-only"
+        />
       </body>
     </html>
   )
