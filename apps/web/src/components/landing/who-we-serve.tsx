@@ -104,7 +104,7 @@ export function WhoWeServe() {
             <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
               <div className="aspect-video relative">
                 <Image
-                  src="/images/mobile-app-interface.jpg"
+                  src="/landingpage/0d24bf1c3f4f1bb7c477705873721d70c081d9cbdb88acb2f8d888aefc319ad0.png"
                   alt="Mobile App Interface"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
