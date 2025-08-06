@@ -18,9 +18,9 @@ import { Button } from '@/components/ui/button'
 import type { 
   ThreatAssessment, 
   CommunityIncident,
-  PropertyStatus,
-  ThreatLevel 
+  PropertyStatus
 } from '@/types/situation-room'
+import { ThreatLevel } from '@/types/situation-room'
 
 interface Property {
   id: string
@@ -105,14 +105,24 @@ export function SituationRoomMap({
 
   // Convert incidents to map markers
   const incidentMarkers = useMemo(() => {
+    const mapIncidentType = (type: 'damage' | 'outage' | 'emergency' | 'advisory'): 'weather' | 'crime' | 'infrastructure' | 'emergency' => {
+      switch (type) {
+        case 'damage': return 'weather'
+        case 'outage': return 'infrastructure'
+        case 'advisory': return 'emergency'
+        case 'emergency': return 'emergency'
+        default: return 'emergency'
+      }
+    }
+
     return incidents
-      .filter(incident => incident.location?.coordinates)
+      .filter(incident => incident.location?.lat && incident.location?.lng)
       .map((incident): IncidentMarker => ({
         id: incident.id,
-        coordinates: incident.location!.coordinates as [number, number],
+        coordinates: [incident.location!.lng, incident.location!.lat] as [number, number],
         incident,
         verified: incident.verified,
-        type: incident.type || 'emergency'
+        type: mapIncidentType(incident.type)
       }))
   }, [incidents])
 
@@ -129,17 +139,17 @@ export function SituationRoomMap({
       })
 
       const maxThreatLevel = nearbyThreats.reduce((max, threat) => {
-        const levels: ThreatLevel[] = ['low', 'medium', 'high', 'critical', 'emergency']
+        const levels: ThreatLevel[] = [ThreatLevel.LOW, ThreatLevel.MEDIUM, ThreatLevel.HIGH, ThreatLevel.CRITICAL, ThreatLevel.EMERGENCY]
         const currentLevel = levels.indexOf(threat.severity)
         const maxLevel = levels.indexOf(max)
         return currentLevel > maxLevel ? threat.severity : max
-      }, 'low' as ThreatLevel)
+      }, ThreatLevel.LOW)
 
       return {
         ...property,
-        threatLevel: nearbyThreats.length > 0 ? maxThreatLevel : 'low',
+        threatLevel: nearbyThreats.length > 0 ? maxThreatLevel : ThreatLevel.LOW,
         hasActiveThreats: nearbyThreats.length > 0,
-        emergencyMode: nearbyThreats.some(t => t.severity === 'emergency'),
+        emergencyMode: nearbyThreats.some(t => t.severity === ThreatLevel.EMERGENCY),
         // Mock systems data - in real app would come from property status
         systemsOnline: propertyStatus?.systems?.online || 12,
         totalSystems: propertyStatus?.systems?.total || 15
@@ -337,9 +347,9 @@ export function SituationRoomMap({
               <div className="flex justify-between">
                 <span className="text-xs text-gray-400">Threat Level:</span>
                 <Badge variant={
-                  selectedProperty.threatLevel === 'emergency' || selectedProperty.threatLevel === 'critical' 
+                  selectedProperty.threatLevel === ThreatLevel.EMERGENCY || selectedProperty.threatLevel === ThreatLevel.CRITICAL 
                     ? 'destructive' 
-                    : selectedProperty.threatLevel === 'high' || selectedProperty.threatLevel === 'medium'
+                    : selectedProperty.threatLevel === ThreatLevel.HIGH || selectedProperty.threatLevel === ThreatLevel.MEDIUM
                     ? 'secondary'
                     : 'outline'
                 } className="text-xs capitalize">

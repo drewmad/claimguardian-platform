@@ -42,13 +42,26 @@
         "OPENAI_API_KEY",
         "EXT_PUBLIC_GOOGLE_MAPS_API_KEY",
         "RESEND_API_KEY",
-        "RESEND_FROM_EMAIL"
+        "RESEND_FROM_EMAIL",
+        "ANTHROPIC_API_KEY",
+        "XAI_API_KEY",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET"
       ]
     },
     "dev": {
       "cache": false,
       "persistent": true,
-      "env": ["NODE_ENV", "NEXT_PUBLIC_*", "GEMINI_API_KEY", "OPENAI_API_KEY"]
+      "env": [
+        "NODE_ENV", 
+        "NEXT_PUBLIC_*", 
+        "GEMINI_API_KEY", 
+        "OPENAI_API_KEY",
+        "ANTHROPIC_API_KEY",
+        "XAI_API_KEY",
+        "STRIPE_SECRET_KEY",
+        "STRIPE_WEBHOOK_SECRET"
+      ]
     },
     "lint": {
       "dependsOn": ["^lint"],
