@@ -106,107 +106,73 @@ export function PredictiveMaintenanceAlerts() {
   const [systemHealth, setSystemHealth] = useState<SystemHealth[]>([]);
   const supabase = createClient();
 
-  // Mock data for demonstration
-  const activeAlerts: MaintenanceAlert[] = [
-    {
-      id: '1',
-      system: 'HVAC',
-      component: 'AC Compressor',
-      urgency: 'high',
-      predictedFailure: '2024-03-15',
-      currentCondition: 35,
-      estimatedCost: 4500,
-      preventiveCost: 350,
-      recommendation: 'Schedule preventive maintenance within 2 weeks to avoid complete failure',
-      lastInspection: '2023-11-20',
-      icon: Thermometer
-    },
-    {
-      id: '2',
-      system: 'Roof',
-      component: 'Shingles (North Side)',
-      urgency: 'medium',
-      predictedFailure: '2024-06-01',
-      currentCondition: 55,
-      estimatedCost: 8000,
-      preventiveCost: 1200,
-      recommendation: 'Replace damaged shingles before hurricane season',
-      lastInspection: '2024-01-10',
-      icon: Home
-    },
-    {
-      id: '3',
-      system: 'Plumbing',
-      component: 'Water Heater',
-      urgency: 'low',
-      predictedFailure: '2025-01-01',
-      currentCondition: 68,
-      estimatedCost: 1800,
-      preventiveCost: 150,
-      recommendation: 'Annual flush and anode rod inspection recommended',
-      lastInspection: '2023-12-05',
-      icon: Droplets
-    },
-    {
-      id: '4',
-      system: 'Electrical',
-      component: 'Circuit Breaker Panel',
-      urgency: 'critical',
-      predictedFailure: '2024-02-20',
-      currentCondition: 22,
-      estimatedCost: 3200,
-      preventiveCost: 450,
-      recommendation: 'URGENT: Signs of overheating detected. Schedule inspection immediately',
-      lastInspection: '2023-08-15',
-      icon: Zap
-    }
-  ];
+  const [loading, setLoading] = useState(false);
 
-  const healthData: SystemHealth[] = [
-    { system: 'Roof', health: 72, trend: 'declining', lastMaintenance: '6 months ago', nextScheduled: 'March 2024' },
-    { system: 'HVAC', health: 35, trend: 'declining', lastMaintenance: '14 months ago', nextScheduled: 'ASAP' },
-    { system: 'Plumbing', health: 68, trend: 'stable', lastMaintenance: '2 months ago', nextScheduled: 'June 2024' },
-    { system: 'Electrical', health: 22, trend: 'declining', lastMaintenance: '18 months ago', nextScheduled: 'URGENT' },
-    { system: 'Foundation', health: 91, trend: 'stable', lastMaintenance: '1 year ago', nextScheduled: 'Annual check' },
-    { system: 'Windows', health: 84, trend: 'stable', lastMaintenance: '3 months ago', nextScheduled: 'Sept 2024' }
-  ];
+  const [maintenanceHistory, setMaintenanceHistory] = useState<MaintenanceHistory[]>([]);
+  const [riskMatrix, setRiskMatrix] = useState<RiskAssessment[]>([]);
 
-  const maintenanceTimeline = [
-    { month: 'Jan', preventive: 450, repairs: 0, saved: 2800 },
-    { month: 'Feb', preventive: 320, repairs: 150, saved: 1500 },
-    { month: 'Mar', preventive: 580, repairs: 0, saved: 4200 },
-    { month: 'Apr', preventive: 290, repairs: 890, saved: 0 },
-    { month: 'May', preventive: 410, repairs: 0, saved: 3100 },
-    { month: 'Jun', preventive: 520, repairs: 0, saved: 3800 }
-  ];
-
-  const riskMatrix: RiskAssessment[] = [
-    { category: 'Roof', current: 28, predicted: 45, optimal: 10 },
-    { category: 'HVAC', current: 65, predicted: 82, optimal: 15 },
-    { category: 'Plumbing', current: 32, predicted: 38, optimal: 12 },
-    { category: 'Electrical', current: 78, predicted: 92, optimal: 8 },
-    { category: 'Foundation', current: 9, predicted: 12, optimal: 5 },
-    { category: 'Windows', current: 16, predicted: 22, optimal: 10 }
-  ];
-
-  const totalSavings = maintenanceTimeline.reduce((sum, month) => sum + month.saved, 0);
-  const totalPreventive = maintenanceTimeline.reduce((sum, month) => sum + month.preventive, 0);
-  const totalRepairs = maintenanceTimeline.reduce((sum, month) => sum + month.repairs, 0);
+  const [maintenanceTimeline, setMaintenanceTimeline] = useState<any[]>([]);
+  
+  const totalSavings = maintenanceTimeline.reduce((sum, month) => sum + (month.saved || 0), 0);
+  const totalPreventive = maintenanceTimeline.reduce((sum, month) => sum + (month.preventive || 0), 0);
+  const totalRepairs = maintenanceTimeline.reduce((sum, month) => sum + (month.repairs || 0), 0);
 
   useEffect(() => {
-    setAlerts(activeAlerts);
-    setSystemHealth(healthData);
-  }, []);
+    loadMaintenanceData();
+  }, [selectedProperty]);
+
+  const loadMaintenanceData = async () => {
+    if (!selectedProperty) return;
+    
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('predictive-maintenance', {
+        body: { property_id: selectedProperty }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setAlerts(data.alerts || []);
+        setSystemHealth(data.systemHealth || []);
+        setMaintenanceTimeline(data.timeline || []);
+        setRiskMatrix(data.riskMatrix || []);
+        setMaintenanceHistory(data.history || []);
+      }
+    } catch (error) {
+      console.error('Error loading maintenance data:', error);
+      // Set empty arrays on error
+      setAlerts([]);
+      setSystemHealth([]);
+      setMaintenanceTimeline([]);
+      setRiskMatrix([]);
+      setMaintenanceHistory([]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const runPredictiveScan = async () => {
+    if (!selectedProperty) {
+      toast.error('Please select a property first');
+      return;
+    }
+    
     setScanning(true);
     try {
-      // Simulate AI analysis
-      await new Promise(resolve => setTimeout(resolve, 3000));
-      
-      toast.success('Predictive scan complete - 4 issues detected');
-      
-      // In production, this would call an Edge Function for ML predictions
+      const { data, error } = await supabase.functions.invoke('predictive-maintenance-scan', {
+        body: { 
+          property_id: selectedProperty,
+          scan_type: 'comprehensive'
+        }
+      });
+
+      if (error) throw error;
+
+      if (data?.predictions) {
+        setAlerts(data.predictions);
+        toast.success(`Predictive scan complete - ${data.predictions.length} issues detected`);
+      }
     } catch (error) {
       console.error('Error running scan:', error);
       toast.error('Failed to complete scan');

@@ -115,123 +115,68 @@ export function SentimentAnalysisDashboard() {
   const [communications, setCommunications] = useState<CommunicationAnalysis[]>([]);
   const supabase = createClient();
 
-  // Mock data for demonstration
-  const overallSentiment: SentimentScore = {
-    overall: 72,
-    positive: 58,
-    negative: 18,
-    neutral: 24,
-    confidence: 89
-  };
+  const [overallSentiment, setOverallSentiment] = useState<SentimentScore>({
+    overall: 0,
+    positive: 0,
+    negative: 0,
+    neutral: 0,
+    confidence: 0
+  });
 
-  const emotionalProfile: EmotionBreakdown = {
-    satisfaction: 65,
-    frustration: 22,
-    confusion: 15,
-    urgency: 38,
-    trust: 71
-  };
+  const [emotionalProfile, setEmotionalProfile] = useState<EmotionBreakdown>({
+    satisfaction: 0,
+    frustration: 0,
+    confusion: 0,
+    urgency: 0,
+    trust: 0
+  });
 
-  const sentimentTrends: SentimentTrend[] = [
-    { date: 'Mon', positive: 65, negative: 20, neutral: 15, volume: 45 },
-    { date: 'Tue', positive: 70, negative: 18, neutral: 12, volume: 52 },
-    { date: 'Wed', positive: 62, negative: 25, neutral: 13, volume: 48 },
-    { date: 'Thu', positive: 68, negative: 19, neutral: 13, volume: 41 },
-    { date: 'Fri', positive: 72, negative: 15, neutral: 13, volume: 56 },
-    { date: 'Sat', positive: 75, negative: 14, neutral: 11, volume: 38 },
-    { date: 'Sun', positive: 78, negative: 12, neutral: 10, volume: 32 }
-  ];
+  const [sentimentTrends, setSentimentTrends] = useState<SentimentTrend[]>([]);
+  const [topicInsights, setTopicInsights] = useState<TopicInsight[]>([]);
+  const [recentCommunications, setRecentCommunications] = useState<CommunicationAnalysis[]>([]);
+  const [channelDistribution, setChannelDistribution] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const topicInsights: TopicInsight[] = [
-    { topic: 'Claim Status', mentions: 234, sentiment: 68, trend: 'stable' },
-    { topic: 'Documentation', mentions: 189, sentiment: 45, trend: 'declining' },
-    { topic: 'Response Time', mentions: 156, sentiment: 52, trend: 'improving' },
-    { topic: 'Settlement Amount', mentions: 134, sentiment: 61, trend: 'stable' },
-    { topic: 'Customer Service', mentions: 98, sentiment: 78, trend: 'improving' },
-    { topic: 'Policy Coverage', mentions: 87, sentiment: 55, trend: 'stable' }
-  ];
+  useEffect(() => {
+    loadSentimentData();
+  }, [selectedTimeRange]);
 
-  const recentCommunications: CommunicationAnalysis[] = [
-    {
-      id: '1',
-      type: 'email',
-      timestamp: '2 hours ago',
-      content: 'Thank you for the quick response on my claim. The adjuster was very professional and the process was smooth.',
-      sentiment: {
-        overall: 85,
-        positive: 85,
-        negative: 5,
-        neutral: 10,
-        confidence: 92
-      },
-      emotions: {
-        satisfaction: 80,
-        frustration: 5,
-        confusion: 0,
-        urgency: 10,
-        trust: 85
-      },
-      topics: ['Customer Service', 'Claim Process'],
-      actionRequired: false,
-      priority: 'low'
-    },
-    {
-      id: '2',
-      type: 'call',
-      timestamp: '4 hours ago',
-      content: 'Customer expressed frustration about delayed payment. Has been waiting 3 weeks for settlement.',
-      sentiment: {
-        overall: 25,
-        positive: 10,
-        negative: 65,
-        neutral: 25,
-        confidence: 88
-      },
-      emotions: {
-        satisfaction: 15,
-        frustration: 75,
-        confusion: 20,
-        urgency: 80,
-        trust: 25
-      },
-      topics: ['Settlement Amount', 'Response Time'],
-      actionRequired: true,
-      priority: 'high',
-      suggestedResponse: 'Apologize for delay, provide specific timeline, escalate to management'
-    },
-    {
-      id: '3',
-      type: 'chat',
-      timestamp: '6 hours ago',
-      content: 'Need help understanding what documents are required for my water damage claim.',
-      sentiment: {
-        overall: 50,
-        positive: 20,
-        negative: 20,
-        neutral: 60,
-        confidence: 85
-      },
-      emotions: {
-        satisfaction: 40,
-        frustration: 25,
-        confusion: 65,
-        urgency: 45,
-        trust: 50
-      },
-      topics: ['Documentation', 'Claim Process'],
-      actionRequired: true,
-      priority: 'medium',
-      suggestedResponse: 'Provide detailed documentation checklist, offer assistance with gathering documents'
+  const loadSentimentData = async () => {
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
+        body: { timeRange: selectedTimeRange }
+      });
+
+      if (error) throw error;
+
+      if (data) {
+        setOverallSentiment(data.overallSentiment || {
+          overall: 0,
+          positive: 0,
+          negative: 0,
+          neutral: 0,
+          confidence: 0
+        });
+        setEmotionalProfile(data.emotionalProfile || {
+          satisfaction: 0,
+          frustration: 0,
+          confusion: 0,
+          urgency: 0,
+          trust: 0
+        });
+        setSentimentTrends(data.trends || []);
+        setTopicInsights(data.topics || []);
+        setRecentCommunications(data.recentCommunications || []);
+        setChannelDistribution(data.channels || []);
+      }
+    } catch (error) {
+      console.error('Error loading sentiment data:', error);
+      toast.error('Failed to load sentiment analysis data');
+    } finally {
+      setLoading(false);
     }
-  ];
-
-  const channelDistribution = [
-    { channel: 'Email', count: 145, percentage: 35 },
-    { channel: 'Phone', count: 124, percentage: 30 },
-    { channel: 'Chat', count: 95, percentage: 23 },
-    { channel: 'Reviews', count: 33, percentage: 8 },
-    { channel: 'Social', count: 17, percentage: 4 }
-  ];
+  };
 
   const analyzeSentiment = async () => {
     if (!testMessage.trim()) {
@@ -241,37 +186,20 @@ export function SentimentAnalysisDashboard() {
 
     setAnalyzing(true);
     try {
-      // Simulate AI analysis
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Mock sentiment analysis result
-      const result: CommunicationAnalysis = {
-        id: Date.now().toString(),
-        type: 'chat',
-        timestamp: 'Just now',
-        content: testMessage,
-        sentiment: {
-          overall: Math.random() * 100,
-          positive: Math.random() * 100,
-          negative: Math.random() * 100,
-          neutral: Math.random() * 100,
-          confidence: 85 + Math.random() * 15
-        },
-        emotions: {
-          satisfaction: Math.random() * 100,
-          frustration: Math.random() * 100,
-          confusion: Math.random() * 100,
-          urgency: Math.random() * 100,
-          trust: Math.random() * 100
-        },
-        topics: ['Test Analysis'],
-        actionRequired: Math.random() > 0.5,
-        priority: 'medium'
-      };
+      const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
+        body: { 
+          message: testMessage,
+          type: 'real-time'
+        }
+      });
 
-      setCommunications(prev => [result, ...prev]);
-      toast.success('Sentiment analysis complete');
-      setTestMessage('');
+      if (error) throw error;
+
+      if (data?.analysis) {
+        setCommunications(prev => [data.analysis, ...prev]);
+        toast.success('Sentiment analysis complete');
+        setTestMessage('');
+      }
     } catch (error) {
       console.error('Error analyzing sentiment:', error);
       toast.error('Failed to analyze sentiment');
@@ -627,7 +555,7 @@ export function SentimentAnalysisDashboard() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {[...communications, ...recentCommunications].map((comm) => (
+                  {communications.map((comm) => (
                     <div key={comm.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
