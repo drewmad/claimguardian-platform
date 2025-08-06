@@ -458,11 +458,13 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => {
             <Input label="Property Nickname" placeholder="e.g., Beach House, Downtown Condo" value={state.basicInfo.propertyName} onChange={(e) => onChange('basicInfo', 'propertyName', e.target.value)} />
             <Select label="Property Type" value={state.basicInfo.propertyType} onChange={(e) => onChange('basicInfo', 'propertyType', e.target.value)}>
                 <option value="">Select a type...</option>
-                <option value="single-family">Single Family Home</option>
-                <option value="condominium">Condominium</option>
-                <option value="townhouse">Townhouse</option>
-                <option value="apartment">Apartment</option>
-                <option value="multi-family">Multi-Family</option>
+                <option value="residential">Single Family Home</option>
+                <option value="residential">Condominium</option>
+                <option value="residential">Townhouse</option>
+                <option value="residential">Apartment</option>
+                <option value="residential">Multi-Family</option>
+                <option value="commercial">Commercial Property</option>
+                <option value="land">Vacant Land</option>
             </Select>
         </div>
             {state.errors.propertyType && <p className={COLORS.error}>{state.errors.propertyType}</p>}

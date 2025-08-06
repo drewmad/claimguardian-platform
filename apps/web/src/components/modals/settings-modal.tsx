@@ -90,6 +90,19 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
     { id: 'warranty', label: 'Warranty Center', icon: Wrench },
   ] as const
 
+  // Format phone number as user types
+  const formatPhoneNumber = (value: string) => {
+    // Remove all non-digits
+    const phoneNumber = value.replace(/\D/g, '')
+    
+    // Format as (XXX) XXX-XXXX
+    if (phoneNumber.length === 0) return ''
+    if (phoneNumber.length <= 3) return `(${phoneNumber}`
+    if (phoneNumber.length <= 6) return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3)}`
+    if (phoneNumber.length <= 10) return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6)}`
+    return `(${phoneNumber.slice(0, 3)}) ${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`
+  }
+
   const loadProfile = useCallback(async () => {
     if (!user) return
     
@@ -100,7 +113,8 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
         setProfile(data)
         setFirstName(data.firstName || '')
         setLastName(data.lastName || '')
-        setPhone(data.phone || '')
+        // Format phone number when loading from database
+        setPhone(data.phone ? formatPhoneNumber(data.phone) : '')
         setXHandle(data.xHandle || '')
         setIsXConnected(data.isXConnected || false)
       }
@@ -112,12 +126,28 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
     }
   }, [user])
 
-  // Load profile data
+  // Load profile data and preferences
   useEffect(() => {
     if (isOpen && user) {
       loadProfile()
+      
+      // Load saved preferences
+      const savedTheme = localStorage.getItem('theme') as 'light' | 'dark' | 'system' | null
+      const savedLanguage = localStorage.getItem('language')
+      
+      if (savedTheme) {
+        setPreferences(prev => ({ ...prev, theme: savedTheme }))
+      }
+      if (savedLanguage) {
+        setPreferences(prev => ({ ...prev, language: savedLanguage }))
+      }
     }
   }, [isOpen, user, loadProfile])
+
+  const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatPhoneNumber(e.target.value)
+    setPhone(formatted)
+  }
 
   const handleProfileUpdate = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -125,11 +155,15 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
 
     setSaving(true)
     try {
+      // Remove formatting from phone before saving
+      const cleanPhone = phone.replace(/\D/g, '')
+      
       const success = await profileService.updateProfile(user.id, {
         firstName,
         lastName,
-        phone,
-        xHandle
+        phone: cleanPhone,
+        xHandle,
+        isXConnected
       })
 
       if (success) {
@@ -181,8 +215,29 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
 
   const handlePreferenceChange = (key: keyof UserPreferences, value: unknown) => {
     setPreferences(prev => ({ ...prev, [key]: value }))
-    // Auto-save preferences
-    toast.success(`${key} updated`)
+    
+    // Apply theme changes immediately
+    if (key === 'theme') {
+      const theme = value as 'light' | 'dark' | 'system'
+      if (theme === 'system') {
+        // Use system preference
+        const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+        document.documentElement.classList.toggle('dark', systemTheme === 'dark')
+        localStorage.setItem('theme', 'system')
+      } else {
+        // Apply selected theme
+        document.documentElement.classList.toggle('dark', theme === 'dark')
+        localStorage.setItem('theme', theme)
+      }
+      toast.success('Theme updated')
+    } else if (key === 'language') {
+      // Language change would require i18n setup
+      localStorage.setItem('language', value as string)
+      toast.success('Language preference saved (requires refresh)')
+    } else {
+      // Auto-save other preferences
+      toast.success(`${key} updated`)
+    }
   }
 
   const handleXConnect = async () => {
@@ -317,9 +372,10 @@ export function SettingsModal({ isOpen, onClose, defaultTab = 'profile' }: Setti
                         <input
                           type="tel"
                           value={phone}
-                          onChange={(e) => setPhone(e.target.value)}
+                          onChange={handlePhoneChange}
                           className="w-full px-3 py-2 bg-gray-800 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-white"
-                          placeholder="Enter your phone number"
+                          placeholder="(555) 555-5555"
+                          maxLength={14}
                         />
                       </div>
 

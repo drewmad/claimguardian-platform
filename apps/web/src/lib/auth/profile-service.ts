@@ -59,7 +59,7 @@ class ProfileService {
       const { data: profile, error: profileError } = await this.supabase
         .from('user_profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .single()
 
       if (profileError) {
@@ -68,7 +68,7 @@ class ProfileService {
       }
 
       return {
-        id: profile.id,
+        id: profile.user_id,
         email: user.user.email || '',
         firstName: profile.first_name,
         lastName: profile.last_name,
@@ -105,7 +105,7 @@ class ProfileService {
       const { error } = await this.supabase
         .from('user_profiles')
         .update(updateData)
-        .eq('id', userId)
+        .eq('user_id', userId)
 
       if (error) {
         logger.error('Failed to update profile', {}, error instanceof Error ? error : new Error(String(error)))
