@@ -15,10 +15,7 @@ module.exports = {
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
     // Include UI package
-    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}',
-    // Add additional patterns to ensure all files are scanned
-    './src/app/**/*.{js,ts,jsx,tsx,mdx}',
-    './src/components/**/*.{js,ts,jsx,tsx,mdx}'
+    '../../packages/ui/src/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
     extend: {
