@@ -11,7 +11,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
-import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, Search, Target, DollarSign, TrendingUp, ChevronDown, ChevronRight, Home, Database, Lock, Menu, Layers, Cpu, FileCheck, GraduationCap, TrendingDown, Info, RefreshCw, X } from 'lucide-react'
+import { Shield, ArrowLeft, Users, FileText, AlertCircle, Settings, Activity, Brain, Search, Target, DollarSign, TrendingUp, ChevronDown, ChevronRight, Home, Database, Lock, Menu, Layers, Cpu, FileCheck, GraduationCap, TrendingDown, Info, RefreshCw, X, Map } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 
 import { LegalDocumentsTab } from './legal-documents-tab'
@@ -24,6 +24,7 @@ import { PermissionsManagement } from '@/components/admin/permissions-management
 import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
 import { ErrorDashboard } from '@/components/admin/error-dashboard'
 import { EnhancedExtractionTester } from '@/components/admin/enhanced-extraction-tester'
+import { ParcelSearchMap } from '@/components/maps'
 
 import { Button } from '@claimguardian/ui'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -66,6 +67,12 @@ const navigationMenu = [
     ]
   },
   {
+    category: 'Developer Tools',
+    items: [
+      { id: 'parcel-search', label: 'Florida Parcel Search', icon: Map },
+    ]
+  },
+  {
     category: 'System',
     items: [
       { id: 'legal-docs', label: 'Legal Documents', icon: FileText },
@@ -80,7 +87,7 @@ export function AdminDashboardImproved() {
   const [activeTab, setActiveTab] = useState('overview')
   const [searchQuery, setSearchQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
-  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'User Management', 'AI & ML'])
+  const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'User Management', 'AI & ML', 'Developer Tools'])
   
   // Handle tab query parameter
   useEffect(() => {
@@ -351,6 +358,21 @@ export function AdminDashboardImproved() {
         
       case 'errors':
         return <ErrorDashboard />
+      
+      case 'parcel-search':
+        return (
+          <div className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold text-white mb-2">Florida Parcel Search</h2>
+              <p className="text-gray-400">
+                Search and analyze Florida property parcels with comprehensive data filtering and mapping.
+              </p>
+            </div>
+            <div className="h-[800px]">
+              <ParcelSearchMap height="800px" />
+            </div>
+          </div>
+        )
       
       case 'legal-docs':
         return <LegalDocumentsTab />

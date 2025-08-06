@@ -10,12 +10,13 @@
 // Force dynamic rendering to prevent SSG issues with Supabase client
 export const dynamic = 'force-dynamic'
 
-import { AlertTriangle, Wind, Zap, Home, Shield, CheckCircle, XCircle, Phone, Radio, Users, Siren, Brain, Bell, Wifi, WifiOff, RefreshCw, Eye, Filter, Navigation, MessageSquare, Gauge } from 'lucide-react'
+import { AlertTriangle, Wind, Zap, Home, Shield, CheckCircle, XCircle, Phone, Radio, Users, Siren, Brain, Bell, Wifi, WifiOff, RefreshCw, Eye, Filter, Navigation, MessageSquare, Gauge, Map } from 'lucide-react'
 import { useState, useEffect, useMemo } from 'react'
 import { toast } from 'sonner'
 
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { AIAssessmentPanel } from '@/components/situation-room/ai-assessment-panel'
+import { SituationRoomMap } from '@/components/maps/situation-room-map'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -36,7 +37,7 @@ import type {
 
 export default function SituationRoomPage() {
   const [propertyId] = useState('current-property-id') // This would come from auth context
-  const [selectedView, setSelectedView] = useState<'overview' | 'threats' | 'intelligence' | 'community' | 'emergency'>('overview')
+  const [selectedView, setSelectedView] = useState<'overview' | 'threats' | 'intelligence' | 'community' | 'emergency' | 'map'>('overview')
   const [showEmergencyMode, setShowEmergencyMode] = useState(false)
   
   const {
@@ -217,11 +218,12 @@ export default function SituationRoomPage() {
             { id: 'threats', label: 'Threats', icon: AlertTriangle, badge: activeThreatCount },
             { id: 'intelligence', label: 'Intelligence', icon: Brain, badge: unreadFeedCount },
             { id: 'community', label: 'Community', icon: Users },
+            { id: 'map', label: 'Threat Map', icon: Map },
             { id: 'emergency', label: 'Emergency', icon: Siren }
           ].map(tab => (
             <button
               key={tab.id}
-              onClick={() => setSelectedView(tab.id as 'overview' | 'threats' | 'intelligence' | 'community' | 'emergency')}
+              onClick={() => setSelectedView(tab.id as 'overview' | 'threats' | 'intelligence' | 'community' | 'emergency' | 'map')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 selectedView === tab.id 
                   ? 'liquid-glass-premium text-white' 
@@ -262,6 +264,15 @@ export default function SituationRoomPage() {
         
         {selectedView === 'community' && (
           <CommunityIntelligenceView data={communityIntel} />
+        )}
+        
+        {selectedView === 'map' && (
+          <SituationRoomMapView 
+            threats={threats}
+            communityIntel={communityIntel}
+            propertyStatus={propertyStatus}
+            emergencyMode={emergencyMode}
+          />
         )}
         
         {selectedView === 'emergency' && (
@@ -1025,5 +1036,155 @@ function QuickActionsPanel({ urgentActions }: QuickActionsPanelProps) {
         )}
       </CardContent>
     </Card>
+  )
+}
+
+interface SituationRoomMapViewProps {
+  threats: ThreatAssessment[]
+  communityIntel: CommunityIntelligence
+  propertyStatus: PropertyStatus
+  emergencyMode: boolean
+}
+
+function SituationRoomMapView({ threats, communityIntel, propertyStatus, emergencyMode }: SituationRoomMapViewProps) {
+  // Mock property data for demonstration
+  const mockProperty = {
+    id: 'demo-property-1',
+    name: 'Your Property',
+    address: '3407 Knox Terrace, Port Charlotte FL 33948',
+    coordinates: [-82.0907, 26.9762] as [number, number],
+    type: 'single_family' as const,
+    value: 485000,
+    insuranceStatus: 'active' as const,
+    claimsCount: 0,
+    riskLevel: 'medium' as const,
+    county: 'Charlotte',
+    lastUpdated: new Date(),
+    threatLevel: emergencyMode ? 'emergency' as ThreatLevel : 'medium' as ThreatLevel,
+    hasActiveThreats: threats.length > 0,
+    emergencyMode,
+    systemsOnline: propertyStatus?.systems?.online || 12,
+    totalSystems: propertyStatus?.systems?.total || 15
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-white">Threat Map</h2>
+          <p className="text-gray-400">Real-time property and threat monitoring</p>
+        </div>
+        <div className="flex items-center gap-2">
+          {emergencyMode && (
+            <Badge variant="destructive" className="animate-pulse">
+              <Siren className="w-3 h-3 mr-1" />
+              EMERGENCY MODE
+            </Badge>
+          )}
+          <Badge variant="outline">
+            {threats.length} Active Threats
+          </Badge>
+        </div>
+      </div>
+
+      <SituationRoomMap
+        properties={[mockProperty]}
+        threats={threats}
+        incidents={communityIntel.incidents}
+        propertyStatus={propertyStatus}
+        emergencyMode={emergencyMode}
+        height="700px"
+        onPropertyClick={(property) => {
+          toast.info(`Selected: ${property.name}`)
+        }}
+        onThreatClick={(threat) => {
+          toast.warning(`Threat Alert: ${threat.title}`)
+        }}
+        onIncidentClick={(incident) => {
+          toast.info(`Community Incident: ${incident.title}`)
+        }}
+      />
+
+      {/* Map Controls and Information */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
+          <CardHeader>
+            <CardTitle className="text-white text-sm">Map Legend</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-green-500 rounded-full"></div>
+                <span className="text-gray-300">Low Risk</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
+                <span className="text-gray-300">Medium Risk</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-orange-500 rounded-full"></div>
+                <span className="text-gray-300">High Risk</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                <span className="text-gray-300">Critical/Emergency</span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
+          <CardHeader>
+            <CardTitle className="text-white text-sm">Threat Statistics</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2 text-xs">
+              <div className="flex justify-between">
+                <span className="text-gray-300">Total Threats:</span>
+                <span className="text-white">{threats.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Critical:</span>
+                <span className="text-red-400">
+                  {threats.filter(t => t.severity === 'critical' || t.severity === 'emergency').length}
+                </span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Community Incidents:</span>
+                <span className="text-orange-400">{communityIntel.incidents.length}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-300">Systems Online:</span>
+                <span className="text-green-400">
+                  {propertyStatus?.systems?.online || 0}/{propertyStatus?.systems?.total || 0}
+                </span>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
+          <CardHeader>
+            <CardTitle className="text-white text-sm">Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              <Button size="sm" className="w-full text-xs h-7 justify-start">
+                <Phone className="w-3 h-3 mr-1" />
+                Call Emergency
+              </Button>
+              <Button size="sm" variant="outline" className="w-full text-xs h-7 justify-start">
+                <Shield className="w-3 h-3 mr-1" />
+                Activate Systems
+              </Button>
+              <Button size="sm" variant="outline" className="w-full text-xs h-7 justify-start">
+                <Navigation className="w-3 h-3 mr-1" />
+                Evacuation Route
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
   )
 }
