@@ -37,7 +37,7 @@ import { createClient } from '@/lib/supabase/client'
 
 export default function SocialConnectPage() {
   const router = useRouter()
-  const { user, isLoading: authLoading } = useAuth()
+  const { user, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [connectedCount, setConnectedCount] = useState(0)
   

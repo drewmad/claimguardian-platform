@@ -12,14 +12,15 @@ import { icsIntegrationService } from '@/lib/nims/ics-integration'
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
     const { data, error } = await supabase
       .from('ics_incidents')
       .select('*')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
     
     if (error) {
@@ -38,13 +39,14 @@ export async function GET(
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const body = await request.json()
     
     // Update incident using ICS integration service
-    const updatedIncident = await icsIntegrationService.updateIncidentStatus(params.id, body)
+    const updatedIncident = await icsIntegrationService.updateIncidentStatus(id, body)
     
     return NextResponse.json({
       incident: updatedIncident,
@@ -61,16 +63,17 @@ export async function PUT(
 
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
     
     // Only allow deletion of closed incidents
     const { data: incident } = await supabase
       .from('ics_incidents')
       .select('status')
-      .eq('id', params.id)
+      .eq('id', id)
       .single()
     
     if (!incident) {
@@ -87,7 +90,7 @@ export async function DELETE(
     const { error } = await supabase
       .from('ics_incidents')
       .delete()
-      .eq('id', params.id)
+      .eq('id', id)
     
     if (error) {
       throw error

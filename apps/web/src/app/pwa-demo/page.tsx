@@ -15,7 +15,7 @@ import { motion } from 'framer-motion'
 import { 
   Smartphone, Monitor, Download, Wifi, WifiOff, 
   Bell, Share, FileText, Camera, Heart, Bookmark,
-  Zap, Shield, Star, Globe, Offline, Cloud,
+  Zap, Shield, Star, Globe, Cloud,
   CheckCircle, ArrowRight, Sparkles, Home, Plus
 } from 'lucide-react'
 import { toast } from 'sonner'

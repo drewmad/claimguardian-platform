@@ -112,7 +112,7 @@ export async function resendVerificationAction(email: string): Promise<{
 
     if (error) {
       if (error.message.includes('rate limit') || error.message.includes('too many')) {
-        authLogger.warn('Email verification rate limited', { email }, error)
+        authLogger.warn('Email verification rate limited', { email, error: error.message })
         return {
           success: false,
           rateLimited: true,

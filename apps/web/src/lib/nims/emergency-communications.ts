@@ -7,6 +7,7 @@
  */
 
 import { createClient } from '@/lib/supabase/client'
+import { parseString } from 'xml2js'
 
 // CAP (Common Alerting Protocol) Message Structure
 export interface CAPMessage {
@@ -444,10 +445,10 @@ export class EmergencyCommunicationManager {
     // This would parse XML using xml2js or similar library
     // Simplified implementation for demonstration
     try {
-      const parser = require('xml2js').parseString
+      // Use imported parseString function
       let capMessage: CAPMessage
 
-      parser(capXML, (err: any, result: any) => {
+      parseString(capXML, (err: any, result: any) => {
         if (err) throw err
         
         const alert = result.alert

@@ -67,7 +67,7 @@ function EnhancedVerifyContent() {
     retryCount: 0
   })
 
-  const { success, error, info, loading } = useToast()
+  const { success, error: showError, info } = useToast()
   const { addNotification } = useNotifications()
 
   // Enhanced error mapping for better user experience
@@ -131,19 +131,19 @@ function EnhancedVerifyContent() {
       const supabase = createClient()
 
       // Check for error parameters first
-      const error = searchParams.get('error')
+      const errorParam = searchParams.get('error')
       const errorDescription = searchParams.get('error_description') 
       const errorCode = searchParams.get('error_code')
       
-      if (error) {
-        const errorInfo = mapSupabaseError(error, errorCode || undefined, errorDescription || undefined)
+      if (errorParam) {
+        const errorInfo = mapSupabaseError(errorParam, errorCode || undefined, errorDescription || undefined)
         setState(prev => ({
           ...prev,
           ...errorInfo,
           canRetry: true
         }))
         
-        logger.error('Email verification URL error', { error, errorDescription, errorCode })
+        logger.error('Email verification URL error', { error: errorParam, errorDescription, errorCode })
         return
       }
 
@@ -174,13 +174,8 @@ function EnhancedVerifyContent() {
             countdown: 5
           }))
           
-          success('Email already verified!', {
-            subtitle: 'You can proceed to your dashboard',
-            actions: [{
-              label: 'Go to Dashboard',
-              onClick: () => router.push('/dashboard')
-            }]
-          })
+          success('Email already verified! You can proceed to your dashboard')
+          router.push('/dashboard')
           
           // Auto-redirect countdown
           let countdownValue = 5
@@ -230,12 +225,10 @@ function EnhancedVerifyContent() {
           retryCount: prev.retryCount + 1
         }))
         
-        error(`Verification failed: ${errorInfo.message || 'Unknown error'}`, {
-          actions: errorInfo.status === 'expired' ? [{
-            label: 'Request New Email',
-            onClick: () => router.push('/auth/resend-verification')
-          }] : undefined
-        })
+        showError(errorInfo.message || 'Verification failed: Unknown error')
+        if (errorInfo.status === 'expired') {
+          setTimeout(() => router.push('/auth/resend-verification'), 2000)
+        }
         
         logger.error('Email verification failed', { type: verificationType }, verifyError)
         return
@@ -250,13 +243,8 @@ function EnhancedVerifyContent() {
           countdown: 3
         }))
         
-        success('Email verified successfully!', {
-          subtitle: 'Welcome to ClaimGuardian',
-          actions: [{
-            label: 'Go to Dashboard',
-            onClick: () => router.push('/dashboard')
-          }]
-        })
+        success('Email verified successfully! Welcome to ClaimGuardian')
+        setTimeout(() => router.push('/dashboard'), 1500)
 
         addNotification({
           title: 'Welcome to ClaimGuardian!',
@@ -305,13 +293,11 @@ function EnhancedVerifyContent() {
         }
       }))
       
-      error('Verification failed', {
-        subtitle: 'An unexpected error occurred'
-      })
+      showError('Verification failed: An unexpected error occurred')
       
       logger.error('Unexpected verification error', {}, err as Error)
     }
-  }, [searchParams, mapSupabaseError, router, success, error, addNotification, state.retryCount])
+  }, [searchParams, mapSupabaseError, router, success, showError, addNotification, state.retryCount])
 
   const retryVerification = useCallback(() => {
     verifyEmail()

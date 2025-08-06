@@ -11,10 +11,11 @@ import { emergencyCommunicationManager } from '@/lib/nims/emergency-communicatio
 
 export async function POST(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await emergencyCommunicationManager.distributeAlert(params.id)
+    const { id } = await params
+    await emergencyCommunicationManager.distributeAlert(id)
     
     return NextResponse.json({
       message: 'Alert distributed successfully'

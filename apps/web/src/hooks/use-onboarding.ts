@@ -29,7 +29,7 @@ export interface OnboardingActions {
   startTour: () => void
   completeTour: () => void
   skipTour: () => void
-  markStepComplete: (step: string) => void
+  markStepComplete: (step: string, data?: any) => void
   resetOnboarding: () => void
   shouldShowTour: () => boolean
 }
