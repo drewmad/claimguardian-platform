@@ -9,7 +9,7 @@
  * @status stable
  */
 
-import { claudeErrorLogger, claudeErrorHelpers } from './claude-error-logger'
+import { claudeErrorLogger, claudeErrorHelpers, ClaudeErrorContext } from './claude-error-logger'
 
 /**
  * Example: How to integrate Claude error logging into development workflow
@@ -206,7 +206,7 @@ export function withClaudeErrorLogging<T extends (...args: unknown[]) => Promise
       await claudeErrorLogger.logError(
         error as Error,
         {
-          taskType: taskType as unknown,
+          taskType: (taskType as any) || 'other',
           taskDescription,
           userIntent: 'Complete task successfully',
           errorType: 'runtime',
@@ -259,8 +259,8 @@ export async function checkClaudeLearningsBeforeTask(
   }
 ) {
   const learnings = await claudeErrorLogger.getRelevantLearnings({
-    taskType: taskType as unknown,
-    errorType: context.errorType as unknown,
+    taskType: taskType as ClaudeErrorContext['taskType'],
+    errorType: context.errorType as ClaudeErrorContext['errorType'],
     framework: context.framework,
     codeLanguage: context.language
   })
