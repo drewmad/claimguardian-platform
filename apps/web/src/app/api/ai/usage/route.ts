@@ -3,9 +3,10 @@
  */
 import { NextRequest, NextResponse } from 'next/server'
 import { costTrackingService } from '@/services/cost-tracking'
-import { createClient } from '@/utils/supabase/server'
+import { cacheable } from '@/lib/cache/api-cache-middleware'
+import { createClient } from '@/lib/supabase/server'
 
-export async function GET(request: NextRequest) {
+export const GET = cacheable({ endpoint: 'ai_usage' })(async (request: NextRequest) => {
   try {
     const supabase = createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -49,4 +50,4 @@ export async function GET(request: NextRequest) {
       { status: 500 }
     )
   }
-}
+})

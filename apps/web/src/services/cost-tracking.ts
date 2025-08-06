@@ -3,7 +3,7 @@
  * Tracks OpenAI, Google Gemini, and other AI provider costs per tool
  */
 
-import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 
 export interface AIToolUsage {
   toolId: string

@@ -23,6 +23,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, ReactNode } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { useSettingsModal } from '@/hooks/use-settings-modal'
 import { SettingsModal } from '@/components/modals/settings-modal'
 import { AskGuardianChat, AskGuardianButton } from '@/components/ai/ask-guardian-chat'
@@ -105,9 +106,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-5 h-5" />
             </button>
             <Link href="/dashboard" className="flex items-center gap-2">
-              <img 
+              <OptimizedImage 
                 src="/ClaimGuardian.png" 
                 alt="ClaimGuardian Logo" 
+                width={40}
+                height={40}
+                priority={true}
                 className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
               />
               <span className="text-lg sm:text-xl font-bold text-white hidden sm:block">

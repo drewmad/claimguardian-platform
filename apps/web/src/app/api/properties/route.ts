@@ -8,12 +8,14 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { withAPIMiddleware, APIContext } from '@/lib/api/api-middleware'
+import { cacheable, CacheInvalidator } from '@/lib/cache/api-cache-middleware'
 import { createClient } from '@/lib/supabase/server'
 
 /**
  * GET /api/properties - List properties for authenticated user
  */
-export const GET = withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
+export const GET = cacheable({ endpoint: 'properties' })(
+  withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
   try {
     const supabase = await createClient()
     
@@ -74,12 +76,15 @@ export const GET = withAPIMiddleware(async (request: NextRequest, context: APICo
       { status: 500 }
     )
   }
-})
+}))
 
 /**
  * POST /api/properties - Create a new property
  */
-export const POST = withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
+export const POST = cacheable({ 
+  endpoint: 'properties',
+  invalidateOnMutate: true
+})(withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
   try {
     const supabase = await createClient()
     const body = await request.json()
@@ -115,6 +120,9 @@ export const POST = withAPIMiddleware(async (request: NextRequest, context: APIC
       )
     }
 
+    // Invalidate user's property cache
+    await CacheInvalidator.invalidateUserProperties(context.userId)
+
     return NextResponse.json(
       { data: property },
       { status: 201 }
@@ -126,4 +134,4 @@ export const POST = withAPIMiddleware(async (request: NextRequest, context: APIC
       { status: 500 }
     )
   }
-})
+}))

@@ -15,16 +15,18 @@ import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
 import { COLORS } from '@/lib/constants'
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { useModalStore } from '@/stores/modal-store'
 
 // Professional logo with enhanced styling
 const HeaderLogoIcon = () => (
   <div className="relative">
-    <img 
+    <OptimizedImage 
       src="/ClaimGuardian.png" 
       alt="ClaimGuardian Logo" 
       width={32} 
       height={32}
+      priority={true}
       className="object-contain"
     />
     {/* Subtle glow effect for logo */}

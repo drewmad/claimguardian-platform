@@ -12,6 +12,7 @@
 
 import Link from 'next/link'
 
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { COLORS } from '@/lib/constants'
 
 const HeaderLogoIcon = () => (
