@@ -9,6 +9,8 @@
   },
   "scripts": {
     "build": "turbo build",
+    "build:clean": "./scripts/build-clean.sh",
+    "build:pretty": "node scripts/build-pretty.js",
     "dev": "turbo dev",
     "dev:co-strategist": "node ./scripts/ai/co-strategist.js",
     "lint": "turbo lint",

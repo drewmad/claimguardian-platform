@@ -81,7 +81,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className} antialiased bg-background text-text-primary`}>
+      <body className={`${inter.className} antialiased bg-gray-900 text-white`}>
         <ErrorBoundary>
           <QueryProvider>
             <AuthProvider>

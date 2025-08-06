@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "/hooks/notification/on_vercel_fail.sh"
+          }
+        ]
+      }
+    ]
+  }
+}

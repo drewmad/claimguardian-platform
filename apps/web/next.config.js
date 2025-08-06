@@ -28,6 +28,19 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   output: 'standalone',
+  
+  // Suppress verbose logging during build
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
+  },
+  
+  // Configure logging
+  logging: {
+    fetches: {
+      fullUrl: false,
+    },
+  },
   experimental: {
     // Optimize more packages for better performance
     optimizePackageImports: [

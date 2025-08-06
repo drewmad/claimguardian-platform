@@ -80,7 +80,9 @@ class AuthService {
   constructor() {
     try {
       this.supabase = createBrowserSupabaseClient()
-      logger.info('[AUTH SERVICE] Supabase client created successfully')
+      if (process.env.NODE_ENV === 'development') {
+        logger.info('[AUTH SERVICE] Supabase client created successfully')
+      }
     } catch (error) {
       logger.error('[AUTH SERVICE] Failed to create Supabase client:', toError(error))
       throw error
