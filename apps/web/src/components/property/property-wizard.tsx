@@ -458,11 +458,10 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => {
             <Input label="Property Nickname" placeholder="e.g., Beach House, Downtown Condo" value={state.basicInfo.propertyName} onChange={(e) => onChange('basicInfo', 'propertyName', e.target.value)} />
             <Select label="Property Type" value={state.basicInfo.propertyType} onChange={(e) => onChange('basicInfo', 'propertyType', e.target.value)}>
                 <option value="">Select a type...</option>
-                <option value="residential">Single Family Home</option>
-                <option value="residential">Condominium</option>
-                <option value="residential">Townhouse</option>
-                <option value="residential">Apartment</option>
-                <option value="residential">Multi-Family</option>
+                <option value="single_family">Single Family Home</option>
+                <option value="condo">Condominium</option>
+                <option value="townhouse">Townhouse</option>
+                <option value="multi_family">Multi-Family</option>
                 <option value="commercial">Commercial Property</option>
                 <option value="land">Vacant Land</option>
             </Select>
@@ -563,7 +562,7 @@ const Step5: React.FC<Step5Props> = ({ state }) => (
             <ReviewItem label="Address" value={state.selectedProperty} />
             <ReviewItem label="Nickname" value={state.basicInfo.propertyName} />
             <ReviewItem label="Ownership" value={state.ownershipStatus.charAt(0).toUpperCase() + state.ownershipStatus.slice(1)} />
-            <ReviewItem label="Property Type" value={state.basicInfo.propertyType.replace('-', ' ')} />
+            <ReviewItem label="Property Type" value={state.basicInfo.propertyType.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} />
             <ReviewItem label="Bed/Bath" value={`${state.propertyDetails.bedrooms || '?'} bed / ${state.propertyDetails.bathrooms || '?'} bath`} />
             <ReviewItem label="HOA" value={state.propertyDetails.isHOA.charAt(0).toUpperCase() + state.propertyDetails.isHOA.slice(1)} />
             <ReviewItem label="Has Mortgage" value={state.financialInfo.hasMortgage.charAt(0).toUpperCase() + state.financialInfo.hasMortgage.slice(1)} />
