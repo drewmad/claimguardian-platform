@@ -1,7 +1,7 @@
 /**
  * @fileMetadata
  * @purpose "Provides React hooks for managing real-time WebSocket subscriptions for the Situation Room."
- * @dependencies ["@/lib","@supabase/auth-helpers-nextjs","@supabase/supabase-js","react"]
+ * @dependencies ["@/lib","@supabase/supabase-js","react"]
  * @owner frontend-team
  * @status stable
  */
@@ -17,7 +17,7 @@
  */
 'use client'
 
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs'
+import { createClient } from '@/lib/supabase/client'
 import type { RealtimeChannel } from '@supabase/supabase-js'
 import { useEffect, useRef, useCallback, useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
@@ -73,7 +73,7 @@ interface SituationRoomRealtimeHook {
 
 export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   const [isClient, setIsClient] = useState(false)
-  const supabaseRef = useRef<ReturnType<typeof createClientComponentClient> | null>(null)
+  const supabaseRef = useRef<ReturnType<typeof createClient> | null>(null)
   const channelsRef = useRef<Map<string, RealtimeChannel>>(new Map())
   const connectionStateRef = useRef<'connected' | 'reconnecting' | 'disconnected'>('disconnected')
   const reconnectAttemptsRef = useRef(0)
@@ -85,7 +85,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       try {
-        supabaseRef.current = createClientComponentClient()
+        supabaseRef.current = createClient()
         setIsClient(true)
       } catch (error) {
         logger.warn('Failed to initialize Supabase client:', error)
