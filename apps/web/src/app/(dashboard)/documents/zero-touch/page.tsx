@@ -1,1 +1,231 @@
-'use client'\n\nimport { useState } from 'react'\nimport { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'\nimport { Badge } from '@claimguardian/ui'\nimport { Sparkles, Brain, Zap, FileText, TrendingUp, Clock, CheckCircle } from 'lucide-react'\nimport { EnhancedDocumentUpload } from '@/components/zero-touch/enhanced-document-upload'\nimport { DocumentConfirmationUI } from '@/components/zero-touch/document-confirmation-ui'\nimport { DashboardLayout } from '@/components/layout/dashboard-layout'\n\nexport default function ZeroTouchDocumentsPage() {\n  const [activeTab, setActiveTab] = useState<'upload' | 'review'>('upload')\n  const [stats, setStats] = useState({\n    totalProcessed: 0,\n    pendingReview: 0,\n    autoConfirmed: 0,\n    averageConfidence: 0\n  })\n\n  const handleDocumentProcessed = (document: any) => {\n    setStats(prev => ({\n      ...prev,\n      totalProcessed: prev.totalProcessed + 1,\n      pendingReview: document.status === 'pending_review' ? prev.pendingReview + 1 : prev.pendingReview,\n      autoConfirmed: document.status === 'auto_confirmed' ? prev.autoConfirmed + 1 : prev.autoConfirmed,\n      averageConfidence: ((prev.averageConfidence * prev.totalProcessed) + document.confidence) / (prev.totalProcessed + 1)\n    }))\n    \n    // Switch to review tab if document needs review\n    if (document.status === 'pending_review') {\n      setActiveTab('review')\n    }\n  }\n\n  return (\n    <DashboardLayout>\n      <div className=\"min-h-screen bg-gray-900 p-6\">\n        {/* Header */}\n        <div className=\"max-w-7xl mx-auto mb-8\">\n          <div className=\"flex items-center gap-4 mb-2\">\n            <div className=\"p-3 bg-purple-500/10 rounded-xl border border-purple-500/20\">\n              <Sparkles className=\"w-8 h-8 text-purple-500\" />\n            </div>\n            <div>\n              <h1 className=\"text-3xl font-bold text-white\">\n                Zero-Touch Evidence Locker\n              </h1>\n              <p className=\"text-gray-400\">\n                AI-powered document processing with intelligent naming, tagging, and metadata extraction\n              </p>\n            </div>\n            <Badge className=\"bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-400 border-purple-500/20\">\n              <Zap className=\"w-4 h-4 mr-1\" />\n              Multi-AI Powered\n            </Badge>\n          </div>\n        </div>\n\n        {/* Stats Cards */}\n        <div className=\"max-w-7xl mx-auto mb-8\">\n          <div className=\"grid grid-cols-1 md:grid-cols-4 gap-6\">\n            <Card className=\"bg-gray-800 border-gray-700\">\n              <CardContent className=\"p-6\">\n                <div className=\"flex items-center gap-4\">\n                  <div className=\"p-3 bg-blue-500/10 rounded-lg\">\n                    <FileText className=\"w-6 h-6 text-blue-500\" />\n                  </div>\n                  <div>\n                    <p className=\"text-sm text-gray-400\">Total Processed</p>\n                    <p className=\"text-2xl font-bold text-white\">{stats.totalProcessed}</p>\n                  </div>\n                </div>\n              </CardContent>\n            </Card>\n\n            <Card className=\"bg-gray-800 border-gray-700\">\n              <CardContent className=\"p-6\">\n                <div className=\"flex items-center gap-4\">\n                  <div className=\"p-3 bg-yellow-500/10 rounded-lg\">\n                    <Clock className=\"w-6 h-6 text-yellow-500\" />\n                  </div>\n                  <div>\n                    <p className=\"text-sm text-gray-400\">Pending Review</p>\n                    <p className=\"text-2xl font-bold text-white\">{stats.pendingReview}</p>\n                  </div>\n                </div>\n              </CardContent>\n            </Card>\n\n            <Card className=\"bg-gray-800 border-gray-700\">\n              <CardContent className=\"p-6\">\n                <div className=\"flex items-center gap-4\">\n                  <div className=\"p-3 bg-green-500/10 rounded-lg\">\n                    <CheckCircle className=\"w-6 h-6 text-green-500\" />\n                  </div>\n                  <div>\n                    <p className=\"text-sm text-gray-400\">Auto-Confirmed</p>\n                    <p className=\"text-2xl font-bold text-white\">{stats.autoConfirmed}</p>\n                  </div>\n                </div>\n              </CardContent>\n            </Card>\n\n            <Card className=\"bg-gray-800 border-gray-700\">\n              <CardContent className=\"p-6\">\n                <div className=\"flex items-center gap-4\">\n                  <div className=\"p-3 bg-purple-500/10 rounded-lg\">\n                    <TrendingUp className=\"w-6 h-6 text-purple-500\" />\n                  </div>\n                  <div>\n                    <p className=\"text-sm text-gray-400\">Avg Confidence</p>\n                    <p className=\"text-2xl font-bold text-white\">\n                      {Math.round(stats.averageConfidence * 100)}%\n                    </p>\n                  </div>\n                </div>\n              </CardContent>\n            </Card>\n          </div>\n        </div>\n\n        {/* Navigation Tabs */}\n        <div className=\"max-w-7xl mx-auto mb-8\">\n          <div className=\"flex gap-2 bg-gray-800 p-1 rounded-lg border border-gray-700 w-fit\">\n            <button\n              onClick={() => setActiveTab('upload')}\n              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${\n                activeTab === 'upload'\n                  ? 'bg-purple-600 text-white'\n                  : 'text-gray-400 hover:text-white hover:bg-gray-700'\n              }`}\n            >\n              <Sparkles className=\"w-4 h-4\" />\n              Upload & Process\n            </button>\n            <button\n              onClick={() => setActiveTab('review')}\n              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${\n                activeTab === 'review'\n                  ? 'bg-purple-600 text-white'\n                  : 'text-gray-400 hover:text-white hover:bg-gray-700'\n              }`}\n            >\n              <Brain className=\"w-4 h-4\" />\n              Review & Confirm\n              {stats.pendingReview > 0 && (\n                <Badge className=\"bg-yellow-500/20 text-yellow-400 text-xs\">\n                  {stats.pendingReview}\n                </Badge>\n              )}\n            </button>\n          </div>\n        </div>\n\n        {/* Main Content */}\n        <div className=\"max-w-7xl mx-auto\">\n          {activeTab === 'upload' ? (\n            <div className=\"space-y-8\">\n              <EnhancedDocumentUpload \n                onDocumentProcessed={handleDocumentProcessed}\n              />\n            </div>\n          ) : (\n            <div className=\"space-y-8\">\n              <DocumentConfirmationUI />\n            </div>\n          )}\n        </div>\n\n        {/* AI Provider Information */}\n        <div className=\"max-w-7xl mx-auto mt-12\">\n          <Card className=\"bg-gray-800 border-gray-700\">\n            <CardHeader>\n              <CardTitle className=\"text-white flex items-center gap-2\">\n                <Brain className=\"w-5 h-5 text-purple-500\" />\n                AI Processing Pipeline\n              </CardTitle>\n            </CardHeader>\n            <CardContent>\n              <div className=\"grid grid-cols-1 md:grid-cols-4 gap-6\">\n                <div className=\"text-center\">\n                  <div className=\"p-3 bg-blue-500/10 rounded-lg w-fit mx-auto mb-3\">\n                    <Brain className=\"w-6 h-6 text-blue-500\" />\n                  </div>\n                  <h4 className=\"text-white font-medium mb-2\">OpenAI GPT-4 Vision</h4>\n                  <p className=\"text-gray-400 text-sm\">General document analysis and OCR</p>\n                </div>\n                \n                <div className=\"text-center\">\n                  <div className=\"p-3 bg-green-500/10 rounded-lg w-fit mx-auto mb-3\">\n                    <Brain className=\"w-6 h-6 text-green-500\" />\n                  </div>\n                  <h4 className=\"text-white font-medium mb-2\">Google Gemini Pro</h4>\n                  <p className=\"text-gray-400 text-sm\">Complex multi-page documents</p>\n                </div>\n                \n                <div className=\"text-center\">\n                  <div className=\"p-3 bg-purple-500/10 rounded-lg w-fit mx-auto mb-3\">\n                    <Brain className=\"w-6 h-6 text-purple-500\" />\n                  </div>\n                  <h4 className=\"text-white font-medium mb-2\">xAI Grok</h4>\n                  <p className=\"text-gray-400 text-sm\">Advanced damage assessment & anomaly detection</p>\n                </div>\n                \n                <div className=\"text-center\">\n                  <div className=\"p-3 bg-orange-500/10 rounded-lg w-fit mx-auto mb-3\">\n                    <Sparkles className=\"w-6 h-6 text-orange-500\" />\n                  </div>\n                  <h4 className=\"text-white font-medium mb-2\">Consensus Engine</h4>\n                  <p className=\"text-gray-400 text-sm\">Multi-provider result synthesis</p>\n                </div>\n              </div>\n              \n              <div className=\"mt-6 p-4 bg-gray-900 rounded-lg\">\n                <h4 className=\"text-white font-medium mb-2\">How it Works:</h4>\n                <ol className=\"text-gray-400 text-sm space-y-1\">\n                  <li>1. <strong>Parallel Processing:</strong> Multiple AI models analyze your document simultaneously</li>\n                  <li>2. <strong>Smart Naming:</strong> Generates descriptive filenames with dates, amounts, and entities</li>\n                  <li>3. <strong>Auto-Tagging:</strong> Creates intelligent tags for easy search and organization</li>\n                  <li>4. <strong>Florida Enhancement:</strong> Cross-references with Florida property and insurance data</li>\n                  <li>5. <strong>Confidence Routing:</strong> High-confidence documents auto-confirm, others need review</li>\n                  <li>6. <strong>Continuous Learning:</strong> System improves from every user interaction</li>\n                </ol>\n              </div>\n            </CardContent>\n          </Card>\n        </div>\n      </div>\n    </DashboardLayout>\n  )\n}"
+'use client'
+
+import { useState } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
+import { Badge } from '@claimguardian/ui'
+import { Sparkles, Brain, Zap, FileText, TrendingUp, Clock, CheckCircle } from 'lucide-react'
+import { EnhancedDocumentUpload } from '@/components/zero-touch/enhanced-document-upload'
+import { DocumentConfirmationUI } from '@/components/zero-touch/document-confirmation-ui'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
+
+export default function ZeroTouchDocumentsPage() {
+  const [activeTab, setActiveTab] = useState<'upload' | 'review'>('upload')
+  const [stats, setStats] = useState({
+    totalProcessed: 0,
+    pendingReview: 0,
+    autoConfirmed: 0,
+    averageConfidence: 0
+  })
+
+  const handleDocumentProcessed = (document: any) => {
+    setStats(prev => ({
+      ...prev,
+      totalProcessed: prev.totalProcessed + 1,
+      pendingReview: document.status === 'pending_review' ? prev.pendingReview + 1 : prev.pendingReview,
+      autoConfirmed: document.status === 'auto_confirmed' ? prev.autoConfirmed + 1 : prev.autoConfirmed,
+      averageConfidence: ((prev.averageConfidence * prev.totalProcessed) + document.confidence) / (prev.totalProcessed + 1)
+    }))
+    
+    // Switch to review tab if document needs review
+    if (document.status === 'pending_review') {
+      setActiveTab('review')
+    }
+  }
+
+  return (
+    <DashboardLayout>
+      <div className="min-h-screen bg-gray-900 p-6">
+        {/* Header */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="flex items-center gap-4 mb-2">
+            <div className="p-3 bg-purple-500/10 rounded-xl border border-purple-500/20">
+              <Sparkles className="w-8 h-8 text-purple-500" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">
+                Zero-Touch Evidence Locker
+              </h1>
+              <p className="text-gray-400">
+                AI-powered document processing with intelligent naming, tagging, and metadata extraction
+              </p>
+            </div>
+            <Badge className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 text-purple-400 border-purple-500/20">
+              <Zap className="w-4 h-4 mr-1" />
+              Multi-AI Powered
+            </Badge>
+          </div>
+        </div>
+
+        {/* Stats Cards */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-blue-500/10 rounded-lg">
+                    <FileText className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Total Processed</p>
+                    <p className="text-2xl font-bold text-white">{stats.totalProcessed}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-yellow-500/10 rounded-lg">
+                    <Clock className="w-6 h-6 text-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Pending Review</p>
+                    <p className="text-2xl font-bold text-white">{stats.pendingReview}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-green-500/10 rounded-lg">
+                    <CheckCircle className="w-6 h-6 text-green-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Auto-Confirmed</p>
+                    <p className="text-2xl font-bold text-white">{stats.autoConfirmed}</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-gray-800 border-gray-700">
+              <CardContent className="p-6">
+                <div className="flex items-center gap-4">
+                  <div className="p-3 bg-purple-500/10 rounded-lg">
+                    <TrendingUp className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-400">Avg Confidence</p>
+                    <p className="text-2xl font-bold text-white">
+                      {Math.round(stats.averageConfidence * 100)}%
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+
+        {/* Navigation Tabs */}
+        <div className="max-w-7xl mx-auto mb-8">
+          <div className="flex gap-2 bg-gray-800 p-1 rounded-lg border border-gray-700 w-fit">
+            <button
+              onClick={() => setActiveTab('upload')}
+              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'upload'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              }`}
+            >
+              <Sparkles className="w-4 h-4" />
+              Upload & Process
+            </button>
+            <button
+              onClick={() => setActiveTab('review')}
+              className={`px-6 py-3 rounded-md font-medium transition-colors flex items-center gap-2 ${
+                activeTab === 'review'
+                  ? 'bg-purple-600 text-white'
+                  : 'text-gray-400 hover:text-white hover:bg-gray-700'
+              }`}
+            >
+              <Brain className="w-4 h-4" />
+              Review & Confirm
+              {stats.pendingReview > 0 && (
+                <Badge className="bg-yellow-500/20 text-yellow-400 text-xs">
+                  {stats.pendingReview}
+                </Badge>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="max-w-7xl mx-auto">
+          {activeTab === 'upload' ? (
+            <div className="space-y-8">
+              <EnhancedDocumentUpload 
+                onDocumentProcessed={handleDocumentProcessed}
+              />
+            </div>
+          ) : (
+            <div className="space-y-8">
+              <DocumentConfirmationUI />
+            </div>
+          )}
+        </div>
+
+        {/* AI Provider Information */}
+        <div className="max-w-7xl mx-auto mt-12">
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader>
+              <CardTitle className="text-white flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-500" />
+                AI Processing Pipeline
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="text-center">
+                  <div className="p-3 bg-blue-500/10 rounded-lg w-fit mx-auto mb-3">
+                    <Brain className="w-6 h-6 text-blue-500" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">OpenAI GPT-4 Vision</h4>
+                  <p className="text-gray-400 text-sm">General document analysis and OCR</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="p-3 bg-green-500/10 rounded-lg w-fit mx-auto mb-3">
+                    <Brain className="w-6 h-6 text-green-500" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">Google Gemini Pro</h4>
+                  <p className="text-gray-400 text-sm">Complex multi-page documents</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="p-3 bg-purple-500/10 rounded-lg w-fit mx-auto mb-3">
+                    <Brain className="w-6 h-6 text-purple-500" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">xAI Grok</h4>
+                  <p className="text-gray-400 text-sm">Advanced damage assessment & anomaly detection</p>
+                </div>
+                
+                <div className="text-center">
+                  <div className="p-3 bg-orange-500/10 rounded-lg w-fit mx-auto mb-3">
+                    <Sparkles className="w-6 h-6 text-orange-500" />
+                  </div>
+                  <h4 className="text-white font-medium mb-2">Consensus Engine</h4>
+                  <p className="text-gray-400 text-sm">Multi-provider result synthesis</p>
+                </div>
+              </div>
+              
+              <div className="mt-6 p-4 bg-gray-900 rounded-lg">
+                <h4 className="text-white font-medium mb-2">How it Works:</h4>
+                <ol className="text-gray-400 text-sm space-y-1">
+                  <li>1. <strong>Parallel Processing:</strong> Multiple AI models analyze your document simultaneously</li>
+                  <li>2. <strong>Smart Naming:</strong> Generates descriptive filenames with dates, amounts, and entities</li>
+                  <li>3. <strong>Auto-Tagging:</strong> Creates intelligent tags for easy search and organization</li>
+                  <li>4. <strong>Florida Enhancement:</strong> Cross-references with Florida property and insurance data</li>
+                  <li>5. <strong>Confidence Routing:</strong> High-confidence documents auto-confirm, others need review</li>
+                  <li>6. <strong>Continuous Learning:</strong> System improves from every user interaction</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </DashboardLayout>
+  )
+}
