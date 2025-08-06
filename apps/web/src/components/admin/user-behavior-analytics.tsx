@@ -223,7 +223,7 @@ export function UserBehaviorAnalytics() {
       // Generate mock activity patterns
       const mockPatterns = []
       const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-      for (let day of days) {
+      for (const day of days) {
         for (let hour = 0; hour < 24; hour++) {
           const baseActivity = day === 'Saturday' || day === 'Sunday' ? 0.6 : 1.0
           const hourMultiplier = hour >= 9 && hour <= 17 ? 1.5 : hour >= 18 && hour <= 22 ? 1.2 : 0.3
