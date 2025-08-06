@@ -13,7 +13,8 @@
 import { 
   ArrowLeft, Camera, Edit2, Trash2, Save, X, 
   DollarSign, Calendar, Shield, Tag, Package,
-  Upload, Image as ImageIcon, Loader2, CheckCircle
+  Upload, Image as ImageIcon, Loader2, CheckCircle,
+  ArrowUpRight, ArrowDownRight
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useRef } from 'react'
