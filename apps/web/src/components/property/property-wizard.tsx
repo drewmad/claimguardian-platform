@@ -13,25 +13,43 @@
 import React, { useState, useReducer, useEffect, useRef, useCallback } from 'react';
 import { Home, Building, Shield, Banknote, CheckSquare, ChevronLeft, ChevronRight, X, Loader2, CheckCircle, AlertCircle, MapPin, Plus, Minus, Edit } from 'lucide-react';
 import { toast } from 'sonner'
-import { logger } from "@/lib/logger/production-logger"
 import { createProperty } from '@/actions/properties'
 
-// --- MOCK SUPABASE CLIENT ---
-const supabase = {
-  from: (tableName: string) => ({
-    update: (data: unknown) => ({
-      eq: (column: string, id: string) => {
-        console.log(`%cSupabase PATCH:`, 'color: #00c7b1; font-weight: bold;', { tableName, id, data });
-        return new Promise(resolve => setTimeout(() => resolve({ error: null }), 300));
-      }
-    }),
-    insert: (data: unknown) => {
-        console.log(`%cSupabase INSERT:`, 'color: #00c7b1; font-weight: bold;', { tableName, data });
-        const mockId = `prop_${Math.random().toString(36).substr(2, 9)}`;
-        return new Promise(resolve => setTimeout(() => resolve({ data: [{...data, id: mockId }], error: null }), 300));
-    }
-  })
+// Simple logger fallback if production logger isn't available
+const logger = {
+  error: (message: string, error?: unknown) => console.error(message, error)
 };
+
+// Add Google Maps types
+declare global {
+  interface Window {
+    google: {
+      maps: {
+        places: {
+          Autocomplete: new (
+            input: HTMLInputElement,
+            options?: {
+              types?: string[];
+              componentRestrictions?: { country: string };
+            }
+          ) => {
+            addListener: (event: string, callback: () => void) => void;
+            getPlace: () => {
+              formatted_address?: string;
+              address_components?: Array<{
+                types: string[];
+                long_name: string;
+              }>;
+            };
+          };
+        };
+        event: {
+          clearInstanceListeners: (instance: unknown) => void;
+        };
+      };
+    };
+  }
+}
 
 // --- Constants & Configuration ---
 const COLORS = {
@@ -150,7 +168,8 @@ function wizardReducer(state: PropertyData, action: WizardAction): PropertyData 
         case 'UPDATE_FIELD': {
             const { section, field, value } = action.payload;
             if (section) {
-                return { ...state, [section]: { ...state[section as keyof PropertyData], [field]: value } };
+                const currentSection = state[section as keyof PropertyData] as Record<string, unknown>;
+                return { ...state, [section]: { ...currentSection, [field]: value } };
             }
             return { ...state, [field]: value };
         }
@@ -254,7 +273,7 @@ const useGooglePlaces = (onPlaceSelected: (address: PropertyData['address']) => 
         };
     }, [GOOGLE_MAPS_API_KEY]);
 
-    const parseAddress = (place: google.maps.places.PlaceResult) => {
+    const parseAddress = (place: { formatted_address?: string; address_components?: Array<{ types: string[]; long_name: string; }> }) => {
         const components: Record<string, string> = {};
         if (place.address_components) {
             place.address_components.forEach(c => {
@@ -302,25 +321,24 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
         dispatch({ type: 'SET_LOADING', payload: true });
         const savedState = localStorage.getItem('propertyWizardState');
         if (savedState) {
-            dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedState) });
-            dispatch({ type: 'SET_LOADING', payload: false });
-        } else {
-            supabase.from('properties').insert({ status: 'draft' }).then((result: { data?: { id: string }[] }) => {
-                if (result.data && result.data[0]) dispatch({ type: 'SET_ID', payload: result.data[0].id });
-                setTimeout(() => dispatch({ type: 'SET_LOADING', payload: false }), 200);
-            });
+            try {
+                dispatch({ type: 'LOAD_STATE', payload: JSON.parse(savedState) });
+            } catch (error) {
+                console.warn('Failed to load saved wizard state:', error);
+                localStorage.removeItem('propertyWizardState');
+            }
         }
+        // Always create a session ID for this wizard instance
+        dispatch({ type: 'SET_ID', payload: `draft_${Date.now()}` });
+        setTimeout(() => dispatch({ type: 'SET_LOADING', payload: false }), 200);
     }, [open]);
 
-    const debouncedSave = useCallback(useDebounce(async (newState: PropertyData) => {
+    const debouncedSave = useCallback(useDebounce((newState: PropertyData) => {
         if (!newState.id) return;
-        const { errors, isLoading, isSaving, ...saveData } = newState;
-        const { error } = await supabase.from('properties').update(saveData).eq('id', newState.id);
-        if (!error) {
-            localStorage.setItem('propertyWizardState', JSON.stringify(newState));
-            setShowSavedToast(true);
-            setTimeout(() => setShowSavedToast(false), 2000);
-        }
+        // Auto-save to localStorage
+        localStorage.setItem('propertyWizardState', JSON.stringify(newState));
+        setShowSavedToast(true);
+        setTimeout(() => setShowSavedToast(false), 2000);
     }, 600), []);
 
     useEffect(() => { debouncedSave(state); }, [state, debouncedSave]);
