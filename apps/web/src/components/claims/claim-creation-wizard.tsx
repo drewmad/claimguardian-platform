@@ -40,6 +40,7 @@ import { Label } from '@/components/ui/label'
 import { Progress } from '@/components/ui/progress'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
+import { useNavigateToParent } from '@/lib/utils/navigation'
 
 
 interface ClaimData {
@@ -167,6 +168,7 @@ interface ClaimCreationWizardProps {
 export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimCreationWizardProps) {
   const { user } = useAuth()
   const router = useRouter()
+  const { navigateToParent, getParentInfo } = useNavigateToParent('newClaim')
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -712,11 +714,11 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
         <div className="mb-8">
           <Button
             variant="ghost"
-            onClick={onCancel || (() => router.back())}
+            onClick={onCancel || navigateToParent}
             className="mb-4"
           >
             <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
+            Back to {getParentInfo().parentLabel}
           </Button>
           
           <h1 className="text-3xl font-bold mb-2">Create New Claim</h1>

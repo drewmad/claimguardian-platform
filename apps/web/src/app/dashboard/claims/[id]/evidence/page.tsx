@@ -17,11 +17,13 @@ import { logger } from "@/lib/logger/production-logger"
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { EvidenceManager } from '@/components/claims/evidence-manager'
 import { Button } from '@/components/ui/button'
+import { useNavigateToParent } from '@/lib/utils/navigation'
 
 export default function ClaimEvidencePage() {
   const params = useParams()
   const router = useRouter()
   const claimId = params.id as string
+  const { navigateToParent, getParentInfo } = useNavigateToParent('claimEvidence', claimId)
 
   return (
     <ProtectedRoute>
@@ -31,11 +33,11 @@ export default function ClaimEvidencePage() {
           <div className="mb-8">
             <Button
               variant="ghost"
-              onClick={() => router.back()}
+              onClick={navigateToParent}
               className="mb-4"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Claim
+              Back to {getParentInfo().parentLabel}
             </Button>
             
             <h1 className="text-3xl font-bold mb-2">Claim Evidence</h1>

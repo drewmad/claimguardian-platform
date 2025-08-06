@@ -18,6 +18,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -351,7 +352,10 @@ function ClaimsDashboardContent() {
                             <FileText className="w-4 h-4" />
                             {claim.documents} Documents
                           </button>
-                          <button className="flex items-center gap-2 text-sm text-gray-400 hover:text-white">
+                          <button 
+                            onClick={() => toast.info('Messages feature coming soon! You\'ll be able to communicate with your adjuster directly.')}
+                            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white"
+                          >
                             <MessageSquare className="w-4 h-4" />
                             {claim.messages} Messages
                           </button>
@@ -393,7 +397,10 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                  <button 
+                    onClick={() => toast.info('Document upload feature coming soon! You can upload documents when viewing individual claims.')}
+                    className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <Upload className="w-5 h-5 text-green-400" />
                       <div>
@@ -404,7 +411,10 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                  <button 
+                    onClick={() => toast.info('Export feature coming soon! You\'ll be able to download your claims history in PDF and CSV formats.')}
+                    className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <Download className="w-5 h-5 text-purple-400" />
                       <div>
@@ -415,7 +425,10 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                  <button 
+                    onClick={() => router.push('/dashboard/insurance')}
+                    className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                  >
                     <div className="flex items-center gap-3">
                       <Shield className="w-5 h-5 text-cyan-400" />
                       <div>

@@ -13,8 +13,8 @@ import { BillingDashboard } from '@/components/billing/billing-dashboard'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 
 export const metadata: Metadata = {
-  title: 'Billing | ClaimGuardian',
-  description: 'Manage your subscription and billing',
+  title: 'Membership & Billing | ClaimGuardian',
+  description: 'Manage your subscription, payment methods, and view invoices',
 }
 
 export default async function BillingPage() {
@@ -28,13 +28,15 @@ export default async function BillingPage() {
 
   return (
     <DashboardLayout>
-      <div className="p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900">Billing & Subscription</h1>
-          <p className="text-gray-600 mt-2">Manage your subscription, payment methods, and billing history</p>
+      <div className="p-6 bg-gray-900 min-h-screen">
+        <div className="max-w-7xl mx-auto">
+          <div className="mb-8">
+            <h1 className="text-3xl font-bold text-white mb-2">Membership & Billing</h1>
+            <p className="text-gray-400">Manage your subscription, payment methods, and view invoices.</p>
+          </div>
+          
+          <BillingDashboard userId={user.id} />
         </div>
-        
-        <BillingDashboard userId={user.id} />
       </div>
     </DashboardLayout>
   )

@@ -17,6 +17,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import React, { useState, useRef } from 'react'
+import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
@@ -168,6 +169,7 @@ const mockRooms: Room[] = [
 ]
 
 function PersonalPropertyContent() {
+  const router = useRouter()
   const [items, setItems] = useState<PropertyItem[]>(mockItems)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
@@ -245,18 +247,23 @@ function PersonalPropertyContent() {
     setIsScanning(true)
     setScanProgress(0)
     
-    // Simulate scanning process
+    // Store interval ID to clear on cancel
     const interval = setInterval(() => {
       setScanProgress(prev => {
         if (prev >= 100) {
           clearInterval(interval)
           setIsScanning(false)
+          // Only show success if scanning completed (not cancelled)
           toast.success('Item scanned successfully!')
+          setShowAddModal(true) // Open add modal with scanned data
           return 100
         }
         return prev + 10
       })
     }, 200)
+    
+    // Store interval ID for cancellation
+    ;(window as any).scanInterval = interval
   }
 
   const handleQuickAdd = (category: string) => {
@@ -472,7 +479,10 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all">
+                <Card 
+                  className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
+                  onClick={() => toast.info('Photo capture feature coming soon!')}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-purple-600/20 rounded-lg">
@@ -486,7 +496,10 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all">
+                <Card 
+                  className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
+                  onClick={() => toast.info('Report generation feature coming soon!')}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-green-600/20 rounded-lg">
@@ -500,7 +513,10 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all">
+                <Card 
+                  className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
+                  onClick={() => toast.info('Sharing feature coming soon!')}
+                >
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3">
                       <div className="p-3 bg-cyan-600/20 rounded-lg">
@@ -778,8 +794,7 @@ function PersonalPropertyContent() {
                           if (isSelectionMode) {
                             toggleItemSelection(item.id)
                           } else {
-                            setSelectedItem(item)
-                            setShowDetailModal(true)
+                            router.push(`/dashboard/personal-property/${item.id}`)
                           }
                         }}
                       >
@@ -934,8 +949,7 @@ function PersonalPropertyContent() {
                               if (isSelectionMode) {
                                 toggleItemSelection(item.id)
                               } else {
-                                setSelectedItem(item)
-                                setShowDetailModal(true)
+                                router.push(`/dashboard/personal-property/${item.id}`)
                               }
                             }}
                           >
@@ -1448,6 +1462,11 @@ function PersonalPropertyContent() {
                 <Button
                   variant="outline"
                   onClick={() => {
+                    // Clear the scanning interval
+                    if ((window as any).scanInterval) {
+                      clearInterval((window as any).scanInterval)
+                      delete (window as any).scanInterval
+                    }
                     setIsScanning(false)
                     setScanProgress(0)
                   }}
@@ -1467,7 +1486,10 @@ function PersonalPropertyContent() {
           <DialogContent className="bg-gray-800 border-gray-700 max-w-2xl">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-white flex items-center gap-3">
-                {getCategoryIcon(selectedItem.category)({ className: 'h-6 w-6 text-gray-400' })}
+                {(() => {
+                  const Icon = getCategoryIcon(selectedItem.category)
+                  return <Icon className="h-6 w-6 text-gray-400" />
+                })()}
                 {selectedItem.name}
               </DialogTitle>
             </DialogHeader>

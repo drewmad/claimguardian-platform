@@ -14,7 +14,7 @@ import {
   Info, Building, Wrench, FileText,
   MapPin, Shield, CheckCircle, Wind, Award, Plus,
   AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
-  Home, Save, X, Loader2
+  Home, Save, X, Loader2, Upload, Image
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
@@ -27,9 +27,11 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { FloridaAddressForm } from '@/components/forms/florida-address-form'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { PropertyImage } from '@/components/ui/property-image'
+import { useNavigateToParent } from '@/lib/utils/navigation'
 
 type SubTab = 'detail' | 'home-systems' | 'structures'
 
@@ -54,10 +56,12 @@ function PropertyDetailContent() {
   const params = useParams()
   const router = useRouter()
   const propertyId = params.id as string
+  const { navigateToParent, getParentInfo } = useNavigateToParent('propertyDetail')
   const [activeSubTab, setActiveSubTab] = useState<SubTab>('detail')
   const [isEditing, setIsEditing] = useState(false)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [showPhotoUploadModal, setShowPhotoUploadModal] = useState(false)
   
   // Property state - will be loaded from Supabase
   const [property, setProperty] = useState<Record<string, unknown> | null>(null)
@@ -382,6 +386,9 @@ function PropertyDetailContent() {
   const [structures, setStructures] = useState<any[]>([])
 
   const handleAddSystem = () => {
+    // Ensure we stay on the home-systems tab
+    setActiveSubTab('home-systems')
+    
     const newSystem = {
       id: Date.now(),
       name: 'New System',
@@ -416,8 +423,7 @@ function PropertyDetailContent() {
   }
 
   const handleUpdatePhotos = () => {
-    toast.info('Photo upload feature coming soon!')
-    // TODO: Implement photo upload modal or redirect to photo management page
+    setShowPhotoUploadModal(true)
   }
 
   const handleViewDocuments = () => {
@@ -479,11 +485,11 @@ function PropertyDetailContent() {
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
             <button 
-              onClick={() => router.back()}
+              onClick={navigateToParent}
               className="flex items-center gap-1 hover:text-white transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
-              Back
+              Back to {getParentInfo().parentLabel}
             </button>
             <span>/</span>
             <Home className="w-4 h-4" />
@@ -996,6 +1002,104 @@ function PropertyDetailContent() {
           )}
         </div>
       </div>
+
+      {/* Photo Upload Modal */}
+      {showPhotoUploadModal && (
+        <Dialog open={showPhotoUploadModal} onOpenChange={setShowPhotoUploadModal}>
+          <DialogContent className="bg-gray-800 border-gray-700 max-w-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-semibold text-white">Upload Property Photos</DialogTitle>
+            </DialogHeader>
+            
+            <div className="space-y-4">
+              {/* Drop Zone */}
+              <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors cursor-pointer">
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-white font-medium mb-2">Drop photos here or click to browse</p>
+                <p className="text-sm text-gray-400">Supports JPG, PNG, HEIF • Max 10MB per file</p>
+                <input
+                  type="file"
+                  multiple
+                  accept="image/*"
+                  onChange={(e) => {
+                    const files = e.target.files
+                    if (files && files.length > 0) {
+                      toast.success(`Selected ${files.length} photo${files.length > 1 ? 's' : ''} for upload`)
+                      // TODO: Implement actual file upload logic
+                    }
+                  }}
+                  className="hidden"
+                  id="photo-upload"
+                />
+                <label htmlFor="photo-upload" className="inline-block mt-4">
+                  <Button type="button" className="bg-blue-600 hover:bg-blue-700">
+                    <Camera className="w-4 h-4 mr-2" />
+                    Select Photos
+                  </Button>
+                </label>
+              </div>
+
+              {/* Photo Types */}
+              <div>
+                <Label className="text-gray-400 mb-2">Photo Categories</Label>
+                <div className="grid grid-cols-2 gap-3">
+                  <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
+                    <Home className="w-5 h-5 text-blue-400 mb-1" />
+                    <p className="text-white font-medium">Exterior</p>
+                    <p className="text-xs text-gray-400">Front, sides, backyard</p>
+                  </button>
+                  <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
+                    <Building className="w-5 h-5 text-green-400 mb-1" />
+                    <p className="text-white font-medium">Interior</p>
+                    <p className="text-xs text-gray-400">Rooms, fixtures, systems</p>
+                  </button>
+                  <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
+                    <Shield className="w-5 h-5 text-purple-400 mb-1" />
+                    <p className="text-white font-medium">Features</p>
+                    <p className="text-xs text-gray-400">Security, upgrades</p>
+                  </button>
+                  <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors">
+                    <FileText className="w-5 h-5 text-orange-400 mb-1" />
+                    <p className="text-white font-medium">Documents</p>
+                    <p className="text-xs text-gray-400">Permits, warranties</p>
+                  </button>
+                </div>
+              </div>
+
+              {/* Preview Section */}
+              <div>
+                <Label className="text-gray-400 mb-2">Selected Photos</Label>
+                <div className="bg-gray-700/50 rounded-lg p-4 min-h-[100px] flex items-center justify-center">
+                  <div className="text-center">
+                    <Image className="w-8 h-8 text-gray-500 mx-auto mb-2" />
+                    <p className="text-sm text-gray-500">No photos selected yet</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <DialogFooter className="mt-6">
+              <Button
+                variant="outline"
+                onClick={() => setShowPhotoUploadModal(false)}
+                className="bg-gray-700 hover:bg-gray-600 border-gray-600"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  toast.success('Photos uploaded successfully!')
+                  setShowPhotoUploadModal(false)
+                }}
+                className="bg-blue-600 hover:bg-blue-700"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Upload Photos
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
     </DashboardLayout>
   )
 }

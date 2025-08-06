@@ -24,6 +24,7 @@ import {
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
@@ -204,6 +205,7 @@ function EmptyUpcomingTasks() {
         size="sm"
         variant="outline"
         className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
+        onClick={() => toast.info('Task history coming soon! You\'ll be able to view all your completed maintenance tasks.')}
       >
         View Completed Tasks
       </Button>
@@ -405,7 +407,12 @@ function DashboardContent() {
                         <CloudRain className="h-5 w-5 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.4)]" />
                         Environmental Monitoring
                       </CardTitle>
-                      <Button variant="ghost" size="sm" className="text-gray-400 hover:text-white backdrop-blur-sm hover:bg-white/10">
+                      <Button 
+                        variant="ghost" 
+                        size="sm" 
+                        className="text-gray-400 hover:text-white backdrop-blur-sm hover:bg-white/10"
+                        onClick={() => toast.info('Environmental monitoring settings coming soon!')}
+                      >
                         <Settings2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -436,7 +443,11 @@ function DashboardContent() {
                                 150 miles SW
                               </span>
                             </div>
-                            <Button size="sm" className="mt-3 bg-orange-600 hover:bg-orange-700">
+                            <Button 
+                              size="sm" 
+                              className="mt-3 bg-orange-600 hover:bg-orange-700"
+                              onClick={() => router.push('/dashboard/disaster')}
+                            >
                               View Preparation Checklist
                             </Button>
                           </div>

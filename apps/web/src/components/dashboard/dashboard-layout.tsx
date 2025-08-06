@@ -25,6 +25,7 @@ import { useState, useEffect, ReactNode } from 'react'
 import { useAuth } from '@/components/auth/auth-provider'
 import { useSettingsModal } from '@/hooks/use-settings-modal'
 import { SettingsModal } from '@/components/modals/settings-modal'
+import { AskGuardianChat, AskGuardianButton } from '@/components/ai/ask-guardian-chat'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -34,7 +35,7 @@ const navigationItems = [
   { id: 'home', label: 'Dashboard', icon: Home, href: '/dashboard' },
   { id: 'property', label: 'My Home', icon: Building, href: '/dashboard/property' },
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
-  { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/policies' },
+  { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
   { id: 'maintenance', label: 'Maintenance', icon: Wrench, href: '/dashboard/maintenance' },
   { id: 'expenses', label: 'Expenses', icon: DollarSign, href: '/dashboard/expenses' },
@@ -43,7 +44,7 @@ const navigationItems = [
   { id: 'community', label: 'Community Pulse', icon: Users, href: '/dashboard/community' },
   { id: 'situation-room', label: 'Situation Room', icon: Siren, href: '/dashboard/situation-room' },
   { id: 'development', label: 'Development', icon: Code, href: '/dashboard/development' },
-  { id: 'billing', label: 'Billing', icon: CreditCard, href: '/dashboard/billing' },
+  { id: 'billing', label: 'Membership & Billing', icon: CreditCard, href: '/dashboard/billing' },
 ]
 
 const adminFeatures = [
@@ -61,6 +62,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
   const [isMobile, setIsMobile] = useState(false)
   const [notifications] = useState(3)
+  const [isAskGuardianOpen, setIsAskGuardianOpen] = useState(false)
   const router = useRouter()
   const pathname = usePathname()
   const { user, signOut } = useAuth()
@@ -322,6 +324,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       
       {/* Settings Modal */}
       <SettingsModal isOpen={isOpen} onClose={closeSettings} />
+      
+      {/* Ask Guardian AI Chat */}
+      <AskGuardianChat 
+        isOpen={isAskGuardianOpen}
+        onClose={() => setIsAskGuardianOpen(false)}
+        context={{
+          propertyId: pathname.includes('/property/') ? pathname.split('/').pop() : undefined,
+          policyId: pathname.includes('/policy/') ? pathname.split('/').pop() : undefined,
+          claimId: pathname.includes('/claim/') ? pathname.split('/').pop() : undefined
+        }}
+      />
+      
+      {/* Ask Guardian Button */}
+      {!isAskGuardianOpen && (
+        <AskGuardianButton onClick={() => setIsAskGuardianOpen(true)} />
+      )}
     </div>
   )
 }

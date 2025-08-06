@@ -22,6 +22,7 @@ import {
 } from 'lucide-react'
 import { useParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
+import { toast } from 'sonner'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { ClaimTimeline, TimelineEvent } from '@/components/claims/claim-timeline'
@@ -31,6 +32,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { useNavigateToParent } from '@/lib/utils/navigation'
 
 interface ClaimDetails {
   id: string
@@ -63,15 +65,10 @@ interface ClaimDetails {
   }>
 }
 
-export default function ClaimDetailPage() {
-  const params = useParams()
-  const router = useRouter()
-  const claimId = params.id as string
-  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
-
-  // Mock claim data
-  const [claim] = useState<ClaimDetails>({
-    id: claimId,
+// Mock claims data based on ID
+const mockClaims: Record<string, ClaimDetails> = {
+  '1': {
+    id: '1',
     claimNumber: 'CLM-2024-0892',
     status: 'investigating',
     damageType: 'Water Damage',
@@ -129,6 +126,88 @@ export default function ClaimDetailPage() {
         type: 'document'
       }
     ]
+  },
+  '2': {
+    id: '2',
+    claimNumber: 'CLM-2024-0456',
+    status: 'settled',
+    damageType: 'Wind Damage',
+    dateOfLoss: '2024-03-10',
+    dateSubmitted: '2024-03-12',
+    description: 'Roof damage from severe thunderstorm. Multiple shingles blown off, water intrusion in attic.',
+    causeOfLoss: 'High winds during thunderstorm',
+    estimatedAmount: 8500,
+    approvedAmount: 7800,
+    paidAmount: 5300,
+    deductible: 2500,
+    propertyAddress: '456 Oak Avenue, Miami, FL 33101',
+    damageLocations: ['Roof', 'Attic', 'Ceiling - Bedroom 2'],
+    policyNumber: 'HO-987654321',
+    insuranceCompany: 'State Farm',
+    adjuster: {
+      name: 'Mike Chen',
+      phone: '(555) 987-6543',
+      email: 'mchen@statefarm.com'
+    },
+    progress: 100,
+    timeline: [
+      {
+        date: '2024-03-12',
+        event: 'Claim Submitted',
+        description: 'Initial claim filed',
+        type: 'status'
+      },
+      {
+        date: '2024-03-15',
+        event: 'Emergency Repairs Approved',
+        description: 'Approved $2,000 for emergency tarping',
+        type: 'payment'
+      },
+      {
+        date: '2024-03-20',
+        event: 'Final Settlement',
+        description: 'Claim settled for $7,800',
+        type: 'payment'
+      }
+    ]
+  },
+  '3': {
+    id: '3',
+    claimNumber: 'CLM-2024-1025',
+    status: 'draft',
+    damageType: 'Auto Collision',
+    dateOfLoss: '2024-11-20',
+    dateSubmitted: '',
+    description: 'Rear-ended at traffic light, bumper and trunk damage',
+    causeOfLoss: 'Other driver ran red light',
+    estimatedAmount: 3200,
+    deductible: 1000,
+    propertyAddress: 'N/A - Vehicle Claim',
+    damageLocations: ['Rear Bumper', 'Trunk', 'Tail Lights'],
+    policyNumber: 'AUTO-123456',
+    insuranceCompany: 'Progressive',
+    progress: 10,
+    timeline: [
+      {
+        date: '2024-11-20',
+        event: 'Accident Occurred',
+        description: 'Police report filed at scene',
+        type: 'status'
+      }
+    ]
+  }
+}
+
+export default function ClaimDetailPage() {
+  const params = useParams()
+  const router = useRouter()
+  const claimId = params.id as string
+  const { navigateToParent, getParentInfo } = useNavigateToParent('claimDetail')
+  const [timelineEvents, setTimelineEvents] = useState<TimelineEvent[]>([])
+
+  // Get the correct claim based on ID
+  const [claim] = useState<ClaimDetails>(() => {
+    return mockClaims[claimId] || mockClaims['1'] // Default to claim 1 if not found
   })
 
   // Convert claim timeline to TimelineEvent format
@@ -169,11 +248,11 @@ export default function ClaimDetailPage() {
           <div className="mb-8">
             <Button
               variant="ghost"
-              onClick={() => router.back()}
+              onClick={navigateToParent}
               className="mb-4"
             >
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Claims
+              Back to {getParentInfo().parentLabel}
             </Button>
             
             <div className="flex items-start justify-between">
@@ -190,11 +269,24 @@ export default function ClaimDetailPage() {
               </div>
               
               <div className="flex gap-3">
-                <Button variant="outline" className="border-gray-700">
+                <Button 
+                  variant="outline" 
+                  className="border-gray-700"
+                  onClick={() => toast.info('Export feature coming soon! You\'ll be able to download claim details as PDF.')}
+                >
                   <Download className="w-4 h-4 mr-2" />
                   Export
                 </Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">
+                <Button 
+                  className="bg-blue-600 hover:bg-blue-700"
+                  onClick={() => {
+                    if (claim.adjuster?.email) {
+                      window.location.href = `mailto:${claim.adjuster.email}?subject=Regarding Claim ${claim.claimNumber}`
+                    } else {
+                      toast.info('Contact feature will be available once an adjuster is assigned to your claim.')
+                    }
+                  }}
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   Contact Adjuster
                 </Button>
@@ -396,7 +488,10 @@ export default function ClaimDetailPage() {
                   <div className="text-center py-12">
                     <MessageSquare className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                     <p className="text-gray-400">No messages yet</p>
-                    <Button className="mt-4">
+                    <Button 
+                      className="mt-4"
+                      onClick={() => toast.info('Messaging feature coming soon! You\'ll be able to chat directly with your adjuster.')}
+                    >
                       Start Conversation
                     </Button>
                   </div>
