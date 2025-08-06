@@ -114,8 +114,8 @@ export function SocialLoginPanel({
           name: identity.identity_data?.full_name || identity.identity_data?.name || '',
           picture: identity.identity_data?.picture || identity.identity_data?.avatar_url,
           isConnected: true,
-          linkedAt: new Date(identity.created_at),
-          lastUsed: new Date(identity.last_sign_in_at || identity.created_at)
+          linkedAt: identity.created_at ? new Date(identity.created_at) : new Date(),
+          lastUsed: new Date(identity.last_sign_in_at || identity.created_at || new Date().toISOString())
         }))
 
       setState(prev => ({ ...prev, connectedAccounts: accounts }))
