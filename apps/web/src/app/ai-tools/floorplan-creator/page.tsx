@@ -394,7 +394,7 @@ export default function FloorplanCreatorPage() {
                           {/* Rooms */}
                           <div className="relative w-full h-full">
                             {currentPlan.rooms.map((room) => {
-                              const Icon = room.icon || Square
+                              const IconComponent = (room.icon as React.ElementType) || Square
                               return (
                                 <div
                                   key={room.id}
@@ -410,7 +410,7 @@ export default function FloorplanCreatorPage() {
                                   onClick={() => setSelectedRoom(room)}
                                 >
                                   <div className="absolute inset-0 flex flex-col items-center justify-center text-white">
-                                    <Icon className="h-6 w-6 mb-1 opacity-70" />
+                                    <IconComponent className="h-6 w-6 mb-1 opacity-70" />
                                     <p className="text-sm font-medium">{room.name}</p>
                                     {showDimensions && (
                                       <p className="text-xs opacity-70">
@@ -534,7 +534,7 @@ export default function FloorplanCreatorPage() {
                   <CardContent>
                     <div className="grid grid-cols-2 gap-2">
                       {roomTypes.map((roomType) => {
-                        const Icon = roomType.icon
+                        const IconComponent = roomType.icon as React.ElementType
                         return (
                           <Button
                             key={roomType.type}
@@ -542,7 +542,7 @@ export default function FloorplanCreatorPage() {
                             onClick={() => addRoom(roomType.type)}
                             className="bg-gray-700 hover:bg-gray-600 flex flex-col items-center py-3"
                           >
-                            <Icon className="h-5 w-5 mb-1" />
+                            <IconComponent className="h-5 w-5 mb-1" />
                             <span className="text-xs">{roomType.label}</span>
                           </Button>
                         )
