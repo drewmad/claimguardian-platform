@@ -13,6 +13,8 @@ import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
 import { 
+  uploadDocument,
+  getDocumentInsights,
   uploadPolicyDocument,
   getPolicyDocuments,
   deletePolicyDocument,
@@ -61,7 +63,7 @@ export function useUploadDocument() {
   return useMutation({
     mutationFn: uploadPolicyDocument,
     onSuccess: (result) => {
-      if (result.data) {
+      if (result.success) {
         // Invalidate documents list
         queryClient.invalidateQueries({ queryKey: documentKeys.lists() })
         toast.success('Document uploaded successfully')
@@ -83,7 +85,7 @@ export function useCreateDocumentRecord() {
   return useMutation({
     mutationFn: createDocumentRecord,
     onSuccess: (result) => {
-      if (result.data) {
+      if (result.success) {
         queryClient.invalidateQueries({ queryKey: documentKeys.lists() })
         toast.success('Document record created')
       } else {
@@ -104,7 +106,7 @@ export function useDeleteDocument() {
   return useMutation({
     mutationFn: (id: string) => deletePolicyDocument(id),
     onSuccess: (result, id) => {
-      if (result.data) {
+      if (result.success) {
         // Remove from cache
         queryClient.removeQueries({ queryKey: documentKeys.detail(id) })
         queryClient.removeQueries({ queryKey: documentKeys.url(id) })
