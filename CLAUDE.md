@@ -453,6 +453,55 @@ pnpm db:generate-types
 - **GIS**: PostGIS extension for Florida parcel processing
 - **Search**: Full-text indexing for documents and claims
 
+#### PostgreSQL Extensions
+ClaimGuardian leverages 35+ PostgreSQL extensions for advanced functionality:
+
+**Core Extensions:**
+- **`uuid-ossp`**: UUID generation for primary keys
+- **`pgcrypto`**: Cryptographic functions for security
+- **`pgsodium`**: Supabase Vault encryption functions
+- **`plpgsql`**: Stored procedure language
+
+**Spatial & GIS:**
+- **`postgis`** + **`postgis_topology`** + **`postgis_raster`** + **`postgis_sfcgal`**: Complete spatial analysis
+- **`postgis_tiger_geocoder`**: US address geocoding
+- **`address_standardizer`** + **`address_standardizer_data_us`**: Address normalization
+- **`fuzzystrmatch`**: String similarity for address matching
+
+**Search & Text Processing:**
+- **`pgroonga`** + **`pgroonga_database`**: Multi-language full-text search
+- **`pg_trgm`**: Trigram-based text similarity and indexing
+- **`unaccent`**: Accent-insensitive text search
+- **`rum`**: Advanced full-text search with ranking
+- **`citext`**: Case-insensitive text columns
+
+**Performance & Monitoring:**
+- **`pg_stat_statements`** + **`pg_stat_monitor`**: Query performance monitoring
+- **`index_advisor`** + **`hypopg`**: Index optimization tools
+- **`pg_repack`**: Table reorganization without locks
+- **`btree_gin`** + **`btree_gist`**: Enhanced indexing options
+
+**Testing & Development:**
+- **`pgtap`**: Unit testing for database functions
+- **`plpgsql_check`**: Static analysis for PL/pgSQL functions
+
+**AI & Vector Operations:**
+- **`vector`**: Vector similarity search for AI embeddings
+- **`hstore`**: Key-value data storage
+- **`pg_jsonschema`**: JSON schema validation
+
+**Supabase Integration:**
+- **`pg_graphql`**: GraphQL API generation
+- **`pg_net`**: HTTP client for webhooks
+- **`pg_cron`**: Job scheduling
+- **`pgmq`**: Message queue system
+- **`wrappers`**: Foreign data wrappers
+
+**Security & Audit:**
+- **`pgaudit`**: Database auditing
+- **`moddatetime`**: Automatic timestamp updates
+- **`http`**: HTTP requests from database
+
 ### Edge Functions Architecture
 ClaimGuardian leverages Deno Edge Functions for:
 

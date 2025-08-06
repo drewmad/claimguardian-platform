@@ -23,6 +23,7 @@ import { UsersManagement } from '@/components/admin/users-management'
 import { PermissionsManagement } from '@/components/admin/permissions-management'
 import { MLOperationsDashboard } from '@/components/admin/ml-operations-dashboard'
 import { ErrorDashboard } from '@/components/admin/error-dashboard'
+import { EnhancedExtractionTester } from '@/components/admin/enhanced-extraction-tester'
 
 import { Button } from '@claimguardian/ui'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -54,6 +55,7 @@ const navigationMenu = [
       { id: 'ai-cache', label: 'AI Cache', icon: Database },
       { id: 'ml-operations', label: 'ML Operations', icon: Cpu },
       { id: 'claude-learning', label: 'Claude Learning', icon: GraduationCap },
+      { id: 'document-extraction', label: 'Document Extraction', icon: FileText },
     ]
   },
   {
@@ -340,6 +342,9 @@ export function AdminDashboardImproved() {
       
       case 'claude-learning':
         return <ClaudeLearningDashboard />
+      
+      case 'document-extraction':
+        return <EnhancedExtractionTester />
       
       case 'ab-testing':
         return <ABTestDashboard />
