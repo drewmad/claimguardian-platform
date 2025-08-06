@@ -98,12 +98,13 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-5 h-5" />
             </button>
             <Link href="/dashboard" className="flex items-center gap-2">
-              <Shield className="w-5 h-5 sm:w-6 sm:h-6 text-cyan-400" />
+              <img 
+                src="/ClaimGuardian.png" 
+                alt="ClaimGuardian Logo" 
+                className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+              />
               <span className="text-lg sm:text-xl font-bold text-white hidden sm:block">
                 ClaimGuardian
-              </span>
-              <span className="text-lg font-bold text-white sm:hidden">
-                CG
               </span>
             </Link>
           </div>

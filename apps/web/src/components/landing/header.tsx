@@ -16,9 +16,9 @@ import { COLORS } from '@/lib/constants'
 
 const HeaderLogoIcon = () => (
   <img 
-    src="/images/claimguardian-logo.png" 
+    src="/ClaimGuardian.png" 
     alt="ClaimGuardian Logo" 
-    width={28} 
+    width={32} 
     height={32}
     className="object-contain"
   />

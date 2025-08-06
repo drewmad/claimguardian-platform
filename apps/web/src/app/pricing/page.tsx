@@ -163,7 +163,7 @@ export default function PricingPage() {
             Ready to protect your property?
           </h2>
           <p className="text-xl text-blue-100 mb-10 max-w-2xl mx-auto">
-            Join thousands of Florida property owners who trust ClaimGuardian
+            Join ClaimGuardian and protect your property with AI-powered intelligence
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">

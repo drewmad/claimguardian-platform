@@ -70,7 +70,7 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 const GuardianHeroLogo = () => (
   <div className="relative">
     <img 
-      src="/images/claimguardian-logo.png" 
+      src="/ClaimGuardian.png" 
       alt="ClaimGuardian Logo" 
       className="drop-shadow-[0_8px_32px_rgba(57,255,20,0.4)] h-16 md:h-20 w-auto object-contain"
     />
@@ -153,7 +153,7 @@ export function Hero() {
                   <p className="text-sm text-gray-300">Asset optimization & legacy preservation</p>
                 </div>
               </div>
-              <p className="text-xl font-bold text-green-400 mt-6">
+              <p className="text-xl font-bold text-white mt-6">
                 Forged in Florida, Built for Every Property Owner
               </p>
             </div>

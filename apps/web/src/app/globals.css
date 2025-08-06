@@ -26,6 +26,9 @@
 /* Import liquid glass effects */
 @import '../styles/liquid-glass.css';
 
+/* Import enhanced color system for better contrast */
+@import '../styles/color-system.css';
+
 @layer base {
   html {
     scroll-behavior: smooth;

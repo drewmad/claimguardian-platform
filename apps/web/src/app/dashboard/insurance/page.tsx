@@ -22,6 +22,7 @@ import { InsuranceBadge, PolicyStatusBadge, InsurabilityBadge } from '@/componen
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PropertyImage } from '@/components/ui/property-image'
+import { InsuranceEmptyState } from '@/components/ui/empty-state'
 
 
 interface Policy {
@@ -396,24 +397,10 @@ function InsuranceDashboardContent() {
           {/* Property Grouped Policies */}
           <div className="space-y-6">
             {properties.length === 0 ? (
-              <Card variant="insurance">
-                <CardContent className="p-12 text-center">
-                  <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-white mb-2">No Insurance Policies Yet</h3>
-                  <p className="text-gray-400 mb-6">Start by adding your properties and insurance policies to track coverage and manage claims.</p>
-                  <div className="flex gap-4 justify-center">
-                    <button 
-                      onClick={() => router.push('/dashboard/property')}
-                      className="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg transition-colors"
-                    >
-                      Add Property
-                    </button>
-                    <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg transition-colors">
-                      Add Policy
-                    </button>
-                  </div>
-                </CardContent>
-              </Card>
+              <InsuranceEmptyState 
+                onAddProperty={() => router.push('/dashboard/property')}
+                onAddPolicy={() => {/* TODO: Add policy modal */}}
+              />
             ) : (
               properties.map((property) => {
               const propertyPolicies = policies.filter(p => property.policies.includes(p.id))

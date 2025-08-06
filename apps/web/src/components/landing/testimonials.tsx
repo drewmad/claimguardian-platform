@@ -57,38 +57,13 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 }
 
 export function Testimonials() {
-  const [activeTestimonial, setActiveTestimonial] = useState(0)
-  
-  const testimonials = [
-    {
-      quote: "I thought ClaimGuardian was just for insurance claims. Then I discovered it tracks every warranty, schedules every maintenance, and saved me $8,000 on my AC replacement by reminding me it was still under warranty. It's like having a property manager in my pocket.",
-      author: "Jennifer K.",
-      location: "Tampa Bay",
-      userSince: "2023",
-      highlight: "Saved $8,000 on AC warranty claim"
-    },
-    {
-      quote: "After Hurricane Ian, my neighbor fought their insurance for 18 months. I had my full settlement in 6 weeks. The difference? ClaimGuardian had documented everything before the storm hit. Every upgrade, every repair, every receipt—organized and ready.",
-      author: "Michael R.",
-      location: "Fort Myers",
-      userSince: "2022",
-      highlight: "Full settlement in 6 weeks vs 18 months"
-    },
-    {
-      quote: "As a real estate investor with 12 properties, ClaimGuardian transformed my business. I track every improvement, optimize maintenance schedules, and my property values have increased 23% through better documentation and care. It's generational wealth building on autopilot.",
-      author: "Sarah D.",
-      location: "Miami-Dade",
-      userSince: "2023",
-      highlight: "23% property value increase"
-    }
-  ]
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveTestimonial((prev) => (prev + 1) % testimonials.length)
-    }, 8000)
-    return () => clearInterval(interval)
-  }, [testimonials.length])
+  const testimonial = {
+    quote: "ClaimGuardian has greatly improved my productivity and quality. The AI has been impressively accurate, and the UI is clean and intuitive. This is the best AI-powered property management tool I've used, and I believe it will be the leading solution for Florida homeowners. Keep up the great work!",
+    author: "A. Richards",
+    location: "Florida",
+    userSince: "Beta Tester",
+    highlight: "Best AI-powered property management tool"
+  }
 
   return (
     <section className="px-4 md:px-8 py-20 bg-gradient-to-b from-gray-900 to-black">
@@ -106,49 +81,34 @@ export function Testimonials() {
             </div>
             
             <blockquote className="font-slab text-xl md:text-2xl lg:text-3xl font-medium italic text-white text-center max-w-4xl mx-auto leading-relaxed">
-              "{testimonials[activeTestimonial].quote}"
+              "{testimonial.quote}"
             </blockquote>
             
             <div className="mt-8 text-center">
-              <p className="text-lg font-semibold text-white">{testimonials[activeTestimonial].author}, {testimonials[activeTestimonial].location}</p>
-              <p className="text-sm text-gray-400">ClaimGuardian User Since {testimonials[activeTestimonial].userSince}</p>
-              <p className="mt-2 text-green-400 font-semibold">{testimonials[activeTestimonial].highlight}</p>
+              <p className="text-lg font-semibold text-white">{testimonial.author}, {testimonial.location}</p>
+              <p className="text-sm text-gray-400">{testimonial.userSince}</p>
+              <p className="mt-2 text-green-400 font-semibold">{testimonial.highlight}</p>
             </div>
-          </div>
-          
-          {/* Testimonial Navigation */}
-          <div className="flex justify-center gap-2">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => setActiveTestimonial(index)}
-                className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  activeTestimonial === index 
-                    ? 'w-8 bg-green-400' 
-                    : 'bg-gray-600 hover:bg-gray-500'
-                }`}
-              />
-            ))}
           </div>
         </div>
         
         {/* Stats Grid */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>
-            <div className="text-3xl font-bold text-green-400">15,000+</div>
-            <div className="text-gray-400 text-sm mt-1">Properties Protected</div>
+            <div className="text-3xl font-bold text-green-400">100%</div>
+            <div className="text-gray-400 text-sm mt-1">Florida Focused</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-blue-400">$47M+</div>
-            <div className="text-gray-400 text-sm mt-1">Claims Optimized</div>
+            <div className="text-3xl font-bold text-blue-400">AI-First</div>
+            <div className="text-gray-400 text-sm mt-1">Technology</div>
           </div>
           <div>
-            <div className="text-3xl font-bold text-orange-400">4.9/5</div>
-            <div className="text-gray-400 text-sm mt-1">User Rating</div>
+            <div className="text-3xl font-bold text-orange-400">15 min</div>
+            <div className="text-gray-400 text-sm mt-1">Property Setup</div>
           </div>
           <div>
             <div className="text-3xl font-bold text-purple-400">24/7</div>
-            <div className="text-gray-400 text-sm mt-1">AI Support</div>
+            <div className="text-gray-400 text-sm mt-1">AI Monitoring</div>
           </div>
         </div>
       </AnimatedSection>

@@ -134,10 +134,7 @@ export function PropertyLifecycle() {
                   onClick={() => setActivePhase(key as typeof activePhase)}
                   className="relative group"
                 >
-                  {/* Connection line */}
-                  {index < Object.keys(phases).length - 1 && (
-                    <div className="hidden md:block absolute left-full top-1/2 -translate-y-1/2 w-8 lg:w-16 h-0.5 bg-gray-700" />
-                  )}
+                  {/* Connection line removed per user request */}
                   
                   {/* Icon circle */}
                   <div className={`

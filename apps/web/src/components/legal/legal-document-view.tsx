@@ -185,7 +185,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
         <div className="flex items-center justify-between">
           <div>
             <h3 className="text-lg font-semibold text-white mb-2">Ready to Join?</h3>
-            <p className="text-slate-300">Join thousands of Florida property owners protecting their assets with ClaimGuardian.</p>
+            <p className="text-slate-300">Protect your assets with ClaimGuardian's AI-powered property intelligence.</p>
           </div>
           <div className="flex items-center gap-3">
             <Link

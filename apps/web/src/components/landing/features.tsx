@@ -168,7 +168,7 @@ export function Features() {
             One Platform. Complete Control. Forever Protected.
           </h3>
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Join thousands of Florida property owners who've transformed scattered documents and forgotten warranties into organized intelligence and generational wealth.
+            Transform scattered documents and forgotten warranties into organized intelligence. Built by a Florida family for property owners who demand better protection.
           </p>
         </div>
       </AnimatedSection>

@@ -12,9 +12,11 @@ import { useRouter, useParams } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card-variants'
 import { Badge } from '@/components/ui/badge'
+import { InsuranceBadge } from '@/components/ui/insurance-badges'
 import { Progress } from '@/components/ui/progress'
+import { InsuranceBreadcrumb } from '@/components/ui/breadcrumb'
 
 interface PolicyDetails {
   id: string
@@ -100,7 +102,7 @@ function PolicyDetailsContent() {
               Back to Insurance
             </button>
             
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardContent className="p-12 text-center">
                 <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                 <h3 className="text-xl font-semibold text-white mb-2">Policy Not Found</h3>
@@ -123,15 +125,13 @@ function PolicyDetailsContent() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">
-            <button
-              onClick={() => router.push('/dashboard/insurance')}
-              className="text-gray-400 hover:text-white flex items-center gap-2 mb-4"
-            >
-              <ArrowLeft className="w-4 h-4" />
-              Back to Asset
-            </button>
+            <InsuranceBreadcrumb 
+              policy={policy.carrier}
+              policyId={policy.id}
+              className="mb-4"
+            />
             
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur mb-6">
+            <Card variant="insurance" className="mb-6">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
                   <div className="flex items-center gap-4">
@@ -154,7 +154,7 @@ function PolicyDetailsContent() {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Coverages */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Shield className="w-5 h-5 text-blue-400" />
@@ -204,7 +204,7 @@ function PolicyDetailsContent() {
             </Card>
 
             {/* Key Info */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Calendar className="w-5 h-5 text-blue-400" />
@@ -247,7 +247,7 @@ function PolicyDetailsContent() {
             </Card>
 
             {/* Deductibles */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <DollarSign className="w-5 h-5 text-yellow-400" />
@@ -274,7 +274,7 @@ function PolicyDetailsContent() {
             </Card>
 
             {/* Contacts */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <User className="w-5 h-5 text-blue-400" />
@@ -300,7 +300,7 @@ function PolicyDetailsContent() {
             </Card>
 
             {/* Riders & Endorsements */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <FileText className="w-5 h-5 text-blue-400" />
@@ -319,7 +319,7 @@ function PolicyDetailsContent() {
             </Card>
 
             {/* Mortgagee */}
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Building className="w-5 h-5 text-blue-400" />
@@ -340,7 +340,7 @@ function PolicyDetailsContent() {
           </div>
 
           {/* Policy Documents */}
-          <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur mt-6">
+          <Card variant="insurance" className="mt-6">
             <CardHeader>
               <CardTitle className="text-white flex items-center gap-2">
                 <FileText className="w-5 h-5 text-blue-400" />
