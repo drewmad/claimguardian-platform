@@ -289,33 +289,51 @@ export function SignupModal() {
         <div className="absolute inset-0 bg-black/50" />
         <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-8 shadow-xl">
           <div className="text-center">
-            {/* Success Icon */}
-            <div className="mx-auto w-16 h-16 bg-green-500/10 rounded-full flex items-center justify-center mb-4">
-              <svg className="w-8 h-8 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {/* Enhanced Success Icon with Animation */}
+            <div className="mx-auto w-20 h-20 bg-green-500/10 rounded-full flex items-center justify-center mb-4 relative">
+              <svg className="w-11 h-11 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
+              {/* Confetti Animation */}
+              <div className="absolute inset-0 animate-ping">
+                <Sparkles className="w-6 h-6 text-green-400 absolute -top-2 -right-2 animate-bounce" />
+                <Sparkles className="w-4 h-4 text-blue-400 absolute -bottom-1 -left-1 animate-pulse" />
+                <Sparkles className="w-5 h-5 text-yellow-400 absolute top-1 -left-3 animate-bounce delay-150" />
+              </div>
             </div>
             
-            <h2 className="text-2xl font-bold mb-4">Check Your Email!</h2>
+            <h2 className="text-2xl font-bold mb-4">🎉 Account Created!</h2>
             
             <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4 mb-6">
               <p className="text-blue-300 font-medium mb-2">
-                ✉️ We've sent a confirmation email to:
+                We've sent a verification link to:
               </p>
-              <p className="text-white font-semibold">
+              <p className="text-white font-semibold text-lg">
                 {formData.email}
               </p>
             </div>
             
-            <div className="text-left space-y-3 mb-6">
-              <p className="text-slate-300">
-                <span className="font-semibold">Important:</span> You must confirm your email before you can sign in.
-              </p>
-              <ol className="list-decimal list-inside space-y-2 text-sm text-slate-400">
-                <li>Check your inbox for an email from ClaimGuardian</li>
-                <li>Click the confirmation link in the email</li>
-                <li>Once confirmed, return here to sign in</li>
-              </ol>
+            <div className="text-left space-y-4 mb-6">
+              <div className="space-y-3">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    1
+                  </div>
+                  <p className="text-slate-300 pt-1">Open your inbox</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <p className="text-slate-300 pt-1">Click "Verify your email"</p>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <p className="text-slate-300 pt-1">Return here → Start protecting your property</p>
+                </div>
+              </div>
             </div>
             
             <div className="bg-slate-700/50 rounded-lg p-3 mb-6">
@@ -339,44 +357,49 @@ export function SignupModal() {
               </button>
             </div>
             
-            <div className="space-y-3">
+            <div className="flex gap-3 mb-4">
+              <button
+                onClick={handleResendEmail}
+                disabled={resending || isLimited}
+                className="flex-1 bg-slate-700/50 hover:bg-slate-700 text-white font-medium py-3 rounded-lg transition-all duration-200 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {resending ? 'Sending...' : 'Resend Email'}
+                {isLimited && ` (${secondsRemaining}s)`}
+              </button>
+              <button
+                onClick={() => {
+                  // Note: In real implementation, this would check email verification status
+                  // For now, it's disabled as requested
+                  closeModal()
+                  setIsSubmitted(false)
+                  // Navigate to dashboard - disabled until email verified
+                }}
+                disabled={true} // Disabled until email verified
+                className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 text-white font-semibold py-3 rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+                title="Available after email verification"
+              >
+                Go to Dashboard
+              </button>
+            </div>
+            
+            <div className="text-center">
               <button
                 onClick={() => {
                   setIsSubmitted(false)
                   closeModal()
                   openModal('login')
                 }}
-                className="w-full btn-primary py-3"
+                className="text-blue-400 hover:text-blue-300 text-sm"
               >
-                Go to Sign In
+                Already verified? Sign in →
               </button>
-              
-              <div className="flex gap-3">
-                <button
-                  onClick={handleResendEmail}
-                  disabled={resending || isLimited}
-                  className="flex-1 btn-secondary py-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                >
-                  {resending ? 'Sending...' : 'Resend Email'}
-                  {isLimited && ` (${secondsRemaining}s)`}
-                </button>
-                <button
-                  onClick={() => {
-                    closeModal()
-                    setIsSubmitted(false)
-                  }}
-                  className="flex-1 btn-outline py-2"
-                >
-                  Close
-                </button>
-              </div>
-              
-              {resendSuccess && (
-                <p className="text-green-400 text-sm text-center">
-                  Verification email sent successfully!
-                </p>
-              )}
             </div>
+              
+            {resendSuccess && (
+              <p className="text-green-400 text-sm text-center mt-2">
+                Verification email sent successfully!
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -784,7 +807,7 @@ export function SignupModal() {
                   (currentStep === 5 && !formData.agreeAI)
                 }
                 className={`flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 md:ml-auto disabled:opacity-50 disabled:cursor-not-allowed ${
-                  shakeButton ? 'animate-shake' : ''
+                  shakeButton ? 'animate-[shake_0.5s_ease-in-out]' : ''
                 }`}
               >
                 Next →
@@ -832,6 +855,92 @@ export function SignupModal() {
         </div>
         </div>
       </div>
+
+      {/* Policy Modals */}
+      {showTermsModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setShowTermsModal(false)} />
+          <div className="relative bg-slate-800 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-slate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">Terms of Service Summary</h3>
+                <button
+                  onClick={() => setShowTermsModal(false)}
+                  className="text-slate-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-4 text-gray-300">
+                <p><strong>Service Overview:</strong> ClaimGuardian provides AI-powered insurance claim assistance and property management tools.</p>
+                <p><strong>User Responsibilities:</strong> Provide accurate information, verify AI suggestions, maintain account security.</p>
+                <p><strong>Privacy:</strong> We protect your data with bank-level security and never sell personal information.</p>
+                <p><strong>AI Disclaimer:</strong> Our AI provides suggestions, not legal advice. Always verify with your insurer.</p>
+                <p><strong>Cancellation:</strong> Cancel anytime. No long-term commitments.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showPrivacyModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setShowPrivacyModal(false)} />
+          <div className="relative bg-slate-800 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-slate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">Privacy Policy Summary</h3>
+                <button
+                  onClick={() => setShowPrivacyModal(false)}
+                  className="text-slate-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-4 text-gray-300">
+                <p><strong>Data Collection:</strong> We collect only what's needed for claim assistance (property info, documents, communications).</p>
+                <p><strong>Data Usage:</strong> Information is used solely to provide our services. AI analysis stays private to you.</p>
+                <p><strong>Data Security:</strong> Bank-grade encryption, secure storage, regular security audits.</p>
+                <p><strong>Data Sharing:</strong> We never sell data. Only shared with your explicit consent or legal requirements.</p>
+                <p><strong>Your Rights:</strong> Access, modify, or delete your data anytime. Full control over your information.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showAIModal && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/70" onClick={() => setShowAIModal(false)} />
+          <div className="relative bg-slate-800 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden">
+            <div className="p-6 border-b border-slate-700">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xl font-bold text-white">How Our AI Works</h3>
+                <button
+                  onClick={() => setShowAIModal(false)}
+                  className="text-slate-400 hover:text-white p-1"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+            <div className="p-6 overflow-y-auto max-h-[60vh]">
+              <div className="space-y-4 text-gray-300">
+                <p><strong>Document Analysis:</strong> Our AI reads insurance policies, claim forms, and property documents to identify key information.</p>
+                <p><strong>Claim Optimization:</strong> Suggests documentation improvements, identifies coverage gaps, and recommends next steps.</p>
+                <p><strong>Accuracy:</strong> 95%+ accuracy on standard documents, but context and nuances may be missed.</p>
+                <p><strong>Limitations:</strong> AI provides suggestions, not legal advice. Always verify critical decisions with your insurer.</p>
+                <p><strong>Privacy:</strong> All AI processing happens securely. Your data never trains other models or leaves our system.</p>
+                <p><strong>Human Oversight:</strong> Complex cases are reviewed by insurance professionals when needed.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
