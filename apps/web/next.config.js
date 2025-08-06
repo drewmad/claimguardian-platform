@@ -109,6 +109,38 @@ const nextConfig = {
             test: /[\\/]node_modules[\\/](react|react-dom)[\\/]/,
             priority: 20,
           },
+          // Dashboard pages chunk
+          dashboard: {
+            name: 'dashboard',
+            test: /[\\/]app[\\/]dashboard[\\/]/,
+            chunks: 'all',
+            priority: 18,
+            reuseExistingChunk: true,
+          },
+          // AI tools chunk
+          aiTools: {
+            name: 'ai-tools',
+            test: /[\\/]app[\\/]ai-tools[\\/]/,
+            chunks: 'all',
+            priority: 18,
+            reuseExistingChunk: true,
+          },
+          // Admin pages chunk
+          admin: {
+            name: 'admin',
+            test: /[\\/]app[\\/]admin[\\/]/,
+            chunks: 'all',
+            priority: 17,
+            reuseExistingChunk: true,
+          },
+          // Supabase chunk
+          supabase: {
+            name: 'supabase',
+            test: /[\\/]node_modules[\\/]@supabase[\\/]/,
+            chunks: 'all',
+            priority: 16,
+            reuseExistingChunk: true,
+          },
           ui: {
             name: 'ui',
             chunks: 'all',
@@ -120,6 +152,14 @@ const nextConfig = {
             chunks: 'all',
             test: /[\\/]node_modules[\\/]lucide-react[\\/]/,
             priority: 15,
+          },
+          // AI provider chunks (async loading)
+          aiProviders: {
+            name: 'ai-providers',
+            test: /[\\/]node_modules[\\/](openai|@anthropic-ai|@google\/generative-ai)[\\/]/,
+            chunks: 'async',
+            priority: 12,
+            reuseExistingChunk: true,
           },
           commons: {
             name: 'commons',

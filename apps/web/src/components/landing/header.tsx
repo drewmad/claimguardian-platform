@@ -15,11 +15,12 @@ import Link from 'next/link'
 import { COLORS } from '@/lib/constants'
 
 const HeaderLogoIcon = () => (
-  <img 
+  <OptimizedImage 
     src="/ClaimGuardian.png" 
     alt="ClaimGuardian Logo" 
     width={32} 
     height={32}
+    priority={true}
     className="object-contain"
   />
 )

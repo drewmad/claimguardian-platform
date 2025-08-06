@@ -181,8 +181,8 @@ export function useOnboarding(): UseOnboardingReturn {
     })
   }, [saveState])
 
-  const markStepComplete = useCallback((step: string) => {
-    logger.track('onboarding_step_completed', { step })
+  const markStepComplete = useCallback((step: string, data?: any) => {
+    logger.track('onboarding_step_completed', { step, data })
     
     const updates: Partial<OnboardingState> = {
       currentStep: state.currentStep + 1
@@ -197,6 +197,10 @@ export function useOnboarding(): UseOnboardingReturn {
         break
       case 'ai-tools':
         updates.hasExploredAITools = true
+        // Save selected AI tools preference
+        if (data?.selectedTools) {
+          localStorage.setItem('selected_ai_tools', JSON.stringify(data.selectedTools))
+        }
         break
     }
 

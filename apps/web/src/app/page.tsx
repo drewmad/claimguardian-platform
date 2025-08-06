@@ -33,6 +33,10 @@ import { WhoWeServe } from '@/components/landing/who-we-serve'
 import { ContentModal } from '@/components/modals/content-modal'
 import { ForgotPasswordModal } from '@/components/modals/forgot-password-modal'
 import { SimpleLoginModal } from '@/components/modals/simple-login-modal'
+import { SimpleSignupModal } from '@/components/modals/simple-signup-modal'
+import { ResponsiveLoginModal } from '@/components/modals/responsive-login-modal'
+import { ResponsiveSignupModal } from '@/components/modals/responsive-signup-modal'
+import { ResponsiveForgotPasswordModal } from '@/components/modals/responsive-forgot-password-modal'
 import { FAQData, HowToData, ProductData, OrganizationData, CLAIMGUARDIAN_FAQS, CLAIM_DOCUMENTATION_STEPS } from '@/components/seo/structured-data'
 
 export default function HomePage() {
@@ -76,8 +80,14 @@ export default function HomePage() {
 
       {/* Application Modals - Simplified for better user experience */}
       <SimpleLoginModal />
+      <SimpleSignupModal />
       <ForgotPasswordModal />
       <ContentModal />
+      
+      {/* New Responsive Modals */}
+      <ResponsiveLoginModal />
+      <ResponsiveSignupModal />
+      <ResponsiveForgotPasswordModal />
     </div>
   )
 }

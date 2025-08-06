@@ -24,7 +24,7 @@ import {
   Zap, Eye, Plus, ArrowUpRight, ArrowDownRight,
   Clock, MapPin, Thermometer, Timer, Settings2,
   ShieldCheck, Receipt, HardHat, Siren, Code,
-  Menu, X, Info
+  Menu, X, Info, Zap
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
@@ -39,6 +39,7 @@ import { LearningWidget } from '@/components/learning/learning-widget'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { WelcomeTour } from '@/components/onboarding/welcome-tour'
 import { PropertySetupWizard } from '@/components/onboarding/property-setup-wizard'
+import { AIToolsIntroduction } from '@/components/onboarding/ai-tools-introduction'
 import { useOnboarding } from '@/hooks/use-onboarding'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -258,6 +259,7 @@ function DashboardContent() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
   const [showPropertyWizard, setShowPropertyWizard] = useState(false)
+  const [showAIToolsIntro, setShowAIToolsIntro] = useState(false)
   
   const onboarding = useOnboarding()
   
@@ -300,6 +302,9 @@ function DashboardContent() {
         } else if (!hasProperties && !onboarding.hasAddedProperty) {
           // Show property wizard for users without properties
           setShowPropertyWizard(true)
+        } else if (onboarding.hasAddedProperty && !onboarding.hasExploredAITools) {
+          // Show AI Tools intro after property setup
+          setShowAIToolsIntro(true)
         }
       } catch (error) {
         logger.error('Error checking onboarding status:', toError(error))
@@ -357,6 +362,16 @@ function DashboardContent() {
                     <Info className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 )}
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-gray-400 hover:text-white hover:bg-gray-700"
+                  onClick={() => setShowAIToolsIntro(true)}
+                  aria-label="Explore AI Tools"
+                  title="AI Tools"
+                >
+                  <Zap className="h-4 w-4" aria-hidden="true" />
+                </Button>
                 <Button 
                   variant="outline" 
                   size="sm" 
@@ -770,12 +785,29 @@ function DashboardContent() {
           setShowPropertyWizard(false)
           onboarding.markStepComplete('property')
           toast.success('Property added successfully! Your dashboard is now personalized.')
-          // Reload to show the new property
-          window.location.reload()
+          // Show AI Tools intro next
+          setShowAIToolsIntro(true)
         }}
         onSkip={() => {
           setShowPropertyWizard(false)
           localStorage.setItem('property_wizard_skipped', Date.now().toString())
+        }}
+      />
+    )}
+    
+    {/* AI Tools Introduction */}
+    {showAIToolsIntro && (
+      <AIToolsIntroduction
+        onComplete={() => {
+          setShowAIToolsIntro(false)
+          onboarding.markStepComplete('ai-tools', { 
+            selectedTools: JSON.parse(localStorage.getItem('selected_ai_tools') || '[]')
+          })
+          toast.success('Great! You can now explore AI-powered features to enhance your property management.')
+        }}
+        onSkip={() => {
+          setShowAIToolsIntro(false)
+          localStorage.setItem('ai_tools_intro_skipped', Date.now().toString())
         }}
       />
     )}

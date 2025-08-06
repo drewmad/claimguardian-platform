@@ -20,6 +20,8 @@
 import { Home, BrainCircuit, Hammer, KeyRound, ArrowRight, Building, PlayCircle } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { useState, useEffect, useRef } from 'react'
 
 import { COLORS } from '@/lib/constants'
@@ -70,9 +72,12 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 // Professional logo with enhanced styling for hero section
 const GuardianHeroLogo = () => (
   <div className="relative">
-    <img 
+    <OptimizedImage 
       src="/ClaimGuardian.png" 
       alt="ClaimGuardian Logo" 
+      width={80}
+      height={80}
+      priority={true}
       className="drop-shadow-[0_8px_32px_rgba(57,255,20,0.4)] h-16 md:h-20 w-auto object-contain"
     />
     {/* Ambient glow effect */}

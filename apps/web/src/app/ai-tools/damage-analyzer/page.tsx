@@ -48,6 +48,7 @@ import { AIBreadcrumb } from '@/components/ui/breadcrumb'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { OptimizedImage } from '@/components/ui/optimized-image'
 import { Progress } from '@/components/ui/progress'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { FeatureLimitBadge } from '@/components/subscription/subscription-gate'
@@ -524,7 +525,18 @@ function UploadStep({ onUpload, onSwitchToCamera }: { onUpload: (files: File[]) 
 function AnalyzingStep({ image }: { image: File | null }) {
   return (
     <div className="text-center">
-      {image && <img src={URL.createObjectURL(image)} alt="Damage analysis in progress" className="max-h-64 rounded-lg mx-auto mb-6" />}
+      {image && (
+        <div className="max-h-64 rounded-lg mx-auto mb-6 relative">
+          <OptimizedImage
+            src={URL.createObjectURL(image)}
+            alt="Damage analysis in progress"
+            width={400}
+            height={300}
+            className="rounded-lg"
+            priority={true}
+          />
+        </div>
+      )}
       <h2 className="text-2xl font-semibold text-white mb-4">Analyzing Damage...</h2>
       <p className="text-gray-400 mb-6">Our AI is assessing the damage and cross-referencing your policy. This may take a moment.</p>
       <Progress value={50} className="w-full max-w-md mx-auto" />
