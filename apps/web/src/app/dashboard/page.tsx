@@ -244,10 +244,10 @@ function DashboardContent() {
           logger.error('Error checking onboarding:', toError(error))
         }
 
-        // Show onboarding if not completed or no record exists
-        if (!data?.onboarding_completed) {
-          setShowOnboarding(true)
-        }
+        // Onboarding disabled - no longer show modal at startup
+        // if (!data?.onboarding_completed) {
+        //   setShowOnboarding(true)
+        // }
       } catch (error) {
         logger.error('Error checking onboarding status:', toError(error))
       } finally {
