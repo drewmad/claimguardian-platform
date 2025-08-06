@@ -29,7 +29,7 @@
       }
     ],
     "typeRoots": ["../../node_modules/@types", "./node_modules/@types"],
-    "types": ["react", "react-dom", "node", "jest"],
+    "types": ["node", "react", "react-dom", "jest"],
     "paths": {
       "@/*": [
         "./src/*"
@@ -41,9 +41,14 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    "src/types/**/*.d.ts"
+    "src/types/**/*.d.ts",
+    "jest-setup.ts"
   ],
   "exclude": [
-    "node_modules"
+    "node_modules",
+    "**/*.test.ts",
+    "**/*.test.tsx",
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ]
 }

@@ -6,6 +6,8 @@
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "typeRoots": ["../../node_modules/@types", "../../types"],
+    "types": ["node"],
     "strict": true,
     "declaration": true,
     "declarationMap": true,

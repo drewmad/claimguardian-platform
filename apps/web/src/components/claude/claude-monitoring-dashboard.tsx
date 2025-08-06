@@ -201,12 +201,7 @@ export function ClaudeMonitoringDashboard() {
     return undefined
   }, [fetchDashboardData, autoRefresh, refreshInterval])
 
-  interface ProductionStatusData {
-    metrics: ProductionMetrics
-    anomalies: Anomaly[]
-    abTestSummary: ABTestSummary
-  }
-
+  type ProductionStatusData = Awaited<ReturnType<typeof claudeProductionMonitor.getProductionStatus>>
 
   interface FeedbackStatus {
     systemHealth: 'healthy' | 'warning' | 'critical'

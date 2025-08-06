@@ -48,12 +48,12 @@ export function ClaudeMonitoringWidget({
         ])
 
         const newMetrics: WidgetMetrics = {
-          systemStatus: productionStatus.status,
+          systemStatus: productionStatus.anomalies.length > 0 ? 'warning' : 'healthy',
           successRate: productionStatus.metrics.successRate,
           avgExecutionTime: productionStatus.metrics.avgExecutionTime,
           activeOptimizations: abTestReport.treatmentGroup.avgOptimizations || 0,
           performanceGain: abTestReport.businessMetrics.performanceImprovement,
-          learningEnabled: productionStatus.metrics.learningEnabled,
+          learningEnabled: productionStatus.metrics.learningApplicationRate > 0.5,
           lastUpdate: new Date()
         }
 

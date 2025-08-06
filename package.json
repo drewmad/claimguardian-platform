@@ -118,6 +118,12 @@
       "@types/react": "18.3.23",
       "@types/react-dom": "18.3.7",
       "openai>zod": "3.23.8"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@tailwindcss/oxide",
+      "core-js-pure",
+      "msw",
+      "unrs-resolver"
+    ]
   }
 }
