@@ -319,17 +319,33 @@ export function MultiStepSignupForm() {
                 <Shield className="w-10 h-10 text-blue-600" />
               </div>
               <h1 className="text-3xl font-bold text-white mb-2">Welcome to ClaimGuardian</h1>
-              <p className="text-gray-400">Your AI-powered insurance claim advocate for Florida property owners</p>
-              <p className="text-sm text-gray-500 mt-4">
-                This signup process ensures we comply with all Florida insurance regulations and protects your data according to the highest standards.
+              <p className="text-gray-400">Your Digital Guardian</p>
+            </div>
+            
+            {/* Visual Divider */}
+            <div className="border-t border-slate-700/50"></div>
+            
+            {/* Compliance Message - Simplified */}
+            <div className="text-center">
+              <p className="text-sm text-gray-400">
+                We follow Florida law and safeguard your data with advanced security standards.
               </p>
             </div>
             
-            {/* Info Box */}
+            {/* Visual Divider */}
+            <div className="border-t border-slate-700/50"></div>
+            
+            {/* What to Expect - Enhanced with emoji and bullets */}
             <Alert className="bg-blue-950/50 border-blue-800">
               <AlertCircle className="h-4 w-4 text-blue-400" />
               <AlertDescription className="text-blue-100">
-                <strong>What to expect:</strong> This process takes about 2 minutes and includes important legal disclosures required by Florida law.
+                <div className="space-y-2">
+                  <div className="font-semibold text-blue-100">📘 What to Expect</div>
+                  <ul className="space-y-1 text-sm">
+                    <li>• <strong>Duration:</strong> About 2 minutes</li>
+                    <li>• <strong>Includes:</strong> Legal disclosures required by Florida law</li>
+                  </ul>
+                </div>
               </AlertDescription>
             </Alert>
           </div>
