@@ -52,7 +52,8 @@ class ProfileService {
       const { data: user, error: userError } = await this.supabase.auth.getUser()
       
       if (userError || !user) {
-        logger.error('Failed to get auth user', {}, userError || undefined)
+        const logError = userError ? new Error(userError.message) : undefined;
+        logger.error('Failed to get auth user', {}, logError)
         return null
       }
 
@@ -63,7 +64,8 @@ class ProfileService {
         .single()
 
       if (profileError) {
-        logger.error('Failed to fetch profile', {}, profileError || undefined)
+        const logError = profileError ? new Error(profileError.message) : undefined;
+        logger.error('Failed to fetch profile', {}, logError)
         return null
       }
 
@@ -95,7 +97,8 @@ class ProfileService {
       const { data: { user }, error: authError } = await this.supabase.auth.getUser()
       
       if (authError || !user) {
-        logger.error('Failed to get authenticated user', {}, authError)
+        const logError = authError ? new Error(authError.message) : undefined;
+        logger.error('Failed to get authenticated user', {}, logError)
         return false
       }
       
@@ -177,7 +180,8 @@ class ProfileService {
       })
 
       if (updateError) {
-        logger.error('Failed to update email', {}, updateError || undefined)
+        const logError = updateError ? new Error(updateError.message) : undefined;
+        logger.error('Failed to update email', {}, logError)
         
         if (updateError.message.includes('already registered')) {
           return { success: false, error: 'This email is already in use' }
@@ -255,7 +259,8 @@ class ProfileService {
         })
 
       if (uploadError) {
-        logger.error('Failed to upload avatar', {}, uploadError || undefined)
+        const logError = uploadError ? new Error(uploadError.message) : undefined;
+        logger.error('Failed to upload avatar', {}, logError)
         return { error: 'Failed to upload avatar' }
       }
 
