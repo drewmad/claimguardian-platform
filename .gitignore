@@ -611,6 +611,11 @@ services/noaa-*/
 services/weather-*/
 services/environmental-*/
 
+# Admin dashboard components (development/experimental)
+apps/web/src/components/admin/experimental/
+apps/web/src/components/admin/*-temp.*
+apps/web/src/components/admin/*-draft.*
+
 # ==============================================================================
 # TEMPORARY EXCLUSIONS (REMOVE WHEN STABLE)
 # ==============================================================================
