@@ -9,15 +9,39 @@
 'use server'
 
 import { sendEmail, sendEmailWithRateLimit } from '@/lib/email/resend'
-import {
-  getWelcomeEmail,
-  getPasswordResetEmail,
-  getEmailVerificationEmail,
-  getClaimUpdateEmail,
-  getPropertyEnrichmentEmail
-} from '@/lib/email/templates'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/server'
+
+// Email templates - inline for now until we need a separate file
+const getWelcomeEmail = (name: string) => ({
+  subject: 'Welcome to ClaimGuardian',
+  text: `Welcome ${name}! Your Digital Guardian is ready.`,
+  html: `<h1>Welcome ${name}!</h1><p>Your Digital Guardian is ready.</p>`
+})
+
+const getPasswordResetEmail = (name: string, resetUrl: string) => ({
+  subject: 'Reset your ClaimGuardian password',
+  text: `Hi ${name}, reset your password: ${resetUrl}`,
+  html: `<h1>Hi ${name}</h1><p>Reset your password by clicking <a href="${resetUrl}">here</a></p>`
+})
+
+const getEmailVerificationEmail = (name: string, verificationUrl: string) => ({
+  subject: 'Verify your ClaimGuardian account',
+  text: `Hi ${name}, please verify your account: ${verificationUrl}`,
+  html: `<h1>Hi ${name}</h1><p>Please verify your account by clicking <a href="${verificationUrl}">here</a></p>`
+})
+
+const getClaimUpdateEmail = (claimNumber: string, status: string) => ({
+  subject: `Claim ${claimNumber} Update`,
+  text: `Your claim ${claimNumber} status: ${status}`,
+  html: `<h1>Claim Update</h1><p>Your claim ${claimNumber} status: ${status}</p>`
+})
+
+const getPropertyEnrichmentEmail = (propertyAddress: string) => ({
+  subject: 'Property Analysis Complete',
+  text: `Property analysis complete for ${propertyAddress}`,
+  html: `<h1>Analysis Complete</h1><p>Your property analysis for ${propertyAddress} is ready.</p>`
+})
 
 /**
  * Send welcome email to new users
@@ -199,7 +223,7 @@ export async function sendClaimUpdateEmail({
     }
 
     const name = profile.first_name || profile.email.split('@')[0]
-    const template = getClaimUpdateEmail(name, claimNumber, status, message)
+    const template = getClaimUpdateEmail(claimNumber, status)
 
     const result = await sendEmail({
       to: profile.email,
@@ -267,7 +291,7 @@ export async function sendPropertyEnrichmentEmail({
     }
 
     const name = profile.first_name || profile.email.split('@')[0]
-    const template = getPropertyEnrichmentEmail(name, propertyAddress, enrichmentData)
+    const template = getPropertyEnrichmentEmail(propertyAddress)
 
     const result = await sendEmail({
       to: profile.email,

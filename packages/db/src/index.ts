@@ -80,6 +80,10 @@ export type Profile = {
   updated_at: string
 }
 
+// Note: There is no actual 'claims' table in the database schema
+// The application expects this interface but it doesn't exist in the actual database
+// Community claims are stored in 'community_claims' table with different structure
+// This type is a placeholder until proper claims table is created or application is refactored
 export type Claim = {
   id: string
   user_id: string
@@ -102,6 +106,7 @@ export type Claim = {
 export type PropertyInsert = Omit<CoreProperty, 'id' | 'created_at' | 'updated_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>
 export type PropertyUpdate = Partial<Omit<CoreProperty, 'id' | 'created_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>>
 
+// ClaimInsert/Update types - Note: these are placeholders since claims table doesn't exist
 export type ClaimInsert = Omit<Claim, 'id' | 'created_at' | 'updated_at'>
 export type ClaimUpdate = Partial<Omit<Claim, 'id' | 'created_at' | 'updated_at'>>
 
