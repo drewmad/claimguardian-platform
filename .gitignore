@@ -387,13 +387,223 @@ cron.yaml.backup
 !/supabase/migrations/README.md
 
 # ==============================================================================
-# AGENT/CLI SPECIFIC
+# AGENT/CLI SPECIFIC  
 # ==============================================================================
 # Gemini CLI artifacts
 .gemini-clipboard/
+
+# Claude Code artifacts
+.claude/cache/
+.claude/temp/
+.claude/logs/
+.claude/sessions/
 
 # Temporary commit messages
 commit_message.txt
 
 # Local security logs
 *security-log.txt
+
+# ==============================================================================
+# AI/ML ARTIFACTS
+# ==============================================================================
+# Model artifacts and caches
+.ai-cache/
+embeddings-cache/
+model-artifacts/
+*.pkl
+*.joblib
+*.h5
+*.hdf5
+*.pb
+
+# Jupyter notebooks checkpoints
+.ipynb_checkpoints/
+notebooks/
+
+# Vector databases
+vector-db/
+.chroma/
+.weaviate/
+.faiss/
+
+# ==============================================================================
+# MODERN DEVELOPMENT TOOLS
+# ==============================================================================
+# Playwright
+/test-results/
+/playwright-report/
+/playwright/.cache/
+/e2e-reports/
+
+# Storybook
+storybook-static/
+.storybook/public/
+
+# Vite
+.vite-cache/
+.vite/
+
+# Bundle analyzer reports
+bundle-analyzer-report.html
+*-bundle-report.json
+
+# Source maps (in production)
+*.map
+!**/*.map.ts
+!**/*.map.js
+
+# ==============================================================================
+# DATABASE & INFRASTRUCTURE
+# ==============================================================================
+# Docker volumes and data
+docker-volumes/
+.docker-data/
+
+# Redis dumps
+dump.rdb
+
+# PostgreSQL backups
+*.dump
+*.backup
+
+# SQLite databases (if used for development)
+*.sqlite
+*.db
+
+# ==============================================================================
+# TESTING & QA
+# ==============================================================================
+# Test artifacts
+test-artifacts/
+screenshots/
+__snapshots__/
+*.spec.js.snap
+*.test.js.snap
+
+# Lighthouse reports
+lighthouse-reports/
+performance-audit/
+
+# Visual regression test artifacts
+visual-diff/
+chromatic-build-*
+
+# ==============================================================================
+# DEPLOYMENT & PRODUCTION
+# ==============================================================================
+# Static export directories  
+out/
+export/
+
+# Cloudflare Workers
+wrangler.toml
+.dev.vars
+.prod.vars
+
+# AWS CDK
+cdk.out/
+.cdk.staging/
+
+# Terraform
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl
+
+# Kubernetes
+k8s-secrets/
+*.kubeconfig
+
+# ==============================================================================
+# MONITORING & ANALYTICS
+# ==============================================================================
+# Sentry
+.sentryclirc
+
+# Performance monitoring
+*.perf
+*.trace
+profile-*
+
+# User analytics (local testing)
+analytics-test-data/
+
+# ==============================================================================
+# CONTENT & ASSETS
+# ==============================================================================
+# Large media files (use Git LFS instead)
+*.mov
+*.avi
+*.mp4
+*.mp3
+*.wav
+*.flac
+
+# Generated images
+public/generated/
+assets/generated/
+
+# Compressed archives (except intentional ones)
+*.zip
+*.tar.gz
+*.rar
+!assets/*.zip
+!docs/*.zip
+
+# ==============================================================================
+# SECURITY & COMPLIANCE  
+# ==============================================================================
+# Audit reports
+audit-report.html
+security-audit/
+compliance-reports/
+
+# OWASP ZAP reports
+zap-reports/
+
+# SSL certificates and keys (local dev)
+certs/
+ssl/
+tls/
+
+# GDPR/Privacy compliance exports
+privacy-exports/
+data-exports/
+
+# ==============================================================================
+# PROJECT SPECIFIC EXCLUDES
+# ==============================================================================
+# Claude learning artifacts
+claude-errors.log
+claude-learnings.json
+.claude-context/
+
+# UI component documentation artifacts
+component-screenshots/
+design-tokens-temp/
+
+# Florida insurance specific temp files
+floir-temp/
+florida-compliance-temp/
+insurance-carrier-logos/temp/
+
+# Property image generation cache
+property-images-cache/
+ai-generated-images-temp/
+
+# Legal document processing temp
+legal-doc-processing/
+policy-extraction-temp/
+
+# ==============================================================================
+# TEMPORARY EXCLUSIONS (REMOVE WHEN STABLE)
+# ==============================================================================
+# Components under development
+# apps/web/src/components/experimental/
+
+# Feature flags configuration (local overrides)
+feature-flags.local.json
+
+# A/B testing configuration
+ab-test-config.local.json
