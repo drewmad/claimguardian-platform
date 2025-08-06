@@ -12,7 +12,7 @@
 
 import { 
   Home, Building, Package, Shield, FileText, 
-  HardHat, Users, Settings, 
+  HardHat, Users, Cog, 
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
@@ -23,8 +23,6 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, ReactNode } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
-import { SettingsModal } from '@/components/modals/settings-modal'
-import { useSettingsModal } from '@/hooks/use-settings-modal'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -47,7 +45,7 @@ const navigationItems = [
 ]
 
 const adminFeatures = [
-  { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Settings, href: '/admin' }
+  { id: 'admin-dashboard', label: 'Admin Dashboard', icon: Cog, href: '/admin' }
 ]
 
 const aiFeatures = [
@@ -64,7 +62,6 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { user, signOut } = useAuth()
-  const { isOpen: isSettingsOpen, openSettings, closeSettings } = useSettingsModal()
 
   useEffect(() => {
     const checkMobile = () => {
@@ -119,10 +116,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               )}
             </button>
             <div className="h-6 w-px bg-gray-600 mx-2" />
-            <button
-              onClick={() => router.push('/account/profile')}
-              className="flex items-center gap-2 px-3 py-2 hover:bg-gray-700 rounded-lg transition-colors"
-            >
+            <div className="flex items-center gap-2 px-3 py-2">
               <div className="w-8 h-8 bg-cyan-600 rounded-full flex items-center justify-center">
                 <User className="w-5 h-5 text-white" />
               </div>
@@ -130,7 +124,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 <p className="text-sm font-medium text-white">{user?.user_metadata?.firstName || 'User'}</p>
                 <p className="text-xs text-gray-400">{user?.email}</p>
               </div>
-            </button>
+            </div>
             <button
               onClick={handleSignOut}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -282,7 +276,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               }}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700 mb-3"
             >
-              <Settings className="w-5 h-5" />
+              <Cog className="w-5 h-5" />
               <span className="font-medium">Settings</span>
             </button>
             
