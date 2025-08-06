@@ -76,131 +76,12 @@ function InsuranceDashboardContent() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   
-  // Mock data
-  const [policies] = useState<Policy[]>([
-    {
-      id: '1',
-      type: 'Homeowners',
-      carrier: 'State Farm',
-      policyNumber: 'HO-2024-784512',
-      premium: 2400,
-      deductible: 2500,
-      coverage: 450000,
-      status: 'active',
-      effectiveDate: '2024-03-15',
-      expirationDate: '2025-03-15',
-      nextPayment: '2025-02-15',
-      documents: 12,
-      claims: 2
-    },
-    {
-      id: '2',
-      type: 'Flood',
-      carrier: 'FEMA NFIP',
-      policyNumber: 'FL-2024-125478',
-      premium: 1800,
-      deductible: 5000,
-      coverage: 250000,
-      status: 'active',
-      effectiveDate: '2024-06-01',
-      expirationDate: '2025-06-01',
-      nextPayment: '2025-05-01',
-      documents: 5,
-      claims: 0
-    },
-    {
-      id: '3',
-      type: 'Auto',
-      carrier: 'Progressive',
-      policyNumber: 'AU-2024-963852',
-      premium: 1600,
-      deductible: 1000,
-      coverage: 50000,
-      status: 'active',
-      effectiveDate: '2024-01-10',
-      expirationDate: '2025-01-10',
-      nextPayment: '2024-12-10',
-      documents: 8,
-      claims: 1
-    }
-  ])
+  // Mock data - empty by default
+  const [policies] = useState<Policy[]>([])
 
-  const [coverages] = useState<Coverage[]>([
-    {
-      type: 'Dwelling',
-      limit: 450000,
-      used: 0,
-      deductible: 2500,
-      icon: Home
-    },
-    {
-      type: 'Personal Property',
-      limit: 225000,
-      used: 15000,
-      deductible: 2500,
-      icon: Package
-    },
-    {
-      type: 'Liability',
-      limit: 500000,
-      used: 0,
-      deductible: 0,
-      icon: Shield
-    },
-    {
-      type: 'Medical Payments',
-      limit: 5000,
-      used: 0,
-      deductible: 0,
-      icon: Heart
-    }
-  ])
+  const [coverages] = useState<Coverage[]>([])
 
-  const [properties] = useState<Property[]>([
-    {
-      id: '1',
-      name: 'Metropolis Modern Villa',
-      address: '3407 Knox Ter',
-      city: 'Port Charlotte',
-      state: 'FL',
-      zip: '33948',
-      type: 'single-family',
-      bedrooms: 4,
-      bathrooms: 3.5,
-      squareFeet: 3200,
-      lotSize: 10500,
-      yearBuilt: 2022,
-      estimatedValue: 765000,
-      lastSalePrice: 550000,
-      lastSaleDate: '2018-06-14',
-      propertyTaxes: 8500,
-      hoaFees: 150,
-      insurability: 'high',
-      policies: ['1'],
-      images: ['property-1']
-    },
-    {
-      id: '2',
-      name: 'Coastal Breeze Retreat',
-      address: '1842 Pelican Bay Dr',
-      city: 'Port Charlotte',
-      state: 'FL',
-      zip: '33952',
-      type: 'single-family',
-      bedrooms: 3,
-      bathrooms: 2,
-      squareFeet: 2400,
-      lotSize: 8200,
-      yearBuilt: 2019,
-      estimatedValue: 485000,
-      lastSalePrice: 420000,
-      lastSaleDate: '2020-03-22',
-      propertyTaxes: 5800,
-      insurability: 'medium',
-      policies: ['2'],
-      images: ['property-2']
-    }
-  ])
+  const [properties] = useState<Property[]>([])
 
   const totalPremium = policies.reduce((sum, policy) => sum + policy.premium, 0)
   const totalCoverage = policies.reduce((sum, policy) => sum + policy.coverage, 0)
@@ -254,6 +135,203 @@ function InsuranceDashboardContent() {
     }).format(amount)
   }
 
+  // Render property detail view if a property is selected
+  if (selectedProperty) {
+    return (
+      <DashboardLayout>
+        <div className="p-6">
+          <div className="max-w-7xl mx-auto">
+            {/* Property Detail Header */}
+            <div className="mb-6">
+              <button
+                onClick={() => setSelectedProperty(null)}
+                className="text-gray-400 hover:text-white flex items-center gap-2 mb-4"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Back to Portfolio
+              </button>
+              
+              <div className="flex justify-between items-start">
+                <div>
+                  <h1 className="text-3xl font-bold text-white mb-2">{selectedProperty.name}</h1>
+                  <p className="text-gray-400 flex items-center gap-1">
+                    <MapPin className="w-4 h-4" />
+                    {selectedProperty.address}, {selectedProperty.city}, {selectedProperty.state} {selectedProperty.zip}
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    Edit
+                  </button>
+                  <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    Share
+                  </button>
+                  <button className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg">
+                    Export
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Images Carousel */}
+            <div className="mb-8">
+              <div className="relative h-96 bg-gray-800 rounded-lg overflow-hidden">
+                <PropertyImage
+                  propertyId={selectedProperty.id}
+                  propertyType={selectedProperty.type}
+                  propertyName={selectedProperty.name}
+                  size="full"
+                  className="w-full h-full object-cover"
+                />
+                {/* Carousel dots */}
+                <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex gap-2">
+                  <div className="w-2 h-2 bg-white rounded-full"></div>
+                  <div className="w-2 h-2 bg-white/50 rounded-full"></div>
+                  <div className="w-2 h-2 bg-white/50 rounded-full"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Property Overview Section */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <Info className="w-5 h-5 text-blue-400" />
+                <h2 className="text-xl font-semibold text-white">Property Overview</h2>
+              </div>
+              <p className="text-gray-300 mb-6">
+                A stunning modern villa located in the heart of Metropolis, offering luxurious living with breathtaking views and state-of-the-art amenities. This property boasts an open floor plan, gourmet kitchen, and a spacious master suite. The exterior features a beautifully landscaped yard with a private pool and patio area, perfect for entertaining. Close to shopping, dining, and top-rated schools.
+              </p>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div className="flex items-center gap-3">
+                  <Home className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Property Type</p>
+                    <p className="text-white capitalize">{selectedProperty.type.replace('-', ' ')}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Calendar className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Year Built</p>
+                    <p className="text-white">{selectedProperty.yearBuilt}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Square className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Lot Size</p>
+                    <p className="text-white">{selectedProperty.lotSize.toLocaleString()} sq ft ({(selectedProperty.lotSize / 43560).toFixed(2)} acres)</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Bed className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Bedrooms</p>
+                    <p className="text-white">{selectedProperty.bedrooms}</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Square className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Living Area</p>
+                    <p className="text-white">{selectedProperty.squareFeet.toLocaleString()} sq ft</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <Bath className="w-5 h-5 text-gray-400" />
+                  <div>
+                    <p className="text-sm text-gray-400">Bathrooms</p>
+                    <p className="text-white">{selectedProperty.bathrooms} Full, 1 Half</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Financial Snapshot */}
+            <div className="mb-8">
+              <div className="flex items-center gap-2 mb-4">
+                <DollarSign className="w-5 h-5 text-green-400" />
+                <h2 className="text-xl font-semibold text-white">Financial Snapshot</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardContent className="p-6">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Listing Price</p>
+                        <p className="text-2xl font-bold text-white">{formatCurrency(selectedProperty.estimatedValue)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-400 mb-1">Estimated AVM</p>
+                        <p className="text-2xl font-bold text-white">{formatCurrency(selectedProperty.estimatedValue)}</p>
+                      </div>
+                    </div>
+                    <div className="mt-4 pt-4 border-t border-gray-700">
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-gray-400 mb-1">Last Sale ({selectedProperty.lastSaleDate ? new Date(selectedProperty.lastSaleDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A'})</p>
+                          <p className="text-lg text-white">{selectedProperty.lastSalePrice ? formatCurrency(selectedProperty.lastSalePrice) : 'N/A'}</p>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-400 mb-1">Property Taxes (2023)</p>
+                          <p className="text-lg text-white">{selectedProperty.propertyTaxes ? formatCurrency(selectedProperty.propertyTaxes) : 'N/A'}</p>
+                        </div>
+                      </div>
+                      {selectedProperty.hoaFees && (
+                        <div className="mt-4">
+                          <p className="text-sm text-gray-400 mb-1">HOA Fee</p>
+                          <p className="text-lg text-white">${selectedProperty.hoaFees} / monthly</p>
+                        </div>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* Associated Policies */}
+                <Card className="bg-gray-800 border-gray-700">
+                  <CardHeader>
+                    <CardTitle className="text-white">Insurance Coverage</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-3">
+                      {selectedProperty.policies.map(policyId => {
+                        const policy = policies.find(p => p.id === policyId)
+                        if (!policy) return null
+                        const Icon = getPolicyIcon(policy.type)
+                        return (
+                          <div key={policy.id} className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                            <div className="flex items-center gap-3">
+                              <Icon className="w-5 h-5 text-blue-400" />
+                              <div>
+                                <p className="font-medium text-white">{policy.type}</p>
+                                <p className="text-sm text-gray-400">{policy.carrier}</p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium text-white">{formatCurrency(policy.coverage)}</p>
+                              <p className="text-sm text-gray-400">${policy.premium}/year</p>
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <button className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-gray-300 flex items-center justify-center gap-2">
+                        <Plus className="w-4 h-4" />
+                        Add Policy
+                      </button>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+
+            {/* Sidebar sections would go here - similar to the image */}
+          </div>
+        </div>
+      </DashboardLayout>
+    )
+  }
+
   return (
     <DashboardLayout>
       <div className="p-6">
@@ -261,8 +339,8 @@ function InsuranceDashboardContent() {
           {/* Header */}
           <div className="flex justify-between items-start mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-white mb-2">Insurance Coverage</h1>
-              <p className="text-gray-400">Manage your policies and track coverage</p>
+              <h1 className="text-3xl font-bold text-white mb-2">Insurance Policies</h1>
+              <p className="text-gray-400">Manage and analyze your insurance portfolio.</p>
             </div>
             <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
               <Plus className="w-4 h-4" />
@@ -276,7 +354,7 @@ function InsuranceDashboardContent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
                   <Shield className="w-5 h-5 text-blue-400" />
-                  <CheckCircle className="w-4 h-4 text-green-400" />
+                  <span className="text-xs text-gray-400">Total: {policies.length}</span>
                 </div>
                 <p className="text-2xl font-bold text-white">{activePolicies}</p>
                 <p className="text-sm text-gray-400">Active Policies</p>
@@ -287,245 +365,275 @@ function InsuranceDashboardContent() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
                   <DollarSign className="w-5 h-5 text-green-400" />
-                  <span className="text-xs text-gray-400">/year</span>
+                  <span className="text-xs text-gray-400">Total: ${(totalPremium * 12 / 1000).toFixed(0)}k/year</span>
                 </div>
-                <p className="text-2xl font-bold text-white">${totalPremium.toLocaleString()}</p>
-                <p className="text-sm text-gray-400">Total Premium</p>
+                <p className="text-2xl font-bold text-white">${(totalPremium / 12).toFixed(0).toLocaleString()}</p>
+                <p className="text-sm text-gray-400">Average Premium</p>
               </CardContent>
             </Card>
             
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <Building className="w-5 h-5 text-cyan-400" />
-                  <TrendingUp className="w-4 h-4 text-green-400" />
+                  <Calendar className="w-5 h-5 text-yellow-400" />
+                  <span className="text-xs text-yellow-400">!</span>
                 </div>
-                <p className="text-2xl font-bold text-white">${(totalCoverage/1000000).toFixed(1)}M</p>
-                <p className="text-sm text-gray-400">Total Coverage</p>
+                <p className="text-2xl font-bold text-white">2</p>
+                <p className="text-sm text-gray-400">Expiring in 90 Days</p>
+                <p className="text-xs text-gray-500 mt-1">Renewals coming up</p>
               </CardContent>
             </Card>
             
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
-                  <FileText className="w-5 h-5 text-orange-400" />
-                  <span className="text-xs text-orange-400">{totalClaims} Total</span>
+                  <AlertTriangle className="w-5 h-5 text-red-400" />
+                  <span className="text-xs text-red-400">!</span>
                 </div>
-                <p className="text-2xl font-bold text-white">1</p>
-                <p className="text-sm text-gray-400">Open Claims</p>
+                <p className="text-2xl font-bold text-white">3</p>
+                <p className="text-sm text-gray-400">Coverage Gaps</p>
+                <p className="text-xs text-gray-500 mt-1">AI-detected issues</p>
               </CardContent>
             </Card>
           </div>
 
-          {/* Alerts */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-            <Card className="bg-orange-900/20 border border-orange-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-orange-400 mt-0.5" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-orange-300 mb-1">Auto Policy Renewal Soon</h3>
-                    <p className="text-sm text-gray-300 mb-2">
-                      Your Progressive auto policy expires in {getDaysUntil('2025-01-10')} days. 
-                      Review your coverage and compare rates.
-                    </p>
-                    <button className="text-sm text-orange-400 hover:text-orange-300 flex items-center gap-1">
-                      Review Policy <ChevronRight className="w-4 h-4" />
-                    </button>
+          {/* Tabs */}
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="flex justify-between items-center mb-6">
+              <TabsList className="bg-gray-800 border border-gray-700">
+                <TabsTrigger value="policies" className="data-[state=active]:bg-gray-700">Policies</TabsTrigger>
+                <TabsTrigger value="portfolio" className="data-[state=active]:bg-gray-700">Portfolio</TabsTrigger>
+              </TabsList>
+              
+              {activeTab === 'portfolio' && (
+                <div className="flex items-center gap-2">
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search properties..."
+                      className="bg-gray-800 border border-gray-700 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    />
                   </div>
+                  <button
+                    onClick={() => router.push('/dashboard/property')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+                  >
+                    <Plus className="w-4 h-4" />
+                    Add to Portfolio
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-blue-900/20 border border-blue-500/30">
-              <CardContent className="p-6">
-                <div className="flex items-start gap-3">
-                  <Info className="w-5 h-5 text-blue-400 mt-0.5" />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-blue-300 mb-1">Coverage Gap Detected</h3>
-                    <p className="text-sm text-gray-300 mb-2">
-                      Your personal property coverage may be insufficient. Consider increasing from $225k to $300k.
-                    </p>
-                    <button className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1">
-                      Update Coverage <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Active Policies */}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-white mb-4">Active Policies</h2>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {policies.filter(p => p.status === 'active').map((policy) => {
-                const Icon = getPolicyIcon(policy.type)
-                const daysUntilRenewal = getDaysUntil(policy.expirationDate)
-                
-                return (
-                  <Card key={policy.id} className="bg-gray-800 border-gray-700">
-                    <CardContent className="p-6">
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-12 h-12 bg-gray-700 rounded-lg flex items-center justify-center">
-                            <Icon className="w-6 h-6 text-blue-400" />
-                          </div>
-                          <div>
-                            <h3 className="font-semibold text-white">{policy.type}</h3>
-                            <p className="text-sm text-gray-400">{policy.carrier}</p>
-                          </div>
-                        </div>
-                        <Badge variant="default" className="bg-green-600">Active</Badge>
-                      </div>
-
-                      <div className="space-y-3 mb-4">
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Policy #</span>
-                          <span className="text-gray-300 font-mono">{policy.policyNumber}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Coverage</span>
-                          <span className="text-white font-medium">${policy.coverage.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Premium</span>
-                          <span className="text-white">${policy.premium}/year</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
-                          <span className="text-gray-400">Deductible</span>
-                          <span className="text-gray-300">${policy.deductible.toLocaleString()}</span>
-                        </div>
-                      </div>
-
-                      <div className="mb-4">
-                        <div className="flex justify-between text-xs mb-1">
-                          <span className="text-gray-400">Renewal in {daysUntilRenewal} days</span>
-                          <span className="text-gray-400">{new Date(policy.expirationDate).toLocaleDateString()}</span>
-                        </div>
-                        <Progress 
-                          value={((365 - daysUntilRenewal) / 365) * 100} 
-                          className="h-1.5"
-                        />
-                      </div>
-
-                      <div className="flex justify-between items-center">
-                        <div className="flex gap-3 text-xs">
-                          <span className="flex items-center gap-1 text-gray-400">
-                            <FileText className="w-3 h-3" />
-                            {policy.documents} docs
-                          </span>
-                          <span className="flex items-center gap-1 text-gray-400">
-                            <FileCheck className="w-3 h-3" />
-                            {policy.claims} claims
-                          </span>
-                        </div>
-                        <button className="text-blue-400 hover:text-blue-300">
-                          <ChevronRight className="w-5 h-5" />
-                        </button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )
-              })}
+              )}
             </div>
-          </div>
 
-          {/* Coverage Breakdown */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Coverage Limits</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  {coverages.map((coverage) => {
-                    const Icon = coverage.icon as React.ComponentType<{ className?: string }>
-                    const utilization = (coverage.used / coverage.limit) * 100
+            {/* Policies Tab Content */}
+            <TabsContent value="policies" className="space-y-6">
+              {policies.length === 0 ? (
+                <div className="text-center py-12">
+                  <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">No policies yet</h3>
+                  <p className="text-gray-400 mb-6">Start by adding your first insurance policy</p>
+                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg inline-flex items-center gap-2">
+                    <Plus className="w-5 h-5" />
+                    Add Your First Policy
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {policies.map((policy) => {
+                    const Icon = getPolicyIcon(policy.type)
+                    const statusColor = policy.status === 'active' ? 'bg-green-600' : 
+                                      policy.status === 'expired' ? 'bg-red-600' : 'bg-yellow-600'
+                    const statusText = policy.status.charAt(0).toUpperCase() + policy.status.slice(1)
                     
                     return (
-                      <div key={coverage.type} className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-2">
-                            {coverage.icon && React.createElement(coverage.icon as React.ComponentType<{ className?: string }>, { className: "w-4 h-4 text-gray-400" })}
-                            <span className="text-sm font-medium text-white">{coverage.type}</span>
+                      <Card key={policy.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer">
+                        <CardContent className="p-6">
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex items-center gap-3">
+                              <div className="w-10 h-10 bg-gray-700 rounded-lg flex items-center justify-center">
+                                <Icon className="w-5 h-5 text-blue-400" />
+                              </div>
+                              <div>
+                                <h3 className="font-semibold text-white">{policy.type}</h3>
+                                <p className="text-xs text-gray-400">{policy.carrier}</p>
+                              </div>
+                            </div>
+                            <Badge className={`${statusColor} text-white`}>{statusText}</Badge>
                           </div>
-                          <span className="text-sm text-gray-300">
-                            ${coverage.used.toLocaleString()} / ${coverage.limit.toLocaleString()}
-                          </span>
-                        </div>
-                        <Progress value={utilization} className="h-2" />
-                        {coverage.deductible > 0 && (
-                          <p className="text-xs text-gray-400">
-                            Deductible: ${coverage.deductible.toLocaleString()}
-                          </p>
-                        )}
-                      </div>
+
+                          <div className="space-y-2 mb-4">
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Policy Number</span>
+                              <span className="text-gray-300 font-mono text-xs">{policy.policyNumber}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Coverage</span>
+                              <span className="text-white font-medium">{formatCurrency(policy.coverage)}</span>
+                            </div>
+                            <div className="flex justify-between text-sm">
+                              <span className="text-gray-400">Premium</span>
+                              <span className="text-white">${policy.premium}/year</span>
+                            </div>
+                          </div>
+
+                          {policy.status === 'active' && (
+                            <div className="text-xs text-gray-400">
+                              Renews {new Date(policy.expirationDate).toLocaleDateString()}
+                            </div>
+                          )}
+                          
+                          <div className="flex justify-between items-center mt-4 pt-4 border-t border-gray-700">
+                            <div className="flex gap-2 text-xs text-gray-400">
+                              {policy.claims > 0 && <span>{policy.claims} claims</span>}
+                              <span>No claims</span>
+                            </div>
+                            <button className="text-blue-400 hover:text-blue-300 text-sm flex items-center gap-1">
+                              View Details
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </CardContent>
+                      </Card>
                     )
                   })}
                 </div>
-              </CardContent>
-            </Card>
+              )}
+            </TabsContent>
 
-            <Card className="bg-gray-800 border-gray-700">
-              <CardHeader>
-                <CardTitle className="text-white">Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
+            {/* Portfolio Tab Content */}
+            <TabsContent value="portfolio" className="space-y-6">
+              {properties.length === 0 ? (
+                <div className="text-center py-12">
+                  <Building className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                  <h3 className="text-xl font-semibold text-white mb-2">No properties in your portfolio</h3>
+                  <p className="text-gray-400 mb-6">Add properties to track their insurance coverage and value</p>
                   <button 
-                    onClick={() => router.push('/dashboard/claims')}
-                    className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
+                    onClick={() => router.push('/dashboard/property')}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg inline-flex items-center gap-2"
                   >
-                    <div className="flex items-center gap-3">
-                      <FileText className="w-5 h-5 text-blue-400" />
-                      <div>
-                        <p className="font-medium text-white">File a Claim</p>
-                        <p className="text-sm text-gray-400">Start a new insurance claim</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </button>
-
-                  <button className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Download className="w-5 h-5 text-green-400" />
-                      <div>
-                        <p className="font-medium text-white">Download Documents</p>
-                        <p className="text-sm text-gray-400">Get all policy documents</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </button>
-
-                  <button className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <Phone className="w-5 h-5 text-purple-400" />
-                      <div>
-                        <p className="font-medium text-white">Contact Agent</p>
-                        <p className="text-sm text-gray-400">Speak with your insurance agent</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
-                  </button>
-
-                  <button 
-                    onClick={() => router.push('/ai-tools/policy-chat')}
-                    className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-3">
-                      <Users className="w-5 h-5 text-cyan-400" />
-                      <div>
-                        <p className="font-medium text-white">Policy Advisor</p>
-                        <p className="text-sm text-gray-400">AI-powered policy assistance</p>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-5 h-5 text-gray-400" />
+                    <Plus className="w-5 h-5" />
+                    Add Your First Property
                   </button>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              ) : (
+                <>
+                  {/* Portfolio Header Stats */}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-white">{properties.length}</p>
+                            <p className="text-sm text-gray-400">Total Properties</p>
+                          </div>
+                          <Building className="w-8 h-8 text-blue-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-white">{formatCurrency(properties.reduce((sum, p) => sum + p.estimatedValue, 0))}</p>
+                            <p className="text-sm text-gray-400">Total Value</p>
+                          </div>
+                          <TrendingUp className="w-8 h-8 text-green-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-white">{properties.filter(p => p.policies.length > 0).length}</p>
+                            <p className="text-sm text-gray-400">Insured Properties</p>
+                          </div>
+                          <Shield className="w-8 h-8 text-green-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                    
+                    <Card className="bg-gray-800 border-gray-700">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-2xl font-bold text-white">{properties.filter(p => p.insurability === 'high').length}</p>
+                            <p className="text-sm text-gray-400">High Insurability</p>
+                          </div>
+                          <CheckCircle className="w-8 h-8 text-green-400" />
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </div>
+
+                  {/* Property Cards */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {properties.map((property) => (
+                      <Card 
+                        key={property.id} 
+                        className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer group"
+                        onClick={() => setSelectedProperty(property)}
+                      >
+                        <div className="relative h-48 bg-gray-900 overflow-hidden">
+                          <PropertyImage
+                            propertyId={property.id}
+                            propertyType={property.type}
+                            propertyName={property.name}
+                            size="medium"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          />
+                          <div className="absolute top-3 right-3">
+                            <Badge className={`${getInsurabilityColor(property.insurability)} backdrop-blur-sm`}>
+                              {property.insurability} insurability
+                            </Badge>
+                          </div>
+                        </div>
+                        
+                        <CardContent className="p-4">
+                          <h3 className="font-semibold text-white mb-1">{property.name}</h3>
+                          <p className="text-sm text-gray-400 flex items-center gap-1 mb-3">
+                            <MapPin className="w-3 h-3" />
+                            {property.city}, {property.state}
+                          </p>
+                          
+                          <div className="grid grid-cols-2 gap-2 text-sm mb-3">
+                            <div className="text-gray-400">
+                              Added:
+                            </div>
+                            <div className="text-gray-300">
+                              -
+                            </div>
+                            <div className="text-gray-400">
+                              Est. Value:
+                            </div>
+                            <div className="text-gray-300">
+                              {formatCurrency(property.estimatedValue)}
+                            </div>
+                            <div className="text-gray-400">
+                              Insurability:
+                            </div>
+                            <div className="text-gray-300">
+                              -
+                            </div>
+                          </div>
+                          
+                          <div className="flex justify-center pt-3 border-t border-gray-700">
+                            <button className="text-blue-400 hover:text-blue-300 flex items-center gap-1 text-sm">
+                              View Details
+                              <ChevronRight className="w-4 h-4" />
+                            </button>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                </>
+              )}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </DashboardLayout>

@@ -17,8 +17,10 @@ import { logger } from "@/lib/logger/production-logger"
 import { getPropertyImage, getPropertyImageByType, PropertyImageStyle } from '@/lib/ai/image-generation'
 
 interface PropertyImageProps {
+  propertyId?: string // Add support for propertyId
   propertyType?: string
   propertyName?: string
+  size?: string // Add support for size prop
   location?: string
   style?: PropertyImageStyle
   width?: number
@@ -30,8 +32,10 @@ interface PropertyImageProps {
 }
 
 export function PropertyImage({
+  propertyId, // Accept but don't use yet
   propertyType = 'Single Family Home',
   propertyName,
+  size, // Accept size prop for compatibility
   location = 'Florida',
   style = 'florida-style',
   width = 400,

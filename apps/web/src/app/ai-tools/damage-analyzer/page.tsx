@@ -39,6 +39,7 @@ import { toError } from '@claimguardian/utils'
 import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
+import { PermissionGuard } from '@/components/auth/permission-guard'
 import { CameraCapture } from '@/components/camera/camera-capture'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { AIBreadcrumb } from '@/components/ui/breadcrumb'
@@ -48,6 +49,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { useAuthDebug } from '@/hooks/use-auth-debug'
 import { FeatureLimitBadge } from '@/components/subscription/subscription-gate'
+import { AI_TOOLS_PERMISSIONS } from '@/types/permissions'
 import { useSubscription } from '@/hooks/use-subscription'
 
 // --- MOCK DATA AND TYPES ---
@@ -723,7 +725,12 @@ export default function DamageAnalyzerPage() {
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <DamageAnalyzerContent />
+        <PermissionGuard 
+          permission={AI_TOOLS_PERMISSIONS.DAMAGE_ANALYZER}
+          featureName="AI Damage Analyzer"
+        >
+          <DamageAnalyzerContent />
+        </PermissionGuard>
       </DashboardLayout>
     </ProtectedRoute>
   )
