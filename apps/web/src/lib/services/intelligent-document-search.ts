@@ -94,7 +94,7 @@ export class IntelligentDocumentSearch {
 
       this.isInitialized = true
     } catch (error) {
-      logger.error('Failed to initialize document search', error)
+      logger.error('Failed to initialize document search', error as Error)
       throw error
     }
   }

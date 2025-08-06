@@ -154,6 +154,7 @@ supabase/_migrations_archive/
 supabase/migrations-backup/
 supabase/migrations_backup*/
 supabase/migrations_archive*/
+supabase/migrations.archive.*/
 supabase/migrations_ai/
 supabase/migrations_consolidated/
 
@@ -162,6 +163,10 @@ supabase/config.toml.bak
 
 # Database backups
 supabase/backups/
+supabase/schema_backup_*.sql
+supabase/schema.sql.backup*
+supabase/schema.sql.new
+supabase/schema.sql.remote
 
 # ==============================================================================
 # LOGS & PROCESSING FILES
@@ -615,6 +620,14 @@ services/environmental-*/
 apps/web/src/components/admin/experimental/
 apps/web/src/components/admin/*-temp.*
 apps/web/src/components/admin/*-draft.*
+
+# Large CSV and data files (should be in data-platform/raw or external storage)
+*.csv
+!**/samples/**/*.csv
+!docs/**/*.csv
+!**/*example*.csv
+data/
+CleanedSplit*/
 
 # ==============================================================================
 # TEMPORARY EXCLUSIONS (REMOVE WHEN STABLE)

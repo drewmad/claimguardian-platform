@@ -61,6 +61,7 @@ const aiFeatures = [
   { id: 'damage-analyzer', label: 'Damage Analyzer', icon: Camera, href: '/ai-tools/damage-analyzer' },
   { id: 'policy-chat', label: 'Policy Advisor', icon: FileSearch, href: '/ai-tools/policy-chat' },
   { id: 'inventory-scanner', label: 'Inventory Scanner', icon: Package, href: '/ai-tools/inventory-scanner' },
+  { id: 'intelligent-document-search', label: 'Intelligent Document Search', icon: Brain, href: '/documents/intelligent-search' },
   { id: '3d-model-generator', label: '3D Model Generator', icon: Package, href: '/ai-tools/3d-model-generator' }
 ]
 
