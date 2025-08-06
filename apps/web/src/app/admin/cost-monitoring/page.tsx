@@ -5,7 +5,7 @@
 
 import { Metadata } from 'next'
 import { LiveCostDashboard } from '@/components/admin/live-cost-dashboard'
-import { DashboardLayout } from '@/components/layouts/dashboard-layout'
+import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 
 export const metadata: Metadata = {
   title: 'AI Cost Monitoring - Admin Dashboard | ClaimGuardian',

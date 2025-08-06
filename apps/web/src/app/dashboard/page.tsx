@@ -24,7 +24,7 @@ import {
   Zap, Eye, Plus, ArrowUpRight, ArrowDownRight,
   Clock, MapPin, Thermometer, Timer, Settings2,
   ShieldCheck, Receipt, HardHat, Siren, Code,
-  Menu, X, Info, Zap
+  Menu, X, Info
 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
