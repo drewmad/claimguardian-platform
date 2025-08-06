@@ -11,7 +11,7 @@
  */
 import { create } from 'zustand'
 
-type ModalType = 'login' | 'signup' | 'forgotPassword' | 'content' | 'securityQuestions' | 'sessionWarning'
+type ModalType = 'login' | 'signup' | 'forgotPassword' | 'content' | 'securityQuestions' | 'sessionWarning' | 'success' | 'confirmation' | 'settings'
 
 interface ModalData {
   title?: string

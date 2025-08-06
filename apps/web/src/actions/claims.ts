@@ -1,14 +1,14 @@
 /**
  * @fileMetadata
- * @purpose "Claims management server actions for CRUD operations"
+ * @purpose "Claims management server actions for CRUD operations with production hardening"
  * @owner claims-team
- * @dependencies ["@claimguardian/db", "@claimguardian/utils"]
+ * @dependencies ["@claimguardian/db", "@claimguardian/utils", "@/lib/database", "@/lib/monitoring"]
  * @exports ["createClaim", "updateClaim", "deleteClaim", "getClaim", "getUserClaims", "uploadClaimDocument", "generateClaimReport"]
  * @complexity high
- * @tags ["server-action", "claims", "database", "documents"]
+ * @tags ["server-action", "claims", "database", "documents", "production-hardened"]
  * @status stable
- * @lastModifiedBy Claude AI Assistant
- * @lastModifiedDate 2025-08-04T22:05:00Z
+ * @lastModifiedBy Claude AI Assistant - Production Hardening
+ * @lastModifiedDate 2025-08-06T00:00:00Z
  */
 
 'use server'
@@ -16,6 +16,10 @@
 import { createClient } from '@/lib/supabase/server'
 import type { ClaimInsert, ClaimUpdate } from '@claimguardian/db'
 import { toError } from '@claimguardian/utils'
+import { PooledDatabaseOperations } from '@/lib/database/connection-pool'
+import { logger } from '@/lib/logger/production-logger'
+import { asyncErrorHandler, withRetry } from '@/lib/error-handling/async-error-handler'
+import { cacheManager, CachePatterns } from '@/lib/cache/redis-cache-manager'
 export interface ClaimResult {
   success: boolean
   error?: string
@@ -37,55 +41,111 @@ export async function createClaim({
   description: string
   incidentDate?: string
 }): Promise<ClaimResult> {
-  try {
-    const supabase = await createClient()
-    
-    // Get current user
-    const { data: { user }, error: authError } = await supabase.auth.getUser()
-    if (authError || !user) {
-      return {
-        success: false,
-        error: 'Authentication required'
+  const operationStart = Date.now()
+  
+  const result = await asyncErrorHandler.executeWithFullResilience(
+    async () => {
+      const supabase = await createClient()
+      
+      // Get current user with retry logic
+      const authResult = await withRetry(
+        async () => {
+          const { data: { user }, error: authError } = await supabase.auth.getUser()
+          if (authError || !user) {
+            throw new Error('Authentication required')
+          }
+          return user
+        },
+        3,
+        'create-claim-auth'
+      )
+
+      if (!authResult.success) {
+        throw new Error(authResult.error.message)
       }
-    }
 
-    const claimData: ClaimInsert = {
-      user_id: user.id,
-      property_id: propertyId,
-      damage_type: claimType, // Map claimType to damage_type
-      description,
-      date_of_loss: incidentDate || new Date().toISOString(),
-      date_reported: new Date().toISOString(),
-      estimated_value: null,
-      adjuster_name: null,
-      adjuster_phone: null,
-      adjuster_email: null,
-      status: 'draft'
-    }
+      const user = authResult.data
 
-    const { data, error } = await supabase
-      .from('claims')
-      .insert(claimData)
-      .select()
-      .single()
-
-    if (error) {
-      return {
-        success: false,
-        error: error.message
+      const claimData: ClaimInsert = {
+        user_id: user.id,
+        property_id: propertyId,
+        damage_type: claimType,
+        description,
+        date_of_loss: incidentDate || new Date().toISOString(),
+        date_reported: new Date().toISOString(),
+        estimated_value: null,
+        adjuster_name: null,
+        adjuster_phone: null,
+        adjuster_email: null,
+        status: 'draft'
       }
-    }
 
-    return {
-      success: true,
-      data
+      // Use pooled database operations for better performance
+      const insertResult = await PooledDatabaseOperations.executeQuery(
+        async (client) => {
+          const { data, error } = await client
+            .from('claims')
+            .insert(claimData)
+            .select()
+            .single()
+
+          if (error) throw error
+          return data
+        },
+        'create-claim'
+      )
+
+      if (!insertResult.success) {
+        throw insertResult.error
+      }
+
+      // Invalidate user claims cache
+      await cacheManager.delete(CachePatterns.userKey(user.id, 'claims'))
+      
+      // Log successful claim creation for analytics
+      logger.info('Claim created successfully', {
+        userId: user.id,
+        claimId: insertResult.data.id,
+        propertyId,
+        claimType,
+        duration: Date.now() - operationStart
+      })
+
+      return insertResult.data
+    },
+    {
+      retryConfig: {
+        maxAttempts: 3,
+        baseDelay: 1000,
+        maxDelay: 5000,
+        exponential: true,
+        jitter: true
+      },
+      timeoutConfig: {
+        timeoutMs: 30000,
+        timeoutMessage: 'Claim creation timed out'
+      },
+      circuitBreakerKey: 'create-claim',
+      context: 'create-claim'
     }
-  } catch (error) {
-    const err = toError(error)
+  )
+
+  if (!result.success) {
+    logger.error('Failed to create claim', result.error, {
+      propertyId,
+      claimType,
+      duration: Date.now() - operationStart
+    })
+
     return {
       success: false,
-      error: err.message
+      error: result.error.message
     }
+  }
+
+  return {
+    success: true,
+    data: result.data
   }
 }
 

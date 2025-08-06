@@ -1,0 +1,190 @@
+# Prometheus Configuration for ClaimGuardian Production Monitoring
+# Comprehensive metrics collection and alerting rules
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  scrape_timeout: 10s
+  external_labels:
+    cluster: 'claimguardian-production'
+    environment: 'production'
+
+# Alertmanager configuration
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+# Rules and alerts
+rule_files:
+  - "alerts/*.yml"
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus itself
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # Node Exporter for system metrics
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    scrape_interval: 15s
+    metrics_path: /metrics
+
+  # ClaimGuardian Application instances
+  - job_name: 'claimguardian-app'
+    static_configs:
+      - targets: 
+        - 'app-1:3000'
+        - 'app-2:3000'
+    scrape_interval: 30s
+    metrics_path: /api/metrics
+    scrape_timeout: 10s
+    params:
+      format: ['prometheus']
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: instance
+      - source_labels: [__address__]
+        regex: '([^:]+):(.*)'
+        target_label: service
+        replacement: '${1}'
+
+  # HAProxy Load Balancer
+  - job_name: 'haproxy'
+    static_configs:
+      - targets: ['load-balancer:8404']
+    scrape_interval: 30s
+    metrics_path: /stats
+    params:
+      stats: ['']
+      csv: ['']
+
+  # Redis Cache
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis:6379']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # Background Worker
+  - job_name: 'claimguardian-worker'
+    static_configs:
+      - targets: ['worker:3000']
+    scrape_interval: 60s
+    metrics_path: /api/worker/metrics
+    scrape_timeout: 15s
+
+  # MinIO Storage
+  - job_name: 'minio'
+    static_configs:
+      - targets: ['minio:9000']
+    scrape_interval: 60s
+    metrics_path: /minio/v2/metrics/cluster
+
+  # Database metrics (if available)
+  - job_name: 'postgres-exporter'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+    metrics_path: /metrics
+
+  # External service monitoring
+  - job_name: 'external-services'
+    static_configs:
+      - targets:
+        - 'api.openai.com:443'
+        - 'generativelanguage.googleapis.com:443'
+    scrape_interval: 300s  # 5 minutes
+    metrics_path: /
+    scheme: https
+    params:
+      module: [http_2xx]
+
+  # Custom application metrics
+  - job_name: 'claimguardian-business-metrics'
+    static_configs:
+      - targets: ['app-1:3000', 'app-2:3000']
+    scrape_interval: 60s
+    metrics_path: /api/admin/metrics/business
+    params:
+      format: ['prometheus']
+
+  # SSL Certificate monitoring
+  - job_name: 'ssl-certificates'
+    static_configs:
+      - targets:
+        - 'claimguardianai.com:443'
+    scrape_interval: 86400s  # Daily
+    metrics_path: /probe
+    params:
+      module: [ssl_cert]
+
+# Recording rules for performance optimization
+recording_rules:
+  # Application performance rules
+  - name: claimguardian.performance
+    interval: 30s
+    rules:
+      - record: claimguardian:request_rate_5m
+        expr: rate(http_requests_total[5m])
+      
+      - record: claimguardian:error_rate_5m
+        expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
+      
+      - record: claimguardian:response_time_p95_5m
+        expr: histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))
+      
+      - record: claimguardian:response_time_p99_5m
+        expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
+
+  # System resource rules
+  - name: claimguardian.resources
+    interval: 60s
+    rules:
+      - record: claimguardian:cpu_usage_avg
+        expr: avg(100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100))
+      
+      - record: claimguardian:memory_usage_percent
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100
+      
+      - record: claimguardian:disk_usage_percent
+        expr: (1 - (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"})) * 100
+
+  # Business metrics rules
+  - name: claimguardian.business
+    interval: 300s  # 5 minutes
+    rules:
+      - record: claimguardian:active_users_5m
+        expr: increase(user_sessions_total[5m])
+      
+      - record: claimguardian:claims_created_hourly
+        expr: increase(claims_created_total[1h])
+      
+      - record: claimguardian:ai_operations_per_hour
+        expr: increase(ai_operations_total[1h])
+      
+      - record: claimguardian:revenue_impact_hourly
+        expr: increase(revenue_events_total[1h]) * on() group_left() avg_revenue_per_user
+
+# Storage configuration
+storage:
+  tsdb:
+    path: /prometheus
+    retention.time: 30d
+    retention.size: 50GB
+    min-block-duration: 2h
+    max-block-duration: 25h
+
+# Remote write configuration (for long-term storage)
+remote_write:
+  - url: "https://prometheus-remote-write-endpoint.example.com/api/v1/write"
+    queue_config:
+      max_samples_per_send: 1000
+      max_shards: 200
+      capacity: 2500
