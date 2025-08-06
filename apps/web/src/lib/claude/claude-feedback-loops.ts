@@ -218,7 +218,8 @@ class ClaudeFeedbackLoops {
 
       // Update Learning Application Rate
       const learningRateMetric = this.findMetricByName('Learning Application Rate')
-      if (learningRateMetric && abTestReport.treatmentGroup.taskCount > 0) {
+      const taskCount = abTestReport.treatmentGroup.sessions * abTestReport.treatmentGroup.avgTasksPerSession
+      if (learningRateMetric && taskCount > 0) {
         // Calculate based on A/B test data
         const learningRate = abTestReport.treatmentGroup.avgConfidence || 0.78
         this.updateMetric(learningRateMetric.id, learningRate)
@@ -227,7 +228,7 @@ class ClaudeFeedbackLoops {
       // Update ROI
       const roiMetric = this.findMetricByName('ROI Percentage')
       if (roiMetric) {
-        const newROI = analyticsReport.analytics.roi.netROI
+        const newROI = analyticsReport.roiMetrics.netROI
         this.updateMetric(roiMetric.id, newROI)
       }
 
