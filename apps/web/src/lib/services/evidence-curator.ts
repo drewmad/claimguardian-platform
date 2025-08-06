@@ -630,7 +630,7 @@ Provide JSON response with:
       }
     }
 
-    return requirements[claimType] || requirements.hurricane
+    return requirements[claimType as keyof typeof requirements] || requirements.hurricane
   }
 
   /**
@@ -690,7 +690,7 @@ Provide JSON response with:
       legal_documents: 'Collect all official reports and legal documentation related to the incident.'
     }
 
-    return guidance[category] || 'Follow standard documentation procedures for this evidence type.'
+    return guidance[category as keyof typeof guidance] || 'Follow standard documentation procedures for this evidence type.'
   }
 
   /**

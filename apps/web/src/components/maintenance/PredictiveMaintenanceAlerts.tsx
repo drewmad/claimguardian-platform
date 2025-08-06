@@ -280,11 +280,11 @@ export function PredictiveMaintenanceAlerts() {
               <Badge variant="outline">Health</Badge>
             </div>
             <p className="text-2xl font-bold">
-              {Math.round(healthData.reduce((sum, s) => sum + s.health, 0) / healthData.length)}%
+              {systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0}%
             </p>
             <p className="text-sm text-gray-500">Overall Health</p>
             <Progress 
-              value={Math.round(healthData.reduce((sum, s) => sum + s.health, 0) / healthData.length)} 
+              value={systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0} 
               className="mt-2 h-2"
             />
           </CardContent>

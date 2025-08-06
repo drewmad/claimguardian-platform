@@ -27,6 +27,7 @@ interface Property {
   claimsCount: number
   riskLevel: 'low' | 'medium' | 'high'
   county: string
+  lastUpdated: Date
 }
 
 interface MapLayer {

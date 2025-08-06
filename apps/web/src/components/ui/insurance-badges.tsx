@@ -17,6 +17,7 @@ export type InsuranceBadgeVariant =
   | 'expired' 
   | 'pending'
   | 'cancelled'
+  | 'none'
   | 'insurability-high'
   | 'insurability-medium' 
   | 'insurability-low'
@@ -61,6 +62,11 @@ const badgeConfig = {
     className: 'bg-gray-600/20 text-gray-400 border-gray-600/30',
     icon: XCircle,
     label: 'Cancelled'
+  },
+  none: {
+    className: 'bg-gray-600/20 text-gray-400 border-gray-600/30',
+    icon: XCircle,
+    label: 'No Insurance'
   },
   
   // Insurability Levels

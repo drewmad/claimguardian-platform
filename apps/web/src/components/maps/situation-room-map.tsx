@@ -17,8 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import type { 
   ThreatAssessment, 
-  CommunityIncident,
-  PropertyStatus
+  CommunityIncident
 } from '@/types/situation-room'
 import { ThreatLevel } from '@/types/situation-room'
 
@@ -62,7 +61,7 @@ interface SituationRoomMapProps {
   properties?: Property[]
   threats?: ThreatAssessment[]
   incidents?: CommunityIncident[]
-  propertyStatus?: PropertyStatus | null
+  propertyStatus?: any | null
   emergencyMode?: boolean
   onPropertyClick?: (property: Property) => void
   onThreatClick?: (threat: ThreatAssessment) => void
@@ -151,8 +150,8 @@ export function SituationRoomMap({
         hasActiveThreats: nearbyThreats.length > 0,
         emergencyMode: nearbyThreats.some(t => t.severity === ThreatLevel.EMERGENCY),
         // Mock systems data - in real app would come from property status
-        systemsOnline: propertyStatus?.systems?.online || 12,
-        totalSystems: propertyStatus?.systems?.total || 15
+        systemsOnline: 12,
+        totalSystems: 15
       }
     })
   }, [properties, threatMarkers, propertyStatus])
@@ -321,7 +320,6 @@ export function SituationRoomMap({
         onPropertyClick={handlePropertyClick}
         height={height}
         mapStyle={mapStyle === 'dark' ? 'mapbox://styles/mapbox/dark-v11' : 'mapbox://styles/mapbox/satellite-streets-v12'}
-        showPropertyDetails={false} // We'll handle details in situation room context
       />
 
       {/* Selected Property Details */}

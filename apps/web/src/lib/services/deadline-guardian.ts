@@ -139,7 +139,7 @@ export class DeadlineGuardianService {
       const hasKeywords = pattern.keywords.some(keyword => text.includes(keyword))
       if (hasKeywords && dates.length > 0) {
         // Use the first found date as potential deadline
-        const potentialDate = this.parseDate(dates[0])
+        const potentialDate = dates[0] ? this.parseDate(dates[0]) : null
         if (potentialDate && isAfter(potentialDate, new Date())) {
           deadlines.push({
             id: `deadline-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -459,8 +459,14 @@ export class DeadlineGuardianService {
       }
 
       deadlines.forEach(deadline => {
-        stats[deadline.status as keyof typeof stats] = (stats[deadline.status as keyof typeof stats] || 0) + 1
-        stats.by_priority[deadline.priority]++
+        // Update status counts
+        if (deadline.status in stats) {
+          (stats as any)[deadline.status] = ((stats as any)[deadline.status] || 0) + 1
+        }
+        // Update priority counts
+        if (deadline.priority in stats.by_priority) {
+          stats.by_priority[deadline.priority as keyof typeof stats.by_priority]++
+        }
       })
 
       return stats

@@ -55,6 +55,13 @@ export interface ThreatAssessment {
   aiAnalysis: AIThreatAnalysis
   lastUpdated: Date
   isActive: boolean
+  location?: {
+    coordinates: [number, number] // [longitude, latitude]
+    address?: string
+    zipCode?: string
+    county?: string
+  }
+  radius?: number // threat radius in meters
 }
 
 export interface AIThreatAnalysis {
