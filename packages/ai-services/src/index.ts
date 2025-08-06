@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "AI services package main export with Gemini 2.0 optimizations"
+ * @dependencies ["@google/generative-ai", "openai"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
@@ -38,3 +38,12 @@ export { AIService, aiService } from './service';
 export { ClarityService } from './features/clarity/clarity.service';
 export { SentinelService } from './features/sentinel/sentinel.service';
 export { DocumentCategorizerService } from './features/categorizer/document-categorizer.service';
+
+// Export Gemini 2.0 optimizations
+export { GeminiStrategy, GeminiCostAnalyzer } from './strategies/gemini-strategy';
+export { 
+  GeminiInsuranceService, 
+  createFloridaInsuranceAI,
+  type FloridaClaimAnalysis,
+  type PolicyExtractionResult 
+} from './services/gemini-insurance.service';

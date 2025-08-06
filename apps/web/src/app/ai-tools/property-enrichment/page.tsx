@@ -1,3 +1,5 @@
+'use client'
+
 /**
  * @fileMetadata
  * @owner @ai-team

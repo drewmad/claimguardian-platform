@@ -3,7 +3,7 @@
  * @purpose "Provides utility functions for formatting data such as phone numbers, currency, and dates."
  * @owner frontend-team
  * @dependencies []
- * @exports ["formatPhoneNumber", "formatCurrency", "formatDate"]
+ * @exports ["formatPhoneNumber", "formatCurrency", "formatDate", "formatDuration"]
  * @lastModifiedBy Drew Madison
  * @lastModifiedDate 2025-07-03T23:09:02-04:00
  * @complexity low
@@ -50,4 +50,16 @@ export const formatDate = (date: Date | string | number): string => {
     month: 'long',
     day: 'numeric'
   }).format(d)
+}
+
+export const formatDuration = (milliseconds: number): string => {
+  if (milliseconds < 1000) {
+    return `${milliseconds}ms`
+  }
+  const seconds = milliseconds / 1000
+  if (seconds < 60) {
+    return `${seconds.toFixed(1)}s`
+  }
+  const minutes = seconds / 60
+  return `${minutes.toFixed(1)}m`
 }
