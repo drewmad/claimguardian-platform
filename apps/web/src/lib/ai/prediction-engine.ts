@@ -253,7 +253,7 @@ export class PredictionEngine {
         .limit(100)
 
       // Market data analysis
-      const marketData = await this.analyzeMarketData((property as unknown).city, (property as unknown).state)
+      const marketData = await this.analyzeMarketData((property as any).city, (property as any).state)
       
       // Cost calculation with ML model
       const baseCost = this.calculateBaseCost(damageType, severity, property)
@@ -443,10 +443,10 @@ export class PredictionEngine {
     const factors: RiskFactor[] = []
     
     // Environmental factors
-    if ((property as unknown).metadata?.flood_zone && (property as unknown).metadata.flood_zone !== 'X') {
+    if ((property as any).metadata?.flood_zone && (property as any).metadata.flood_zone !== 'X') {
       factors.push({
         type: 'environmental',
-        description: `Property in flood zone ${(property as unknown).metadata.flood_zone}`,
+        description: `Property in flood zone ${(property as any).metadata.flood_zone}`,
         impact_score: 75,
         mitigation_suggestions: ['Consider flood insurance', 'Install flood barriers', 'Elevate utilities']
       })
@@ -464,7 +464,7 @@ export class PredictionEngine {
     }
 
     // Age-based structural factors
-    const propertyAge = new Date().getFullYear() - ((property as unknown).year_built || 2000)
+    const propertyAge = new Date().getFullYear() - ((property as any).year_built || 2000)
     if (propertyAge > 30) {
       factors.push({
         type: 'structural',
@@ -492,7 +492,7 @@ export class PredictionEngine {
       'mobile_home': 1.4
     }
     
-    baseScore *= propertyTypeMultipliers[(property as unknown).property_type as keyof typeof propertyTypeMultipliers] || 1.0
+    baseScore *= propertyTypeMultipliers[(property as any).property_type as keyof typeof propertyTypeMultipliers] || 1.0
     
     // Cap at 95 to maintain realism
     return Math.min(Math.round(baseScore), 95)
@@ -548,7 +548,7 @@ export class PredictionEngine {
       'hail': { minor: 3000, moderate: 10000, major: 30000, severe: 100000 }
     }
     
-    return (baseCosts as unknown)[damageType]?.[severity] || 10000
+    return (baseCosts as any)[damageType]?.[severity] || 10000
   }
 
   private applyMarketFactors(baseCost: number, marketData: any): number {
@@ -583,7 +583,7 @@ export class PredictionEngine {
       'hail': { minor: 3, moderate: 7, major: 21, severe: 60 }
     }
     
-    const repairDays = (timelines as unknown)[damageType]?.[severity] || 14
+    const repairDays = (timelines as any)[damageType]?.[severity] || 14
     
     return {
       inspection_days: 2,
@@ -741,7 +741,7 @@ export class PredictionEngine {
       'structural': 15000
     }
     
-    const baseCost = (baseCosts as unknown)[system] || 5000
+    const baseCost = (baseCosts as any)[system] || 5000
     const propertyValueMultiplier = ((property as any).current_value || 200000) / 200000
     
     return Math.round(baseCost * propertyValueMultiplier)
@@ -759,7 +759,7 @@ export class PredictionEngine {
       ]
     }
     
-    return (actions as unknown)[system] || []
+    return (actions as any)[system] || []
   }
 
   private determineUrgencyLevel(predictedDate: Date, probability: number): 'low' | 'medium' | 'high' | 'critical' {
@@ -781,6 +781,6 @@ export class PredictionEngine {
       'consider major renovations': 25000
     }
     
-    return (costEstimates as unknown)[action.toLowerCase()] || 1000
+    return (costEstimates as any)[action.toLowerCase()] || 1000
   }
 }

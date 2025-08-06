@@ -20,6 +20,7 @@ import {
   Camera,
   CheckCircle,
   DollarSign,
+  FileText,
   Home,
   Loader2,
   Shield
@@ -729,7 +730,6 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
           <Progress value={(currentStep + 1) / WIZARD_STEPS.length * 100} className="mb-4" />
           <div className="flex justify-between">
             {WIZARD_STEPS.map((step, index) => {
-              const Icon = step.icon
               const isActive = index === currentStep
               const isCompleted = index < currentStep
               
@@ -747,7 +747,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
                     {isCompleted ? (
                       <CheckCircle className="h-5 w-5" />
                     ) : (
-                      <Icon className="h-5 w-5" />
+                      <FileText className="h-5 w-5" />
                     )}
                   </div>
                   <span className="text-xs text-center hidden md:block">{step.title}</span>

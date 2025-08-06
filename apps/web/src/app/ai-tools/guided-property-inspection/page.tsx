@@ -437,7 +437,7 @@ export default function GuidedPropertyInspectionPage() {
                             <div key={room.id} className="p-3 bg-gray-700/50 rounded-lg">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-3">
-                                  <room.icon className="h-5 w-5 text-gray-400" />
+                                  <Home className="h-5 w-5 text-gray-400" />
                                   <span className="text-white">{room.name}</span>
                                 </div>
                                 <Badge variant="outline" className="text-xs">
@@ -734,7 +734,7 @@ export default function GuidedPropertyInspectionPage() {
                             <div key={room.id} className="space-y-2">
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-2">
-                                  <room.icon className={`h-4 w-4 ${
+                                  <Home className={`h-4 w-4 ${
                                     index === currentRoomIndex ? 'text-blue-400' :
                                     room.status === 'completed' ? 'text-green-400' : 'text-gray-500'
                                   }`} />

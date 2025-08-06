@@ -244,13 +244,13 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.THREAT_UPDATE)) {
       const threatChannel = supabase
         .channel(`threats:${propertyId}`)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: '*',
           schema: 'public',
           table: 'threat_assessments',
           filter: `property_id=eq.${propertyId}`
         }, handleThreatUpdate)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: '*',
           schema: 'public',
           table: 'ai_analyses',
@@ -277,13 +277,13 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.INTELLIGENCE_FEED)) {
       const intelligenceChannel = supabase
         .channel(`intelligence:${propertyId}`)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: 'INSERT',
           schema: 'public',
           table: 'intelligence_feeds',
           filter: `property_id=eq.${propertyId}`
         }, handleIntelligenceUpdate)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: 'INSERT',
           schema: 'public',
           table: 'environmental_data',
@@ -308,13 +308,13 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.PROPERTY_ALERT)) {
       const propertyChannel = supabase
         .channel(`property:${propertyId}`)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: '*',
           schema: 'public',
           table: 'property_systems',
           filter: `property_id=eq.${propertyId}`
         }, handlePropertySystemUpdate)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: '*',
           schema: 'public',
           table: 'property_alerts',
@@ -363,7 +363,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.AI_RECOMMENDATION)) {
       const aiChannel = supabase
         .channel(`ai:${propertyId}`)
-        .on('postgres_changes' as unknown, {
+        .on('postgres_changes' as any, {
           event: 'INSERT',
           schema: 'public',
           table: 'ai_recommendations',

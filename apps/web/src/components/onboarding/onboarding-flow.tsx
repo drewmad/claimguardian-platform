@@ -12,6 +12,7 @@
 
 import { 
   UserCheck,
+  UserPlus,
   Shield,
   Sparkles,
   X,
@@ -418,7 +419,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
                   {step.completed ? (
                     <CheckCircle className="w-6 h-6" />
                   ) : (
-                    <step.icon className="w-6 h-6" />
+                    <UserPlus className="w-6 h-6" />
                   )}
                 </div>
                 {index < steps.length - 1 && (

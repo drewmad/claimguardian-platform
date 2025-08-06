@@ -1024,7 +1024,6 @@ function PersonalPropertyContent() {
             <TabsContent value="rooms" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mockRooms.map(room => {
-                  const Icon = room.icon
                   const roomItems = items.filter(item => item.room === room.name)
                   
                   return (
@@ -1033,7 +1032,7 @@ function PersonalPropertyContent() {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-3">
                             <div className="p-3 bg-blue-600/20 rounded-lg">
-                              <Icon className="h-6 w-6 text-blue-400" />
+                              <Home className="h-6 w-6 text-blue-400" />
                             </div>
                             <div>
                               <h3 className="font-semibold text-white">{room.name}</h3>
