@@ -7,7 +7,7 @@
  */
 'use server'
 
-import { createServerSupabaseClient } from '@/lib/supabase/server'
+import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
 
 export interface InsurancePolicy {
@@ -54,7 +54,7 @@ export interface PolicyWithProperty extends InsurancePolicy {
 
 export async function getUserPolicies(): Promise<{ data: PolicyWithProperty[] | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -93,7 +93,7 @@ export async function getUserPolicies(): Promise<{ data: PolicyWithProperty[] | 
 
 export async function getPolicyById(policyId: string): Promise<{ data: PolicyWithProperty | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -133,7 +133,7 @@ export async function getPolicyById(policyId: string): Promise<{ data: PolicyWit
 
 export async function createPolicy(policy: Omit<InsurancePolicy, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<{ data: InsurancePolicy | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -164,7 +164,7 @@ export async function createPolicy(policy: Omit<InsurancePolicy, 'id' | 'user_id
 
 export async function updatePolicy(policyId: string, updates: Partial<InsurancePolicy>): Promise<{ data: InsurancePolicy | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -195,7 +195,7 @@ export async function updatePolicy(policyId: string, updates: Partial<InsuranceP
 
 export async function deletePolicy(policyId: string): Promise<{ error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -223,7 +223,7 @@ export async function deletePolicy(policyId: string): Promise<{ error: string | 
 
 export async function getPolicyClaims(policyId: string): Promise<{ data: any[] | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
@@ -251,7 +251,7 @@ export async function getPolicyClaims(policyId: string): Promise<{ data: any[] |
 
 export async function getPolicyDocuments(policyId: string): Promise<{ data: any[] | null; error: string | null }> {
   try {
-    const supabase = await createServerSupabaseClient()
+    const supabase = await createClient()
     
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {

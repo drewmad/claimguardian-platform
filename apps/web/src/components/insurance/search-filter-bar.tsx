@@ -8,7 +8,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Search, Filter, X, Calendar, DollarSign, Shield, SortAsc, SortDesc } from 'lucide-react'
+import { Search, Filter, X, Calendar, DollarSign, Shield, SortAsc, SortDesc, Building } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
 import { cn } from '@/lib/utils'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -16,6 +17,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Card, CardContent } from '@/components/ui/card-variants'
+import { slideInRight, fadeInUp } from '@/lib/animations'
 
 export interface FilterOptions {
   search: string
@@ -119,22 +121,34 @@ export function SearchFilterBar({
         </div>
 
         {/* Filter Toggle Button */}
-        <Button
-          variant="outline"
-          onClick={() => setIsFilterOpen(!isFilterOpen)}
-          className={cn(
-            "gap-2 border-gray-700",
-            isFilterOpen && "bg-gray-700"
-          )}
+        <motion.div
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
         >
-          <Filter className="w-4 h-4" />
-          Filters
-          {activeFilterCount > 0 && (
-            <span className="ml-1 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full">
-              {activeFilterCount}
-            </span>
-          )}
-        </Button>
+          <Button
+            variant="outline"
+            onClick={() => setIsFilterOpen(!isFilterOpen)}
+            className={cn(
+              "gap-2 border-gray-700",
+              isFilterOpen && "bg-gray-700"
+            )}
+          >
+            <Filter className="w-4 h-4" />
+            Filters
+            <AnimatePresence>
+              {activeFilterCount > 0 && (
+                <motion.span 
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0, opacity: 0 }}
+                  className="ml-1 px-2 py-0.5 bg-blue-600 text-white text-xs rounded-full"
+                >
+                  {activeFilterCount}
+                </motion.span>
+              )}
+            </AnimatePresence>
+          </Button>
+        </motion.div>
 
         {/* Sort Options */}
         <Select
@@ -162,9 +176,16 @@ export function SearchFilterBar({
       </div>
 
       {/* Expanded Filter Panel */}
-      {isFilterOpen && (
-        <Card variant="insurance">
-          <CardContent className="p-6">
+      <AnimatePresence>
+        {isFilterOpen && (
+          <motion.div
+            variants={slideInRight}
+            initial="initial"
+            animate="animate"
+            exit="exit"
+          >
+            <Card variant="insurance">
+              <CardContent className="p-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Policy Types */}
               <div>
@@ -281,23 +302,29 @@ export function SearchFilterBar({
 
             {/* Actions */}
             <div className="mt-6 flex justify-between">
-              <Button
-                variant="ghost"
-                onClick={clearFilters}
-                className="text-gray-400 hover:text-white"
-              >
-                Clear All Filters
-              </Button>
-              <Button
-                onClick={() => setIsFilterOpen(false)}
-                className="bg-blue-600 hover:bg-blue-700"
-              >
-                Apply Filters
-              </Button>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  variant="ghost"
+                  onClick={clearFilters}
+                  className="text-gray-400 hover:text-white"
+                >
+                  Clear All Filters
+                </Button>
+              </motion.div>
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <Button
+                  onClick={() => setIsFilterOpen(false)}
+                  className="bg-blue-600 hover:bg-blue-700"
+                >
+                  Apply Filters
+                </Button>
+              </motion.div>
             </div>
           </CardContent>
         </Card>
-      )}
+      </motion.div>
+    )}
+  </AnimatePresence>
     </div>
   )
 }

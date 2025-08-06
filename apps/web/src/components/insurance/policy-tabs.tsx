@@ -185,7 +185,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 <div className="flex items-center justify-between">
                   <div>
                     <p className="text-sm text-gray-400">Status</p>
-                    <InsuranceBadge variant="active" className="mt-1" />
+                    <InsuranceBadge variant="active" className="mt-1">Active</InsuranceBadge>
                   </div>
                   <Clock className="w-8 h-8 text-green-400" />
                 </div>
@@ -375,7 +375,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                       </div>
                       <div className="text-right">
                         <p className="text-white font-semibold">{formatCurrency(claim.amount)}</p>
-                        <InsuranceBadge variant={`claim-${claim.status}`} />
+                        <InsuranceBadge variant={`claim-${claim.status}`}>{claim.status}</InsuranceBadge>
                       </div>
                     </div>
                   </div>

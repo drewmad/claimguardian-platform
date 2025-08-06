@@ -10,9 +10,10 @@
  */
 'use client'
 
-import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package, Search, Filter, Grid, List, ArrowLeft, MapPin, Bed, Bath, Square, Calendar, Tag, ExternalLink, Loader2 } from 'lucide-react'
+import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package, Search, Filter, Grid, List, ArrowLeft, MapPin, Bed, Bath, Square, Calendar, Tag, ExternalLink, Loader2, Archive } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
@@ -23,6 +24,17 @@ import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PropertyImage } from '@/components/ui/property-image'
 import { InsuranceEmptyState } from '@/components/ui/empty-state'
+import { SearchFilterBar, type InsuranceFilterOptions } from '@/components/insurance/search-filter-bar'
+import { InsuranceStatsCards } from '@/components/insurance/insurance-stats-cards'
+import { PropertyPolicyCard } from '@/components/insurance/property-policy-card'
+import { BulkActions, useBulkSelection, BulkCheckbox } from '@/components/ui/bulk-actions'
+import { 
+  fadeInUp, 
+  staggerContainer, 
+  staggerItem, 
+  cardHover,
+  pageTransition
+} from '@/lib/animations'
 
 
 interface Policy {
@@ -78,11 +90,23 @@ function InsuranceDashboardContent() {
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [expandedProperty, setExpandedProperty] = useState<string | null>(null)
+  const [filters, setFilters] = useState<InsuranceFilterOptions>({
+    search: '',
+    policyTypes: [],
+    carriers: [],
+    status: [],
+    sortBy: 'name',
+    sortOrder: 'asc',
+    dateRange: {}
+  })
   
   // Empty data by default - will be populated from database
   const [policies] = useState<Policy[]>([])
   const [coverages] = useState<Coverage[]>([])
   const [properties] = useState<Property[]>([])
+  
+  // Bulk selection for policies
+  const bulkSelection = useBulkSelection(properties)
 
   const totalPremium = policies.reduce((sum, policy) => sum + policy.premium, 0)
   const totalCoverage = policies.reduce((sum, policy) => sum + policy.coverage, 0)
@@ -335,115 +359,177 @@ function InsuranceDashboardContent() {
 
   return (
     <DashboardLayout>
-      <div className="p-6 bg-gray-900 min-h-screen">
+      <motion.div 
+        className="p-6 bg-gray-900 min-h-screen"
+        variants={pageTransition}
+        initial="initial"
+        animate="animate"
+        exit="exit"
+      >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <div className="flex justify-between items-start mb-8">
+          <motion.div 
+            className="flex justify-between items-start mb-8"
+            variants={fadeInUp}
+          >
             <div>
               <h1 className="text-3xl font-bold text-white mb-2">Insurance Dashboard</h1>
               <p className="text-gray-400">An overview of all your insurance policies and coverage.</p>
             </div>
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2">
+            <motion.button 
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
               <Plus className="w-4 h-4" />
               Add Policy
-            </button>
-          </div>
+            </motion.button>
+          </motion.div>
+
+          {/* Search and Filter */}
+          <motion.div variants={fadeInUp}>
+            <SearchFilterBar 
+              onFiltersChange={setFilters}
+              availableCarriers={Array.from(new Set(policies.map(p => p.carrier)))}
+              availablePolicyTypes={Array.from(new Set(policies.map(p => p.type)))}
+              className="mb-8"
+            />
+          </motion.div>
+
+          {/* Bulk Actions */}
+          <AnimatePresence>
+            {bulkSelection.selectedCount > 0 && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.2 }}
+              >
+                <BulkActions
+                  selectedCount={bulkSelection.selectedCount}
+                  totalCount={properties.length}
+                  selectedIds={bulkSelection.selectedIds}
+                  onSelectAll={bulkSelection.selectAll}
+                  onClearSelection={bulkSelection.clearSelection}
+                  actions={[
+                    {
+                      id: 'export',
+                      label: 'Export',
+                      icon: Download,
+                      action: async (ids) => {
+                        console.log('Exporting properties:', ids)
+                      }
+                    },
+                    {
+                      id: 'archive',
+                      label: 'Archive',
+                      icon: Archive,
+                      action: async (ids) => {
+                        console.log('Archiving properties:', ids)
+                      }
+                    }
+                  ]}
+                  className="mb-6"
+                />
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Stats Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card variant="insurance">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
-                    <Shield className="w-6 h-6 text-blue-400" />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold text-white">{totalCoverage > 0 ? `$${(totalCoverage / 1000000).toFixed(2)}M` : '$0'}</p>
-                    <p className="text-sm text-gray-400">Total Dwelling Coverage</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card variant="insurance">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-green-400" />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold text-white">{totalPremium > 0 ? `$${totalPremium.toLocaleString()}` : '$0'}</p>
-                    <p className="text-sm text-gray-400">Total Annual Premium</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-            
-            <Card variant="insurance">
-              <CardContent className="p-6">
-                <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center">
-                    <FileText className="w-6 h-6 text-purple-400" />
-                  </div>
-                  <div>
-                    <p className="text-3xl font-bold text-white">{activePolicies}</p>
-                    <p className="text-sm text-gray-400">Active Policies</p>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+          <motion.div variants={fadeInUp}>
+            <InsuranceStatsCards 
+              totalCoverage={totalCoverage}
+              totalPremium={totalPremium}
+              activePolicies={activePolicies}
+            />
+          </motion.div>
 
           {/* Property Grouped Policies */}
-          <div className="space-y-6">
+          <motion.div 
+            className="space-y-6"
+            variants={staggerContainer}
+            initial="initial"
+            animate="animate"
+          >
             {properties.length === 0 ? (
-              <InsuranceEmptyState 
-                onAddProperty={() => router.push('/dashboard/property')}
-                onAddPolicy={() => {/* TODO: Add policy modal */}}
-              />
+              <motion.div variants={staggerItem}>
+                <InsuranceEmptyState 
+                  onAddProperty={() => router.push('/dashboard/property')}
+                  onAddPolicy={() => {/* TODO: Add policy modal */}}
+                />
+              </motion.div>
             ) : (
               properties.map((property) => {
               const propertyPolicies = policies.filter(p => property.policies.includes(p.id))
               const isExpanded = expandedProperty === property.id
               
               return (
-                <Card key={property.id} variant="property" className="overflow-hidden">
-                  <CardHeader 
-                    className="cursor-pointer hover:bg-gray-700/20 transition-colors"
-                    onClick={() => setExpandedProperty(isExpanded ? null : property.id)}
+                <motion.div key={property.id} variants={staggerItem}>
+                  <motion.div
+                    variants={cardHover}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-700">
-                          <PropertyImage
-                            propertyId={property.id}
-                            propertyType={property.type}
-                            propertyName={property.name}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                        <div>
-                          <h3 className="text-xl font-semibold text-white">{property.name}</h3>
-                          <p className="text-sm text-gray-400">{propertyPolicies.length} Policies</p>
-                        </div>
-                      </div>
-                      <ChevronRight className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
-                    </div>
-                  </CardHeader>
-                  
-                  {isExpanded && (
-                    <CardContent className="p-6 space-y-4 border-t border-gray-700/50">
-                      {propertyPolicies.map((policy) => {
-                        const Icon = getPolicyIcon(policy.type)
-                        const isWindstorm = policy.type.toLowerCase() === 'windstorm'
-                        const windDeductible = isWindstorm ? `2% ($${(policy.coverage * 0.02 / 1000).toFixed(0)},000)` : null
-                        
-                        return (
-                          <div 
-                            key={policy.id} 
-                            className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 hover:bg-gray-700/50 transition-colors cursor-pointer"
-                            onClick={() => router.push(`/dashboard/insurance/policy/${policy.id}`)}
+                    <Card variant="property" className="overflow-hidden">
+                      <CardHeader 
+                        className="cursor-pointer hover:bg-gray-700/20 transition-colors"
+                        onClick={() => setExpandedProperty(isExpanded ? null : property.id)}
+                      >
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="w-16 h-16 rounded-lg overflow-hidden bg-gray-700">
+                              <PropertyImage
+                                propertyId={property.id}
+                                propertyType={property.type}
+                                propertyName={property.name}
+                                className="w-full h-full object-cover"
+                              />
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-semibold text-white">{property.name}</h3>
+                              <p className="text-sm text-gray-400">{propertyPolicies.length} Policies</p>
+                            </div>
+                          </div>
+                          <motion.div
+                            animate={{ rotate: isExpanded ? 90 : 0 }}
+                            transition={{ duration: 0.2 }}
                           >
+                            <ChevronRight className="w-5 h-5 text-gray-400" />
+                          </motion.div>
+                        </div>
+                      </CardHeader>
+                  
+                  <AnimatePresence>
+                    {isExpanded && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        transition={{ duration: 0.3, ease: 'easeInOut' }}
+                      >
+                        <CardContent className="p-6 space-y-4 border-t border-gray-700/50">
+                          <motion.div
+                            variants={staggerContainer}
+                            initial="initial"
+                            animate="animate"
+                          >
+                            {propertyPolicies.map((policy) => {
+                              const Icon = getPolicyIcon(policy.type)
+                              const isWindstorm = policy.type.toLowerCase() === 'windstorm'
+                              const windDeductible = isWindstorm ? `2% ($${(policy.coverage * 0.02 / 1000).toFixed(0)},000)` : null
+                              
+                              return (
+                                <motion.div 
+                                  key={policy.id}
+                                  variants={staggerItem}
+                                  whileHover={{ scale: 1.01 }}
+                                  whileTap={{ scale: 0.99 }}
+                                >
+                                  <div 
+                                    className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 hover:bg-gray-700/50 transition-colors cursor-pointer"
+                                    onClick={() => router.push(`/dashboard/insurance/policy/${policy.id}`)}
+                                  >
                             <div className="flex justify-between items-start mb-4">
                               <div>
                                 <h4 className="text-lg font-semibold text-white">{policy.carrier}</h4>
@@ -484,29 +570,42 @@ function InsuranceDashboardContent() {
                                 <p className="text-white font-medium">{new Date(policy.expirationDate).toLocaleDateString('en-US', { year: 'numeric', month: '2-digit', day: '2-digit' })}</p>
                               </div>
                             </div>
-                          </div>
-                        )
-                      })}
-                      
-                      {propertyPolicies.length === 0 && (
-                        <div className="text-center py-8">
-                          <Shield className="w-12 h-12 text-gray-600 mx-auto mb-3" />
-                          <p className="text-gray-400">No policies for this property</p>
-                          <button className="mt-4 text-blue-400 hover:text-blue-300 text-sm">
-                            Add Policy →
-                          </button>
-                        </div>
-                      )}
-                    </CardContent>
-                  )}
-                </Card>
+                                  </div>
+                                </motion.div>
+                              )
+                            })}
+                            
+                            {propertyPolicies.length === 0 && (
+                              <motion.div 
+                                variants={staggerItem}
+                                className="text-center py-8"
+                              >
+                                <Shield className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                                <p className="text-gray-400">No policies for this property</p>
+                                <motion.button 
+                                  className="mt-4 text-blue-400 hover:text-blue-300 text-sm"
+                                  whileHover={{ scale: 1.05 }}
+                                  whileTap={{ scale: 0.95 }}
+                                >
+                                  Add Policy →
+                                </motion.button>
+                              </motion.div>
+                            )}
+                          </motion.div>
+                        </CardContent>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                    </Card>
+                  </motion.div>
+                </motion.div>
               )
             })
             )}
-          </div>
+          </motion.div>
 
         </div>
-      </div>
+      </motion.div>
     </DashboardLayout>
   )
 }

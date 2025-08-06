@@ -57,7 +57,7 @@ export function InlineEdit(props: InlineEditProps) {
     if (isEditing && inputRef.current) {
       if ('select' in inputRef.current) {
         inputRef.current.focus()
-      } else if ('setSelectionRange' in inputRef.current) {
+      } else if ('setSelectionRange' in inputRef.current && inputRef.current instanceof HTMLInputElement) {
         inputRef.current.focus()
         inputRef.current.setSelectionRange(0, inputRef.current.value.length)
       }
