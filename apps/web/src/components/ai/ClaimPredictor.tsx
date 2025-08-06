@@ -144,10 +144,10 @@ export function ClaimPredictor() {
       
       // Estimate payout based on severity and property type
       const payoutRanges = {
-        minor: { min: 1000, max: 5000, likely: 2500 },
-        moderate: { min: 5000, max: 25000, likely: 12000 },
-        severe: { min: 25000, max: 100000, likely: 50000 },
-        total_loss: { min: 100000, max: 500000, likely: 250000 }
+        minor: { min: 1000, max: 5000, mostLikely: 2500 },
+        moderate: { min: 5000, max: 25000, mostLikely: 12000 },
+        severe: { min: 25000, max: 100000, mostLikely: 50000 },
+        total_loss: { min: 100000, max: 500000, mostLikely: 250000 }
       };
       
       const payout = payoutRanges[formData.severity as keyof typeof payoutRanges] || payoutRanges.moderate;

@@ -520,7 +520,7 @@ export function FraudDetectionDashboard() {
                     <XAxis dataKey="range" />
                     <YAxis />
                     <Tooltip />
-                    <Bar dataKey="count" fill={(entry: any) => entry.color}>
+                    <Bar dataKey="count">
                       {riskDistribution.map((entry, index) => (
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
