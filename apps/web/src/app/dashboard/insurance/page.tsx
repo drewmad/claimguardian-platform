@@ -17,7 +17,8 @@ import React, { useState } from 'react'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Badge } from '@/components/ui/badge'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card-variants'
+import { InsuranceBadge, PolicyStatusBadge, InsurabilityBadge } from '@/components/ui/insurance-badges'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { PropertyImage } from '@/components/ui/property-image'
@@ -254,7 +255,7 @@ function InsuranceDashboardContent() {
                 <h2 className="text-xl font-semibold text-white">Financial Snapshot</h2>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Card className="bg-gray-800 border-gray-700">
+                <Card variant="elevated">
                   <CardContent className="p-6">
                     <div className="grid grid-cols-2 gap-4">
                       <div>
@@ -288,7 +289,7 @@ function InsuranceDashboardContent() {
                 </Card>
 
                 {/* Associated Policies */}
-                <Card className="bg-gray-800 border-gray-700">
+                <Card variant="elevated">
                   <CardHeader>
                     <CardTitle className="text-white">Insurance Coverage</CardTitle>
                   </CardHeader>
@@ -349,7 +350,7 @@ function InsuranceDashboardContent() {
 
           {/* Stats Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center">
@@ -363,7 +364,7 @@ function InsuranceDashboardContent() {
               </CardContent>
             </Card>
             
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center">
@@ -377,7 +378,7 @@ function InsuranceDashboardContent() {
               </CardContent>
             </Card>
             
-            <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+            <Card variant="insurance">
               <CardContent className="p-6">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center">
@@ -395,7 +396,7 @@ function InsuranceDashboardContent() {
           {/* Property Grouped Policies */}
           <div className="space-y-6">
             {properties.length === 0 ? (
-              <Card className="bg-gray-800/50 border-gray-700/50 backdrop-blur">
+              <Card variant="insurance">
                 <CardContent className="p-12 text-center">
                   <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-white mb-2">No Insurance Policies Yet</h3>
@@ -419,7 +420,7 @@ function InsuranceDashboardContent() {
               const isExpanded = expandedProperty === property.id
               
               return (
-                <Card key={property.id} className="bg-gray-800/50 border-gray-700/50 backdrop-blur overflow-hidden">
+                <Card key={property.id} variant="property" className="overflow-hidden">
                   <CardHeader 
                     className="cursor-pointer hover:bg-gray-700/20 transition-colors"
                     onClick={() => setExpandedProperty(isExpanded ? null : property.id)}

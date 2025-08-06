@@ -102,14 +102,21 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
         })
       }
 
+      // Prepare messages with image data if available
+      const chatMessages = [
+        { role: 'system' as const, content: systemPrompt },
+        ...messages.map(m => ({ role: m.role as 'system' | 'user' | 'assistant', content: m.content })),
+        { 
+          role: 'user' as const, 
+          content: imageData 
+            ? `${input}\n\n[User has attached an image: ${attachedFile?.name}]`
+            : input 
+        }
+      ]
+
       // Get AI response
       const response = await enhancedAIClient.enhancedChat({
-        messages: [
-          { role: 'system', content: systemPrompt },
-          ...messages.map(m => ({ role: m.role, content: m.content })),
-          { role: 'user', content: input }
-        ],
-        image: imageData,
+        messages: chatMessages,
         featureId: 'ask-guardian'
       })
 
