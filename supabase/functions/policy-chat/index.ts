@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
     
     return new Response(
       JSON.stringify({
-        error: error instanceof Error ? error.message : String(error) : 'An error occurred processing your request',
+        error: error instanceof Error ? error.message : 'An error occurred processing your request',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

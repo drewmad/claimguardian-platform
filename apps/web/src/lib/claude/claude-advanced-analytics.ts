@@ -55,13 +55,14 @@ export interface ROIMetrics {
 
 export interface TaskSuccessPredictor {
   predictSuccess(
-    taskType: string,
     complexity: 'simple' | 'medium' | 'complex',
     context: Record<string, any>
   ): Promise<PredictionModel>
 }
 
-interface TaskContext {
+export interface AnalyticsTaskContext {
+  taskType?: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'other'
+  complexity?: 'simple' | 'medium' | 'complex'
   filePath?: string
   codeLanguage?: string
   framework?: string
@@ -221,35 +222,36 @@ class ClaudeAdvancedAnalytics {
    * SUCCESS PREDICTION - ML-style prediction of task success rates
    */
   async predictTaskSuccess(
-    taskType: string,
     complexity: 'simple' | 'medium' | 'complex',
-    context: TaskContext = {}
+    context: AnalyticsTaskContext
   ): Promise<PredictionModel> {
-    logger.info('Predicting task success', { taskType, complexity, context })
+    const { taskType } = context
+    const safeTaskType = taskType || 'other'
+    logger.info('Predicting task success', { taskType: safeTaskType, complexity, context })
 
     // Get historical data for similar tasks
-    const historicalData = await this.getHistoricalTaskData(taskType, complexity, context)
+    const historicalData = await this.getHistoricalTaskData(safeTaskType, complexity, context)
     
     // Calculate base success probability
-    let successProbability = this.calculateBaseSuccessRate(taskType, complexity)
+    let successProbability = this.calculateBaseSuccessRate(safeTaskType, complexity)
     
     // Adjust based on context factors
     successProbability = this.adjustForContext(successProbability, context, historicalData)
     
     // Estimate execution time
-    const estimatedTime = this.estimateExecutionTime(taskType, complexity, context)
+    const estimatedTime = this.estimateExecutionTime(safeTaskType, complexity, context)
     
     // Identify risk factors
-    const riskFactors = this.identifyRiskFactors(taskType, complexity, context, historicalData)
+    const riskFactors = this.identifyRiskFactors(safeTaskType, complexity, context, historicalData)
     
     // Recommend approach
-    const recommendedApproach = this.recommendApproach(taskType, complexity, context, historicalData)
+    const recommendedApproach = this.recommendApproach(safeTaskType, complexity, context, historicalData)
     
     // Calculate confidence level
     const confidenceLevel = this.calculateConfidenceLevel(historicalData.sampleSize, context)
 
     return {
-      taskType,
+      taskType: safeTaskType,
       successProbability: Math.max(0, Math.min(1, successProbability)),
       estimatedTime,
       riskFactors,
@@ -258,7 +260,7 @@ class ClaudeAdvancedAnalytics {
     }
   }
 
-  private async getHistoricalTaskData(taskType: string, complexity: string, context: TaskContext) {
+  private async getHistoricalTaskData(taskType: string, complexity: string, context: AnalyticsTaskContext) {
     // Mock historical data - in production, query actual database
     return {
       sampleSize: Math.floor(Math.random() * 50) + 10,
@@ -284,7 +286,7 @@ class ClaudeAdvancedAnalytics {
     return baseRates[taskType as keyof typeof baseRates]?.[complexity as keyof typeof baseRates.analysis] || 0.70
   }
 
-  private adjustForContext(baseProbability: number, context: TaskContext, historicalData: unknown): number {
+  private adjustForContext(baseProbability: number, context: AnalyticsTaskContext, historicalData: unknown): number {
     let adjusted = baseProbability
 
     // Framework familiarity
@@ -317,7 +319,7 @@ class ClaudeAdvancedAnalytics {
     return adjusted
   }
 
-  private estimateExecutionTime(taskType: string, complexity: string, context: TaskContext): number {
+  private estimateExecutionTime(taskType: string, complexity: string, context: AnalyticsTaskContext): number {
     const baseTimes = {
       'code-generation': { simple: 180, medium: 360, complex: 720 },
       'file-modification': { simple: 120, medium: 240, complex: 480 },
@@ -340,7 +342,7 @@ class ClaudeAdvancedAnalytics {
     return Math.round(baseTime)
   }
 
-  private identifyRiskFactors(taskType: string, complexity: string, context: TaskContext, historicalData: any): string[] {
+  private identifyRiskFactors(taskType: string, complexity: string, context: AnalyticsTaskContext, historicalData: any): string[] {
     const risks: string[] = []
 
     if (complexity === 'complex') {
@@ -366,7 +368,7 @@ class ClaudeAdvancedAnalytics {
     return risks
   }
 
-  private recommendApproach(taskType: string, complexity: string, context: TaskContext, historicalData: unknown): string {
+  private recommendApproach(taskType: string, complexity: string, context: AnalyticsTaskContext, historicalData: unknown): string {
     const approaches = {
       'code-generation': {
         simple: 'Use established component patterns with quick iteration',
@@ -398,7 +400,7 @@ class ClaudeAdvancedAnalytics {
     return approaches[taskType as keyof typeof approaches]?.[complexity as keyof typeof approaches.analysis] || 'Apply systematic approach with careful validation'
   }
 
-  private calculateConfidenceLevel(sampleSize: number, context: TaskContext): number {
+  private calculateConfidenceLevel(sampleSize: number, context: AnalyticsTaskContext): number {
     let confidence = Math.min(0.95, 0.5 + (sampleSize / 100)) // Base confidence from sample size
 
     // Adjust for context completeness
@@ -641,7 +643,7 @@ class ClaudeAdvancedAnalytics {
       this.generateTrendAnalysis(timeframe),
       this.identifyBottlenecks(timeframe),
       this.calculateROI(timeframe),
-      this.predictTaskSuccess('code-generation', 'medium', { framework: 'react', codeLanguage: 'typescript' })
+      this.predictTaskSuccess('medium', { taskType: 'code-generation', framework: 'react', codeLanguage: 'typescript' })
     ])
 
     return {

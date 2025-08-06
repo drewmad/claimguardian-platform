@@ -7,7 +7,7 @@
  */
 
 import { claudeProductionMonitor } from './claude-production-monitor'
-import { claudeAdvancedAnalytics } from './claude-advanced-analytics'
+import { claudeAdvancedAnalytics, AnalyticsTaskContext } from './claude-advanced-analytics'
 import { claudeEnhancedAutomation } from './claude-enhanced-automation'
 import { withCompleteLearning } from './claude-complete-learning-system'
 import { logger } from '@/lib/logger'
@@ -145,18 +145,20 @@ class ClaudeABTestingFramework {
 
         // Apply auto-optimizations
         const optimization = await claudeEnhancedAutomation.applyAutoOptimizations({
-          taskType,
+          taskType: taskType as 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'other',
           complexity: context.complexity || 'medium',
           framework: context.framework,
-          codeLanguage: context.language
+          codeLanguage: context.language,
         })
         optimizationsCount = optimization.appliedOptimizations.length
 
         // Get prediction for confidence score
         const prediction = await claudeAdvancedAnalytics.predictTaskSuccess(
-          taskType,
           context.complexity || 'medium',
-          context
+          {
+            ...context,
+            taskType: taskType as 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'other'
+          }
         )
         confidenceScore = prediction.confidenceLevel
 

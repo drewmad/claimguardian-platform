@@ -192,7 +192,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
       identifier: "tmlrvecuwgppbaynesji",
       method: "POST",
       path: "/rest/v1/rpc/search_learnings", 
-      search: null,
+      search: undefined,
       status_code: 404,
       timestamp: 1754384663684000
     }

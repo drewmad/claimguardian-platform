@@ -1,14 +1,18 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "Google Gemini AI provider implementation with latest models support"
+ * @dependencies ["@google/generative-ai"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { 
+  GoogleGenerativeAI,
+  HarmCategory,
+  HarmBlockThreshold
+} from '@google/generative-ai';
 
 import {
   AIRequest,
@@ -32,12 +36,12 @@ export class GeminiProvider extends BaseAIProvider {
     super(config);
     this.client = new GoogleGenerativeAI(config.apiKey);
     
-    // Model mapping for different use cases
+    // Model mapping for different use cases - Updated to latest Gemini models (Jan 2025)
     this.modelMapping = {
-      'fast': 'gemini-1.5-flash',
-      'balanced': 'gemini-1.5-pro', 
-      'powerful': 'gemini-1.5-pro',
-      'vision': 'gemini-1.5-flash' // Good for image analysis
+      'fast': 'gemini-2.0-flash-exp',        // Latest flash model with improved speed
+      'balanced': 'gemini-1.5-pro-002',      // Latest stable Pro with better performance
+      'powerful': 'gemini-1.5-pro-002',      // Same as balanced for consistency
+      'vision': 'gemini-2.0-flash-exp'       // Flash 2.0 has excellent vision capabilities
     };
   }
   
@@ -58,11 +62,30 @@ export class GeminiProvider extends BaseAIProvider {
             parts: [{ text: prompt }] 
           }],
           generationConfig: {
-            maxOutputTokens: request.maxTokens || 2048,
+            maxOutputTokens: request.maxTokens || 8192,  // Increased default for better responses
             temperature: request.temperature || 0.7,
             topP: 0.95,
-            topK: 40
-          }
+            topK: model.includes('2.0') ? 64 : 40,  // Higher topK for Gemini 2.0
+            candidateCount: 1
+          },
+          safetySettings: [
+            {
+              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            }
+          ]
         });
       });
       
@@ -121,9 +144,30 @@ export class GeminiProvider extends BaseAIProvider {
         return await genAI.generateContent({
           contents: contents as any[],
           generationConfig: {
-            maxOutputTokens: request.maxTokens || 2048,
+            maxOutputTokens: request.maxTokens || 8192,  // Increased default
             temperature: request.temperature || 0.7,
-          }
+            topP: 0.95,
+            topK: model.includes('2.0') ? 64 : 40,  // Higher topK for Gemini 2.0
+            candidateCount: 1
+          },
+          safetySettings: [
+            {
+              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            }
+          ]
         });
       });
       
@@ -188,7 +232,31 @@ export class GeminiProvider extends BaseAIProvider {
                 }
               }
             ]
-          }]
+          }],
+          generationConfig: {
+            maxOutputTokens: request.maxTokens || 8192,
+            temperature: request.temperature || 0.4,  // Lower temp for vision tasks
+            topP: 0.95,
+            topK: model.includes('2.0') ? 64 : 40
+          },
+          safetySettings: [
+            {
+              category: HarmCategory.HARM_CATEGORY_HARASSMENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_HATE_SPEECH,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            },
+            {
+              category: HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT,
+              threshold: HarmBlockThreshold.BLOCK_ONLY_HIGH
+            }
+          ]
         });
       });
       
@@ -228,11 +296,19 @@ export class GeminiProvider extends BaseAIProvider {
   }
   
   estimateCost(tokens: number, model: string): number {
-    // Gemini pricing as of 2024 (per 1K tokens)
+    // Gemini pricing as of Jan 2025 (per 1K tokens)
     const pricing: Record<string, { input: number; output: number }> = {
+      'gemini-2.0-flash-exp': { 
+        input: 0.00000,   // Free during experimental period
+        output: 0.00000   // Free during experimental period
+      },
       'gemini-1.5-flash': { 
         input: 0.00001,   // $0.01 per 1M tokens
         output: 0.00003   // $0.03 per 1M tokens
+      },
+      'gemini-1.5-pro-002': { 
+        input: 0.00005,   // $0.05 per 1M tokens
+        output: 0.00015   // $0.15 per 1M tokens
       },
       'gemini-1.5-pro': { 
         input: 0.00005,   // $0.05 per 1M tokens
@@ -240,7 +316,7 @@ export class GeminiProvider extends BaseAIProvider {
       }
     };
     
-    const modelPricing = pricing[model] || pricing['gemini-1.5-pro'];
+    const modelPricing = pricing[model] || pricing['gemini-1.5-pro-002'];
     return (tokens / 1000) * modelPricing.input; // Simplified - assumes input tokens
   }
   
@@ -374,7 +450,8 @@ export class GeminiProvider extends BaseAIProvider {
     console.error('[GeminiProvider] Error:', {
       error: err.message || error,
       feature: request.feature,
-      userId: request.userId
+      userId: request.userId,
+      model: this.selectModel(request)
     });
     
     // Handle Gemini-specific errors
@@ -396,10 +473,29 @@ export class GeminiProvider extends BaseAIProvider {
       );
     }
     
-    if (err.message?.includes('SAFETY')) {
+    if (err.message?.includes('SAFETY') || err.message?.includes('blocked')) {
       throw new AIServiceError(
         'Content blocked by safety filters',
         'SAFETY_BLOCK',
+        'gemini',
+        false
+      );
+    }
+    
+    // Gemini 2.0 specific errors
+    if (err.message?.includes('model not found') || err.message?.includes('not available')) {
+      throw new AIServiceError(
+        'Model not available - falling back to stable version',
+        'MODEL_NOT_FOUND',
+        'gemini',
+        true  // Retryable with different model
+      );
+    }
+    
+    if (err.message?.includes('context length exceeded')) {
+      throw new AIServiceError(
+        'Context length exceeded - try reducing input size',
+        'CONTEXT_LENGTH_EXCEEDED',
         'gemini',
         false
       );

@@ -62,7 +62,7 @@ interface ABTestResult {
 }
 
 class ClaudeProductionMonitor {
-  private supabase: ReturnType<typeof createClient>
+  private supabase?: ReturnType<typeof createClient>
   private metrics: ProductionMetrics[] = []
   private abTestSessions: Map<string, 'control' | 'treatment'> = new Map()
   private monitoringTimer?: NodeJS.Timeout
@@ -372,7 +372,7 @@ class ClaudeProductionMonitor {
     return numbers.reduce((a, b) => a + b, 0)
   }
 
-  private calculateStatisticalSignificance(control: unknown, treatment: unknown): number {
+  private calculateStatisticalSignificance(control: any, treatment: any): number {
     // Simplified statistical significance calculation
     // In production, would use proper statistical tests
     const sampleSizeEffect = Math.min(control.taskCount, treatment.taskCount) / 100

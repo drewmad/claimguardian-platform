@@ -16,7 +16,7 @@ import { logger } from '@/lib/logger'
 export interface ReflectionContext {
   // Task details
   taskId: string
-  taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'research'
+  taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'other'
   taskDescription: string
   userIntent: string
   originalRequest: string
@@ -387,7 +387,7 @@ class ClaudeSelfReflection {
     
     // Query learning system for similar tasks
     try {
-      const learnings = await claudeLearningContext.getRelevantLearnings({
+      const learnings = await claudeErrorLogger.getRelevantLearnings({
         taskType: context.taskType,
         codeLanguage: context.codebase.language,
         framework: context.codebase.framework
@@ -399,7 +399,7 @@ class ClaudeSelfReflection {
         }
       })
     } catch (error) {
-      logger.warn('Could not fetch learnings for approach analysis', {}, error instanceof Error ? error : new Error(String(error)))
+      logger.warn('Could not fetch learnings for approach analysis', { error: error instanceof Error ? error.message : String(error) })
     }
     
     return betterApproaches

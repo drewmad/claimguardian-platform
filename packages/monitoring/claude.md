@@ -138,9 +138,9 @@ trackWebVitals({
     // Largest Contentful Paint
     console.log('LCP:', metric.value)
   },
-  onFID: (metric) => {
-    // First Input Delay
-    console.log('FID:', metric.value)
+  onINP: (metric) => {
+    // Interaction to Next Paint (replaces FID)
+    console.log('INP:', metric.value)
   },
   onTTFB: (metric) => {
     // Time to First Byte
@@ -483,8 +483,8 @@ window.addEventListener('beforeunload', cleanupMonitoring)
 ```
 
 ## Dependencies
-- `@sentry/nextjs ^8.46.0` - Error monitoring
-- `web-vitals ^4.2.4` - Performance metrics
+- `@sentry/nextjs ^10.1.0` - Error monitoring
+- `web-vitals ^5.1.0` - Performance metrics (INP replaces FID)
 - `react ^18.3.1` - React integration
 
 ## Build Configuration

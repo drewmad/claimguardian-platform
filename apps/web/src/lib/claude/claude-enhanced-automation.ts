@@ -6,7 +6,7 @@
  * @dependencies ["@/lib/claude/claude-advanced-analytics", "@/lib/claude/claude-complete-learning-system", "@/lib/logger"]
  */
 
-import { claudeAdvancedAnalytics, PredictionModel } from './claude-advanced-analytics'
+import { claudeAdvancedAnalytics, PredictionModel, AnalyticsTaskContext } from './claude-advanced-analytics'
 import { completeLearningSystem } from './claude-complete-learning-system'
 import { logger } from '@/lib/logger'
 
@@ -61,12 +61,8 @@ export interface BatchLearningSession {
   timestamp: Date
 }
 
-interface TaskContext {
-  taskType: string
+interface TaskContext extends AnalyticsTaskContext {
   complexity: 'simple' | 'medium' | 'complex'
-  filePath?: string
-  codeLanguage?: string
-  framework?: string
   requirements?: string
   constraints?: Record<string, any>
 }
@@ -130,7 +126,7 @@ class ClaudeEnhancedAutomation {
     const newRules = await this.generateOptimizationRules(taskContext)
     
     return [...existingRules, ...newRules].filter(rule => 
-      rule.applicableTaskTypes.includes(taskContext.taskType) ||
+      (taskContext.taskType && rule.applicableTaskTypes.includes(taskContext.taskType)) ||
       rule.applicableTaskTypes.includes('all')
     )
   }
@@ -194,7 +190,6 @@ class ClaudeEnhancedAutomation {
     
     // Get prediction model for the task
     const prediction = await claudeAdvancedAnalytics.predictTaskSuccess(
-      taskContext.taskType,
       taskContext.complexity,
       taskContext
     )
@@ -303,14 +298,13 @@ class ClaudeEnhancedAutomation {
 
     // Get success prediction for different approaches
     const prediction = await claudeAdvancedAnalytics.predictTaskSuccess(
-      taskContext.taskType,
       taskContext.complexity,
       taskContext
     )
 
     // Determine best approach based on task type and context
     const delegation: SmartDelegation = {
-      taskType: taskContext.taskType,
+      taskType: taskContext.taskType ?? 'other',
       complexity: taskContext.complexity,
       bestApproach: prediction.recommendedApproach,
       recommendedTools: this.selectOptimalTools(taskContext, prediction),

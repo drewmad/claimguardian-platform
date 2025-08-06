@@ -223,7 +223,7 @@ export function withClaudeErrorLogging<T extends (...args: unknown[]) => Promise
 /**
  * Hook for React components to track Claude-generated code issues
  */
-export function useClaudeErrorTracking(componentName: string, codeContext: unknown) {
+export function useClaudeErrorTracking(componentName: string, codeContext?: ClaudeErrorContext['codebaseContext']) {
   const logComponentError = async (error: Error, action: string) => {
     await claudeErrorLogger.logError(error, {
       taskType: 'code-generation',

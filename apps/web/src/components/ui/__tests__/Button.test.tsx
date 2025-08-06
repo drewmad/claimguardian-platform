@@ -2,7 +2,7 @@
  * @fileMetadata
  * @purpose "Tests for Button UI component"
  * @owner ui-team
- * @dependencies ["vitest", "@testing-library/react", "@testing-library/user-event"]
+ * @dependencies ["vitest", "@testing-library/react", "@testing-library/user-event", "@testing-library/jest-dom"]
  * @exports []
  * @complexity low
  * @tags ["test", "ui", "component", "button"]
@@ -376,7 +376,7 @@ describe('Button Component', () => {
   describe('Form Integration', () => {
     it('should submit form when type="submit"', async () => {
       const user = userEvent.setup()
-      const handleSubmit = jest.fn(e => e.preventDefault())
+      const handleSubmit = jest.fn((e: React.FormEvent) => e.preventDefault())
       
       render(
         <form onSubmit={handleSubmit}>

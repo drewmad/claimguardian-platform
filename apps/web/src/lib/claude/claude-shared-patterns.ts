@@ -7,6 +7,7 @@
  */
 
 import { completeLearningSystem } from './claude-complete-learning-system'
+import { claudeErrorLogger } from './claude-error-logger'
 import { logger } from '@/lib/logger'
 
 export interface SharedPattern {
@@ -417,12 +418,18 @@ const testUser2 = new UserBuilder()
    */
   async derivePatternFromLearnings(learningIds: string[]): Promise<SharedPattern | null> {
     try {
-      // Get learnings from the complete learning system
+      // Get learnings from error logger
       const learnings = await Promise.all(
-        learningIds.map(id => completeLearningSystem.getLearning(id))
+        learningIds.map(async (id) => {
+          // getRelevantLearnings doesn't accept errorId, but we can get all learnings
+          const learningData = await claudeErrorLogger.getRelevantLearnings({})
+          // Filter to find the one with matching id
+          const matching = learningData.find((l: any) => l.id === id)
+          return matching || null
+        })
       )
 
-      const validLearnings = learnings.filter(l => l !== null)
+      const validLearnings = learnings.filter((l): l is NonNullable<typeof l> => l !== null)
       if (validLearnings.length === 0) return null
 
       // Analyze common elements
@@ -483,7 +490,20 @@ const testUser2 = new UserBuilder()
     }
   }
 
-  private analyzeCommonality(learnings: unknown[]): unknown {
+  private analyzeCommonality(learnings: unknown[]): {
+    confidence: number
+    suggestedName: string
+    category: PatternCategory
+    description: string
+    commonProblem: string
+    commonSolution: string
+    avgTimeReduction: number
+    avgErrorReduction: number
+    languages: string[]
+    frameworks: string[]
+    examples: PatternExample[]
+    tags: string[]
+  } {
     // Simplified commonality analysis
     const categories = learnings.map(l => this.categorizelearning(l))
     const mostCommonCategory = this.findMostCommon(categories) as PatternCategory
@@ -504,9 +524,9 @@ const testUser2 = new UserBuilder()
     }
   }
 
-  private categorizelearning(learning: unknown): PatternCategory {
+  private categorizelearning(learning: any): PatternCategory {
     // Simple categorization logic
-    const taskDescription = learning.task.toLowerCase()
+    const taskDescription = (learning?.task || learning?.description || '').toLowerCase()
     
     if (taskDescription.includes('performance') || taskDescription.includes('speed')) {
       return 'performance_optimization'
@@ -750,7 +770,7 @@ const testUser2 = new UserBuilder()
         return result
       }
 
-      data.patterns.forEach((pattern: unknown) => {
+      data.patterns.forEach((pattern: any) => {
         try {
           // Check if pattern already exists
           if (this.patterns.has(pattern.id)) {
@@ -833,6 +853,3 @@ const testUser2 = new UserBuilder()
 
 // Export singleton instance
 export const claudeSharedPatterns = new ClaudeSharedPatterns()
-
-// Export types
-export type { SharedPattern, PatternCategory, PatternImpact, PatternApplicability, PatternExample, PatternMetrics, PatternTemplate }

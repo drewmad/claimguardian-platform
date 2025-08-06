@@ -452,8 +452,8 @@ Deno.serve(async (req: Request) => {
     console.log(JSON.stringify({
   level: "info",
   timestamp: new Date().toISOString(),
-  message: `[Address Validation] Processing address: ${typeof address === 'string' ? address : JSON.stringify(address
-}));}`)
+  message: `[Address Validation] Processing address: ${typeof address === 'string' ? address : JSON.stringify(address)}`
+    }))
 
     const intelligence: AddressIntelligence = {}
 

@@ -28,8 +28,7 @@ const createSmartComponent = withCompleteLearning(
     framework: 'react',
     complexity: 'medium',
     tools: ['Write', 'Read'],
-    enableAutoReflection: true,
-    reflectionSensitivity: 'high'
+    enableAutoReflection: true
   },
   async () => {
     console.log('🧠 Claude Learning System ACTIVE - analyzing previous learnings...')
@@ -292,7 +291,7 @@ export async function demonstrateLearningSystem() {
     // Even errors contribute to learning!
     return {
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : 'Unknown error',
       learningNote: 'Error patterns captured for future prevention'
     }
   }

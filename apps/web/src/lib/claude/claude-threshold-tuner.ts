@@ -165,8 +165,8 @@ class ClaudeThresholdTuner {
     let falseNegatives = 0
 
     for (const metric of metrics) {
-      const predicted = metric.confidenceLevel >= threshold
-      const actual = metric.actualSuccess
+      const predicted = (metric as any).confidenceLevel >= threshold
+      const actual = (metric as any).actualSuccess
 
       if (predicted && actual) truePositives++
       else if (predicted && !actual) falsePositives++

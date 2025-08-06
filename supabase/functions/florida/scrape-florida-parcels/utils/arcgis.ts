@@ -92,7 +92,7 @@ export async function scrapeArcGIS(
         });
         
         allData.push(...mappedData);
-        console.log(JSON.stringify({ level: "info", timestamp: new Date().toISOString(), message: `[${config.source}] Fetched ${features.length} records (total: ${allData.length} }))`);
+        console.log(JSON.stringify({ level: "info", timestamp: new Date().toISOString(), message: `[${config.source}] Fetched ${features.length} records (total: ${allData.length})` }));
         
         if (features.length < BATCH_SIZE) {
           moreRecords = false;

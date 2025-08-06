@@ -8,7 +8,7 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { onCLS, onFCP, onFID, onLCP, onTTFB, onINP, Metric } from 'web-vitals'
+import { onCLS, onFCP, onLCP, onTTFB, onINP, Metric } from 'web-vitals'
 
 export interface PerformanceMetric {
   name: string
@@ -54,16 +54,13 @@ class MetricsCollector {
     // First Contentful Paint
     onFCP((metric) => this.recordWebVital(metric))
     
-    // First Input Delay (deprecated, but still useful)
-    onFID((metric) => this.recordWebVital(metric))
-    
     // Largest Contentful Paint
     onLCP((metric) => this.recordWebVital(metric))
     
     // Time to First Byte
     onTTFB((metric) => this.recordWebVital(metric))
     
-    // Interaction to Next Paint (new metric)
+    // Interaction to Next Paint (replaces FID)
     onINP((metric) => this.recordWebVital(metric))
   }
 
@@ -150,7 +147,7 @@ class MetricsCollector {
 
   getMetricsSummary() {
     const webVitals = this.metrics.filter(m => 
-      ['CLS', 'FCP', 'FID', 'LCP', 'TTFB', 'INP'].includes(m.name)
+      ['CLS', 'FCP', 'LCP', 'TTFB', 'INP'].includes(m.name)
     )
 
     const summary = {
