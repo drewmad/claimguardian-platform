@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { MapPin, Shield, Plus, ChevronRight, Loader2, Home } from 'lucide-react'
+import { MapPin, Shield, Plus, ChevronRight, Loader2, Home, Building, Bath, Bed, Layers, Car, Zap, CheckCircle2, XCircle, TreePine, Banknote } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
@@ -39,6 +39,15 @@ interface DisplayProperty {
   lotSize: number
   insurabilityScore: number
   isPrimary: boolean
+  // Enhanced fields from new wizard
+  ownershipStatus?: string
+  numberOfFloors?: number
+  roomsPerFloor?: number[]
+  features?: string[]
+  hasHomeownersRenters?: string
+  hasFlood?: string
+  hasOther?: string
+  hasMortgage?: string
 }
 
 interface PropertyRecord {
@@ -100,9 +109,10 @@ function PropertyOverviewContent() {
         
         if (propertiesData.length > 0) {
           const prop = propertiesData[0] as unknown as PropertyRecord
+          const metadata = prop.metadata as Record<string, unknown> || {}
           const transformedData: DisplayProperty = {
             id: prop.id,
-            name: (prop.metadata as Record<string, unknown>)?.name as string || 'Unnamed Property',
+            name: metadata?.name as string || 'Unnamed Property',
             address: prop.full_address || 'Address not set',
             type: prop.property_type?.replace('_', ' ') || 'Single Family Home',
             value: prop.current_value || 0,
@@ -111,8 +121,17 @@ function PropertyOverviewContent() {
             bedrooms: prop.bedrooms || 0,
             bathrooms: prop.bathrooms || 0,
             lotSize: prop.lot_size_acres || 0,
-            insurabilityScore: (prop.metadata as Record<string, unknown>)?.insurability_score as number || 0,
-            isPrimary: (prop.metadata as Record<string, unknown>)?.is_primary as boolean || false
+            insurabilityScore: metadata?.insurability_score as number || 0,
+            isPrimary: metadata?.is_primary as boolean || false,
+            // Enhanced fields from new wizard
+            ownershipStatus: metadata?.ownershipStatus as string,
+            numberOfFloors: metadata?.numberOfFloors as number,
+            roomsPerFloor: metadata?.roomsPerFloor as number[],
+            features: metadata?.features as string[],
+            hasHomeownersRenters: metadata?.hasHomeownersRenters as string,
+            hasFlood: metadata?.hasFlood as string,
+            hasOther: metadata?.hasOther as string,
+            hasMortgage: metadata?.hasMortgage as string,
           }
           setProperty(transformedData)
         } else {
@@ -147,9 +166,10 @@ function PropertyOverviewContent() {
         
         if (propertiesData.length > 0) {
           const prop = propertiesData[0] as unknown as PropertyRecord
+          const metadata = prop.metadata as Record<string, unknown> || {}
           const transformedData: DisplayProperty = {
             id: prop.id,
-            name: (prop.metadata as Record<string, unknown>)?.name as string || 'Unnamed Property',
+            name: metadata?.name as string || 'Unnamed Property',
             address: prop.full_address || 'Address not set',
             type: prop.property_type?.replace('_', ' ') || 'Single Family Home',
             value: prop.current_value || 0,
@@ -158,8 +178,17 @@ function PropertyOverviewContent() {
             bedrooms: prop.bedrooms || 0,
             bathrooms: prop.bathrooms || 0,
             lotSize: prop.lot_size_acres || 0,
-            insurabilityScore: (prop.metadata as Record<string, unknown>)?.insurability_score as number || 0,
-            isPrimary: (prop.metadata as Record<string, unknown>)?.is_primary as boolean || false
+            insurabilityScore: metadata?.insurability_score as number || 0,
+            isPrimary: metadata?.is_primary as boolean || false,
+            // Enhanced fields from new wizard
+            ownershipStatus: metadata?.ownershipStatus as string,
+            numberOfFloors: metadata?.numberOfFloors as number,
+            roomsPerFloor: metadata?.roomsPerFloor as number[],
+            features: metadata?.features as string[],
+            hasHomeownersRenters: metadata?.hasHomeownersRenters as string,
+            hasFlood: metadata?.hasFlood as string,
+            hasOther: metadata?.hasOther as string,
+            hasMortgage: metadata?.hasMortgage as string,
           }
           setProperty(transformedData)
         }
@@ -229,7 +258,8 @@ function PropertyOverviewContent() {
                   <ChevronRight className="w-5 h-5 text-gray-400" />
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 mb-4">
+                {/* Basic Property Info */}
+                <div className="grid grid-cols-2 gap-4 mb-6">
                   <div className="bg-gray-700 rounded-lg p-3">
                     <p className="text-xs text-gray-400">Value</p>
                     <p className="text-lg font-bold text-cyan-300">${(property.value / 1000).toFixed(0)}k</p>
@@ -246,6 +276,136 @@ function PropertyOverviewContent() {
                     <p className="text-xs text-gray-400">Built</p>
                     <p className="text-sm text-white font-medium">{property.yearBuilt}</p>
                   </div>
+                </div>
+
+                {/* Enhanced Property Details */}
+                <div className="space-y-4 mb-6">
+                  {/* Property Layout */}
+                  <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                    <div className="flex items-center gap-3">
+                      <Building className="w-5 h-5 text-blue-400" />
+                      <div>
+                        <p className="text-sm font-medium text-white">Property Layout</p>
+                        <p className="text-xs text-gray-400">Rooms & Structure</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="flex items-center gap-4 text-sm text-white">
+                        <div className="flex items-center gap-1">
+                          <Bed className="w-4 h-4" />
+                          <span>{property.bedrooms}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Bath className="w-4 h-4" />
+                          <span>{property.bathrooms}</span>
+                        </div>
+                        {property.numberOfFloors && (
+                          <div className="flex items-center gap-1">
+                            <Layers className="w-4 h-4" />
+                            <span>{property.numberOfFloors} floors</span>
+                          </div>
+                        )}
+                      </div>
+                      {property.roomsPerFloor && property.roomsPerFloor.length > 0 && (
+                        <p className="text-xs text-gray-400 mt-1">
+                          {property.roomsPerFloor.map((rooms, index) => `Floor ${index + 1}: ${rooms} rooms`).join(' • ')}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Ownership & Financial */}
+                  <div className="grid grid-cols-2 gap-4">
+                    {property.ownershipStatus && (
+                      <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Home className="w-4 h-4 text-green-400" />
+                          <span className="text-sm text-gray-300">Ownership</span>
+                        </div>
+                        <span className="text-sm text-white font-medium capitalize">
+                          {property.ownershipStatus.replace('_', ' ')}
+                        </span>
+                      </div>
+                    )}
+                    
+                    {property.hasMortgage && (
+                      <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <Banknote className="w-4 h-4 text-yellow-400" />
+                          <span className="text-sm text-gray-300">Mortgage</span>
+                        </div>
+                        <span className="text-sm text-white font-medium">
+                          {property.hasMortgage === 'yes' ? 'Yes' : 'No'}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Insurance Coverage */}
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Shield className="w-4 h-4 text-blue-400" />
+                      <span className="text-sm font-medium text-white">Insurance Coverage</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                      {property.hasHomeownersRenters && (
+                        <div className="flex items-center gap-2 p-2 bg-gray-700 rounded">
+                          {property.hasHomeownersRenters === 'yes' ? (
+                            <CheckCircle2 className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <XCircle className="w-3 h-3 text-red-400" />
+                          )}
+                          <span className="text-xs text-gray-300">
+                            {property.ownershipStatus === 'own' ? 'Homeowners' : 'Renters'}
+                          </span>
+                        </div>
+                      )}
+                      
+                      {property.hasFlood && (
+                        <div className="flex items-center gap-2 p-2 bg-gray-700 rounded">
+                          {property.hasFlood === 'yes' ? (
+                            <CheckCircle2 className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <XCircle className="w-3 h-3 text-red-400" />
+                          )}
+                          <span className="text-xs text-gray-300">Flood</span>
+                        </div>
+                      )}
+                      
+                      {property.hasOther && (
+                        <div className="flex items-center gap-2 p-2 bg-gray-700 rounded">
+                          {property.hasOther === 'yes' ? (
+                            <CheckCircle2 className="w-3 h-3 text-green-400" />
+                          ) : (
+                            <XCircle className="w-3 h-3 text-red-400" />
+                          )}
+                          <span className="text-xs text-gray-300">Other</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Property Features */}
+                  {property.features && property.features.length > 0 && (
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2 mb-2">
+                        <TreePine className="w-4 h-4 text-green-400" />
+                        <span className="text-sm font-medium text-white">Property Features</span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {property.features.slice(0, 6).map((feature) => (
+                          <span key={feature} className="px-2 py-1 bg-blue-600/20 text-blue-300 text-xs rounded-full">
+                            {feature}
+                          </span>
+                        ))}
+                        {property.features.length > 6 && (
+                          <span className="px-2 py-1 bg-gray-600/20 text-gray-400 text-xs rounded-full">
+                            +{property.features.length - 6} more
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <div className="flex items-center justify-between pt-4 border-t border-gray-700">
