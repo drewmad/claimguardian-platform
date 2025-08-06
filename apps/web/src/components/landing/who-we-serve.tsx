@@ -72,7 +72,7 @@ export function WhoWeServe() {
             <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
               <div className="aspect-video relative">
                 <Image
-                  src="/images/property-waterfront-estate.jpg"
+                  src="/landingpage/Waterfront.png"
                   alt="Waterfront Estate Protection"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -88,7 +88,7 @@ export function WhoWeServe() {
             <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
               <div className="aspect-video relative">
                 <Image
-                  src="/images/property-modern-home.jpg"
+                  src="/landingpage/ModernHomeProtection.png"
                   alt="Modern Home Protection"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"

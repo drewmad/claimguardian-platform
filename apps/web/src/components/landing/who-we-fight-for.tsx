@@ -14,18 +14,18 @@ import Image from 'next/image'
 
 const images = [
   {
-    src: 'https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=400&h=300&fit=crop',
-    alt: 'Family home',
+    src: '/landingpage/Families Fighting for Fair Settlements.png',
+    alt: 'Family home with ClaimGuardian protection',
     title: 'Families Fighting for Fair Settlements'
   },
   {
-    src: 'https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=400&h=300&fit=crop',
-    alt: 'Business property',
+    src: '/landingpage/Businesses Protecting Their Future .png',
+    alt: 'Business property with comprehensive coverage',
     title: 'Businesses Protecting Their Future'
   },
   {
-    src: 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=300&fit=crop',
-    alt: 'Storm damage',
+    src: '/landingpage/Communities.png',
+    alt: 'Community recovering from natural disaster',
     title: 'Communities Recovering from Disasters'
   }
 ]
