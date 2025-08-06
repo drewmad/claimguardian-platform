@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
 import { Sparkles, Brain, Zap, FileText, TrendingUp, Clock, CheckCircle } from 'lucide-react'
 import { EnhancedDocumentUpload } from '@/components/zero-touch/enhanced-document-upload'
 import { DocumentConfirmationUI } from '@/components/zero-touch/document-confirmation-ui'

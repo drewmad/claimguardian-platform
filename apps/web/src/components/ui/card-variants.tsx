@@ -59,3 +59,6 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 
 // Export all for convenience
 export { Card as StandardCard }
+
+// Export the CardVariants type for compatibility  
+export type CardVariants = CardVariant

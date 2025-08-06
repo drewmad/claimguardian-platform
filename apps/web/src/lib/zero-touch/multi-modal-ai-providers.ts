@@ -219,7 +219,8 @@ export class MultiModalAIOrchestrator {
       ]
     })
     
-    return JSON.parse(response.content[0].text)
+    const content = response.content[0]
+    return JSON.parse(content.type === 'text' ? content.text : '{}')
   }
 
   private async analyzeWithXAI(data: any): Promise<any> {
@@ -332,23 +333,25 @@ export class MultiModalAIOrchestrator {
     return JSON.parse(sorted[0][0])
   }
 
-  private mergeDates(analyses: any[]): string[] {
+  private mergeDates(analyses: unknown[]): string[] {
     const allDates = new Set<string>()
-    analyses.forEach(a => {
-      if (a.result.dates && Array.isArray(a.result.dates)) {
-        a.result.dates.forEach(d => allDates.add(d))
+    analyses.forEach((a: unknown) => {
+      const analysis = a as any
+      if (analysis.result?.dates && Array.isArray(analysis.result.dates)) {
+        analysis.result.dates.forEach((d: string) => allDates.add(d))
       }
     })
     return Array.from(allDates).sort()
   }
 
-  private mergeAmounts(analyses: any[]): any[] {
-    const amounts = []
+  private mergeAmounts(analyses: unknown[]): unknown[] {
+    const amounts: unknown[] = []
     const seen = new Set()
     
-    analyses.forEach(a => {
-      if (a.result.amounts && Array.isArray(a.result.amounts)) {
-        a.result.amounts.forEach(amount => {
+    analyses.forEach((a: unknown) => {
+      const analysis = a as any
+      if (analysis.result?.amounts && Array.isArray(analysis.result.amounts)) {
+        analysis.result.amounts.forEach((amount: any) => {
           const key = `${amount.value}_${amount.type}`
           if (!seen.has(key)) {
             seen.add(key)
@@ -393,29 +396,31 @@ export class MultiModalAIOrchestrator {
     }
   }
 
-  private mergeAnomalies(analyses: any[]): any[] {
+  private mergeAnomalies(analyses: unknown[]): unknown[] {
     // Prioritize xAI's anomaly detection
-    const xaiAnalysis = analyses.find(a => a.provider === 'xAI Grok')
+    const xaiAnalysis = (analyses as any[]).find(a => a.provider === 'xAI Grok')
     if (xaiAnalysis?.result?.anomalies) {
       return xaiAnalysis.result.anomalies
     }
     
-    const allAnomalies = []
-    analyses.forEach(a => {
-      if (a.result.anomalies && Array.isArray(a.result.anomalies)) {
-        allAnomalies.push(...a.result.anomalies)
+    const allAnomalies: unknown[] = []
+    analyses.forEach((a: unknown) => {
+      const analysis = a as any
+      if (analysis.result?.anomalies && Array.isArray(analysis.result.anomalies)) {
+        allAnomalies.push(...analysis.result.anomalies)
       }
     })
     
     return this.deduplicateAnomalies(allAnomalies)
   }
 
-  private mergeAssociations(analyses: any[]): any[] {
+  private mergeAssociations(analyses: unknown[]): unknown[] {
     const associations = new Map()
     
-    analyses.forEach(a => {
-      if (a.result.associations && Array.isArray(a.result.associations)) {
-        a.result.associations.forEach(assoc => {
+    analyses.forEach((a: unknown) => {
+      const analysis = a as any
+      if (analysis.result?.associations && Array.isArray(analysis.result.associations)) {
+        analysis.result.associations.forEach((assoc: any) => {
           const key = `${assoc.type}_${assoc.id}`
           if (!associations.has(key) || assoc.confidence > associations.get(key).confidence) {
             associations.set(key, assoc)
@@ -455,8 +460,8 @@ export class MultiModalAIOrchestrator {
     return names.sort((a, b) => b.length - a.length)[0]
   }
 
-  private extractUniqueFindings(providerResult: any, consensus: any): any[] {
-    const unique = []
+  private extractUniqueFindings(providerResult: any, consensus: any): unknown[] {
+    const unique: unknown[] = []
     
     // Find findings unique to this provider
     Object.keys(providerResult).forEach(key => {

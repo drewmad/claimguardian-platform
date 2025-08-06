@@ -269,7 +269,7 @@ export default function SituationRoomPage() {
         {selectedView === 'map' && (
           <SituationRoomMapView 
             threats={threats}
-            communityIntel={communityIntel}
+            communityIntel={communityIntel || { alerts: [], insights: [], networkStatus: 'disconnected' }}
             propertyStatus={propertyStatus}
             emergencyMode={emergencyMode}
           />

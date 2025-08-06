@@ -15,7 +15,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Home, Building, TrendingUp, AlertCircle, Filter, Download, Eye, EyeOff } from 'lucide-react'
 import { FloridaPropertyMap } from './florida-property-map'
 import { fadeInUp, staggerContainer } from '@/lib/animations'
-import { CardVariants } from '@/components/ui/card-variants'
+import { Card, CardContent, CardTitle, CardDescription, CardHeader } from '@/components/ui/card-variants'
 import { InsuranceBadge } from '@/components/ui/insurance-badges'
 
 // Types
@@ -256,7 +256,7 @@ export function PropertyMapDashboard({
       {/* Statistics Cards */}
       <motion.div variants={staggerContainer} className="grid grid-cols-1 md:grid-cols-4 gap-6">
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total Properties</p>
@@ -264,11 +264,11 @@ export function PropertyMapDashboard({
               </div>
               <Home className="w-8 h-8 text-green-400" />
             </div>
-          </CardVariants>
+          </Card>
         </motion.div>
 
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total Value</p>
@@ -276,11 +276,11 @@ export function PropertyMapDashboard({
               </div>
               <TrendingUp className="w-8 h-8 text-blue-400" />
             </div>
-          </CardVariants>
+          </Card>
         </motion.div>
 
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Total Claims</p>
@@ -288,11 +288,11 @@ export function PropertyMapDashboard({
               </div>
               <AlertCircle className="w-8 h-8 text-orange-400" />
             </div>
-          </CardVariants>
+          </Card>
         </motion.div>
 
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-gray-400 text-sm">Average Value</p>
@@ -300,14 +300,14 @@ export function PropertyMapDashboard({
               </div>
               <Building className="w-8 h-8 text-purple-400" />
             </div>
-          </CardVariants>
+          </Card>
         </motion.div>
       </motion.div>
 
       {/* Filters Panel */}
       {showFilters && (
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-white">Filters</h2>
               <button
@@ -441,7 +441,7 @@ export function PropertyMapDashboard({
                 </select>
               </div>
             </div>
-          </CardVariants>
+          </Card>
         </motion.div>
       )}
 
@@ -449,7 +449,7 @@ export function PropertyMapDashboard({
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Map */}
         <motion.div variants={fadeInUp} className="lg:col-span-2">
-          <CardVariants variant="default" className="p-0 overflow-hidden">
+          <Card variant="default" className="p-0 overflow-hidden">
             <FloridaPropertyMap
               properties={filteredProperties}
               onPropertyClick={handlePropertyClick}
@@ -460,12 +460,12 @@ export function PropertyMapDashboard({
                 'mapbox://styles/mapbox/satellite-streets-v12'
               }
             />
-          </CardVariants>
+          </Card>
         </motion.div>
 
         {/* Property Details */}
         <motion.div variants={fadeInUp}>
-          <CardVariants variant="default" className="p-6">
+          <Card variant="default" className="p-6">
             <h2 className="text-lg font-semibold text-white mb-4">Property Details</h2>
             
             {selectedProperty ? (
@@ -530,7 +530,7 @@ export function PropertyMapDashboard({
                 <p className="text-gray-400">Click on a property marker to view details</p>
               </div>
             )}
-          </CardVariants>
+          </Card>
         </motion.div>
       </div>
     </div>

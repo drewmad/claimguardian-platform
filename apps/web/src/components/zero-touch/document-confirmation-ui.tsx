@@ -1,11 +1,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Button } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
-import { Input } from '@claimguardian/ui'
-import { Textarea } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Input } from '@/components/ui/input'
+import { Textarea } from '@/components/ui/textarea'
 import { AlertCircle, CheckCircle, Edit2, FileText, Sparkles, Brain, Shield, Tag } from 'lucide-react'
 import { toast } from 'sonner'
 import { createClient } from '@/lib/supabase/client'
@@ -254,7 +254,7 @@ export function DocumentConfirmationUI() {
                     </label>
                     <Input
                       defaultValue={doc.ai_suggested_name}
-                      onChange={(e) => setEditedValues({
+                      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEditedValues({
                         ...editedValues,
                         [doc.id]: {
                           ...editedValues[doc.id],
@@ -271,7 +271,7 @@ export function DocumentConfirmationUI() {
                     </label>
                     <Input
                       defaultValue={doc.ai_suggested_category}
-                      onChange={(e) => setEditedValues({
+                      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEditedValues({
                         ...editedValues,
                         [doc.id]: {
                           ...editedValues[doc.id],
@@ -288,7 +288,7 @@ export function DocumentConfirmationUI() {
                     </label>
                     <Textarea
                       placeholder="Add any corrections or notes..."
-                      onChange={(e) => setEditedValues({
+                      onChange={(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setEditedValues({
                         ...editedValues,
                         [doc.id]: {
                           ...editedValues[doc.id],

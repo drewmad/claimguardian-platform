@@ -2,10 +2,10 @@
 
 import { useState, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { Card, CardContent, CardHeader, CardTitle } from '@claimguardian/ui'
-import { Button } from '@claimguardian/ui'
-import { Badge } from '@claimguardian/ui'
-import { Progress } from '@claimguardian/ui'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
+import { Progress } from '@/components/ui/progress'
 import { 
   Upload, 
   FileText, 
