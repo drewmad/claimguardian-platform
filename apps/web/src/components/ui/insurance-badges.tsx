@@ -163,17 +163,20 @@ export function InsuranceBadge({ variant, children, showIcon = true, className }
 
 // Convenience exports for common use cases
 export function PolicyStatusBadge({ status }: { status: 'active' | 'expired' | 'pending' | 'cancelled' }) {
-  return <InsuranceBadge variant={status} />
+  return <InsuranceBadge variant={status}>{badgeConfig[status].label}</InsuranceBadge>
 }
 
 export function InsurabilityBadge({ level }: { level: 'high' | 'medium' | 'low' }) {
-  return <InsuranceBadge variant={`insurability-${level}` as InsuranceBadgeVariant} />
+  const variant = `insurability-${level}` as InsuranceBadgeVariant
+  return <InsuranceBadge variant={variant}>{badgeConfig[variant].label}</InsuranceBadge>
 }
 
 export function CoverageBadge({ level }: { level: 'adequate' | 'partial' | 'insufficient' }) {
-  return <InsuranceBadge variant={`coverage-${level}` as InsuranceBadgeVariant} />
+  const variant = `coverage-${level}` as InsuranceBadgeVariant
+  return <InsuranceBadge variant={variant}>{badgeConfig[variant].label}</InsuranceBadge>
 }
 
 export function ClaimStatusBadge({ status }: { status: 'open' | 'closed' | 'approved' | 'denied' }) {
-  return <InsuranceBadge variant={`claim-${status}` as InsuranceBadgeVariant} />
+  const variant = `claim-${status}` as InsuranceBadgeVariant
+  return <InsuranceBadge variant={variant}>{badgeConfig[variant].label}</InsuranceBadge>
 }
