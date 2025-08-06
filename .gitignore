@@ -252,6 +252,7 @@ REPOSITORY_FINAL_CLEANUP_PLAN.md
 # AI documentation and reports
 AI_AUGMENTATION_REPORT.md
 AI_FEATURE_BACKLOG.csv
+AI_ENHANCEMENT_BACKLOG.csv
 AI_IMPLEMENTATION_EXAMPLES.md
 AI_IMPLEMENTATION_ROADMAP.md
 AI_SPRINT_PLAN.md
@@ -267,6 +268,9 @@ FLORIDA_PLATFORM_SETUP.md
 docs/florida-platform/FLOIR_DEPLOYMENT_GUIDE.md
 docs/florida-platform/FLORIDA_DATA_PLATFORM_SUMMARY.md
 docs/florida-platform/FLORIDA_PLATFORM_SETUP.md
+
+# Future features documentation (work in progress)
+docs/FUTURE_*.md
 
 # ==============================================================================
 # NEW PACKAGE BUILD OUTPUTS
@@ -357,6 +361,11 @@ data-platform/processed/**/*
 supabase/functions/*/.env
 supabase/functions/*/node_modules/
 supabase/functions/*/dist/
+
+# NOAA and weather data functions (development/experimental)
+supabase/functions/noaa-*/
+supabase/functions/weather-*/
+supabase/functions/proactive-*/
 
 # ==============================================================================
 # TEMPORARY REORGANIZATION FILES
@@ -595,6 +604,12 @@ ai-generated-images-temp/
 # Legal document processing temp
 legal-doc-processing/
 policy-extraction-temp/
+
+# Weather and environmental data services (development)
+apps/web/src/app/dashboard/weather/sync/
+services/noaa-*/
+services/weather-*/
+services/environmental-*/
 
 # ==============================================================================
 # TEMPORARY EXCLUSIONS (REMOVE WHEN STABLE)

@@ -47,3 +47,14 @@ export {
   type FloridaClaimAnalysis,
   type PolicyExtractionResult 
 } from './services/gemini-insurance.service';
+
+// Export model manager
+export { 
+  aiModelManager, 
+  AIProvider as ModelAIProvider, 
+  AIModel as ModelAIModel, 
+  getAvailableAIProviders,
+  generateAIText,
+  analyzeAIImage,
+  getBestAIModel 
+} from './model-manager';
