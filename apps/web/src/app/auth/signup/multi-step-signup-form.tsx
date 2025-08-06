@@ -24,6 +24,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
+import { SocialLoginPanel } from '@/components/auth/social-login-enhanced'
 
 type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer' | 'success'
 
@@ -359,6 +360,25 @@ export function MultiStepSignupForm() {
             <div className="text-center mb-6">
               <h2 className="text-2xl font-bold text-white">Create Account</h2>
               <p className="text-gray-400 mt-1">Sign up to get started</p>
+            </div>
+
+            {/* Social Login Section */}
+            <div className="mb-8">
+              <SocialLoginPanel
+                mode="signup"
+                onSuccess={() => router.push('/onboarding/property-setup')}
+                onError={(error) => setError(error.toString())}
+              />
+            </div>
+
+            {/* Divider */}
+            <div className="relative mb-6">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-slate-700"></div>
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-slate-900/50 px-2 text-slate-400">Or sign up with email</span>
+              </div>
             </div>
             
             {/* Personal Info */}

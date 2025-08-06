@@ -19,6 +19,7 @@ import { useAuth } from '@/components/auth/auth-provider'
 import { useRateLimit } from '@/hooks/use-rate-limit'
 import { authService } from '@/lib/auth/auth-service'
 import { useModalStore } from '@/stores/modal-store'
+import { SocialLoginPanel } from '@/components/auth/social-login-enhanced'
 
 export function LoginModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -128,6 +129,24 @@ export function LoginModal() {
             <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Welcome Back</h2>
             <p className="text-sm text-gray-400 mt-2">Sign in to access your ClaimGuardian account</p>
           </div>
+
+        {/* Social Login Section */}
+        <div className="mb-6">
+          <SocialLoginPanel
+            mode="login"
+            onSuccess={() => closeModal()}
+            onError={(error) => logger.error('Social login error', { error })}
+          />
+        </div>
+
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-slate-700"></div>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-gradient-to-b from-slate-800 to-slate-900 px-2 text-slate-400">Or continue with email</span>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-5">
           <div className="group">

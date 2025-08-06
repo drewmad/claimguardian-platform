@@ -12,7 +12,7 @@ import { emergencyCommunicationManager, MessagePriority } from '@/lib/nims/emerg
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { searchParams } = new URL(request.url)
     
     const status = searchParams.get('status')

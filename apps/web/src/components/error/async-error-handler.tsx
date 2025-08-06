@@ -106,7 +106,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
     return Math.floor(delay + jitter)
   }, [config])
 
-  const executeWithRetry = useCallback(async <T>(
+  const executeWithRetry = useCallback(async <T,>(
     operation: () => Promise<T>,
     context?: string
   ): Promise<T> => {

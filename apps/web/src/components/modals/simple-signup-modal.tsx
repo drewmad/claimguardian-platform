@@ -18,6 +18,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useModalStore } from '@/stores/modal-store'
+import { SocialLoginPanel } from '@/components/auth/social-login-enhanced'
 
 export function SimpleSignupModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
@@ -83,6 +84,24 @@ export function SimpleSignupModal() {
         </button>
 
         <h2 className="text-xl font-bold mb-6">Create Account</h2>
+
+        {/* Social Login Section */}
+        <div className="mb-6">
+          <SocialLoginPanel
+            mode="signup"
+            onSuccess={() => closeModal()}
+            onError={(error) => console.error('Social signup error:', error)}
+          />
+        </div>
+
+        <div className="relative mb-6">
+          <div className="absolute inset-0 flex items-center">
+            <div className="w-full border-t border-gray-200"></div>
+          </div>
+          <div className="relative flex justify-center text-xs uppercase">
+            <span className="bg-white px-2 text-gray-500">Or continue with email</span>
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>

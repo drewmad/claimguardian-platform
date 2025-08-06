@@ -230,7 +230,7 @@ function EnhancedVerifyContent() {
           retryCount: prev.retryCount + 1
         }))
         
-        error(`Verification failed: ${errorInfo.message}`, {
+        error(`Verification failed: ${errorInfo.message || 'Unknown error'}`, {
           actions: errorInfo.status === 'expired' ? [{
             label: 'Request New Email',
             onClick: () => router.push('/auth/resend-verification')
@@ -265,6 +265,8 @@ function EnhancedVerifyContent() {
           priority: 'high',
           source: 'system',
           actionable: true,
+          read: false,
+          archived: false,
           actions: [{
             id: 'get-started',
             label: 'Get Started',
