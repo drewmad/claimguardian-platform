@@ -20,7 +20,10 @@ import { Toaster } from 'sonner'
 import { AuthProvider } from '@/components/auth/auth-provider'
 import { CookieConsentSimple } from '@/components/cookie-consent-simple'
 import { QueryProvider } from '@/components/providers/query-provider'
-import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
+import { CriticalErrorBoundary } from '@/components/error/error-boundary'
+import { ErrorProvider, ErrorCollector } from '@/providers/error-provider'
+import { ToastProvider, CustomToaster } from '@/components/notifications/toast-system'
+import { NotificationProvider } from '@/components/notifications/notification-center'
 import { PWAProvider } from '@/components/pwa/pwa-provider'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -100,40 +103,40 @@ export default function RootLayout({
           Skip to main content
         </a>
 
-        <ErrorBoundary>
-          <QueryProvider>
-            <AuthProvider>
-              <PWAProvider>
-                {/* Main content wrapper with proper semantic structure */}
-                <div id="main-content" role="main" tabIndex={-1}>
-                  {children}
-                </div>
-              </PWAProvider>
-              
-              {/* Toast notifications with accessibility attributes */}
-              <div aria-live="polite" aria-atomic="true">
-                <Toaster 
-                  position="top-right" 
-                  richColors 
-                  closeButton
-                  toastOptions={{
-                    duration: 5000,
-                    role: 'status',
-                    ariaProps: {
-                      role: 'status',
-                      'aria-live': 'polite',
-                    },
-                  }}
-                />
-              </div>
-              
-              {/* Cookie consent with proper ARIA attributes */}
-              <div role="complementary" aria-label="Cookie consent">
-                <CookieConsentSimple />
-              </div>
-            </AuthProvider>
-          </QueryProvider>
-        </ErrorBoundary>
+        <CriticalErrorBoundary>
+          <ErrorProvider>
+            <ToastProvider>
+              <NotificationProvider>
+                <QueryProvider>
+                  <AuthProvider>
+                    <PWAProvider>
+                      {/* Main content wrapper with proper semantic structure */}
+                      <div id="main-content" role="main" tabIndex={-1}>
+                        {children}
+                      </div>
+                    </PWAProvider>
+                    
+                    {/* Enhanced toast system with accessibility */}
+                    <div aria-live="polite" aria-atomic="true">
+                      <CustomToaster 
+                        position="top-right"
+                        theme="system"
+                      />
+                    </div>
+                    
+                    {/* Cookie consent with proper ARIA attributes */}
+                    <div role="complementary" aria-label="Cookie consent">
+                      <CookieConsentSimple />
+                    </div>
+
+                    {/* Error collector for development */}
+                    <ErrorCollector />
+                  </AuthProvider>
+                </QueryProvider>
+              </NotificationProvider>
+            </ToastProvider>
+          </ErrorProvider>
+        </CriticalErrorBoundary>
 
         {/* Hidden screen reader announcement area */}
         <div 

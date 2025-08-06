@@ -1,0 +1,1611 @@
+openapi: 3.0.3
+info:
+  title: ClaimGuardian Partner API
+  description: |
+    # ClaimGuardian Partner API v1
+    
+    Welcome to the ClaimGuardian Partner API - a comprehensive white-label solution for insurance carriers, MGAs, and property management companies.
+    
+    ## Overview
+    
+    The ClaimGuardian Partner API enables insurance carriers to integrate our AI-powered claims processing platform into their existing systems, providing:
+    
+    - **AI-Powered Damage Assessment**: Automated property damage analysis using computer vision and machine learning
+    - **Document Processing**: Intelligent OCR and document classification for claims documentation
+    - **Property Intelligence**: Real-time property valuation, risk assessment, and historical data
+    - **Claims Lifecycle Management**: Complete claims processing workflow from FNOL to settlement
+    - **White-Label Branding**: Fully customizable experience with your company's branding
+    - **Real-Time Webhooks**: Event-driven notifications for seamless integration
+    
+    ## Target Markets
+    
+    - **Regional Insurance Companies** (50-10,000 customers)
+    - **MGAs/MGUs** (Managing General Agents/Underwriters)
+    - **InsurTech Companies** building claims management solutions
+    - **Property Management Companies** with self-insurance programs
+    
+    ## Getting Started
+    
+    1. **Contact Sales**: Reach out to our partner team for onboarding
+    2. **Receive API Keys**: Get sandbox and production API keys
+    3. **Configure Branding**: Set up white-label customizations
+    4. **Integrate**: Use our SDKs or REST API directly
+    5. **Go Live**: Process real claims with full support
+    
+    ## Authentication
+    
+    All API requests require authentication using API keys in the Authorization header:
+    
+    ```
+    Authorization: Bearer pk_live_your_api_key_here
+    ```
+    
+    ## Rate Limits
+    
+    API requests are rate limited based on your subscription tier:
+    - **Starter**: 1,000 requests/hour
+    - **Professional**: 10,000 requests/hour  
+    - **Enterprise**: 100,000 requests/hour
+    - **Custom**: Negotiated limits
+    
+    ## Webhooks
+    
+    Stay informed of claim status changes and processing updates through our webhook system.
+    
+    ## Support
+    
+    - **Documentation**: https://docs.claimguardianai.com/partner-api
+    - **Developer Support**: api-support@claimguardianai.com
+    - **Status Page**: https://status.claimguardianai.com
+    
+  version: 1.0.0
+  contact:
+    name: ClaimGuardian API Team
+    email: api-support@claimguardianai.com
+    url: https://claimguardianai.com/contact
+  license:
+    name: Commercial License
+    url: https://claimguardianai.com/terms
+  termsOfService: https://claimguardianai.com/partner-terms
+
+servers:
+  - url: https://api.claimguardianai.com
+    description: Production server
+  - url: https://sandbox-api.claimguardianai.com
+    description: Sandbox server for development
+
+security:
+  - ApiKeyAuth: []
+
+tags:
+  - name: Claims Management
+    description: Create, update, and manage insurance claims
+  - name: Document Processing  
+    description: Upload and process claim-related documents
+  - name: Property Intelligence
+    description: Property data, valuations, and risk assessments
+  - name: AI Services
+    description: AI-powered damage assessment and settlement prediction
+  - name: Webhooks
+    description: Manage webhook endpoints for real-time notifications
+  - name: Analytics & Reporting
+    description: Claims analytics and business intelligence
+  - name: Partner Management
+    description: Manage partner account settings and configurations
+
+paths:
+  # Claims Management Endpoints
+  /partner/v1/claims:
+    get:
+      tags: [Claims Management]
+      summary: List claims
+      description: |
+        Retrieve a paginated list of claims for your organization.
+        
+        **Filters Available:**
+        - Status filtering (draft, submitted, under_review, approved, denied, settled)
+        - Date range filtering
+        - Policy number search
+        - Custom field filtering based on your configuration
+        
+        **Use Cases:**
+        - Dashboard claim listings
+        - Report generation
+        - Bulk claim processing
+        - Integration with existing claim management systems
+      operationId: listClaims
+      parameters:
+        - name: status
+          in: query
+          description: Filter by claim status
+          schema:
+            type: string
+            enum: [draft, submitted, under_review, approved, denied, settled, closed]
+        - name: date_from
+          in: query
+          description: Filter claims from date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: "2024-01-01T00:00:00Z"
+        - name: date_to
+          in: query  
+          description: Filter claims to date (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: "2024-12-31T23:59:59Z"
+        - name: policy_number
+          in: query
+          description: Filter by policy number
+          schema:
+            type: string
+            example: "POL-2024-123456"
+        - name: page
+          in: query
+          description: Page number (1-based)
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: limit
+          in: query
+          description: Number of items per page
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+            default: 50
+            example: 50
+        - name: sort
+          in: query
+          description: Sort field
+          schema:
+            type: string
+            enum: [created_at, updated_at, incident_date, estimated_amount]
+            default: created_at
+        - name: order
+          in: query
+          description: Sort order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+      responses:
+        '200':
+          description: Successfully retrieved claims
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          claims:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Claim'
+                          pagination:
+                            $ref: '#/components/schemas/PaginationInfo'
+              examples:
+                successful_response:
+                  summary: Successful claims list
+                  value:
+                    success: true
+                    data:
+                      claims:
+                        - id: "clm_1234567890"
+                          external_id: "YOUR-CLAIM-001"
+                          claim_number: "ACME-2024-A1B2C3"
+                          status: "under_review"
+                          claim_type: "hurricane"
+                          incident_date: "2024-03-15T08:00:00Z"
+                          estimated_amount: 75000.00
+                          policy_number: "POL-2024-123456"
+                          claimant_info:
+                            firstName: "John"
+                            lastName: "Smith"
+                            email: "john.smith@email.com"
+                            phone: "+1-555-0123"
+                          property:
+                            address: "123 Main St, Miami, FL 33101"
+                            property_type: "single_family"
+                          created_at: "2024-03-15T09:30:00Z"
+                      pagination:
+                        page: 1
+                        limit: 50
+                        total: 127
+                        totalPages: 3
+                        hasNext: true
+                        hasPrev: false
+                    metadata:
+                      requestId: "req_1234567890_abc123"
+                      timestamp: "2024-03-15T10:15:00Z"
+                      processingTime: 245
+                      rateLimit:
+                        remaining: 999
+                        reset: "2024-03-15T11:00:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    
+    post:
+      tags: [Claims Management]
+      summary: Create a new claim
+      description: |
+        Create a new insurance claim in the ClaimGuardian system.
+        
+        **Key Features:**
+        - Automatic claim number generation
+        - Property intelligence integration
+        - AI damage assessment (if enabled)
+        - Automated workflow triggers
+        - Real-time webhook notifications
+        
+        **Processing Flow:**
+        1. Validate claim data and policy information
+        2. Create or link to existing property record
+        3. Generate unique claim number using your company prefix
+        4. Trigger AI processing pipeline (if configured)
+        5. Send webhook notification to your system
+        6. Return claim details with next steps
+        
+        **White-Label Features:**
+        - Custom claim numbering format
+        - Configurable required fields
+        - Branded email notifications
+        - Custom workflow rules
+      operationId: createClaim
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClaimRequest'
+            examples:
+              hurricane_claim:
+                summary: Hurricane damage claim
+                value:
+                  externalId: "YOUR-SYSTEM-CLAIM-001"
+                  policyNumber: "POL-2024-123456"
+                  propertyAddress: "123 Ocean Drive, Miami Beach, FL 33139"
+                  incidentDate: "2024-03-15T08:00:00Z"
+                  incidentType: "hurricane"
+                  description: "Roof damage and water intrusion from Hurricane Milton. Multiple shingles missing, gutters damaged, water damage in master bedroom and living room."
+                  estimatedLoss: 75000.00
+                  deductible: 2500.00
+                  claimantInfo:
+                    firstName: "Maria"
+                    lastName: "Rodriguez"
+                    email: "maria.rodriguez@email.com"
+                    phone: "+1-305-555-0123"
+                    address: "123 Ocean Drive, Miami Beach, FL 33139"
+                  adjusterInfo:
+                    name: "John Adjuster"
+                    company: "ACME Insurance Adjusters"
+                    phone: "+1-305-555-0456"
+                    email: "john@acmeadjusters.com"
+              water_damage_claim:
+                summary: Water damage from burst pipe
+                value:
+                  externalId: "YOUR-SYSTEM-CLAIM-002"
+                  policyNumber: "POL-2024-789012"
+                  propertyAddress: "456 Residential Lane, Orlando, FL 32801"
+                  incidentDate: "2024-03-10T14:30:00Z"
+                  incidentType: "water"
+                  description: "Kitchen pipe burst causing water damage to flooring, cabinets, and adjacent rooms. Emergency mitigation services completed."
+                  estimatedLoss: 25000.00
+                  deductible: 1000.00
+                  claimantInfo:
+                    firstName: "Robert"
+                    lastName: "Johnson"
+                    email: "robert.johnson@email.com"
+                    phone: "+1-407-555-0789"
+                    address: "456 Residential Lane, Orlando, FL 32801"
+      responses:
+        '201':
+          description: Claim created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ClaimCreatedResponse'
+              examples:
+                successful_creation:
+                  summary: Successful claim creation
+                  value:
+                    success: true
+                    data:
+                      claimId: "clm_1234567890"
+                      externalId: "YOUR-SYSTEM-CLAIM-001"
+                      status: "submitted"
+                      claimNumber: "ACME-2024-A1B2C3"
+                      estimatedProcessingTime: "5 business days"
+                      nextSteps:
+                        - "Review submitted claim information"
+                        - "Schedule property inspection if required"
+                        - "Upload photos of damage"
+                        - "Provide receipts for emergency repairs"
+                      requiredDocuments:
+                        - "Photos of damage from multiple angles"
+                        - "Proof of ownership or lease agreement"
+                        - "Weather report or official storm documentation"
+                        - "Receipts for emergency repairs"
+                      webhookUrl: "https://your-system.com/webhooks/claim-updates"
+                    metadata:
+                      requestId: "req_1234567890_def456"
+                      timestamp: "2024-03-15T10:20:00Z"
+                      processingTime: 1250
+                      rateLimit:
+                        remaining: 998
+                        reset: "2024-03-15T11:00:00Z"
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          description: Claim with external ID already exists
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error:
+                  code: "resource_already_exists"
+                  message: "Claim with external ID YOUR-SYSTEM-CLAIM-001 already exists"
+                metadata:
+                  requestId: "req_1234567890_ghi789"
+                  timestamp: "2024-03-15T10:25:00Z"
+                  processingTime: 150
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /partner/v1/claims/{claimId}:
+    get:
+      tags: [Claims Management]
+      summary: Get claim details
+      description: |
+        Retrieve detailed information about a specific claim.
+        
+        **Included Data:**
+        - Complete claim information
+        - Property details and valuation
+        - Document list and processing status
+        - AI assessment results (if available)
+        - Status history and timeline
+        - Communication log
+      operationId: getClaim
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          description: Unique claim identifier
+          schema:
+            type: string
+            example: "clm_1234567890"
+      responses:
+        '200':
+          description: Claim details retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ClaimDetails'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    patch:
+      tags: [Claims Management]
+      summary: Update claim information
+      description: |
+        Update specific fields of an existing claim.
+        
+        **Updatable Fields:**
+        - Status changes (with workflow validation)
+        - Adjuster information
+        - Estimated amounts
+        - Settlement information
+        - Internal notes and metadata
+        
+        **Workflow Rules:**
+        Status transitions are validated based on your configuration:
+        - submitted → under_review → approved/denied → settled
+        - Custom workflows supported for complex claim types
+      operationId: updateClaim
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          description: Unique claim identifier
+          schema:
+            type: string
+            example: "clm_1234567890"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateClaimRequest'
+      responses:
+        '200':
+          description: Claim updated successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/ClaimDetails'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  # Document Processing Endpoints
+  /partner/v1/claims/{claimId}/documents:
+    get:
+      tags: [Document Processing]
+      summary: List claim documents
+      description: |
+        Get all documents associated with a claim, including processing status and extracted data.
+      operationId: listClaimDocuments
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Documents retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          documents:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/Document'
+    
+    post:
+      tags: [Document Processing]
+      summary: Upload claim document
+      description: |
+        Upload a document for AI processing and analysis.
+        
+        **Supported File Types:**
+        - Images: JPEG, PNG, HEIC, WebP (up to 50MB)
+        - Documents: PDF, Word, Excel (up to 50MB)
+        - Videos: MP4, MOV (up to 200MB for property walkthroughs)
+        
+        **AI Processing Features:**
+        - **OCR Text Extraction**: Extract text from images and PDFs
+        - **Document Classification**: Automatically categorize document types
+        - **Damage Detection**: Identify and assess property damage in photos
+        - **Content Validation**: Verify document authenticity and completeness
+        - **Data Extraction**: Pull structured data from forms and receipts
+        
+        **Processing Pipeline:**
+        1. File validation and virus scanning
+        2. Secure upload to encrypted storage
+        3. AI processing queue
+        4. OCR and computer vision analysis
+        5. Results webhook notification
+      operationId: uploadClaimDocument
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file, documentType]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: The document file to upload
+                documentType:
+                  type: string
+                  enum: [photo, receipt, estimate, policy, report, other]
+                  description: Type of document being uploaded
+                description:
+                  type: string
+                  description: Optional description of the document
+                  maxLength: 500
+                tags:
+                  type: array
+                  items:
+                    type: string
+                  description: Optional tags for organization
+                  maxItems: 10
+      responses:
+        '201':
+          description: Document uploaded successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/DocumentUploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '413':
+          description: File too large
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error:
+                  code: "document_too_large"
+                  message: "File size exceeds maximum limit of 50MB"
+        '415':
+          description: Unsupported file type
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiResponse'
+              example:
+                success: false
+                error:
+                  code: "unsupported_file_type"
+                  message: "File type not supported. Please upload JPEG, PNG, PDF, or Word documents."
+
+  # Property Intelligence Endpoints  
+  /partner/v1/properties/{propertyId}:
+    get:
+      tags: [Property Intelligence]
+      summary: Get property intelligence
+      description: |
+        Get comprehensive property information including valuation, risk assessment, and historical data.
+        
+        **Data Sources:**
+        - Public records and tax assessments
+        - MLS and real estate transaction history
+        - Weather and natural disaster history
+        - Crime statistics and neighborhood data
+        - Satellite imagery and aerial photography
+        - Building permits and renovation history
+        
+        **Risk Assessment Factors:**
+        - Fire risk based on construction and location
+        - Flood risk from FEMA and local data
+        - Wind/hurricane risk for coastal properties
+        - Earthquake risk where applicable
+        - Crime risk from local statistics
+        - Overall insurability score (1-100)
+      operationId: getPropertyIntelligence
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property intelligence retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/PropertyIntelligence'
+
+  /partner/v1/properties/search:
+    get:
+      tags: [Property Intelligence]
+      summary: Search properties by address
+      description: |
+        Search for property information by address with intelligent matching.
+        
+        **Search Capabilities:**
+        - Fuzzy address matching
+        - Partial address searches
+        - GPS coordinate lookup
+        - Batch address processing
+        - Historical property data
+      operationId: searchProperties
+      parameters:
+        - name: address
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "123 Main Street, Miami, FL"
+        - name: exact_match
+          in: query
+          schema:
+            type: boolean
+            default: false
+            description: Require exact address match
+      responses:
+        '200':
+          description: Property search results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          properties:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/PropertySearchResult'
+                          matchConfidence:
+                            type: number
+                            description: Confidence score for address matching (0-1)
+                            example: 0.95
+
+  # Webhooks Management
+  /partner/v1/webhooks:
+    get:
+      tags: [Webhooks]
+      summary: List webhook endpoints
+      description: List all configured webhook endpoints for your organization
+      operationId: listWebhooks
+      responses:
+        '200':
+          description: Webhooks retrieved successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        type: object
+                        properties:
+                          webhooks:
+                            type: array
+                            items:
+                              $ref: '#/components/schemas/WebhookEndpoint'
+
+    post:
+      tags: [Webhooks]
+      summary: Create webhook endpoint
+      description: |
+        Create a new webhook endpoint to receive real-time notifications.
+        
+        **Available Events:**
+        - `claim.created` - New claim submitted
+        - `claim.updated` - Claim information changed
+        - `claim.approved` - Claim approved for payment
+        - `claim.denied` - Claim denied
+        - `claim.settled` - Claim payment processed
+        - `document.processed` - Document AI processing complete
+        - `property.assessed` - Property intelligence updated
+        - `user.created` - New user registered
+        - `billing.usage_warning` - Approaching usage limits
+        - `billing.limit_exceeded` - Usage limits exceeded
+        
+        **Security Features:**
+        - HMAC-SHA256 signature verification
+        - IP whitelist filtering
+        - SSL certificate validation
+        - Retry logic with exponential backoff
+        - Dead letter queue for failed deliveries
+      operationId: createWebhook
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateWebhookRequest'
+      responses:
+        '201':
+          description: Webhook created successfully
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/ApiResponse'
+                  - type: object
+                    properties:
+                      data:
+                        $ref: '#/components/schemas/WebhookEndpoint'
+
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: http
+      scheme: bearer
+      description: |
+        Partner API authentication using Bearer token format.
+        
+        **API Key Format:** 
+        - Production: `pk_live_32CharacterKey`
+        - Sandbox: `pk_test_32CharacterKey`
+        
+        **Usage:**
+        ```
+        Authorization: Bearer pk_live_your_api_key_here
+        ```
+
+  schemas:
+    # Core API Response Structure
+    ApiResponse:
+      type: object
+      required: [success, metadata]
+      properties:
+        success:
+          type: boolean
+          description: Indicates if the request was successful
+        data:
+          type: object
+          description: Response data (present when success=true)
+        error:
+          $ref: '#/components/schemas/ApiError'
+        metadata:
+          $ref: '#/components/schemas/ResponseMetadata'
+
+    ApiError:
+      type: object
+      required: [code, message]
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code
+          enum: 
+            - invalid_api_key
+            - expired_api_key
+            - insufficient_permissions
+            - rate_limit_exceeded
+            - quota_exceeded
+            - invalid_request
+            - missing_required_field
+            - invalid_field_value
+            - resource_not_found
+            - resource_already_exists
+            - resource_limit_exceeded
+            - processing_failed
+            - external_service_error
+            - claim_already_submitted
+            - invalid_claim_status
+            - document_too_large
+            - unsupported_file_type
+            - internal_error
+            - service_unavailable
+        message:
+          type: string
+          description: Human-readable error description
+          example: "Missing required field: claimantInfo"
+        details:
+          type: object
+          description: Additional error context
+          additionalProperties: true
+
+    ResponseMetadata:
+      type: object
+      required: [requestId, timestamp, processingTime, rateLimit]
+      properties:
+        requestId:
+          type: string
+          description: Unique request identifier for support
+          example: "req_1234567890_abc123"
+        timestamp:
+          type: string
+          format: date-time
+          description: Response timestamp (ISO 8601)
+          example: "2024-03-15T10:15:00Z"
+        processingTime:
+          type: integer
+          description: Processing time in milliseconds
+          example: 245
+        rateLimit:
+          type: object
+          required: [remaining, reset]
+          properties:
+            remaining:
+              type: integer
+              description: Remaining requests in current window
+              example: 999
+            reset:
+              type: string
+              format: date-time
+              description: Rate limit reset time
+              example: "2024-03-15T11:00:00Z"
+
+    # Claims Management Schemas
+    CreateClaimRequest:
+      type: object
+      required: [externalId, policyNumber, propertyAddress, incidentDate, incidentType, description, estimatedLoss, deductible, claimantInfo]
+      properties:
+        externalId:
+          type: string
+          description: Your system's unique identifier for this claim
+          maxLength: 100
+          example: "YOUR-SYSTEM-CLAIM-001"
+        policyNumber:
+          type: string
+          description: Insurance policy number
+          maxLength: 50
+          example: "POL-2024-123456"
+        propertyAddress:
+          type: string
+          description: Full property address
+          maxLength: 200
+          example: "123 Ocean Drive, Miami Beach, FL 33139"
+        incidentDate:
+          type: string
+          format: date-time
+          description: Date and time when the incident occurred
+          example: "2024-03-15T08:00:00Z"
+        incidentType:
+          type: string
+          enum: [hurricane, wind, hail, water, fire, lightning, theft, vandalism, other]
+          description: Type of incident/damage
+        description:
+          type: string
+          description: Detailed description of the damage and incident
+          maxLength: 2000
+          example: "Roof damage and water intrusion from Hurricane Milton. Multiple shingles missing, gutters damaged."
+        estimatedLoss:
+          type: number
+          format: currency
+          minimum: 0
+          maximum: 10000000
+          description: Estimated dollar amount of damages
+          example: 75000.00
+        deductible:
+          type: number
+          format: currency
+          minimum: 0
+          description: Policy deductible amount
+          example: 2500.00
+        claimantInfo:
+          $ref: '#/components/schemas/ClaimantInfo'
+        adjusterInfo:
+          $ref: '#/components/schemas/AdjusterInfo'
+
+    ClaimantInfo:
+      type: object
+      required: [firstName, lastName, email, phone, address]
+      properties:
+        firstName:
+          type: string
+          maxLength: 50
+          example: "Maria"
+        lastName:
+          type: string
+          maxLength: 50
+          example: "Rodriguez"
+        email:
+          type: string
+          format: email
+          example: "maria.rodriguez@email.com"
+        phone:
+          type: string
+          pattern: '^\+?[\d\s\-\(\)]+$'
+          example: "+1-305-555-0123"
+        address:
+          type: string
+          maxLength: 200
+          example: "123 Ocean Drive, Miami Beach, FL 33139"
+
+    AdjusterInfo:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+          example: "John Adjuster"
+        company:
+          type: string
+          maxLength: 100
+          example: "ACME Insurance Adjusters"
+        phone:
+          type: string
+          example: "+1-305-555-0456"
+        email:
+          type: string
+          format: email
+          example: "john@acmeadjusters.com"
+
+    ClaimCreatedResponse:
+      type: object
+      required: [claimId, externalId, status, claimNumber, estimatedProcessingTime, nextSteps, requiredDocuments]
+      properties:
+        claimId:
+          type: string
+          description: ClaimGuardian's unique claim identifier
+          example: "clm_1234567890"
+        externalId:
+          type: string
+          description: Your system's claim identifier
+          example: "YOUR-SYSTEM-CLAIM-001"
+        status:
+          type: string
+          enum: [draft, submitted, under_review, approved, denied, settled, closed]
+          description: Current claim status
+          example: "submitted"
+        claimNumber:
+          type: string
+          description: Generated claim number for reference
+          example: "ACME-2024-A1B2C3"
+        estimatedProcessingTime:
+          type: string
+          description: Estimated time for claim processing
+          example: "5 business days"
+        nextSteps:
+          type: array
+          items:
+            type: string
+          description: List of next steps for the claimant
+          example: ["Review submitted claim information", "Schedule property inspection", "Upload photos of damage"]
+        requiredDocuments:
+          type: array
+          items:
+            type: string
+          description: List of required documentation
+          example: ["Photos of damage", "Proof of ownership", "Weather report"]
+        webhookUrl:
+          type: string
+          format: uri
+          description: Configured webhook URL for updates
+          example: "https://your-system.com/webhooks/claim-updates"
+
+    Claim:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "clm_1234567890"
+        external_id:
+          type: string
+          example: "YOUR-CLAIM-001"
+        claim_number:
+          type: string
+          example: "ACME-2024-A1B2C3"
+        status:
+          type: string
+          enum: [draft, submitted, under_review, approved, denied, settled, closed]
+        claim_type:
+          type: string
+          enum: [hurricane, wind, hail, water, fire, lightning, theft, vandalism, other]
+        incident_date:
+          type: string
+          format: date-time
+        reported_date:
+          type: string
+          format: date-time
+        estimated_amount:
+          type: number
+          format: currency
+        settled_amount:
+          type: number
+          format: currency
+        policy_number:
+          type: string
+        description:
+          type: string
+        claimant_info:
+          $ref: '#/components/schemas/ClaimantInfo'
+        adjuster_info:
+          $ref: '#/components/schemas/AdjusterInfo'
+        property:
+          $ref: '#/components/schemas/PropertySummary'
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ClaimDetails:
+      allOf:
+        - $ref: '#/components/schemas/Claim'
+        - type: object
+          properties:
+            documents:
+              type: array
+              items:
+                $ref: '#/components/schemas/Document'
+            ai_assessment:
+              $ref: '#/components/schemas/AIAssessment'
+            status_history:
+              type: array
+              items:
+                $ref: '#/components/schemas/StatusHistoryEntry'
+            settlement_info:
+              $ref: '#/components/schemas/SettlementInfo'
+
+    UpdateClaimRequest:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [under_review, approved, denied, settled, closed]
+        adjuster_info:
+          $ref: '#/components/schemas/AdjusterInfo'
+        estimated_amount:
+          type: number
+          format: currency
+        settled_amount:
+          type: number
+          format: currency
+        internal_notes:
+          type: string
+          maxLength: 1000
+        settlement_info:
+          $ref: '#/components/schemas/SettlementInfo'
+
+    # Document Processing Schemas
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "doc_1234567890"
+        claim_id:
+          type: string
+        document_type:
+          type: string
+          enum: [photo, receipt, estimate, policy, report, other]
+        file_name:
+          type: string
+        file_url:
+          type: string
+          format: uri
+        file_size:
+          type: integer
+          description: File size in bytes
+        processing_status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        extracted_data:
+          type: object
+          description: AI-extracted structured data
+          additionalProperties: true
+        ocr_text:
+          type: string
+          description: Extracted text content
+        ai_analysis:
+          $ref: '#/components/schemas/DocumentAIAnalysis'
+        created_at:
+          type: string
+          format: date-time
+
+    DocumentUploadResponse:
+      type: object
+      properties:
+        document_id:
+          type: string
+          example: "doc_1234567890"
+        upload_url:
+          type: string
+          format: uri
+          description: Secure upload URL (if using presigned uploads)
+        processing_status:
+          type: string
+          enum: [pending, processing]
+        estimated_processing_time:
+          type: string
+          example: "2-5 minutes"
+
+    DocumentAIAnalysis:
+      type: object
+      properties:
+        damage_detected:
+          type: boolean
+        damage_types:
+          type: array
+          items:
+            type: string
+        confidence_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        extracted_amounts:
+          type: array
+          items:
+            type: object
+            properties:
+              amount:
+                type: number
+              currency:
+                type: string
+              context:
+                type: string
+        quality_score:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Document quality score for OCR accuracy
+
+    # Property Intelligence Schemas  
+    PropertySummary:
+      type: object
+      properties:
+        id:
+          type: string
+        address:
+          type: string
+        property_type:
+          type: string
+          enum: [single_family, condo, townhouse, multi_family, commercial]
+
+    PropertyIntelligence:
+      type: object
+      properties:
+        property_id:
+          type: string
+        basic_info:
+          $ref: '#/components/schemas/PropertyBasicInfo'
+        risk_assessment:
+          $ref: '#/components/schemas/RiskAssessment'
+        market_value:
+          $ref: '#/components/schemas/MarketValue'
+        insurability_factors:
+          $ref: '#/components/schemas/InsurabilityFactors'
+
+    PropertyBasicInfo:
+      type: object
+      properties:
+        address:
+          type: string
+        year_built:
+          type: integer
+        square_footage:
+          type: integer
+        bedrooms:
+          type: integer
+        bathrooms:
+          type: number
+        lot_size:
+          type: integer
+          description: Lot size in square feet
+        property_type:
+          type: string
+          enum: [single_family, condo, townhouse, multi_family, commercial]
+
+    RiskAssessment:
+      type: object
+      properties:
+        overall_score:
+          type: integer
+          minimum: 1
+          maximum: 100
+          description: Overall risk score (1=highest risk, 100=lowest risk)
+        fire_risk:
+          type: integer
+          minimum: 1
+          maximum: 100
+        flood_risk:
+          type: integer
+          minimum: 1
+          maximum: 100
+        wind_risk:
+          type: integer
+          minimum: 1
+          maximum: 100
+        hail_risk:
+          type: integer
+          minimum: 1
+          maximum: 100
+        crime_risk:
+          type: integer
+          minimum: 1
+          maximum: 100
+
+    MarketValue:
+      type: object
+      properties:
+        estimated_value:
+          type: number
+          format: currency
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+          description: Confidence in valuation estimate
+        comparables:
+          type: array
+          maxItems: 10
+          items:
+            type: object
+            properties:
+              address:
+                type: string
+              sold_price:
+                type: number
+                format: currency
+              sold_date:
+                type: string
+                format: date
+              square_footage:
+                type: integer
+              distance:
+                type: number
+                description: Distance in miles
+
+    InsurabilityFactors:
+      type: object
+      properties:
+        roof_age:
+          type: integer
+          description: Age of roof in years
+        roof_material:
+          type: string
+          enum: [shingle, tile, metal, slate, other]
+        hvac_age:
+          type: integer
+          description: Age of HVAC system in years
+        electrical_age:
+          type: integer
+          description: Age of electrical system in years
+        plumbing_age:
+          type: integer
+          description: Age of plumbing system in years
+        foundation_type:
+          type: string
+          enum: [slab, crawl_space, basement, pier_beam]
+        construction:
+          type: string
+          enum: [frame, masonry, concrete_block, steel]
+
+    PropertySearchResult:
+      type: object
+      properties:
+        property_id:
+          type: string
+        address:
+          type: string
+        match_confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        basic_info:
+          $ref: '#/components/schemas/PropertyBasicInfo'
+
+    # AI Assessment Schemas
+    AIAssessment:
+      type: object
+      properties:
+        assessment_id:
+          type: string
+        status:
+          type: string
+          enum: [pending, processing, completed, failed]
+        damage_analysis:
+          $ref: '#/components/schemas/DamageAnalysis'
+        settlement_prediction:
+          $ref: '#/components/schemas/SettlementPrediction'
+        created_at:
+          type: string
+          format: date-time
+        completed_at:
+          type: string
+          format: date-time
+
+    DamageAnalysis:
+      type: object
+      properties:
+        total_damage_score:
+          type: number
+          minimum: 0
+          maximum: 1
+        damage_categories:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+                enum: [roof, siding, windows, interior, foundation, other]
+              severity:
+                type: string
+                enum: [minor, moderate, major, severe]
+              confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+              estimated_cost:
+                type: number
+                format: currency
+        affected_areas:
+          type: array
+          items:
+            type: string
+
+    SettlementPrediction:
+      type: object
+      properties:
+        predicted_amount:
+          type: number
+          format: currency
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        factors:
+          type: array
+          items:
+            type: object
+            properties:
+              factor:
+                type: string
+              impact:
+                type: string
+                enum: [increase, decrease, neutral]
+              weight:
+                type: number
+                minimum: 0
+                maximum: 1
+
+    # Webhook Schemas
+    WebhookEndpoint:
+      type: object
+      properties:
+        id:
+          type: string
+        url:
+          type: string
+          format: uri
+        events:
+          type: array
+          items:
+            type: string
+            enum: [claim.created, claim.updated, claim.approved, claim.denied, claim.settled, document.processed, property.assessed, user.created, user.updated, billing.usage_warning, billing.limit_exceeded]
+        active:
+          type: boolean
+        secret:
+          type: string
+          description: Secret for HMAC signature verification
+        created_at:
+          type: string
+          format: date-time
+
+    CreateWebhookRequest:
+      type: object
+      required: [url, events]
+      properties:
+        url:
+          type: string
+          format: uri
+          description: HTTPS endpoint to receive webhook notifications
+          example: "https://your-api.com/webhooks/claimguardian"
+        events:
+          type: array
+          items:
+            type: string
+            enum: [claim.created, claim.updated, claim.approved, claim.denied, claim.settled, document.processed, property.assessed, user.created, user.updated, billing.usage_warning, billing.limit_exceeded]
+          minItems: 1
+          description: Events to subscribe to
+          example: ["claim.created", "claim.updated", "document.processed"]
+        description:
+          type: string
+          maxLength: 200
+          description: Optional description for this webhook
+          example: "Production claims processing notifications"
+
+    # Utility Schemas
+    PaginationInfo:
+      type: object
+      properties:
+        page:
+          type: integer
+          minimum: 1
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 1000
+        total:
+          type: integer
+          minimum: 0
+        totalPages:
+          type: integer
+          minimum: 0
+        hasNext:
+          type: boolean
+        hasPrev:
+          type: boolean
+
+    StatusHistoryEntry:
+      type: object
+      properties:
+        id:
+          type: string
+        status:
+          type: string
+        changed_by:
+          type: string
+        notes:
+          type: string
+        timestamp:
+          type: string
+          format: date-time
+
+    SettlementInfo:
+      type: object
+      properties:
+        settlement_amount:
+          type: number
+          format: currency
+        settlement_date:
+          type: string
+          format: date-time
+        payment_method:
+          type: string
+          enum: [check, ach, wire_transfer]
+        check_number:
+          type: string
+        notes:
+          type: string
+
+  responses:
+    BadRequest:
+      description: Bad request - invalid parameters or request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "invalid_request"
+              message: "Invalid request format or missing required fields"
+              details:
+                field_errors: ["externalId is required", "incidentDate must be a valid ISO date"]
+            metadata:
+              requestId: "req_1234567890_error"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 50
+
+    Unauthorized:
+      description: Unauthorized - invalid or missing API key
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "invalid_api_key"
+              message: "Invalid API key provided"
+            metadata:
+              requestId: "req_1234567890_auth"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 25
+
+    Forbidden:
+      description: Forbidden - insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "insufficient_permissions"
+              message: "Your API key does not have permission for this operation"
+            metadata:
+              requestId: "req_1234567890_perm"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 30
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "resource_not_found"
+              message: "Claim not found or access denied"
+            metadata:
+              requestId: "req_1234567890_404"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 75
+
+    RateLimitExceeded:
+      description: Rate limit exceeded
+      headers:
+        X-RateLimit-Limit:
+          schema:
+            type: integer
+          description: Request limit per hour
+        X-RateLimit-Remaining:
+          schema:
+            type: integer
+          description: Remaining requests in current window
+        X-RateLimit-Reset:
+          schema:
+            type: string
+            format: date-time
+          description: Rate limit reset time
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "rate_limit_exceeded"
+              message: "API rate limit exceeded. Limit: 1000 requests/hour"
+            metadata:
+              requestId: "req_1234567890_rate"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 5
+              rateLimit:
+                remaining: 0
+                reset: "2024-03-15T11:00:00Z"
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiResponse'
+          example:
+            success: false
+            error:
+              code: "internal_error"
+              message: "An internal error occurred. Please try again later."
+            metadata:
+              requestId: "req_1234567890_500"
+              timestamp: "2024-03-15T10:15:00Z"
+              processingTime: 100

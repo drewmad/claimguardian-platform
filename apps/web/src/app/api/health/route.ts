@@ -106,7 +106,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const poolStats = connectionPool.getStats()
       healthCheck.checks.connectionPool = {
         status: poolStats.totalConnections > 0 ? 'pass' : 'warn',
-        details: poolStats
+        details: { ...poolStats }
       }
     } catch (error) {
       healthCheck.checks.connectionPool = {
@@ -311,7 +311,12 @@ async function checkExternalServices(): Promise<{
       }
     })
 
-    const failedServices = results.filter(result => !result.ok && !result.skipped)
+    const failedServices = results.filter(result => {
+      if ('skipped' in result && result.skipped) {
+        return false
+      }
+      return !result.ok
+    })
     const responseTime = Date.now() - startTime
 
     return {
@@ -322,9 +327,9 @@ async function checkExternalServices(): Promise<{
         services: results.reduce((acc, result) => {
           acc[result.service] = {
             ok: result.ok,
-            status: result.status,
-            skipped: result.skipped,
-            error: result.error
+            status: 'status' in result ? result.status : undefined,
+            skipped: 'skipped' in result ? result.skipped : undefined,
+            error: 'error' in result ? result.error : undefined
           }
           return acc
         }, {} as Record<string, unknown>)

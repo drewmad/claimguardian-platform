@@ -4,9 +4,18 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 
+interface Alert {
+  id: string;
+  type: string;
+  message: string;
+  severity: 'high' | 'medium' | 'low';
+  timestamp: string;
+  affectedUsers: number;
+}
+
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
@@ -33,7 +42,8 @@ export async function GET(request: NextRequest) {
     // Get recent cost alerts
     const { data: costAlerts, error: costAlertsError } = await supabase
       .from('cost_alerts')
-      .select(`
+      .select(
+        `
         id,
         alert_type,
         alert_level,
@@ -43,7 +53,8 @@ export async function GET(request: NextRequest) {
         percentage_used,
         created_at,
         user_id
-      `)
+      `
+      )
       .order('created_at', { ascending: false })
       .limit(50)
 
@@ -54,12 +65,14 @@ export async function GET(request: NextRequest) {
     // Get high usage patterns (users with unusual activity)
     const { data: highUsageUsers } = await supabase
       .from('ai_usage_logs')
-      .select(`
+      .select(
+        `
         user_id,
         cost_total,
         created_at,
         user_profiles!inner(email)
-      `)
+      `
+      )
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
       .order('cost_total', { ascending: false })
       .limit(10)
@@ -70,7 +83,7 @@ export async function GET(request: NextRequest) {
     })
 
     // Process alerts
-    const alerts = []
+    const alerts: Alert[] = []
 
     // Add budget alerts
     costAlerts?.forEach(alert => {
@@ -92,7 +105,7 @@ export async function GET(request: NextRequest) {
       if (!userUsageMap[key]) {
         userUsageMap[key] = { 
           cost: 0, 
-          email: log.user_profiles?.email || 'Unknown'
+          email: log.user_profiles[0]?.email || 'Unknown'
         }
       }
       userUsageMap[key].cost += log.cost_total || 0

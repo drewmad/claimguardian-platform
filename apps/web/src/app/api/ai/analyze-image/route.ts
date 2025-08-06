@@ -26,7 +26,7 @@ const costTrackingContext = {
 export const POST = withBudgetCheck(
   withCostTracking(
     costTrackingContext,
-    async (request: NextRequest) => {
+    async (request: NextRequest): Promise<NextResponse> => {
       return withRateLimit(
         request,
         'ai-analyze-image',
@@ -105,7 +105,7 @@ export const POST = withBudgetCheck(
 
           return NextResponse.json(result.data)
         }
-      )
+      ) as Promise<NextResponse>
     }
   )
 )

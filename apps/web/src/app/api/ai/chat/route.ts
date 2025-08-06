@@ -120,7 +120,7 @@ export const POST = withBudgetCheck(
             )
           }
         }
-      )
+      ) as Promise<NextResponse>
     }
   )
 )

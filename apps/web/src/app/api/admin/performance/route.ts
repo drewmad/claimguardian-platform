@@ -66,9 +66,10 @@ export async function GET(request: NextRequest) {
     const aiCacheMetrics = cacheManager.getMetrics()
 
     // Get database statistics
-    const { data: dbStats } = await supabase
+    const { data } = await supabase
       .rpc('get_database_stats')
       .single()
+    const dbStats = data as { active_connections: number, slow_queries: number } | null
 
     // Get AI usage statistics
     const { data: aiStats } = await supabase
@@ -76,6 +77,11 @@ export async function GET(request: NextRequest) {
       .select('estimated_cost, model_used, created_at')
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()) // Last 24 hours
       .limit(1000)
+
+    const totalCost = aiStats?.reduce((sum, stat) => sum + (stat.estimated_cost || 0), 0) || 0
+    const totalRequests = aiStats?.length || 0
+    const avgCostPerRequest = totalRequests > 0 ? totalCost / totalRequests : 0
+    const modelsUsed = [...new Set(aiStats?.map(stat => stat.model_used) || [])]
 
     const metrics: SystemMetrics = {
       database: {
@@ -102,12 +108,10 @@ export async function GET(request: NextRequest) {
         }
       },
       ai: {
-        totalCost: aiStats?.reduce((sum, stat) => sum + (stat.estimated_cost || 0), 0) || 0,
-        totalRequests: aiStats?.length || 0,
-        avgCostPerRequest: aiStats?.length > 0 
-          ? (aiStats.reduce((sum, stat) => sum + (stat.estimated_cost || 0), 0) / aiStats.length)
-          : 0,
-        modelsUsed: [...new Set(aiStats?.map(stat => stat.model_used) || [])],
+        totalCost,
+        totalRequests,
+        avgCostPerRequest,
+        modelsUsed,
         cacheHitRate: `${(aiCacheMetrics.hitRate * 100).toFixed(1)}%`
       }
     }
@@ -149,8 +153,8 @@ export async function POST(request: NextRequest) {
         result = 'All caches cleared'
         break
       case 'expired':
-        const expiredCount = await cacheManager['cleanup']?.() || 0
-        result = `Cleared ${expiredCount} expired entries`
+        await cacheManager['cleanup']?.()
+        result = `Cleared expired entries`
         break
       default:
         return NextResponse.json(

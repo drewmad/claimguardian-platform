@@ -14,7 +14,7 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { 
   Smartphone, Monitor, Tablet, CheckCircle, 
-  ArrowRight, Eye, Touch, Zap, Shield
+  ArrowRight, Eye, Zap, Shield, Hand
 } from 'lucide-react'
 
 import { useModalStore } from '@/stores/modal-store'
@@ -29,7 +29,7 @@ const features = [
     description: 'Optimized for touch interactions with slide-up animations on mobile devices'
   },
   {
-    icon: Touch,
+    icon: Hand,
     title: 'Touch Gestures',
     description: 'Swipe to close, drag to dismiss, and native touch feel on all interactions'
   },

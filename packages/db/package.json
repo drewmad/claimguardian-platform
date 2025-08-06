@@ -9,7 +9,8 @@
     ".": {
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
-    }
+    },
+    "./types/*": "./src/types/*.ts"
   },
   "scripts": {
     "build": "tsup src/index.ts --format esm --dts",

@@ -88,3 +88,80 @@ export async function getSessionExpiryAction(): Promise<number | null> {
     return null
   }
 }
+
+/**
+ * Server action to resend email verification
+ * Returns success status and any error message
+ */
+export async function resendVerificationAction(email: string): Promise<{
+  success: boolean
+  error?: string
+  rateLimited?: boolean
+}> {
+  try {
+    authLogger.info('Resending verification email', { email })
+    
+    const supabase = await createAuthClient()
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email,
+      options: {
+        emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/verify-enhanced`
+      }
+    })
+
+    if (error) {
+      if (error.message.includes('rate limit') || error.message.includes('too many')) {
+        authLogger.warn('Email verification rate limited', { email }, error)
+        return {
+          success: false,
+          rateLimited: true,
+          error: 'Too many attempts. Please wait before requesting another email.'
+        }
+      }
+      
+      authLogger.error('Failed to resend verification email', { email }, error)
+      return {
+        success: false,
+        error: error.message
+      }
+    }
+
+    authLogger.info('Verification email sent successfully', { email })
+    return { success: true }
+  } catch (error) {
+    authLogger.error('Unexpected error resending verification email', { email }, error as Error)
+    return {
+      success: false,
+      error: 'An unexpected error occurred while sending verification email'
+    }
+  }
+}
+
+/**
+ * Server action to check email verification status
+ * Returns the current user's verification status
+ */
+export async function checkVerificationStatusAction(): Promise<{
+  isVerified: boolean
+  email?: string
+  user?: any
+}> {
+  try {
+    const supabase = await createAuthClient()
+    const { data: { user }, error } = await supabase.auth.getUser()
+    
+    if (error || !user) {
+      return { isVerified: false }
+    }
+    
+    return {
+      isVerified: !!user.email_confirmed_at,
+      email: user.email,
+      user
+    }
+  } catch (error) {
+    authLogger.error('Failed to check verification status', {}, error as Error)
+    return { isVerified: false }
+  }
+}

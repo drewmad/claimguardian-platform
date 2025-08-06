@@ -1,0 +1,287 @@
+# AlertManager Configuration
+# ClaimGuardian AI-Powered Insurance Platform
+
+global:
+  # SMTP configuration for email alerts
+  smtp_smarthost: '${SMTP_HOST}:${SMTP_PORT}'
+  smtp_from: 'alerts@claimguardianai.com'
+  smtp_auth_username: '${SMTP_USERNAME}'
+  smtp_auth_password: '${SMTP_PASSWORD}'
+  smtp_require_tls: true
+
+# Templates for alert formatting
+templates:
+  - '/etc/alertmanager/templates/*.tmpl'
+
+# Route configuration
+route:
+  # Default receiver
+  receiver: 'default'
+  
+  # Group alerts by severity and category
+  group_by: ['severity', 'category', 'alertname']
+  
+  # Group wait time before sending first notification
+  group_wait: 30s
+  
+  # Group interval for subsequent notifications
+  group_interval: 5m
+  
+  # Repeat interval for sending notifications
+  repeat_interval: 12h
+
+  # Sub-routes for different alert types
+  routes:
+    # Critical alerts - immediate notification
+    - match:
+        severity: critical
+      receiver: 'critical-alerts'
+      group_wait: 10s
+      group_interval: 1m
+      repeat_interval: 30m
+      continue: true
+
+    # Security alerts - immediate notification
+    - match:
+        category: security
+      receiver: 'security-team'
+      group_wait: 10s
+      group_interval: 2m
+      repeat_interval: 1h
+      continue: true
+
+    # AI cost alerts - business team
+    - match:
+        category: ai
+      receiver: 'ai-cost-alerts'
+      group_wait: 1m
+      group_interval: 10m
+      repeat_interval: 4h
+
+    # Database alerts - infrastructure team
+    - match:
+        category: database
+      receiver: 'database-team'
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 2h
+
+    # Business alerts - business team
+    - match:
+        category: business
+      receiver: 'business-team'
+      group_wait: 5m
+      group_interval: 30m
+      repeat_interval: 24h
+
+    # System alerts - infrastructure team
+    - match:
+        category: system
+      receiver: 'infrastructure-team'
+      group_wait: 1m
+      group_interval: 5m
+      repeat_interval: 4h
+
+# Inhibit rules to prevent spam
+inhibit_rules:
+  # Inhibit warning if critical alert is firing
+  - source_match:
+      severity: 'critical'
+    target_match:
+      severity: 'warning'
+    equal: ['alertname', 'instance']
+
+  # Inhibit instance-specific alerts if instance is down
+  - source_match:
+      alertname: 'InstanceDown'
+    target_match_re:
+      alertname: '.*'
+    equal: ['instance']
+
+# Receivers configuration
+receivers:
+  # Default receiver (low priority)
+  - name: 'default'
+    email_configs:
+      - to: 'devops@claimguardianai.com'
+        subject: '[ClaimGuardian] {{ .GroupLabels.alertname }} - {{ .Status | toUpper }}'
+        body: |
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Instance:** {{ .Labels.instance }}
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+
+  # Critical alerts - multiple channels
+  - name: 'critical-alerts'
+    email_configs:
+      - to: 'critical@claimguardianai.com'
+        subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
+        body: |
+          **CRITICAL ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Instance:** {{ .Labels.instance }}
+          **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ if .Annotations.runbook_url }}**Runbook:** {{ .Annotations.runbook_url }}{{ end }}
+          {{ end }}
+        html: |
+          <h2 style="color: #d32f2f;">🚨 CRITICAL ALERT</h2>
+          {{ range .Alerts }}
+          <div style="border-left: 4px solid #d32f2f; padding: 10px; margin: 10px 0;">
+            <h3>{{ .Annotations.summary }}</h3>
+            <p><strong>Description:</strong> {{ .Annotations.description }}</p>
+            <p><strong>Severity:</strong> {{ .Labels.severity }}</p>
+            <p><strong>Instance:</strong> {{ .Labels.instance }}</p>
+            <p><strong>Started:</strong> {{ .StartsAt.Format "2006-01-02 15:04:05" }}</p>
+            {{ if .Annotations.runbook_url }}<p><a href="{{ .Annotations.runbook_url }}">📖 Runbook</a></p>{{ end }}
+          </div>
+          {{ end }}
+    
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#critical-alerts'
+        title: '🚨 Critical Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          Severity: {{ .Labels.severity }}
+          Instance: {{ .Labels.instance }}
+          {{ end }}
+        color: 'danger'
+
+    webhook_configs:
+      - url: '${DISCORD_WEBHOOK_URL}'
+        send_resolved: true
+
+  # Security team alerts
+  - name: 'security-team'
+    email_configs:
+      - to: 'security@claimguardianai.com'
+        subject: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          **SECURITY ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Instance:** {{ .Labels.instance }}
+          **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+    
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#security-alerts'
+        title: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          {{ end }}
+        color: 'warning'
+
+  # AI cost monitoring alerts
+  - name: 'ai-cost-alerts'
+    email_configs:
+      - to: 'finance@claimguardianai.com,ceo@claimguardianai.com'
+        subject: '💰 AI Cost Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          **AI COST ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Cost Impact:** {{ .Labels.severity }} level
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+          
+          Please review the AI cost dashboard: https://grafana.claimguardianai.com/d/ai-costs
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#ai-costs'
+        title: '💰 AI Cost Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          {{ end }}
+        color: '#ff9800'
+
+  # Database team alerts
+  - name: 'database-team'
+    email_configs:
+      - to: 'database@claimguardianai.com'
+        subject: '🗄️ Database Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          **DATABASE ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Instance:** {{ .Labels.instance }}
+          **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+
+  # Business team alerts
+  - name: 'business-team'
+    email_configs:
+      - to: 'business@claimguardianai.com'
+        subject: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          **BUSINESS METRICS ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Impact:** {{ .Labels.severity }} level
+          **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+          
+          Review business dashboard: https://grafana.claimguardianai.com/d/business
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#business-metrics'
+        title: '📊 Business Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          {{ end }}
+
+  # Infrastructure team alerts
+  - name: 'infrastructure-team'
+    email_configs:
+      - to: 'infrastructure@claimguardianai.com'
+        subject: '⚙️ Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          **INFRASTRUCTURE ALERT**
+          
+          {{ range .Alerts }}
+          **Alert:** {{ .Annotations.summary }}
+          **Description:** {{ .Annotations.description }}
+          **Severity:** {{ .Labels.severity }}
+          **Instance:** {{ .Labels.instance }}
+          **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
+          {{ end }}
+
+    slack_configs:
+      - api_url: '${SLACK_WEBHOOK_URL}'
+        channel: '#infrastructure'
+        title: '⚙️ Infrastructure Alert: {{ .GroupLabels.alertname }}'
+        text: |
+          {{ range .Alerts }}
+          **{{ .Annotations.summary }}**
+          {{ .Annotations.description }}
+          Instance: {{ .Labels.instance }}
+          {{ end }}
+        color: '#2196f3'

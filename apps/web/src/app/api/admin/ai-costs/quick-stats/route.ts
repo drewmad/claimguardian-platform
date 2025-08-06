@@ -6,7 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {
@@ -90,7 +90,7 @@ export async function GET(request: NextRequest) {
     // Calculate cost by tool
     const toolCosts: Record<string, number> = {}
     toolData?.forEach(log => {
-      const toolName = log.ai_tools?.name || 'unknown'
+      const toolName = log.ai_tools[0]?.name || 'unknown'
       toolCosts[toolName] = (toolCosts[toolName] || 0) + (log.cost_total || 0)
     })
 

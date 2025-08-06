@@ -1,0 +1,314 @@
+# Prometheus Alert Rules
+# ClaimGuardian AI-Powered Insurance Platform
+
+groups:
+  # System and Infrastructure Alerts
+  - name: system.rules
+    rules:
+      # High CPU usage
+      - alert: HighCPUUsage
+        expr: claimguardian:cpu_utilization > 80
+        for: 5m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+          runbook_url: "https://docs.claimguardianai.com/runbooks/high-cpu"
+
+      - alert: CriticalCPUUsage
+        expr: claimguardian:cpu_utilization > 95
+        for: 2m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Critical CPU usage on {{ $labels.instance }}"
+          description: "CPU usage is {{ $value }}% on {{ $labels.instance }}"
+
+      # High memory usage
+      - alert: HighMemoryUsage
+        expr: claimguardian:memory_utilization > 85
+        for: 5m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: CriticalMemoryUsage
+        expr: claimguardian:memory_utilization > 95
+        for: 1m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Critical memory usage on {{ $labels.instance }}"
+          description: "Memory usage is {{ $value }}% on {{ $labels.instance }}"
+
+      # High disk usage
+      - alert: HighDiskUsage
+        expr: claimguardian:disk_utilization > 85
+        for: 10m
+        labels:
+          severity: warning
+          category: system
+        annotations:
+          summary: "High disk usage on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+
+      - alert: CriticalDiskUsage
+        expr: claimguardian:disk_utilization > 95
+        for: 5m
+        labels:
+          severity: critical
+          category: system
+        annotations:
+          summary: "Critical disk usage on {{ $labels.instance }}"
+          description: "Disk usage is {{ $value }}% on {{ $labels.instance }}"
+
+      # Instance down
+      - alert: InstanceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+          category: availability
+        annotations:
+          summary: "Instance {{ $labels.instance }} is down"
+          description: "{{ $labels.instance }} has been down for more than 1 minute"
+
+  # Application Performance Alerts
+  - name: application.rules
+    rules:
+      # High error rate
+      - alert: HighErrorRate
+        expr: claimguardian:http_error_rate > 0.05
+        for: 5m
+        labels:
+          severity: warning
+          category: application
+        annotations:
+          summary: "High error rate detected"
+          description: "HTTP error rate is {{ $value | humanizePercentage }} over the last 5 minutes"
+
+      - alert: CriticalErrorRate
+        expr: claimguardian:http_error_rate > 0.1
+        for: 2m
+        labels:
+          severity: critical
+          category: application
+        annotations:
+          summary: "Critical error rate detected"
+          description: "HTTP error rate is {{ $value | humanizePercentage }} over the last 2 minutes"
+
+      # High response time
+      - alert: HighResponseTime
+        expr: claimguardian:http_request_duration_p99 > 2
+        for: 5m
+        labels:
+          severity: warning
+          category: performance
+        annotations:
+          summary: "High response time detected"
+          description: "99th percentile response time is {{ $value }}s"
+
+      - alert: CriticalResponseTime
+        expr: claimguardian:http_request_duration_p99 > 5
+        for: 2m
+        labels:
+          severity: critical
+          category: performance
+        annotations:
+          summary: "Critical response time detected"
+          description: "99th percentile response time is {{ $value }}s"
+
+      # Low request rate (potential outage)
+      - alert: LowRequestRate
+        expr: claimguardian:http_requests_per_second < 1
+        for: 10m
+        labels:
+          severity: warning
+          category: availability
+        annotations:
+          summary: "Unusually low request rate"
+          description: "Request rate is {{ $value }} requests/second, which may indicate an outage"
+
+  # Database Alerts
+  - name: database.rules
+    rules:
+      # High database connection usage
+      - alert: HighDatabaseConnections
+        expr: claimguardian:db_connection_utilization > 0.8
+        for: 5m
+        labels:
+          severity: warning
+          category: database
+        annotations:
+          summary: "High database connection usage"
+          description: "Database connection usage is {{ $value | humanizePercentage }}"
+
+      - alert: CriticalDatabaseConnections
+        expr: claimguardian:db_connection_utilization > 0.95
+        for: 1m
+        labels:
+          severity: critical
+          category: database
+        annotations:
+          summary: "Critical database connection usage"
+          description: "Database connection usage is {{ $value | humanizePercentage }}"
+
+  # AI Service Alerts
+  - name: ai.rules
+    rules:
+      # High AI cost rate
+      - alert: HighAICostRate
+        expr: claimguardian:ai_cost_per_hour > 100
+        for: 5m
+        labels:
+          severity: warning
+          category: ai
+        annotations:
+          summary: "High AI cost rate detected"
+          description: "AI costs are ${{ $value }}/hour, exceeding budget threshold"
+
+      - alert: CriticalAICostRate
+        expr: claimguardian:ai_cost_per_hour > 250
+        for: 1m
+        labels:
+          severity: critical
+          category: ai
+        annotations:
+          summary: "Critical AI cost rate detected"
+          description: "AI costs are ${{ $value }}/hour, requiring immediate attention"
+
+      # High AI request rate
+      - alert: HighAIRequestRate
+        expr: claimguardian:ai_requests_per_second > 10
+        for: 5m
+        labels:
+          severity: info
+          category: ai
+        annotations:
+          summary: "High AI request rate"
+          description: "AI request rate is {{ $value }} requests/second"
+
+      # AI service unavailable
+      - alert: AIServiceUnavailable
+        expr: ai_service_available == 0
+        for: 2m
+        labels:
+          severity: critical
+          category: ai
+        annotations:
+          summary: "AI service unavailable"
+          description: "{{ $labels.service }} AI service has been unavailable for 2 minutes"
+
+  # WebSocket Alerts
+  - name: websocket.rules
+    rules:
+      # High WebSocket connection count
+      - alert: HighWebSocketConnections
+        expr: claimguardian:websocket_connections_active > 1000
+        for: 5m
+        labels:
+          severity: warning
+          category: websocket
+        annotations:
+          summary: "High WebSocket connection count"
+          description: "{{ $value }} active WebSocket connections"
+
+      # WebSocket connection spike
+      - alert: WebSocketConnectionSpike
+        expr: increase(websocket_connections_total[5m]) > 500
+        for: 1m
+        labels:
+          severity: warning
+          category: websocket
+        annotations:
+          summary: "WebSocket connection spike detected"
+          description: "{{ $value }} new WebSocket connections in the last 5 minutes"
+
+  # Security Alerts
+  - name: security.rules
+    rules:
+      # High rate of 4xx errors (potential attack)
+      - alert: HighClientErrorRate
+        expr: rate(http_requests_total{status=~"4.."}[5m]) > 5
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High rate of client errors"
+          description: "{{ $value }} 4xx errors per second, potential security issue"
+
+      # Multiple authentication failures
+      - alert: HighAuthFailures
+        expr: rate(auth_failures_total[5m]) > 2
+        for: 2m
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "High authentication failure rate"
+          description: "{{ $value }} authentication failures per second"
+
+      # SSL certificate expiring
+      - alert: SSLCertificateExpiringSoon
+        expr: probe_ssl_earliest_cert_expiry - time() < 7 * 24 * 60 * 60
+        for: 1h
+        labels:
+          severity: warning
+          category: security
+        annotations:
+          summary: "SSL certificate expiring soon"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+      - alert: SSLCertificateExpiring
+        expr: probe_ssl_earliest_cert_expiry - time() < 24 * 60 * 60
+        for: 1h
+        labels:
+          severity: critical
+          category: security
+        annotations:
+          summary: "SSL certificate expiring within 24 hours"
+          description: "SSL certificate for {{ $labels.instance }} expires in {{ $value | humanizeDuration }}"
+
+  # Business Logic Alerts
+  - name: business.rules
+    rules:
+      # Low conversion rate
+      - alert: LowConversionRate
+        expr: user_conversion_rate < 0.02
+        for: 30m
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Low user conversion rate"
+          description: "User conversion rate is {{ $value | humanizePercentage }}"
+
+      # High claim processing time
+      - alert: HighClaimProcessingTime
+        expr: avg_claim_processing_time_hours > 72
+        for: 1h
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "High average claim processing time"
+          description: "Average claim processing time is {{ $value }} hours"
+
+      # Revenue anomaly
+      - alert: DailyRevenueAnomaly
+        expr: abs(daily_revenue - daily_revenue_baseline) / daily_revenue_baseline > 0.3
+        for: 2h
+        labels:
+          severity: warning
+          category: business
+        annotations:
+          summary: "Daily revenue anomaly detected"
+          description: "Daily revenue is {{ $value | humanizePercentage }} different from baseline"

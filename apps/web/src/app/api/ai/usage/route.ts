@@ -8,7 +8,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export const GET = cacheable({ endpoint: 'ai_usage' })(async (request: NextRequest) => {
   try {
-    const supabase = createClient()
+    const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
 
     if (authError || !user) {

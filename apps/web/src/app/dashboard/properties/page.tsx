@@ -36,6 +36,13 @@ import { PropertyLimitModal } from '@/components/property/property-limit-modal'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { 
+  PropertyCardSkeleton, 
+  DashboardStatsSkeleton, 
+  SkeletonCard 
+} from '@/components/ui/skeleton'
+import { ComponentLoader } from '@/components/loading/page-loader'
+import { useLoadingState, useAsyncOperation } from '@/hooks/use-loading-state'
 import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { checkPropertyLimit, getPropertyPricing } from '@/actions/user-tiers'
@@ -104,85 +111,115 @@ interface PropertyPricing {
 
 export default function PropertiesPage() {
   const [properties, setProperties] = useState<Property[]>([])
-  const [loading, setLoading] = useState(true)
   const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
   const [limitInfo, setLimitInfo] = useState<PropertyLimitInfo | null>(null)
   const [pricing, setPricing] = useState<PropertyPricing | null>(null)
   const [showLimitModal, setShowLimitModal] = useState(false)
-  const [limitLoading, setLimitLoading] = useState(true)
   const [activeTab, setActiveTab] = useState<'single' | 'multiple'>('single')
+  
+  // Enhanced loading states
+  const propertiesLoader = useLoadingState({ key: 'properties', minDuration: 500 })
+  const limitsLoader = useLoadingState({ key: 'limits', minDuration: 300 })
+  const { execute: executeAsync } = useAsyncOperation()
   
   const { user } = useAuth()
   const supabase = createClient()
 
   const fetchProperties = useCallback(async () => {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
+    const result = await executeAsync(
+      async () => {
+        const { data: { user } } = await supabase.auth.getUser()
+        if (!user) throw new Error('User not authenticated')
 
-      // Fetch current properties with enrichment data
-      const { data, error } = await supabase
-        .from('properties')
-        .select(`
-          *,
-          enrichment:property_enrichments(
-            version,
-            enriched_at,
-            flood_zone,
-            elevation_meters,
-            hurricane_evacuation_zone
-          )
-        `)
-        .eq('user_id', user.id)
-        .eq('is_current', true) // Only get current versions
-        .eq('property_enrichments.is_current', true)
-        .order('created_at', { ascending: false })
+        propertiesLoader.startLoading('Loading your properties...')
+        propertiesLoader.updateProgress(20)
 
-      if (error) {
-        logger.error('Error fetching properties:', error)
-        toast.error('Failed to load properties')
-        return
+        // Fetch current properties with enrichment data
+        const { data, error } = await supabase
+          .from('properties')
+          .select(`
+            *,
+            enrichment:property_enrichments(
+              version,
+              enriched_at,
+              flood_zone,
+              elevation_meters,
+              hurricane_evacuation_zone
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('is_current', true) // Only get current versions
+          .eq('property_enrichments.is_current', true)
+          .order('created_at', { ascending: false })
+
+        if (error) throw error
+
+        propertiesLoader.updateProgress(80)
+        propertiesLoader.updateMessage('Processing property data...')
+
+        // Transform the data to include enrichment
+        const transformedData = data?.map(property => ({
+          ...property,
+          enrichment: property.enrichment?.[0] || null
+        })) || []
+
+        propertiesLoader.updateProgress(100)
+        return transformedData
+      },
+      {
+        loadingMessage: 'Fetching properties...',
+        successMessage: 'Properties loaded successfully',
+        errorMessage: 'Failed to load properties',
+        showProgress: true
       }
+    )
 
-      // Transform the data to include enrichment
-      const transformedData = data?.map(property => ({
-        ...property,
-        enrichment: property.enrichment?.[0] || null
-      })) || []
-
-      setProperties(transformedData)
-    } catch (error) {
-      logger.error('Error:', error)
-      toast.error('An error occurred while loading properties')
-    } finally {
-      setLoading(false)
+    if (result) {
+      setProperties(result)
+      propertiesLoader.stopLoading()
+    } else {
+      propertiesLoader.setError(new Error('Failed to load properties'))
     }
-  }, [supabase])
+  }, [supabase, executeAsync, propertiesLoader])
 
   const fetchLimitInfo = useCallback(async () => {
     if (!user) return
 
-    try {
-      setLimitLoading(true)
-      
-      const [limitResult, pricingResult] = await Promise.all([
-        checkPropertyLimit(user.id),
-        getPropertyPricing(user.id)
-      ])
+    const result = await executeAsync(
+      async () => {
+        limitsLoader.startLoading('Checking property limits...')
+        limitsLoader.updateProgress(30)
 
-      if (limitResult.data) {
-        setLimitInfo(limitResult.data)
-      }
+        const [limitResult, pricingResult] = await Promise.all([
+          checkPropertyLimit(user.id),
+          getPropertyPricing(user.id)
+        ])
 
-      if (pricingResult.data) {
-        setPricing(pricingResult.data)
+        limitsLoader.updateProgress(80)
+        limitsLoader.updateMessage('Processing limit data...')
+
+        const data = {
+          limitInfo: limitResult.data || null,
+          pricing: pricingResult.data || null
+        }
+
+        limitsLoader.updateProgress(100)
+        return data
+      },
+      {
+        loadingMessage: 'Loading property limits...',
+        successMessage: 'Limits loaded',
+        errorMessage: 'Failed to load property limits',
+        showProgress: true
       }
-    } catch (error) {
-      logger.error('Error fetching limit info:', error)
-    } finally {
-      setLimitLoading(false)
+    )
+
+    if (result) {
+      setLimitInfo(result.limitInfo)
+      setPricing(result.pricing)
+      limitsLoader.stopLoading()
     }
-  }, [user])
+  }, [user, executeAsync, limitsLoader])
 
   useEffect(() => {
     fetchProperties()
@@ -211,7 +248,7 @@ export default function PropertiesPage() {
     }
   }
 
-  const handleAddProperty = () => {
+  const handleAddProperty = async () => {
     if (!limitInfo || !user) {
       toast.error('Unable to check property limits')
       return
@@ -238,16 +275,29 @@ export default function PropertiesPage() {
     fetchLimitInfo()
   }
 
-  if (loading) {
+  // Enhanced loading screen
+  if (propertiesLoader.isLoading && properties.length === 0) {
     return (
       <div className="container mx-auto p-6">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/4"></div>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[1, 2, 3].map(i => (
-              <div key={i} className="h-48 bg-gray-200 rounded"></div>
-            ))}
-          </div>
+        <div className="mb-6">
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+        </div>
+        
+        {/* Tab skeleton */}
+        <div className="flex gap-2 mb-6">
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
+          <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-40"></div>
+        </div>
+
+        {/* Stats skeleton */}
+        <DashboardStatsSkeleton />
+
+        {/* Property cards skeleton */}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mt-6">
+          {[1, 2, 3].map(i => (
+            <PropertyCardSkeleton key={i} />
+          ))}
         </div>
       </div>
     )
@@ -289,7 +339,11 @@ export default function PropertiesPage() {
       </div>
 
       {/* Property Limits Info Card */}
-      {!limitLoading && limitInfo && pricing && !limitInfo.canAdd && (
+      <ComponentLoader
+        isLoading={limitsLoader.isLoading}
+        skeleton={<SkeletonCard className="mb-6 bg-gray-50 dark:bg-gray-800" />}
+      >
+        {limitInfo && pricing && !limitInfo.canAdd && (
         <Card className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
@@ -319,7 +373,8 @@ export default function PropertiesPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+        )}
+      </ComponentLoader>
 
       {/* Tab Content */}
       {activeTab === 'single' ? (
@@ -379,7 +434,7 @@ export default function PropertiesPage() {
         <div className="space-y-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-4">
-              {!limitLoading && limitInfo && (
+              {!limitsLoader.isLoading && limitInfo && (
                 <div className="text-sm text-gray-600">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className={getTierColor(limitInfo.tier)}>
@@ -393,7 +448,7 @@ export default function PropertiesPage() {
                 </div>
               )}
             </div>
-            <Button onClick={handleAddProperty} disabled={limitLoading}>
+            <Button onClick={handleAddProperty} disabled={limitsLoader.isLoading}>
               {limitInfo?.canAdd ? (
                 <>
                   <Plus className="mr-2 h-4 w-4" />
