@@ -8,7 +8,7 @@
  * @status stable
  */
 
-import '@testing-library/jest-dom'
+import '@testing-library/jest-dom' // Re-enabled for runtime testing
 
 // Mock Next.js router
 jest.mock('next/navigation', () => ({

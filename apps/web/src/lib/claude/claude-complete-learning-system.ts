@@ -114,7 +114,8 @@ class ClaudeCompleteLearningSystem {
     
     // Start reflection tracking if enabled
     if (context.enableAutoReflection) {
-      reflectionTriggers.startTaskTracking(taskType, context.complexity)
+      const validTaskType = taskType === 'other' ? 'analysis' : taskType
+      reflectionTriggers.startTaskTracking(validTaskType as any, context.complexity)
     }
     
     // Display learning insights
@@ -146,7 +147,8 @@ class ClaudeCompleteLearningSystem {
       // Execute the function with comprehensive monitoring
       if (context.enableAutoReflection) {
         // Use auto-reflection wrapper
-        const wrappedFn = autoReflect(context.taskType, context.complexity, fn)
+        const validTaskType = context.taskType === 'other' ? 'analysis' : context.taskType
+        const wrappedFn = autoReflect(validTaskType as any, context.complexity, fn)
         result = await wrappedFn()
       } else {
         // Execute without reflection
@@ -257,9 +259,7 @@ class ClaudeCompleteLearningSystem {
       framework: context.framework,
       errorType,
       toolsUsed: context.tools,
-      mistakeCategory,
-      timestamp: new Date(),
-      sessionId: taskId
+      mistakeCategory
     })
     
     // Log to reflection system
@@ -348,15 +348,15 @@ class ClaudeCompleteLearningSystem {
     return 'simple'
   }
   
-  private displayLearningInsights(analysis: unknown, context: CompleteLearningContext) {
+  private displayLearningInsights(analysis: any, context: CompleteLearningContext) {
     console.log(`\n🧠 Claude Learning Analysis for ${context.taskType}:`)
-    console.log(`   Risk Level: ${analysis.riskLevel}`)
-    console.log(`   Success Estimate: ${(analysis.estimatedSuccessRate * 100).toFixed(1)}%`)
+    console.log(`   Risk Level: ${analysis.riskLevel || 'unknown'}`)
+    console.log(`   Success Estimate: ${((analysis.estimatedSuccessRate || 0) * 100).toFixed(1)}%`)
     
     if (analysis.recommendations?.length > 0) {
       console.log('   📋 Key Recommendations:')
-      analysis.recommendations.slice(0, 3).forEach((rec: unknown) => {
-        console.log(`     • ${rec.category.toUpperCase()}: ${rec.summary.substring(0, 100)}...`)
+      analysis.recommendations.slice(0, 3).forEach((rec: any) => {
+        console.log(`     • ${rec.category?.toUpperCase() || 'GENERAL'}: ${rec.summary?.substring(0, 100) || 'No summary'}...`)
       })
     }
     
@@ -387,9 +387,7 @@ class ClaudeCompleteLearningSystem {
       framework: context.framework,
       errorType: 'runtime',
       toolsUsed: context.tools,
-      mistakeCategory: 'execution-failure',
-      timestamp: new Date(),
-      sessionId: context.taskId
+      mistakeCategory: 'execution-failure'
     })
   }
   

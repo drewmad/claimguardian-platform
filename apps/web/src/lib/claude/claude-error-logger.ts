@@ -2,15 +2,16 @@
  * @fileMetadata
  * @purpose "Claude-specific error logging and learning system"
  * @owner ai-team
- * @dependencies ["@supabase/supabase-js", "@/lib/logger"]
+ * @dependencies ["@supabase/supabase-js", "@/lib/logger", "@claimguardian/db"]
  * @exports ["claudeErrorLogger", "ClaudeErrorContext", "ClaudeError"]
  * @complexity high
  * @tags ["claude", "error", "learning", "ai", "optimization"]
  * @status stable
  */
 
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import { logger } from '@/lib/logger'
+import type { Database } from '@claimguardian/db'
 
 export interface ClaudeErrorContext {
   // Task context
@@ -75,7 +76,7 @@ export interface ClaudeLearning {
 }
 
 class ClaudeErrorLogger {
-  private supabase: ReturnType<typeof createClient> | null = null
+  private supabase: SupabaseClient<Database> | null = null
   private isEnabled: boolean = true
   private sessionId: string
   private learningCache: Map<string, ClaudeLearning[]> = new Map()
@@ -84,7 +85,7 @@ class ClaudeErrorLogger {
     this.sessionId = `claude-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     
     try {
-      this.supabase = createClient(
+      this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
         process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
       )
@@ -167,7 +168,7 @@ class ClaudeErrorLogger {
     if (!this.isEnabled || !this.supabase) return
 
     try {
-      const updateData: unknown = {
+      const updateData: any = {
         resolved: true,
         resolution_method: resolutionMethod,
         updated_at: new Date().toISOString()
@@ -433,7 +434,7 @@ class ClaudeErrorLogger {
   /**
    * Analyze error patterns for insights
    */
-  private analyzePatterns(errors: unknown[]): unknown[] {
+  private analyzePatterns(errors: any[]): any[] {
     const patterns = new Map()
     
     errors.forEach(error => {

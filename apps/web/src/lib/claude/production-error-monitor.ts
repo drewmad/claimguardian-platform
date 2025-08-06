@@ -257,17 +257,18 @@ class ProductionErrorMonitor {
     const patterns = new Map<string, ProductionErrorPattern>()
 
     for (const entry of logEntries) {
-      const key = `${entry.method}_${entry.path}_${entry.status_code}`
+      const typedEntry = entry as any
+      const key = `${typedEntry.method}_${typedEntry.path}_${typedEntry.status_code}`
       
       if (!patterns.has(key)) {
         patterns.set(key, {
           pattern: key,
-          endpoint: entry.path,
-          method: entry.method,
-          statusCode: entry.status_code,
+          endpoint: typedEntry.path,
+          method: typedEntry.method,
+          statusCode: typedEntry.status_code,
           frequency: 0,
           affectedUsers: [],
-          severity: this.determineSeverity(entry.status_code, entry.path)
+          severity: this.determineSeverity(typedEntry.status_code, typedEntry.path)
         })
       }
 
@@ -275,30 +276,30 @@ class ProductionErrorMonitor {
       pattern.frequency++
       
       // Extract user ID from path or headers if available
-      if (entry.path.includes('user_id=eq.')) {
-        const userId = entry.path.match(/user_id=eq\.([^&]+)/)?.[1]
+      if (typedEntry.path.includes('user_id=eq.')) {
+        const userId = typedEntry.path.match(/user_id=eq\.([^&]+)/)?.[1]
         if (userId && !pattern.affectedUsers.includes(userId)) {
           pattern.affectedUsers.push(userId)
         }
       }
 
       // Add root cause analysis
-      if (entry.status_code === 404) {
-        if (entry.path.includes('policy_documents_extended')) {
+      if (typedEntry.status_code === 404) {
+        if (typedEntry.path.includes('policy_documents_extended')) {
           pattern.rootCause = 'Missing policy_documents_extended view'
           pattern.resolution = 'Deploy view to database'
-        } else if (entry.path.includes('recent_login_activity')) {
+        } else if (typedEntry.path.includes('recent_login_activity')) {
           pattern.rootCause = 'Missing recent_login_activity table'
           pattern.resolution = 'Deploy table to database'
-        } else if (entry.path.includes('learnings')) {
+        } else if (typedEntry.path.includes('learnings')) {
           pattern.rootCause = 'Missing learnings table or search_learnings function'
           pattern.resolution = 'Deploy Claude Learning System database objects'
         }
-      } else if (entry.status_code === 400) {
-        if (entry.path.includes('user_profiles')) {
+      } else if (typedEntry.status_code === 400) {
+        if (typedEntry.path.includes('user_profiles')) {
           pattern.rootCause = 'User profile record missing or RLS policy issue'
           pattern.resolution = 'Create missing user profile records, verify RLS policies'
-        } else if (entry.path.includes('storage')) {
+        } else if (typedEntry.path.includes('storage')) {
           pattern.rootCause = 'Storage bucket missing or RLS policy misconfigured'
           pattern.resolution = 'Verify bucket exists and RLS policies allow user access'
         }

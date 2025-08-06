@@ -7,7 +7,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-import { APIKeyManager } from './api-key-manager'
+import { APIKeyManager, RateLimitResult } from './api-key-manager'
 import { logger } from '@/lib/logger/production-logger'
 import { createClient } from '@/lib/supabase/server'
 

@@ -1,8 +1,8 @@
 /**
  * @fileMetadata
- * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @owner platform-team
+ * @purpose "Global type declarations for the web application including Google Maps and Jest DOM matchers"
+ * @dependencies ["@testing-library/jest-dom", "react", "next"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
@@ -11,6 +11,23 @@
 // Global type declarations for Google Maps and Window extensions
 
 declare global {
+  // Jest DOM matchers extension
+  namespace jest {
+    interface Matchers<R> {
+      toBeInTheDocument(): R;
+      toHaveClass(className: string): R;
+      toBeDisabled(): R;
+      toBeEnabled(): R;
+      toHaveFocus(): R;
+      toHaveAttribute(attr: string, value?: string): R;
+      toHaveStyle(style: string | Record<string, any>): R;
+      toHaveTextContent(text: string | RegExp): R;
+      toBeVisible(): R;
+      toBeChecked(): R;
+      toHaveValue(value: string | number): R;
+    }
+  }
+
   interface Window {
     google?: {
       maps: {

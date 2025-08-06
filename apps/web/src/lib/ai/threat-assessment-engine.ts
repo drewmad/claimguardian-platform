@@ -627,7 +627,7 @@ export class ThreatAssessmentEngine {
   }
 
   private async callGemini(prompt: string, modelName: string): Promise<string> {
-    const { model } = this.providers.gemini.client
+    const { model } = this.providers.gemini.client as any
     
     const result = await model.generateContent(prompt)
     const response = await result.response
@@ -740,7 +740,7 @@ Respond with valid JSON only, no additional text.
       const parsed = JSON.parse(cleanText)
 
       // Validate and transform the response
-      const threats: ThreatAssessment[] = parsed.threats.map((threat: unknown, index: number) => ({
+      const threats: ThreatAssessment[] = parsed.threats.map((threat: any, index: number) => ({
         id: `ai-threat-${Date.now()}-${index}`,
         type: this.validateThreatType(threat.type),
         severity: this.validateThreatLevel(threat.severity),
@@ -789,7 +789,7 @@ Respond with valid JSON only, no additional text.
         isActive: true
       }))
 
-      const recommendations: AIRecommendation[] = parsed.recommendations.map((rec: unknown, index: number) => ({
+      const recommendations: AIRecommendation[] = parsed.recommendations.map((rec: any, index: number) => ({
         id: `ai-rec-${Date.now()}-${index}`,
         title: rec.title || 'Unknown Recommendation',
         description: rec.description || '',
@@ -803,7 +803,7 @@ Respond with valid JSON only, no additional text.
         alternatives: []
       }))
 
-      const intelligenceFeeds: IntelligenceFeed[] = parsed.intelligenceFeeds.map((feed: unknown, index: number) => ({
+      const intelligenceFeeds: IntelligenceFeed[] = parsed.intelligenceFeeds.map((feed: any, index: number) => ({
         id: `ai-intel-${Date.now()}-${index}`,
         source: feed.source || 'AI Analysis',
         type: this.validateIntelligenceType(feed.type),

@@ -345,7 +345,7 @@ export function isFeatureEnabled(feature: keyof AIFeatureFlags): boolean {
 }
 
 export function getPromptTemplate(category: string, type: string): string {
-  const templates = AI_PROMPTS as unknown
+  const templates = AI_PROMPTS as Record<string, Record<string, string>>
   return templates[category]?.[type] || ''
 }
 

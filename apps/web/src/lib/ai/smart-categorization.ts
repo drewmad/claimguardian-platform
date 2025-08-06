@@ -471,7 +471,7 @@ export class SmartCategorizationEngine {
       inventory_catalog: ['electronics', 'furniture', 'appliances', 'jewelry', 'collectibles']
     }
 
-    const categorySubcategories = (subcategories as unknown)[category] || ['general']
+    const categorySubcategories = (subcategories as any)[category] || ['general']
     const contentLower = content.toLowerCase()
     
     // Simple keyword matching for subcategory
@@ -678,7 +678,7 @@ export class SmartCategorizationEngine {
     return systems.slice(0, 2).map(system => ({
       system_name: system,
       damage_level: Math.floor(Math.random() * 100),
-      operational_status: ['functional', 'impaired', 'non_functional'][Math.floor(Math.random() * 3)] as unknown,
+      operational_status: ['functional', 'impaired', 'non_functional'][Math.floor(Math.random() * 3)] as 'functional' | 'impaired' | 'non_functional',
       repair_priority: Math.floor(Math.random() * 5) + 1
     }))
   }
@@ -798,7 +798,7 @@ export class SmartCategorizationEngine {
       furniture: ['seating', 'storage', 'sleeping', 'work']
     }
     
-    return (subcategories as unknown)[category]?.[0] || 'general'
+    return (subcategories as any)[category]?.[0] || 'general'
   }
 
   private async estimateItemValue(category: ItemCategory, name: string, description: string, metadata?: Record<string, unknown>): Promise<number> {
@@ -815,7 +815,7 @@ export class SmartCategorizationEngine {
       documents: 0
     }
     
-    const baseValue = (baseValues as unknown)[category] || 200
+    const baseValue = (baseValues as any)[category] || 200
     const randomVariation = 0.5 + Math.random() // 0.5x to 1.5x variation
     
     return Math.round(baseValue * randomVariation)
@@ -855,7 +855,7 @@ export class SmartCategorizationEngine {
     return {
       last_maintenance: null,
       next_maintenance: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
-      maintenance_frequency: (frequencies as unknown)[category] || 'annually',
+      maintenance_frequency: (frequencies as any)[category] || 'annually',
       maintenance_tasks: ['Clean', 'Inspect', 'Service'],
       professional_service_required: category === 'appliances'
     }

@@ -506,7 +506,9 @@ class FloridaParcelQueryOptimizer {
     // Limit cache size
     if (this.queryCache.size > 1000) {
       const firstKey = this.queryCache.keys().next().value
-      this.queryCache.delete(firstKey)
+      if (firstKey) {
+        this.queryCache.delete(firstKey)
+      }
     }
   }
 

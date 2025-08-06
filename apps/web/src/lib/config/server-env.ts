@@ -66,7 +66,7 @@ function validateServerEnv() {
   
   if (!parsed.success) {
     logger.error('❌ Invalid server environment variables:')
-    parsed.error.errors.forEach(error => {
+    parsed.error.issues.forEach((error: any) => {
       logger.error(`  ${error.path.join('.')}: ${error.message}`)
     })
     throw new Error('Invalid server environment configuration')
@@ -80,7 +80,7 @@ function validateClientEnv() {
   
   if (!parsed.success) {
     logger.error('❌ Invalid client environment variables:')
-    parsed.error.errors.forEach(error => {
+    parsed.error.issues.forEach((error: any) => {
       logger.error(`  ${error.path.join('.')}: ${error.message}`)
     })
     throw new Error('Invalid client environment configuration')

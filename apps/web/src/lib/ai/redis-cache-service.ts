@@ -40,6 +40,11 @@ interface CacheStats {
   topFeatures: Array<{ featureId: string, hits: number, savings: number }>
 }
 
+interface ChatMessage {
+  role: string
+  content: string
+}
+
 class RedisAICacheService {
   private isEnabled: boolean = false
   private options: Required<RedisCacheOptions>
@@ -84,13 +89,13 @@ class RedisAICacheService {
    * Generate cache key from request parameters
    */
   private generateCacheKey(
-    messages: unknown[], 
+    messages: ChatMessage[], 
     featureId: string, 
     model: string,
     userId?: string
   ): string {
     const content = JSON.stringify({
-      messages: messages.map(m => ({ role: m.role, content: m.content })),
+      messages: messages.map((m: any) => ({ role: m.role, content: m.content })),
       featureId,
       model,
       userId: userId || 'anonymous'
@@ -118,7 +123,7 @@ class RedisAICacheService {
    * Get cached response
    */
   async get(
-    messages: unknown[], 
+    messages: ChatMessage[], 
     featureId: string, 
     model: string,
     userId?: string
@@ -165,7 +170,7 @@ class RedisAICacheService {
    * Cache AI response
    */
   async set(
-    messages: unknown[],
+    messages: ChatMessage[],
     featureId: string,
     model: string,
     response: string,
@@ -213,7 +218,7 @@ class RedisAICacheService {
    * Semantic similarity search for related cached responses
    */
   async findSimilar(
-    messages: unknown[], 
+    messages: ChatMessage[], 
     featureId: string, 
     model: string,
     similarityThreshold = 0.85

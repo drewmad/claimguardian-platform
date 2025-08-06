@@ -345,7 +345,7 @@ class AnalyticsStreamProcessor {
     try {
       if (this.supabase) {
         // Batch insert events
-        const { error } = await this.supabase
+        const { error } = await (this.supabase as any)
           .from('analytics_events')
           .insert(events.map(event => ({
             id: event.id,
@@ -391,7 +391,7 @@ class AnalyticsStreamProcessor {
       // Flush to database
       if (metricsToFlush.length > 0 && this.supabase) {
         try {
-          const { error } = await this.supabase
+          const { error } = await (this.supabase as any)
             .from('analytics_aggregated')
             .insert(metricsToFlush.map(metrics => ({
               timestamp: metrics.timestamp.toISOString(),
@@ -441,14 +441,14 @@ class AnalyticsStreamProcessor {
     try {
       // Clean up raw events
       const rawCutoff = new Date(now.getTime() - this.config.retentionPolicy.raw * 24 * 60 * 60 * 1000)
-      await this.supabase
+      await (this.supabase as any)
         .from('analytics_events')
         .delete()
         .lt('timestamp', rawCutoff.toISOString())
 
       // Clean up aggregated data
       const aggCutoff = new Date(now.getTime() - this.config.retentionPolicy.aggregated * 24 * 60 * 60 * 1000)
-      await this.supabase
+      await (this.supabase as any)
         .from('analytics_aggregated')
         .delete()
         .lt('timestamp', aggCutoff.toISOString())
@@ -477,7 +477,7 @@ class AnalyticsStreamProcessor {
     if (!this.supabase) return []
 
     try {
-      const { data, error } = await this.supabase
+      const { data, error } = await (this.supabase as any)
         .from('analytics_aggregated')
         .select('*')
         .eq('interval', interval)
@@ -490,7 +490,7 @@ class AnalyticsStreamProcessor {
         return []
       }
 
-      return data.map((row: unknown) => ({
+      return data.map((row: any) => ({
         timestamp: new Date(row.timestamp),
         interval: row.interval,
         metrics: {

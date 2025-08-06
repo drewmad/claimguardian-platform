@@ -370,6 +370,8 @@ class TenantManager {
         targetOrgId = userOrg.organization_id
       }
 
+      // FIXED: Add null check for targetOrgId before passing to getOrganizationById
+      if (!targetOrgId) return null
       // Get organization details
       const organization = await this.getOrganizationById(targetOrgId)
       if (!organization) return null
@@ -476,7 +478,7 @@ class TenantManager {
 
         if (error) throw error
 
-        return { success: true, userId: existingUser.user.id }
+        return { success: true, userId: existingUser.id }
       } else {
         // Create invitation for new user
         const invitationToken = crypto.randomUUID()
@@ -700,13 +702,13 @@ class TenantManager {
 
       if (error) throw error
 
-      return data || []
+      return (data || []) as T[]
     } catch (error) {
       console.error('Failed to execute tenant query:', error)
       if (typeof queryOrOrgCode === 'string') {
         return { data: null, error: error instanceof Error ? error.message : 'Unknown error' }
       }
-      return []
+      return [] as T[]
     }
   }
 

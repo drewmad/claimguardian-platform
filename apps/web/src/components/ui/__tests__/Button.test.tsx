@@ -16,6 +16,7 @@ import { render, screen, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom'
 import { Button } from '../button'
+import * as React from 'react'
 
 describe('Button Component', () => {
   afterEach(() => {
@@ -36,10 +37,11 @@ describe('Button Component', () => {
     })
 
     it('should forward ref correctly', () => {
-      const ref = jest.fn()
+      const ref = React.createRef<HTMLButtonElement>()
       render(<Button ref={ref}>Test</Button>)
       
-      expect(ref).toHaveBeenCalledWith(expect.any(HTMLButtonElement))
+      expect(ref.current).toBeInstanceOf(HTMLButtonElement)
+      expect(ref.current?.textContent).toBe('Test')
     })
   })
 
@@ -391,7 +393,7 @@ describe('Button Component', () => {
       const user = userEvent.setup()
       
       render(
-        <form>
+        <form data-testid="test-form">
           <input defaultValue="test" data-testid="input" />
           <Button type="reset">Reset Form</Button>
         </form>
@@ -400,9 +402,15 @@ describe('Button Component', () => {
       const input = screen.getByTestId('input') as HTMLInputElement
       expect(input.value).toBe('test')
       
+      // Modify input value first to test reset functionality
+      await user.clear(input)
+      await user.type(input, 'changed value')
+      expect(input.value).toBe('changed value')
+      
+      // Now test the reset functionality
       await user.click(screen.getByRole('button'))
       
-      expect(input.value).toBe('')
+      expect(input.value).toBe('test') // Should return to default value
     })
   })
 })

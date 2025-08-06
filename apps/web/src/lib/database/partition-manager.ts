@@ -589,7 +589,7 @@ class IntelligentPartitionManager {
 
       // Note: Direct SQL execution not available - return mock data for now
       console.warn('Partition manager attempted to execute raw SQL - not implemented:', sql)
-      const data = [] // Mock empty partition list
+      const data: any[] = [] // Mock empty partition list
 
       interface PartitionRow {
         partition_name: string
@@ -600,7 +600,7 @@ class IntelligentPartitionManager {
         last_accessed?: string
       }
 
-      const partitions: PartitionInfo[] = (data as PartitionRow[] || []).map((row: PartitionRow) => ({
+      const partitions: PartitionInfo[] = (data || []).map((row: PartitionRow) => ({
         name: row.partition_name,
         parent: row.parent_name,
         type: this.strategies.get(tableName)?.type || 'unknown',

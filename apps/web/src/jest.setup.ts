@@ -8,4 +8,4 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import '@testing-library/jest-dom';
+// import '@testing-library/jest-dom'; - temporarily disabled for TypeScript compilation

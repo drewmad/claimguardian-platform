@@ -108,7 +108,9 @@ class PermissionChecker {
         .single()
 
       if (subscription && subscription.user_tiers) {
-        const tierData = subscription.user_tiers as UserTierData
+        const tierData = Array.isArray(subscription.user_tiers) 
+          ? subscription.user_tiers[0] as UserTierData
+          : subscription.user_tiers as UserTierData
         return {
           tier: subscription.tier,
           permissions: tierData.permissions || [],

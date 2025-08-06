@@ -686,5 +686,4 @@ class ClaudeEnhancedAutomation {
 // Export singleton instance
 export const claudeEnhancedAutomation = new ClaudeEnhancedAutomation()
 
-// Export types for external use
-export type { AutoOptimizationRule, ProactiveSuggestion, SmartDelegation, BatchLearningSession }
+// Types already exported as interfaces above

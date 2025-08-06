@@ -91,8 +91,8 @@ interface ComparisonAnalysis {
 }
 
 class AITimeSeriesAnalyzer {
-  private supabase: unknown
-  private analysisCache = new Map<string, { result: unknown; timestamp: number }>()
+  private supabase: any
+  private analysisCache = new Map<string, { result: any; timestamp: number }>()
   private cacheTTL = 900000 // 15 minutes
   private modelCache = new Map<string, any>()
 
@@ -102,7 +102,7 @@ class AITimeSeriesAnalyzer {
 
   private initializeSupabase(): void {
     if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-      this.supabase = createClient(
+      this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL,
         process.env.SUPABASE_SERVICE_ROLE_KEY
       )
@@ -122,7 +122,7 @@ class AITimeSeriesAnalyzer {
     includeAnomalyDetection?: boolean
   }): Promise<AIPerformanceAnalysis> {
     const cacheKey = this.generateCacheKey('aiPerformanceAnalysis', options)
-    const cached = this.getFromCache(cacheKey)
+    const cached = this.getFromCache<AIPerformanceAnalysis>(cacheKey)
     if (cached) return cached
 
     const { startTime, endTime, resolution = '15m' } = options
@@ -192,7 +192,7 @@ class AITimeSeriesAnalyzer {
       forecast
     }
 
-    this.setCache(cacheKey, analysis)
+    this.setCache<AIPerformanceAnalysis>(cacheKey, analysis)
     return analysis
   }
 
@@ -331,7 +331,7 @@ class AITimeSeriesAnalyzer {
    * Analyze trends across all metrics
    */
   private async analyzeTrends(
-    data: unknown,
+    data: any,
     resolution: string
   ): Promise<PerformanceTrend[]> {
     const trends: PerformanceTrend[] = []
@@ -367,7 +367,7 @@ class AITimeSeriesAnalyzer {
   /**
    * Detect anomalies using statistical methods
    */
-  private async detectAnomalies(data: unknown): Promise<AnomalyPoint[]> {
+  private async detectAnomalies(data: any): Promise<AnomalyPoint[]> {
     const anomalies: AnomalyPoint[] = []
 
     for (const [metricName, timeSeries] of Object.entries(data)) {
@@ -437,7 +437,7 @@ class AITimeSeriesAnalyzer {
   /**
    * Generate forecasts for different time horizons
    */
-  private async generateForecasts(data: unknown): Promise<{
+  private async generateForecasts(data: any): Promise<{
     nextHour: TimeSeriesDataPoint[]
     nextDay: TimeSeriesDataPoint[]
     nextWeek: TimeSeriesDataPoint[]
@@ -482,7 +482,7 @@ class AITimeSeriesAnalyzer {
    * Generate actionable recommendations based on analysis
    */
   private generateRecommendations(analysis: {
-    metrics: unknown
+    metrics: any
     trends: PerformanceTrend[]
     anomalies: AnomalyPoint[]
   }): string[] {
@@ -578,8 +578,8 @@ class AITimeSeriesAnalyzer {
 
     // Compare each metric
     for (const metric of ['responseTime', 'throughput', 'errorRate', 'cost', 'accuracy']) {
-      const baselineValues = (baselineData as unknown)[metric].map((d: TimeSeriesDataPoint) => d.value)
-      const comparisonValues = (comparisonData as unknown)[metric].map((d: TimeSeriesDataPoint) => d.value)
+      const baselineValues = (baselineData as any)[metric].map((d: TimeSeriesDataPoint) => d.value)
+      const comparisonValues = (comparisonData as any)[metric].map((d: TimeSeriesDataPoint) => d.value)
 
       if (baselineValues.length === 0 || comparisonValues.length === 0) continue
 
@@ -842,11 +842,11 @@ class AITimeSeriesAnalyzer {
     return unitMap[resolution] || 'minute'
   }
 
-  private generateMockTimeSeriesData(options: unknown): unknown {
+  private generateMockTimeSeriesData(options: any): any {
     // Generate realistic mock data for development
     const points = 100
     const now = new Date()
-    const data: unknown = {
+    const data: any = {
       responseTime: [],
       throughput: [],
       errorRate: [],
@@ -887,20 +887,20 @@ class AITimeSeriesAnalyzer {
   }
 
   // Cache management
-  private generateCacheKey(operation: string, params: unknown): string {
+  private generateCacheKey(operation: string, params: any): string {
     return `${operation}:${JSON.stringify(params)}`
   }
 
-  private getFromCache(key: string): unknown | null {
+  private getFromCache<T>(key: string): T | null {
     const cached = this.analysisCache.get(key)
     if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      return cached.result
+      return cached.result as T
     }
     this.analysisCache.delete(key)
     return null
   }
 
-  private setCache(key: string, result: unknown): void {
+  private setCache<T>(key: string, result: T): void {
     this.analysisCache.set(key, {
       result,
       timestamp: Date.now()

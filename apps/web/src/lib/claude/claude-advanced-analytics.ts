@@ -61,6 +61,15 @@ export interface TaskSuccessPredictor {
   ): Promise<PredictionModel>
 }
 
+interface TaskContext {
+  filePath?: string
+  codeLanguage?: string
+  framework?: string
+  similarTasksAttempted?: number
+  recentErrorRate?: number
+  timeConstraint?: 'urgent' | 'normal' | 'flexible'
+}
+
 class ClaudeAdvancedAnalytics {
   private trendData: TrendDataPoint[] = []
   private bottlenecks: Map<string, BottleneckAnalysis> = new Map()
@@ -214,14 +223,7 @@ class ClaudeAdvancedAnalytics {
   async predictTaskSuccess(
     taskType: string,
     complexity: 'simple' | 'medium' | 'complex',
-    context: {
-      filePath?: string
-      codeLanguage?: string
-      framework?: string
-      similarTasksAttempted?: number
-      recentErrorRate?: number
-      timeConstraint?: 'urgent' | 'normal' | 'flexible'
-    } = {}
+    context: TaskContext = {}
   ): Promise<PredictionModel> {
     logger.info('Predicting task success', { taskType, complexity, context })
 
@@ -256,7 +258,7 @@ class ClaudeAdvancedAnalytics {
     }
   }
 
-  private async getHistoricalTaskData(taskType: string, complexity: string, context: unknown) {
+  private async getHistoricalTaskData(taskType: string, complexity: string, context: TaskContext) {
     // Mock historical data - in production, query actual database
     return {
       sampleSize: Math.floor(Math.random() * 50) + 10,
@@ -282,7 +284,7 @@ class ClaudeAdvancedAnalytics {
     return baseRates[taskType as keyof typeof baseRates]?.[complexity as keyof typeof baseRates.analysis] || 0.70
   }
 
-  private adjustForContext(baseProbability: number, context: unknown, historicalData: unknown): number {
+  private adjustForContext(baseProbability: number, context: TaskContext, historicalData: unknown): number {
     let adjusted = baseProbability
 
     // Framework familiarity
@@ -308,14 +310,14 @@ class ClaudeAdvancedAnalytics {
     }
 
     // Experience with similar tasks
-    if (context.similarTasksAttempted > 5) {
+    if (context.similarTasksAttempted && context.similarTasksAttempted > 5) {
       adjusted += 0.08 // Experience improves success rate
     }
 
     return adjusted
   }
 
-  private estimateExecutionTime(taskType: string, complexity: string, context: unknown): number {
+  private estimateExecutionTime(taskType: string, complexity: string, context: TaskContext): number {
     const baseTimes = {
       'code-generation': { simple: 180, medium: 360, complex: 720 },
       'file-modification': { simple: 120, medium: 240, complex: 480 },
@@ -338,7 +340,7 @@ class ClaudeAdvancedAnalytics {
     return Math.round(baseTime)
   }
 
-  private identifyRiskFactors(taskType: string, complexity: string, context: unknown, historicalData: unknown): string[] {
+  private identifyRiskFactors(taskType: string, complexity: string, context: TaskContext, historicalData: any): string[] {
     const risks: string[] = []
 
     if (complexity === 'complex') {
@@ -349,7 +351,7 @@ class ClaudeAdvancedAnalytics {
       risks.push('Time pressure may lead to rushed implementation')
     }
 
-    if (context.recentErrorRate > 0.2) {
+    if (context.recentErrorRate && context.recentErrorRate > 0.2) {
       risks.push('Recent high error rate indicates potential knowledge gaps')
     }
 
@@ -364,7 +366,7 @@ class ClaudeAdvancedAnalytics {
     return risks
   }
 
-  private recommendApproach(taskType: string, complexity: string, context: unknown, historicalData: unknown): string {
+  private recommendApproach(taskType: string, complexity: string, context: TaskContext, historicalData: unknown): string {
     const approaches = {
       'code-generation': {
         simple: 'Use established component patterns with quick iteration',
@@ -396,7 +398,7 @@ class ClaudeAdvancedAnalytics {
     return approaches[taskType as keyof typeof approaches]?.[complexity as keyof typeof approaches.analysis] || 'Apply systematic approach with careful validation'
   }
 
-  private calculateConfidenceLevel(sampleSize: number, context: unknown): number {
+  private calculateConfidenceLevel(sampleSize: number, context: TaskContext): number {
     let confidence = Math.min(0.95, 0.5 + (sampleSize / 100)) // Base confidence from sample size
 
     // Adjust for context completeness

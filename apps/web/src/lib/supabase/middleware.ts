@@ -16,7 +16,7 @@ interface CookieStore {
   set(options: { name: string; value: string; [key: string]: unknown }): void
 }
 
-interface RequestWithCookies extends NextRequest {
+interface RequestWithCookies extends Omit<NextRequest, 'cookies'> {
   cookies: CookieStore
 }
 
