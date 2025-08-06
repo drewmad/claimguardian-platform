@@ -2,6 +2,7 @@
 
 import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { WeatherDashboard } from '@/components/noaa/weather-dashboard'
+import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
@@ -20,6 +21,14 @@ export default function WeatherPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              onClick={() => window.location.href = '/dashboard/weather/sync'}
+              className="bg-purple-500/10 border-purple-500/20 text-purple-400 hover:bg-purple-500/20"
+            >
+              <Cloud className="w-4 h-4 mr-2" />
+              Historical Sync
+            </Button>
             <Badge variant="outline" className="bg-green-500/10 text-green-400 border-green-500/20">
               <Eye className="w-3 h-3 mr-1" />
               System Active
