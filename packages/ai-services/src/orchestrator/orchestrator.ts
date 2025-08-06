@@ -256,7 +256,7 @@ export class AIOrchestrator {
     
     // Check if we should prefer Gemini for this task
     const costSensitive = process.env.COST_OPTIMIZE !== 'false';
-    const requiresStability = feature === 'customer-communication' || feature === 'clara';
+    const requiresStability = feature === 'communication-helper' || feature === 'clara';
     
     if (GeminiStrategy.shouldPreferGemini(taskType, costSensitive, requiresStability)) {
       const geminiProvider = this.providers.get('gemini');

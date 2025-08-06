@@ -341,7 +341,6 @@ export class GeminiCostAnalyzer {
     };
     
     const tokens = avgTokensPerTask[taskType] || { input: 1000, output: 1000 };
-    const totalTokens = tokens.input + tokens.output;
     
     // Gemini 2.0 Flash Experimental is FREE
     const geminiCostPerTask = 0;

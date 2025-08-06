@@ -142,7 +142,7 @@ export class GeminiProvider extends BaseAIProvider {
       
       const result = await this.withRetry(async () => {
         return await genAI.generateContent({
-          contents: contents as any[],
+          contents,
           generationConfig: {
             maxOutputTokens: request.maxTokens || 8192,  // Increased default
             temperature: request.temperature || 0.7,
@@ -330,8 +330,8 @@ export class GeminiProvider extends BaseAIProvider {
   
   // Helper methods specific to Gemini
   
-  private convertMessagesToGeminiFormat(messages: ChatMessage[]): unknown[] {
-    const contents: unknown[] = [];
+  private convertMessagesToGeminiFormat(messages: ChatMessage[]): any[] {
+    const contents: any[] = [];
     
     // Gemini doesn't have a system role, so we prepend it to the first user message
     let systemPrompt = '';

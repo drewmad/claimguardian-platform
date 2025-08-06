@@ -12,8 +12,6 @@
 import { GeminiProvider } from '../providers/gemini.provider';
 import { GeminiStrategy } from '../strategies/gemini-strategy';
 import { 
-  AIRequest, 
-  ImageAnalysisRequest,
   AIProviderConfig 
 } from '../types/index';
 
@@ -77,7 +75,7 @@ export class GeminiInsuranceService {
         this.provider.analyzeImage({
           imageBase64: image,
           prompt: prompt + '\n\nProperty details: ' + JSON.stringify(propertyDetails || {}),
-          feature: 'hurricane-analyzer',
+          feature: 'damage-analyzer',
           userId: 'system',
           temperature: 0.4, // Lower for consistent analysis
           maxTokens: 8192
@@ -95,7 +93,7 @@ Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, r
     
     const result = await this.provider.generateText({
       prompt: combinedPrompt,
-      feature: 'hurricane-analyzer',
+      feature: 'damage-analyzer',
       userId: 'system',
       temperature: 0.5,
       maxTokens: 4096,
@@ -195,7 +193,7 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
     
     const result = await this.provider.generateText({
       prompt: prompt + '\n\nPolicies to compare:\n' + JSON.stringify(policies, null, 2),
-      feature: 'policy-analysis',
+      feature: 'document-extractor',
       userId: 'system',
       temperature: 0.6,
       maxTokens: 8192,
@@ -235,7 +233,7 @@ Use clear sections, bullet points, and tables where appropriate.`;
     
     const result = await this.provider.generateText({
       prompt,
-      feature: 'document-generator',
+      feature: 'communication-helper',
       userId: 'system',
       temperature: 0.5,
       maxTokens: 8192
@@ -271,7 +269,7 @@ Return a structured validation report with any violations, warnings, and importa
     
     const result = await this.provider.generateText({
       prompt,
-      feature: 'florida-regulation-compliance',
+      feature: 'document-extractor',
       userId: 'system',
       temperature: 0.4,
       maxTokens: 4096,
@@ -301,7 +299,12 @@ Return a structured validation report with any violations, warnings, and importa
     hurricaneAnalysis: number;
     policyExtraction: number;
     claimReports: number;
-  }): ReturnType<typeof GeminiCostAnalyzer.calculateSavings> {
+  }): {
+    geminiCost: number;
+    openAICost: number;
+    savings: number;
+    savingsPercent: number;
+  } {
     // All these are FREE with Gemini 2.0 Flash Experimental!
     const totalVolume = 
       monthlyUsage.hurricaneAnalysis + 
@@ -321,8 +324,7 @@ Return a structured validation report with any violations, warnings, and importa
 export function createFloridaInsuranceAI(apiKey: string): GeminiInsuranceService {
   return new GeminiInsuranceService({
     apiKey,
-    provider: 'gemini',
-    model: 'gemini-2.0-flash-exp', // Use free model by default
+    defaultModel: 'gemini-2.0-flash-exp', // Use free model by default
     maxRetries: 3,
     timeout: 30000
   });

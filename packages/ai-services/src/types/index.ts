@@ -27,7 +27,26 @@ export interface AIResponse {
 }
 
 // Request types
-export type AIFeature = 'clara' | 'clarity' | 'max' | 'sentinel' | 'generic' | 'document-categorizer' | 'damage-analyzer' | 'document-extractor';
+export type AIFeature = 
+  | 'clara' 
+  | 'clarity' 
+  | 'max' 
+  | 'sentinel' 
+  | 'generic' 
+  | 'document-categorizer' 
+  | 'damage-analyzer' 
+  | 'document-extractor'
+  | 'hurricane-analyzer'
+  | 'policy-analysis'
+  | 'policy-chat'
+  | 'receipt-scanner'
+  | 'claim-assistant'
+  | 'communication-helper'
+  | 'customer-communication'
+  | 'property-scanner'
+  | 'batch-processor'
+  | 'document-generator'
+  | 'florida-regulation-compliance';
 
 export interface AIRequest {
   prompt: string;
@@ -48,6 +67,7 @@ export interface AIProviderConfig {
   defaultModel?: string;
   maxRetries?: number;
   timeout?: number;
+  provider?: string;
 }
 
 // Chat types for conversational AI
