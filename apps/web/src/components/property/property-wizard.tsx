@@ -17,6 +17,7 @@ import { logger } from "@/lib/logger/production-logger"
 
 import { createProperty } from '@/actions/properties'
 import { useGooglePlaces } from '@/hooks/use-google-maps'
+import { AddressVerificationModal } from './address-verification-modal'
 
 // --- Constants & Configuration ---
 const COLORS = {
@@ -50,6 +51,13 @@ interface WizardState {
     step: number
     ownershipStatus: string
     selectedProperty: string
+    parsedAddress?: {
+        street: string
+        city: string
+        state: string
+        zipCode: string
+    }
+    addressVerified: boolean
     basicInfo: { propertyName: string; propertyType: string }
     propertyDetails: { bedrooms: string; bathrooms: string; isHOA: string }
     insuranceInfo: { hasHomeownersRenters: string; hasFlood: string }
@@ -60,12 +68,14 @@ interface WizardState {
 }
 
 type WizardAction = 
-    | { type: 'UPDATE_FIELD'; payload: { section?: string; field: string; value: string } }
+    | { type: 'UPDATE_FIELD'; payload: { section?: string; field: string; value: any } }
     | { type: 'NEXT_STEP' }
     | { type: 'PREV_STEP' }
     | { type: 'SET_ERRORS'; payload: Record<string, string> }
     | { type: 'SET_SAVING'; payload: boolean }
     | { type: 'SET_LOADING'; payload: boolean }
+    | { type: 'SET_ADDRESS_VERIFIED'; payload: boolean }
+    | { type: 'SET_PARSED_ADDRESS'; payload: WizardState['parsedAddress'] }
     | { type: 'LOAD_STATE'; payload: Partial<WizardState> }
     | { type: 'RESET' }
 
@@ -74,6 +84,8 @@ const initialState: WizardState = {
     step: 1,
     ownershipStatus: '', // 'own' or 'rent'
     selectedProperty: '', // Full address
+    parsedAddress: undefined,
+    addressVerified: false,
     basicInfo: { propertyName: '', propertyType: '' },
     propertyDetails: { bedrooms: '', bathrooms: '', isHOA: '' },
     insuranceInfo: { hasHomeownersRenters: '', hasFlood: '' },
@@ -101,6 +113,10 @@ function wizardReducer(state: WizardState, action: WizardAction): WizardState {
             return { ...state, isSaving: action.payload };
         case 'SET_LOADING':
             return { ...state, isLoading: action.payload };
+        case 'SET_ADDRESS_VERIFIED':
+            return { ...state, addressVerified: action.payload };
+        case 'SET_PARSED_ADDRESS':
+            return { ...state, parsedAddress: action.payload };
         case 'LOAD_STATE':
             return { ...initialState, ...action.payload };
         case 'RESET':
@@ -164,6 +180,7 @@ interface PropertyWizardProps {
 export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProps) {
     const [state, dispatch] = useReducer(wizardReducer, initialState);
     const { validateStep } = useFormValidation(state);
+    const [showAddressVerification, setShowAddressVerification] = useState(false);
 
     useAutoSave(state, dispatch);
 
@@ -176,12 +193,38 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     }, []);
 
     const handleNext = () => {
+        // Special handling for step 1 - require address verification
+        if (state.step === 1 && state.selectedProperty && !state.addressVerified) {
+            // Parse the address for verification
+            const addressParts = state.selectedProperty.split(', ');
+            const parsedAddress = {
+                street: addressParts[0] || '',
+                city: addressParts[1] || '',
+                state: addressParts[2]?.split(' ')[0] || 'FL',
+                zipCode: addressParts[2]?.split(' ')[1] || ''
+            };
+            dispatch({ type: 'SET_PARSED_ADDRESS', payload: parsedAddress });
+            setShowAddressVerification(true);
+            return;
+        }
+
         const errors = validateStep(state.step);
         if (Object.keys(errors).length > 0) {
             dispatch({ type: 'SET_ERRORS', payload: errors });
         } else {
             dispatch({ type: 'NEXT_STEP' });
         }
+    };
+
+    const handleAddressConfirm = () => {
+        dispatch({ type: 'SET_ADDRESS_VERIFIED', payload: true });
+        setShowAddressVerification(false);
+        dispatch({ type: 'NEXT_STEP' });
+    };
+
+    const handleAddressEdit = () => {
+        setShowAddressVerification(false);
+        // Focus back on address input
     };
 
     const handleBack = () => dispatch({ type: 'PREV_STEP' });
@@ -253,9 +296,19 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     if (!open) return null;
 
     return (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-            <div className="relative w-full max-w-3xl h-full max-h-[95vh]">
-                <div className={`w-full h-full ${COLORS.panel} rounded-2xl shadow-2xl backdrop-blur-2xl ${COLORS.border} border flex flex-col overflow-hidden`}>
+        <>
+            <AddressVerificationModal
+                isOpen={showAddressVerification}
+                address={state.selectedProperty}
+                parsedAddress={state.parsedAddress}
+                onConfirm={handleAddressConfirm}
+                onEdit={handleAddressEdit}
+                onClose={() => setShowAddressVerification(false)}
+            />
+            
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="relative w-full max-w-3xl h-full max-h-[95vh]">
+                    <div className={`w-full h-full ${COLORS.panel} rounded-2xl shadow-2xl backdrop-blur-2xl ${COLORS.border} border flex flex-col overflow-hidden`}>
                     {/* Header */}
                     <header className={`flex items-center justify-between p-6 border-b ${COLORS.border} flex-shrink-0`}>
                         <div>
@@ -323,9 +376,10 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                             </button>
                         )}
                     </footer>
+                    </div>
                 </div>
             </div>
-        </div>
+        </>
     );
 }
 
@@ -404,6 +458,7 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => {
             
             if (place.formatted_address) {
                 onChange(null, 'selectedProperty', place.formatted_address)
+                onChange(null, 'addressVerified', 'false') // Reset verification when address changes
             }
         })
 
@@ -432,11 +487,19 @@ const Step1: React.FC<StepProps> = ({ state, onChange }) => {
                     ref={addressInputRef}
                     type="text"
                     value={state.selectedProperty}
-                    onChange={(e) => onChange(null, 'selectedProperty', e.target.value)}
+                    onChange={(e) => {
+                        onChange(null, 'selectedProperty', e.target.value)
+                        onChange(null, 'addressVerified', 'false') // Reset verification on manual change
+                    }}
                     placeholder="Start typing your address..."
                     className={`w-full p-3 ${COLORS.panel} border ${COLORS.border} rounded-lg focus:ring-2 focus:ring-indigo-400 ${COLORS.textPrimary} placeholder-slate-500`}
                 />
-                {isGoogleLoaded && (
+                {state.addressVerified && (
+                    <p className="text-xs text-green-400 mt-1 flex items-center gap-1">
+                        <CheckCircle size={14} /> Address verified
+                    </p>
+                )}
+                {isGoogleLoaded && !state.addressVerified && (
                     <p className="text-xs text-green-400 mt-1">
                         ✓ Address autocomplete enabled
                     </p>

@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package } from 'lucide-react'
+import { Shield, FileText, DollarSign, CheckCircle, TrendingUp, Phone, Download, Plus, ChevronRight, Home, Car, Heart, Umbrella, AlertTriangle, Info, Building, Users, FileCheck, Package, Search, Filter, Grid, List, ArrowLeft, MapPin, Bed, Bath, Square, Calendar, Tag, ExternalLink, Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
 
@@ -19,6 +19,8 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { PropertyImage } from '@/components/ui/property-image'
 
 
 interface Policy {
@@ -45,8 +47,34 @@ interface Coverage {
   icon: React.ComponentType<{ className?: string }>
 }
 
+interface Property {
+  id: string
+  name: string
+  address: string
+  city: string
+  state: string
+  zip: string
+  type: 'single-family' | 'condo' | 'townhouse' | 'multi-family' | 'commercial'
+  bedrooms: number
+  bathrooms: number
+  squareFeet: number
+  lotSize: number
+  yearBuilt: number
+  estimatedValue: number
+  lastSalePrice?: number
+  lastSaleDate?: string
+  propertyTaxes?: number
+  hoaFees?: number
+  insurability: 'low' | 'medium' | 'high'
+  policies: string[] // Policy IDs associated with this property
+  images?: string[]
+}
+
 function InsuranceDashboardContent() {
   const router = useRouter()
+  const [activeTab, setActiveTab] = useState('policies')
+  const [selectedProperty, setSelectedProperty] = useState<Property | null>(null)
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   
   // Mock data
   const [policies] = useState<Policy[]>([
@@ -128,6 +156,52 @@ function InsuranceDashboardContent() {
     }
   ])
 
+  const [properties] = useState<Property[]>([
+    {
+      id: '1',
+      name: 'Metropolis Modern Villa',
+      address: '3407 Knox Ter',
+      city: 'Port Charlotte',
+      state: 'FL',
+      zip: '33948',
+      type: 'single-family',
+      bedrooms: 4,
+      bathrooms: 3.5,
+      squareFeet: 3200,
+      lotSize: 10500,
+      yearBuilt: 2022,
+      estimatedValue: 765000,
+      lastSalePrice: 550000,
+      lastSaleDate: '2018-06-14',
+      propertyTaxes: 8500,
+      hoaFees: 150,
+      insurability: 'high',
+      policies: ['1'],
+      images: ['property-1']
+    },
+    {
+      id: '2',
+      name: 'Coastal Breeze Retreat',
+      address: '1842 Pelican Bay Dr',
+      city: 'Port Charlotte',
+      state: 'FL',
+      zip: '33952',
+      type: 'single-family',
+      bedrooms: 3,
+      bathrooms: 2,
+      squareFeet: 2400,
+      lotSize: 8200,
+      yearBuilt: 2019,
+      estimatedValue: 485000,
+      lastSalePrice: 420000,
+      lastSaleDate: '2020-03-22',
+      propertyTaxes: 5800,
+      insurability: 'medium',
+      policies: ['2'],
+      images: ['property-2']
+    }
+  ])
+
   const totalPremium = policies.reduce((sum, policy) => sum + policy.premium, 0)
   const totalCoverage = policies.reduce((sum, policy) => sum + policy.coverage, 0)
   const activePolicies = policies.filter(p => p.status === 'active').length
@@ -149,6 +223,35 @@ function InsuranceDashboardContent() {
     const today = new Date()
     const diff = Math.ceil((target.getTime() - today.getTime()) / (1000 * 60 * 60 * 24))
     return diff
+  }
+
+  const getPropertyTypeIcon = (type: string) => {
+    switch(type) {
+      case 'single-family': return Home
+      case 'condo': return Building
+      case 'townhouse': return Building
+      case 'multi-family': return Building
+      case 'commercial': return Building
+      default: return Home
+    }
+  }
+
+  const getInsurabilityColor = (level: string) => {
+    switch(level) {
+      case 'high': return 'text-green-400 bg-green-400/10 border-green-400/20'
+      case 'medium': return 'text-yellow-400 bg-yellow-400/10 border-yellow-400/20'
+      case 'low': return 'text-red-400 bg-red-400/10 border-red-400/20'
+      default: return 'text-gray-400 bg-gray-400/10 border-gray-400/20'
+    }
+  }
+
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    }).format(amount)
   }
 
   return (

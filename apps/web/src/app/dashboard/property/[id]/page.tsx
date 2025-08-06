@@ -378,72 +378,52 @@ function PropertyDetailContent() {
     setActiveSubTab('detail')
   }
 
-  const [systems] = useState([
-    {
-      id: 1,
-      name: 'HVAC System',
-      type: 'Central Air',
-      brand: 'Carrier',
-      model: 'Infinity 19VS',
-      installDate: '2020-05-15',
-      lastMaintenance: '2024-03-10',
-      warrantyExpiration: '2030-05-15',
-      status: 'Good',
-      efficiency: 'SEER 19',
-      value: 8500
-    },
-    {
-      id: 2,
-      name: 'Water Heater',
-      type: 'Tank',
-      brand: 'Rheem',
-      model: 'Performance Platinum',
-      installDate: '2021-08-20',
-      lastMaintenance: '2024-01-15',
-      warrantyExpiration: '2031-08-20',
-      status: 'Excellent',
-      efficiency: '0.95 UEF',
-      value: 1200
-    },
-    {
-      id: 3,
-      name: 'Electrical Panel',
-      type: 'Main Panel',
-      brand: 'Square D',
-      model: 'QO Load Center',
-      installDate: '2019-12-10',
-      lastMaintenance: '2023-06-05',
-      warrantyExpiration: '2039-12-10',
-      status: 'Good',
-      efficiency: '200 Amp',
-      value: 2500
-    }
-  ])
+  const [systems, setSystems] = useState<any[]>([])
+  const [structures, setStructures] = useState<any[]>([])
 
-  const [structures] = useState([
-    {
-      id: 1,
-      name: 'Architectural Shingle Roof',
-      type: 'Roof',
-      material: 'GAF Timberline HDZ',
-      installDate: '2019-08-20',
-      warrantyExpiration: '2044-08-20',
-      windRating: 'Class F',
-      insuranceScore: 98,
-      value: 15000
-    },
-    {
-      id: 2,
-      name: 'Impact Windows - Front',
-      type: 'Windows',
-      material: 'PGT WinGuard Impact',
-      installDate: '2021-11-10',
-      warrantyExpiration: '2041-11-10',
-      windRating: 'Miami-Dade NOA',
-      insuranceScore: 100,
-      value: 25000
+  const handleAddSystem = () => {
+    const newSystem = {
+      id: Date.now(),
+      name: 'New System',
+      type: '',
+      brand: '',
+      model: '',
+      installDate: new Date().toISOString().split('T')[0],
+      lastMaintenance: '',
+      warrantyExpiration: '',
+      status: 'New',
+      efficiency: '',
+      value: 0
     }
-  ])
+    setSystems([...systems, newSystem])
+    toast.success('New system added. Fill in the details.')
+  }
+
+  const handleAddStructure = () => {
+    const newStructure = {
+      id: Date.now(),
+      name: 'New Structure',
+      type: '',
+      material: '',
+      installDate: new Date().toISOString().split('T')[0],
+      warrantyExpiration: '',
+      windRating: '',
+      insuranceScore: 0,
+      value: 0
+    }
+    setStructures([...structures, newStructure])
+    toast.success('New structure added. Fill in the details.')
+  }
+
+  const handleUpdatePhotos = () => {
+    toast.info('Photo upload feature coming soon!')
+    // TODO: Implement photo upload modal or redirect to photo management page
+  }
+
+  const handleViewDocuments = () => {
+    toast.info('Document viewer coming soon!')
+    // TODO: Implement document viewer modal or redirect to documents page
+  }
 
   const subTabs = [
     { id: 'detail', label: 'Detail', icon: Info },
@@ -779,14 +759,18 @@ function PropertyDetailContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button 
+                      onClick={handleUpdatePhotos}
+                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <span className="flex items-center gap-3">
                         <Camera className="w-5 h-5 text-cyan-400" />
                         <span>Update Property Photos</span>
                       </span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
-                    <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
+                    <button 
+                      onClick={handleViewDocuments}
+                      className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <span className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-blue-400" />
                         <span>View Insurance Documents</span>
@@ -849,14 +833,24 @@ function PropertyDetailContent() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-white">Home Systems</h3>
-                <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                <button 
+                  onClick={handleAddSystem}
+                  className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                   <Plus className="w-4 h-4" />
                   Add System
                 </button>
               </div>
               
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-                {systems.map((system) => (
+                {systems.length === 0 ? (
+                  <Card className="bg-gray-800 border-gray-700 col-span-full">
+                    <CardContent className="p-6 text-center">
+                      <Wrench className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                      <p className="text-gray-400">No home systems added yet</p>
+                      <p className="text-sm text-gray-500 mt-2">Click "Add System" to start tracking your home systems</p>
+                    </CardContent>
+                  </Card>
+                ) : systems.map((system) => (
                   <Card key={system.id} className="bg-gray-800 border-gray-700">
                     <CardContent className="p-6">
                       <div className="flex items-start justify-between mb-4">
@@ -939,14 +933,24 @@ function PropertyDetailContent() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold text-white">Building Structures</h3>
-                  <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
+                  <button 
+                    onClick={handleAddStructure}
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                     <Plus className="w-4 h-4" />
                     Add Structure
                   </button>
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {structures.map((structure) => (
+                  {structures.length === 0 ? (
+                    <Card className="bg-gray-800 border-gray-700 col-span-full">
+                      <CardContent className="p-6 text-center">
+                        <Building className="w-12 h-12 text-gray-500 mx-auto mb-3" />
+                        <p className="text-gray-400">No structures added yet</p>
+                        <p className="text-sm text-gray-500 mt-2">Click "Add Structure" to start tracking your building structures</p>
+                      </CardContent>
+                    </Card>
+                  ) : structures.map((structure) => (
                     <Card key={structure.id} className="bg-gray-800 border-gray-700">
                       <CardContent className="p-6">
                         <div className="flex items-start justify-between mb-4">
