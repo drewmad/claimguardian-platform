@@ -257,7 +257,7 @@ export function CostTrackingDashboard() {
       </Card>
 
       {/* Subscription Info */}
-      {usage.subscription && (
+      {usage?.budgetStatus && (
         <Card className="bg-gray-800 border-gray-700">
           <CardHeader>
             <CardTitle className="text-white flex items-center gap-2">
@@ -272,25 +272,25 @@ export function CostTrackingDashboard() {
             <div className="space-y-2">
               <div className="text-sm text-gray-400">Plan</div>
               <div className="text-white font-medium capitalize">
-                {usage.subscription.tier}
+                Free
               </div>
             </div>
             <div className="space-y-2">
               <div className="text-sm text-gray-400">Monthly Budget</div>
               <div className="text-white font-medium">
-                {costTrackingUtils.formatCost(usage.subscription.monthlyBudget)}
+                {costTrackingUtils.formatCost(usage.budgetStatus?.budgetAmount || 0)}
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm text-gray-400">Daily Requests</div>
+              <div className="text-sm text-gray-400">Current Spend</div>
               <div className="text-white font-medium">
-                {usage.subscription.currentDayRequests} / {usage.subscription.dailyLimit}
+                {costTrackingUtils.formatCost(usage.budgetStatus?.currentSpend || 0)}
               </div>
             </div>
             <div className="space-y-2">
-              <div className="text-sm text-gray-400">Monthly Requests</div>
+              <div className="text-sm text-gray-400">Budget Used</div>
               <div className="text-white font-medium">
-                {usage.subscription.currentMonthRequests} / {usage.subscription.monthlyLimit}
+                {Math.round(usage.budgetStatus?.percentageUsed || 0)}%
               </div>
             </div>
           </CardContent>

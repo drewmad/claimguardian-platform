@@ -236,7 +236,7 @@ export default function TouchDemoPage() {
             </CardHeader>
             <CardContent>
               <div
-                ref={gestureTestRef}
+                ref={gestureTestRef as React.RefObject<HTMLDivElement>}
                 className="bg-white/5 border border-white/20 rounded-lg p-8 mb-4 min-h-[200px] flex flex-col items-center justify-center cursor-pointer"
               >
                 <Hand className="w-8 h-8 text-blue-400 mb-2" />
@@ -365,7 +365,7 @@ export default function TouchDemoPage() {
           </CardHeader>
           <CardContent>
             <div
-              ref={pinchRef}
+              ref={pinchRef as React.RefObject<HTMLDivElement>}
               className="bg-white/5 border border-white/20 rounded-lg p-8 min-h-[200px] flex items-center justify-center overflow-hidden"
             >
               <motion.div

@@ -3,14 +3,14 @@
  * @purpose "Document upload wizard with AI processing and intelligent categorization"
  * @owner ai-team
  * @dependencies ["react", "framer-motion", "@/components/ui"]
- * @exports ["DocumentUploadWizard", "DocumentCategory", "ProcessingStep"]
+ * @exports ["DocumentUploadWizard", "UploadDocumentCategory", "ProcessingStep"]
  * @complexity high
  * @tags ["ai", "document", "upload", "wizard", "processing"]
  * @status stable
  */
 'use client'
 
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { 
   FileText,
@@ -46,7 +46,7 @@ import { useNotifications } from '@/components/notifications/notification-center
 import { cn } from '@/lib/utils'
 import { logger } from '@/lib/logger'
 
-export type DocumentCategory = 
+export type UploadDocumentCategory = 
   | 'insurance-policy'
   | 'damage-photos'
   | 'receipts'
@@ -62,8 +62,8 @@ export type ProcessingStep =
   | 'review'
   | 'complete'
 
-interface DocumentCategory {
-  id: DocumentCategory
+interface UploadDocumentCategoryConfig {
+  id: UploadDocumentCategory
   name: string
   description: string
   icon: React.ElementType
@@ -85,14 +85,14 @@ interface DocumentUploadWizardProps {
 interface ProcessedDocument {
   id: string
   file: EnhancedFile
-  category: DocumentCategory
+  category: UploadDocumentCategory
   aiResults: any
   extractedData: Record<string, any>
   confidence: number
   reviewStatus: 'pending' | 'approved' | 'needs-review'
 }
 
-const DOCUMENT_CATEGORIES: DocumentCategory[] = [
+const DOCUMENT_CATEGORIES: UploadDocumentCategoryConfig[] = [
   {
     id: 'insurance-policy',
     name: 'Insurance Policy',
@@ -174,7 +174,7 @@ export function DocumentUploadWizard({
   className
 }: DocumentUploadWizardProps) {
   const [currentStep, setCurrentStep] = useState<ProcessingStep>('upload')
-  const [selectedCategory, setSelectedCategory] = useState<DocumentCategory>()
+  const [selectedCategory, setSelectedCategory] = useState<UploadDocumentCategory>()
   const [uploadedFiles, setUploadedFiles] = useState<EnhancedFile[]>([])
   const [processedDocuments, setProcessedDocuments] = useState<ProcessedDocument[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
@@ -242,6 +242,8 @@ export function DocumentUploadWizard({
         priority: 'high',
         source: 'system',
         actionable: true,
+        read: false,
+        archived: false,
         actions: [{
           id: 'review-results',
           label: 'Review Results',
@@ -252,7 +254,7 @@ export function DocumentUploadWizard({
 
       logger.track('document_processing_completed', {
         count: processed.length,
-        category: selectedCategory.id,
+        category: selectedCategory,
         averageConfidence: processed.reduce((acc, doc) => acc + doc.confidence, 0) / processed.length
       })
 
@@ -260,7 +262,7 @@ export function DocumentUploadWizard({
       error('Processing failed', {
         subtitle: 'Failed to process documents with AI'
       })
-      logger.error('Document processing failed', { category: selectedCategory?.id }, err as Error)
+      logger.error('Document processing failed', { category: selectedCategory }, err as Error)
     } finally {
       setIsProcessing(false)
     }
@@ -277,7 +279,7 @@ export function DocumentUploadWizard({
 
     logger.track('document_wizard_completed', {
       documentsProcessed: processedDocuments.length,
-      category: selectedCategory?.id
+      category: selectedCategory
     })
   }, [processedDocuments, selectedCategory, onComplete, success])
 
@@ -391,12 +393,12 @@ export function DocumentUploadWizard({
             {currentStep === 'review' && (
               <ReviewStep
                 processedDocuments={processedDocuments}
-                onApprove={(docId) => {
+                onApprove={(docId: string) => {
                   setProcessedDocuments(prev => prev.map(doc => 
                     doc.id === docId ? { ...doc, reviewStatus: 'approved' } : doc
                   ))
                 }}
-                onNeedsReview={(docId) => {
+                onNeedsReview={(docId: string) => {
                   setProcessedDocuments(prev => prev.map(doc => 
                     doc.id === docId ? { ...doc, reviewStatus: 'needs-review' } : doc
                   ))
@@ -471,7 +473,7 @@ export function DocumentUploadWizard({
 interface UploadStepProps {
   onFilesChange: (files: EnhancedFile[]) => void
   maxDocuments: number
-  selectedCategory?: DocumentCategory
+  selectedCategory?: UploadDocumentCategory
 }
 
 function UploadStep({ onFilesChange, maxDocuments, selectedCategory }: UploadStepProps) {
@@ -493,7 +495,10 @@ function UploadStep({ onFilesChange, maxDocuments, selectedCategory }: UploadSte
       <FileUploadEnhanced
         onFilesChange={onFilesChange}
         maxFiles={maxDocuments}
-        acceptedTypes={selectedCategory?.acceptedTypes || ['image/*', 'application/pdf', '.pdf']}
+        acceptedTypes={selectedCategory ? 
+          DOCUMENT_CATEGORIES.find(cat => cat.id === selectedCategory)?.acceptedTypes || ['image/*', 'application/pdf', '.pdf']
+          : ['image/*', 'application/pdf', '.pdf']
+        }
         processingType="document-extraction"
         enableAI={true}
         autoProcess={true}
@@ -510,8 +515,8 @@ function UploadStep({ onFilesChange, maxDocuments, selectedCategory }: UploadSte
 }
 
 interface CategoryStepProps {
-  selectedCategory?: DocumentCategory
-  onCategorySelect: (category: DocumentCategory) => void
+  selectedCategory?: UploadDocumentCategory
+  onCategorySelect: (category: UploadDocumentCategory) => void
   uploadedFiles: EnhancedFile[]
 }
 
@@ -533,8 +538,8 @@ function CategoryStep({ selectedCategory, onCategorySelect, uploadedFiles }: Cat
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {DOCUMENT_CATEGORIES.map((category) => {
-          const Icon = category.icon
-          const isSelected = selectedCategory?.id === category.id
+          const Icon = category.icon as React.ComponentType<{ className?: string }>
+          const isSelected = selectedCategory === category.id
           
           return (
             <Card
@@ -545,7 +550,7 @@ function CategoryStep({ selectedCategory, onCategorySelect, uploadedFiles }: Cat
                   ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800" 
                   : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
               )}
-              onClick={() => onCategorySelect(category)}
+              onClick={() => onCategorySelect(category.id)}
             >
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
@@ -587,7 +592,7 @@ function AnalyzeStep({ isProcessing, uploadedFiles, selectedCategory, onProcess 
         <div>
           <h3 className="text-lg font-semibold mb-2">AI Analysis in Progress</h3>
           <p className="text-gray-600 dark:text-gray-400">
-            Processing {uploadedFiles.length} documents in the {selectedCategory?.name} category
+            Processing {uploadedFiles.length} documents in the {selectedCategory?.replace(/-/g, ' ')} category
           </p>
         </div>
 
@@ -624,7 +629,7 @@ function ReviewStep({ processedDocuments, onApprove, onNeedsReview }: any) {
                   <div>
                     <h4 className="font-medium">{doc.file.file.name}</h4>
                     <p className="text-sm text-gray-600">
-                      Confidence: {doc.confidence}% • Category: {doc.category.name}
+                      Confidence: {doc.confidence}% • Category: {doc.category.replace(/-/g, ' ')}
                     </p>
                   </div>
                   
@@ -681,14 +686,14 @@ function getStepIndex(step: ProcessingStep): number {
   return steps.indexOf(step)
 }
 
-async function simulateAIProcessing(file: EnhancedFile, category: DocumentCategory) {
+async function simulateAIProcessing(file: EnhancedFile, category: UploadDocumentCategory) {
   // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 2000))
   
   // Mock AI results based on category
   const results = {
     confidence: Math.floor(Math.random() * 20) + 80,
-    extractedData: generateMockExtractedData(category.id),
+    extractedData: generateMockExtractedData(category),
     processingTime: Math.floor(Math.random() * 3) + 1
   }
   

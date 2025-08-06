@@ -988,4 +988,4 @@ function PreviewExportStep({
   )
 }
 
-export { ExportSettings, ExportMetadata }
+export type { ExportSettings, ExportMetadata }

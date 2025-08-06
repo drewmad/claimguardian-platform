@@ -25,6 +25,7 @@ type ModalType =
   | 'responsive-signup'
   | 'responsive-forgot-password'
   | 'enhanced-forgot-password'
+  | 'socialLogin'
 
 interface ModalData {
   title?: string

@@ -129,7 +129,10 @@ export function EmailVerificationWizard({
             message: 'Your email has been successfully verified. You can now access all features.',
             type: 'success',
             priority: 'high',
-            source: 'system'
+            source: 'system',
+            actionable: false,
+            read: false,
+            archived: false
           })
         }
       } catch (err) {
@@ -176,13 +179,26 @@ export function EmailVerificationWizard({
       const toastId = loading('Sending verification email...', { persistent: true })
       
       const supabase = createClient()
-      const { error: resendError } = await supabase.auth.resend({
-        type: verificationType,
-        email,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/verify`
-        }
-      })
+      
+      // Handle resend based on verification type
+      let resendError = null
+      if (verificationType === 'recovery') {
+        // For password recovery, use the resetPasswordForEmail method
+        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}/auth/reset-password`
+        })
+        resendError = error
+      } else {
+        // For signup and email_change, use the resend method
+        const { error } = await supabase.auth.resend({
+          type: verificationType as 'signup' | 'email_change',
+          email,
+          options: {
+            emailRedirectTo: `${window.location.origin}/auth/verify`
+          }
+        })
+        resendError = error
+      }
       
       if (resendError) {
         if (resendError.message.includes('rate limit') || resendError.message.includes('too many')) {
