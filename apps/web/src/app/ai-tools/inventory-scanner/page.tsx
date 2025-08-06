@@ -278,20 +278,69 @@ Analyze this image and identify all items visible. For each item, provide detail
   const handleBarcodeScanned = async (code: string, format: string) => {
     toast.info(`Looking up product: ${code}`)
     
-    // In a real app, you'd look up the product in a database
-    // For now, we'll use the barcode as a serial number
-    if (selectedItemForBarcode) {
-      updateItem(selectedItemForBarcode, { 
-        serial_number: code,
-        notes: `Barcode (${format}): ${code}`
-      })
-      toast.success('Barcode added to item')
+    try {
+      // Try to fetch product info from a barcode API
+      const productInfo = await fetchProductInfo(code)
+      
+      if (productInfo && selectedItemForBarcode) {
+        updateItem(selectedItemForBarcode, { 
+          name: productInfo.name || `Product ${code}`,
+          brand: productInfo.brand || '',
+          model: productInfo.model || '',
+          serial_number: code,
+          estimated_value: productInfo.price || 0,
+          notes: `${format}: ${code}${productInfo.description ? ` - ${productInfo.description}` : ''}`
+        })
+        toast.success(`Product found: ${productInfo.name || code}`)
+      } else if (selectedItemForBarcode) {
+        // Fallback: just add the barcode
+        updateItem(selectedItemForBarcode, { 
+          serial_number: code,
+          notes: `Barcode (${format}): ${code}`
+        })
+        toast.success('Barcode added to item')
+      }
+    } catch (error) {
+      logger.error('Error looking up product:', error)
+      // Fallback: just add the barcode
+      if (selectedItemForBarcode) {
+        updateItem(selectedItemForBarcode, { 
+          serial_number: code,
+          notes: `Barcode (${format}): ${code}`
+        })
+        toast.success('Barcode saved to item')
+      }
     }
     
-    // You could also make an API call to get product details
-    // For demo purposes, we'll just add the barcode
     setShowBarcodeScanner(false)
     setSelectedItemForBarcode(null)
+  }
+
+  // Product lookup function - you can replace this with your preferred API
+  const fetchProductInfo = async (barcode: string) => {
+    try {
+      // Example using Open Food Facts API (free and open)
+      const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
+      if (!response.ok) throw new Error('Product not found')
+      
+      const data = await response.json()
+      if (data.status === 1 && data.product) {
+        return {
+          name: data.product.product_name || data.product.generic_name,
+          brand: data.product.brands,
+          model: data.product.generic_name_en,
+          description: data.product.categories,
+          price: null // OpenFoodFacts doesn't provide price
+        }
+      }
+      
+      // You could also try a UPC database API
+      // Example: https://upcdatabase.org/api or https://barcodespider.com/
+      
+      return null
+    } catch {
+      return null
+    }
   }
 
   const startBarcodeScanner = (itemId: string) => {
@@ -332,8 +381,9 @@ Analyze this image and identify all items visible. For each item, provide detail
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <div className="p-3 sm:p-6">
-          <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
+        <div className="min-h-screen bg-slate-950">
+          <div className="p-3 sm:p-6">
+            <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
             {/* Header */}
             <div className="mb-6 sm:mb-8">
               <div className="flex flex-col sm:flex-row sm:items-center gap-3 mb-4">
@@ -354,7 +404,7 @@ Analyze this image and identify all items visible. For each item, provide detail
             </div>
 
             {/* AI Configuration */}
-            <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(234,179,8,0.15)] transition-all duration-300">
+            <Card className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300">
               <CardContent className="p-3 sm:p-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-0">
                   <div className="flex items-center gap-2">
@@ -388,46 +438,88 @@ Analyze this image and identify all items visible. For each item, provide detail
             <div className="space-y-6">
               {/* Summary Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                <Card 
+                  onClick={() => {
+                    setFilterCategory('')
+                    setFilterRoom('')
+                    toast.info(`Showing all ${scanResult.items.length} items`)
+                  }}
+                  className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] transition-all duration-300 active:scale-95 cursor-pointer group"
+                >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <Package className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.4)]" />
+                      <div className="p-2 bg-purple-500/10 rounded-lg group-hover:bg-purple-500/20 transition-colors">
+                        <Package className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400" />
+                      </div>
                       <div>
-                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.items.length}</p>
-                        <p className="text-xs sm:text-sm text-gray-400">Total Items</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white">{scanResult.items.length}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">Total Items</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                <Card 
+                  onClick={() => {
+                    const breakdown = scanResult.items.map(item => ({
+                      name: item.name,
+                      value: item.estimated_value * item.quantity
+                    })).sort((a, b) => b.value - a.value)
+                    console.log('Value breakdown:', breakdown)
+                    toast.info('Check console for value breakdown')
+                  }}
+                  className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] transition-all duration-300 active:scale-95 cursor-pointer group"
+                >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.4)]" />
+                      <div className="p-2 bg-green-500/10 rounded-lg group-hover:bg-green-500/20 transition-colors">
+                        <DollarSign className="h-6 w-6 sm:h-8 sm:w-8 text-green-400" />
+                      </div>
                       <div>
-                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">${scanResult.total_value.toLocaleString()}</p>
-                        <p className="text-xs sm:text-sm text-gray-400">Total Value</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white">${scanResult.total_value.toLocaleString()}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">Total Value</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                <Card 
+                  onClick={() => {
+                    setFilterCategory('')
+                    setFilterRoom('')
+                    const highValueItems = filteredItems.filter(item => item.high_value)
+                    if (highValueItems.length > 0) {
+                      toast.info(`Showing ${highValueItems.length} high value items`)
+                    }
+                  }}
+                  className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] transition-all duration-300 active:scale-95 cursor-pointer group"
+                >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.4)]" />
+                      <div className="p-2 bg-orange-500/10 rounded-lg group-hover:bg-orange-500/20 transition-colors">
+                        <AlertCircle className="h-6 w-6 sm:h-8 sm:w-8 text-orange-400" />
+                      </div>
                       <div>
-                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{scanResult.high_value_items}</p>
-                        <p className="text-xs sm:text-sm text-gray-400">High Value Items</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white">{scanResult.high_value_items}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">High Value Items</p>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
-                <Card className="bg-gray-800/85 backdrop-blur-md border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 active:scale-95 cursor-pointer">
+                <Card 
+                  onClick={() => {
+                    const roomBreakdown = Object.entries(scanResult.rooms)
+                    console.log('Room breakdown:', roomBreakdown)
+                    toast.info(`Items found in ${Object.keys(scanResult.rooms).length} rooms`)
+                  }}
+                  className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 shadow-[0_8px_32px_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] transition-all duration-300 active:scale-95 cursor-pointer group"
+                >
                   <CardContent className="p-3 sm:p-4">
                     <div className="flex items-center gap-2 sm:gap-3">
-                      <Home className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.4)]" />
+                      <div className="p-2 bg-blue-500/10 rounded-lg group-hover:bg-blue-500/20 transition-colors">
+                        <Home className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400" />
+                      </div>
                       <div>
-                        <p className="text-lg sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">{Object.keys(scanResult.rooms).length}</p>
-                        <p className="text-xs sm:text-sm text-gray-400">Rooms Scanned</p>
+                        <p className="text-lg sm:text-2xl font-bold text-white">{Object.keys(scanResult.rooms).length}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">Rooms Scanned</p>
                       </div>
                     </div>
                   </CardContent>
@@ -450,7 +542,7 @@ Analyze this image and identify all items visible. For each item, provide detail
               )}
 
               {/* Filters and Actions */}
-              <Card className="bg-gray-800 border-gray-700">
+              <Card className="bg-gray-900/50 backdrop-blur-md border-gray-800/50">
                 <CardContent className="p-3 sm:p-4">
                   <div className="space-y-3 sm:space-y-0 sm:flex sm:flex-wrap sm:items-center sm:gap-4">
                     {/* Filters Row */}
@@ -523,7 +615,7 @@ Analyze this image and identify all items visible. For each item, provide detail
               <div className="space-y-4">
                 <h2 className="text-lg sm:text-xl font-semibold text-white">Inventory Items</h2>
                 {filteredItems.map((item) => (
-                  <Card key={item.id} className="bg-gray-800 border-gray-700">
+                  <Card key={item.id} className="bg-gray-900/50 backdrop-blur-md border-gray-800/50 hover:border-gray-700/50 transition-all">
                     <CardContent className="p-3 sm:p-4">
                       <div className="grid grid-cols-1 lg:grid-cols-6 gap-3 sm:gap-4">
                         <div className="lg:col-span-2">
@@ -643,6 +735,7 @@ Analyze this image and identify all items visible. For each item, provide detail
               }}
             />
           )}
+            </div>
           </div>
         </div>
       </DashboardLayout>

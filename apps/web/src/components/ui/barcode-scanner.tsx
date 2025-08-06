@@ -81,12 +81,12 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   }
 
   return (
-    <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-      <Card className="max-w-lg w-full">
+    <div className="fixed inset-0 bg-black/90 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+      <Card className="max-w-lg w-full bg-gray-900/95 border-gray-800/50 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold flex items-center gap-2">
-              <Scan className="h-5 w-5" />
+            <h3 className="text-lg font-semibold text-white flex items-center gap-2">
+              <Scan className="h-5 w-5 text-blue-400" />
               Barcode Scanner
             </h3>
             <Button
@@ -114,7 +114,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
             )}
           </div>
           
-          <p className="text-sm text-gray-600 text-center">
+          <p className="text-sm text-gray-400 text-center">
             Position the barcode within the frame to scan
           </p>
         </div>
