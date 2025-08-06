@@ -287,16 +287,20 @@ export default function SituationRoomPage() {
               maintenanceSchedule: [],
               insuranceStatus: {
                 policyActive: true,
-                coverageLevel: 'standard',
-                expirationDate: new Date(),
-                lastClaimDate: null
+                coverageLevel: 85,
+                premiumStatus: 'current' as const,
+                claimsHistory: [],
+                rateChanges: [],
+                renewalDate: new Date(),
+                alerts: []
               },
               securityStatus: {
-                systemActive: true,
-                lastUpdate: new Date(),
-                vulnerabilities: []
+                systemArmed: true,
+                sensorsActive: 5,
+                alertsActive: [],
+                emergencyContacts: []
               }
-            }}
+            } as PropertyStatus}
             emergencyMode={emergencyMode}
           />
         )}
@@ -1089,8 +1093,8 @@ function SituationRoomMapView({ threats, communityIntel, propertyStatus, emergen
     threatLevel: emergencyMode ? 'emergency' as ThreatLevel : 'medium' as ThreatLevel,
     hasActiveThreats: threats.length > 0,
     emergencyMode,
-    systemsOnline: propertyStatus?.systems?.online || 12,
-    totalSystems: propertyStatus?.systems?.total || 15
+    systemsOnline: propertyStatus?.systems?.filter(s => s.status === 'operational').length || 12,
+    totalSystems: propertyStatus?.systems?.length || 15
   }
 
   return (
@@ -1116,7 +1120,7 @@ function SituationRoomMapView({ threats, communityIntel, propertyStatus, emergen
       <SituationRoomMap
         properties={[mockProperty]}
         threats={threats}
-        incidents={communityIntel.incidents}
+        incidents={communityIntel?.activeIncidents || []}
         propertyStatus={propertyStatus}
         emergencyMode={emergencyMode}
         height="700px"
@@ -1127,7 +1131,7 @@ function SituationRoomMapView({ threats, communityIntel, propertyStatus, emergen
           toast.warning(`Threat Alert: ${threat.title}`)
         }}
         onIncidentClick={(incident) => {
-          toast.info(`Community Incident: ${incident.title}`)
+          toast.info(`Community Incident: ${incident.description}`)
         }}
       />
 
@@ -1177,12 +1181,12 @@ function SituationRoomMapView({ threats, communityIntel, propertyStatus, emergen
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Community Incidents:</span>
-                <span className="text-orange-400">{communityIntel.incidents.length}</span>
+                <span className="text-orange-400">{communityIntel?.activeIncidents?.length || 0}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-300">Systems Online:</span>
                 <span className="text-green-400">
-                  {propertyStatus?.systems?.online || 0}/{propertyStatus?.systems?.total || 0}
+                  {propertyStatus?.systems?.filter(s => s.status === 'operational').length || 0}/{propertyStatus?.systems?.length || 0}
                 </span>
               </div>
             </div>
