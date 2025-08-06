@@ -21,6 +21,7 @@ import { AuthProvider } from '@/components/auth/auth-provider'
 import { CookieConsentSimple } from '@/components/cookie-consent-simple'
 import { QueryProvider } from '@/components/providers/query-provider'
 import { ErrorBoundary } from '@/lib/error-handling/error-boundary'
+import { PWAProvider } from '@/components/pwa/pwa-provider'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -31,6 +32,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'ClaimGuardian Family Team' }],
   creator: 'ClaimGuardian',
   publisher: 'ClaimGuardian',
+  manifest: '/manifest.json',
   formatDetection: {
     email: false,
     address: false,
@@ -63,7 +65,14 @@ export const metadata: Metadata = {
   },
   verification: {
     google: 'google-site-verification-code',
-  }
+  },
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'ClaimGuardian',
+  },
+  applicationName: 'ClaimGuardian',
+  category: 'finance'
 }
 
 export const viewport: Viewport = {
@@ -94,10 +103,12 @@ export default function RootLayout({
         <ErrorBoundary>
           <QueryProvider>
             <AuthProvider>
-              {/* Main content wrapper with proper semantic structure */}
-              <div id="main-content" role="main" tabIndex={-1}>
-                {children}
-              </div>
+              <PWAProvider>
+                {/* Main content wrapper with proper semantic structure */}
+                <div id="main-content" role="main" tabIndex={-1}>
+                  {children}
+                </div>
+              </PWAProvider>
               
               {/* Toast notifications with accessibility attributes */}
               <div aria-live="polite" aria-atomic="true">
