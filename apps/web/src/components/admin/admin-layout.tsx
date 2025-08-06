@@ -7,7 +7,7 @@
  */
 'use client'
 
-import { AlertTriangle, Bug, Database, FileText, Home, Shield, Users } from 'lucide-react'
+import { AlertTriangle, Bug, Database, FileText, Home, Shield, Users, Heart, BarChart3 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
@@ -20,6 +20,8 @@ export function AdminLayout({ children }: AdminLayoutProps) {
 
   const navItems = [
     { href: '/admin', icon: Home, label: 'Overview' },
+    { href: '/admin/clara-admin', icon: Heart, label: 'Clara AI Companion' },
+    { href: '/admin/oracle-admin', icon: BarChart3, label: 'Oracle Settlement Analytics' },
     { href: '/admin/errors', icon: AlertTriangle, label: 'Error Logs' },
     { href: '/admin/compliance', icon: Shield, label: 'Compliance' },
     { href: '/debug-auth', icon: Bug, label: 'Debug Auth' },

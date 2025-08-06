@@ -16,7 +16,7 @@ import {
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
-  CreditCard, MapPin
+  CreditCard, MapPin, Clock
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -38,6 +38,7 @@ const navigationItems = [
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
   { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
+  { id: 'deadline-guardian', label: 'Deadline Guardian', icon: Clock, href: '/dashboard/deadline-guardian' },
   { id: 'maintenance', label: 'Maintenance', icon: Wrench, href: '/dashboard/maintenance' },
   { id: 'expenses', label: 'Expenses', icon: DollarSign, href: '/dashboard/expenses' },
   { id: 'warranty-watch', label: 'Warranty Watch', icon: ShieldCheck, href: '/dashboard/warranty-watch' },

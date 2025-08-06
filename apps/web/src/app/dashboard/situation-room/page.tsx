@@ -269,8 +269,34 @@ export default function SituationRoomPage() {
         {selectedView === 'map' && (
           <SituationRoomMapView 
             threats={threats}
-            communityIntel={communityIntel || { alerts: [], insights: [], networkStatus: 'disconnected' }}
-            propertyStatus={propertyStatus}
+            communityIntel={communityIntel || {
+              neighborhoodId: 'unknown',
+              riskLevel: 'low' as ThreatLevel,
+              activeIncidents: [],
+              contractorAvailability: [],
+              marketTrends: [],
+              sharedResources: [],
+              communicationChannels: []
+            }}
+            propertyStatus={propertyStatus || {
+              propertyId: 'unknown',
+              overallHealth: 85,
+              lastInspection: new Date(),
+              systems: [],
+              alerts: [],
+              maintenanceSchedule: [],
+              insuranceStatus: {
+                policyActive: true,
+                coverageLevel: 'standard',
+                expirationDate: new Date(),
+                lastClaimDate: null
+              },
+              securityStatus: {
+                systemActive: true,
+                lastUpdate: new Date(),
+                vulnerabilities: []
+              }
+            }}
             emergencyMode={emergencyMode}
           />
         )}
