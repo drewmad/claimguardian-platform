@@ -64,14 +64,7 @@ export type Scan = CoreScan
 export type DigitalModel = CoreDigitalModel
 export type Parcel = ReferenceParcel
 
-// Export specific table types for convenience
-export type Claim = Database['public']['Tables']['claims']['Row']
-
-// TODO: Fix these once users and profiles tables are added to database types
-// export type User = Database['public']['Tables']['users']['Row']
-// export type Profile = Database['public']['Tables']['profiles']['Row']
-
-// Temporary types until database types are fixed
+// Temporary types until database types are properly generated
 export type User = {
   id: string
   email: string
@@ -87,11 +80,30 @@ export type Profile = {
   updated_at: string
 }
 
+export type Claim = {
+  id: string
+  user_id: string
+  property_id: string
+  claim_number: string
+  status: 'draft' | 'submitted' | 'acknowledged' | 'investigating' | 'approved' | 'denied' | 'settled' | 'closed' | 'reopened' | 'withdrawn'
+  claim_type: 'property' | 'casualty' | 'liability' | 'other'
+  incident_date: string
+  reported_date: string
+  description: string | null
+  estimated_amount: number | null
+  adjuster_name: string | null
+  adjuster_phone: string | null
+  adjuster_email: string | null
+  created_at: string
+  updated_at: string
+}
+
 // Export insert/update types
 export type PropertyInsert = Omit<CoreProperty, 'id' | 'created_at' | 'updated_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>
 export type PropertyUpdate = Partial<Omit<CoreProperty, 'id' | 'created_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>>
-export type ClaimInsert = Database['public']['Tables']['claims']['Insert']
-export type ClaimUpdate = Database['public']['Tables']['claims']['Update']
+
+export type ClaimInsert = Omit<Claim, 'id' | 'created_at' | 'updated_at'>
+export type ClaimUpdate = Partial<Omit<Claim, 'id' | 'created_at' | 'updated_at'>>
 
 // Re-export Maps Intelligence for convenience
 export { MapsIntelligenceService } from './services/maps-intelligence-service'
