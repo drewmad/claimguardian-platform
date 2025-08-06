@@ -38,7 +38,7 @@ export interface ClaudeErrorContext {
   
   // Environment
   sessionId?: string
-  timestamp: Date
+  timestamp: string
   codebaseContext?: {
     framework: string
     languages: string[]
@@ -52,7 +52,7 @@ export interface ClaudeError {
   error_message: string
   error_stack?: string
   error_details: string
-  context: ClaudeErrorContext
+  context: any
   severity: 'low' | 'medium' | 'high' | 'critical'
   resolved: boolean
   resolution_method?: string
@@ -109,7 +109,7 @@ class ClaudeErrorLogger {
     const fullContext: ClaudeErrorContext = {
       ...context,
       sessionId: this.sessionId,
-      timestamp: new Date()
+      timestamp: new Date().toISOString()
     }
 
     // Generate unique error ID
@@ -129,7 +129,7 @@ class ClaudeErrorLogger {
       error_message: errorObj.message,
       error_stack: errorObj.stack,
       error_details: this.extractErrorDetails(errorObj, fullContext),
-      context: fullContext,
+      context: fullContext as any,
       severity,
       resolved: false,
       learning_applied: false
@@ -307,8 +307,8 @@ class ClaudeErrorLogger {
           .update({
             solution_pattern: solutionPattern,
             context_tags: contextTags,
-            confidence_score: Math.max(existing.confidence_score, confidenceScore),
-            usage_count: existing.usage_count + 1,
+            confidence_score: Math.max(existing.confidence_score || 0, confidenceScore),
+            usage_count: (existing.usage_count || 0) + 1,
             updated_at: new Date().toISOString()
           })
           .eq('id', existing.id)
@@ -365,18 +365,18 @@ class ClaudeErrorLogger {
    */
   private async analyzeAndLearn(error: Omit<ClaudeError, 'created_at' | 'updated_at'>): Promise<void> {
     // Extract pattern from error
-    const patternName = `${error.context.taskType}-${error.context.errorType}-${error.context.mistakeCategory}`
+    const patternName = `${(error.context as any).taskType}-${(error.context as any).errorType}-${(error.context as any).mistakeCategory}`
     const mistakePattern = this.extractMistakePattern(error)
     
     // Try to determine solution pattern from similar resolved errors
-    const contextTags = this.extractContextTags(error.context)
+    const contextTags = this.extractContextTags(error.context as any)
     
     // This would be enhanced with ML in the future
-    if (error.context.correctApproach) {
+    if ((error.context as any).correctApproach) {
       await this.recordLearning(
         patternName,
         mistakePattern,
-        error.context.correctApproach,
+        (error.context as any).correctApproach,
         contextTags,
         0.6 // Lower confidence for self-reported solutions
       )
@@ -387,7 +387,7 @@ class ClaudeErrorLogger {
    * Extract mistake pattern from error
    */
   private extractMistakePattern(error: Omit<ClaudeError, 'created_at' | 'updated_at'>): string {
-    return `Task: ${error.context.taskType}, Error: ${error.context.errorType}, Category: ${error.context.mistakeCategory}, Tools: [${error.context.toolsUsed.join(', ')}]`
+    return `Task: ${(error.context as any).taskType}, Error: ${(error.context as any).errorType}, Category: ${(error.context as any).mistakeCategory}, Tools: [${((error.context as any).toolsUsed as any[]).join(', ')}]`
   }
 
   /**
