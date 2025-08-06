@@ -21,6 +21,8 @@ export { Badge } from './badge'
 export { Tabs, TabsList, TabsTrigger, TabsContent } from './tabs'
 export { Popover, PopoverTrigger, PopoverContent } from './popover'
 export { Progress } from './progress'
+export { Alert, AlertTitle, AlertDescription } from './alert'
+export { Textarea } from './textarea'
 export { cn } from './utils'
 export { CheckIcon, XIcon } from './icons'
 
