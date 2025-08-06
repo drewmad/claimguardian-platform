@@ -38,7 +38,7 @@ import {
   PolarRadiusAxis
 } from 'recharts'
 import { AlertCircle, AlertTriangle, ArrowDown, ArrowUp, CheckCircle, Clock, Database, Heart, Info, Lightbulb, MonitorCheck, RefreshCw, Settings, Target, TrendingUp, Download, Play, Pause, Cpu, HardDrive } from 'lucide-react'
-import { claudeProductionMonitor } from '@/lib/claude/claude-production-monitor'
+import { claudeProductionMonitor, type ProductionMetrics, type Anomaly, type ABTestSummary } from '@/lib/claude/claude-production-monitor'
 import { claudeABTesting } from '@/lib/claude/claude-ab-testing'
 import { claudeThresholdTuner } from '@/lib/claude/claude-threshold-tuner'
 import { claudeFeedbackLoops } from '@/lib/claude/claude-feedback-loops'
@@ -126,11 +126,11 @@ export function ClaudeMonitoringDashboard() {
       // Process and structure the data
       const dashboardData: DashboardData = {
         systemStatus: {
-          status: productionStatus.status,
+          status: productionStatus.anomalies.length > 0 ? 'warning' : 'healthy',
           uptime: Date.now() - new Date('2024-01-01').getTime(), // Mock uptime
           lastUpdate: new Date(),
-          activeComponents: Object.values(productionStatus.healthCheck).filter(Boolean).length,
-          totalComponents: Object.keys(productionStatus.healthCheck).length,
+          activeComponents: Object.values(productionStatus.metrics).filter(Boolean).length,
+          totalComponents: Object.keys(productionStatus.metrics).length,
           alerts: generateAlerts(productionStatus, {
             ...feedbackStatus,
             recentActions: feedbackStatus.recentActions.map((action: any) => ({
@@ -201,15 +201,12 @@ export function ClaudeMonitoringDashboard() {
     return undefined
   }, [fetchDashboardData, autoRefresh, refreshInterval])
 
-  interface ProductionStatus {
-    status: 'healthy' | 'warning' | 'error'
-    metrics: {
-      successRate: number
-      avgExecutionTime: number
-      totalTasks: number
-    }
-    healthCheck: Record<string, boolean>
+  interface ProductionStatusData {
+    metrics: ProductionMetrics
+    anomalies: Anomaly[]
+    abTestSummary: ABTestSummary
   }
+
 
   interface FeedbackStatus {
     systemHealth: 'healthy' | 'warning' | 'critical'
@@ -220,14 +217,16 @@ export function ClaudeMonitoringDashboard() {
     recentActions: Array<{ id: string; action: string }>
   }
 
-  const generateAlerts = (productionStatus: ProductionStatus, feedbackStatus: FeedbackStatus): { id: string; type: "error" | "info" | "warning"; message: string; timestamp: Date; }[] => {
+  const generateAlerts = (productionStatus: ProductionStatusData, feedbackStatus: FeedbackStatus): { id: string; type: "error" | "info" | "warning"; message: string; timestamp: Date; }[] => {
     const alerts: { id: string; type: "error" | "info" | "warning"; message: string; timestamp: Date; }[] = []
 
-    if (productionStatus.status === 'error') {
+    // Check for critical anomalies
+    const criticalAnomalies = productionStatus.anomalies.filter(a => a.severity === 'critical')
+    if (criticalAnomalies.length > 0) {
       alerts.push({
         id: 'system-error',
         type: 'error',
-        message: 'System health check failed - multiple components unhealthy',
+        message: `Critical system anomalies detected: ${criticalAnomalies.length}`,
         timestamp: new Date()
       })
     }
