@@ -40,7 +40,6 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { checkPropertyLimit, getPropertyPricing } from '@/actions/user-tiers'
 import { UserTier } from '@/lib/permissions/permission-checker'
-import { PropertyImage } from '@/components/property/property-image'
 type Json = Record<string, unknown> | unknown[] | string | number | boolean | null
 
 interface Property {
@@ -346,9 +345,9 @@ export default function PropertiesPage() {
             {properties.slice(0, 1).map(property => (
               <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                 <div className="aspect-video relative bg-gradient-to-br from-blue-400 to-blue-600">
-                  <PropertyImage
-                    propertyType={property.property_type}
-                    propertyName={(property.metadata as { name?: string })?.name || property.street_address}
+                  <img
+                    src={`https://source.unsplash.com/800x450/?house,modern,architecture&sig=${property.id}`}
+                    alt={(property.metadata as { name?: string })?.name || property.street_address}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -435,9 +434,9 @@ export default function PropertiesPage() {
                 return (
                   <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
                     <div className="aspect-video relative bg-gradient-to-br from-gray-100 to-gray-200">
-                      <PropertyImage
-                        propertyType={property.property_type}
-                        propertyName={propertyName}
+                      <img
+                        src={`https://source.unsplash.com/800x450/?house,property,real-estate&sig=${property.id}`}
+                        alt={propertyName}
                         className="w-full h-full object-cover"
                       />
                     </div>
