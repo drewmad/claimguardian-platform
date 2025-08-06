@@ -66,61 +66,110 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 
 export function Features() {
   return (
-    <section id="features" className="px-4 md:px-8 py-20 bg-black/10">
+    <section id="features" className="px-4 md:px-8 py-20 bg-gradient-to-b from-gray-900 to-black">
       <AnimatedSection className="max-w-6xl mx-auto text-center">
-        <h2 className="font-slab text-3xl md:text-4xl font-bold">
-          <span className="text-white">Transform Property Ownership.</span>
-          <span className="block mt-2 bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">Build Generational Wealth.</span>
+        <h2 className="font-slab text-3xl md:text-5xl font-bold">
+          <span className="text-white">The ClaimGuardian Difference</span>
+          <span className="block mt-3 text-2xl md:text-3xl bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent">
+            Your Property's Complete Lifecycle Command Center
+          </span>
         </h2>
-        <p className="mt-6 max-w-3xl mx-auto text-xl text-gray-300">
-          ClaimGuardian creates living digital twins of everything you own, transforming scattered property data into actionable intelligence for wealth building.
+        <p className="mt-6 max-w-4xl mx-auto text-xl text-gray-300">
+          More than insurance claims. More than documentation. ClaimGuardian is your AI-powered property command center—from the day you buy to the legacy you leave.
         </p>
-        <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-          <div className={`${liquidGlass.cards.success} p-8 rounded-2xl h-full flex flex-col text-left`}>
+        
+        {/* The Three Pillars */}
+        <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className={`${liquidGlass.cards.success} p-8 rounded-2xl h-full flex flex-col text-left transform hover:scale-105 transition-transform`}>
             <div className="flex items-center gap-3 mb-4">
               <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-green-400 to-green-600 text-black`}>
                 <Clock size={24} />
               </div>
-              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Complete Property Intelligence</h3>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Before: Prepare & Protect</h3>
             </div>
             <p className="text-base text-gray-300 flex-grow leading-relaxed">
-              <span className="font-semibold text-green-400">Track everything you own.</span> From your home's foundation to your headphone warranty, create a living digital twin that grows smarter over time. 
-              Transform scattered data into organized intelligence.
+              <span className="font-semibold text-green-400">Document everything before disaster strikes.</span> Create digital twins of every item, track warranties, schedule maintenance, and build an unbreakable record of ownership. 
+              Your property's complete story, protected forever.
             </p>
-            <div className="mt-4 text-sm text-green-400 font-medium">
-              → Every possession tracked and optimized
-            </div>
-          </div>
-          <div className={`${liquidGlass.cards.info} p-8 rounded-2xl h-full flex flex-col text-left`}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-blue-400 to-blue-600 text-black`}>
-                <DollarSign size={24} />
+            <div className="mt-6 space-y-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span> Photo documentation with AI cataloging
               </div>
-              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Predictive Wealth Building</h3>
-            </div>
-            <p className="text-base text-gray-300 flex-grow leading-relaxed">
-              <span className="font-semibold text-blue-400">Optimize before problems arise.</span> AI predicts maintenance needs, tracks warranty expirations, and identifies investment opportunities. 
-              Transform reactive property management into proactive wealth building.
-            </p>
-            <div className="mt-4 text-sm text-blue-400 font-medium">
-              → Save $12,000+ through predictive maintenance
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span> Warranty tracking & alerts
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span> Maintenance scheduling
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-green-400">✓</span> Value tracking & depreciation
+              </div>
             </div>
           </div>
-          <div className={`${liquidGlass.cards.primary} p-8 rounded-2xl h-full flex flex-col text-left`}>
+          
+          <div className={`${liquidGlass.cards.warning} p-8 rounded-2xl h-full flex flex-col text-left transform hover:scale-105 transition-transform`}>
             <div className="flex items-center gap-3 mb-4">
-              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-purple-400 to-purple-600 text-black`}>
+              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-orange-400 to-orange-600 text-black`}>
                 <ShieldCheck size={24} />
               </div>
-              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>Preserve Your Legacy</h3>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>During: Command & Control</h3>
             </div>
             <p className="text-base text-gray-300 flex-grow leading-relaxed">
-              <span className="font-semibold text-purple-400">Build generational wealth.</span> Your complete property story transfers seamlessly to future generations. 
-              Every improvement, lesson learned, and optimization becomes part of your family's lasting legacy.
+              <span className="font-semibold text-orange-400">When disaster strikes, take command.</span> Real-time damage documentation, AI-powered claim optimization, and instant access to your complete property history. 
+              Fight back with intelligence, not emotion.
             </p>
-            <div className="mt-4 text-sm text-purple-400 font-medium">
-              → Knowledge preserved for future generations
+            <div className="mt-6 space-y-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <span className="text-orange-400">✓</span> AI damage assessment
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-orange-400">✓</span> Claim optimization engine
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-orange-400">✓</span> Evidence organization
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-orange-400">✓</span> Settlement analyzer
+              </div>
             </div>
           </div>
+          
+          <div className={`${liquidGlass.cards.primary} p-8 rounded-2xl h-full flex flex-col text-left transform hover:scale-105 transition-transform`}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className={`${liquidGlass.iconContainers.medium} bg-gradient-to-br from-purple-400 to-purple-600 text-black`}>
+                <DollarSign size={24} />
+              </div>
+              <h3 className={`font-bold text-xl text-white ${liquidGlass.text.shadowLight}`}>After: Optimize & Build</h3>
+            </div>
+            <p className="text-base text-gray-300 flex-grow leading-relaxed">
+              <span className="font-semibold text-purple-400">Transform ownership into wealth.</span> Track improvements, optimize investments, and build a property legacy that transfers seamlessly to the next generation. 
+              Every lesson learned becomes family wisdom.
+            </p>
+            <div className="mt-6 space-y-2 text-sm text-gray-400">
+              <div className="flex items-center gap-2">
+                <span className="text-purple-400">✓</span> Investment tracking
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-purple-400">✓</span> Improvement documentation
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-purple-400">✓</span> Generational transfer
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-purple-400">✓</span> Community insights
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        {/* Bottom CTA */}
+        <div className="mt-16 p-8 bg-gradient-to-r from-gray-800/60 to-gray-900/60 backdrop-blur-xl border border-gray-700/50 rounded-2xl">
+          <h3 className="text-2xl font-bold text-white mb-4">
+            One Platform. Complete Control. Forever Protected.
+          </h3>
+          <p className="text-lg text-gray-300 max-w-3xl mx-auto">
+            Join thousands of Florida property owners who've transformed scattered documents and forgotten warranties into organized intelligence and generational wealth.
+          </p>
         </div>
       </AnimatedSection>
       

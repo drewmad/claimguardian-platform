@@ -17,34 +17,35 @@ const segments = [
   {
     icon: Home,
     title: 'Homeowners',
-    description: 'From hurricanes to hidden damages, we help homeowners navigate the claims process and secure maximum settlements.'
+    description: 'Create a complete digital twin of your property. Track every warranty, schedule maintenance, document improvements, and protect your largest investment for generations.'
   },
   {
     icon: Building,
-    title: 'Business Owners',
-    description: 'Protect your livelihood with proper documentation and expert guidance through commercial property claims.'
+    title: 'Real Estate Investors',
+    description: 'Manage entire portfolios with intelligent oversight. Track ROI on improvements, optimize maintenance schedules, and maximize property values across all holdings.'
   },
   {
     icon: Users,
-    title: 'Property Managers',
-    description: 'Efficiently handle multiple claims across your portfolio with our streamlined documentation system.'
+    title: 'Growing Families',
+    description: 'Build and transfer generational wealth. Every repair, upgrade, and lesson learned becomes part of your family\'s property legacy, preserved forever.'
   },
   {
     icon: Shield,
-    title: 'Public Adjusters',
-    description: 'Enhance your services with AI-powered documentation and evidence collection tools.'
+    title: 'Hurricane Survivors',
+    description: 'From pre-storm preparation to post-disaster recovery. Document everything before, command the claims process during, and rebuild stronger after.'
   }
 ]
 
 export function WhoWeServe() {
   return (
-    <section id="who-we-serve" className="py-16 md:py-24 bg-slate-900/50">
+    <section id="who-we-serve" className="py-16 md:py-24 bg-gradient-to-b from-black to-gray-900">
       <div className="container mx-auto px-6">
-        <h2 className="text-3xl md:text-4xl font-extrabold text-center mb-4">
-          Who We Serve
+        <h2 className="text-3xl md:text-5xl font-extrabold text-center mb-4">
+          <span className="text-white">Built for Every</span>
+          <span className="text-green-400"> Florida Property Owner</span>
         </h2>
-        <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
-          Whether you're a homeowner facing your first claim or a professional managing multiple properties, ClaimGuardian has the tools you need.
+        <p className="text-xl text-gray-300 text-center max-w-4xl mx-auto mb-12">
+          From your first home to your investment empire. From daily maintenance to disaster recovery. ClaimGuardian is your property's complete lifecycle command center.
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">

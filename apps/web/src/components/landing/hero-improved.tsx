@@ -126,21 +126,35 @@ export function Hero() {
           </AnimatedSection>
           
           <AnimatedSection delay={100}>
-            <p className="mt-4 text-[clamp(1.125rem,2.5vw,1.5rem)] font-medium text-gray-200 max-w-3xl mx-auto">
-              <span className="font-bold text-white">Your Property's Complete Story, Protected Forever</span>
+            <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
+              More Than Insurance. It's Total Asset Command.
+            </p>
+            <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
+              Your Property's Command Center for Life
             </p>
             <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
-              AI-powered property intelligence network that creates living digital twins of everything you own—from your headphones to your air conditioner.
+              AI-powered property intelligence that creates living digital twins of everything you own—tracking every warranty, scheduling every maintenance, documenting every upgrade.
             </p>
           </AnimatedSection>
           
           <AnimatedSection delay={200}>
-            <div className="mt-6 max-w-3xl mx-auto space-y-4">
-              <p className="text-lg text-gray-300">
-                Transform property ownership from anxiety into wealth building • Track warranties • Optimize maintenance • Preserve your legacy
-              </p>
-              <p className="text-xl font-bold text-green-400">
-                Smart property ownership and community resilience, protected forever.
+            <div className="mt-6 max-w-4xl mx-auto space-y-4">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
+                  <h3 className="font-bold text-green-400 mb-1">Prepare for the Storm</h3>
+                  <p className="text-sm text-gray-300">Pre-disaster documentation & readiness</p>
+                </div>
+                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
+                  <h3 className="font-bold text-blue-400 mb-1">Command During Crisis</h3>
+                  <p className="text-sm text-gray-300">Real-time damage tracking & claims</p>
+                </div>
+                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
+                  <h3 className="font-bold text-purple-400 mb-1">Build Generational Wealth</h3>
+                  <p className="text-sm text-gray-300">Asset optimization & legacy preservation</p>
+                </div>
+              </div>
+              <p className="text-xl font-bold text-green-400 mt-6">
+                Forged in Florida, Built for Every Property Owner
               </p>
             </div>
           </AnimatedSection>
