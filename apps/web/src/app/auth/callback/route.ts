@@ -14,8 +14,17 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET(request: NextRequest) {
   const requestUrl = new URL(request.url)
   const code = requestUrl.searchParams.get('code')
+  const tokenHash = requestUrl.searchParams.get('token_hash')
   const type = requestUrl.searchParams.get('type')
   const next = requestUrl.searchParams.get('next') || '/dashboard'
+
+  // Handle token_hash format (email verification links)
+  if (tokenHash) {
+    logger.info('Redirecting token_hash verification to verify page')
+    return NextResponse.redirect(
+      new URL(`/auth/verify?token_hash=${tokenHash}&type=${type || 'signup'}`, requestUrl.origin)
+    )
+  }
 
   if (code) {
     try {
