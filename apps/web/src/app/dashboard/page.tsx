@@ -38,6 +38,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 import { LearningWidget } from '@/components/learning/learning-widget'
 import { OnboardingFlow } from '@/components/onboarding/onboarding-flow'
 import { WelcomeTour } from '@/components/onboarding/welcome-tour'
+import { PropertySetupWizard } from '@/components/onboarding/property-setup-wizard'
 import { useOnboarding } from '@/hooks/use-onboarding'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -256,6 +257,7 @@ function DashboardContent() {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
+  const [showPropertyWizard, setShowPropertyWizard] = useState(false)
   
   const onboarding = useOnboarding()
   
@@ -283,9 +285,21 @@ function DashboardContent() {
           logger.error('Error checking onboarding:', toError(error))
         }
 
+        // Check if user has any properties
+        const { data: properties } = await supabase
+          .from('properties')
+          .select('id')
+          .eq('user_id', user.id)
+          .limit(1)
+
+        const hasProperties = properties && properties.length > 0
+
         // Check if we should show the welcome tour
         if (!onboarding.isLoading && onboarding.shouldShowTour()) {
           setShowWelcomeTour(true)
+        } else if (!hasProperties && !onboarding.hasAddedProperty) {
+          // Show property wizard for users without properties
+          setShowPropertyWizard(true)
         }
       } catch (error) {
         logger.error('Error checking onboarding status:', toError(error))
@@ -362,9 +376,10 @@ function DashboardContent() {
                   className="bg-blue-600 hover:bg-blue-700 touch-target" 
                   size="sm"
                   aria-label="Quick add new item"
+                  onClick={() => setShowPropertyWizard(true)}
                 >
                   <Plus className="h-4 w-4 sm:mr-2" aria-hidden="true" />
-                  <span className="hidden sm:inline">Quick Add</span>
+                  <span className="hidden sm:inline">Add Property</span>
                 </Button>
               </div>
             </header>
@@ -745,6 +760,23 @@ function DashboardContent() {
           localStorage.setItem('onboarding_tour_dismissed', Date.now().toString())
         }}
         startDelay={1000}
+      />
+    )}
+    
+    {/* Property Setup Wizard */}
+    {showPropertyWizard && (
+      <PropertySetupWizard
+        onComplete={() => {
+          setShowPropertyWizard(false)
+          onboarding.markStepComplete('property')
+          toast.success('Property added successfully! Your dashboard is now personalized.')
+          // Reload to show the new property
+          window.location.reload()
+        }}
+        onSkip={() => {
+          setShowPropertyWizard(false)
+          localStorage.setItem('property_wizard_skipped', Date.now().toString())
+        }}
       />
     )}
     
