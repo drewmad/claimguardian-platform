@@ -145,23 +145,29 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
   const status = subscription ? getSubscriptionStatus(subscription.status) : null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 p-6">
       {/* Current Plan */}
-      <Card>
-        <CardHeader>
-          <CardTitle>Current Plan</CardTitle>
-          <CardDescription>Your subscription details and usage</CardDescription>
+      <Card className="bg-gray-800 border-gray-700">
+        <CardHeader className="border-b border-gray-700">
+          <CardTitle className="text-xl text-white">Current Plan</CardTitle>
+          <CardDescription className="text-gray-400">Your subscription details and usage</CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pt-6">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="text-2xl font-bold">{plan.name}</h3>
-                <p className="text-gray-600">{plan.description}</p>
+                <h3 className="text-3xl font-bold text-white">{plan.name}</h3>
+                <p className="text-gray-400 mt-1">{plan.description}</p>
               </div>
               {status && (
                 <Badge 
-                  variant={status.color === 'green' ? 'default' : status.color === 'red' ? 'destructive' : 'secondary'}
+                  className={`px-3 py-1 ${
+                    status.color === 'green' 
+                      ? 'bg-green-500/20 text-green-400 border-green-500/50' 
+                      : status.color === 'red' 
+                      ? 'bg-red-500/20 text-red-400 border-red-500/50' 
+                      : 'bg-gray-500/20 text-gray-400 border-gray-500/50'
+                  }`}
                 >
                   {status.label}
                 </Badge>
@@ -169,22 +175,26 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
             </div>
 
             {subscription && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8 p-6 bg-gray-900/50 rounded-lg">
                 <div className="flex items-center space-x-3">
-                  <DollarSign className="h-5 w-5 text-gray-400" />
+                  <div className="p-2 bg-blue-500/20 rounded-lg">
+                    <DollarSign className="h-5 w-5 text-blue-400" />
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-600">Amount</p>
-                    <p className="font-medium">
+                    <p className="text-sm text-gray-500">Amount</p>
+                    <p className="font-semibold text-white">
                       {formatCurrency(subscription.plan.amount)} / {subscription.plan.interval}
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <Calendar className="h-5 w-5 text-gray-400" />
+                  <div className="p-2 bg-green-500/20 rounded-lg">
+                    <Calendar className="h-5 w-5 text-green-400" />
+                  </div>
                   <div>
-                    <p className="text-sm text-gray-600">Next billing date</p>
-                    <p className="font-medium">
+                    <p className="text-sm text-gray-500">Next billing date</p>
+                    <p className="font-semibold text-white">
                       {subscription.currentPeriodEnd.toLocaleDateString()}
                     </p>
                   </div>
@@ -192,10 +202,12 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
 
                 {subscription.cancelAtPeriodEnd && (
                   <div className="flex items-center space-x-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-500" />
+                    <div className="p-2 bg-yellow-500/20 rounded-lg">
+                      <AlertCircle className="h-5 w-5 text-yellow-400" />
+                    </div>
                     <div>
-                      <p className="text-sm text-gray-600">Cancels on</p>
-                      <p className="font-medium">
+                      <p className="text-sm text-gray-500">Cancels on</p>
+                      <p className="font-semibold text-white">
                         {subscription.currentPeriodEnd.toLocaleDateString()}
                       </p>
                     </div>
@@ -205,31 +217,32 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
             )}
 
             {/* Usage Limits */}
-            <div className="border-t pt-4 mt-4">
-              <h4 className="font-medium mb-3">Plan Limits</h4>
+            <div className="border-t border-gray-700 pt-6 mt-6">
+              <h4 className="font-semibold text-white mb-4">Plan Limits</h4>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div>
-                  <p className="text-sm text-gray-600">Properties</p>
-                  <p className="font-medium">
-                    {plan.limits.properties === -1 ? 'Unlimited' : plan.limits.properties}
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Properties</p>
+                  <p className="font-bold text-lg text-white">
+                    {plan.limits.properties === -1 ? '∞' : plan.limits.properties}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Claims</p>
-                  <p className="font-medium">
-                    {plan.limits.claims === -1 ? 'Unlimited' : plan.limits.claims}
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Claims</p>
+                  <p className="font-bold text-lg text-white">
+                    {plan.limits.claims === -1 ? '∞' : plan.limits.claims}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">AI Requests</p>
-                  <p className="font-medium">
-                    {plan.limits.aiRequests === -1 ? 'Unlimited' : `${plan.limits.aiRequests}/mo`}
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">AI Requests</p>
+                  <p className="font-bold text-lg text-white">
+                    {plan.limits.aiRequests === -1 ? '∞' : `${plan.limits.aiRequests}`}
                   </p>
+                  {plan.limits.aiRequests !== -1 && <p className="text-xs text-gray-500">per month</p>}
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Storage</p>
-                  <p className="font-medium">
-                    {plan.limits.storage === -1 ? 'Unlimited' : `${plan.limits.storage} GB`}
+                <div className="bg-gray-900/50 p-4 rounded-lg">
+                  <p className="text-xs text-gray-500 mb-1">Storage</p>
+                  <p className="font-bold text-lg text-white">
+                    {plan.limits.storage === -1 ? '∞' : `${plan.limits.storage} GB`}
                   </p>
                 </div>
               </div>
@@ -290,23 +303,32 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
 
       {/* Payment Methods & History Tabs */}
       <Tabs defaultValue="payment-methods" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="payment-methods">Payment Methods</TabsTrigger>
-          <TabsTrigger value="billing-history">Billing History</TabsTrigger>
+        <TabsList className="bg-gray-800 border border-gray-700">
+          <TabsTrigger value="payment-methods" className="data-[state=active]:bg-gray-700 text-gray-400 data-[state=active]:text-white">
+            Payment Methods
+          </TabsTrigger>
+          <TabsTrigger value="billing-history" className="data-[state=active]:bg-gray-700 text-gray-400 data-[state=active]:text-white">
+            Billing History
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="payment-methods" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Payment Methods</CardTitle>
-              <CardDescription>Manage your payment methods</CardDescription>
+          <Card className="bg-gray-800 border-gray-700">
+            <CardHeader className="border-b border-gray-700">
+              <CardTitle className="text-white">Payment Methods</CardTitle>
+              <CardDescription className="text-gray-400">Manage your payment methods</CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-6">
               {paymentMethods.length === 0 ? (
                 <div className="text-center py-8">
-                  <CreditCard className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">No payment methods on file</p>
-                  <Button onClick={handleManageSubscription}>
+                  <div className="w-16 h-16 bg-gray-700 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <CreditCard className="h-8 w-8 text-gray-400" />
+                  </div>
+                  <p className="text-gray-400 mb-4">No payment methods on file</p>
+                  <Button 
+                    onClick={handleManageSubscription}
+                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                  >
                     Add Payment Method
                   </Button>
                 </div>

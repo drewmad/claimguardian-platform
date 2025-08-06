@@ -23,6 +23,8 @@ import { useRouter, usePathname } from 'next/navigation'
 import { useState, useEffect, ReactNode } from 'react'
 
 import { useAuth } from '@/components/auth/auth-provider'
+import { useSettingsModal } from '@/hooks/use-settings-modal'
+import { SettingsModal } from '@/components/modals/settings-modal'
 
 interface DashboardLayoutProps {
   children: ReactNode
@@ -62,6 +64,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
   const router = useRouter()
   const pathname = usePathname()
   const { user, signOut } = useAuth()
+  const { isOpen, openSettings, closeSettings } = useSettingsModal()
 
   useEffect(() => {
     const checkMobile = () => {
@@ -318,7 +321,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
       )}
       
       {/* Settings Modal */}
-      <SettingsModal isOpen={isSettingsOpen} onClose={closeSettings} />
+      <SettingsModal isOpen={isOpen} onClose={closeSettings} />
     </div>
   )
 }

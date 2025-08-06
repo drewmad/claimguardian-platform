@@ -91,6 +91,19 @@ class ProfileService {
    */
   async updateProfile(userId: string, data: ProfileUpdateData): Promise<boolean> {
     try {
+      // Verify the current user matches the profile being updated
+      const { data: { user }, error: authError } = await this.supabase.auth.getUser()
+      
+      if (authError || !user) {
+        logger.error('Failed to get authenticated user', {}, authError)
+        return false
+      }
+      
+      if (user.id !== userId) {
+        logger.error('User ID mismatch', { authenticatedUserId: user.id, requestedUserId: userId })
+        return false
+      }
+      
       const updateData: Record<string, unknown> = {
         updated_at: new Date().toISOString()
       }
@@ -102,15 +115,28 @@ class ProfileService {
       if (data.xHandle !== undefined) updateData.x_handle = data.xHandle
       if (data.isXConnected !== undefined) updateData.is_x_connected = data.isXConnected
 
-      const { error } = await this.supabase
+      logger.info('Attempting profile update', { userId, updateData })
+      
+      const { data: updatedProfile, error } = await this.supabase
         .from('user_profiles')
         .update(updateData)
         .eq('user_id', userId)
+        .select()
+        .single()
 
       if (error) {
-        logger.error('Failed to update profile', {}, error instanceof Error ? error : new Error(String(error)))
+        logger.error('Failed to update profile', { 
+          userId, 
+          updateData,
+          errorCode: error.code,
+          errorMessage: error.message,
+          errorDetails: error.details,
+          errorHint: error.hint
+        }, error instanceof Error ? error : new Error(String(error)))
         return false
       }
+
+      logger.info('Profile update response', { userId, updatedProfile })
 
       logger.info('Profile updated successfully', { userId })
       return true

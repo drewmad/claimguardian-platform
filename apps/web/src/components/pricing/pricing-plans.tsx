@@ -69,34 +69,34 @@ export function PricingPlans() {
   return (
     <div>
       {/* Billing Toggle */}
-      <div className="flex justify-center mb-8">
-        <div className="bg-gray-100 p-1 rounded-lg">
+      <div className="flex justify-center mb-12">
+        <div className="bg-gray-800 p-1 rounded-lg border border-gray-700">
           <button
             onClick={() => setBillingInterval('monthly')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
               billingInterval === 'monthly'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
             Monthly
           </button>
           <button
             onClick={() => setBillingInterval('annually')}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-6 py-3 rounded-md text-sm font-medium transition-all ${
               billingInterval === 'annually'
-                ? 'bg-white text-gray-900 shadow-sm'
-                : 'text-gray-600 hover:text-gray-900'
+                ? 'bg-blue-600 text-white shadow-lg'
+                : 'text-gray-400 hover:text-white'
             }`}
           >
             Annual
-            <span className="ml-2 text-green-600 text-xs">Save 17%</span>
+            <span className="ml-2 text-green-400 text-xs font-semibold">Save 17%</span>
           </button>
         </div>
       </div>
 
       {/* Plans Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((planId) => {
           const plan = PRICING_PLANS[planId]
           const price = billingInterval === 'monthly' 
@@ -106,41 +106,51 @@ export function PricingPlans() {
           return (
             <Card 
               key={plan.id} 
-              className={`relative ${plan.popular ? 'border-blue-600 shadow-lg' : ''}`}
+              className={`relative bg-gray-800 border ${
+                plan.popular 
+                  ? 'border-blue-500 shadow-2xl shadow-blue-500/20 scale-105' 
+                  : 'border-gray-700'
+              } hover:border-gray-600 transition-all`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <span className="bg-blue-600 text-white text-xs font-semibold px-3 py-1 rounded-full">
-                    Most Popular
+                <div className="absolute -top-4 left-1/2 -translate-x-1/2 z-10">
+                  <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+                    MOST POPULAR
                   </span>
                 </div>
               )}
               
-              <CardHeader>
-                <CardTitle>{plan.name}</CardTitle>
-                <CardDescription>{plan.description}</CardDescription>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold">${price}</span>
-                  <span className="text-gray-600 ml-2">
-                    /{billingInterval === 'monthly' ? 'mo' : 'mo'}
+              <CardHeader className="text-center pt-8">
+                <CardTitle className="text-xl font-bold text-white">{plan.name}</CardTitle>
+                <CardDescription className="text-gray-400 mt-2">{plan.description}</CardDescription>
+                <div className="mt-6">
+                  <span className="text-5xl font-bold text-white">${price}</span>
+                  <span className="text-gray-400 ml-2">
+                    /month
                   </span>
                   {billingInterval === 'annually' && plan.price.annually > 0 && (
-                    <div className="text-sm text-gray-500 mt-1">
+                    <div className="text-sm text-gray-500 mt-2">
                       ${plan.price.annually} billed annually
                     </div>
                   )}
                 </div>
               </CardHeader>
               
-              <CardContent>
+              <CardContent className="pt-6">
                 <Button
                   onClick={() => handleSubscribe(plan.id)}
                   disabled={loading !== null}
-                  className="w-full mb-6"
-                  variant={plan.popular ? 'default' : 'outline'}
+                  className={`w-full mb-6 py-6 text-lg font-semibold transition-all ${
+                    plan.popular 
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg' 
+                      : plan.id === 'free'
+                      ? 'bg-gray-700 hover:bg-gray-600 text-white'
+                      : 'bg-transparent border-2 border-gray-600 hover:border-blue-500 hover:bg-gray-700 text-white'
+                  }`}
+                  variant="default"
                 >
                   {loading === plan.id ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="h-5 w-5 animate-spin" />
                   ) : plan.id === 'free' ? (
                     'Get Started'
                   ) : (
@@ -148,11 +158,11 @@ export function PricingPlans() {
                   )}
                 </Button>
                 
-                <ul className="space-y-3">
+                <ul className="space-y-4">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">
-                      <Check className="h-5 w-5 text-green-600 mr-2 mt-0.5 flex-shrink-0" />
-                      <span className="text-sm text-gray-600">{feature}</span>
+                      <Check className="h-5 w-5 text-green-400 mr-3 mt-0.5 flex-shrink-0" />
+                      <span className="text-sm text-gray-300">{feature}</span>
                     </li>
                   ))}
                 </ul>
