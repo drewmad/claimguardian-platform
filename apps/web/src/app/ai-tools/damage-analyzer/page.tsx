@@ -35,6 +35,7 @@ import { useDropzone } from 'react-dropzone'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
+import { useAnalytics } from '@/hooks/useAnalytics'
 
 import { enhancedAIClient } from '@/lib/ai/enhanced-client'
 import { enhancedDocumentExtractor } from '@/lib/services/enhanced-document-extraction'
@@ -164,6 +165,8 @@ const MOCK_ANALYSIS: { [key: string]: AnalysisResult } = {
 
 function DamageAnalyzerContent() {
   const subscription = useSubscription()
+  const { trackAI, trackClick, trackFeatureUsage, trackErrorEvent, trackConversionEvent } = useAnalytics()
+  
   const [step, setStep] = useState<'select_policy' | 'upload' | 'capture' | 'analyzing' | 'result'>('select_policy')
   const [policies, setPolicies] = useState<Policy[]>([])
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null)
