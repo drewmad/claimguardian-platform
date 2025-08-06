@@ -104,15 +104,15 @@ export function WhoWeServe() {
             <div className="group relative overflow-hidden rounded-xl bg-slate-800/50 backdrop-blur-sm border border-slate-700/50">
               <div className="aspect-video relative">
                 <Image
-                  src="/landingpage/0d24bf1c3f4f1bb7c477705873721d70c081d9cbdb88acb2f8d888aefc319ad0.png"
+                  src="/landingpage/mobile-first.png"
                   alt="Mobile App Interface"
                   fill
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4">
-                  <h4 className="text-white font-semibold text-lg">Mobile-First Tools</h4>
-                  <p className="text-gray-300 text-sm">Document damage anywhere, anytime with AI assistance</p>
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                <div className="absolute bottom-4 left-4 right-4 bg-black/40 backdrop-blur-md rounded-lg p-3 border border-white/10">
+                  <h4 className="text-white font-bold text-lg drop-shadow-lg">Mobile-First Tools</h4>
+                  <p className="text-gray-100 text-sm font-medium drop-shadow">Document damage anywhere, anytime with AI assistance</p>
                 </div>
               </div>
             </div>

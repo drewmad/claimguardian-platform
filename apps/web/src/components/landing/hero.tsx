@@ -128,7 +128,7 @@ export function Hero() {
         <div className="relative z-10 container mx-auto px-4 text-center pt-16 pb-24">
           <AnimatedSection>
             <div className="mb-8 px-4 py-1.5 rounded-full border border-white/20 bg-black/20 text-sm font-semibold backdrop-blur-sm">
-              Forged in Florida, for Floridians, by Floridians.
+              Founded in Florida, by a Florida Family, Exclusively for Floridians.
             </div>
           </AnimatedSection>
           

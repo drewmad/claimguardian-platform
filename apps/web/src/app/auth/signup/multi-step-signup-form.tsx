@@ -11,7 +11,7 @@
 'use client'
 
 import { createBrowserSupabaseClient } from '@claimguardian/db'
-import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check } from 'lucide-react'
+import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check, CheckCircle2 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useCallback, useMemo } from 'react'
@@ -24,10 +24,10 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { cn } from '@/lib/utils'
 
-type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer'
+type Step = 'welcome' | 'account' | 'legal' | 'ai-disclaimer' | 'success'
 
 // Constants moved outside component to prevent recreation
-const STEPS: readonly Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer'] as const
+const STEPS: readonly Step[] = ['welcome', 'account', 'legal', 'ai-disclaimer', 'success'] as const
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const PHONE_DIGITS_REGEX = /^\d{10}$/
 
@@ -160,6 +160,8 @@ export function MultiStepSignupForm() {
         return formData.over18 && formData.legalAgreements
       case 'ai-disclaimer':
         return formData.aiDisclaimerAccepted
+      case 'success':
+        return true
       default:
         return false
     }
@@ -226,6 +228,7 @@ export function MultiStepSignupForm() {
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo: `${window.location.origin}/auth/verify`,
           data: {
             first_name: formData.firstName,
             last_name: formData.lastName,
@@ -243,25 +246,44 @@ export function MultiStepSignupForm() {
       if (signUpData?.user) {
         logger.info('✅ User created successfully:', signUpData.user.id)
         
-        // Profile will be automatically created by database trigger
-        // Store additional signup data in user metadata for now
-        logger.info('User profile will be created automatically by database trigger')
-        
-        // Log consent data for audit trail
-        console.log('User consents recorded:', {
-          terms_accepted: formData.legalAgreements,
-          ai_disclaimer_accepted: formData.aiDisclaimerAccepted,
-          residency_type: formData.residencyType,
-          over_18: formData.over18,
-          signup_timestamp: new Date().toISOString(),
-          signup_user_agent: navigator.userAgent,
-          signup_referrer: document.referrer || null,
-          signup_landing_page: window.location.href
-        })
-        
-        logger.info('🚀 Redirecting to onboarding...')
-        // Redirect to property setup
-        router.push('/onboarding/property-setup')
+        // Check if email confirmation is required
+        if (!signUpData.session && signUpData.user && !signUpData.user.email_confirmed_at) {
+          logger.info('📧 Email confirmation required - showing success page')
+          
+          // Log consent data for audit trail
+          console.log('User consents recorded:', {
+            terms_accepted: formData.legalAgreements,
+            ai_disclaimer_accepted: formData.aiDisclaimerAccepted,
+            residency_type: formData.residencyType,
+            over_18: formData.over18,
+            signup_timestamp: new Date().toISOString(),
+            signup_user_agent: navigator.userAgent,
+            signup_referrer: document.referrer || null,
+            signup_landing_page: window.location.href
+          })
+          
+          // Show success message for email verification
+          setCurrentStep('success')
+        } else {
+          // Profile will be automatically created by database trigger
+          logger.info('User profile will be created automatically by database trigger')
+          
+          // Log consent data for audit trail
+          console.log('User consents recorded:', {
+            terms_accepted: formData.legalAgreements,
+            ai_disclaimer_accepted: formData.aiDisclaimerAccepted,
+            residency_type: formData.residencyType,
+            over_18: formData.over18,
+            signup_timestamp: new Date().toISOString(),
+            signup_user_agent: navigator.userAgent,
+            signup_referrer: document.referrer || null,
+            signup_landing_page: window.location.href
+          })
+          
+          logger.info('🚀 Redirecting to onboarding...')
+          // Redirect to property setup
+          router.push('/onboarding/property-setup')
+        }
       } else {
         logger.info('❌ No user data received from signup')
         setError('Signup completed but no user data received. Please try signing in.')
@@ -617,6 +639,52 @@ export function MultiStepSignupForm() {
           </div>
         )
         
+      case 'success':
+        return (
+          <div className="space-y-6 text-center">
+            <div className="w-20 h-20 bg-green-600/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <CheckCircle2 className="w-10 h-10 text-green-600" />
+            </div>
+            <div>
+              <h2 className="text-2xl font-bold text-white mb-2">Account Created Successfully!</h2>
+              <p className="text-gray-400 mb-6">
+                We've sent a verification email to <strong className="text-white">{formData.email}</strong>
+              </p>
+            </div>
+            
+            <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 space-y-4">
+              <h3 className="font-semibold text-white">Next Steps:</h3>
+              <div className="space-y-3 text-left">
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mt-0.5">1</div>
+                  <div>
+                    <p className="text-white font-medium">Check your email</p>
+                    <p className="text-gray-400 text-sm">Look for an email from ClaimGuardian with the subject "Verify your email address"</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mt-0.5">2</div>
+                  <div>
+                    <p className="text-white font-medium">Click the verification link</p>
+                    <p className="text-gray-400 text-sm">This will confirm your email address and activate your account</p>
+                  </div>
+                </div>
+                <div className="flex items-start space-x-3">
+                  <div className="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-white text-sm font-bold mt-0.5">3</div>
+                  <div>
+                    <p className="text-white font-medium">Start managing your property</p>
+                    <p className="text-gray-400 text-sm">Once verified, you'll be redirected to complete your property setup</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div className="text-sm text-gray-500">
+              <p>Didn't receive an email? Check your spam folder or contact support.</p>
+            </div>
+          </div>
+        )
+        
       default:
         return null
     }
@@ -646,7 +714,7 @@ export function MultiStepSignupForm() {
               />
             </div>
             <div className="flex justify-between mt-2">
-              {['Welcome', 'Account', 'Legal', 'AI Terms'].map((stepName, index) => {
+              {['Welcome', 'Account', 'Legal', 'AI Terms', 'Success'].map((stepName, index) => {
                 const isCompleted = index < stepProgress.currentStep - 1
                 const isCurrent = index === stepProgress.currentStep - 1
                 
@@ -677,7 +745,8 @@ export function MultiStepSignupForm() {
           {renderStepContent}
           
           {/* Navigation */}
-          <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
+          {currentStep !== 'success' && (
+            <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
             {currentStep === 'welcome' ? (
               <>
                 <Link
@@ -750,6 +819,7 @@ export function MultiStepSignupForm() {
               </>
             )}
           </div>
+          )}
           
           {/* Footer Links */}
           {currentStep !== 'welcome' && (

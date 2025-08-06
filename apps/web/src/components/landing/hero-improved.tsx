@@ -128,10 +128,10 @@ export function Hero() {
           
           <AnimatedSection delay={100}>
             <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
-              More Than Insurance. It's Total Asset Command.
+              Build the Digital Twin. Activate Your Digital Guardian
             </p>
             <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
-              Your Property's Command Center for Life
+              Track it, Maintain it, Fix it, Warranty It, Claim it. Replace it. Donate it. Dispose
             </p>
             <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
               AI-powered property intelligence that creates living digital twins of everything you own—tracking every warranty, scheduling every maintenance, documenting every upgrade.
@@ -155,7 +155,7 @@ export function Hero() {
                 </div>
               </div>
               <p className="text-xl font-bold text-white mt-6">
-                Forged in Florida, Built for Every Property Owner
+                Founded in Florida, by a Florida Family, Exclusively for Floridians
               </p>
             </div>
           </AnimatedSection>
@@ -164,17 +164,20 @@ export function Hero() {
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
                 href="/auth/signup"
-                className={`${liquidGlass.buttons.primary} group relative font-bold py-4 px-8 text-white text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-lg`}
+                className={`group relative font-bold py-5 px-10 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
                 style={{ 
                   background: hoveredCTA 
-                    ? `linear-gradient(135deg, ${COLORS.brand.royalBlue}, ${COLORS.brand.neonGreen})` 
-                    : COLORS.brand.neonGreen 
+                    ? `linear-gradient(135deg, #39FF14, #00FF7F)` 
+                    : `linear-gradient(135deg, #39FF14, #32CD32)`,
+                  boxShadow: hoveredCTA 
+                    ? '0 0 40px rgba(57, 255, 20, 0.6), 0 20px 60px rgba(0, 0, 0, 0.4)'
+                    : '0 0 20px rgba(57, 255, 20, 0.4), 0 10px 40px rgba(0, 0, 0, 0.3)'
                 }}
                 onMouseEnter={() => setHoveredCTA(true)}
                 onMouseLeave={() => setHoveredCTA(false)}
                 aria-label="Create your complete property digital twin - no credit card required"
               >
-                <span className="relative z-10">Create My Digital Twin →</span>
+                <span className="relative z-10 font-black tracking-wide">Create My Digital Twin →</span>
               </Link>
               
               <Link
@@ -264,7 +267,7 @@ export function Hero() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 text-left">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                  Built by Florida Family, 
+                  Built by a Florida Family, 
                   <span className="block text-green-400">For Florida Families</span>
                 </h2>
                 
@@ -298,7 +301,7 @@ export function Hero() {
                     <svg className="w-4 h-4 text-green-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                     </svg>
-                    <span>Hurricane Ian Survivors</span>
+                    <span>Engineered for Resilience</span>
                   </div>
                 </div>
               </div>
