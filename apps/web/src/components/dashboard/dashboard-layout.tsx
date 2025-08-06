@@ -16,7 +16,7 @@ import {
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
-  CreditCard, MapPin, Clock, Brain, Cloud
+  CreditCard, MapPin, Clock, Brain, Cloud, AlertTriangle, Zap
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -39,6 +39,8 @@ const navigationItems = [
   { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
   { id: 'smart-policy-recommendations', label: 'Smart Policy Recommendations', icon: Brain, href: '/smart-policy-recommendations' },
   { id: 'claims', label: 'Claims', icon: FileText, href: '/dashboard/claims' },
+  { id: 'realtime-claims', label: 'Real-Time Claims Processing', icon: Zap, href: '/realtime-claims' },
+  { id: 'crisis-response', label: 'Crisis Response Coordinator', icon: AlertTriangle, href: '/crisis-response' },
   { id: 'deadline-guardian', label: 'Deadline Guardian', icon: Clock, href: '/dashboard/deadline-guardian' },
   { id: 'maintenance', label: 'Maintenance', icon: Wrench, href: '/dashboard/maintenance' },
   { id: 'expenses', label: 'Expenses', icon: DollarSign, href: '/dashboard/expenses' },
