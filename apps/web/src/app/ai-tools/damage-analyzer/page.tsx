@@ -37,6 +37,8 @@ import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
 import { enhancedAIClient } from '@/lib/ai/enhanced-client'
+import { enhancedDocumentExtractor } from '@/lib/services/enhanced-document-extraction'
+import { createClient } from '@/lib/supabase/client'
 
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { PermissionGuard } from '@/components/auth/permission-guard'
@@ -186,13 +188,78 @@ function DamageAnalyzerContent() {
     async function loadPolicies() {
       setIsLoading(true)
       try {
-        // const result = await getPolicies(); // Real implementation
-        // if (result.error) throw new Error(result.error.message);
-        // setPolicies(result.data || []);
-        setPolicies(MOCK_POLICIES) // Mock implementation
+        // Load real policies from Supabase
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        
+        if (!user) {
+          throw new Error('User not authenticated')
+        }
+
+        const { data: policiesData, error } = await supabase
+          .from('policies')
+          .select(`
+            id,
+            policy_number,
+            carrier_name,
+            policy_type,
+            coverage_limits,
+            deductible_amount,
+            wind_deductible,
+            hurricane_deductible,
+            effective_date,
+            expiration_date,
+            properties (
+              id,
+              name,
+              address
+            )
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+
+        if (error) throw error
+
+        // Convert to expected format
+        const formattedPolicies: Policy[] = policiesData?.map(policy => ({
+          id: policy.id,
+          provider: policy.carrier_name || 'Unknown Provider',
+          policy_number: policy.policy_number || 'Unknown',
+          type: policy.policy_type === 'flood' ? 'flood' : 
+                policy.policy_type === 'windstorm' ? 'windstorm' : 'homeowners',
+          coverage_details: {
+            dwelling: policy.coverage_limits?.dwelling || 0,
+            personal_property: policy.coverage_limits?.personal_property || 0,
+            deductible: policy.deductible_amount || 0,
+            clauses: {
+              'water_damage_roof': { 
+                title: 'Water Damage (Roof Leaks)', 
+                description: 'Covers sudden and accidental water damage from roof leaks.', 
+                covered: true 
+              },
+              'wind_damage_siding': { 
+                title: 'Wind Damage (Siding)', 
+                description: 'Covers damage to siding caused by high winds.', 
+                covered: true 
+              },
+              'flood_damage': { 
+                title: 'Flood Damage', 
+                description: policy.policy_type === 'flood' 
+                  ? 'Covers damage from rising waters.' 
+                  : 'Flood damage is excluded. Requires separate flood policy.', 
+                covered: policy.policy_type === 'flood' 
+              }
+            }
+          }
+        })) || []
+
+        // Fallback to mock data if no real policies found for demo purposes
+        setPolicies(formattedPolicies.length > 0 ? formattedPolicies : MOCK_POLICIES)
       } catch (error) {
         toast.error('Failed to load insurance policies.')
         logger.error('Failed to load policies:', toError(error))
+        // Fallback to mock data on error
+        setPolicies(MOCK_POLICIES)
       } finally {
         setIsLoading(false)
       }

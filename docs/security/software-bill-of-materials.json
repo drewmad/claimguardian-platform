@@ -1,0 +1,222 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:claimguardian-platform-sbom-2025-08-06",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-06T16:00:00Z",
+    "tools": [
+      {
+        "vendor": "ClaimGuardian",
+        "name": "Security Audit Tool",
+        "version": "1.0.0"
+      }
+    ],
+    "component": {
+      "type": "application",
+      "bom-ref": "claimguardian-platform",
+      "name": "ClaimGuardian Platform",
+      "version": "1.0.0",
+      "description": "AI-first insurance claim advocacy platform for Florida property owners"
+    },
+    "properties": [
+      {
+        "name": "security:classification",
+        "value": "sensitive"
+      },
+      {
+        "name": "compliance:frameworks",
+        "value": "GDPR,CCPA,Florida Insurance Code"
+      }
+    ]
+  },
+  "components": [
+    {
+      "type": "library",
+      "bom-ref": "@supabase/supabase-js@2.53.0",
+      "name": "@supabase/supabase-js",
+      "version": "2.53.0",
+      "description": "Supabase JavaScript Client",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ],
+      "evidence": {
+        "identity": {
+          "field": "purl",
+          "confidence": 1,
+          "methods": [
+            {
+              "technique": "manifest-analysis",
+              "confidence": 1
+            }
+          ]
+        }
+      },
+      "properties": [
+        {
+          "name": "security:risk-level",
+          "value": "medium"
+        },
+        {
+          "name": "security:usage",
+          "value": "database-client,authentication"
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "@supabase/ssr@0.6.1",
+      "name": "@supabase/ssr",
+      "version": "0.6.1",
+      "description": "Supabase Server-Side Rendering helpers",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "csv-parser@3.2.0",
+      "name": "csv-parser",
+      "version": "3.2.0",
+      "description": "CSV parsing library",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "dotenv@17.2.1",
+      "name": "dotenv",
+      "version": "17.2.1",
+      "description": "Environment variable loader",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-2-Clause"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "react@19.1.1",
+      "name": "react",
+      "version": "19.1.1",
+      "description": "React JavaScript library for building user interfaces",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "next@15.4.5",
+      "name": "next",
+      "version": "15.4.5",
+      "description": "Next.js React framework",
+      "licenses": [
+        {
+          "license": {
+            "id": "MIT"
+          }
+        }
+      ]
+    },
+    {
+      "type": "library",
+      "bom-ref": "typescript@5.9.2",
+      "name": "typescript",
+      "version": "5.9.2",
+      "description": "TypeScript language",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ]
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "bom-ref": "esbuild@0.21.5",
+      "id": "GHSA-67mh-4wv8-2f99",
+      "source": {
+        "name": "npm audit",
+        "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99"
+      },
+      "ratings": [
+        {
+          "source": {
+            "name": "CVSS v3.1",
+            "url": "https://www.first.org/cvss/"
+          },
+          "score": 5.3,
+          "severity": "medium",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+        }
+      ],
+      "cwes": [346],
+      "description": "esbuild enables any website to send any requests to the development server and read the response",
+      "detail": "esbuild allows any websites to send any request to the development server and read the response due to default CORS settings.",
+      "recommendation": "Upgrade to version 0.25.0 or later",
+      "affects": [
+        {
+          "ref": "services__noaa-data-ingestor>vitest>vite>esbuild"
+        }
+      ],
+      "published": "2025-02-10T17:48:07.000Z",
+      "updated": "2025-02-10T17:48:08.000Z"
+    }
+  ],
+  "services": [
+    {
+      "bom-ref": "supabase-service",
+      "name": "Supabase Database Service",
+      "description": "PostgreSQL database with Row Level Security",
+      "endpoints": [
+        "https://[project-ref].supabase.co"
+      ],
+      "authenticated": true,
+      "x-trust-boundary": false,
+      "data": [
+        {
+          "flow": "bi-directional",
+          "classification": "PII"
+        }
+      ]
+    },
+    {
+      "bom-ref": "openai-service",
+      "name": "OpenAI API",
+      "description": "AI processing service for document analysis",
+      "endpoints": [
+        "https://api.openai.com"
+      ],
+      "authenticated": true,
+      "x-trust-boundary": true,
+      "data": [
+        {
+          "flow": "outbound",
+          "classification": "sensitive"
+        }
+      ]
+    }
+  ]
+}

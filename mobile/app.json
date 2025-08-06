@@ -1,0 +1,89 @@
+{
+  "expo": {
+    "name": "ClaimGuardian Mobile",
+    "slug": "claimguardian-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#1F2937"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "platforms": [
+      "ios",
+      "android"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.claimguardian.mobile",
+      "buildNumber": "1.0.0",
+      "infoPlist": {
+        "NSCameraUsageDescription": "ClaimGuardian needs access to your camera to capture damage photos for insurance claims.",
+        "NSPhotoLibraryUsageDescription": "ClaimGuardian needs access to your photo library to select images for damage assessment.",
+        "NSLocationWhenInUseUsageDescription": "ClaimGuardian uses your location to identify properties and add GPS data to damage reports.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "ClaimGuardian uses your location to identify properties and add GPS data to damage reports."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#1F2937"
+      },
+      "package": "com.claimguardian.mobile",
+      "versionCode": 1,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Allow ClaimGuardian to access your camera to capture damage photos.",
+          "microphonePermission": "Allow ClaimGuardian to access your microphone to record voice notes with damage reports.",
+          "recordAudioAndroid": true
+        }
+      ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow ClaimGuardian to use your location to identify properties and add GPS data to damage reports.",
+          "locationAlwaysPermission": "Allow ClaimGuardian to use your location to identify properties and add GPS data to damage reports.",
+          "locationWhenInUsePermission": "Allow ClaimGuardian to use your location to identify properties and add GPS data to damage reports."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "ClaimGuardian needs access to your photo library to select images for damage assessment."
+        }
+      ]
+    ],
+    "scheme": "claimguardian-mobile",
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "f8e9d7c6-b5a4-3c2d-1e0f-9g8h7i6j5k4l"
+      }
+    }
+  }
+}

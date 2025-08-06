@@ -9,8 +9,10 @@
  * @status stable
  */
 
-import { logger } from '@/lib/logger'
+import { logger } from '@/lib/logger/production-logger'
 import { createClient } from '@/lib/supabase/client'
+import { enhancedAIClient } from '@/lib/ai/enhanced-client'
+import { toError } from '@claimguardian/utils'
 
 // Comprehensive extraction schema for insurance policy documents
 export interface ExtractedPolicyDataEnhanced {
@@ -220,6 +222,397 @@ const DEFAULT_OPTIONS: EnhancedExtractionOptions = {
 
 export class EnhancedDocumentExtractor {
   private supabase = createClient()
+
+  /**
+   * Real-time document analysis - replaces mock implementations
+   */
+  async analyzeDocumentRealTime(
+    file: File,
+    documentType: 'policy' | 'estimate' | 'receipt' | 'correspondence' | 'auto' = 'auto'
+  ): Promise<{
+    success: boolean
+    analysis?: {
+      documentType: string
+      confidence: number
+      extractedText: string
+      structuredData?: Record<string, any>
+      keyFields?: Array<{ field: string; value: string; confidence: number }>
+      suggestions?: string[]
+    }
+    error?: string
+  }> {
+    try {
+      // Convert file to base64
+      const base64Content = await this.fileToBase64(file)
+      
+      // Use enhanced AI client for real-time analysis
+      const prompt = this.getRealTimeAnalysisPrompt(documentType)
+      
+      const response = await enhancedAIClient.enhancedImageAnalysis({
+        image: base64Content,
+        prompt,
+        featureId: 'real-time-document-analysis'
+      })
+
+      // Parse AI response
+      const analysis = JSON.parse(response)
+      
+      return {
+        success: true,
+        analysis: {
+          documentType: analysis.documentType || documentType,
+          confidence: analysis.confidence || 0.8,
+          extractedText: analysis.extractedText || analysis.text || '',
+          structuredData: analysis.structuredData,
+          keyFields: analysis.keyFields || [],
+          suggestions: analysis.suggestions || []
+        }
+      }
+    } catch (error) {
+      const err = toError(error)
+      logger.error('Real-time document analysis failed', { error: err, fileName: file.name })
+      
+      return {
+        success: false,
+        error: err.message
+      }
+    }
+  }
+
+  /**
+   * Batch process evidence documents with auto-categorization
+   */
+  async processEvidenceDocuments(
+    files: File[],
+    claimId?: string
+  ): Promise<Array<{
+    fileName: string
+    category: string
+    priority: 'high' | 'medium' | 'low'
+    analysis: any
+    qualityScore: number
+    suggestions: string[]
+  }>> {
+    const results = await Promise.allSettled(
+      files.map(async (file) => {
+        const analysis = await this.analyzeDocumentRealTime(file, 'auto')
+        
+        if (!analysis.success || !analysis.analysis) {
+          return {
+            fileName: file.name,
+            category: 'unknown',
+            priority: 'low' as const,
+            analysis: null,
+            qualityScore: 0,
+            suggestions: ['Failed to analyze document']
+          }
+        }
+
+        // Use AI to categorize and score
+        const categorization = await this.categorizeAndScoreEvidence(
+          analysis.analysis.extractedText,
+          analysis.analysis.documentType,
+          file.name
+        )
+
+        return {
+          fileName: file.name,
+          category: categorization.category,
+          priority: categorization.priority,
+          analysis: analysis.analysis,
+          qualityScore: categorization.qualityScore,
+          suggestions: categorization.suggestions
+        }
+      })
+    )
+
+    const processedResults = results
+      .filter((result): result is PromiseFulfilledResult<any> => result.status === 'fulfilled')
+      .map(result => result.value)
+
+    // Save to database if claimId provided
+    if (claimId && processedResults.length > 0) {
+      await this.saveEvidenceAnalysis(claimId, processedResults)
+    }
+
+    return processedResults
+  }
+
+  /**
+   * Smart document search with semantic understanding
+   */
+  async searchDocuments(
+    query: string,
+    filters?: {
+      claimId?: string
+      documentTypes?: string[]
+      dateRange?: { start: string; end: string }
+      minConfidence?: number
+    }
+  ): Promise<Array<{
+    documentId: string
+    fileName: string
+    relevanceScore: number
+    matchedContent: string
+    extractedData?: any
+  }>> {
+    try {
+      // Build database query
+      let dbQuery = this.supabase
+        .from('document_extractions_enhanced')
+        .select(`
+          id,
+          document_id,
+          extracted_data,
+          confidence_score,
+          created_at
+        `)
+        .order('created_at', { ascending: false })
+
+      if (filters?.claimId) {
+        dbQuery = dbQuery.eq('property_id', filters.claimId)
+      }
+
+      if (filters?.minConfidence) {
+        dbQuery = dbQuery.gte('confidence_score', filters.minConfidence)
+      }
+
+      if (filters?.dateRange) {
+        dbQuery = dbQuery
+          .gte('created_at', filters.dateRange.start)
+          .lte('created_at', filters.dateRange.end)
+      }
+
+      const { data: documents, error } = await dbQuery.limit(50)
+
+      if (error) throw error
+
+      // Use AI for semantic search scoring
+      const scoredResults = await Promise.all(
+        documents.map(async (doc) => {
+          const relevanceScore = await this.calculateSemanticRelevance(
+            query,
+            doc.extracted_data?.rawText || JSON.stringify(doc.extracted_data)
+          )
+
+          return {
+            documentId: doc.document_id,
+            fileName: doc.extracted_data?.fileName || 'Unknown',
+            relevanceScore,
+            matchedContent: this.extractMatchedContent(
+              query,
+              doc.extracted_data?.rawText || JSON.stringify(doc.extracted_data)
+            ),
+            extractedData: doc.extracted_data
+          }
+        })
+      )
+
+      // Return top matches sorted by relevance
+      return scoredResults
+        .filter(result => result.relevanceScore > 0.3)
+        .sort((a, b) => b.relevanceScore - a.relevanceScore)
+        .slice(0, 10)
+    } catch (error) {
+      logger.error('Document search failed', { error: toError(error), query })
+      return []
+    }
+  }
+
+  /**
+   * Convert file to base64
+   */
+  private async fileToBase64(file: File): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader()
+      reader.readAsDataURL(file)
+      reader.onload = () => {
+        const result = reader.result as string
+        const base64 = result.split(',')[1]
+        resolve(base64)
+      }
+      reader.onerror = error => reject(error)
+    })
+  }
+
+  /**
+   * Get real-time analysis prompt
+   */
+  private getRealTimeAnalysisPrompt(documentType: string): string {
+    const basePrompt = `Analyze this document and extract all text and key information. Return as JSON with this structure:
+    {
+      "documentType": "detected type (policy/estimate/receipt/correspondence/legal/other)",
+      "confidence": "confidence score 0-1",
+      "extractedText": "complete text content",
+      "structuredData": {
+        "keyValuePairs": "relevant data fields",
+        "dates": ["extracted dates"],
+        "amounts": ["monetary amounts"],
+        "parties": ["people/companies mentioned"]
+      },
+      "keyFields": [
+        {"field": "field name", "value": "extracted value", "confidence": 0.9}
+      ],
+      "suggestions": ["recommendations for better documentation"]
+    }`
+
+    const typeSpecific: Record<string, string> = {
+      policy: `Focus on policy numbers, coverage amounts, deductibles, dates, carrier info, and property details.`,
+      estimate: `Focus on line items, costs, contractor info, scope of work, and dates.`,
+      receipt: `Focus on items purchased, amounts, vendor info, dates, and payment methods.`,
+      correspondence: `Focus on sender/receiver, dates, subject matter, and key decisions or commitments.`,
+      auto: `Determine the document type first, then apply appropriate extraction rules.`
+    }
+
+    return `${basePrompt}\n\nSpecial instructions: ${typeSpecific[documentType] || typeSpecific.auto}`
+  }
+
+  /**
+   * Categorize and score evidence quality
+   */
+  private async categorizeAndScoreEvidence(
+    extractedText: string,
+    documentType: string,
+    fileName: string
+  ): Promise<{
+    category: string
+    priority: 'high' | 'medium' | 'low'
+    qualityScore: number
+    suggestions: string[]
+  }> {
+    try {
+      const response = await enhancedAIClient.enhancedChat({
+        messages: [
+          {
+            role: 'system',
+            content: `You are an expert insurance claims adjuster. Analyze evidence documents and provide:
+            1. Category (damage_photos, repair_estimates, receipts, correspondence, policies, legal_documents, before_after, other)
+            2. Priority for claim processing (high/medium/low)
+            3. Quality score (0-100) based on clarity, completeness, and relevance
+            4. Suggestions for improvement
+            
+            Return JSON: {
+              "category": "string",
+              "priority": "high|medium|low", 
+              "qualityScore": number,
+              "suggestions": ["array of strings"]
+            }`
+          },
+          {
+            role: 'user',
+            content: `Analyze this evidence document:
+            Filename: ${fileName}
+            Document type: ${documentType}
+            Content preview: ${extractedText.substring(0, 1000)}...`
+          }
+        ],
+        featureId: 'evidence-categorization'
+      })
+
+      const result = JSON.parse(response)
+      return {
+        category: result.category || 'other',
+        priority: result.priority || 'medium',
+        qualityScore: Math.max(0, Math.min(100, result.qualityScore || 50)),
+        suggestions: result.suggestions || []
+      }
+    } catch (error) {
+      logger.warn('Evidence categorization failed', { error: toError(error), fileName })
+      return {
+        category: 'other',
+        priority: 'medium',
+        qualityScore: 50,
+        suggestions: ['Could not automatically analyze - manual review recommended']
+      }
+    }
+  }
+
+  /**
+   * Calculate semantic relevance score
+   */
+  private async calculateSemanticRelevance(query: string, content: string): Promise<number> {
+    try {
+      const response = await enhancedAIClient.enhancedChat({
+        messages: [
+          {
+            role: 'system',
+            content: `Rate the relevance of the content to the search query on a scale of 0.0 to 1.0.
+            Consider semantic meaning, not just keyword matching. Return only the numeric score.`
+          },
+          {
+            role: 'user',
+            content: `Query: "${query}"\n\nContent: ${content.substring(0, 2000)}...`
+          }
+        ],
+        featureId: 'semantic-relevance'
+      })
+
+      const score = parseFloat(response.trim())
+      return isNaN(score) ? 0.5 : Math.max(0, Math.min(1, score))
+    } catch (error) {
+      logger.warn('Relevance scoring failed', { error: toError(error) })
+      return 0.5
+    }
+  }
+
+  /**
+   * Extract matched content for search results
+   */
+  private extractMatchedContent(query: string, content: string): string {
+    const words = query.toLowerCase().split(' ')
+    const sentences = content.split(/[.!?]+/)
+    
+    // Find sentences that contain query terms
+    const matchedSentences = sentences.filter(sentence => {
+      const lowerSentence = sentence.toLowerCase()
+      return words.some(word => lowerSentence.includes(word))
+    })
+
+    return matchedSentences.slice(0, 3).join('. ').trim() + '...'
+  }
+
+  /**
+   * Save evidence analysis results
+   */
+  private async saveEvidenceAnalysis(
+    claimId: string,
+    analyses: Array<{
+      fileName: string
+      category: string
+      priority: string
+      analysis: any
+      qualityScore: number
+      suggestions: string[]
+    }>
+  ): Promise<void> {
+    try {
+      const insertData = analyses.map(analysis => ({
+        claim_id: claimId,
+        file_name: analysis.fileName,
+        category: analysis.category,
+        priority: analysis.priority,
+        extracted_data: analysis.analysis,
+        quality_score: analysis.qualityScore,
+        suggestions: analysis.suggestions,
+        processed_at: new Date().toISOString()
+      }))
+
+      const { error } = await this.supabase
+        .from('evidence_analyses')
+        .insert(insertData)
+
+      if (error) {
+        logger.error('Failed to save evidence analyses', { error, claimId })
+      } else {
+        logger.info('Evidence analyses saved successfully', { 
+          claimId, 
+          count: analyses.length 
+        })
+      }
+    } catch (error) {
+      logger.error('Error saving evidence analyses', { error: toError(error), claimId })
+    }
+  }
   
   /**
    * Extract comprehensive policy data from a document using multi-provider AI

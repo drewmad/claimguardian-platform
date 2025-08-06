@@ -80,35 +80,22 @@ export type Profile = {
   updated_at: string
 }
 
-// Note: There is no actual 'claims' table in the database schema
-// The application expects this interface but it doesn't exist in the actual database
-// Community claims are stored in 'community_claims' table with different structure
-// This type is a placeholder until proper claims table is created or application is refactored
-export type Claim = {
-  id: string
-  user_id: string
-  property_id: string
-  claim_number: string
-  status: 'draft' | 'submitted' | 'acknowledged' | 'investigating' | 'approved' | 'denied' | 'settled' | 'closed' | 'reopened' | 'withdrawn'
-  claim_type: 'property' | 'casualty' | 'liability' | 'other'
-  incident_date: string
-  reported_date: string
-  description: string | null
-  estimated_amount: number | null
-  adjuster_name: string | null
-  adjuster_phone: string | null
-  adjuster_email: string | null
-  created_at: string
-  updated_at: string
-}
+// Claims table now exists in database - use generated types
+export type Claim = Database['public']['Tables']['claims']['Row']
 
 // Export insert/update types
 export type PropertyInsert = Omit<CoreProperty, 'id' | 'created_at' | 'updated_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>
 export type PropertyUpdate = Partial<Omit<CoreProperty, 'id' | 'created_at' | 'version_id' | 'valid_from' | 'valid_to' | 'is_current' | 'full_address'>>
 
-// ClaimInsert/Update types - Note: these are placeholders since claims table doesn't exist
-export type ClaimInsert = Omit<Claim, 'id' | 'created_at' | 'updated_at'>
-export type ClaimUpdate = Partial<Omit<Claim, 'id' | 'created_at' | 'updated_at'>>
+// Claims insert/update types from actual database schema
+export type ClaimInsert = Database['public']['Tables']['claims']['Insert']
+export type ClaimUpdate = Database['public']['Tables']['claims']['Update']
+
+// Export claim enums that exist
+export type ClaimStatus = Database['public']['Enums']['claim_status']
+
+// TODO: Additional claim tables and enums will be added as they are created
+// Currently only the main claims table and claim_status enum are available
 
 // Re-export Maps Intelligence for convenience
 export { MapsIntelligenceService } from './services/maps-intelligence-service'
