@@ -94,7 +94,8 @@ export class IntelligentDocumentSearch {
 
       this.isInitialized = true
     } catch (error) {
-      logger.error('Failed to initialize document search', error as Error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error('Failed to initialize document search', { errorMessage })
       throw error
     }
   }
@@ -161,7 +162,8 @@ export class IntelligentDocumentSearch {
 
       return results
     } catch (error) {
-      logger.error('Document search failed', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error('Document search failed', { errorMessage })
       throw error
     }
   }
@@ -413,7 +415,8 @@ export class IntelligentDocumentSearch {
       this.entityCache.set(documentId, entities)
       return entities
     } catch (error) {
-      logger.error('Failed to extract document entities', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error('Failed to extract document entities', { errorMessage })
       return []
     }
   }
@@ -459,7 +462,8 @@ export class IntelligentDocumentSearch {
 
       return insights
     } catch (error) {
-      logger.error('Failed to generate document insights', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error('Failed to generate document insights', { errorMessage })
       return []
     }
   }

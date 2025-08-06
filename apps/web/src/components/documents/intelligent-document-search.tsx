@@ -144,7 +144,8 @@ export function IntelligentDocumentSearchComponent() {
       })
 
     } catch (error) {
-      logger.error('Document search failed', error)
+      const errorMessage = error instanceof Error ? error.message : String(error)
+      logger.error('Document search failed', { errorMessage })
       setSearchState(prev => ({
         ...prev,
         error: error instanceof Error ? error.message : 'Search failed. Please try again.'
@@ -169,7 +170,8 @@ export function IntelligentDocumentSearchComponent() {
         const insights = await documentSearch.generateDocumentInsights('mock-user-id')
         setSearchState(prev => ({ ...prev, insights }))
       } catch (error) {
-        logger.error('Failed to load document insights', error)
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        logger.error('Failed to load document insights', { errorMessage })
       }
     }
 
