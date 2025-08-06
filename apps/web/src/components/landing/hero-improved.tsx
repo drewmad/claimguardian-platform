@@ -24,6 +24,7 @@ import { useState, useEffect, useRef } from 'react'
 
 import { COLORS } from '@/lib/constants'
 import { liquidGlass } from '@/lib/styles/liquid-glass'
+import { useModalStore } from '@/stores/modal-store'
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {
@@ -81,6 +82,7 @@ const GuardianHeroLogo = () => (
 )
 
 export function Hero() {
+  const { openModal } = useModalStore()
   const [hoveredCTA, setHoveredCTA] = useState(false)
   
   const pills = [
@@ -162,8 +164,8 @@ export function Hero() {
           
           <AnimatedSection delay={300}>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
-              <Link
-                href="/auth/signup"
+              <button
+                onClick={() => openModal('signup')}
                 className={`group relative font-bold py-5 px-10 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
                 style={{ 
                   background: hoveredCTA 
@@ -178,7 +180,7 @@ export function Hero() {
                 aria-label="Create your complete property digital twin - no credit card required"
               >
                 <span className="relative z-10 font-black tracking-wide">Create My Digital Twin →</span>
-              </Link>
+              </button>
               
               <Link
                 href="#how-it-works"
