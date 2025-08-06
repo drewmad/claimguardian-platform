@@ -16,7 +16,7 @@ import {
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
-  CreditCard
+  CreditCard, MapPin
 } from 'lucide-react'
 import Link from 'next/link'
 import { useRouter, usePathname } from 'next/navigation'
@@ -33,6 +33,7 @@ interface DashboardLayoutProps {
 
 const navigationItems = [
   { id: 'home', label: 'Dashboard', icon: Home, href: '/dashboard' },
+  { id: 'property-map', label: 'Property Map', icon: MapPin, href: '/dashboard/property-map' },
   { id: 'property', label: 'My Home', icon: Building, href: '/dashboard/property' },
   { id: 'personal-property', label: 'Personal Property', icon: Package, href: '/dashboard/personal-property' },
   { id: 'insurance', label: 'Insurance', icon: Shield, href: '/dashboard/insurance' },
