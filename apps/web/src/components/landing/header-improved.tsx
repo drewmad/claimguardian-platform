@@ -15,6 +15,7 @@ import Link from 'next/link'
 import { Menu, X } from 'lucide-react'
 
 import { COLORS } from '@/lib/constants'
+import { useModalStore } from '@/stores/modal-store'
 
 // Professional logo with enhanced styling
 const HeaderLogoIcon = () => (
@@ -33,6 +34,7 @@ const HeaderLogoIcon = () => (
 
 export function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const { openModal } = useModalStore()
 
   return (
     <>
@@ -75,12 +77,12 @@ export function Header() {
         </a>
         
         <div className="flex items-center gap-4 ml-4">
-          <Link 
-            href="/auth/signin" 
+          <button 
+            onClick={() => openModal('login')}
             className="text-gray-300 hover:text-white transition-colors duration-200"
           >
             Sign In
-          </Link>
+          </button>
           <Link 
             href="/auth/signup" 
             className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
@@ -163,13 +165,15 @@ export function Header() {
             </a>
             
             <div className="border-t border-gray-600 pt-4 space-y-3">
-              <Link 
-                href="/auth/signin" 
-                className="block text-gray-300 text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
-                onClick={() => setIsMobileMenuOpen(false)}
+              <button 
+                onClick={() => {
+                  openModal('login')
+                  setIsMobileMenuOpen(false)
+                }}
+                className="block w-full text-left text-gray-300 text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
               >
                 Sign In
-              </Link>
+              </button>
               <Link 
                 href="/auth/signup" 
                 className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"

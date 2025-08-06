@@ -468,9 +468,9 @@ export class EnhancedDocumentExtractor {
   }
 
   /**
-   * Categorize and score evidence quality
+   * Categorize and score evidence quality - made public for external use
    */
-  private async categorizeAndScoreEvidence(
+  async categorizeAndScoreEvidence(
     extractedText: string,
     documentType: string,
     fileName: string

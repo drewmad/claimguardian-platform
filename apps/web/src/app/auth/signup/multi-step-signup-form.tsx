@@ -15,6 +15,7 @@ import { Shield, ArrowLeft, ArrowRight, Loader2, AlertCircle, Check, CheckCircle
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState, useCallback, useMemo } from 'react'
+import { useModalStore } from '@/stores/modal-store'
 import { logger } from "../../../lib/logger/production-logger"
 
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -42,6 +43,7 @@ const passwordStrengthCache = new Map<string, PasswordStrengthResult>()
 
 export function MultiStepSignupForm() {
   const router = useRouter()
+  const { openModal } = useModalStore()
   const [currentStep, setCurrentStep] = useState<Step>('welcome')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -842,9 +844,12 @@ export function MultiStepSignupForm() {
             <div className="text-center mt-6">
               <p className="text-sm text-gray-400">
                 Already have an account?{' '}
-                <Link href="/auth/signin" className="text-blue-400 hover:text-blue-300">
+                <button 
+                  onClick={() => openModal('login')}
+                  className="text-blue-400 hover:text-blue-300"
+                >
                   Sign In
-                </Link>
+                </button>
               </p>
             </div>
           )}
