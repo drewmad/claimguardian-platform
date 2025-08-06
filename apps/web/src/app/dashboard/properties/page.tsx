@@ -22,7 +22,9 @@ import {
   Lock,
   Users,
   TrendingUp,
-  Crown
+  Crown,
+  Building,
+  ArrowRight
 } from 'lucide-react'
 import Link from 'next/link'
 import { useEffect, useState, useCallback } from 'react'
@@ -38,6 +40,7 @@ import { createClient } from '@/lib/supabase/client'
 import { useAuth } from '@/components/auth/auth-provider'
 import { checkPropertyLimit, getPropertyPricing } from '@/actions/user-tiers'
 import { UserTier } from '@/lib/permissions/permission-checker'
+import { PropertyImage } from '@/components/property/property-image'
 type Json = Record<string, unknown> | unknown[] | string | number | boolean | null
 
 interface Property {
@@ -108,6 +111,7 @@ export default function PropertiesPage() {
   const [pricing, setPricing] = useState<PropertyPricing | null>(null)
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [limitLoading, setLimitLoading] = useState(true)
+  const [activeTab, setActiveTab] = useState<'single' | 'multiple'>('single')
   
   const { user } = useAuth()
   const supabase = createClient()
@@ -252,49 +256,37 @@ export default function PropertiesPage() {
 
   return (
     <div className="container mx-auto p-6">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">My Properties</h1>
-          <p className="text-gray-600 mt-1">
-            Manage your properties and view enrichment data
-          </p>
-        </div>
-        <div className="flex items-center gap-4">
-          {!limitLoading && limitInfo && (
-            <div className="text-sm text-gray-600">
-              <div className="flex items-center gap-2">
-                <Badge variant="outline" className={getTierColor(limitInfo.tier)}>
-                  <div className="flex items-center gap-1">
-                    {getTierIcon(limitInfo.tier)}
-                    <span className="capitalize">{limitInfo.tier}</span>
-                  </div>
-                </Badge>
-                <span>{limitInfo.currentCount} of {limitInfo.limit === 999999 ? '∞' : limitInfo.limit} properties</span>
-              </div>
-              {limitInfo.limit !== 999999 && (
-                <div className="mt-1">
-                  <Progress 
-                    value={(limitInfo.currentCount / limitInfo.limit) * 100} 
-                    className="h-2 w-32"
-                  />
-                </div>
-              )}
-            </div>
-          )}
-          <Button onClick={handleAddProperty} disabled={limitLoading}>
-            {limitInfo?.canAdd ? (
-              <>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Property
-              </>
-            ) : (
-              <>
-                <Lock className="mr-2 h-4 w-4" />
-                Add Property
-              </>
-            )}
-          </Button>
-        </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold">Properties Dashboard</h1>
+        <p className="text-gray-600 mt-1">
+          Manage and review your portfolio of properties.
+        </p>
+      </div>
+
+      {/* Tab Navigation */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setActiveTab('single')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'single'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Home className="inline-block mr-2 h-4 w-4" />
+          My Property
+        </button>
+        <button
+          onClick={() => setActiveTab('multiple')}
+          className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+            activeTab === 'multiple'
+              ? 'bg-blue-600 text-white'
+              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+          }`}
+        >
+          <Building className="inline-block mr-2 h-4 w-4" />
+          Multiple Properties
+        </button>
       </div>
 
       {/* Property Limits Info Card */}
@@ -330,146 +322,145 @@ export default function PropertiesPage() {
         </Card>
       )}
 
-      {properties.length === 0 ? (
-        <Card>
-          <CardContent className="text-center py-12">
-            <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium mb-2">No properties yet</h3>
-            <p className="text-gray-600 mb-4">
-              Add your first property to get started with ClaimGuardian
-            </p>
-            <Link href="/dashboard/properties/add">
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Add Your First Property
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-6">
-          {/* Properties Grid */}
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {properties.map(property => (
-              <Card 
-                key={property.id}
-                className="hover:shadow-lg transition-shadow cursor-pointer"
-                onClick={() => setSelectedProperty(property)}
-              >
-                <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <CardTitle className="text-lg flex items-center gap-2">
-                        <Home className="h-5 w-5" />
-                        {(property.metadata as { name?: string })?.name || property.full_address}
-                      </CardTitle>
-                      <div className="flex items-center gap-2 mt-2">
-                        {property.occupancy_status === 'owner_occupied' && (
-                          <Badge variant="default" className="text-xs">Primary</Badge>
-                        )}
-                        <Badge variant="outline" className="text-xs">
-                          {property.property_type.replace('_', ' ')}
-                        </Badge>
-                      </div>
-                    </div>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
-                      <MoreVertical className="h-4 w-4" />
+      {/* Tab Content */}
+      {activeTab === 'single' ? (
+        // Single Property Tab
+        properties.length === 0 ? (
+          <Card>
+            <CardContent className="text-center py-12">
+              <Home className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium mb-2">No property yet</h3>
+              <p className="text-gray-600 mb-4">
+                Add your primary residence to get started with ClaimGuardian
+              </p>
+              <Link href="/dashboard/properties/add">
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Your Property
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ) : (
+          <div className="grid gap-6 md:grid-cols-2">
+            {properties.slice(0, 1).map(property => (
+              <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                <div className="aspect-video relative bg-gradient-to-br from-blue-400 to-blue-600">
+                  <PropertyImage
+                    propertyType={property.property_type}
+                    propertyName={(property.metadata as { name?: string })?.name || property.street_address}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardContent className="p-6">
+                  <h3 className="text-xl font-semibold mb-2">
+                    {(property.metadata as { name?: string })?.name || 'My Home'}
+                  </h3>
+                  <div className="flex items-center gap-2 text-gray-600 mb-4">
+                    <MapPin className="h-4 w-4" />
+                    <span className="text-sm">{property.city}, {property.state}</span>
+                  </div>
+                  <div className="space-y-2 text-sm text-gray-600 mb-4">
+                    <div>Added: {new Date(property.created_at).toLocaleDateString()}</div>
+                    <div>Est. Value: {property.current_value ? `$${property.current_value.toLocaleString()}` : '-'}</div>
+                    <div>Insurability: {property.enrichment ? 'Assessed' : '-'}</div>
+                  </div>
+                  <Link href={`/dashboard/properties/${property.id}`}>
+                    <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                      View Details <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-3">
-                    <div className="flex items-start gap-2 text-sm text-gray-600">
-                      <MapPin className="h-4 w-4 mt-0.5 flex-shrink-0" />
-                      <span>{property.full_address}</span>
-                    </div>
-                    
-                    {/* Enrichment Status */}
-                    <div className="border-t pt-3">
-                      {property.enrichment ? (
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <CheckCircle2 className="h-4 w-4 text-green-500" />
-                              <span className="text-sm font-medium">Data Enriched</span>
-                            </div>
-                            <Badge variant="outline" className="text-xs">
-                              v{property.enrichment.version}
-                            </Badge>
-                          </div>
-                          <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
-                            <div>
-                              <span className="font-medium">Flood:</span> {property.enrichment.flood_zone || 'N/A'}
-                            </div>
-                            <div>
-                              <span className="font-medium">Elev:</span> {
-                                property.enrichment.elevation_meters 
-                                  ? `${property.enrichment.elevation_meters.toFixed(1)}m`
-                                  : 'N/A'
-                              }
-                            </div>
-                            <div>
-                              <span className="font-medium">Hurricane:</span> {
-                                property.enrichment.hurricane_evacuation_zone || 'None'
-                              }
-                            </div>
-                            <div>
-                              <span className="font-medium">Updated:</span> {
-                                property.enrichment.enriched_at ? new Date(property.enrichment.enriched_at).toLocaleDateString() : 'N/A'
-                              }
-                            </div>
-                          </div>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4 text-yellow-500" />
-                          <span className="text-sm text-gray-600">Not enriched</span>
-                        </div>
-                      )}
-                    </div>
-                    
-                    <div className="flex gap-2 pt-2">
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        className="flex-1"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          setSelectedProperty(property)
-                        }}
-                      >
-                        <Eye className="mr-2 h-3 w-3" />
-                        View Details
-                      </Button>
-                      <Link href={`/dashboard/claims/new?property=${property.id}`}>
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={(e) => e.stopPropagation()}
-                        >
-                          <Shield className="mr-2 h-3 w-3" />
-                          New Claim
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                  </Link>
                 </CardContent>
               </Card>
             ))}
           </div>
+        )
+      ) : (
+        // Multiple Properties Tab
+        <div className="space-y-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-4">
+              {!limitLoading && limitInfo && (
+                <div className="text-sm text-gray-600">
+                  <div className="flex items-center gap-2">
+                    <Badge variant="outline" className={getTierColor(limitInfo.tier)}>
+                      <div className="flex items-center gap-1">
+                        {getTierIcon(limitInfo.tier)}
+                        <span className="capitalize">{limitInfo.tier}</span>
+                      </div>
+                    </Badge>
+                    <span>{limitInfo.currentCount} of {limitInfo.limit === 999999 ? '∞' : limitInfo.limit} properties</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            <Button onClick={handleAddProperty} disabled={limitLoading}>
+              {limitInfo?.canAdd ? (
+                <>
+                  <Plus className="mr-2 h-4 w-4" />
+                  Add Property
+                </>
+              ) : (
+                <>
+                  <Lock className="mr-2 h-4 w-4" />
+                  Add Property
+                </>
+              )}
+            </Button>
+          </div>
 
-          {/* Selected Property Details */}
-          {selectedProperty && (
-            <div className="mt-8">
-              <h2 className="text-xl font-semibold mb-4">
-                Property Details: {(selectedProperty.metadata as { name?: string })?.name || selectedProperty.full_address}
-              </h2>
-              <PropertyEnrichmentStatus
-                propertyId={selectedProperty.id}
-                latitude={selectedProperty.location && typeof selectedProperty.location === 'string' ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[1] : undefined}
-                longitude={selectedProperty.location && typeof selectedProperty.location === 'string' ? (JSON.parse(selectedProperty.location) as { coordinates: [number, number] }).coordinates[0] : undefined}
-                address={selectedProperty.street_address}
-              />
+          {properties.length === 0 ? (
+            <Card>
+              <CardContent className="text-center py-12">
+                <Building className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                <h3 className="text-lg font-medium mb-2">No additional properties</h3>
+                <p className="text-gray-600 mb-4">
+                  Perfect for landlords and property managers. Add rental properties, vacation homes, and investment properties.
+                </p>
+                <Link href="/dashboard/properties/add">
+                  <Button>
+                    <Plus className="mr-2 h-4 w-4" />
+                    Add Property
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {properties.map(property => {
+                // Generate a display name for the property
+                const propertyName = (property.metadata as { name?: string })?.name || 
+                  `${property.property_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} ${properties.indexOf(property) + 1}`
+
+                return (
+                  <Card key={property.id} className="overflow-hidden hover:shadow-lg transition-shadow">
+                    <div className="aspect-video relative bg-gradient-to-br from-gray-100 to-gray-200">
+                      <PropertyImage
+                        propertyType={property.property_type}
+                        propertyName={propertyName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-6">
+                      <h3 className="text-xl font-semibold mb-2">{propertyName}</h3>
+                      <div className="flex items-center gap-2 text-gray-600 mb-4">
+                        <MapPin className="h-4 w-4" />
+                        <span className="text-sm">{property.city}, {property.state}</span>
+                      </div>
+                      <div className="space-y-2 text-sm text-gray-600 mb-4">
+                        <div>Added: {new Date(property.created_at).toLocaleDateString()}</div>
+                        <div>Est. Value: {property.current_value ? `$${property.current_value.toLocaleString()}` : '-'}</div>
+                        <div>Insurability: {property.enrichment ? 'Assessed' : '-'}</div>
+                      </div>
+                      <Link href={`/dashboard/properties/${property.id}`}>
+                        <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                          View Details <ArrowRight className="ml-2 h-4 w-4" />
+                        </Button>
+                      </Link>
+                    </CardContent>
+                  </Card>
+                )
+              })}
             </div>
           )}
         </div>
