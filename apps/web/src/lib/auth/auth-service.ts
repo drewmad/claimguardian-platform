@@ -409,7 +409,7 @@ class AuthService {
         type: 'signup',
         email: email,
         options: {
-          emailRedirectTo: getAuthCallbackURL('/auth/verify')
+          emailRedirectTo: getAuthCallbackURL('/auth/callback')
         }
       })
 

@@ -34,10 +34,8 @@ export async function GET(request: NextRequest) {
       // Check if this is email verification
       if (type === 'signup' || type === 'email') {
         logger.info('Email verification successful')
-        // Redirect to sign in with success message
-        return NextResponse.redirect(
-          new URL('/auth/signin?message=Email verified! Please sign in.', requestUrl.origin)
-        )
+        // Redirect to dashboard since the user is now verified and has a session
+        return NextResponse.redirect(new URL('/dashboard', requestUrl.origin))
       }
 
       // For other types (recovery, etc), redirect to next
