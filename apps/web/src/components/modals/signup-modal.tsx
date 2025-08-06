@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { X, Eye, EyeOff, AlertCircle, Shield, Home, Building, Key, Users, Check } from 'lucide-react'
+import { X, Eye, EyeOff, AlertCircle, Shield, Home, Building, Key, Users, Check, Scale, ExternalLink, Brain, Sparkles } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { logger } from '@/lib/logger'
 import { toError } from '@claimguardian/utils'
@@ -40,8 +40,9 @@ export function SignupModal() {
     confirmPassword: '',
     phone: '',
     role: 'homeowner', // Pre-select homeowner as majority use case
-    agree: false,
+    agreeTerms: false,
     over18: false,
+    agreeAI: false,
     acceptedDocuments: [] as string[]
   })
   
@@ -55,6 +56,10 @@ export function SignupModal() {
   
   const [validationError, setValidationError] = useState('')
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [showTermsModal, setShowTermsModal] = useState(false)
+  const [showPrivacyModal, setShowPrivacyModal] = useState(false)
+  const [showAIModal, setShowAIModal] = useState(false)
+  const [shakeButton, setShakeButton] = useState(false)
 
   // Role options with icons and descriptions
   const roleOptions = [
@@ -159,6 +164,22 @@ export function SignupModal() {
       return false
     }
     
+    // Step 4 validation
+    if (!formData.over18) {
+      setValidationError('You must be 18 or older to use ClaimGuardian')
+      return false
+    }
+    if (!formData.agreeTerms) {
+      setValidationError('Please accept the Terms of Service and Privacy Policy')
+      return false
+    }
+    
+    // Step 5 validation
+    if (!formData.agreeAI) {
+      setValidationError('Please acknowledge how our AI assistance works')
+      return false
+    }
+    
     return true
   }
   const handleSubmit = async (e: React.FormEvent) => {
@@ -194,8 +215,9 @@ export function SignupModal() {
           confirmPassword: '',
           phone: '',
           role: 'homeowner',
-          agree: false,
+          agreeTerms: false,
           over18: false,
+          agreeAI: false,
           acceptedDocuments: []
         })
         setCurrentStep(1)
@@ -381,14 +403,14 @@ export function SignupModal() {
             </div>
             <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">Create Your ClaimGuardian Account</h2>
             <p className="text-sm text-gray-400 mt-2">
-              Step {currentStep} of 3 • <span className="text-blue-400">≈1 min</span>
+              Step {currentStep} of 5 • <span className="text-blue-400">≈2 min</span>
             </p>
             
             {/* Progress bar */}
             <div className="w-full bg-slate-700/50 rounded-full h-2 mt-4">
               <div 
                 className="bg-gradient-to-r from-blue-500 to-cyan-500 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${(currentStep / 3) * 100}%` }}
+                style={{ width: `${(currentStep / 5) * 100}%` }}
               />
             </div>
           </div>
@@ -586,6 +608,142 @@ export function SignupModal() {
             </div>
           )}
 
+          {currentStep === 4 && (
+            <div className="space-y-5">
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Scale className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-lg font-semibold text-white">Legal Agreements</h3>
+                </div>
+                <p className="text-sm text-gray-400">Please review and accept the required policies</p>
+              </div>
+
+              <div className="space-y-4">
+                {/* Age Verification */}
+                <div className="bg-amber-500/5 border border-amber-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                      <input
+                        type="checkbox"
+                        name="over18"
+                        checked={formData.over18}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-white font-medium">
+                        I am at least 18 years old (required in Florida)
+                      </label>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Legal requirement to file insurance claims
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Terms and Privacy */}
+                <div className="bg-amber-500/5 border border-amber-500/30 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="mt-1">
+                      <input
+                        type="checkbox"
+                        name="agreeTerms"
+                        checked={formData.agreeTerms}
+                        onChange={handleChange}
+                        className="w-4 h-4 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
+                      />
+                    </div>
+                    <div className="flex-1">
+                      <label className="text-white font-medium">
+                        I accept the Terms of Service and Privacy Policy
+                      </label>
+                      <div className="flex items-center gap-4 mt-2">
+                        <button
+                          type="button"
+                          onClick={() => setShowTermsModal(true)}
+                          className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          View Terms
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setShowPrivacyModal(true)}
+                          className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          View Privacy Policy
+                        </button>
+                      </div>
+                      <p className="text-xs text-gray-400 mt-2">
+                        Read summary of our terms and privacy practices
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 5 && (
+            <div className="space-y-5">
+              <div className="text-center mb-4">
+                <div className="flex items-center justify-center gap-2 mb-2">
+                  <Brain className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-lg font-semibold text-white">AI Disclaimer</h3>
+                </div>
+                <p className="text-sm text-gray-400">Understand how our AI assistance works</p>
+              </div>
+
+              <div className="bg-orange-500/10 border border-orange-500/30 rounded-lg p-4">
+                <div className="flex items-start gap-3 mb-4">
+                  <AlertCircle className="w-5 h-5 text-orange-400 flex-shrink-0 mt-0.5" />
+                  <div>
+                    <h4 className="font-semibold text-orange-200 mb-2">How Our AI Helps</h4>
+                    <ul className="space-y-2 text-sm text-orange-100">
+                      <li className="flex items-start gap-2">
+                        <span className="w-1 h-1 bg-orange-400 rounded-full flex-shrink-0 mt-2"></span>
+                        <span>Reads your documents and suggests next steps</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-1 h-1 bg-orange-400 rounded-full flex-shrink-0 mt-2"></span>
+                        <span>95%+ accuracy, but may miss context</span>
+                      </li>
+                      <li className="flex items-start gap-2">
+                        <span className="w-1 h-1 bg-orange-400 rounded-full flex-shrink-0 mt-2"></span>
+                        <span>Always cross-check big decisions</span>
+                      </li>
+                    </ul>
+                    <button
+                      type="button"
+                      onClick={() => setShowAIModal(true)}
+                      className="text-xs text-orange-300 hover:text-orange-200 mt-2 flex items-center gap-1"
+                    >
+                      Learn more about our AI
+                      <ExternalLink className="w-3 h-3" />
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex items-start gap-3">
+                  <div className="mt-1">
+                    <input
+                      type="checkbox"
+                      name="agreeAI"
+                      checked={formData.agreeAI}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-blue-500 bg-slate-700 border-slate-600 rounded focus:ring-blue-500 focus:ring-2"
+                    />
+                  </div>
+                  <label className="text-white font-medium flex-1">
+                    I understand how ClaimGuardian AI works and will verify critical details *
+                  </label>
+                </div>
+              </div>
+            </div>
+          )}
+
           {(error || validationError) && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 flex items-start gap-2">
               <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
@@ -605,23 +763,36 @@ export function SignupModal() {
               </button>
             )}
             
-            {currentStep < 3 ? (
+            {currentStep < 5 ? (
               <button
                 type="button"
                 onClick={() => {
                   // Basic validation before proceeding
                   if (currentStep === 1 && !formData.role) return
                   if (currentStep === 2 && (!formData.firstName || !formData.lastName || !formData.phone)) return
+                  if (currentStep === 3 && (!formData.email || !passwordStrength.isStrong)) return
+                  if (currentStep === 4 && (!formData.over18 || !formData.agreeTerms)) {
+                    // Add shake animation for disabled button
+                    setShakeButton(true)
+                    setTimeout(() => setShakeButton(false), 500)
+                    return
+                  }
                   setCurrentStep(currentStep + 1)
                 }}
-                className="flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 md:ml-auto"
+                disabled={
+                  (currentStep === 4 && (!formData.over18 || !formData.agreeTerms)) ||
+                  (currentStep === 5 && !formData.agreeAI)
+                }
+                className={`flex-1 py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 md:ml-auto disabled:opacity-50 disabled:cursor-not-allowed ${
+                  shakeButton ? 'animate-shake' : ''
+                }`}
               >
                 Next →
               </button>
             ) : (
               <button
                 type="submit"
-                disabled={loading || !passwordStrength.isStrong}
+                disabled={loading || !passwordStrength.isStrong || !formData.agreeAI}
                 className="flex-1 relative py-3 px-4 bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white font-semibold rounded-lg shadow-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl hover:shadow-blue-500/25 md:ml-auto"
               >
                 {loading ? (
