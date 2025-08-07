@@ -1,13 +1,25 @@
 /**
  * @fileMetadata
- * @purpose "Hurricane preparation guide page"
+ * @purpose "Hurricane preparation lead magnet with downloadable PDF guide"
  * @dependencies ["lucide-react","next"]
  * @owner frontend-team
  * @status stable
  */
 
-import { Shield, Home, ArrowLeft, CheckCircle } from "lucide-react";
+import { Metadata } from "next";
+import { Shield, Home, ArrowLeft, CheckCircle, Download, Camera, FileText, Clock, AlertTriangle, Phone } from "lucide-react";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Hurricane Prep Guide 2025 | ClaimGuardian - Free Florida Property Protection Checklist",
+  description: "Complete Hurricane Season 2025 preparation guide for Florida property owners. Free downloadable PDF checklist with room-by-room documentation tips.",
+  keywords: "hurricane preparation, Florida hurricane checklist, property protection, storm preparation, insurance documentation",
+  openGraph: {
+    title: "Hurricane Prep Guide 2025 - Free Florida Checklist",
+    description: "Complete hurricane preparation guide with downloadable PDF. Protect your Florida property with proven strategies.",
+    url: "https://claimguardianai.com/hurricane-prep",
+  },
+};
 
 export default function HurricanePrepPage() {
   return (

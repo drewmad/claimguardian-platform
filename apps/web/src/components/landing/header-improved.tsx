@@ -23,7 +23,7 @@ const HeaderLogoIcon = () => (
   <div className="relative">
     <OptimizedImage
       src="/ClaimGuardian.png"
-      alt="ClaimGuardian Logo"
+      alt="ClaimGuardian emblem – stylized shield with Florida silhouette representing AI-powered property protection"
       width={32}
       height={32}
       priority={true}
@@ -52,9 +52,12 @@ export function Header() {
         {/* Logo - Professional logo + Wordmark paired */}
         <Link href="/" className="flex items-center gap-2 group">
           <HeaderLogoIcon />
-          <h1 className="font-slab text-xl md:text-2xl font-bold text-white group-hover:text-green-400 transition-colors duration-300">
+          <div 
+            className="font-slab text-xl md:text-2xl font-bold text-white group-hover:text-green-400 transition-colors duration-300"
+            aria-label="ClaimGuardian - AI-powered property intelligence"
+          >
             ClaimGuardian
-          </h1>
+          </div>
         </Link>
 
         {/* Desktop Navigation */}

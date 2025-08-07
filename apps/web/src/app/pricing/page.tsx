@@ -12,15 +12,80 @@ import { PricingFAQ } from "@/components/pricing/pricing-faq";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import StructuredData from "@/components/common/structured-data";
 
 export const metadata: Metadata = {
-  title: "Pricing | ClaimGuardian",
-  description: "Choose the perfect plan for protecting your Florida property",
+  title: "Pricing | ClaimGuardian - Property Intelligence That Pays for Itself",
+  description: "Choose your protection level. Guardian Essential starts at $29/month. Your plan pays for itself with one avoided claim denial.",
+  keywords: "pricing, plans, insurance claim help, property protection, Florida insurance, AI claims assistance",
+  openGraph: {
+    title: "ClaimGuardian Pricing - Property Protection Plans",
+    description: "Guardian Essential: $29/month. Guardian Free: $0/month. Choose the protection that fits your property portfolio.",
+    url: "https://claimguardianai.com/pricing",
+  },
+  alternates: {
+    canonical: "https://claimguardianai.com/pricing",
+  },
 };
 
 export default function PricingPage() {
+  const schema = [
+    {
+      "@context": "https://schema.org",
+      "@type": "Product",
+      "name": "ClaimGuardian - Guardian Essential",
+      "brand": { "@type": "Brand", "name": "ClaimGuardian" },
+      "description": "AI-powered property intelligence and claim advocacy platform for Florida property owners.",
+      "url": "https://claimguardianai.com/pricing",
+      "offers": {
+        "@type": "Offer",
+        "priceCurrency": "USD",
+        "price": "29.00",
+        "priceValidUntil": "2025-12-31",
+        "availability": "https://schema.org/InStock",
+        "url": "https://claimguardianai.com/auth/signup?plan=essential",
+        "seller": {
+          "@type": "Organization",
+          "name": "ClaimGuardian"
+        }
+      }
+    },
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How much does ClaimGuardian cost?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Guardian Essential starts at $29/month. Guardian Free is $0/month. All plans include a 30-day money-back guarantee."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do you offer annual discounts?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Yes! Save 17% with annual billing. Guardian Essential: $290/year (vs $348 monthly). All plans include our 30-day guarantee."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I cancel anytime?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Absolutely. Cancel anytime with no cancellation fees. You keep all your property documentation."
+          }
+        }
+      ]
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
+    <>
+      <StructuredData schema={schema} />
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-800 to-gray-900">
       {/* Header */}
       <header className="bg-gray-900/50 backdrop-blur-sm border-b border-gray-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -366,6 +431,7 @@ export default function PricingPage() {
           </div>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   );
 }

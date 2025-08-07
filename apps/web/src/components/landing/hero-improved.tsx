@@ -25,6 +25,7 @@ import {
   ArrowRight,
   Building,
   PlayCircle,
+  ChevronDown,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -35,6 +36,76 @@ import { useState, useEffect, useRef } from "react";
 import { COLORS } from "@/lib/constants";
 import { liquidGlass } from "@/lib/styles/liquid-glass";
 import { useABTest, trackABTestConversion, AB_TEST_CONFIGS } from "@/hooks/useABTest";
+
+// Hurricane Season Countdown Component
+const HurricaneCountdown = () => {
+  const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0 });
+
+  useEffect(() => {
+    // Hurricane season ends November 30
+    const hurricaneSeasonEnd = new Date(new Date().getFullYear(), 10, 30); // November 30
+    
+    const timer = setInterval(() => {
+      const now = new Date();
+      const difference = hurricaneSeasonEnd.getTime() - now.getTime();
+      
+      if (difference > 0) {
+        const days = Math.floor(difference / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+        
+        setTimeLeft({ days, hours, minutes });
+      }
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <div className="bg-gradient-to-r from-red-600 via-orange-500 to-red-600 border-b border-red-400/50 py-3 relative overflow-hidden">
+      {/* Animated background pattern */}
+      <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)] animate-pulse opacity-30" />
+      
+      <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center relative z-10">
+        <div className="flex items-center gap-2">
+          <span className="text-2xl animate-bounce">🌀</span>
+          <span className="font-bold text-white text-sm sm:text-base">
+            HURRICANE SEASON 2025
+          </span>
+        </div>
+        
+        {/* Countdown Timer */}
+        <div className="flex items-center gap-2 bg-black/30 rounded-lg px-3 py-1 backdrop-blur-sm">
+          <span className="text-yellow-200 font-medium text-sm">Days Left:</span>
+          <div className="flex items-center gap-1">
+            <span className="bg-yellow-300 text-black px-2 py-1 rounded font-bold text-sm min-w-[2rem] text-center">
+              {timeLeft.days}
+            </span>
+            <span className="text-yellow-200 text-xs">:</span>
+            <span className="bg-yellow-300 text-black px-2 py-1 rounded font-bold text-sm min-w-[2rem] text-center">
+              {timeLeft.hours.toString().padStart(2, '0')}
+            </span>
+            <span className="text-yellow-200 text-xs">:</span>
+            <span className="bg-yellow-300 text-black px-2 py-1 rounded font-bold text-sm min-w-[2rem] text-center">
+              {timeLeft.minutes.toString().padStart(2, '0')}
+            </span>
+          </div>
+        </div>
+        
+        <Link
+          href="/hurricane-prep"
+          className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors group shadow-lg"
+        >
+          <span>Get Protected Now</span>
+          <ArrowRight
+            size={14}
+            className="group-hover:translate-x-1 transition-transform"
+          />
+        </Link>
+      </div>
+    </div>
+  );
+};
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {
@@ -100,55 +171,74 @@ const GuardianHeroLogo = () => (
 
 export function Hero() {
   const [hoveredCTA, setHoveredCTA] = useState(false);
+  const [audienceDropdownOpen, setAudienceDropdownOpen] = useState(false);
+  const [showCTAPulse, setShowCTAPulse] = useState(false);
   
   // A/B Test for hero tagline
   const { variant: taglineVariant, loading: taglineLoading } = useABTest(AB_TEST_CONFIGS.HERO_TAGLINE);
 
+  // Session-based personalization for returning visitors
+  const [isReturningVisitor, setIsReturningVisitor] = useState(false);
+
+  useEffect(() => {
+    // Check if user has visited before
+    const hasVisited = localStorage.getItem('claimguardian_visited');
+    setIsReturningVisitor(!!hasVisited);
+    
+    // Set visited flag for future visits
+    if (!hasVisited) {
+      localStorage.setItem('claimguardian_visited', 'true');
+    }
+  }, []);
+
+  // Micro-interaction: Pulse CTA border every 8 seconds after page idle
+  useEffect(() => {
+    let idleTimer: NodeJS.Timeout;
+    let pulseTimer: NodeJS.Timeout;
+
+    const startPulsing = () => {
+      pulseTimer = setInterval(() => {
+        setShowCTAPulse(true);
+        setTimeout(() => setShowCTAPulse(false), 1000);
+      }, 8000);
+    };
+
+    const resetIdleTimer = () => {
+      clearTimeout(idleTimer);
+      clearInterval(pulseTimer);
+      idleTimer = setTimeout(startPulsing, 3000); // Start pulsing after 3s of idle
+    };
+
+    // Listen for user activity
+    const events = ['mousedown', 'mousemove', 'keypress', 'scroll', 'touchstart'];
+    events.forEach(event => document.addEventListener(event, resetIdleTimer, true));
+
+    resetIdleTimer(); // Start the timer
+
+    return () => {
+      clearTimeout(idleTimer);
+      clearInterval(pulseTimer);
+      events.forEach(event => document.removeEventListener(event, resetIdleTimer, true));
+    };
+  }, []);
+
   const pills = [
-    { label: "Homeowners", icon: Home },
-    { label: "Renters", icon: KeyRound },
-    { label: "Landlords", icon: Building },
-    { label: "Builders", icon: Hammer },
-    { label: "AI-Augmented", icon: BrainCircuit },
+    { label: "Homeowners", icon: Home, section: "homeowners" },
+    { label: "Renters", icon: KeyRound, section: "renters" },
+    { label: "Landlords", icon: Building, section: "landlords" },
+    { label: "Builders", icon: Hammer, section: "builders" },
+    { label: "AI-Augmented", icon: BrainCircuit, section: "ai-features" },
   ];
+
+  const scrollToSection = (sectionId: string) => {
+    setAudienceDropdownOpen(false);
+    document.getElementById(sectionId)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <>
-      {/* Enhanced Hurricane Season Urgency Banner */}
-      <div className="bg-gradient-to-r from-red-600 via-orange-500 to-red-600 border-b border-red-400/50 py-3 relative overflow-hidden">
-        {/* Animated background pattern */}
-        <div className="absolute inset-0 bg-[repeating-linear-gradient(45deg,transparent,transparent_10px,rgba(255,255,255,0.1)_10px,rgba(255,255,255,0.1)_20px)] animate-pulse opacity-30" />
-        
-        <div className="container mx-auto px-4 flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-4 text-center relative z-10">
-          <div className="flex items-center gap-2">
-            <span className="text-2xl animate-bounce">🌀</span>
-            <span className="font-bold text-white text-sm sm:text-base">
-              HURRICANE SEASON 2025 ACTIVE
-            </span>
-            <span className="text-2xl animate-bounce">⚡</span>
-          </div>
-          
-          <div className="flex items-center gap-2">
-            <span className="text-yellow-200 font-medium text-sm">
-              Next Storm Risk: 
-            </span>
-            <span className="bg-yellow-300 text-black px-2 py-1 rounded font-bold text-xs uppercase tracking-wide">
-              Aug 15-30
-            </span>
-          </div>
-          
-          <Link
-            href="/hurricane-prep"
-            className="flex items-center gap-2 bg-white text-red-600 px-4 py-2 rounded-full font-bold text-sm hover:bg-yellow-100 transition-colors group shadow-lg"
-          >
-            <span>Get Protected Now</span>
-            <ArrowRight
-              size={14}
-              className="group-hover:translate-x-1 transition-transform"
-            />
-          </Link>
-        </div>
-      </div>
+      {/* Hurricane Season Countdown Timer */}
+      <HurricaneCountdown />
 
       <section className="hero-liquid-glass relative min-h-[80vh] flex items-center justify-center overflow-hidden">
         {/* Skip Link for Accessibility */}
@@ -176,7 +266,7 @@ export function Hero() {
                 <div className="relative">
                   <OptimizedImage
                     src="/ClaimGuardian.png"
-                    alt="ClaimGuardian Logo"
+                    alt="ClaimGuardian emblem – stylized shield with Florida silhouette representing AI-powered property protection"
                     width={140}
                     height={140}
                     priority={true}
@@ -187,15 +277,14 @@ export function Hero() {
                 </div>
               </div>
               <div className="flex-1 text-center md:text-left md:order-2">
-                <h1
+                <div
                   className="font-slab text-[clamp(2.75rem,5.5vw,4.5rem)] font-bold text-white leading-none mb-6"
-                  aria-label="ClaimGuardian - AI-powered property intelligence"
                 >
                   Claim<span className="text-green-400">Guardian</span>
-                </h1>
-                <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">
+                </div>
+                <h1 className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">
                   {taglineLoading ? 'Your Property Intelligence, Not Theirs' : taglineVariant?.data?.tagline || 'Your Property Intelligence, Not Theirs'}
-                </p>
+                </h1>
                 {/* A/B Test Debug Info (only in development) */}
                 {process.env.NODE_ENV === 'development' && taglineVariant && (
                   <div className="text-xs text-yellow-400 mt-1 opacity-60">
@@ -221,31 +310,44 @@ export function Hero() {
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            {/* Audience Pills with "Built For" heading */}
-            <div className="mt-10 space-y-4">
-              <h3 className="text-lg font-semibold text-gray-300 text-center">Built For</h3>
-              <div className="overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-                <div className="flex gap-3 justify-center min-w-max px-4">
-                {pills.map((pill) => (
-                  <button
-                    key={pill.label}
-                    className={`${liquidGlass.backgrounds.secondary} flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle} transition-all duration-300`}
-                    onClick={() =>
-                      document
-                        .getElementById("who-we-serve")
-                        ?.scrollIntoView({ behavior: "smooth" })
-                    }
-                  >
-                    <pill.icon
-                      size={16}
-                      className={`text-green-400 ${liquidGlass.text.glowSubtle}`}
-                    />
-                    <span className="text-sm font-medium whitespace-nowrap">
-                      {pill.label}
-                    </span>
-                  </button>
-                ))}
-                </div>
+            {/* "I'm a..." Dropdown */}
+            <div className="mt-10 flex justify-center">
+              <div className="relative">
+                <button
+                  className={`${liquidGlass.backgrounds.secondary} flex items-center gap-3 px-6 py-3 rounded-full border border-white/10 hover:border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle} transition-all duration-300`}
+                  onClick={() => setAudienceDropdownOpen(!audienceDropdownOpen)}
+                >
+                  <span className="text-sm font-medium text-gray-300">
+                    I'm a...
+                  </span>
+                  <ChevronDown
+                    size={16}
+                    className={`text-green-400 transition-transform duration-200 ${
+                      audienceDropdownOpen ? "rotate-180" : ""
+                    }`}
+                  />
+                </button>
+                
+                {/* Dropdown Menu */}
+                {audienceDropdownOpen && (
+                  <div className={`absolute top-full mt-2 left-1/2 transform -translate-x-1/2 ${liquidGlass.backgrounds.default} border border-white/10 rounded-2xl shadow-xl z-20 min-w-[200px] overflow-hidden`}>
+                    {pills.map((pill, index) => (
+                      <button
+                        key={pill.label}
+                        className="w-full flex items-center gap-3 px-4 py-3 hover:bg-white/5 transition-colors duration-200 text-left"
+                        onClick={() => scrollToSection(pill.section)}
+                      >
+                        <pill.icon
+                          size={16}
+                          className={`text-green-400 ${liquidGlass.text.glowSubtle}`}
+                        />
+                        <span className="text-sm font-medium text-gray-300">
+                          {pill.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </AnimatedSection>
@@ -259,12 +361,14 @@ export function Hero() {
             >
               <Link
                 href="/auth/signup"
-                className={`group relative font-bold py-6 px-12 text-black text-xl hover:scale-105 inline-flex items-center gap-3 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
+                className={`group relative font-bold py-6 px-12 text-black text-xl hover:scale-105 inline-flex items-center gap-3 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300 ${
+                  showCTAPulse ? 'animate-pulse ring-2 ring-green-400/50' : ''
+                }`}
                 style={{
                   background: hoveredCTA
                     ? `linear-gradient(135deg, #39FF14, #00FF7F)`
                     : `linear-gradient(135deg, #39FF14, #32CD32)`,
-                  boxShadow: hoveredCTA
+                  boxShadow: hoveredCTA || showCTAPulse
                     ? "0 0 50px rgba(57, 255, 20, 0.7), 0 25px 70px rgba(0, 0, 0, 0.5)"
                     : "0 0 30px rgba(57, 255, 20, 0.5), 0 15px 50px rgba(0, 0, 0, 0.4)",
                 }}
@@ -279,7 +383,7 @@ export function Hero() {
                 aria-label="Deploy your digital guardian for complete property protection"
               >
                 <span className="relative z-10 font-black tracking-wide">
-                  Deploy My Digital Guardian
+                  {isReturningVisitor ? "Resume My Digital Twin" : "Deploy My Digital Guardian"}
                 </span>
                 <ArrowRight 
                   size={24} 
@@ -304,53 +408,40 @@ export function Hero() {
             </div>
           </AnimatedSection>
 
-          {/* Trust Signals with Social Proof - Enhanced with icons and separators */}
+          {/* Trust Bar - Left-justified with Florida flag and rating */}
           <AnimatedSection delay={500}>
-            <div className="mt-12 pt-8 border-t border-white/10 space-y-6">
-              {/* Primary Trust Signals */}
-              <div className="flex flex-wrap items-center justify-center gap-4 text-sm text-gray-400">
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🏦</span>
-                  <span className="font-medium">Bank-Level Security</span>
+            <div className="mt-12 pt-8 border-t border-white/10">
+              {/* Trust Bar */}
+              <div className="flex flex-wrap items-center justify-start gap-6 text-sm mb-6">
+                <div className="flex items-center gap-3 bg-gradient-to-r from-blue-600/20 to-orange-500/20 border border-blue-400/30 rounded-full px-4 py-2 backdrop-blur-sm">
+                  <span className="text-lg">🇺🇸</span>
+                  <span className="font-medium text-blue-300">Founded in Florida</span>
+                  <div className="flex items-center gap-1 ml-2">
+                    <span className="text-yellow-400">★★★★★</span>
+                    <span className="font-bold text-yellow-400 ml-1">4.9</span>
+                  </div>
                 </div>
-                <span className="text-gray-600 hidden sm:inline">·</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🛡️</span>
-                  <span className="font-bold text-green-400">On Guard</span>
-                  <span className="font-medium">24/7</span>
-                </div>
-                <span className="text-gray-600 hidden sm:inline">·</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">⏱️</span>
-                  <span className="font-bold text-blue-400">15 min</span>
-                  <span className="font-medium">setup</span>
-                </div>
-                <span className="text-gray-600 hidden sm:inline">·</span>
-                <div className="flex items-center gap-2">
-                  <span className="text-lg">🌴</span>
-                  <span className="font-bold text-yellow-400">100%</span>
-                  <span className="font-medium">Florida Focused</span>
+                <div className="flex items-center gap-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-400/30 rounded-full px-4 py-2 backdrop-blur-sm">
+                  <span className="text-lg">🏆</span>
+                  <span className="font-medium text-green-300">Florida's #1 Property AI</span>
                 </div>
               </div>
               
               {/* Social Proof Statistics */}
-              <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-gray-500">
-                <div className="flex items-center gap-2">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs text-gray-500">
+                <div className="flex flex-col items-start">
                   <span className="font-bold text-green-400 text-lg">$2.4M+</span>
                   <span>Recovered for Families</span>
                 </div>
-                <span className="text-gray-700 hidden sm:inline">•</span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
                   <span className="font-bold text-blue-400 text-lg">1,247</span>
                   <span>Properties Protected</span>
                 </div>
-                <span className="text-gray-700 hidden sm:inline">•</span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
                   <span className="font-bold text-yellow-400 text-lg">4.9/5</span>
                   <span>Customer Rating</span>
                 </div>
-                <span className="text-gray-700 hidden sm:inline">•</span>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-col items-start">
                   <span className="font-bold text-purple-400 text-lg">98%</span>
                   <span>Claim Success Rate</span>
                 </div>
