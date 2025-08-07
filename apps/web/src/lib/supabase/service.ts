@@ -6,8 +6,23 @@
  * @status stable
  */
 
-import { createClient as createSupabaseClient } from "@supabase/supabase-js";
+import { createClient as createSupabaseClient, SupabaseClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger/production-logger";
+
+// Create a more comprehensive mock interface
+interface MockSupabaseClient {
+  from: (table: string) => {
+    select: (columns?: string) => Promise<{ data: null; error: Error }>;
+    insert: (values: unknown) => Promise<{ data: null; error: Error }>;
+    update: (values: unknown) => Promise<{ data: null; error: Error }>;
+    delete: () => Promise<{ data: null; error: Error }>;
+  };
+  storage: {
+    from: (bucket: string) => {
+      list: (path?: string) => Promise<{ data: null; error: Error }>;
+    };
+  };
+}
 
 /**
  * Creates a Supabase client for service/background tasks that don't have access to cookies.
@@ -15,7 +30,7 @@ import { logger } from "@/lib/logger/production-logger";
  * 
  * IMPORTANT: Only use this for internal service operations, never expose to client-side code.
  */
-export function createServiceClient() {
+export function createServiceClient(): SupabaseClient {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
@@ -30,7 +45,7 @@ export function createServiceClient() {
     }
     
     // Return a mock client that will fail gracefully
-    return {
+    const mockClient: MockSupabaseClient = {
       from: () => ({
         select: () => Promise.resolve({ data: null, error: new Error("Service client not configured") }),
         insert: () => Promise.resolve({ data: null, error: new Error("Service client not configured") }),
@@ -42,7 +57,9 @@ export function createServiceClient() {
           list: () => Promise.resolve({ data: null, error: new Error("Service client not configured") }),
         }),
       },
-    } as any;
+    };
+    
+    return mockClient as unknown as SupabaseClient;
   }
 
   try {

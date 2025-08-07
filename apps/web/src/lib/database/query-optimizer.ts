@@ -63,8 +63,8 @@ export type QueryMetrics = {
   operation: "SELECT" | "INSERT" | "UPDATE" | "DELETE";
 };
 
-interface CacheEntry {
-  data: any;
+interface CacheEntry<T = unknown> {
+  data: T;
   timestamp: Date;
   ttl: number;
   hits: number;
@@ -146,9 +146,9 @@ export class QueryOptimizer {
   /**
    * Execute optimized query with automatic caching and performance monitoring
    */
-  async executeOptimized<T = any>(
+  async executeOptimized<T = unknown>(
     query: string,
-    params: any[] = [],
+    params: unknown[] = [],
     options: {
       cacheTTL?: number;
       enableCache?: boolean;
@@ -158,7 +158,7 @@ export class QueryOptimizer {
     } = {},
   ): Promise<{
     data: T[];
-    error: any;
+    error: Error | null;
     metrics: QueryMetrics;
   }> {
     const startTime = performance.now();
@@ -177,11 +177,13 @@ export class QueryOptimizer {
     if (enableCache && operation === "SELECT") {
       const cached = this.getFromCache(queryHash);
       if (cached) {
+        const dataArray = Array.isArray(cached.data) ? cached.data as T[] : [] as T[];
+        
         const metrics: QueryMetrics = {
           queryId,
           query,
           executionTime: performance.now() - startTime,
-          rowsReturned: cached.data.length,
+          rowsReturned: dataArray.length,
           timestamp: new Date(),
           userId,
           cacheHit: true,
@@ -193,7 +195,7 @@ export class QueryOptimizer {
         this.recordMetrics(metrics);
 
         return {
-          data: cached.data,
+          data: dataArray,
           error: null,
           metrics,
         };
@@ -208,7 +210,7 @@ export class QueryOptimizer {
       const result = await this.executeQuery(query, params, tableName);
 
       const executionTime = performance.now() - startTime;
-      const data = result.data || [];
+      const data = Array.isArray(result.data) ? result.data as T[] : [] as T[];
 
       // Cache successful SELECT results
       if (enableCache && operation === "SELECT" && !result.error) {
@@ -282,11 +284,11 @@ export class QueryOptimizer {
    */
   private async executeQuery(
     query: string,
-    params: any[],
+    params: unknown[],
     tableName: string,
   ): Promise<{
-    data: any[];
-    error: any;
+    data: unknown[];
+    error: Error | null;
   }> {
     // This is a simplified implementation
     // In production, you would need proper SQL parsing or use stored procedures
@@ -302,7 +304,7 @@ export class QueryOptimizer {
   /**
    * Analyze query performance and generate execution plan
    */
-  async analyzeQuery(query: string, params: any[] = []): Promise<QueryPlan> {
+  async analyzeQuery(query: string, params: unknown[] = []): Promise<QueryPlan> {
     try {
       const explainResult = await this.supabase.rpc("explain_query", {
         sql_query: query,
@@ -463,11 +465,11 @@ export class QueryOptimizer {
   }
 
   // Private helper methods
-  private generateQueryId(query: string, params: any[]): string {
+  private generateQueryId(query: string, params: unknown[]): string {
     return `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private hashQuery(query: string, params: any[]): string {
+  private hashQuery(query: string, params: unknown[]): string {
     const content = query + JSON.stringify(params);
     let hash = 0;
     for (let i = 0; i < content.length; i++) {
@@ -492,7 +494,7 @@ export class QueryOptimizer {
     return entry;
   }
 
-  private setCache(queryHash: string, data: any, ttl: number): void {
+  private setCache(queryHash: string, data: unknown, ttl: number): void {
     if (this.cache.size > 1000) {
       const oldestKey = this.cache.keys().next().value;
       this.cache.delete(oldestKey);
@@ -528,20 +530,30 @@ export class QueryOptimizer {
     return []; // Mock implementation
   }
 
-  private parseQueryPlan(planData: any): Omit<QueryPlan, "suggestions"> {
-    const plan = planData[0]?.Plan || {};
+  private parseQueryPlan(planData: unknown): Omit<QueryPlan, "suggestions"> {
+    // Type guard for plan data
+    const planArray = Array.isArray(planData) ? planData : [];
+    const plan = (planArray[0] && typeof planArray[0] === 'object' && planArray[0] !== null && 'Plan' in planArray[0]) 
+      ? (planArray[0] as { Plan: Record<string, unknown> }).Plan 
+      : {};
+
+    // Helper to safely convert to number
+    const toNumber = (value: unknown): number => {
+      const num = Number(value);
+      return isNaN(num) ? 0 : num;
+    };
 
     return {
       query: "",
-      planTime: plan["Planning Time"] || 0,
-      executionTime: plan["Execution Time"] || 0,
-      totalCost: plan["Total Cost"] || 0,
-      startupCost: plan["Startup Cost"] || 0,
-      rows: plan["Plan Rows"] || 0,
-      width: plan["Plan Width"] || 0,
-      actualTime: plan["Actual Total Time"] || 0,
-      actualRows: plan["Actual Rows"] || 0,
-      actualLoops: plan["Actual Loops"] || 0,
+      planTime: toNumber(plan["Planning Time"]),
+      executionTime: toNumber(plan["Execution Time"]),
+      totalCost: toNumber(plan["Total Cost"]),
+      startupCost: toNumber(plan["Startup Cost"]),
+      rows: toNumber(plan["Plan Rows"]),
+      width: toNumber(plan["Plan Width"]),
+      actualTime: toNumber(plan["Actual Total Time"]),
+      actualRows: toNumber(plan["Actual Rows"]),
+      actualLoops: toNumber(plan["Actual Loops"]),
       operations: [],
     };
   }
@@ -656,7 +668,7 @@ class FloridaParcelQueryOptimizer {
    */
   async searchParcels(options: ParcelQueryOptions): Promise<{
     data: unknown[];
-    stats: any;
+    stats: Record<string, unknown>;
     plan: QueryPlan;
   }> {
     // Build query based on options
@@ -697,10 +709,10 @@ class FloridaParcelQueryOptimizer {
    */
   private buildParcelQuery(options: ParcelQueryOptions): {
     sql: string;
-    params: any[];
+    params: unknown[];
   } {
     let sql = "SELECT * FROM florida_parcels WHERE 1=1";
-    const params: any[] = [];
+    const params: unknown[] = [];
 
     if (options.counties && options.counties.length > 0) {
       sql += ` AND county_name = ANY($${params.length + 1})`;

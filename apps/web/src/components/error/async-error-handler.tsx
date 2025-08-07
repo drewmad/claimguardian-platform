@@ -80,7 +80,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
   });
 
   const retryTimeoutRef = useRef<NodeJS.Timeout>(undefined);
-  const operationRef = useRef<(() => Promise<any>) | null>(null);
+  const operationRef = useRef<(() => Promise<unknown>) | null>(null);
 
   const clearError = useCallback(() => {
     setState((prev) => ({
