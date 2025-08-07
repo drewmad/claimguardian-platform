@@ -1,0 +1,957 @@
+openapi: 3.0.3
+info:
+  title: ClaimGuardian AI-First Platform API
+  description: |
+    Comprehensive API for ClaimGuardian's AI-powered insurance claim advocacy platform.
+    Supports property management, AI-powered analysis, disaster monitoring, and claim optimization.
+  version: 1.0.0
+  contact:
+    name: ClaimGuardian API Team
+    email: dev@claimguardian.ai
+    url: https://claimguardianai.com
+  license:
+    name: Proprietary
+    url: https://claimguardianai.com/license
+
+servers:
+  - url: https://claimguardianai.com/api
+    description: Production API
+  - url: https://staging.claimguardianai.com/api
+    description: Staging API
+  - url: http://localhost:3000/api
+    description: Development API
+
+paths:
+  # Parcel APIs
+  /parcels/search:
+    get:
+      summary: Search Florida parcels
+      description: Search through 8.2M+ Florida parcels by address, owner, or parcel ID
+      operationId: searchParcels
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+            minLength: 3
+          description: Search query (address, owner name, or parcel ID)
+        - name: type
+          in: query
+          schema:
+            type: string
+            enum: [all, address, owner, parcel]
+            default: all
+          description: Type of search to perform
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          description: Maximum number of results
+      responses:
+        '200':
+          description: Search results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ParcelSearchResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+    post:
+      summary: Autocomplete suggestions
+      description: Get autocomplete suggestions for parcel search fields
+      operationId: parcelAutocomplete
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                query:
+                  type: string
+                  minLength: 2
+                field:
+                  type: string
+                  enum: [PHY_CITY, OWN_NAME, PHY_ADDR1]
+                  default: PHY_CITY
+              required:
+                - query
+      responses:
+        '200':
+          description: Autocomplete suggestions
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  suggestions:
+                    type: array
+                    items:
+                      type: string
+
+  /parcels/tiles/{z}/{x}/{y}:
+    get:
+      summary: Vector tiles for map rendering
+      description: Get vector tiles containing parcel data for efficient map rendering
+      operationId: getVectorTile
+      parameters:
+        - name: z
+          in: path
+          required: true
+          schema:
+            type: integer
+            minimum: 0
+            maximum: 22
+          description: Zoom level
+        - name: x
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Tile X coordinate
+        - name: y
+          in: path
+          required: true
+          schema:
+            type: integer
+          description: Tile Y coordinate
+      responses:
+        '200':
+          description: Vector tile data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GeoJSON'
+
+  # Claims APIs
+  /claims:
+    get:
+      summary: List claims
+      description: Get paginated list of insurance claims
+      operationId: listClaims
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: status
+          in: query
+          schema:
+            $ref: '#/components/schemas/ClaimStatus'
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Claims list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClaimListResponse'
+
+    post:
+      summary: Create new claim
+      description: Create a new insurance claim with AI analysis
+      operationId: createClaim
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateClaimRequest'
+      responses:
+        '201':
+          description: Claim created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+
+  /claims/{claimId}:
+    get:
+      summary: Get claim details
+      description: Retrieve detailed information about a specific claim
+      operationId: getClaim
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: claimId
+          in: path
+          required: true
+          schema:
+            type: string
+          description: Unique claim identifier
+      responses:
+        '200':
+          description: Claim details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Claim'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # AI Analysis APIs
+  /ai/analyze/damage:
+    post:
+      summary: Analyze damage from photos
+      description: Use AI to analyze property damage from uploaded photos
+      operationId: analyzeDamage
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                images:
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                propertyId:
+                  type: string
+                  description: Associated property ID
+                claimId:
+                  type: string
+                  description: Associated claim ID (optional)
+              required:
+                - images
+                - propertyId
+      responses:
+        '200':
+          description: Damage analysis results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DamageAnalysis'
+
+  /ai/estimate/repair:
+    post:
+      summary: Generate repair cost estimate
+      description: AI-powered repair cost estimation based on damage analysis
+      operationId: estimateRepairCosts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                damageAnalysisId:
+                  type: string
+                location:
+                  type: object
+                  properties:
+                    address:
+                      type: string
+                    zip:
+                      type: string
+                    county:
+                      type: string
+                additionalContext:
+                  type: string
+                  description: Additional context for estimate
+              required:
+                - damageAnalysisId
+                - location
+      responses:
+        '200':
+          description: Repair cost estimate
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RepairEstimate'
+
+  # Property Management APIs
+  /properties:
+    get:
+      summary: List user properties
+      description: Get list of properties owned by authenticated user
+      operationId: listProperties
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Properties list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  properties:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Property'
+
+    post:
+      summary: Add new property
+      description: Add a new property to user's portfolio
+      operationId: createProperty
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePropertyRequest'
+      responses:
+        '201':
+          description: Property created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+
+  /properties/{propertyId}:
+    get:
+      summary: Get property details
+      description: Retrieve detailed information about a specific property
+      operationId: getProperty
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Property details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+
+    patch:
+      summary: Update property
+      description: Update property information
+      operationId: updateProperty
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: propertyId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePropertyRequest'
+      responses:
+        '200':
+          description: Property updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Property'
+
+  # Weather and Disaster APIs
+  /weather/alerts:
+    get:
+      summary: Get weather alerts
+      description: Retrieve active weather alerts and warnings
+      operationId: getWeatherAlerts
+      parameters:
+        - name: county
+          in: query
+          schema:
+            type: string
+          description: Florida county name
+        - name: zipCode
+          in: query
+          schema:
+            type: string
+          description: ZIP code for location-specific alerts
+      responses:
+        '200':
+          description: Weather alerts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WeatherAlertsResponse'
+
+  /hurricanes/tracking:
+    get:
+      summary: Active hurricane tracking
+      description: Get current active hurricane and tropical storm data
+      operationId: getHurricaneTracking
+      responses:
+        '200':
+          description: Hurricane tracking data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HurricaneTrackingResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    # Basic Types
+    ClaimStatus:
+      type: string
+      enum:
+        - draft
+        - submitted
+        - acknowledged
+        - investigating
+        - approved
+        - denied
+        - settled
+        - closed
+        - reopened
+        - withdrawn
+
+    PropertyType:
+      type: string
+      enum:
+        - single_family
+        - condo
+        - townhouse
+        - commercial
+        - multi_family
+        - manufactured
+        - vacant_land
+
+    RiskLevel:
+      type: string
+      enum:
+        - minimal
+        - low
+        - moderate
+        - high
+        - extreme
+
+    # Complex Types
+    ParcelSearchResponse:
+      type: object
+      properties:
+        results:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              subtitle:
+                type: string
+              owner:
+                type: string
+              value:
+                type: number
+              coordinates:
+                type: array
+                items:
+                  type: number
+                minItems: 2
+                maxItems: 2
+              relevance:
+                type: number
+              type:
+                type: string
+        query:
+          type: string
+        count:
+          type: integer
+        hasMore:
+          type: boolean
+
+    GeoJSON:
+      type: object
+      properties:
+        type:
+          type: string
+          enum: [FeatureCollection]
+        features:
+          type: array
+          items:
+            type: object
+            properties:
+              type:
+                type: string
+                enum: [Feature]
+              geometry:
+                type: object
+              properties:
+                type: object
+
+    Claim:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique claim identifier (ULID)
+        claimNumber:
+          type: string
+          description: Human-readable claim number (YYYY-NNNNNN)
+        status:
+          $ref: '#/components/schemas/ClaimStatus'
+        title:
+          type: string
+        description:
+          type: string
+        propertyId:
+          type: string
+        userId:
+          type: string
+        incidentDate:
+          type: string
+          format: date
+        reportedDate:
+          type: string
+          format: date-time
+        estimatedAmount:
+          type: number
+          minimum: 0
+        actualAmount:
+          type: number
+          minimum: 0
+        insuranceCarrier:
+          type: string
+        policyNumber:
+          type: string
+        adjusterId:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateClaimRequest:
+      type: object
+      required:
+        - title
+        - description
+        - propertyId
+        - incidentDate
+        - estimatedAmount
+      properties:
+        title:
+          type: string
+          maxLength: 200
+        description:
+          type: string
+          maxLength: 2000
+        propertyId:
+          type: string
+        incidentDate:
+          type: string
+          format: date
+        estimatedAmount:
+          type: number
+          minimum: 0
+        insuranceCarrier:
+          type: string
+        policyNumber:
+          type: string
+        images:
+          type: array
+          items:
+            type: string
+            format: binary
+
+    ClaimListResponse:
+      type: object
+      properties:
+        claims:
+          type: array
+          items:
+            $ref: '#/components/schemas/Claim'
+        totalCount:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+
+    Property:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        parcelId:
+          type: string
+        name:
+          type: string
+        address:
+          type: object
+          properties:
+            street1:
+              type: string
+            street2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+            county:
+              type: string
+        coordinates:
+          type: array
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+        propertyType:
+          $ref: '#/components/schemas/PropertyType'
+        yearBuilt:
+          type: integer
+        squareFeet:
+          type: integer
+        value:
+          type: number
+        insurabilityScore:
+          type: number
+          minimum: 0
+          maximum: 100
+        riskAssessment:
+          type: object
+          properties:
+            overallRisk:
+              $ref: '#/components/schemas/RiskLevel'
+            floodRisk:
+              $ref: '#/components/schemas/RiskLevel'
+            hurricaneRisk:
+              $ref: '#/components/schemas/RiskLevel'
+            wildfireRisk:
+              $ref: '#/components/schemas/RiskLevel'
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreatePropertyRequest:
+      type: object
+      required:
+        - name
+        - address
+        - propertyType
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: object
+          required:
+            - street1
+            - city
+            - state
+            - zip
+          properties:
+            street1:
+              type: string
+            street2:
+              type: string
+            city:
+              type: string
+            state:
+              type: string
+            zip:
+              type: string
+            county:
+              type: string
+        propertyType:
+          $ref: '#/components/schemas/PropertyType'
+        yearBuilt:
+          type: integer
+        squareFeet:
+          type: integer
+        value:
+          type: number
+
+    UpdatePropertyRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 200
+        address:
+          type: object
+        propertyType:
+          $ref: '#/components/schemas/PropertyType'
+        yearBuilt:
+          type: integer
+        squareFeet:
+          type: integer
+        value:
+          type: number
+
+    DamageAnalysis:
+      type: object
+      properties:
+        id:
+          type: string
+        claimId:
+          type: string
+        propertyId:
+          type: string
+        analysisType:
+          type: string
+          enum: [photo_analysis, inspector_report, ai_assessment]
+        damageItems:
+          type: array
+          items:
+            type: object
+            properties:
+              category:
+                type: string
+              severity:
+                type: string
+                enum: [minor, moderate, major, severe]
+              location:
+                type: string
+              description:
+                type: string
+              estimatedCost:
+                type: number
+              confidence:
+                type: number
+                minimum: 0
+                maximum: 1
+        totalEstimate:
+          type: number
+        confidence:
+          type: number
+          minimum: 0
+          maximum: 1
+        aiProvider:
+          type: string
+        modelVersion:
+          type: string
+        processedAt:
+          type: string
+          format: date-time
+
+    RepairEstimate:
+      type: object
+      properties:
+        id:
+          type: string
+        damageAnalysisId:
+          type: string
+        laborCosts:
+          type: number
+        materialCosts:
+          type: number
+        equipmentCosts:
+          type: number
+        permitCosts:
+          type: number
+        totalEstimate:
+          type: number
+        timelineWeeks:
+          type: integer
+        contractors:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+              rating:
+                type: number
+              estimatedCost:
+                type: number
+              availability:
+                type: string
+        marketFactors:
+          type: object
+          properties:
+            laborAvailability:
+              type: string
+            materialPrices:
+              type: string
+            seasonalFactors:
+              type: array
+              items:
+                type: string
+        createdAt:
+          type: string
+          format: date-time
+
+    WeatherAlertsResponse:
+      type: object
+      properties:
+        alerts:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              description:
+                type: string
+              severity:
+                type: string
+                enum: [minor, moderate, severe, extreme]
+              urgency:
+                type: string
+                enum: [immediate, expected, future, past, unknown]
+              certainty:
+                type: string
+                enum: [observed, likely, possible, unlikely, unknown]
+              areas:
+                type: array
+                items:
+                  type: string
+              effectiveDate:
+                type: string
+                format: date-time
+              expirationDate:
+                type: string
+                format: date-time
+        lastUpdated:
+          type: string
+          format: date-time
+
+    HurricaneTrackingResponse:
+      type: object
+      properties:
+        activeStorms:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              name:
+                type: string
+              category:
+                type: integer
+                minimum: 0
+                maximum: 5
+              currentPosition:
+                type: object
+                properties:
+                  latitude:
+                    type: number
+                  longitude:
+                    type: number
+              maximumWinds:
+                type: integer
+              minimumPressure:
+                type: integer
+              movementDirection:
+                type: integer
+              movementSpeed:
+                type: integer
+              forecastTrack:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    time:
+                      type: string
+                      format: date-time
+                    position:
+                      type: object
+                      properties:
+                        latitude:
+                          type: number
+                        longitude:
+                          type: number
+                    intensity:
+                      type: integer
+        lastUpdated:
+          type: string
+          format: date-time
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid parameters or missing required fields
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              details:
+                type: object
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+
+tags:
+  - name: Parcels
+    description: Florida parcel data and search
+  - name: Claims
+    description: Insurance claim management
+  - name: Properties
+    description: Property portfolio management
+  - name: AI Analysis
+    description: AI-powered damage analysis and estimation
+  - name: Weather
+    description: Weather alerts and disaster monitoring

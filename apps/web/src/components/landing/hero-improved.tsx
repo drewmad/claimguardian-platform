@@ -507,7 +507,7 @@ export function Hero() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 text-left">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                  Built by a Florida Family,
+                  Built by a Florida Family,{" "}
                   <span className="block text-green-400">
                     For Florida Families
                   </span>

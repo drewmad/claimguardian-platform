@@ -1,19 +1,15 @@
-# ClaimGuardian
+# ClaimGuardian AI-First Platform
 
-<div align="center">
-  <img src="https://claimguardianai.com/logo.png" alt="ClaimGuardian Logo" width="200"/>
+[![Deploy Status](https://img.shields.io/github/deployments/claimguardian/claimguardian/production?label=deployment&logo=vercel)](https://claimguardianai.com)
+[![Test Coverage](https://img.shields.io/codecov/c/github/claimguardian/claimguardian?logo=codecov)](https://codecov.io/gh/claimguardian/claimguardian)
+[![License](https://img.shields.io/badge/license-Proprietary-blue.svg)](LICENSE)
+[![Node Version](https://img.shields.io/badge/node-%3E%3D20.0.0-brightgreen?logo=node.js)](https://nodejs.org)
 
-**AI-Powered Property Intelligence Platform for Florida Homeowners**
+> **AI-powered insurance claim advocacy platform for Florida property owners with comprehensive parcel mapping and FEMA NIMS compliance.**
 
-[![Next.js](https://img.shields.io/badge/Next.js-15.3.5-black)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
-[![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)
-[![pnpm](https://img.shields.io/badge/pnpm-10.13.1-orange)](https://pnpm.io/)
-[![License](https://img.shields.io/badge/License-Proprietary-red)](./LICENSE)
-
-</div>
-
-> **📋 Mission & Vision**: See our [mission statement and core philosophy](./GOVERNANCE/MISSION.md) in the [`GOVERNANCE/`](./GOVERNANCE) directory.
+🚀 **Live Platform**: [claimguardianai.com](https://claimguardianai.com)  
+📊 **Total Investment**: $690K | **Expected Revenue**: $4M+ | **ROI**: 580% Year 1  
+🎯 **Mission**: Transform insurance claim advocacy through AI-first automation and data-driven insights
 
 ## 🚀 Overview
 
