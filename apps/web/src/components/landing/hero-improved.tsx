@@ -150,26 +150,41 @@ export function Hero() {
           id="main"
         >
           <AnimatedSection>
-            <header className="flex items-center justify-center gap-3 mb-8">
-              <GuardianHeroLogo />
-              <h1
-                className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none"
-                aria-label="ClaimGuardian - AI-powered insurance claim assistance"
-              >
-                ClaimGuardian
-              </h1>
+            <header className="flex flex-col md:flex-row items-center md:items-start justify-center gap-6 mb-8 max-w-5xl mx-auto">
+              <div className="flex-shrink-0 md:order-1">
+                <div className="relative">
+                  <OptimizedImage
+                    src="/ClaimGuardian.png"
+                    alt="ClaimGuardian Logo"
+                    width={140}
+                    height={140}
+                    priority={true}
+                    className="drop-shadow-[0_12px_48px_rgba(57,255,20,0.5)] w-28 h-28 md:w-36 md:h-36 object-contain"
+                  />
+                  {/* Enhanced ambient glow effect */}
+                  <div className="absolute inset-0 blur-3xl opacity-40 bg-gradient-to-b from-green-400 to-transparent animate-pulse" />
+                </div>
+              </div>
+              <div className="flex-1 text-center md:text-left md:order-2">
+                <h1
+                  className="font-slab text-[clamp(2.5rem,5vw,4rem)] font-bold text-white leading-none mb-4"
+                  aria-label="ClaimGuardian - AI-powered property intelligence"
+                >
+                  ClaimGuardian
+                </h1>
+                <p className="text-[clamp(1.5rem,3vw,2rem)] font-bold text-white">
+                  Your Property Intelligence, Not Theirs
+                </p>
+              </div>
             </header>
           </AnimatedSection>
 
           <AnimatedSection delay={100}>
-            <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
-              Your Property Intelligence, Not Theirs
-            </p>
             <p className="mt-3 text-[clamp(1.125rem,2vw,1.5rem)] font-medium text-gray-200 max-w-4xl mx-auto">
               From purchase documents to generational transfer—every asset, every phase, every decision intelligently managed by independent AI that serves only your interests.
             </p>
             <p className="mt-2 text-lg text-gray-300 max-w-3xl mx-auto">
-              Complete property lifecycle management through your private digital twin—instantly capturing every document, actively tracking warranties, continuously optimizing maintenance, rapidly accelerating claims, and seamlessly managing transfers. Enhanced by Florida community intelligence from 10,000+ property owners that keeps your data completely private while maximizing your outcomes. Florida-engineered by survivors who refuse to let property owners get burned again—saving you hours daily and protecting thousands throughout ownership.
+              ClaimGuardian is your AI-powered digital property guardian—an independent intelligence platform that protects, manages, and optimizes everything you own, from real estate to personal property—without industry bias or data surveillance.
             </p>
           </AnimatedSection>
 
