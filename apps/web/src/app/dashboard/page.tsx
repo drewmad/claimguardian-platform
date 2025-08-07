@@ -75,6 +75,14 @@ import { Progress } from "@/components/ui/progress";
 import { useSupabase } from "@/lib/supabase/client";
 import { profileService, UserProfile } from "@/lib/auth/profile-service";
 import { FloridaPropertyMap } from "@/components/maps/florida-property-map";
+import {
+  MetricCard,
+  ActivityFeed,
+  WeatherWidget,
+  PropertyHealthWidget,
+  InsuranceOverviewWidget,
+  AIInsightsWidget,
+} from "@/components/dashboard/enhanced-dashboard-widgets";
 
 interface QuickAccessItem {
   id: string;
@@ -451,170 +459,64 @@ function DashboardContent() {
               </div>
             </header>
 
-            {/* Enhanced Stats Grid with better responsive design */}
+            {/* Enhanced Stats Grid with real-time metric cards */}
             <section role="region" aria-label="Property statistics overview">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
-                <button
-                  onClick={() => router.push("/dashboard/property")}
-                  className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
-                  aria-label="View property details - Current value $485,000"
-                >
-                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <Home
-                          className="h-6 w-6 sm:h-7 sm:w-7 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.3)]"
-                          aria-hidden="true"
-                        />
-                        <Badge className="liquid-glass-success text-green-400 text-xs">
-                          Active
-                        </Badge>
-                      </div>
-                      <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                        $485,000
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        Property Value
-                      </p>
-                      <div className="flex items-center gap-1 mt-2">
-                        <ArrowUpRight
-                          className="h-3 w-3 text-green-400"
-                          aria-hidden="true"
-                        />
-                        <span className="text-xs text-green-400">
-                          +5.2% YoY
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </button>
-
-                <button
-                  onClick={() => router.push("/dashboard/personal-property")}
-                  className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
-                  aria-label="View personal property inventory - 247 items tracked"
-                >
-                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(147,51,234,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <Package
-                          className="h-6 w-6 sm:h-7 sm:w-7 text-purple-400 drop-shadow-[0_2px_8px_rgba(147,51,234,0.3)]"
-                          aria-hidden="true"
-                        />
-                        <span className="text-xs text-gray-500 hidden sm:inline">
-                          Updated 2h ago
-                        </span>
-                      </div>
-                      <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                        247
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        Items Tracked
-                      </p>
-                      <p className="text-xs text-purple-400 mt-2">
-                        $45,320 total value
-                      </p>
-                    </CardContent>
-                  </Card>
-                </button>
-
-                {/* Coverage Score Card */}
-                <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer touch-target">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Shield
-                        className="h-6 w-6 sm:h-7 sm:w-7 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.3)]"
-                        aria-hidden="true"
-                      />
-                      <CheckCircle
-                        className="h-4 w-4 sm:h-5 sm:w-5 text-green-400"
-                        aria-hidden="true"
-                      />
-                    </div>
-                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                      100%
-                    </p>
-                    <p className="text-sm text-text-secondary">
-                      Coverage Score
-                    </p>
-                    <Progress
-                      value={100}
-                      className="h-1 mt-2"
-                      aria-label="Coverage progress 100%"
-                    />
-                  </CardContent>
-                </Card>
-
-                {/* Expenses Card */}
-                <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer touch-target">
-                  <CardContent className="p-4 sm:p-6">
-                    <div className="flex items-center justify-between mb-2">
-                      <Receipt
-                        className="h-6 w-6 sm:h-7 sm:w-7 text-green-400 drop-shadow-[0_2px_8px_rgba(34,197,94,0.3)]"
-                        aria-hidden="true"
-                      />
-                      <span className="text-xs text-green-400">This month</span>
-                    </div>
-                    <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                      $1,245
-                    </p>
-                    <p className="text-sm text-text-secondary">Expenses</p>
-                    <div className="flex items-center gap-1 mt-2">
-                      <ArrowDownRight
-                        className="h-3 w-3 text-green-400"
-                        aria-hidden="true"
-                      />
-                      <span className="text-xs text-green-400">
-                        -12% vs last
-                      </span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Pending Tasks Card */}
-                <button
-                  onClick={() => {
-                    const upcomingTasksSection =
-                      document.getElementById("upcoming-tasks");
-                    if (upcomingTasksSection) {
-                      upcomingTasksSection.scrollIntoView({
-                        behavior: "smooth",
-                      });
-                      upcomingTasksSection.focus();
-                    }
+                <MetricCard 
+                  metric={{
+                    title: "Property Value",
+                    value: "$485,000",
+                    change: 5.2,
+                    trend: "up",
+                    icon: Home,
+                    color: "from-blue-900/20 to-blue-800/20",
+                    sparklineData: [450000, 455000, 460000, 465000, 470000, 475000, 480000, 485000]
                   }}
-                  className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
-                  aria-label={`View pending tasks - ${hasPendingTasks ? "3 tasks pending" : "All tasks completed"}`}
-                >
-                  <Card className="liquid-glass-3 border-gray-700/60 shadow-[0_8px_32px_rgba(0,0,0,0.3)] hover:shadow-[0_8px_32px_rgba(251,146,60,0.15)] hover:liquid-glass-4 transition-all duration-300 active:scale-95 cursor-pointer">
-                    <CardContent className="p-4 sm:p-6">
-                      <div className="flex items-center justify-between mb-2">
-                        <AlertCircle
-                          className="h-6 w-6 sm:h-7 sm:w-7 text-orange-400 drop-shadow-[0_2px_8px_rgba(251,146,60,0.3)]"
-                          aria-hidden="true"
-                        />
-                        <span
-                          className={`text-xs ${hasPendingTasks ? "text-orange-400 animate-pulse" : "text-green-400"}`}
-                        >
-                          {hasPendingTasks ? "Action needed" : "All good"}
-                        </span>
-                      </div>
-                      <p className="text-xl sm:text-2xl font-bold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                        {hasPendingTasks ? "3" : "0"}
-                      </p>
-                      <p className="text-sm text-text-secondary">
-                        Pending Tasks
-                      </p>
-                      <p
-                        className={`text-xs mt-2 ${hasPendingTasks ? "text-orange-400" : "text-green-400"}`}
-                      >
-                        {hasPendingTasks
-                          ? "2 urgent, 1 routine"
-                          : "All caught up!"}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </button>
+                />
+                <MetricCard 
+                  metric={{
+                    title: "Items Tracked",
+                    value: "247",
+                    change: 12,
+                    trend: "up",
+                    icon: Package,
+                    color: "from-purple-900/20 to-purple-800/20",
+                    sparklineData: [210, 215, 220, 225, 230, 235, 240, 247]
+                  }}
+                />
+                <MetricCard 
+                  metric={{
+                    title: "Coverage Score",
+                    value: "100%",
+                    change: 0,
+                    trend: "stable",
+                    icon: Shield,
+                    color: "from-cyan-900/20 to-cyan-800/20",
+                    sparklineData: [98, 99, 100, 100, 100, 100, 100, 100]
+                  }}
+                />
+                <MetricCard 
+                  metric={{
+                    title: "Monthly Expenses",
+                    value: "$1,245",
+                    change: -12,
+                    trend: "down",
+                    icon: Receipt,
+                    color: "from-green-900/20 to-green-800/20",
+                    sparklineData: [1500, 1450, 1400, 1350, 1300, 1280, 1260, 1245]
+                  }}
+                />
+                <MetricCard 
+                  metric={{
+                    title: "Pending Tasks",
+                    value: hasPendingTasks ? "3" : "0",
+                    change: hasPendingTasks ? 50 : -100,
+                    trend: hasPendingTasks ? "up" : "down",
+                    icon: AlertCircle,
+                    color: hasPendingTasks ? "from-orange-900/20 to-orange-800/20" : "from-green-900/20 to-green-800/20",
+                    sparklineData: [5, 4, 3, 2, 1, 2, 3, hasPendingTasks ? 3 : 0]
+                  }}
+                />
               </div>
             </section>
 
@@ -622,137 +524,8 @@ function DashboardContent() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
               {/* Left Column - Enhanced for mobile-first */}
               <div className="lg:col-span-2 space-y-4 sm:space-y-6">
-                {/* Weather & Environmental - Show only when relevant */}
-                {/* For demo, showing hurricane alert - in production, show only when needed */}
-                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(6,182,212,0.1)] transition-all duration-500">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-white flex items-center gap-2">
-                        <CloudRain
-                          className="h-5 w-5 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.4)]"
-                          aria-hidden="true"
-                        />
-                        Environmental Monitoring
-                      </CardTitle>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-gray-400 hover:text-white liquid-glass-1 hover:liquid-glass-2"
-                        onClick={() =>
-                          toast.info(
-                            "Environmental monitoring settings coming soon!",
-                          )
-                        }
-                        aria-label="Open environmental monitoring settings"
-                      >
-                        <Settings2 className="h-4 w-4" aria-hidden="true" />
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent>
-                    <section
-                      role="region"
-                      aria-label="Weather alerts and conditions"
-                    >
-                      {/* Hurricane Alert - High visibility for important information */}
-                      <div className="p-4 liquid-glass-warning border border-orange-500/40 rounded-lg shadow-[0_8px_24px_rgba(251,146,60,0.15)] mb-4">
-                        <div className="flex items-start gap-3">
-                          <div className="p-2 liquid-glass-warning rounded-lg shadow-[0_4px_12px_rgba(251,146,60,0.2)]">
-                            <Wind
-                              className="h-5 w-5 text-orange-400 drop-shadow-[0_2px_6px_rgba(251,146,60,0.4)]"
-                              aria-hidden="true"
-                            />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <h3 className="font-semibold text-orange-300">
-                                Hurricane Watch - Category 2
-                              </h3>
-                              <Badge className="bg-orange-600/20 text-orange-400 border-orange-600/30 text-xs">
-                                72hrs away
-                              </Badge>
-                            </div>
-                            <p className="text-sm text-text-secondary mb-2">
-                              Tropical Storm Maria strengthening in Gulf
-                            </p>
-                            <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
-                              <span className="flex items-center gap-1">
-                                <Timer className="h-3 w-3" aria-hidden="true" />
-                                Updated 30m ago
-                              </span>
-                              <span className="flex items-center gap-1">
-                                <MapPin
-                                  className="h-3 w-3"
-                                  aria-hidden="true"
-                                />
-                                150 miles SW
-                              </span>
-                            </div>
-                            <Button
-                              size="sm"
-                              className="bg-orange-600 hover:bg-orange-700"
-                              onClick={() => router.push("/dashboard/disaster")}
-                              aria-label="View hurricane preparation checklist"
-                            >
-                              View Preparation Checklist
-                            </Button>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Current Conditions - Improved mobile layout */}
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Thermometer
-                              className="h-4 w-4 text-red-400 drop-shadow-[0_2px_4px_rgba(239,68,68,0.3)]"
-                              aria-hidden="true"
-                            />
-                            <span className="text-sm text-text-secondary">
-                              Temperature
-                            </span>
-                          </div>
-                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                            78°F
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            Feels like 82°F
-                          </p>
-                        </div>
-                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Droplets
-                              className="h-4 w-4 text-blue-400 drop-shadow-[0_2px_4px_rgba(59,130,246,0.3)]"
-                              aria-hidden="true"
-                            />
-                            <span className="text-sm text-text-secondary">
-                              Humidity
-                            </span>
-                          </div>
-                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                            85%
-                          </p>
-                          <p className="text-xs text-gray-500">High moisture</p>
-                        </div>
-                        <div className="liquid-glass-2 rounded-lg p-3 shadow-[0_4px_16px_rgba(0,0,0,0.2)] hover:liquid-glass-3 transition-all duration-300">
-                          <div className="flex items-center gap-2 mb-1">
-                            <Wind
-                              className="h-4 w-4 text-gray-400 drop-shadow-[0_2px_4px_rgba(156,163,175,0.3)]"
-                              aria-hidden="true"
-                            />
-                            <span className="text-sm text-text-secondary">
-                              Wind
-                            </span>
-                          </div>
-                          <p className="text-xl font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                            12 mph
-                          </p>
-                          <p className="text-xs text-gray-500">From SE</p>
-                        </div>
-                      </div>
-                    </section>
-                  </CardContent>
-                </Card>
+                {/* Weather Widget with real-time updates */}
+                <WeatherWidget />
 
                 {/* Quick Access Grid */}
                 <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
@@ -890,54 +663,8 @@ function DashboardContent() {
 
               {/* Right Column - Enhanced mobile experience */}
               <div className="space-y-4 sm:space-y-6">
-                {/* Recent Activity */}
-                <Card className="liquid-glass-4 border-gray-700/60 shadow-[0_16px_40px_rgba(0,0,0,0.4)] hover:shadow-[0_16px_40px_rgba(59,130,246,0.1)] transition-all duration-500">
-                  <CardHeader>
-                    <CardTitle className="text-white flex items-center gap-2">
-                      <Activity
-                        className="h-5 w-5 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.4)]"
-                        aria-hidden="true"
-                      />
-                      Recent Activity
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {hasRecentActivity ? (
-                      <div
-                        className="space-y-3"
-                        role="log"
-                        aria-label="Recent activity timeline"
-                      >
-                        {/* Activity items with better mobile styling */}
-                        <div className="flex items-start gap-3">
-                          <div className="relative">
-                            <div className="w-8 h-8 bg-green-600/20 rounded-full flex items-center justify-center">
-                              <Plus
-                                className="h-4 w-4 text-green-400"
-                                aria-hidden="true"
-                              />
-                            </div>
-                            <div className="absolute top-8 left-4 w-0.5 h-12 bg-gray-700"></div>
-                          </div>
-                          <div className="flex-1 -mt-0.5">
-                            <p className="text-sm text-white">
-                              Added 3 items to inventory
-                            </p>
-                            <p className="text-xs text-text-secondary">
-                              Kitchen appliances - $2,400
-                            </p>
-                            <time className="text-xs text-gray-500 mt-1 block">
-                              2 hours ago
-                            </time>
-                          </div>
-                        </div>
-                        {/* More activity items... */}
-                      </div>
-                    ) : (
-                      <EmptyRecentActivity />
-                    )}
-                  </CardContent>
-                </Card>
+                {/* Activity Feed with real-time updates */}
+                <ActivityFeed limit={8} />
 
                 {/* Upcoming Tasks */}
                 <Card
@@ -1002,35 +729,14 @@ function DashboardContent() {
                   </CardContent>
                 </Card>
 
-                {/* AI Assistant */}
-                <Card className="liquid-glass-premium border-blue-600/40 shadow-[0_16px_40px_rgba(59,130,246,0.2)] hover:shadow-[0_20px_48px_rgba(59,130,246,0.25)] transition-all duration-500">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="p-2 liquid-glass-info rounded-lg shadow-[0_4px_12px_rgba(59,130,246,0.3)]">
-                        <Zap
-                          className="h-5 w-5 text-blue-400 drop-shadow-[0_2px_8px_rgba(59,130,246,0.5)]"
-                          aria-hidden="true"
-                        />
-                      </div>
-                      <h3 className="font-semibold text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.3)]">
-                        AI Insights
-                      </h3>
-                    </div>
-                    <p className="text-sm text-gray-300 mb-3">
-                      Based on the approaching hurricane, I recommend
-                      documenting your property's current condition and
-                      reviewing your insurance coverage limits.
-                    </p>
-                    <Button
-                      size="sm"
-                      className="w-full bg-blue-600 hover:bg-blue-700 touch-target"
-                      aria-label="View AI recommendations for hurricane preparation"
-                    >
-                      <Eye className="h-4 w-4 mr-2" aria-hidden="true" />
-                      View Recommendations
-                    </Button>
-                  </CardContent>
-                </Card>
+                {/* Property Health Score Widget */}
+                <PropertyHealthWidget />
+
+                {/* Insurance Overview Widget */}
+                <InsuranceOverviewWidget />
+
+                {/* AI Insights Widget */}
+                <AIInsightsWidget />
               </div>
             </div>
           </div>

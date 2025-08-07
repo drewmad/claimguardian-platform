@@ -32,6 +32,7 @@ import {
   Home,
   Package,
   Globe,
+  Wrench,
 } from "lucide-react";
 import Link from "next/link";
 import { useState, useEffect, useMemo } from "react";
@@ -61,6 +62,42 @@ interface AITool {
 }
 
 const AI_TOOLS: AITool[] = [
+  {
+    id: "property-risk-assessment",
+    title: "Property Risk Assessment",
+    description:
+      "Comprehensive AI-powered risk analysis with predictive analytics and mitigation planning",
+    icon: Shield,
+    color: "blue",
+    href: "/ai-tools/property-risk-assessment",
+    status: "active",
+    category: "analysis",
+    features: [
+      "Overall Risk Scoring",
+      "Multi-Factor Analysis",
+      "Predictive Analytics",
+      "Insurance Impact",
+      "Mitigation ROI Planning",
+    ],
+  },
+  {
+    id: "maintenance-predictor",
+    title: "Predictive Maintenance",
+    description:
+      "AI-powered maintenance scheduling to prevent failures and save thousands annually",
+    icon: Wrench,
+    color: "purple",
+    href: "/ai-tools/maintenance-predictor",
+    status: "active",
+    category: "assistance",
+    features: [
+      "System Health Monitoring",
+      "Failure Prevention",
+      "Cost-Benefit Analysis",
+      "Seasonal Scheduling",
+      "Contractor Matching",
+    ],
+  },
   {
     id: "ar-damage-documenter",
     title: "AR Damage Documenter",

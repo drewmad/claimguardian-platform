@@ -2,7 +2,7 @@
  * @fileMetadata
  * @purpose "Enhanced Interactive Mapbox map component for visualizing Florida properties and insurance data with real-time parcel integration"
  * @owner frontend-team
- * @dependencies ["react", "mapbox-gl", "@types/mapbox-gl", "lucide-react"]
+ * @dependencies ["react", "mapbox-gl", "@types/mapbox-gl", "@mapbox/mapbox-gl-geocoder", "@types/mapbox__mapbox-gl-geocoder", "lucide-react"]
  * @exports ["FloridaPropertyMap"]
  * @complexity high
  * @tags ["maps", "mapbox", "florida", "properties", "geospatial", "enhanced", "parcels"]
