@@ -17,26 +17,26 @@ export interface ExtractedPolicyData {
   policyNumber?: string
   carrierName?: string
   policyType?: string
-  
+
   // Coverage Details
   coverageAmount?: number
   deductible?: number
   windDeductible?: number | string // Could be percentage or dollar amount
   floodDeductible?: number
-  
+
   // Dates
   effectiveDate?: string
   expirationDate?: string
   issueDate?: string
-  
+
   // Property Information
   propertyAddress?: string
   namedInsured?: string
-  
+
   // Additional Details
   premiumAmount?: number
   additionalCoverages?: string[]
-  
+
   // Extraction Metadata
   confidence?: number
   extractedFields?: string[]
@@ -65,22 +65,22 @@ const DEFAULT_OPTIONS: DocumentExtractionOptions = {
 
 class AIDocumentExtractionService {
   private supabase = createClient()
-  
+
   /**
    * Extract policy data from a document file using server-side Edge Function
    */
   async extractPolicyData(
-    fileUrl: string, 
+    fileUrl: string,
     fileName: string,
     options: DocumentExtractionOptions = DEFAULT_OPTIONS
   ): Promise<ExtractionResult> {
     const startTime = Date.now()
-    
+
     try {
-      logger.info('Starting policy document extraction', { 
-        fileName, 
-        fileUrl: fileUrl.substring(0, 50) + '...', 
-        options 
+      logger.info('Starting policy document extraction', {
+        fileName,
+        fileUrl: fileUrl.substring(0, 50) + '...',
+        options
       })
 
       // Determine file type
@@ -127,12 +127,12 @@ class AIDocumentExtractionService {
 
       return extractionResult
     } catch (error) {
-      logger.error('Unexpected error during document extraction', { 
-        error, 
-        fileName, 
-        fileUrl: fileUrl.substring(0, 50) + '...' 
+      logger.error('Unexpected error during document extraction', {
+        error,
+        fileName,
+        fileUrl: fileUrl.substring(0, 50) + '...'
       })
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown extraction error',
@@ -168,7 +168,7 @@ class AIDocumentExtractionService {
       ],
       confidence: 0.85 + Math.random() * 0.1,
       extractedFields: [
-        'policyNumber', 'carrierName', 'policyType', 'coverageAmount', 
+        'policyNumber', 'carrierName', 'policyType', 'coverageAmount',
         'deductible', 'windDeductible', 'effectiveDate', 'expirationDate'
       ],
       processingTime: 1500
@@ -196,7 +196,7 @@ class AIDocumentExtractionService {
     if (data.effectiveDate && data.expirationDate) {
       const effective = new Date(data.effectiveDate)
       const expiration = new Date(data.expirationDate)
-      
+
       if (expiration <= effective) {
         errors.push('Expiration date must be after effective date')
       }

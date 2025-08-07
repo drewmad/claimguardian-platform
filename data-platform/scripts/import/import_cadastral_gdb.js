@@ -3,7 +3,7 @@
 /**
  * CADASTRAL GEODATABASE IMPORT SCRIPT
  * Efficiently processes 19GB Cadastral_Statewide.gdb into staging table
- * 
+ *
  * Strategy:
  * 1. Use ogr2ogr to convert GDB → CSV in chunks
  * 2. Stream CSV data directly to staging table
@@ -98,7 +98,7 @@ class CadastralImporter {
 
   async discoverLayers() {
     console.log(`${colors.cyan}🔍 Discovering geodatabase layers...${colors.reset}`);
-    
+
     return new Promise((resolve, reject) => {
       exec(`ogrinfo -q "${GDB_PATH}"`, (error, stdout, stderr) => {
         if (error) {
@@ -107,16 +107,16 @@ class CadastralImporter {
           resolve(['Florida_Parcels', 'Cadastral_Parcels', 'parcels', 'Parcels']);
           return;
         }
-        
+
         const layers = stdout.split('\n')
           .filter(line => line.trim())
           .map(line => line.replace(/^\d+:\s*/, '').trim());
-        
+
         console.log(`   📋 Found ${layers.length} layers`);
         layers.forEach((layer, i) => {
           console.log(`      ${i + 1}. ${layer}`);
         });
-        
+
         resolve(layers);
       });
     });
@@ -124,18 +124,18 @@ class CadastralImporter {
 
   async getLayerInfo(layerName) {
     console.log(`${colors.cyan}📊 Analyzing layer: ${layerName}${colors.reset}`);
-    
+
     return new Promise((resolve, reject) => {
       exec(`ogrinfo -so "${GDB_PATH}" "${layerName}"`, (error, stdout, stderr) => {
         if (error) {
           resolve(null); // Layer doesn't exist or can't be read
           return;
         }
-        
+
         const lines = stdout.split('\n');
         let featureCount = 0;
         const fields = [];
-        
+
         lines.forEach(line => {
           if (line.includes('Feature Count:')) {
             featureCount = parseInt(line.split(':')[1].trim()) || 0;
@@ -146,7 +146,7 @@ class CadastralImporter {
             }
           }
         });
-        
+
         resolve({
           name: layerName,
           featureCount,
@@ -159,12 +159,12 @@ class CadastralImporter {
 
   async exportToCSV(layerName, outputPath, offset = 0, limit = null) {
     console.log(`   📤 Exporting ${layerName} to CSV...`);
-    
+
     let sql = `SELECT * FROM "${layerName}"`;
     if (limit) {
       sql += ` LIMIT ${limit} OFFSET ${offset}`;
     }
-    
+
     return new Promise((resolve, reject) => {
       const args = [
         '-f', 'CSV',
@@ -173,9 +173,9 @@ class CadastralImporter {
         outputPath,
         GDB_PATH
       ];
-      
+
       const ogr2ogr = spawn('ogr2ogr', args);
-      
+
       ogr2ogr.on('close', (code) => {
         if (code === 0) {
           resolve(outputPath);
@@ -183,7 +183,7 @@ class CadastralImporter {
           reject(new Error(`ogr2ogr failed with code ${code}`));
         }
       });
-      
+
       ogr2ogr.on('error', (error) => {
         reject(error);
       });
@@ -197,26 +197,26 @@ class CadastralImporter {
 
   async processCSVFile(csvPath) {
     console.log(`   🔄 Processing CSV: ${path.basename(csvPath)}`);
-    
+
     const fileStream = createReadStream(csvPath);
     const rl = readline.createInterface({
       input: fileStream,
       crlfDelay: Infinity
     });
-    
+
     let headers = null;
     let batch = [];
     let recordCount = 0;
-    
+
     for await (const line of rl) {
       if (!headers) {
         headers = this.parseCSVLine(line);
         continue;
       }
-      
+
       const values = this.parseCSVLine(line);
       if (values.length !== headers.length) continue;
-      
+
       // Create record object
       const record = {};
       headers.forEach((header, idx) => {
@@ -224,15 +224,15 @@ class CadastralImporter {
         value = value.replace(/^"|"$/g, '').trim();
         record[header] = value === '' ? null : value;
       });
-      
+
       // Map to staging table structure
       const stagingRecord = this.mapToStagingStructure(record);
       stagingRecord.stg_batch_id = this.batchId;
       stagingRecord.stg_record_hash = this.generateRecordHash(record);
-      
+
       batch.push(stagingRecord);
       recordCount++;
-      
+
       // Process batch when full
       if (batch.length >= BATCH_SIZE) {
         await this.insertBatch(batch);
@@ -241,20 +241,20 @@ class CadastralImporter {
         this.showProgress(recordCount);
       }
     }
-    
+
     // Process remaining records
     if (batch.length > 0) {
       await this.insertBatch(batch);
       totalBatchesProcessed++;
     }
-    
+
     totalRecordsProcessed += recordCount;
     return recordCount;
   }
 
   mapToStagingStructure(record) {
     const mapped = {};
-    
+
     // Map known fields to staging structure
     const fieldMapping = {
       'OBJECTID': 'objectid',
@@ -272,7 +272,7 @@ class CadastralImporter {
       'LONGITUDE': 'longitude',
       'WKT': 'geometry_wkt'
     };
-    
+
     // Map known fields
     Object.entries(record).forEach(([key, value]) => {
       const stagingField = fieldMapping[key.toUpperCase()];
@@ -280,11 +280,11 @@ class CadastralImporter {
         mapped[stagingField] = value;
       }
     });
-    
+
     // Map unmapped fields to flexible columns
     let dataFieldIndex = 1;
     let gdbFieldIndex = 1;
-    
+
     Object.entries(record).forEach(([key, value]) => {
       if (!fieldMapping[key.toUpperCase()]) {
         if (dataFieldIndex <= 20) {
@@ -296,7 +296,7 @@ class CadastralImporter {
         }
       }
     });
-    
+
     return mapped;
   }
 
@@ -304,7 +304,7 @@ class CadastralImporter {
     const { error } = await supabase
       .from('stg_cadastral_parcels')
       .insert(batch);
-    
+
     if (error) {
       throw new Error(`Batch insert failed: ${error.message}`);
     }
@@ -314,10 +314,10 @@ class CadastralImporter {
     const result = [];
     let current = '';
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         if (inQuotes && line[i + 1] === '"') {
           current += '"';
@@ -332,7 +332,7 @@ class CadastralImporter {
         current += char;
       }
     }
-    
+
     result.push(current.trim());
     return result;
   }
@@ -340,19 +340,19 @@ class CadastralImporter {
   showProgress(currentFileRecords) {
     const elapsed = (Date.now() - startTime) / 1000;
     const rate = Math.round(totalRecordsProcessed / elapsed);
-    
+
     process.stdout.write(`\r   📊 Progress: ${totalRecordsProcessed.toLocaleString()} records | ${totalBatchesProcessed} batches | ${rate} rec/s`);
   }
 
   async cleanup() {
     console.log(`\n${colors.yellow}🧹 Cleaning up temporary files...${colors.reset}`);
-    
+
     for (const file of this.tempFiles) {
       if (fs.existsSync(file)) {
         fs.unlinkSync(file);
       }
     }
-    
+
     if (fs.existsSync(TEMP_DIR)) {
       fs.rmSync(TEMP_DIR, { recursive: true, force: true });
     }
@@ -361,11 +361,11 @@ class CadastralImporter {
   async run() {
     try {
       await this.initialize();
-      
+
       // Discover and analyze layers
       const layers = await this.discoverLayers();
       let mainLayer = null;
-      
+
       for (const layerName of layers) {
         const layerInfo = await this.getLayerInfo(layerName);
         if (layerInfo && layerInfo.isValid) {
@@ -373,52 +373,52 @@ class CadastralImporter {
           break;
         }
       }
-      
+
       if (!mainLayer) {
         throw new Error('No valid layers found in geodatabase');
       }
-      
+
       console.log(`${colors.green}🎯 Processing main layer: ${mainLayer.name}${colors.reset}`);
       console.log(`   📊 Estimated records: ${mainLayer.featureCount.toLocaleString()}`);
       console.log(`   🏷️  Fields: ${mainLayer.fields.length}`);
       console.log('');
-      
+
       // Process in chunks to handle large dataset
       const totalRecords = mainLayer.featureCount;
       const totalChunks = Math.ceil(totalRecords / CHUNK_SIZE);
-      
+
       console.log(`${colors.cyan}🚀 Starting chunked processing...${colors.reset}`);
       console.log(`   📦 Total chunks: ${totalChunks}`);
       console.log(`   🔢 Records per chunk: ${CHUNK_SIZE.toLocaleString()}`);
       console.log('');
-      
+
       for (let chunkIndex = 0; chunkIndex < totalChunks; chunkIndex++) {
         const offset = chunkIndex * CHUNK_SIZE;
         const chunkNum = chunkIndex + 1;
-        
+
         console.log(`${colors.bright}📦 Processing chunk ${chunkNum}/${totalChunks}${colors.reset}`);
-        
+
         // Export chunk to CSV
         const csvPath = path.join(TEMP_DIR, `chunk_${chunkIndex}.csv`);
         this.tempFiles.push(csvPath);
-        
+
         await this.exportToCSV(mainLayer.name, csvPath, offset, CHUNK_SIZE);
-        
+
         // Process CSV file
         const recordsProcessed = await this.processCSVFile(csvPath);
-        
+
         console.log('');
         console.log(`   ${colors.green}✅ Chunk ${chunkNum} complete: ${recordsProcessed.toLocaleString()} records${colors.reset}`);
-        
+
         // Clean up chunk file immediately to save space
         fs.unlinkSync(csvPath);
       }
-      
+
       // Final statistics
       const endTime = Date.now();
       const totalTime = (endTime - startTime) / 1000;
       const avgRate = Math.round(totalRecordsProcessed / totalTime);
-      
+
       console.log('');
       console.log(`${colors.bright}${colors.green}🎉 IMPORT COMPLETE!${colors.reset}`);
       console.log('═'.repeat(80));
@@ -427,7 +427,7 @@ class CadastralImporter {
       console.log(`   ⚡ Average rate: ${colors.cyan}${avgRate} records/second${colors.reset}`);
       console.log(`   🆔 Batch ID: ${colors.yellow}${this.batchId}${colors.reset}`);
       console.log('');
-      
+
       // Get final staging statistics
       const { data: stats } = await supabase.rpc('get_cadastral_staging_stats');
       if (stats && stats.length > 0) {
@@ -438,7 +438,7 @@ class CadastralImporter {
         console.log(`   Unique counties: ${stat.unique_counties || '0'}`);
         console.log(`   Table size: ${stat.size_estimate_mb?.toFixed(1) || '0'} MB`);
       }
-      
+
     } catch (error) {
       console.error(`${colors.red}❌ Import failed: ${error.message}${colors.reset}`);
       throw error;

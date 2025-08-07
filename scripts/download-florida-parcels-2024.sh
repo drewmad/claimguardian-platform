@@ -52,13 +52,13 @@ echo "File size: ${FILE_SIZE}"
 if [ ! -f "$CHARLOTTE_FILE" ]; then
     echo ""
     echo -e "${YELLOW}Extracting Charlotte County parcels...${NC}"
-    
+
     # Use jq to filter for Charlotte County
     # This assumes COUNTYNAME field exists in the properties
     if command -v jq &> /dev/null; then
         jq '.features = [.features[] | select(.properties.COUNTYNAME == "CHARLOTTE")]' \
             "${OUTPUT_FILE}" > "${CHARLOTTE_FILE}"
-        
+
         CHARLOTTE_COUNT=$(jq '.features | length' "${CHARLOTTE_FILE}")
         echo -e "${GREEN}Extracted ${CHARLOTTE_COUNT} Charlotte County parcels${NC}"
         echo "Saved to: ${CHARLOTTE_FILE}"

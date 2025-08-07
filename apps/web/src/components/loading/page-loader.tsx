@@ -69,7 +69,7 @@ export function PageLoader({
                   <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full flex items-center justify-center">
                     <Shield className="w-10 h-10 text-white" />
                   </div>
-                  
+
                   {/* Orbiting elements */}
                   <motion.div
                     animate={{ rotate: -360 }}
@@ -80,7 +80,7 @@ export function PageLoader({
                       <Home className="w-3 h-3 text-white" />
                     </div>
                   </motion.div>
-                  
+
                   <motion.div
                     animate={{ rotate: -360 }}
                     transition={{ duration: 4, repeat: Infinity, ease: "linear", delay: 1 }}

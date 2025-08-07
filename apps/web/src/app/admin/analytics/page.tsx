@@ -10,9 +10,9 @@ import { AnalyticsDashboard } from '@/components/analytics/AnalyticsDashboard'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  BarChart3, 
-  Download, 
+import {
+  BarChart3,
+  Download,
   RefreshCw,
   Settings,
   TrendingUp,

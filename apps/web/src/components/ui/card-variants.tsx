@@ -30,13 +30,13 @@ const cardVariants = {
 
 export function Card({ variant = 'default', blur = false, className, ...props }: CardProps) {
   return (
-    <BaseCard 
+    <BaseCard
       className={cn(
         cardVariants[variant],
         blur && 'backdrop-blur',
         className
-      )} 
-      {...props} 
+      )}
+      {...props}
     />
   )
 }
@@ -60,5 +60,5 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 // Export all for convenience
 export { Card as StandardCard }
 
-// Export the CardVariants type for compatibility  
+// Export the CardVariants type for compatibility
 export type CardVariants = CardVariant

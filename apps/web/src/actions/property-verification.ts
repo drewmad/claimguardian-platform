@@ -42,7 +42,7 @@ export async function verifyPropertyEnrichment(
 ): Promise<{ success: boolean; data?: EnrichmentVerificationResult; error?: string }> {
   try {
     const supabase = await await createClient()
-    
+
     // Get the current enrichment data
     const { data: enrichment, error } = await supabase
       .from('property_enrichments')
@@ -83,22 +83,22 @@ export async function verifyPropertyEnrichment(
     // Check which fields are captured
     const capturedFields = {
       location: !!(
-        enrichment.county && 
-        enrichment.state_code && 
+        enrichment.county &&
+        enrichment.state_code &&
         enrichment.formatted_address &&
         enrichment.address_components
       ),
       elevation: !!(
-        enrichment.elevation_meters !== null && 
+        enrichment.elevation_meters !== null &&
         enrichment.flood_zone &&
         enrichment.flood_risk_score
       ),
       visualDocumentation: !!(
-        enrichment.street_view_data && 
+        enrichment.street_view_data &&
         enrichment.aerial_view_data
       ),
       emergencyServices: !!(
-        enrichment.fire_protection && 
+        enrichment.fire_protection &&
         enrichment.medical_services &&
         enrichment.police_services
       ),
@@ -115,24 +115,24 @@ export async function verifyPropertyEnrichment(
 
     // Identify missing fields
     const missingFields: string[] = []
-    
+
     // Location fields
     if (!enrichment.plus_code) missingFields.push('Plus Code')
     if (!enrichment.neighborhood) missingFields.push('Neighborhood')
     if (!enrichment.census_tract) missingFields.push('Census Tract')
-    
+
     // Risk fields
     if (!enrichment.storm_surge_zone) missingFields.push('Storm Surge Zone')
-    
+
     // Calculate data quality metrics
     const capturedFieldsCount = Object.values(capturedFields).filter(v => v).length
     const completeness = Math.round((capturedFieldsCount / 6) * 100)
-    
+
     const hasImages = !!(
-      enrichment.street_view_data && 
+      enrichment.street_view_data &&
       Object.keys(enrichment.street_view_data).length > 1 // More than just 'available'
     )
-    
+
     const hasRiskScores = !!(
       enrichment.flood_risk_score &&
       enrichment.insurance_risk_factors?.overall_score
@@ -186,7 +186,7 @@ export async function verifyPropertyEnrichment(
 export async function getUserEnrichmentStats(userId: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get all user properties
     const { data: properties, error: propError } = await supabase
       .from('properties')
@@ -227,7 +227,7 @@ export async function getUserEnrichmentStats(userId: string) {
 
     const enrichedCount = enrichments?.length || 0
     const totalCost = enrichments?.reduce((sum, e) => sum + (e.api_costs?.total || 0), 0) || 0
-    
+
     // Calculate average completeness based on key fields
     const avgCompleteness = enrichments?.reduce((sum, e) => {
       let score = 0
@@ -261,7 +261,7 @@ export async function getUserEnrichmentStats(userId: string) {
 export async function checkEnrichmentHealth(userId: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get all user properties with enrichment status
     const { data, error } = await supabase
       .from('properties')
@@ -293,7 +293,7 @@ export async function checkEnrichmentHealth(userId: string) {
 
     data?.forEach(property => {
       const enrichment = property.enrichment?.[0]
-      
+
       if (!enrichment) {
         issues.push({
           propertyId: property.id,
@@ -305,7 +305,7 @@ export async function checkEnrichmentHealth(userId: string) {
         const daysUntilExpiration = Math.floor(
           (expirationDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)
         )
-        
+
         if (daysUntilExpiration < 0) {
           issues.push({
             propertyId: property.id,

@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Home, Maximize2, Square, Download, Upload,
   Grid, Ruler, Eye, EyeOff,
   Plus, Move, CheckCircle, Sparkles,
@@ -65,7 +65,7 @@ export default function FloorplanCreatorPage() {
     gridEnabled: true,
     unit: 'feet'
   })
-  
+
   const [selectedRoom, setSelectedRoom] = useState<Room | null>(null)
   const [tool, setTool] = useState<'select' | 'draw' | 'measure'>('select')
   const [showDimensions, setShowDimensions] = useState(true)
@@ -73,7 +73,7 @@ export default function FloorplanCreatorPage() {
   const [scanProgress, setScanProgress] = useState(0)
   const [showARScanner, setShowARScanner] = useState(false)
   const [selectedRoomTypeForScan, setSelectedRoomTypeForScan] = useState<string>('living')
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
 
@@ -193,7 +193,7 @@ export default function FloorplanCreatorPage() {
       color: roomType?.color || 'bg-gray-500',
       icon: roomType?.icon
     }
-    
+
     setCurrentPlan({
       ...currentPlan,
       rooms: [...currentPlan.rooms, newRoom],
@@ -203,7 +203,7 @@ export default function FloorplanCreatorPage() {
   }
 
   const updateRoom = (roomId: string, updates: Partial<Room>) => {
-    const updatedRooms = currentPlan.rooms.map(room => 
+    const updatedRooms = currentPlan.rooms.map(room =>
       room.id === roomId ? { ...room, ...updates } : room
     )
     setCurrentPlan({
@@ -229,14 +229,14 @@ export default function FloorplanCreatorPage() {
       exportDate: new Date().toISOString(),
       version: '1.0'
     }
-    
+
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = `floorplan-${currentPlan.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`
     a.click()
-    
+
     toast.success('Floor plan exported successfully')
   }
 
@@ -264,8 +264,8 @@ export default function FloorplanCreatorPage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -343,7 +343,7 @@ export default function FloorplanCreatorPage() {
                             Use AR scanning for precise measurements<br />
                             or add rooms manually
                           </p>
-                          
+
                           <div className="flex flex-col sm:flex-row gap-3 justify-center">
                             <Button
                               onClick={startPhoneScan}
@@ -361,7 +361,7 @@ export default function FloorplanCreatorPage() {
                               Add Manually
                             </Button>
                           </div>
-                          
+
                           {/* Room Type Selector for AR Scanning */}
                           <div className="mt-4 p-3 bg-gray-800 rounded-lg border border-gray-600">
                             <p className="text-sm text-gray-300 mb-2">Room type for AR scan:</p>
@@ -382,7 +382,7 @@ export default function FloorplanCreatorPage() {
                         <>
                           {/* Grid Background */}
                           {currentPlan.gridEnabled && (
-                            <div 
+                            <div
                               className="absolute inset-0"
                               style={{
                                 backgroundImage: 'linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px)',
@@ -390,7 +390,7 @@ export default function FloorplanCreatorPage() {
                               }}
                             />
                           )}
-                          
+
                           {/* Rooms */}
                           <div className="relative w-full h-full">
                             {currentPlan.rooms.map((room) => {
@@ -417,7 +417,7 @@ export default function FloorplanCreatorPage() {
                                       </p>
                                     )}
                                   </div>
-                                  
+
                                   {/* Resize handles */}
                                   {selectedRoom?.id === room.id && (
                                     <>
@@ -430,7 +430,7 @@ export default function FloorplanCreatorPage() {
                               )
                             })}
                           </div>
-                          
+
                           {/* Scanning Overlay */}
                           {isScanning && (
                             <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center">
@@ -439,7 +439,7 @@ export default function FloorplanCreatorPage() {
                                 <p className="text-white text-lg">Scanning your home...</p>
                                 <p className="text-gray-400">Keep moving your phone to scan all rooms</p>
                                 <div className="w-64 h-2 bg-gray-700 rounded-full overflow-hidden">
-                                  <div 
+                                  <div
                                     className="h-full bg-cyan-400 transition-all duration-500"
                                     style={{ width: `${scanProgress}%` }}
                                   />
@@ -450,10 +450,10 @@ export default function FloorplanCreatorPage() {
                           )}
                         </>
                       )}
-                      
+
                       <canvas ref={canvasRef} className="hidden" />
                     </div>
-                    
+
                     {/* Floor Plan Stats */}
                     {currentPlan.rooms.length > 0 && (
                       <div className="mt-4 grid grid-cols-3 gap-4">
@@ -495,7 +495,7 @@ export default function FloorplanCreatorPage() {
                       <Sparkles className="h-4 w-4" />
                       {isScanning ? 'Scanning...' : 'AR Scan Room'}
                     </Button>
-                    
+
                     <Button
                       onClick={() => fileInputRef.current?.click()}
                       variant="outline"
@@ -504,7 +504,7 @@ export default function FloorplanCreatorPage() {
                       <Upload className="h-4 w-4 mr-2" />
                       Import Floor Plan
                     </Button>
-                    
+
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -512,7 +512,7 @@ export default function FloorplanCreatorPage() {
                       onChange={handleFileUpload}
                       className="hidden"
                     />
-                    
+
                     <Button
                       onClick={exportFloorPlan}
                       disabled={currentPlan.rooms.length === 0}
@@ -565,7 +565,7 @@ export default function FloorplanCreatorPage() {
                           className="bg-gray-700 border-gray-600"
                         />
                       </div>
-                      
+
                       <div className="grid grid-cols-2 gap-2">
                         <div>
                           <Label htmlFor="roomWidth" className="text-white">Width ({currentPlan.unit})</Label>
@@ -573,7 +573,7 @@ export default function FloorplanCreatorPage() {
                             id="roomWidth"
                             type="number"
                             value={selectedRoom.dimensions.width}
-                            onChange={(e) => updateRoom(selectedRoom.id, { 
+                            onChange={(e) => updateRoom(selectedRoom.id, {
                               dimensions: { ...selectedRoom.dimensions, width: Number(e.target.value) }
                             })}
                             className="bg-gray-700 border-gray-600"
@@ -585,21 +585,21 @@ export default function FloorplanCreatorPage() {
                             id="roomHeight"
                             type="number"
                             value={selectedRoom.dimensions.height}
-                            onChange={(e) => updateRoom(selectedRoom.id, { 
+                            onChange={(e) => updateRoom(selectedRoom.id, {
                               dimensions: { ...selectedRoom.dimensions, height: Number(e.target.value) }
                             })}
                             className="bg-gray-700 border-gray-600"
                           />
                         </div>
                       </div>
-                      
+
                       <div>
                         <Label className="text-white">Area</Label>
                         <p className="text-lg font-semibold text-cyan-400">
                           {selectedRoom.dimensions.width * selectedRoom.dimensions.height} sq {currentPlan.unit}
                         </p>
                       </div>
-                      
+
                       <Button
                         onClick={() => deleteRoom(selectedRoom.id)}
                         variant="outline"
@@ -638,7 +638,7 @@ export default function FloorplanCreatorPage() {
           </div>
         </div>
       </DashboardLayout>
-      
+
       {/* AR Scanner Modal */}
       {showARScanner && (
         <Suspense fallback={

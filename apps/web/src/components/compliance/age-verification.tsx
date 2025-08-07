@@ -24,21 +24,21 @@ interface AgeVerificationProps {
   required?: boolean
 }
 
-export function AgeVerification({ 
-  value, 
-  onChange, 
+export function AgeVerification({
+  value,
+  onChange,
   error,
-  required = true 
+  required = true
 }: AgeVerificationProps) {
   const [touched, setTouched] = useState(false)
-  
+
   const handleChange = (checked: boolean) => {
     setTouched(true)
     onChange(checked)
   }
-  
+
   const showError = touched && required && !value
-  
+
   return (
     <div className="space-y-3">
       <div className="flex items-start space-x-3">
@@ -51,8 +51,8 @@ export function AgeVerification({
           aria-describedby={error || showError ? "age-error" : undefined}
         />
         <div className="flex-1">
-          <Label 
-            htmlFor="age-verification" 
+          <Label
+            htmlFor="age-verification"
             className="text-sm font-medium cursor-pointer flex items-center gap-2"
           >
             <Calendar className="h-4 w-4 text-slate-400" />
@@ -64,7 +64,7 @@ export function AgeVerification({
           </p>
         </div>
       </div>
-      
+
       {(error || showError) && (
         <Alert variant="destructive" className="py-2" id="age-error">
           <AlertCircle className="h-4 w-4" />
@@ -73,7 +73,7 @@ export function AgeVerification({
           </AlertDescription>
         </Alert>
       )}
-      
+
       {value && (
         <div className="flex items-center gap-2 text-green-600 text-sm">
           <Check className="h-4 w-4" />
@@ -101,35 +101,35 @@ export function AgeVerificationWithDOB({
   onDateOfBirthChange
 }: AgeVerificationWithDOBProps) {
   const [verificationMethod, setVerificationMethod] = useState<'checkbox' | 'dob'>('checkbox')
-  
+
   // Calculate age from date of birth
   const calculateAge = (dob: string): number => {
     const birthDate = new Date(dob)
     const today = new Date()
     let age = today.getFullYear() - birthDate.getFullYear()
     const monthDiff = today.getMonth() - birthDate.getMonth()
-    
+
     if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
       age--
     }
-    
+
     return age
   }
-  
+
   const handleDateChange = (date: string) => {
     if (onDateOfBirthChange) {
       onDateOfBirthChange(date)
     }
-    
+
     // Auto-verify if 18 or older
     const age = calculateAge(date)
     onChange(age >= 18)
   }
-  
+
   if (!useDateOfBirth || verificationMethod === 'checkbox') {
     return <AgeVerification value={value} onChange={onChange} error={error} required={required} />
   }
-  
+
   return (
     <div className="space-y-4">
       <div>
@@ -151,7 +151,7 @@ export function AgeVerificationWithDOB({
           aria-describedby={error ? "dob-error" : undefined}
         />
       </div>
-      
+
       {dateOfBirth && (
         <div className={`flex items-center gap-2 text-sm ${
           calculateAge(dateOfBirth) >= 18 ? 'text-green-600' : 'text-red-600'
@@ -169,14 +169,14 @@ export function AgeVerificationWithDOB({
           )}
         </div>
       )}
-      
+
       {error && (
         <Alert variant="destructive" className="py-2" id="dob-error">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-sm">{error}</AlertDescription>
         </Alert>
       )}
-      
+
       <button
         type="button"
         onClick={() => setVerificationMethod('checkbox')}

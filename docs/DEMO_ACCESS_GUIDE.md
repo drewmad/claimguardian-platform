@@ -132,16 +132,16 @@ https://claimguardianai.com
 ### Database Verification
 ```sql
 -- Check demo data exists
-SELECT 'Incidents' as type, COUNT(*) as count 
+SELECT 'Incidents' as type, COUNT(*) as count
 FROM ics_incidents WHERE id LIKE 'DEMO%'
 UNION ALL
-SELECT 'Resources', COUNT(*) 
+SELECT 'Resources', COUNT(*)
 FROM nims_resources WHERE id LIKE 'DEMO%'
 UNION ALL
-SELECT 'Alerts', COUNT(*) 
+SELECT 'Alerts', COUNT(*)
 FROM emergency_alerts WHERE id LIKE 'DEMO%'
 UNION ALL
-SELECT 'Workflows', COUNT(*) 
+SELECT 'Workflows', COUNT(*)
 FROM disaster_workflows WHERE id LIKE 'DEMO%';
 ```
 

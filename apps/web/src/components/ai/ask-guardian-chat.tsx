@@ -78,7 +78,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
 
     try {
       // Prepare context for AI
-      let systemPrompt = `You are Guardian AI, an expert insurance and property assistant for ClaimGuardian. 
+      let systemPrompt = `You are Guardian AI, an expert insurance and property assistant for ClaimGuardian.
       You help users with insurance policies, claims, property management, and disaster preparedness.
       Be helpful, concise, and professional.`
 
@@ -106,11 +106,11 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
       const chatMessages = [
         { role: 'system' as const, content: systemPrompt },
         ...messages.map(m => ({ role: m.role as 'system' | 'user' | 'assistant', content: m.content })),
-        { 
-          role: 'user' as const, 
-          content: imageData 
+        {
+          role: 'user' as const,
+          content: imageData
             ? `${input}\n\n[User has attached an image: ${attachedFile?.name}]`
-            : input 
+            : input
         }
       ]
 
@@ -184,7 +184,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
                   <Bot className="w-5 h-5 text-white" />
                 </div>
               )}
-              
+
               <div
                 className={`max-w-[80%] rounded-lg p-3 ${
                   message.role === 'user'
@@ -202,7 +202,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
                   {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </p>
               </div>
-              
+
               {message.role === 'user' && (
                 <div className="w-8 h-8 bg-gray-700 rounded-full flex items-center justify-center flex-shrink-0">
                   <User className="w-5 h-5 text-gray-300" />
@@ -210,7 +210,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
               )}
             </div>
           ))}
-          
+
           {isLoading && (
             <div className="flex gap-3 justify-start">
               <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -221,7 +221,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
               </div>
             </div>
           )}
-          
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -238,7 +238,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
               </button>
             </div>
           )}
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={() => fileInputRef.current?.click()}
@@ -253,7 +253,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
               onChange={handleFileAttach}
               className="hidden"
             />
-            
+
             <input
               type="text"
               value={input}
@@ -262,7 +262,7 @@ export function AskGuardianChat({ isOpen, onClose, context }: AskGuardianChatPro
               placeholder="Type or attach an image..."
               className="flex-1 bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
             />
-            
+
             <button
               onClick={handleSend}
               disabled={isLoading || (!input.trim() && !attachedFile)}

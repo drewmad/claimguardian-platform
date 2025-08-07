@@ -13,9 +13,9 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Flame, 
-  CloudRain, 
+import {
+  Flame,
+  CloudRain,
   Wind,
   MapPin,
   Clock,
@@ -124,7 +124,7 @@ export function ActiveEventsMap({ activeEvents, propertyLocation }: ActiveEvents
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge 
+                    <Badge
                       variant={event.status === 'active' ? 'destructive' : 'secondary'}
                       className="text-xs"
                     >

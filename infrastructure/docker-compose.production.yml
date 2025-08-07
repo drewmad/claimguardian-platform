@@ -358,31 +358,31 @@ volumes:
   redis_data:
     driver: local
     name: claimguardian-redis-data
-  
+
   prometheus_data:
     driver: local
     name: claimguardian-prometheus-data
-  
+
   grafana_data:
     driver: local
     name: claimguardian-grafana-data
-  
+
   loki_data:
     driver: local
     name: claimguardian-loki-data
-  
+
   app_logs:
     driver: local
     name: claimguardian-app-logs
-  
+
   backup_data:
     driver: local
     name: claimguardian-backup-data
-  
+
   minio_data:
     driver: local
     name: claimguardian-minio-data
-  
+
   trivy_cache:
     driver: local
     name: claimguardian-trivy-cache

@@ -116,8 +116,8 @@ export function VoiceRecorder({
       ios: {
         extension: '.m4a',
         outputFormat: Audio.RECORDING_OPTION_IOS_OUTPUT_FORMAT_MPEG4AAC,
-        audioQuality: quality === 'high' 
-          ? Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX 
+        audioQuality: quality === 'high'
+          ? Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MAX
           : quality === 'medium'
           ? Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_MEDIUM
           : Audio.RECORDING_OPTION_IOS_AUDIO_QUALITY_LOW,
@@ -219,11 +219,11 @@ export function VoiceRecorder({
   useEffect(() => {
     if (isRecording) {
       const interval = setInterval(() => {
-        const newWaveformData = Array(WAVEFORM_BARS).fill(0).map(() => 
+        const newWaveformData = Array(WAVEFORM_BARS).fill(0).map(() =>
           Math.random() * (audioLevel + 0.1)
         )
         setWaveformData(newWaveformData)
-        
+
         // Simulate audio level from microphone
         setAudioLevel(Math.random() * 0.8 + 0.2)
       }, 100)
@@ -244,7 +244,7 @@ export function VoiceRecorder({
       // Create and start recording
       const { recording } = await Audio.Recording.createAsync(recordingOptions)
       recordingRef.current = recording
-      
+
       setIsRecording(true)
       setRecordingDuration(0)
       setAudioLevel(0)
@@ -260,18 +260,18 @@ export function VoiceRecorder({
       if (!recordingRef.current) return
 
       setIsRecording(false)
-      
+
       await recordingRef.current.stopAndUnloadAsync()
       const uri = recordingRef.current.getURI()
-      
+
       if (uri) {
         setAudioUri(uri)
-        
+
         // Get audio file info
         const fileInfo = await FileSystem.getInfoAsync(uri)
         const audioInfo = await Audio.Sound.createAsync({ uri })
         const status = await audioInfo.sound.getStatusAsync()
-        
+
         if (status.isLoaded) {
           setTotalDuration(status.durationMillis ? status.durationMillis / 1000 : 0)
         }
@@ -349,7 +349,7 @@ export function VoiceRecorder({
         sound.setOnPlaybackStatusUpdate((status) => {
           if (status.isLoaded) {
             setPlaybackPosition(status.positionMillis ? status.positionMillis / 1000 : 0)
-            
+
             if (status.didJustFinish) {
               setIsPlaying(false)
               setPlaybackPosition(0)
@@ -391,15 +391,15 @@ export function VoiceRecorder({
       if (autoSave) {
         const documentsDir = FileSystem.documentDirectory + 'audio/'
         await FileSystem.makeDirectoryAsync(documentsDir, { intermediates: true })
-        
+
         const fileName = `voice_note_${Date.now()}.m4a`
         const permanentUri = documentsDir + fileName
-        
+
         await FileSystem.moveAsync({
           from: audioUri,
           to: permanentUri
         })
-        
+
         finalUri = permanentUri
       }
 
@@ -460,9 +460,9 @@ export function VoiceRecorder({
         <TouchableOpacity onPress={handleCancel}>
           <Text style={styles.headerButton}>Cancel</Text>
         </TouchableOpacity>
-        
+
         <Text style={styles.headerTitle}>Voice Notes</Text>
-        
+
         {audioUri && (
           <TouchableOpacity onPress={handleComplete}>
             <Text style={[styles.headerButton, styles.saveButton]}>Save</Text>
@@ -481,20 +481,20 @@ export function VoiceRecorder({
               <View style={styles.recordingDot} />
             </Animated.View>
           )}
-          
+
           <Text style={styles.statusText}>
-            {isRecording 
-              ? 'Recording...' 
-              : audioUri 
+            {isRecording
+              ? 'Recording...'
+              : audioUri
               ? 'Recording Complete'
               : 'Ready to Record'
             }
           </Text>
-          
+
           <Text style={styles.durationText}>
             {formatDuration(isRecording ? recordingDuration : totalDuration)}
           </Text>
-          
+
           {maxDuration > 0 && (
             <Text style={styles.maxDurationText}>
               Max: {formatDuration(maxDuration)}
@@ -527,14 +527,14 @@ export function VoiceRecorder({
           <View style={styles.audioLevelContainer}>
             <Text style={styles.audioLevelLabel}>Level</Text>
             <View style={styles.audioLevelBar}>
-              <View 
+              <View
                 style={[
                   styles.audioLevelFill,
-                  { 
+                  {
                     width: `${audioLevel * 100}%`,
                     backgroundColor: audioLevel > 0.8 ? '#f44336' : audioLevel > 0.5 ? '#FF9800' : '#4CAF50'
                   }
-                ]} 
+                ]}
               />
             </View>
           </View>
@@ -547,10 +547,10 @@ export function VoiceRecorder({
               style={[styles.recordButton, isRecording && styles.recordButtonActive]}
               onPress={isRecording ? stopRecording : startRecording}
             >
-              <Ionicons 
-                name={isRecording ? "stop" : "mic"} 
-                size={32} 
-                color="#fff" 
+              <Ionicons
+                name={isRecording ? "stop" : "mic"}
+                size={32}
+                color="#fff"
               />
             </TouchableOpacity>
           ) : (
@@ -559,20 +559,20 @@ export function VoiceRecorder({
                 style={styles.playButton}
                 onPress={playAudio}
               >
-                <Ionicons 
-                  name={isPlaying ? "pause" : "play"} 
-                  size={24} 
-                  color="#fff" 
+                <Ionicons
+                  name={isPlaying ? "pause" : "play"}
+                  size={24}
+                  color="#fff"
                 />
               </TouchableOpacity>
 
               <View style={styles.progressContainer}>
                 <View style={styles.progressBar}>
-                  <View 
+                  <View
                     style={[
                       styles.progressFill,
                       { width: `${(playbackPosition / totalDuration) * 100}%` }
-                    ]} 
+                    ]}
                   />
                 </View>
                 <Text style={styles.progressText}>
@@ -600,7 +600,7 @@ export function VoiceRecorder({
         {enableTranscription && (
           <View style={styles.transcriptionContainer}>
             <Text style={styles.transcriptionTitle}>Transcription</Text>
-            
+
             {isTranscribing && (
               <View style={styles.transcriptionLoading}>
                 <LoadingSpinner size="small" color="#4CAF50" />

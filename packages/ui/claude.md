@@ -4,7 +4,7 @@
 The `@claimguardian/ui` package provides a centralized design system built on Radix UI primitives with Tailwind CSS styling and liquid glass effects.
 
 ## Architecture
-- **Radix UI Primitives**: Accessible, unstyled components  
+- **Radix UI Primitives**: Accessible, unstyled components
 - **Tailwind CSS**: Utility-first styling
 - **Liquid Glass Design**: Premium visual effects with glassmorphism
 - **TypeScript 5.8.3**: Full type safety for all components
@@ -24,8 +24,8 @@ The `@claimguardian/ui` package provides a centralized design system built on Ra
 }
 
 .liquid-glass-accent {
-  background: linear-gradient(135deg, 
-    rgba(59, 130, 246, 0.15) 0%, 
+  background: linear-gradient(135deg,
+    rgba(59, 130, 246, 0.15) 0%,
     rgba(147, 51, 234, 0.15) 100%);
 }
 ```
@@ -39,7 +39,7 @@ const colors = {
     900: '#1e3a8a'
   },
   accent: {
-    50: '#faf5ff', 
+    50: '#faf5ff',
     500: '#9333ea', // Purple
     900: '#581c87'
   },
@@ -54,7 +54,7 @@ const colors = {
 ### Form Components
 ```typescript
 // Always import from package root
-import { 
+import {
   Button, Input, Label, Textarea,
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
   Checkbox, RadioGroup, RadioGroupItem
@@ -65,7 +65,7 @@ import {
   Submit
 </Button>
 
-<Input 
+<Input
   placeholder="Enter email"
   className="bg-gray-800 border-gray-700 text-white"
 />
@@ -73,7 +73,7 @@ import {
 
 ### Layout Components
 ```typescript
-import { 
+import {
   Card, CardContent, CardHeader, CardTitle,
   Dialog, DialogContent, DialogHeader, DialogTitle,
   Sheet, SheetContent, SheetHeader, SheetTitle
@@ -92,7 +92,7 @@ import {
 
 ### Navigation Components
 ```typescript
-import { 
+import {
   NavigationMenu, NavigationMenuContent, NavigationMenuItem,
   Tabs, TabsContent, TabsList, TabsTrigger,
   Breadcrumb, BreadcrumbItem, BreadcrumbLink
@@ -109,7 +109,7 @@ import {
 
 ### Feedback Components
 ```typescript
-import { 
+import {
   Alert, AlertDescription,
   Badge, Progress, Skeleton,
   Toast, ToastAction, ToastDescription
@@ -132,7 +132,7 @@ import {
 import { Button, Card, Input } from '@claimguardian/ui'
 
 // Also correct - named imports
-import { 
+import {
   Button,
   Card, CardContent, CardHeader,
   Input, Label
@@ -152,7 +152,7 @@ import { Card } from '@claimguardian/ui/card'
 ```typescript
 // Button variants
 <Button variant="default">Default</Button>
-<Button variant="destructive">Delete</Button>  
+<Button variant="destructive">Delete</Button>
 <Button variant="outline">Outline</Button>
 <Button variant="ghost">Ghost</Button>
 <Button variant="link">Link</Button>
@@ -180,7 +180,7 @@ import { Card } from '@claimguardian/ui/card'
 ### Custom Styling with Tailwind
 ```typescript
 // Extend component styles with className
-<Button 
+<Button
   variant="default"
   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700"
 >
@@ -251,23 +251,23 @@ import { Card } from '@claimguardian/ui/card'
   <CardContent className="space-y-4">
     <div className="space-y-2">
       <Label htmlFor="email" className="text-white">Email</Label>
-      <Input 
-        id="email" 
+      <Input
+        id="email"
         type="email"
         className="bg-gray-700 border-gray-600 text-white"
         placeholder="Enter your email"
       />
     </div>
-    
+
     <div className="space-y-2">
       <Label htmlFor="message" className="text-white">Message</Label>
-      <Textarea 
+      <Textarea
         id="message"
         className="bg-gray-700 border-gray-600 text-white"
         placeholder="Enter your message"
       />
     </div>
-    
+
     <Button className="w-full bg-blue-600 hover:bg-blue-700">
       Submit
     </Button>
@@ -285,10 +285,10 @@ import { Card } from '@claimguardian/ui/card'
         Are you sure you want to proceed?
       </DialogDescription>
     </DialogHeader>
-    
+
     <div className="flex justify-end space-x-2 mt-6">
-      <Button 
-        variant="outline" 
+      <Button
+        variant="outline"
         onClick={() => setIsOpen(false)}
         className="border-gray-600 text-gray-300 hover:bg-gray-700"
       >
@@ -317,7 +317,7 @@ import { Card } from '@claimguardian/ui/card'
 </Button>
 
 // Provide descriptions for complex interactions
-<Input 
+<Input
   aria-describedby="email-help"
   placeholder="Enter email"
 />
@@ -339,8 +339,8 @@ import { Card } from '@claimguardian/ui/card'
 import { Button, Card } from '@claimguardian/ui' // Only these are bundled
 
 // Dynamic imports for large components
-const DataTable = lazy(() => import('@claimguardian/ui').then(mod => ({ 
-  default: mod.DataTable 
+const DataTable = lazy(() => import('@claimguardian/ui').then(mod => ({
+  default: mod.DataTable
 })))
 ```
 
@@ -426,7 +426,7 @@ export default {
 - **Issue**: Component not found when importing
 - **Fix**: Add export to `src/index.tsx`
 
-### Styling Not Applied  
+### Styling Not Applied
 - **Issue**: Tailwind classes not working
 - **Fix**: Ensure component is wrapped with proper class names
 

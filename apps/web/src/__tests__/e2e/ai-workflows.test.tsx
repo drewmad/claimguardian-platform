@@ -47,18 +47,18 @@ describe('AI Workflows End-to-End Tests', () => {
 
       // Step 1: User submits claim for prediction
       render(<ClaimPredictor />);
-      
+
       // Fill claim details
       const claimTypeSelect = screen.getByLabelText(/claim type/i);
       await user.selectOptions(claimTypeSelect, 'water');
-      
+
       const damageAmount = screen.getByLabelText(/damage amount/i);
       await user.clear(damageAmount);
       await user.type(damageAmount, '35000');
-      
+
       const description = screen.getByLabelText(/description/i);
       await user.type(description, 'Severe water damage from burst pipe in master bathroom');
-      
+
       // Mock successful prediction
       mockSupabase.functions.invoke.mockResolvedValue({
         data: {
@@ -86,7 +86,7 @@ describe('AI Workflows End-to-End Tests', () => {
 
       // Step 2: Run fraud detection on the same claim
       const { unmount } = render(<FraudDetectionDashboard />);
-      
+
       mockSupabase.from.mockReturnValue({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockResolvedValue({
@@ -171,7 +171,7 @@ describe('AI Workflows End-to-End Tests', () => {
   describe('Automated Fraud Detection and Response Workflow', () => {
     it('should detect fraud and trigger appropriate responses', async () => {
       const user = userEvent.setup();
-      
+
       render(<FraudDetectionDashboard />);
 
       // Mock high fraud score detection
@@ -232,7 +232,7 @@ describe('AI Workflows End-to-End Tests', () => {
   describe('Compliance Auto-Fix Workflow', () => {
     it('should automatically fix compliance issues when enabled', async () => {
       const user = userEvent.setup();
-      
+
       render(<ComplianceChecker />);
 
       // Enable auto-fix
@@ -291,7 +291,7 @@ describe('AI Workflows End-to-End Tests', () => {
 
       // Apply auto-fixes
       const autoFixButton = screen.getByRole('button', { name: /apply available auto-fixes/i });
-      
+
       // Mock auto-fix application
       mockSupabase.functions.invoke.mockResolvedValue({
         data: {
@@ -317,7 +317,7 @@ describe('AI Workflows End-to-End Tests', () => {
     it('should predict failures and schedule preventive maintenance', async () => {
       const { PredictiveMaintenanceAlerts } = await import('@/components/maintenance/PredictiveMaintenanceAlerts');
       const user = userEvent.setup();
-      
+
       render(<PredictiveMaintenanceAlerts />);
 
       // Mock predictive scan results
@@ -349,7 +349,7 @@ describe('AI Workflows End-to-End Tests', () => {
 
       // Schedule maintenance for critical item
       const scheduleButtons = screen.getAllByRole('button', { name: /schedule/i });
-      
+
       // Mock scheduling action
       mockSupabase.from.mockReturnValue({
         insert: jest.fn().mockResolvedValue({
@@ -379,7 +379,7 @@ describe('AI Workflows End-to-End Tests', () => {
   describe('Multi-Component Integration Workflow', () => {
     it('should handle complete claim lifecycle with all AI features', async () => {
       // This test simulates a complete claim workflow using all AI components
-      
+
       const mockClaim = {
         id: 'CLM-2024-FULL-001',
         type: 'hurricane_damage',
@@ -464,7 +464,7 @@ describe('AI Workflows End-to-End Tests', () => {
   describe('Error Recovery Workflow', () => {
     it('should handle and recover from component failures', async () => {
       const user = userEvent.setup();
-      
+
       // Simulate network failure
       mockSupabase.functions.invoke
         .mockRejectedValueOnce(new Error('Network timeout'))
@@ -474,7 +474,7 @@ describe('AI Workflows End-to-End Tests', () => {
         });
 
       render(<ClaimPredictor />);
-      
+
       const analyzeButton = screen.getByRole('button', { name: /analyze claim/i });
       await user.click(analyzeButton);
 
@@ -485,7 +485,7 @@ describe('AI Workflows End-to-End Tests', () => {
 
       // Retry should succeed
       await user.click(analyzeButton);
-      
+
       await waitFor(() => {
         expect(screen.getByText(/75%/)).toBeInTheDocument();
       });

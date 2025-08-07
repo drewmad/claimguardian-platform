@@ -25,20 +25,20 @@ export { AutoFixService } from './auto-fix-service'
 
 /**
  * LLM Integration Status
- * 
+ *
  * All services are structurally complete with:
  * - Full TypeScript interfaces
  * - Method signatures
  * - Error handling
  * - Statistics tracking
  * - Singleton instances
- * 
+ *
  * Implementation requires Opus model for:
  * - Natural language processing
  * - Pattern synthesis
  * - Semantic analysis
  * - Code understanding
- * 
+ *
  * Current state: Ready for Opus integration
  */
 export const LLM_INTEGRATION_STATUS = {
@@ -66,6 +66,6 @@ export async function enableLLMFeatures(apiKey: string): Promise<void> {
   // 3. Enable all pending features
   // 4. Run initial synthesis
   // 5. Start monitoring
-  
+
   throw new Error('LLM features require Opus model. Awaiting implementation.')
 }

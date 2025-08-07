@@ -30,7 +30,7 @@ const FLORIDA_DATA_SOURCES = {
   },
   'fl_county_lee': {
     base_url: 'https://www.leepa.org/GIS/',
-    data_format: 'shapefile', 
+    data_format: 'shapefile',
     update_frequency: 'monthly',
     file_patterns: ['Parcels_*.zip'],
     expected_size_mb: 75
@@ -38,7 +38,7 @@ const FLORIDA_DATA_SOURCES = {
   'fl_county_sarasota': {
     base_url: 'https://www.sc-pa.com/GIS/',
     data_format: 'shapefile',
-    update_frequency: 'monthly', 
+    update_frequency: 'monthly',
     file_patterns: ['Parcels_*.zip'],
     expected_size_mb: 60
   }
@@ -61,16 +61,16 @@ serve(async (req: Request) => {
     switch (action) {
       case 'check_sources':
         return await checkDataSources(data_source)
-      
+
       case 'trigger_ingest':
         return await triggerIngest(data_source, force_refresh)
-      
+
       case 'get_status':
         return await getStatus(data_source)
-      
+
       case 'health_check':
         return await healthCheck()
-      
+
       default:
         throw new Error(`Unknown action: ${action}`)
     }
@@ -81,7 +81,7 @@ serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: 'Parcel monitor error:', error
 }));
-    
+
     return new Response(JSON.stringify({
       success: false,
       error: error instanceof Error ? error.message : String(error)
@@ -93,8 +93,8 @@ serve(async (req: Request) => {
 })
 
 async function checkDataSources(targetSource?: string) {
-  const sourcesToCheck = targetSource 
-    ? [targetSource] 
+  const sourcesToCheck = targetSource
+    ? [targetSource]
     : Object.keys(FLORIDA_DATA_SOURCES)
 
   const results = []
@@ -116,7 +116,7 @@ async function checkDataSources(targetSource?: string) {
         timestamp: new Date().toISOString(),
         message: `Checking source: ${source}`
       }));
-      
+
       // Get current source record
       const { data: sourceRecord } = await supabase
         .from('parcel_data_sources')
@@ -126,10 +126,10 @@ async function checkDataSources(targetSource?: string) {
 
       // Check if source URL is accessible
       const healthCheck = await checkSourceHealth(config.base_url)
-      
+
       // Look for available files (simplified - would need actual directory listing)
       const availableFiles = await findAvailableFiles(config)
-      
+
       const sourceStatus = {
         source,
         status: healthCheck.accessible ? 'healthy' : 'down',
@@ -315,13 +315,13 @@ async function healthCheck() {
       .from('properties')
       .select('count')
       .limit(1)
-    
+
     healthResults.database = true
 
     // Test each data source
     for (const [source, config] of Object.entries(FLORIDA_DATA_SOURCES)) {
       try {
-        const response = await fetch(config.base_url, { 
+        const response = await fetch(config.base_url, {
           method: 'HEAD',
           signal: AbortSignal.timeout(5000) // 5 second timeout
         })
@@ -334,7 +334,7 @@ async function healthCheck() {
     // Determine overall status
     const sourceHealthy = Object.values(healthResults.data_sources).filter(Boolean).length
     const totalSources = Object.keys(healthResults.data_sources).length
-    
+
     if (healthResults.database && sourceHealthy === totalSources) {
       healthResults.overall_status = 'healthy'
     } else if (healthResults.database && sourceHealthy > 0) {
@@ -368,19 +368,19 @@ async function checkSourceHealth(baseUrl: string): Promise<{
   error?: string
 }> {
   const startTime = Date.now()
-  
+
   try {
     const response = await fetch(baseUrl, {
       method: 'HEAD',
       signal: AbortSignal.timeout(10000) // 10 second timeout
     })
-    
+
     return {
       accessible: response.ok,
       response_time_ms: Date.now() - startTime,
       status_code: response.status
     }
-    
+
   } catch (error) {
     return {
       accessible: false,
@@ -400,13 +400,13 @@ async function findAvailableFiles(config: any): Promise<Array<{
   // 1. List directory contents (if available)
   // 2. Match against file patterns
   // 3. Get file metadata
-  
+
   // For now, return mock data based on patterns
   const mockFiles = config.file_patterns.map((pattern: string, index: number) => ({
     name: pattern.replace('*', new Date().toISOString().split('T')[0]),
     size: config.expected_size_mb * 1024 * 1024,
     last_modified: new Date().toISOString()
   }))
-  
+
   return mockFiles
 }

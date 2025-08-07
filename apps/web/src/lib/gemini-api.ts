@@ -20,7 +20,7 @@ const callGeminiAPI = async (
   attachedImage: { mimeType: string; data: string } | null = null
 ) => {
     const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY;
-    
+
     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro-vision:generateContent?key=${apiKey}`;
 
     const userParts: Part[] = [{ text: prompt }];
@@ -34,7 +34,7 @@ const callGeminiAPI = async (
     }
 
     const contents = [...chatHistory, { role: "user", parts: userParts }];
-    
+
     const payload: {
         contents: unknown[];
         generationConfig?: {
@@ -60,12 +60,12 @@ const callGeminiAPI = async (
         if (!response.ok) {
             const errorBody = await response.text();
             logger.error("API Error Response:", new Error(errorBody));
-            
+
             // If API key error, show helpful message
             if (response.status === 400 && errorBody.includes("API_KEY_INVALID")) {
                 return jsonSchema ? {} : " API Key Required: To use AI features with real analysis, please add your Gemini API key. For now, I'm providing demo responses.";
             }
-            
+
             throw new Error(`API request failed with status ${response.status}`);
         }
 

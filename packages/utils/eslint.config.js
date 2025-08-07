@@ -28,7 +28,7 @@ export default [
     },
     rules: {
       // Base TypeScript rules without extending the full config to avoid conflicts
-      '@typescript-eslint/no-unused-vars': ['error', { 
+      '@typescript-eslint/no-unused-vars': ['error', {
         argsIgnorePattern: '^_',
         varsIgnorePattern: '^_',
         // Allow unused parameters that become class properties
@@ -37,7 +37,7 @@ export default [
       // Disable the regular no-unused-vars rule in favor of TypeScript version
       'no-unused-vars': 'off',
       '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-unused-expressions': ['error', { 
+      '@typescript-eslint/no-unused-expressions': ['error', {
         allowShortCircuit: true,
         allowTernary: true,
         allowTaggedTemplates: true
@@ -53,7 +53,7 @@ export default [
       sourceType: 'module'
     },
     rules: {
-      'no-unused-expressions': ['error', { 
+      'no-unused-expressions': ['error', {
         allowShortCircuit: true,
         allowTernary: true,
         allowTaggedTemplates: true

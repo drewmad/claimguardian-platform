@@ -18,7 +18,7 @@ export const GET = cacheable({ endpoint: 'properties' })(
   withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
   try {
     const supabase = await createClient()
-    
+
     // Parse query parameters
     const { searchParams } = new URL(request.url)
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
@@ -81,7 +81,7 @@ export const GET = cacheable({ endpoint: 'properties' })(
 /**
  * POST /api/properties - Create a new property
  */
-export const POST = cacheable({ 
+export const POST = cacheable({
   endpoint: 'properties',
   invalidateOnMutate: true
 })(withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
@@ -92,12 +92,12 @@ export const POST = cacheable({
     // Validate required fields
     const requiredFields = ['name', 'street_address', 'city', 'state', 'zip']
     const missingFields = requiredFields.filter(field => !body[field])
-    
+
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { 
-          error: 'Validation Error', 
-          message: `Missing required fields: ${missingFields.join(', ')}` 
+        {
+          error: 'Validation Error',
+          message: `Missing required fields: ${missingFields.join(', ')}`
         },
         { status: 400 }
       )

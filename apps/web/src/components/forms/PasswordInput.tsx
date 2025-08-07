@@ -25,26 +25,26 @@ interface PasswordInputProps extends Omit<React.InputHTMLAttributes<HTMLInputEle
 // Simple password strength calculation (replacing zxcvbn for now)
 const calculatePasswordStrength = (password: string): { score: number; feedback: string } => {
   if (!password) return { score: 0, feedback: 'Enter a password' }
-  
+
   let score = 0
   let feedback = 'Very weak'
-  
+
   // Length check
   if (password.length >= 8) score += 1
   if (password.length >= 12) score += 1
-  
+
   // Character variety
   if (/[a-z]/.test(password)) score += 1
   if (/[A-Z]/.test(password)) score += 1
   if (/\d/.test(password)) score += 1
   if (/[!@#$%^&*(),.?":{}|<>]/.test(password)) score += 1
-  
+
   // Common patterns (weak)
   if (/(.)\1{2,}/.test(password)) score -= 1 // Repeated characters
   if (/123|abc|qwerty|password/i.test(password)) score -= 2
-  
+
   score = Math.max(0, Math.min(5, score))
-  
+
   switch (score) {
     case 0:
     case 1:
@@ -63,7 +63,7 @@ const calculatePasswordStrength = (password: string): { score: number; feedback:
       feedback = 'Strong'
       break
   }
-  
+
   return { score, feedback }
 }
 
@@ -74,7 +74,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     const errorId = `${inputId}-error`
     const helperId = `${inputId}-helper`
     const strengthId = `${inputId}-strength`
-    
+
     const strength = useMemo(() => {
       if (!showStrength || !value) return null
       return calculatePasswordStrength(value as string)
@@ -101,7 +101,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
     return (
       <div className="mb-4">
         {label && (
-          <label 
+          <label
             htmlFor={inputId}
             className="block text-sm font-medium text-gray-200 mb-2"
           >
@@ -109,7 +109,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             {props.required && <span className="text-red-400 ml-1">*</span>}
           </label>
         )}
-        
+
         <div className="relative">
           <input
             ref={ref}
@@ -133,7 +133,7 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             autoComplete="new-password"
             {...props}
           />
-          
+
           <button
             type="button"
             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200"
@@ -150,12 +150,12 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             )}
           </button>
         </div>
-        
+
         {showStrength && strength && value && (
           <div id={strengthId} className="mt-2">
             <div className="flex items-center gap-2 mb-1">
               <div className="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
+                <div
                   className={cn(
                     "h-full transition-all duration-300 rounded-full",
                     getStrengthColor(strength.score)
@@ -169,20 +169,20 @@ const PasswordInput = forwardRef<HTMLInputElement, PasswordInputProps>(
             </div>
           </div>
         )}
-        
+
         {error && (
-          <p 
-            id={errorId} 
-            role="alert" 
+          <p
+            id={errorId}
+            role="alert"
             className="mt-1 text-sm text-red-400"
           >
             {error.message}
           </p>
         )}
-        
+
         {helperText && !error && (
-          <p 
-            id={helperId} 
+          <p
+            id={helperId}
             className="mt-1 text-sm text-gray-400"
           >
             {helperText}

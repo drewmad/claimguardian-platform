@@ -15,11 +15,11 @@ import { partnerApiAuth } from './auth'
 import { partnerRateLimiter } from './rate-limiter'
 import { validatePartnerRequest } from './validation'
 import { logger } from '@/lib/logger/production-logger'
-import type { 
-  PartnerApiKey, 
-  PartnerOrganization, 
+import type {
+  PartnerApiKey,
+  PartnerOrganization,
   PartnerApiResponse,
-  PartnerApiErrorCode 
+  PartnerApiErrorCode
 } from '@claimguardian/db/types/partner-api.types'
 
 export interface PartnerApiContext {
@@ -70,13 +70,13 @@ export function withPartnerAuth<T = any>(
   return async (request: NextRequest): Promise<NextResponse> => {
     const startTime = Date.now()
     const requestId = generateRequestId()
-    
+
     // Extract request metadata
     const ip = extractClientIp(request)
     const userAgent = request.headers.get('user-agent') || 'unknown'
     const origin = request.headers.get('origin')
     const contentLength = parseInt(request.headers.get('content-length') || '0', 10)
-    
+
     const requestMetadata = {
       ip,
       userAgent,
@@ -98,10 +98,10 @@ export function withPartnerAuth<T = any>(
 
       // 2. Partner authentication
       let partnerContext: PartnerApiContext | null = null
-      
+
       if (options.requireAuth !== false) {
         const authResult = await partnerApiAuth.authenticate(request)
-        
+
         if (!authResult.success) {
           await logSecurityEvent({
             type: 'auth_failure',
@@ -110,7 +110,7 @@ export function withPartnerAuth<T = any>(
             error: authResult.error,
             requestId
           })
-          
+
           return createErrorResponse({
             code: authResult.errorCode!,
             message: authResult.error!,
@@ -133,7 +133,7 @@ export function withPartnerAuth<T = any>(
             partnerContext.apiKey.permissions,
             options.permissions
           )
-          
+
           if (!hasPermission) {
             await logSecurityEvent({
               type: 'permission_denied',
@@ -141,7 +141,7 @@ export function withPartnerAuth<T = any>(
               permissions: options.permissions,
               requestId
             })
-            
+
             return createErrorResponse({
               code: 'insufficient_permissions',
               message: 'Insufficient permissions for this operation',
@@ -169,7 +169,7 @@ export function withPartnerAuth<T = any>(
             current: rateLimitResult.current,
             requestId
           })
-          
+
           return createErrorResponse({
             code: 'rate_limit_exceeded',
             message: `Rate limit exceeded. Limit: ${rateLimitResult.limit}, Reset: ${rateLimitResult.resetTime}`,
@@ -222,7 +222,7 @@ export function withPartnerAuth<T = any>(
 
       // 7. Execute handler
       const response = await handler(request, partnerContext!)
-      
+
       // 8. Process response
       const processedResponse = await processResponse(response, partnerContext, {
         requestId,
@@ -249,7 +249,7 @@ export function withPartnerAuth<T = any>(
     } catch (error) {
       // Global error handling
       const errorMessage = error instanceof Error ? error.message : 'Internal server error'
-      
+
       logger.error('Partner API error', {
         error,
         requestId,
@@ -309,7 +309,7 @@ async function validateBasicRequest(
   }
 
   // Basic security checks
-  if (metadata.userAgent.toLowerCase().includes('bot') && 
+  if (metadata.userAgent.toLowerCase().includes('bot') &&
       !metadata.userAgent.toLowerCase().includes('legitimate-bot-identifier')) {
     return {
       valid: false,
@@ -327,12 +327,12 @@ async function validatePermissions(
 ): Promise<boolean> {
   for (const permission of requiredPermissions) {
     const [resource, action] = permission.split('.')
-    
+
     if (!apiPermissions[resource] || !apiPermissions[resource][action]) {
       return false
     }
   }
-  
+
   return true
 }
 
@@ -342,7 +342,7 @@ async function processResponse<T>(
   meta: { requestId: string; startTime: number; options: PartnerMiddlewareOptions }
 ): Promise<NextResponse> {
   const processingTime = Date.now() - meta.startTime
-  
+
   // Enrich response with metadata
   const enrichedResponse: PartnerApiResponse<T> = {
     ...response,
@@ -425,7 +425,7 @@ function createErrorResponse(params: {
   }
 
   const statusCode = getStatusCodeForError(params.code)
-  
+
   return NextResponse.json(errorResponse, {
     status: statusCode,
     headers
@@ -471,11 +471,11 @@ function extractClientIp(request: NextRequest): string {
   const forwarded = request.headers.get('x-forwarded-for')
   const real = request.headers.get('x-real-ip')
   const cf = request.headers.get('cf-connecting-ip')
-  
+
   if (cf) return cf
   if (real) return real
   if (forwarded) return forwarded.split(',')[0].trim()
-  
+
   return 'unknown'
 }
 

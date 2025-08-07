@@ -23,7 +23,7 @@ This script will:
 2. Select your project or create a new one
 3. Enable these 3 APIs:
    - **Maps JavaScript API**
-   - **Places API** 
+   - **Places API**
    - **Geocoding API**
 4. Go to Credentials → Create API Key
 5. Restrict the key to these domains:

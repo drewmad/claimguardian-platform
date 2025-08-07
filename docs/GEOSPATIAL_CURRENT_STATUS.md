@@ -98,7 +98,7 @@ Several Edge Functions are created but not deployed:
    ```bash
    # Check import errors
    ./scripts/diagnose-load-error.js
-   
+
    # Test with small batch
    ./scripts/test-parcels-import.sh
    ```

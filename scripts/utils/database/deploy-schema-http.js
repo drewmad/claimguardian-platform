@@ -39,7 +39,7 @@ const supabaseUrl = new URL(SUPABASE_URL);
 async function executeSQL(sql) {
   return new Promise((resolve, reject) => {
     const data = JSON.stringify({ query: sql });
-    
+
     const options = {
       hostname: supabaseUrl.hostname,
       port: 443,
@@ -55,11 +55,11 @@ async function executeSQL(sql) {
 
     const req = https.request(options, (res) => {
       let responseData = '';
-      
+
       res.on('data', (chunk) => {
         responseData += chunk;
       });
-      
+
       res.on('end', () => {
         if (res.statusCode === 200 || res.statusCode === 201) {
           resolve({ success: true, data: responseData });
@@ -80,15 +80,15 @@ async function executeSQL(sql) {
 
 async function main() {
   console.log('🚀 Property Schema Deployment\n');
-  
+
   // Read schema file
   const schemaPath = path.join(__dirname, '..', 'supabase', 'migrations', '20250724_complete_property_schema.sql');
-  
+
   if (!fs.existsSync(schemaPath)) {
     console.error('❌ Schema file not found:', schemaPath);
     process.exit(1);
   }
-  
+
   console.log('📄 Reading schema file...');
   const schemaContent = fs.readFileSync(schemaPath, 'utf8');
   console.log(`📏 Schema size: ${(schemaContent.length / 1024).toFixed(2)} KB\n`);
@@ -99,20 +99,20 @@ async function main() {
   console.log('=' . repeat(50));
   console.log('\n1. Open Supabase SQL Editor:');
   console.log(`   ${SUPABASE_URL.replace('/rest/v1', '')}/project/${supabaseUrl.hostname.split('.')[0]}/editor\n`);
-  
+
   console.log('2. Copy the schema file content from:');
   console.log(`   ${schemaPath}\n`);
-  
+
   console.log('3. Paste into SQL editor and click "Run"\n');
-  
+
   console.log('4. Verify deployment with these queries:\n');
-  
+
   const verificationQueries = [
     "-- Check tables\nSELECT table_name FROM information_schema.tables WHERE table_name LIKE 'property%';",
     "-- Check RLS\nSELECT tablename, rowsecurity FROM pg_tables WHERE tablename LIKE 'property%';",
     "-- Check types\nSELECT typname FROM pg_type WHERE typname IN ('property_type', 'occupancy_status');",
   ];
-  
+
   verificationQueries.forEach((query, idx) => {
     console.log(`Query ${idx + 1}:`);
     console.log(query);
@@ -132,7 +132,7 @@ async function main() {
   const dashboardUrl = `${SUPABASE_URL.replace('/rest/v1', '')}/project/${supabaseUrl.hostname.split('.')[0]}/editor`;
   console.log('🌐 Opening Supabase dashboard...');
   console.log(`   ${dashboardUrl}\n`);
-  
+
   try {
     const { execSync } = require('child_process');
     execSync(`open "${dashboardUrl}"`, { stdio: 'ignore' });

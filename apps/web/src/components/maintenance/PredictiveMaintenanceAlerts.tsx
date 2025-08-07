@@ -112,7 +112,7 @@ export function PredictiveMaintenanceAlerts() {
   const [riskMatrix, setRiskMatrix] = useState<RiskAssessment[]>([]);
 
   const [maintenanceTimeline, setMaintenanceTimeline] = useState<any[]>([]);
-  
+
   const totalSavings = maintenanceTimeline.reduce((sum, month) => sum + (month.saved || 0), 0);
   const totalPreventive = maintenanceTimeline.reduce((sum, month) => sum + (month.preventive || 0), 0);
   const totalRepairs = maintenanceTimeline.reduce((sum, month) => sum + (month.repairs || 0), 0);
@@ -123,7 +123,7 @@ export function PredictiveMaintenanceAlerts() {
 
   const loadMaintenanceData = async () => {
     if (!selectedProperty) return;
-    
+
     setLoading(true);
     try {
       const { data, error } = await supabase.functions.invoke('predictive-maintenance', {
@@ -157,11 +157,11 @@ export function PredictiveMaintenanceAlerts() {
       toast.error('Please select a property first');
       return;
     }
-    
+
     setScanning(true);
     try {
       const { data, error } = await supabase.functions.invoke('predictive-maintenance-scan', {
-        body: { 
+        body: {
           property_id: selectedProperty,
           scan_type: 'comprehensive'
         }
@@ -283,8 +283,8 @@ export function PredictiveMaintenanceAlerts() {
               {systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0}%
             </p>
             <p className="text-sm text-gray-500">Overall Health</p>
-            <Progress 
-              value={systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0} 
+            <Progress
+              value={systemHealth.length > 0 ? Math.round(systemHealth.reduce((sum, s) => sum + s.health, 0) / systemHealth.length) : 0}
               className="mt-2 h-2"
             />
           </CardContent>
@@ -343,7 +343,7 @@ export function PredictiveMaintenanceAlerts() {
                   const daysUntilFailure = Math.floor(
                     (new Date(alert.predictedFailure).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24)
                   );
-                  
+
                   return (
                     <div key={alert.id} className="border rounded-lg p-4">
                       <div className="flex items-start justify-between">
@@ -354,7 +354,7 @@ export function PredictiveMaintenanceAlerts() {
                               <h4 className="font-semibold">{alert.system} - {alert.component}</h4>
                               {getUrgencyBadge(alert.urgency)}
                             </div>
-                            
+
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-3">
                               <div>
                                 <p className="text-xs text-gray-500">Condition</p>
@@ -363,14 +363,14 @@ export function PredictiveMaintenanceAlerts() {
                                   <span className="text-sm font-medium">{alert.currentCondition}%</span>
                                 </div>
                               </div>
-                              
+
                               <div>
                                 <p className="text-xs text-gray-500">Predicted Failure</p>
                                 <p className="text-sm font-medium">
                                   {daysUntilFailure > 0 ? `In ${daysUntilFailure} days` : 'Imminent'}
                                 </p>
                               </div>
-                              
+
                               <div>
                                 <p className="text-xs text-gray-500">Cost to Prevent</p>
                                 <p className="text-sm">
@@ -379,28 +379,28 @@ export function PredictiveMaintenanceAlerts() {
                                 </p>
                               </div>
                             </div>
-                            
+
                             <Alert className="mb-3">
                               <AlertDescription className="text-sm">
                                 {alert.recommendation}
                               </AlertDescription>
                             </Alert>
-                            
+
                             <div className="flex items-center justify-between">
                               <p className="text-xs text-gray-500">
                                 Last inspection: {alert.lastInspection || 'Never'}
                               </p>
-                              
+
                               <div className="flex space-x-2">
-                                <Button 
-                                  variant="outline" 
+                                <Button
+                                  variant="outline"
                                   size="sm"
                                   onClick={() => scheduleMaintenanceuler(alert)}
                                 >
                                   <Calendar className="h-4 w-4 mr-1" />
                                   Schedule
                                 </Button>
-                                <Button 
+                                <Button
                                   size="sm"
                                   variant={alert.urgency === 'critical' ? 'destructive' : 'default'}
                                 >
@@ -432,7 +432,7 @@ export function PredictiveMaintenanceAlerts() {
               <div className="space-y-4">
                 {systemHealth.map((system) => {
                   const Icon = systemIcons[system.system.toLowerCase() as keyof typeof systemIcons] || Home;
-                  
+
                   return (
                     <div key={system.system} className="flex items-center justify-between p-4 border rounded-lg">
                       <div className="flex items-center space-x-4 flex-1">
@@ -445,11 +445,11 @@ export function PredictiveMaintenanceAlerts() {
                               <span className="text-sm text-gray-500">{system.trend}</span>
                             </div>
                           </div>
-                          <Progress 
-                            value={system.health} 
+                          <Progress
+                            value={system.health}
                             className="h-3"
-                            style={{ 
-                              '--progress-background': getHealthColor(system.health) 
+                            style={{
+                              '--progress-background': getHealthColor(system.health)
                             } as React.CSSProperties}
                           />
                           <div className="flex justify-between mt-2 text-xs text-gray-500">
@@ -488,34 +488,34 @@ export function PredictiveMaintenanceAlerts() {
                   <YAxis />
                   <Tooltip />
                   <Legend />
-                  <Area 
-                    type="monotone" 
-                    dataKey="preventive" 
-                    stackId="1" 
-                    stroke="#22c55e" 
-                    fill="#22c55e" 
+                  <Area
+                    type="monotone"
+                    dataKey="preventive"
+                    stackId="1"
+                    stroke="#22c55e"
+                    fill="#22c55e"
                     fillOpacity={0.6}
                     name="Preventive Costs"
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="repairs" 
-                    stackId="1" 
-                    stroke="#ef4444" 
-                    fill="#ef4444" 
+                  <Area
+                    type="monotone"
+                    dataKey="repairs"
+                    stackId="1"
+                    stroke="#ef4444"
+                    fill="#ef4444"
                     fillOpacity={0.6}
                     name="Repair Costs"
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="saved" 
-                    stroke="#3b82f6" 
+                  <Line
+                    type="monotone"
+                    dataKey="saved"
+                    stroke="#3b82f6"
                     strokeWidth={2}
                     name="Amount Saved"
                   />
                 </AreaChart>
               </ResponsiveContainer>
-              
+
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="text-center p-4 bg-green-50 rounded-lg">
                   <DollarSign className="h-8 w-8 text-green-500 mx-auto mb-2" />
@@ -551,26 +551,26 @@ export function PredictiveMaintenanceAlerts() {
                   <PolarGrid />
                   <PolarAngleAxis dataKey="category" />
                   <PolarRadiusAxis angle={90} domain={[0, 100]} />
-                  <Radar 
-                    name="Current Risk" 
-                    dataKey="current" 
-                    stroke="#f97316" 
-                    fill="#f97316" 
-                    fillOpacity={0.6} 
+                  <Radar
+                    name="Current Risk"
+                    dataKey="current"
+                    stroke="#f97316"
+                    fill="#f97316"
+                    fillOpacity={0.6}
                   />
-                  <Radar 
-                    name="Predicted Risk (6mo)" 
-                    dataKey="predicted" 
-                    stroke="#ef4444" 
-                    fill="#ef4444" 
-                    fillOpacity={0.4} 
+                  <Radar
+                    name="Predicted Risk (6mo)"
+                    dataKey="predicted"
+                    stroke="#ef4444"
+                    fill="#ef4444"
+                    fillOpacity={0.4}
                   />
-                  <Radar 
-                    name="Optimal Level" 
-                    dataKey="optimal" 
-                    stroke="#22c55e" 
-                    fill="#22c55e" 
-                    fillOpacity={0.3} 
+                  <Radar
+                    name="Optimal Level"
+                    dataKey="optimal"
+                    stroke="#22c55e"
+                    fill="#22c55e"
+                    fillOpacity={0.3}
                   />
                   <Legend />
                   <Tooltip />
@@ -603,7 +603,7 @@ export function PredictiveMaintenanceAlerts() {
                       <p className="text-sm text-green-700">vs emergency repairs</p>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {alerts.map((alert) => (
                       <div key={alert.id} className="flex items-center justify-between py-2 border-t border-green-200">
@@ -637,7 +637,7 @@ export function PredictiveMaintenanceAlerts() {
                       </li>
                     </ul>
                   </div>
-                  
+
                   <div className="p-4 bg-gray-50 rounded-lg">
                     <h4 className="font-medium mb-2">Property Value Impact</h4>
                     <ul className="space-y-1 text-sm text-gray-600">

@@ -247,7 +247,7 @@ export class EmergencyServicesIntegration {
       }
 
       const pointData = await pointResponse.json()
-      
+
       // Get current conditions
       const forecastResponse = await fetch(pointData.properties.forecast, {
         headers: {
@@ -377,7 +377,7 @@ export class EmergencyServicesIntegration {
       }
 
       const shelterData = await response.json()
-      
+
       return shelterData.shelters.map((shelter: any) => ({
         id: shelter.id,
         name: shelter.name,
@@ -586,7 +586,7 @@ export class EmergencyServicesIntegration {
       throw error
     } finally {
       message.updated_at = new Date().toISOString()
-      
+
       // Store message
       await this.supabase
         .from('data_exchange_messages')

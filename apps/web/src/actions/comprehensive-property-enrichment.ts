@@ -156,15 +156,15 @@ export interface EnrichedProperty {
 export async function enrichProperty(parcelId: string): Promise<{ data: EnrichedProperty | null; error: Error | null }> {
   try {
     logger.info('[PROPERTY ENRICHMENT] Starting enrichment for parcel:', { parcelId })
-    
+
     // Get base parcel data
     const parcelResult = await getParcelDetails(parcelId)
     if (parcelResult.error || !parcelResult.data) {
       throw new Error(`Parcel not found: ${parcelId}`)
     }
-    
+
     const parcelData = parcelResult.data
-    
+
     // Run all enrichment modules in parallel
     const [
       marketAnalysis,
@@ -181,7 +181,7 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
       calculateInvestmentMetrics(parcelData),
       checkComplianceStatus(parcelData)
     ])
-    
+
     // Generate AI insights based on all collected data
     const aiInsights = await generateAIInsights({
       parcelData,
@@ -192,10 +192,10 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
       investmentMetrics,
       complianceStatus
     })
-    
+
     // Calculate overall data quality score
     const dataQualityScore = calculateDataQualityScore(parcelData, marketAnalysis, neighborhoodAnalysis)
-    
+
     const enrichedProperty: EnrichedProperty = {
       parcelData,
       marketAnalysis,
@@ -208,9 +208,9 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
       enrichmentDate: new Date().toISOString(),
       dataQualityScore
     }
-    
+
     logger.info('[PROPERTY ENRICHMENT] Enrichment completed successfully')
-    
+
     return { data: enrichedProperty, error: null }
   } catch (error) {
     logger.error('[PROPERTY ENRICHMENT] Error:', {}, toError(error))
@@ -223,18 +223,18 @@ export async function enrichProperty(parcelId: string): Promise<{ data: Enriched
  */
 async function analyzeMarket(parcel: ParcelData): Promise<MarketAnalysis> {
   const supabase = await createClient()
-  
+
   // First get the raw parcel data using the parcel ID
   const { data: rawParcel } = await supabase
     .from('florida_parcels')
     .select('*')
     .eq('parcel_id', parcel.parcelId)
     .single()
-  
+
   if (!rawParcel) {
     throw new Error('Raw parcel data not found')
   }
-  
+
   // Find comparable sales in the area using raw database fields
   const { data: comparables } = await supabase
     .from('florida_parcels')
@@ -244,7 +244,7 @@ async function analyzeMarket(parcel: ParcelData): Promise<MarketAnalysis> {
     .gte('tot_lvg_area', Math.max(0, Number(rawParcel.tot_lvg_area || 0) * 0.8))
     .lte('tot_lvg_area', Math.max(0, Number(rawParcel.tot_lvg_area || 0) * 1.2))
     .limit(20)
-  
+
   const comparableSales: ComparableSale[] = (comparables || []).map(comp => ({
     address: comp.phy_addr1 ? `${comp.phy_addr1}, ${comp.phy_city}` : parcel.address,
     salePrice: (comp.lnd_val || 0) + (comp.imp_val || 0),
@@ -253,13 +253,13 @@ async function analyzeMarket(parcel: ParcelData): Promise<MarketAnalysis> {
     pricePerSqft: comp.tot_lvg_area ? ((comp.lnd_val || 0) + (comp.imp_val || 0)) / comp.tot_lvg_area : 0,
     distance: Math.random() * 2 // Mock distance in miles
   }))
-  
+
   const prices = comparableSales.map(c => c.salePrice).filter(p => p > 0)
   const medianPrice = prices.length > 0 ? prices.sort((a, b) => a - b)[Math.floor(prices.length / 2)] : 0
-  
+
   const pricesPerSqft = comparableSales.map(c => c.pricePerSqft).filter(p => p > 0)
   const pricePerSqft = pricesPerSqft.length > 0 ? pricesPerSqft.reduce((a, b) => a + b) / pricesPerSqft.length : 0
-  
+
   return {
     comparableSales,
     medianPrice,
@@ -280,12 +280,12 @@ async function assessRisks(parcel: ParcelData): Promise<RiskProfile> {
   const crimeRisk = assessCrimeRisk(parcel)
   const environmentalRisk = assessEnvironmentalRisk(parcel)
   const seismicRisk = assessSeismicRisk(parcel)
-  
+
   const overallRiskScore = (
-    floodRisk.score + hurricaneRisk.score + fireRisk.score + 
+    floodRisk.score + hurricaneRisk.score + fireRisk.score +
     crimeRisk.score + environmentalRisk.score + seismicRisk.score
   ) / 6
-  
+
   return {
     floodRisk,
     hurricaneRisk,
@@ -303,7 +303,7 @@ async function assessRisks(parcel: ParcelData): Promise<RiskProfile> {
 async function generateInsuranceRecommendations(parcel: ParcelData): Promise<InsuranceRecommendations> {
   const totalValue = parcel.totalValue || 0
   const baseRate = 0.008 // 0.8% of property value
-  
+
   return {
     recommendedCarriers: ['State Farm', 'Progressive', 'Citizens Property Insurance', 'Heritage Insurance'],
     estimatedPremium: {
@@ -363,7 +363,7 @@ async function analyzeNeighborhood(parcel: ParcelData): Promise<NeighborhoodAnal
 async function calculateInvestmentMetrics(parcel: ParcelData): Promise<InvestmentMetrics> {
   const totalValue = parcel.totalValue || 0
   const estimatedRent = totalValue * 0.008 // 0.8% monthly rent to value ratio
-  
+
   return {
     estimatedRentalYield: (estimatedRent * 12) / totalValue * 100,
     capitalizationRate: 6.5,
@@ -417,29 +417,29 @@ async function generateAIInsights(data: {
 }): Promise<AIInsights> {
   // In production, this would use OpenAI/Gemini for analysis
   const { parcelData, riskProfile, marketAnalysis, investmentMetrics } = data
-  
+
   const strengths = []
   const weaknesses = []
   const opportunities = []
   const threats = []
-  
+
   // Analyze strengths
   if (riskProfile.overallRiskScore < 0.5) strengths.push('Low overall risk profile')
   if (marketAnalysis.appreciationRate > 4) strengths.push('Strong market appreciation')
   if (investmentMetrics.estimatedRentalYield > 8) strengths.push('High rental yield potential')
-  
+
   // Analyze weaknesses
   if (riskProfile.floodRisk.score > 0.7) weaknesses.push('High flood risk exposure')
   if (parcelData.yearBuilt && parcelData.yearBuilt < 1980) weaknesses.push('Older construction may need updates')
-  
+
   // Identify opportunities
   if (marketAnalysis.marketTrend === 'rising') opportunities.push('Market appreciation trend')
   if (investmentMetrics.renovationROI > 70) opportunities.push('High renovation ROI potential')
-  
+
   // Identify threats
   if (riskProfile.hurricaneRisk.score > 0.8) threats.push('High hurricane risk')
   if (marketAnalysis.daysOnMarket > 60) threats.push('Slower market conditions')
-  
+
   // Determine investment recommendation
   let recommendation: 'buy' | 'hold' | 'sell' | 'avoid' = 'hold'
   if (riskProfile.overallRiskScore < 0.4 && marketAnalysis.appreciationRate > 5) {
@@ -447,7 +447,7 @@ async function generateAIInsights(data: {
   } else if (riskProfile.overallRiskScore > 0.8) {
     recommendation = 'avoid'
   }
-  
+
   return {
     strengthsWeaknessesOpportunitiesThreats: {
       strengths,
@@ -481,10 +481,10 @@ function assessFloodRisk(parcel: ParcelData): RiskFactor {
     parcel.county.toLowerCase().includes('manatee') ||
     parcel.county.toLowerCase().includes('monroe')
   )
-  
+
   const score = isCoastal ? 0.7 : 0.3
   const level: RiskFactor['level'] = score > 0.6 ? 'high' : score > 0.4 ? 'moderate' : 'low'
-  
+
   return {
     score,
     level,
@@ -548,13 +548,13 @@ function assessSeismicRisk(parcel: ParcelData): RiskFactor {
 }
 
 function calculateDataQualityScore(
-  parcel: ParcelData, 
-  market: MarketAnalysis, 
+  parcel: ParcelData,
+  market: MarketAnalysis,
   neighborhood: NeighborhoodAnalysis
 ): number {
   let score = 0
   let maxScore = 0
-  
+
   // Parcel data completeness
   maxScore += 5
   if (parcel.address) score += 1
@@ -562,17 +562,17 @@ function calculateDataQualityScore(
   if (parcel.squareFeet) score += 1
   if (parcel.landValue && parcel.buildingValue) score += 1
   if (parcel.totalValue > 0) score += 1
-  
+
   // Market data quality
   maxScore += 3
   if (market.comparableSales.length >= 5) score += 1
   if (market.medianPrice > 0) score += 1
   if (market.pricePerSqft > 0) score += 1
-  
+
   // Neighborhood data
   maxScore += 2
   if (neighborhood.amenities.schools.length > 0) score += 1
   if (neighborhood.demographics.medianIncome > 0) score += 1
-  
+
   return Math.round((score / maxScore) * 100)
 }

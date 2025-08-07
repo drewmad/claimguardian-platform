@@ -13,11 +13,11 @@
 import { useState, useEffect, useCallback, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  CheckCircle, 
-  XCircle, 
-  Loader2, 
-  Home, 
+import {
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Home,
   LogIn,
   RefreshCw,
   Mail,
@@ -72,10 +72,10 @@ function EnhancedVerifyContent() {
 
   // Enhanced error mapping for better user experience
   const mapSupabaseError = useCallback((error: any, errorCode?: string, errorDescription?: string) => {
-    const errorMappings: Record<string, { 
+    const errorMappings: Record<string, {
       status: VerificationStatus
       message: string
-      suggestion: string 
+      suggestion: string
     }> = {
       'invalid_request': {
         status: 'expired',
@@ -122,8 +122,8 @@ function EnhancedVerifyContent() {
 
   const verifyEmail = useCallback(async () => {
     try {
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         status: 'verifying',
         message: 'Verifying your email address...'
       }))
@@ -132,9 +132,9 @@ function EnhancedVerifyContent() {
 
       // Check for error parameters first
       const errorParam = searchParams.get('error')
-      const errorDescription = searchParams.get('error_description') 
+      const errorDescription = searchParams.get('error_description')
       const errorCode = searchParams.get('error_code')
-      
+
       if (errorParam) {
         const errorInfo = mapSupabaseError(errorParam, errorCode || undefined, errorDescription || undefined)
         setState(prev => ({
@@ -142,7 +142,7 @@ function EnhancedVerifyContent() {
           ...errorInfo,
           canRetry: true
         }))
-        
+
         logger.error('Email verification URL error', { error: errorParam, errorDescription, errorCode })
         return
       }
@@ -150,12 +150,12 @@ function EnhancedVerifyContent() {
       // Handle different token formats
       const token = searchParams.get('token')
       const type = searchParams.get('type') || 'signup'
-      
+
       // Check hash fragment for newer format
       const hash = window.location.hash
       let tokenHash = token
       let verificationType = type
-      
+
       if (hash) {
         const hashParams = new URLSearchParams(hash.substring(1))
         tokenHash = hashParams.get('token') || token
@@ -173,25 +173,25 @@ function EnhancedVerifyContent() {
             user,
             countdown: 5
           }))
-          
+
           success('Email already verified! You can proceed to your dashboard')
           router.push('/dashboard')
-          
+
           // Auto-redirect countdown
           let countdownValue = 5
           const countdownInterval = setInterval(() => {
             countdownValue--
             setState(prev => ({ ...prev, countdown: countdownValue }))
-            
+
             if (countdownValue <= 0) {
               clearInterval(countdownInterval)
               router.push('/dashboard')
             }
           }, 1000)
-          
+
           return
         }
-        
+
         setState(prev => ({
           ...prev,
           status: 'error',
@@ -204,8 +204,8 @@ function EnhancedVerifyContent() {
         return
       }
 
-      logger.info('Processing email verification', { 
-        type: verificationType, 
+      logger.info('Processing email verification', {
+        type: verificationType,
         hasToken: !!tokenHash,
         retryAttempt: state.retryCount
       })
@@ -224,12 +224,12 @@ function EnhancedVerifyContent() {
           canRetry: true,
           retryCount: prev.retryCount + 1
         }))
-        
+
         showError(errorInfo.message || 'Verification failed: Unknown error')
         if (errorInfo.status === 'expired') {
           setTimeout(() => router.push('/auth/resend-verification'), 2000)
         }
-        
+
         logger.error('Email verification failed', { type: verificationType }, verifyError)
         return
       }
@@ -242,7 +242,7 @@ function EnhancedVerifyContent() {
           user: data.user,
           countdown: 3
         }))
-        
+
         success('Email verified successfully! Welcome to ClaimGuardian')
         setTimeout(() => router.push('/dashboard'), 1500)
 
@@ -262,19 +262,19 @@ function EnhancedVerifyContent() {
             handler: () => router.push('/dashboard')
           }]
         })
-        
-        logger.track('email_verified_success', { 
+
+        logger.track('email_verified_success', {
           userId: data.user.id,
           verificationType,
           retryCount: state.retryCount
         })
-        
+
         // Auto-redirect with countdown
         let countdownValue = 3
         const countdownInterval = setInterval(() => {
           countdownValue--
           setState(prev => ({ ...prev, countdown: countdownValue }))
-          
+
           if (countdownValue <= 0) {
             clearInterval(countdownInterval)
             router.push('/dashboard')
@@ -292,9 +292,9 @@ function EnhancedVerifyContent() {
           suggestion: 'Please try again or contact support if the problem persists'
         }
       }))
-      
+
       showError('Verification failed: An unexpected error occurred')
-      
+
       logger.error('Unexpected verification error', {}, err as Error)
     }
   }, [searchParams, mapSupabaseError, router, success, showError, addNotification, state.retryCount])
@@ -356,14 +356,14 @@ function EnhancedVerifyContent() {
                 <div className="mx-auto mb-6">
                   {getStatusIcon()}
                 </div>
-                
+
                 <CardTitle className="text-3xl font-bold mb-2">
                   {state.status === 'verifying' && 'Verifying Email'}
                   {state.status === 'success' && 'Email Verified!'}
                   {state.status === 'error' && 'Verification Failed'}
                   {state.status === 'expired' && 'Link Expired'}
                 </CardTitle>
-                
+
                 <p className="text-gray-600 dark:text-gray-400 text-lg">
                   {state.message}
                 </p>
@@ -395,7 +395,7 @@ function EnhancedVerifyContent() {
                         Your account is now fully activated and secure!
                       </AlertDescription>
                     </Alert>
-                    
+
                     {state.countdown > 0 && (
                       <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 text-center">
                         <p className="text-sm text-blue-700 dark:text-blue-300">
@@ -407,9 +407,9 @@ function EnhancedVerifyContent() {
                         </p>
                       </div>
                     )}
-                    
-                    <Button 
-                      onClick={() => router.push('/dashboard')} 
+
+                    <Button
+                      onClick={() => router.push('/dashboard')}
                       className="w-full bg-green-600 hover:bg-green-700 text-lg h-12"
                     >
                       <Zap className="w-5 h-5 mr-2" />
@@ -429,7 +429,7 @@ function EnhancedVerifyContent() {
                         </AlertDescription>
                       </Alert>
                     )}
-                    
+
                     <div className="bg-gray-50 dark:bg-gray-800/50 rounded-lg p-4">
                       <h4 className="font-medium text-sm mb-3 flex items-center">
                         <AlertTriangle className="w-4 h-4 mr-2 text-orange-500" />
@@ -445,17 +445,17 @@ function EnhancedVerifyContent() {
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       {state.canRetry && (
-                        <Button 
+                        <Button
                           onClick={retryVerification}
-                          variant="outline" 
+                          variant="outline"
                           className="flex items-center justify-center"
                         >
                           <RefreshCw className="w-4 h-4 mr-2" />
                           Retry Verification
                         </Button>
                       )}
-                      
-                      <Button 
+
+                      <Button
                         onClick={() => router.push('/auth/resend-verification')}
                         className="flex items-center justify-center"
                       >
@@ -469,16 +469,16 @@ function EnhancedVerifyContent() {
                 {/* Additional help and navigation */}
                 <div className="pt-6 border-t border-gray-200 dark:border-gray-700">
                   <div className="flex flex-col sm:flex-row gap-3">
-                    <Button 
-                      variant="ghost" 
+                    <Button
+                      variant="ghost"
                       onClick={() => router.push('/')}
                       className="flex-1 flex items-center justify-center"
                     >
                       <Home className="w-4 h-4 mr-2" />
                       Back to Home
                     </Button>
-                    
-                    <Button 
+
+                    <Button
                       variant="ghost"
                       onClick={() => window.open('mailto:support@claimguardianai.com', '_blank')}
                       className="flex-1 flex items-center justify-center"
@@ -504,15 +504,15 @@ function EnhancedVerifyContent() {
             <CardContent className="p-4">
               <p className="text-xs text-center text-gray-500">
                 Having trouble?{' '}
-                <Link 
-                  href="/help/verification" 
+                <Link
+                  href="/help/verification"
                   className="text-blue-600 hover:underline"
                 >
                   View verification troubleshooting guide
                 </Link>
                 {' '}or{' '}
-                <Link 
-                  href="/contact" 
+                <Link
+                  href="/contact"
                   className="text-blue-600 hover:underline"
                 >
                   contact our support team

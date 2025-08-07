@@ -84,7 +84,7 @@ class ConflictResolver {
     try {
       // Detect conflicts
       const conflicts = this.detectConflicts(localVersion, remoteVersion)
-      
+
       if (conflicts.length === 0) {
         return {
           action: 'keep_remote',
@@ -110,7 +110,7 @@ class ConflictResolver {
 
       // Attempt automatic resolution
       const resolution = await this.attemptAutoResolution(conflict)
-      
+
       if (resolution.action !== 'manual_review') {
         await this.markConflictResolved(conflict.conflictId, resolution)
       }
@@ -133,7 +133,7 @@ class ConflictResolver {
 
     for (const key of allKeys) {
       if (key === 'updated_at' || key === 'synced') continue // Skip sync metadata
-      
+
       const localValue = local[key]
       const remoteValue = remote[key]
 
@@ -193,7 +193,7 @@ class ConflictResolver {
 
     // Content conflicts - try smart merge
     const mergeResult = this.attemptSmartMerge(local, remote, conflict.conflictFields, strategy)
-    
+
     if (mergeResult.success) {
       return {
         action: 'merge',
@@ -204,8 +204,8 @@ class ConflictResolver {
     }
 
     // Check if conflicts are in fields that can be auto-resolved
-    const canAutoResolve = conflict.conflictFields.every(field => 
-      strategy.preferLocal.includes(field) || 
+    const canAutoResolve = conflict.conflictFields.every(field =>
+      strategy.preferLocal.includes(field) ||
       strategy.preferRemote.includes(field) ||
       strategy.autoMergeRules[field]
     )
@@ -264,9 +264,9 @@ class ConflictResolver {
   }
 
   private attemptSmartMerge<T>(
-    local: T, 
-    remote: T, 
-    conflictFields: string[], 
+    local: T,
+    remote: T,
+    conflictFields: string[],
     strategy: MergeStrategy
   ): { success: boolean; data?: T; confidence: number; reason: string } {
     try {
@@ -338,7 +338,7 @@ class ConflictResolver {
 
   private mergeArrays(localArray: any[], remoteArray: any[]): any[] {
     const merged = [...localArray]
-    
+
     for (const item of remoteArray) {
       if (!merged.some(existing => JSON.stringify(existing) === JSON.stringify(item))) {
         merged.push(item)
@@ -363,7 +363,7 @@ class ConflictResolver {
         appliedRules++
       } else if (strategy.autoMergeRules[field]) {
         (result as any)[field] = strategy.autoMergeRules[field](
-          (local as any)[field], 
+          (local as any)[field],
           (remote as any)[field]
         )
         appliedRules++
@@ -444,7 +444,7 @@ class ConflictResolver {
 
     try {
       await this.db.runAsync(
-        `INSERT INTO sync_conflicts 
+        `INSERT INTO sync_conflicts
          (id, entity_type, entity_id, local_version, remote_version, conflict_fields, conflict_type, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -464,14 +464,14 @@ class ConflictResolver {
   }
 
   private async markConflictResolved<T>(
-    conflictId: string, 
+    conflictId: string,
     resolution: ConflictResolution<T>
   ): Promise<void> {
     if (!this.db) return
 
     try {
       await this.db.runAsync(
-        `UPDATE sync_conflicts 
+        `UPDATE sync_conflicts
          SET resolved = 1, resolution = ?, resolved_at = ?, resolved_data = ?
          WHERE id = ?`,
         [
@@ -494,8 +494,8 @@ class ConflictResolver {
       const result = await this.db.getAllAsync(
         `SELECT id as conflictId, entity_type, entity_id, local_version, remote_version,
                 conflict_fields, conflict_type, created_at
-         FROM sync_conflicts 
-         WHERE resolved = 0 
+         FROM sync_conflicts
+         WHERE resolved = 0
          ORDER BY created_at DESC`
       ) as any[]
 
@@ -521,9 +521,9 @@ class ConflictResolver {
 
     try {
       const resolvedData = resolution === 'custom' ? customData : null
-      
+
       await this.db.runAsync(
-        `UPDATE sync_conflicts 
+        `UPDATE sync_conflicts
          SET resolved = 1, resolution = ?, resolved_at = ?, resolved_data = ?
          WHERE id = ?`,
         [
@@ -561,12 +561,12 @@ class ConflictResolver {
       ) as { count: number } | null
 
       const autoResolvedResult = await this.db.getFirstAsync(
-        `SELECT COUNT(*) as count FROM sync_conflicts 
+        `SELECT COUNT(*) as count FROM sync_conflicts
          WHERE resolved = 1 AND resolution IN ('merge', 'keep_local', 'keep_remote')`
       ) as { count: number } | null
 
       const manualResolvedResult = await this.db.getFirstAsync(
-        `SELECT COUNT(*) as count FROM sync_conflicts 
+        `SELECT COUNT(*) as count FROM sync_conflicts
          WHERE resolved = 1 AND resolution IN ('local', 'remote', 'custom')`
       ) as { count: number } | null
 
@@ -587,7 +587,7 @@ class ConflictResolver {
 
     try {
       const cutoffDate = new Date(Date.now() - olderThanDays * 24 * 60 * 60 * 1000).toISOString()
-      
+
       await this.db.runAsync(
         'DELETE FROM sync_conflicts WHERE resolved = 1 AND resolved_at < ?',
         [cutoffDate]

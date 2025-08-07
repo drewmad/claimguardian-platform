@@ -29,7 +29,7 @@ export function SignOutButton({
 }: SignOutButtonProps) {
   const { signOut } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
-  
+
   const handleSignOut = async () => {
     setIsLoading(true)
     try {
@@ -42,7 +42,7 @@ export function SignOutButton({
       setIsLoading(false)
     }
   }
-  
+
   return (
     <Button
       variant={variant}

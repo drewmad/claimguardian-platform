@@ -29,18 +29,18 @@ while true; do
     echo -e "${BLUE}============================================================${NC}"
     echo "Time: $(date '+%Y-%m-%d %H:%M:%S')"
     echo
-    
+
     # Get database summary
     STATS=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -c "SELECT COUNT(*) as total, COUNT(DISTINCT co_no) as counties FROM florida_parcels;" 2>/dev/null)
-    
+
     if [ $? -eq 0 ]; then
         TOTAL=$(echo $STATS | awk '{print $1}')
         COUNTIES=$(echo $STATS | awk '{print $3}')
-        
+
         echo -e "${GREEN}Database Status:${NC}"
         echo "  Total Parcels: $(printf "%'d" $TOTAL)"
         echo "  Counties Imported: $COUNTIES / 67"
-        
+
         # Progress bar
         PCT=$((COUNTIES * 100 / 67))
         echo -n "  Progress: ["
@@ -53,7 +53,7 @@ while true; do
         done
         echo "] $PCT%"
         echo
-        
+
         # Get county breakdown
         echo -e "${GREEN}Counties by Status:${NC}"
         COUNTY_LIST=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -c "SELECT co_no, COUNT(*) FROM florida_parcels GROUP BY co_no ORDER BY co_no;" 2>/dev/null | head -10)
@@ -71,7 +71,7 @@ while true; do
     else
         echo -e "${RED}Unable to connect to database${NC}"
     fi
-    
+
     # Active processes
     echo -e "${YELLOW}Active Import Processes:${NC}"
     ACTIVE_PROCS=$(ps aux | grep -E "ogr2ogr.*CADASTRAL_DOR.*CO_NO" | grep -v grep)
@@ -89,12 +89,12 @@ while true; do
             fi
         done
     fi
-    
+
     # Count total active
     ACTIVE_COUNT=$(ps aux | grep "[p]rocess_county" | wc -l | xargs)
     echo "  Total active processes: $ACTIVE_COUNT"
     echo
-    
+
     # Recent completions
     echo -e "${GREEN}Recent Completions:${NC}"
     if [ -d "$LOG_DIR" ]; then
@@ -107,7 +107,7 @@ while true; do
         done
     fi
     echo
-    
+
     # Recent errors/timeouts
     echo -e "${RED}Recent Issues:${NC}"
     ISSUES=0
@@ -122,7 +122,7 @@ while true; do
                 ((ISSUES++))
             done
         fi
-        
+
         # Check main log for timeouts
         if [ -f "/tmp/florida_import_remaining.log" ]; then
             TIMEOUTS=$(grep -E "ERROR.*timeout|canceling statement" /tmp/florida_import_remaining.log 2>/dev/null | tail -3)
@@ -134,12 +134,12 @@ while true; do
             fi
         fi
     fi
-    
+
     if [ $ISSUES -eq 0 ]; then
         echo "  No recent issues"
     fi
     echo
-    
+
     # Recommendations
     echo -e "${BLUE}Recommendations:${NC}"
     if [ $ISSUES -gt 0 ]; then
@@ -147,14 +147,14 @@ while true; do
         echo "  • Use batched import for large counties:"
         echo "    ./scripts/import-large-county-batched.sh <code> <name>"
     fi
-    
+
     # Show remaining counties
     REMAINING=$((67 - COUNTIES))
     if [ $REMAINING -gt 0 ]; then
         echo "  • $REMAINING counties remaining to import"
     fi
     echo
-    
+
     echo "Press Ctrl+C to exit (refreshing every 10 seconds...)"
     sleep 10
 done

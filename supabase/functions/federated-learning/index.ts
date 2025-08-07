@@ -18,10 +18,10 @@ serve(async (req: Request) => {
     switch (action) {
       case 'register_node': {
         const { nodeType, dataVolumeEstimate, capabilities } = data
-        
+
         // Generate anonymized node ID
         const nodeId = generateSecureNodeId()
-        
+
         // Register node with privacy guarantees
         const { error } = await supabase
           .from('federated_learning_nodes')
@@ -51,7 +51,7 @@ serve(async (req: Request) => {
 
       case 'start_round': {
         const { modelFamily, targetNodes, aggregationAlgorithm } = data
-        
+
         // Get current model version
         const { data: currentModel } = await supabase
           .from('ml_model_versions')
@@ -111,7 +111,7 @@ serve(async (req: Request) => {
 
       case 'submit_update': {
         const { roundId, nodeId, encryptedUpdate, updateMetrics } = data
-        
+
         // Verify node is invited to round
         const { data: round } = await supabase
           .from('federated_learning_rounds')
@@ -168,7 +168,7 @@ serve(async (req: Request) => {
 
       case 'aggregate_round': {
         const { roundId } = data
-        
+
         // Get round and all updates
         const { data: round } = await supabase
           .from('federated_learning_rounds')
@@ -241,7 +241,7 @@ serve(async (req: Request) => {
 
       case 'get_model': {
         const { nodeId, modelFamily } = data
-        
+
         // Verify node registration
         const { data: node } = await supabase
           .from('federated_learning_nodes')
@@ -322,10 +322,10 @@ function selectNodesForRound(nodes: any[], targetCount: number): any[] {
   // - Node type diversity
   // - Historical contribution quality
   // - Data volume
-  
+
   const selected: any[] = []
   const nodesByType: Record<string, any[]> = {}
-  
+
   // Group by type
   nodes.forEach(node => {
     if (!nodesByType[node.node_type]) {
@@ -333,18 +333,18 @@ function selectNodesForRound(nodes: any[], targetCount: number): any[] {
     }
     nodesByType[node.node_type].push(node)
   })
-  
+
   // Select proportionally from each type
   const typesCount = Object.keys(nodesByType).length
   const perType = Math.ceil(targetCount / typesCount)
-  
+
   Object.values(nodesByType).forEach(typeNodes => {
-    const sorted = typeNodes.sort((a, b) => 
+    const sorted = typeNodes.sort((a, b) =>
       b.total_contribution_score - a.total_contribution_score
     )
     selected.push(...sorted.slice(0, perType))
   })
-  
+
   return selected.slice(0, targetCount)
 }
 
@@ -363,7 +363,7 @@ async function getNextRoundNumber(supabase: any, modelFamily: string): Promise<n
     .order('round_number', { ascending: false })
     .limit(1)
     .single()
-  
+
   return (data?.round_number || 0) + 1
 }
 
@@ -383,7 +383,7 @@ async function triggerAggregation(supabase: any, roundId: string) {
     timestamp: new Date().toISOString(),
     message: `Triggering aggregation for round ${roundId}`
   }));
-  
+
   // In production, this would trigger a background job
   // For now, we'll set a flag
   await supabase
@@ -398,7 +398,7 @@ async function performSecureAggregation(round: any) {
   // 1. Decrypt updates using secure multi-party computation
   // 2. Verify update integrity
   // 3. Apply aggregation algorithm (FedAvg, FedProx, etc.)
-  
+
   return {
     architecture: { layers: 12, hidden_dim: 768 },
     hyperparameters: { learning_rate: 0.001 },
@@ -419,9 +419,9 @@ function applyDifferentialPrivacy(update: any, noiseMultiplier: number, clipping
   // This is a simplified version - real implementation would:
   // 1. Clip gradients to bounded sensitivity
   // 2. Add calibrated Gaussian noise
-  
+
   const noisyUpdate = { ...update }
-  
+
   // Add noise to weights (simplified)
   if (noisyUpdate.weights) {
     Object.keys(noisyUpdate.weights).forEach(key => {
@@ -429,7 +429,7 @@ function applyDifferentialPrivacy(update: any, noiseMultiplier: number, clipping
       noisyUpdate.weights[key] = noisyUpdate.weights[key] + noise
     })
   }
-  
+
   return noisyUpdate
 }
 
@@ -444,7 +444,7 @@ function gaussianNoise(mean: number, stdDev: number): number {
 async function rewardContributingNodes(supabase: any, round: any) {
   // Update contribution scores for participating nodes
   const contributionBonus = 10 / round.completed_nodes.length
-  
+
   for (const nodeId of round.completed_nodes) {
     await supabase
       .from('federated_learning_nodes')

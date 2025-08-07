@@ -84,7 +84,7 @@ export interface HomeSystem {
   age?: number
   installationDate?: string
   warrantyExpiryDate?: string
-  
+
   // Type-specific fields
   roofMaterial?: string
   roofShape?: 'Gable' | 'Hip' | 'Flat' | 'Gambrel' | 'Mansard' | 'Other'
@@ -99,7 +99,7 @@ export interface HomeSystem {
   plumbingType?: string
   septicOrSewer?: 'Septic' | 'Sewer'
   solarStatus?: 'Owned' | 'Leased'
-  
+
   photos?: string[]
   attachments?: Attachment[]
   maintenanceHistory?: MaintenanceRecord[]
@@ -251,13 +251,13 @@ export interface Asset {
   image?: string
   value?: number // Estimated market value
   coverage?: number // Total insurance coverage
-  
+
   // Property-specific fields
   isPrimaryResidence?: boolean
   address?: PropertyAddress
   details?: PropertyDetails
   landDetails?: LandDetails
-  
+
   // Collections
   inventory?: InventoryItem[]
   systems?: HomeSystem[]
@@ -265,7 +265,7 @@ export interface Asset {
   renovations?: RenovationProject[]
   inspections?: PropertyInspection[]
   documents?: PropertyDocument[]
-  
+
   // Records
   saleHistory?: SaleRecord[]
   taxHistory?: TaxRecord[]
@@ -275,7 +275,7 @@ export interface Asset {
   maintenanceTasks?: MaintenanceTask[]
   warranties?: Warranty[]
   identifiedMaterials?: IdentifiedMaterial[]
-  
+
   // Metadata
   createdAt: string
   updatedAt: string

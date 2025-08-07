@@ -121,18 +121,18 @@ async function getZillowData(address: string, lat?: number, lng?: number): Promi
   try {
     // In production, you would use:
     // 1. RentSpider API (rentspider.com) - $0.10 per call
-    // 2. Mashvisor API - $0.05 per call  
+    // 2. Mashvisor API - $0.05 per call
     // 3. PropertyRadar API - $0.02 per call
     // 4. Rentals.com API
     // 5. Web scraping (complex, rate-limited)
-    
+
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
       message: `[Zillow Mock] Generating property data for: ${address}`
     }));
     return generateMockZillowData(address, lat, lng)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -151,12 +151,12 @@ function generateMockZillowData(address: string, lat?: number, lng?: number): an
   const isTampa = addressLower.includes('tampa') || addressLower.includes('hillsborough')
   const isOrlando = addressLower.includes('orlando') || addressLower.includes('orange')
   const isJacksonville = addressLower.includes('jacksonville') || addressLower.includes('duval')
-  
+
   // Base property characteristics
   let baseValue = 300000
   let pricePerSqFt = 150
   let appreciation = 5.2 // Florida average
-  
+
   // Florida location adjustments
   if (isFloridaProperty) {
     if (isMiami) {
@@ -177,26 +177,26 @@ function generateMockZillowData(address: string, lat?: number, lng?: number): an
       appreciation = 5.9
     }
   }
-  
+
   // Add randomization for realism
   const variance = 0.15 // ±15%
   const randomFactor = 1 + (Math.random() - 0.5) * variance
   baseValue = Math.floor(baseValue * randomFactor)
   pricePerSqFt = Math.floor(pricePerSqFt * randomFactor)
-  
+
   // Generate property details
   const bedrooms = Math.floor(Math.random() * 4) + 2 // 2-5 bedrooms
   const bathrooms = Math.floor(Math.random() * 3) + 1.5 // 1.5-4.5 bathrooms
   const sqft = Math.floor(baseValue / pricePerSqFt)
   const yearBuilt = 1980 + Math.floor(Math.random() * 40) // 1980-2020
-  
+
   // Generate comparable sales
   const comparableSales = []
   for (let i = 0; i < 5; i++) {
     const compVariance = 1 + (Math.random() - 0.5) * 0.2 // ±20% variance
     const compSqft = Math.floor(sqft * compVariance)
     const compPrice = Math.floor(compSqft * pricePerSqFt * compVariance)
-    
+
     comparableSales.push({
       address: `${Math.floor(Math.random() * 9000) + 1000} Mock St`,
       distance: Math.round((Math.random() * 0.8 + 0.1) * 100) / 100, // 0.1-0.9 miles
@@ -210,15 +210,15 @@ function generateMockZillowData(address: string, lat?: number, lng?: number): an
       similarity: Math.floor(Math.random() * 30) + 70 // 70-100% similarity
     })
   }
-  
+
   // Generate price history
   const priceHistory = []
   let currentPrice = baseValue
-  
+
   for (let i = 12; i >= 0; i--) {
     const date = new Date()
     date.setMonth(date.getMonth() - i)
-    
+
     if (i === 0) {
       // Current listing/sale
       priceHistory.push({
@@ -231,7 +231,7 @@ function generateMockZillowData(address: string, lat?: number, lng?: number): an
       // Historical monthly appreciation
       const monthlyAppreciation = (appreciation / 100) / 12
       currentPrice = Math.floor(currentPrice / (1 + monthlyAppreciation))
-      
+
       if (i === 6 && Math.random() > 0.7) {
         // Occasional sale 6 months ago
         priceHistory.push({
@@ -244,7 +244,7 @@ function generateMockZillowData(address: string, lat?: number, lng?: number): an
       }
     }
   }
-  
+
   return {
     address,
     zestimate: baseValue,
@@ -264,7 +264,7 @@ function analyzePropertyValue(zillowData: any): any {
   const zestimate = zillowData.zestimate
   const sqft = zillowData.sqft
   const appreciation = zillowData.appreciation
-  
+
   return {
     zestimate,
     valueRange: {
@@ -285,7 +285,7 @@ function analyzeMarketConditions(zillowData: any, comparableSales: any[]): any {
   const avgSoldPrice = comparableSales.reduce((sum, comp) => sum + comp.soldPrice, 0) / comparableSales.length
   const avgDaysOnMarket = comparableSales.reduce((sum, comp) => sum + comp.daysOnMarket, 0) / comparableSales.length
   const appreciation = zillowData.appreciation
-  
+
   return {
     medianHomeValue: Math.floor(avgSoldPrice),
     medianListPrice: Math.floor(avgSoldPrice * 1.05), // Typically 5% above sold prices
@@ -307,10 +307,10 @@ function calculateInsuranceIntelligence(propertyData: any, marketData: any): any
   const zestimate = propertyData.zestimate
   const sqft = propertyData.sqft
   const yearBuilt = propertyData.yearBuilt
-  
+
   // Replacement cost typically 20-30% higher than market value
   const replacementCost = Math.floor(zestimate * 1.25)
-  
+
   // Age-based risk factors
   const riskFactors = []
   if (yearBuilt < 1990) riskFactors.push('Older construction - potential electrical/plumbing updates needed')
@@ -319,7 +319,7 @@ function calculateInsuranceIntelligence(propertyData: any, marketData: any): any
     riskFactors.push('Florida location - hurricane and flood risk')
     riskFactors.push('High humidity climate - mold/moisture concerns')
   }
-  
+
   return {
     replacementCost,
     insurableValue: Math.floor(replacementCost * 0.9), // Exclude land value
@@ -336,14 +336,14 @@ function generateRentalEstimates(propertyData: any): any {
   const zestimate = propertyData.zestimate
   const bedrooms = propertyData.bedrooms
   const sqft = propertyData.sqft
-  
+
   // Rough rental calculations (1% rule as baseline)
   const baseRent = Math.floor(zestimate * 0.01)
-  
+
   // Bedroom adjustments
   const bedroomMultiplier = bedrooms <= 2 ? 0.9 : bedrooms >= 4 ? 1.1 : 1.0
   const rentZestimate = Math.floor(baseRent * bedroomMultiplier)
-  
+
   return {
     rentZestimate,
     rentRange: {
@@ -402,7 +402,7 @@ Deno.serve(async (req: Request) => {
 
     // Get property data
     const zillowData = await getZillowData(location.address, location.lat, location.lng)
-    
+
     let intelligence: ZillowPropertyIntelligence = {}
 
     switch (analysisType) {
@@ -484,7 +484,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Zillow Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

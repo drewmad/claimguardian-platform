@@ -50,7 +50,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
     setLoading(true)
     setError(null)
     setCurrentStep('Analyzing property data...')
-    
+
     try {
       // Simulate progressive steps
       const steps = [
@@ -61,24 +61,24 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
         'Generating AI insights...',
         'Compiling final report...'
       ]
-      
+
       for (let i = 0; i < steps.length; i++) {
         setCurrentStep(steps[i])
         await new Promise(resolve => setTimeout(resolve, 800))
       }
-      
+
       const result = await enrichProperty(parcelId)
-      
+
       if (result.error) {
         setError(result.error.message)
         return
       }
-      
+
       if (result.data) {
         setEnrichedData(result.data)
         onEnrichmentComplete?.(result.data)
       }
-      
+
     } catch (err) {
       setError('Enrichment failed. Please try again.')
     } finally {
@@ -122,7 +122,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             <div className="text-gray-300">
               Generate comprehensive property analysis using AI and 9.6M Florida parcel dataset
             </div>
-            
+
             {loading && (
               <div className="space-y-4">
                 <div className="flex items-center justify-center space-x-2">
@@ -132,13 +132,13 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                 <Progress value={loading ? 75 : 0} className="w-full" />
               </div>
             )}
-            
+
             {error && (
               <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
                 <p className="text-red-400">{error}</p>
               </div>
             )}
-            
+
             <Button
               onClick={handleEnrichment}
               disabled={loading}
@@ -148,7 +148,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
               {loading ? 'Analyzing Property...' : 'Start AI Analysis'}
             </Button>
           </div>
-          
+
           <div className="grid md:grid-cols-3 gap-4 pt-6 border-t border-gray-700">
             <div className="text-center">
               <TrendingUp className="w-8 h-8 text-blue-400 mx-auto mb-2" />
@@ -221,7 +221,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
             </div>
             <div className="text-gray-400">Overall Risk Score</div>
           </div>
-          
+
           <div className="grid md:grid-cols-2 gap-4">
             {Object.entries(enrichedData.riskProfile).filter(([key]) => key !== 'overallRiskScore').map(([key, riskFactor]) => {
               const factor = riskFactor as RiskFactor
@@ -231,7 +231,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                     <span className="text-white capitalize">
                       {key.replace(/([A-Z])/g, ' $1').replace('Risk', '')}
                     </span>
-                    <Badge 
+                    <Badge
                       variant="secondary"
                       className={`${getRiskColor(factor.score)} border-current`}
                     >
@@ -287,7 +287,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
               <div className="text-gray-400 text-sm">Days on Market</div>
             </div>
           </div>
-          
+
           <div>
             <h4 className="text-white font-medium mb-3">Recent Comparable Sales</h4>
             <div className="space-y-2">
@@ -377,7 +377,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                 </div>
               </div>
             </div>
-            
+
             <div>
               <h4 className="text-white font-medium mb-3">Discount Opportunities</h4>
               <div className="space-y-1">
@@ -415,7 +415,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-blue-400 font-medium mb-2 flex items-center gap-2">
                   <Target className="w-4 h-4" />
@@ -428,7 +428,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                 </ul>
               </div>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <h4 className="text-yellow-400 font-medium mb-2 flex items-center gap-2">
@@ -441,7 +441,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
                   ))}
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-red-400 font-medium mb-2 flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4" />
@@ -455,7 +455,7 @@ export function PropertyEnrichmentUI({ parcelId, onEnrichmentComplete }: Propert
               </div>
             </div>
           </div>
-          
+
           <div className="mt-6 pt-6 border-t border-gray-700">
             <h4 className="text-white font-medium mb-3">Key Action Items</h4>
             <div className="space-y-2">

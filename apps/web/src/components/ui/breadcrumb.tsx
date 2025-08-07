@@ -29,8 +29,8 @@ export interface BreadcrumbProps {
   showHome?: boolean
 }
 
-export function Breadcrumb({ 
-  items, 
+export function Breadcrumb({
+  items,
   className = '',
   separator = <ChevronRight className="h-4 w-4 mx-1 text-gray-500" />,
   'aria-label': ariaLabel = 'Breadcrumb navigation',
@@ -39,7 +39,7 @@ export function Breadcrumb({
   const pathname = usePathname()
 
   return (
-    <nav 
+    <nav
       aria-label={ariaLabel}
       className={cn('flex items-center space-x-1 text-sm text-gray-400', className)}
     >
@@ -47,8 +47,8 @@ export function Breadcrumb({
         {showHome && (
           <>
             <li>
-              <Link 
-                href="/dashboard" 
+              <Link
+                href="/dashboard"
                 className="flex items-center hover:text-white transition-colors"
                 aria-label="Home"
               >
@@ -58,17 +58,17 @@ export function Breadcrumb({
             {items.length > 0 && separator}
           </>
         )}
-        
+
         {items.map((item, index) => {
           const isLast = index === items.length - 1
           const isCurrent = item.current || isLast || item.href === pathname
-          
+
           return (
             <React.Fragment key={index}>
               {index > 0 && separator}
               <li>
                 {item.href && !isCurrent ? (
-                  <Link 
+                  <Link
                     href={item.href}
                     className="hover:text-white transition-colors flex items-center gap-1"
                     aria-current={isCurrent ? 'page' : undefined}
@@ -77,7 +77,7 @@ export function Breadcrumb({
                     {item.label}
                   </Link>
                 ) : (
-                  <span 
+                  <span
                     className="text-white flex items-center gap-1"
                     aria-current={isCurrent ? 'page' : undefined}
                   >
@@ -95,14 +95,14 @@ export function Breadcrumb({
 }
 
 // AI-specific breadcrumb helper
-export function AIBreadcrumb({ 
-  section, 
-  page, 
-  className = '' 
-}: { 
+export function AIBreadcrumb({
+  section,
+  page,
+  className = ''
+}: {
   section: string
   page: string
-  className?: string 
+  className?: string
 }) {
   const items: BreadcrumbItem[] = [
     { label: 'AI Tools', href: '/ai-tools' },
@@ -114,7 +114,7 @@ export function AIBreadcrumb({
 }
 
 // Insurance-specific breadcrumb helper
-export function InsuranceBreadcrumb({ 
+export function InsuranceBreadcrumb({
   property,
   propertyId,
   policy,
@@ -122,7 +122,7 @@ export function InsuranceBreadcrumb({
   claim,
   claimId,
   className = ''
-}: { 
+}: {
   property?: string
   propertyId?: string
   policy?: string
@@ -136,24 +136,24 @@ export function InsuranceBreadcrumb({
   ]
 
   if (property && propertyId) {
-    items.push({ 
-      label: property, 
+    items.push({
+      label: property,
       href: `/dashboard/property/${propertyId}`,
       icon: Home
     })
   }
 
   if (policy && policyId) {
-    items.push({ 
-      label: policy, 
+    items.push({
+      label: policy,
       href: `/dashboard/insurance/policy/${policyId}`,
       icon: FileText
     })
   }
 
   if (claim && claimId) {
-    items.push({ 
-      label: claim, 
+    items.push({
+      label: claim,
       href: `/dashboard/claims/${claimId}`,
       icon: AlertTriangle,
       current: true

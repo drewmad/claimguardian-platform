@@ -120,7 +120,7 @@ export class AutoFixService {
    */
   getFixStats(): FixStatistics {
     const fixes = Array.from(this.fixHistory.values())
-    
+
     const successfulFixes = fixes.filter(f => f.status === 'success').length
     const failedFixes = fixes.filter(f => f.status === 'failed').length
     const rolledBack = fixes.filter(f => f.rolledBack).length

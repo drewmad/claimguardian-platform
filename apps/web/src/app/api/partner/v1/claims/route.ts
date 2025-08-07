@@ -13,16 +13,16 @@ import { NextRequest } from 'next/server'
 import { withPartnerAuth } from '@/lib/partner-api/middleware'
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger/production-logger'
-import type { 
-  PartnerApiResponse, 
-  ClaimApiRequest, 
-  ClaimApiResponse 
+import type {
+  PartnerApiResponse,
+  ClaimApiRequest,
+  ClaimApiResponse
 } from '@claimguardian/db/types/partner-api.types'
 import type { PartnerApiContext } from '@/lib/partner-api/middleware'
 
 /**
  * GET /api/partner/v1/claims - List claims for partner
- * 
+ *
  * Query Parameters:
  * - status: Filter by claim status
  * - date_from: Filter claims from date (ISO string)
@@ -38,7 +38,7 @@ export const GET = withPartnerAuth(
     try {
       const { searchParams } = request.nextUrl
       const supabase = await createClient()
-      
+
       // Extract query parameters
       const status = searchParams.get('status')
       const dateFrom = searchParams.get('date_from')
@@ -48,9 +48,9 @@ export const GET = withPartnerAuth(
       const limit = Math.min(parseInt(searchParams.get('limit') || '50', 10), 1000)
       const sort = searchParams.get('sort') || 'created_at'
       const order = searchParams.get('order') || 'desc'
-      
+
       const offset = (page - 1) * limit
-      
+
       // Build query
       let query = supabase
         .from('partner_claims')
@@ -79,33 +79,33 @@ export const GET = withPartnerAuth(
         .eq('partner_id', context.partner.id)
         .range(offset, offset + limit - 1)
         .order(sort, { ascending: order === 'asc' })
-      
+
       // Apply filters
       if (status) {
         query = query.eq('status', status)
       }
-      
+
       if (policyNumber) {
         query = query.eq('policy_number', policyNumber)
       }
-      
+
       if (dateFrom) {
         query = query.gte('incident_date', dateFrom)
       }
-      
+
       if (dateTo) {
         query = query.lte('incident_date', dateTo)
       }
-      
+
       const { data: claims, error: claimsError } = await query
-      
+
       if (claimsError) {
         logger.error('Error fetching partner claims', {
           error: claimsError,
           partnerId: context.partner.id,
           requestId: context.requestId
         })
-        
+
         return {
           success: false,
           error: {
@@ -123,16 +123,16 @@ export const GET = withPartnerAuth(
           }
         }
       }
-      
+
       // Get total count for pagination
       const { count: totalCount, error: countError } = await supabase
         .from('partner_claims')
         .select('*', { count: 'exact', head: true })
         .eq('partner_id', context.partner.id)
-      
+
       const total = totalCount || 0
       const totalPages = Math.ceil(total / limit)
-      
+
       return {
         success: true,
         data: {
@@ -156,14 +156,14 @@ export const GET = withPartnerAuth(
           }
         }
       }
-      
+
     } catch (error) {
       logger.error('Claims API GET error', {
         error,
         partnerId: context.partner.id,
         requestId: context.requestId
       })
-      
+
       return {
           success: false,
           error: {
@@ -192,7 +192,7 @@ export const GET = withPartnerAuth(
 
 /**
  * POST /api/partner/v1/claims - Create a new claim
- * 
+ *
  * Body:
  * {
  *   externalId: string,
@@ -223,14 +223,14 @@ export const POST = withPartnerAuth(
     try {
       const body = await request.json()
       const supabase = await createClient()
-      
+
       // Validate required fields
       const requiredFields = [
-        'externalId', 'policyNumber', 'propertyAddress', 
+        'externalId', 'policyNumber', 'propertyAddress',
         'incidentDate', 'incidentType', 'description',
         'estimatedLoss', 'deductible', 'claimantInfo'
       ]
-      
+
       for (const field of requiredFields) {
         if (!body[field]) {
           return {
@@ -251,7 +251,7 @@ export const POST = withPartnerAuth(
           }
         }
       }
-      
+
       // Check if external ID already exists for this partner
       const { data: existingClaim } = await supabase
         .from('partner_claims')
@@ -259,7 +259,7 @@ export const POST = withPartnerAuth(
         .eq('partner_id', context.partner.id)
         .eq('external_id', body.externalId)
         .single()
-      
+
       if (existingClaim) {
         return {
           success: false,
@@ -278,17 +278,17 @@ export const POST = withPartnerAuth(
           }
         }
       }
-      
+
       // Generate claim number
       const claimNumber = await generateClaimNumber(context.partner.companyCode)
-      
+
       // Create or find property
       const propertyResult = await findOrCreateProperty(supabase, {
         partnerId: context.partner.id,
         address: body.propertyAddress,
         claimantInfo: body.claimantInfo
       })
-      
+
       if (!propertyResult.success) {
         return {
           success: false,
@@ -307,7 +307,7 @@ export const POST = withPartnerAuth(
           }
         }
       }
-      
+
       // Create claim record
       const claimData = {
         partner_id: context.partner.id,
@@ -333,13 +333,13 @@ export const POST = withPartnerAuth(
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
-      
+
       const { data: newClaim, error: createError } = await supabase
         .from('partner_claims')
         .insert(claimData)
         .select()
         .single()
-      
+
       if (createError) {
         logger.error('Error creating partner claim', {
           error: createError,
@@ -347,7 +347,7 @@ export const POST = withPartnerAuth(
           externalId: body.externalId,
           requestId: context.requestId
         })
-        
+
         return {
           success: false,
           error: {
@@ -365,12 +365,12 @@ export const POST = withPartnerAuth(
           }
         }
       }
-      
+
       // Trigger AI processing if enabled
       if (context.partner.configuration.claimWorkflows.enableAIAssessment) {
         await triggerAIProcessing(newClaim.id, context.partner.id)
       }
-      
+
       // Send webhook notification
       await sendWebhookNotification(context.partner.id, 'claim.created', {
         claimId: newClaim.id,
@@ -378,7 +378,7 @@ export const POST = withPartnerAuth(
         claimNumber,
         status: 'submitted'
       })
-      
+
       // Log successful creation
       logger.info('Partner claim created', {
         partnerId: context.partner.id,
@@ -387,7 +387,7 @@ export const POST = withPartnerAuth(
         claimNumber,
         requestId: context.requestId
       })
-      
+
       const response: ClaimApiResponse = {
         claimId: newClaim.id,
         externalId: body.externalId,
@@ -397,7 +397,7 @@ export const POST = withPartnerAuth(
         nextSteps: generateNextSteps(body.incidentType, context.partner.configuration),
         requiredDocuments: getRequiredDocuments(body.incidentType, context.partner.configuration)
       }
-      
+
       return {
         success: true,
         data: response,
@@ -411,14 +411,14 @@ export const POST = withPartnerAuth(
           }
         }
       }
-      
+
     } catch (error) {
       logger.error('Claims API POST error', {
         error,
         partnerId: context.partner.id,
         requestId: context.requestId
       })
-      
+
       return {
           success: false,
           error: {
@@ -469,14 +469,14 @@ async function findOrCreateProperty(
       .eq('partner_id', params.partnerId)
       .ilike('address->full', `%${params.address}%`)
       .single()
-    
+
     if (existingProperty) {
       return {
         success: true,
         propertyId: existingProperty.id
       }
     }
-    
+
     // Create new property
     const { data: newProperty, error } = await supabase
       .from('partner_properties')
@@ -495,19 +495,19 @@ async function findOrCreateProperty(
       })
       .select('id')
       .single()
-    
+
     if (error) {
       return {
         success: false,
         error: 'Failed to create property'
       }
     }
-    
+
     return {
       success: true,
       propertyId: newProperty.id
     }
-    
+
   } catch (error) {
     return {
       success: false,
@@ -543,7 +543,7 @@ function calculateProcessingTime(incidentType: string, estimatedLoss: number): s
   const baseTime = 3 // 3 business days
   const complexityMultiplier = estimatedLoss > 50000 ? 2 : 1
   const typeMultiplier = ['hurricane', 'water'].includes(incidentType) ? 1.5 : 1
-  
+
   const days = Math.ceil(baseTime * complexityMultiplier * typeMultiplier)
   return `${days} business days`
 }
@@ -554,30 +554,30 @@ function generateNextSteps(incidentType: string, configuration: any): string[] {
     'Schedule property inspection if required',
     'Submit any additional required documentation'
   ]
-  
+
   if (configuration.claimWorkflows.requirePhotos) {
     steps.push('Upload photos of damage')
   }
-  
+
   if (configuration.claimWorkflows.requireReceipts) {
     steps.push('Provide receipts for temporary repairs or expenses')
   }
-  
+
   return steps
 }
 
 function getRequiredDocuments(incidentType: string, configuration: any): string[] {
   const documents = ['Proof of ownership or lease agreement']
-  
+
   if (configuration.claimWorkflows.requirePhotos) {
     documents.push('Photos of damage from multiple angles')
   }
-  
+
   if (configuration.claimWorkflows.requireReceipts) {
     documents.push('Receipts for emergency repairs')
     documents.push('Receipts for additional living expenses')
   }
-  
+
   switch (incidentType) {
     case 'hurricane':
     case 'wind':
@@ -590,6 +590,6 @@ function getRequiredDocuments(incidentType: string, configuration: any): string[
       documents.push('Fire department report')
       break
   }
-  
+
   return documents
 }

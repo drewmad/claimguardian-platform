@@ -42,7 +42,7 @@ export default [
       // Allow empty interfaces for component props that extend HTML props
       '@typescript-eslint/no-empty-object-type': 'off',
       // Configure no-unused-expressions properly
-      '@typescript-eslint/no-unused-expressions': ['error', { 
+      '@typescript-eslint/no-unused-expressions': ['error', {
         allowShortCircuit: true,
         allowTernary: true,
         allowTaggedTemplates: true

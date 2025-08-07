@@ -35,7 +35,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
   const [showSettings, setShowSettings] = useState(false)
   const [budget, setBudget] = useState<'low' | 'medium' | 'high'>('medium')
   const [speedPriority, setSpeedPriority] = useState(false)
-  
+
   const {
     aiAssessmentRunning,
     lastAIAssessment,
@@ -47,8 +47,8 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
   } = useSituationRoom()
 
   const aiStatus = getAIAssessmentStatus()
-  const aiThreats = threats.filter(t => 
-    t.sources.some(source => source.name === 'AI Analysis') || 
+  const aiThreats = threats.filter(t =>
+    t.sources.some(source => source.name === 'AI Analysis') ||
     t.aiAnalysis?.agentsUsed?.some(agent => agent.includes('threat-analyzer'))
   )
 
@@ -79,12 +79,12 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
 
   const getLastAssessmentText = () => {
     if (!lastAIAssessment) return 'Never'
-    
+
     const now = new Date()
     const diff = now.getTime() - lastAIAssessment.getTime()
     const minutes = Math.floor(diff / 60000)
     const hours = Math.floor(minutes / 60)
-    
+
     if (minutes < 1) return 'Just now'
     if (minutes < 60) return `${minutes}m ago`
     if (hours < 24) return `${hours}h ago`
@@ -102,14 +102,14 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
           <div>
             <h3 className="text-lg font-semibold text-white">AI Threat Assessment</h3>
             <p className="text-sm text-gray-400">
-              {aiStatus.totalProviders > 0 
+              {aiStatus.totalProviders > 0
                 ? `${aiStatus.totalProviders} Provider${aiStatus.totalProviders > 1 ? 's' : ''} • Primary: ${aiStatus.primaryProvider}`
                 : 'No Providers Available'
               }
             </p>
           </div>
         </div>
-        
+
         {/* Status Indicator */}
         <div className="flex items-center gap-2">
           <button
@@ -118,7 +118,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
           >
             <Settings className="h-4 w-4 text-gray-400" />
           </button>
-          
+
           {aiStatus.available ? (
             <div className="flex items-center gap-2 text-green-400">
               <CheckCircle className="h-4 w-4" />
@@ -137,7 +137,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
       {showSettings && (
         <div className="mb-6 p-4 bg-gray-800/40 rounded-lg border border-gray-700/30">
           <h4 className="text-sm font-medium text-gray-300 mb-4">AI Provider Settings</h4>
-          
+
           {/* Provider Selection */}
           <div className="mb-4">
             <label className="text-xs text-gray-400 mb-2 block">Preferred Provider</label>
@@ -152,8 +152,8 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
                       : 'bg-gray-700/50 text-gray-300 hover:bg-gray-700'
                   }`}
                 >
-                  {provider === 'auto' ? 'Auto' : 
-                   provider === 'openai' ? 'GPT' : 
+                  {provider === 'auto' ? 'Auto' :
+                   provider === 'openai' ? 'GPT' :
                    provider === 'grok' ? 'Grok' :
                    provider === 'claude' ? 'Claude' :
                    'Gemini'}
@@ -161,7 +161,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
               ))}
             </div>
           </div>
-          
+
           {/* Optimization Settings */}
           <div className="space-y-4">
             <div>
@@ -235,24 +235,24 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
           <div className="text-2xl font-bold text-white">{aiThreats.length}</div>
           <div className="text-sm text-gray-400">AI Threats</div>
         </div>
-        
+
         <div className="bg-gray-800/60 rounded-lg p-3">
           <div className={`text-2xl font-bold ${getThreatLevelColor(overallThreatLevel)}`}>
             {overallThreatLevel.toUpperCase()}
           </div>
           <div className="text-sm text-gray-400">Risk Level</div>
         </div>
-        
+
         <div className="bg-gray-800/60 rounded-lg p-3">
           <div className="text-2xl font-bold text-white">
-            {aiStatus.totalProviders >= 4 ? '99%' : 
-             aiStatus.totalProviders === 3 ? '98%' : 
-             aiStatus.totalProviders === 2 ? '95%' : 
+            {aiStatus.totalProviders >= 4 ? '99%' :
+             aiStatus.totalProviders === 3 ? '98%' :
+             aiStatus.totalProviders === 2 ? '95%' :
              aiStatus.totalProviders === 1 ? '85%' : '50%'}
           </div>
           <div className="text-sm text-gray-400">Confidence</div>
         </div>
-        
+
         <div className="bg-gray-800/60 rounded-lg p-3">
           <div className="text-2xl font-bold text-white">{getLastAssessmentText()}</div>
           <div className="text-sm text-gray-400">Last Scan</div>
@@ -265,7 +265,7 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
           <Clock className="h-4 w-4" />
           <span>Last assessment: {getLastAssessmentText()}</span>
         </div>
-        
+
         <button
           onClick={handleRunAssessment}
           disabled={aiAssessmentRunning}
@@ -311,14 +311,14 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
                     </div>
                   </div>
                 </div>
-                
+
                 <div className={`text-xs font-medium ${getThreatLevelColor(threat.severity)}`}>
                   {threat.severity.toUpperCase()}
                 </div>
               </div>
             ))}
           </div>
-          
+
           {aiThreats.length > 3 && (
             <div className="mt-3 text-center">
               <span className="text-sm text-gray-400">
@@ -360,18 +360,18 @@ export function AIAssessmentPanel({ propertyId, className = '' }: AIAssessmentPa
             <span>Usage Analytics</span>
           </div>
         </div>
-        
+
         {/* Optimization status */}
         {aiStatus.totalProviders > 0 && (
           <div className="mt-3 space-y-1">
             <div className="p-2 bg-gray-800/30 rounded text-xs text-gray-400">
-              <span className="font-medium">Current Settings:</span> 
+              <span className="font-medium">Current Settings:</span>
               {budget === 'low' ? 'Cost-optimized' : budget === 'high' ? 'Premium performance' : 'Balanced'} mode
               {speedPriority && ', Speed priority enabled'}
             </div>
             <div className="p-2 bg-gray-800/30 rounded text-xs text-gray-400">
-              <span className="font-medium">Active Providers:</span> 
-              {aiStatus.providers.filter(p => p.available).map(p => p.name).join(', ')} 
+              <span className="font-medium">Active Providers:</span>
+              {aiStatus.providers.filter(p => p.available).map(p => p.name).join(', ')}
               • Auto-selection • Metrics tracking
             </div>
           </div>

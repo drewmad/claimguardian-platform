@@ -72,19 +72,19 @@ export async function sendEmail({
       return { success: false, error: error.message }
     }
 
-    logger.info('Email sent successfully', { 
-      id: data?.id, 
-      to: Array.isArray(to) ? to.join(', ') : to, 
-      subject 
+    logger.info('Email sent successfully', {
+      id: data?.id,
+      to: Array.isArray(to) ? to.join(', ') : to,
+      subject
     })
 
     return { success: true, id: data?.id }
 
   } catch (error) {
     logger.error('Error sending email', { to, subject }, error as Error)
-    return { 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to send email' 
+    return {
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }
   }
 }
@@ -129,21 +129,21 @@ export async function sendBulkEmails(
       return recipients.map(() => ({ success: false, error: error.message }))
     }
 
-    logger.info('Bulk emails sent successfully', { 
+    logger.info('Bulk emails sent successfully', {
       count: data?.data?.length || 0,
       ids: data?.data?.map(d => d.id).join(', ')
     })
 
-    return data?.data?.map(d => ({ 
-      success: true, 
-      id: d.id 
+    return data?.data?.map(d => ({
+      success: true,
+      id: d.id
     })) || []
 
   } catch (error) {
     logger.error('Error sending bulk emails', { count: recipients.length }, error as Error)
-    return recipients.map(() => ({ 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Failed to send email' 
+    return recipients.map(() => ({
+      success: false,
+      error: error instanceof Error ? error.message : 'Failed to send email'
     }))
   }
 }
@@ -161,9 +161,9 @@ export async function sendEmailWithRateLimit(
     return await sendEmail(options)
   } catch (error) {
     logger.error('Error in rate-limited email send', { userId }, error as Error)
-    return { 
-      success: false, 
-      error: 'Failed to send email' 
+    return {
+      success: false,
+      error: 'Failed to send email'
     }
   }
 }

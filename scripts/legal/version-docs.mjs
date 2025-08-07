@@ -121,7 +121,7 @@ function main() {
   }
 
   const [docType, filePath, title, changeSummary] = args;
-  
+
   // A summary of the document's purpose could be added as another argument if needed.
   // For now, we'll pass a generic summary.
   const summary = `Legal document governing the use of ClaimGuardian services.`;

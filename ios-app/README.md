@@ -143,7 +143,7 @@ let analysis = try await analysisService.analyzeDamage(
 
 // Results include:
 // - Damage categorization
-// - Severity assessment  
+// - Severity assessment
 // - Cost estimation
 // - Repair recommendations
 ```
@@ -260,7 +260,7 @@ func testARMeasurementPerformance() {
 
 2. **App Description**:
 ```
-Professional damage assessment tool for insurance industry professionals. 
+Professional damage assessment tool for insurance industry professionals.
 Features advanced AR measurements, AI-powered damage analysis, and offline-first architecture.
 
 Key Features:
@@ -279,7 +279,7 @@ insurance, damage assessment, AR measurement, property inspection, claim documen
 
 #### Screenshots Required:
 - iPhone 6.7": 1290×2796 pixels (5 screenshots)
-- iPhone 6.5": 1242×2688 pixels (5 screenshots) 
+- iPhone 6.5": 1242×2688 pixels (5 screenshots)
 - iPad Pro 12.9": 2048×2732 pixels (5 screenshots)
 
 ### Build & Distribution
@@ -450,7 +450,7 @@ This software is proprietary and confidential. Unauthorized copying, distributio
 - [ ] Batch processing improvements
 - [ ] Enhanced reporting features
 
-### Version 1.2 (Q2 2025)  
+### Version 1.2 (Q2 2025)
 - [ ] iPad Pro optimization
 - [ ] Multi-language support
 - [ ] Advanced analytics dashboard

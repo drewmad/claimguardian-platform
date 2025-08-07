@@ -85,11 +85,11 @@ export interface ButtonProps
   'data-testid'?: string
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>( 
-  ({ 
-    className, 
-    variant, 
-    size, 
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({
+    className,
+    variant,
+    size,
     children,
     loading = false,
     loadingText,
@@ -102,23 +102,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     'aria-label': ariaLabel,
     'aria-describedby': ariaDescribedby,
     'data-testid': testId,
-    ...props 
+    ...props
   }, ref) => {
     const [isProcessing, setIsProcessing] = React.useState(false)
-    
+
     const isDisabled = disabled || loading || isProcessing
-    
+
     const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
       if (isProcessing || loading) return
-      
+
       // Allow default behavior for reset and submit buttons if no custom onClick
       if ((type === 'reset' || type === 'submit') && !onClick) {
         return // Let the browser handle the default behavior
       }
-      
+
       setIsProcessing(true)
       onClick?.(e)
-      
+
       // Reset processing state after a short delay to prevent double-clicks
       setTimeout(() => setIsProcessing(false), 300)
     }, [onClick, isProcessing, loading, type])
@@ -134,7 +134,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     }, [handleClick, isDisabled])
 
     const Component = asChild ? 'span' : 'button'
-    
+
     return React.createElement(
       Component,
       {

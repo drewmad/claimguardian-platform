@@ -35,10 +35,10 @@ class CSVStreamer {
     const result = [];
     let current = '';
     let inQuotes = false;
-    
+
     for (let i = 0; i < line.length; i++) {
       const char = line[i];
-      
+
       if (char === '"') {
         if (inQuotes && line[i + 1] === '"') {
           current += '"';
@@ -53,20 +53,20 @@ class CSVStreamer {
         current += char;
       }
     }
-    
+
     result.push(current.trim());
     return result;
   }
 
   transformRecord(values) {
     const record = {};
-    
+
     this.headers.forEach((header, index) => {
       const value = values[index];
       // Handle empty strings and convert to null
       record[header] = value === '' || value === '""' ? null : value;
     });
-    
+
     return record;
   }
 
@@ -91,7 +91,7 @@ class CSVStreamer {
 
     this.stats.processed += this.batch.length;
     this.batch = [];
-    
+
     // Progress update
     const elapsed = (Date.now() - this.stats.startTime) / 1000;
     const rate = this.stats.processed / elapsed;
@@ -117,7 +117,7 @@ class CSVStreamer {
       }
 
       const values = this.parseCSVLine(line);
-      
+
       if (values.length !== this.headers.length) {
         console.error(`\n⚠️  Line ${this.lineNumber}: Column count mismatch`);
         this.stats.failed++;
@@ -134,7 +134,7 @@ class CSVStreamer {
 
     // Process remaining batch
     await this.processBatch();
-    
+
     console.log(`\n✅ Streaming complete for ${path.basename(this.filePath)}`);
     return this.stats;
   }
@@ -143,47 +143,47 @@ class CSVStreamer {
 async function estimateCosts(totalRecords, totalSizeGB) {
   console.log('\n💰 Supabase Cost Breakdown:');
   console.log('===========================');
-  
+
   // Florida parcels data specifics
   console.log('\n📊 Florida Parcels Dataset:');
   console.log(`   - Total parcels: ~${(totalRecords / 1000000).toFixed(1)}M`);
   console.log(`   - Raw data size: ~${totalSizeGB.toFixed(1)} GB`);
   console.log(`   - Counties: 67 (all Florida counties)`);
-  
+
   // Storage calculation
   const indexMultiplier = 2.5; // Indexes typically 1.5-2.5x data
   const totalDBSize = totalSizeGB * indexMultiplier;
-  
+
   console.log('\n💾 Database Storage:');
   console.log(`   - Base data: ${totalSizeGB.toFixed(1)} GB`);
   console.log(`   - With indexes: ${totalDBSize.toFixed(1)} GB`);
   console.log(`   - Monthly cost: $${(totalDBSize * 0.125).toFixed(2)} ($0.125/GB)`);
-  
+
   // Compute costs (if using Edge Functions)
   console.log('\n⚡ Edge Functions (if used):');
   console.log(`   - Free tier: 500K invocations/month`);
   console.log(`   - Additional: $2 per 1M invocations`);
-  
+
   // Bandwidth
   const avgQuerySizeKB = 50; // Average query returns 50KB
   const monthlyQueries = 100000; // Estimate
   const monthlyBandwidthGB = (monthlyQueries * avgQuerySizeKB) / 1024 / 1024;
-  
+
   console.log('\n🌐 Bandwidth:');
   console.log(`   - Free tier: 50 GB/month`);
   console.log(`   - Estimated usage: ${monthlyBandwidthGB.toFixed(1)} GB/month`);
   console.log(`   - Additional cost: $${Math.max(0, (monthlyBandwidthGB - 50) * 0.09).toFixed(2)} ($0.09/GB)`);
-  
+
   // Total monthly cost
   const storageCost = totalDBSize * 0.125;
   const bandwidthCost = Math.max(0, (monthlyBandwidthGB - 50) * 0.09);
   const totalMonthlyCost = storageCost + bandwidthCost;
-  
+
   console.log('\n💵 Total Monthly Cost:');
   console.log(`   - Storage: $${storageCost.toFixed(2)}`);
   console.log(`   - Bandwidth: $${bandwidthCost.toFixed(2)}`);
   console.log(`   - TOTAL: $${totalMonthlyCost.toFixed(2)}/month`);
-  
+
   // Pro plan considerations
   console.log('\n📋 Plan Recommendations:');
   if (totalDBSize > 8) {
@@ -192,7 +192,7 @@ async function estimateCosts(totalRecords, totalSizeGB) {
   } else {
     console.log(`   ✅ Free tier sufficient for storage`);
   }
-  
+
   // Performance tips
   console.log('\n🚀 Performance Optimization:');
   console.log('   - Create indexes on: parcel_id, county_fips, own_name');
@@ -203,7 +203,7 @@ async function estimateCosts(totalRecords, totalSizeGB) {
 
 async function main() {
   const inputPath = process.argv[2];
-  
+
   if (!inputPath) {
     console.log('Usage: node import-florida-parcels-streaming.js <csv-file-or-directory>');
     console.log('\nExample:');
@@ -237,7 +237,7 @@ async function main() {
   for (const file of files) {
     const fileSize = fs.statSync(file).size;
     totalSize += fileSize;
-    
+
     const streamer = new CSVStreamer(file);
     const fileStats = await streamer.stream();
     totalRecords += fileStats.processed;

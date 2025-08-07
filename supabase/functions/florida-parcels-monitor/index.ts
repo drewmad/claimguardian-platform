@@ -98,16 +98,16 @@ serve(async (req) => {
     switch (view) {
       case 'dashboard':
         return await getDashboard(supabase);
-      
+
       case 'timeline':
         return await getTimeline(supabase, limit);
-      
+
       case 'errors':
         return await getErrors(supabase, county_code, limit);
-      
+
       case 'performance':
         return await getPerformance(supabase);
-      
+
       default:
         throw new Error(`Invalid view: ${view}`);
     }
@@ -116,9 +116,9 @@ serve(async (req) => {
     console.error('Monitor error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 400
       }
     );
   }
@@ -129,23 +129,23 @@ async function getDashboard(supabase: any): Promise<Response> {
   const { count: totalParcels } = await supabase
     .from('florida_parcels')
     .select('*', { count: 'exact', head: true });
-  
+
   // Get processing logs
   const { data: logs } = await supabase
     .from('florida_parcels_processing_log')
     .select('*')
     .order('updated_at', { ascending: false });
-  
+
   // Get orchestrator status
   const { data: orchestratorJobs } = await supabase
     .from('florida_parcels_orchestrator')
     .select('*')
     .order('created_at', { ascending: false })
     .limit(1);
-  
+
   // Calculate statistics
   const countyStats = new Map<number, any>();
-  
+
   // Initialize all counties
   for (const [code, info] of Object.entries(COUNTY_INFO)) {
     countyStats.set(parseInt(code), {
@@ -161,19 +161,19 @@ async function getDashboard(supabase: any): Promise<Response> {
       errors: 0
     });
   }
-  
+
   // Update with actual data
   for (const log of logs || []) {
     const stats = countyStats.get(log.county_code);
     if (stats) {
       stats.actual_parcels = log.processed_parcels || 0;
       stats.status = log.status;
-      stats.progress = log.total_parcels > 0 
+      stats.progress = log.total_parcels > 0
         ? Math.round((log.processed_parcels / log.total_parcels) * 100)
         : 0;
       stats.last_updated = log.updated_at;
       stats.errors = log.error_count || 0;
-      
+
       if (log.started_at && log.completed_at) {
         const start = new Date(log.started_at).getTime();
         const end = new Date(log.completed_at).getTime();
@@ -181,24 +181,24 @@ async function getDashboard(supabase: any): Promise<Response> {
       }
     }
   }
-  
+
   // Convert to array and sort by status/progress
   const countiesArray = Array.from(countyStats.values()).sort((a, b) => {
-    const statusOrder = { 
-      'processing': 0, 
-      'error': 1, 
+    const statusOrder = {
+      'processing': 0,
+      'error': 1,
       'completed_with_errors': 2,
-      'completed': 3, 
-      'pending': 4 
+      'completed': 3,
+      'pending': 4
     };
-    
+
     const aOrder = statusOrder[a.status as keyof typeof statusOrder] ?? 5;
     const bOrder = statusOrder[b.status as keyof typeof statusOrder] ?? 5;
-    
+
     if (aOrder !== bOrder) return aOrder - bOrder;
     return b.progress - a.progress;
   });
-  
+
   // Summary statistics
   const summary = {
     total_parcels_processed: totalParcels || 0,
@@ -211,22 +211,22 @@ async function getDashboard(supabase: any): Promise<Response> {
     current_orchestrator_job: orchestratorJobs?.[0] || null,
     last_update: new Date().toISOString()
   };
-  
+
   // Performance metrics
   const completedCounties = countiesArray.filter(c => c.processing_time);
   const avgProcessingTime = completedCounties.length > 0
     ? Math.round(completedCounties.reduce((sum, c) => sum + c.processing_time, 0) / completedCounties.length)
     : 0;
-  
+
   const performance = {
     average_processing_time_minutes: avgProcessingTime,
-    average_parcels_per_minute: avgProcessingTime > 0 
+    average_parcels_per_minute: avgProcessingTime > 0
       ? Math.round(completedCounties.reduce((sum, c) => sum + c.actual_parcels, 0) / completedCounties.reduce((sum, c) => sum + c.processing_time, 0))
       : 0,
     fastest_county: completedCounties.sort((a, b) => a.processing_time - b.processing_time)[0] || null,
     slowest_county: completedCounties.sort((a, b) => b.processing_time - a.processing_time)[0] || null
   };
-  
+
   return new Response(
     JSON.stringify({
       summary,
@@ -245,7 +245,7 @@ async function getTimeline(supabase: any, limit: number): Promise<Response> {
     .select('*')
     .order('updated_at', { ascending: false })
     .limit(limit);
-  
+
   // Transform to timeline events
   const timeline = logs?.map((log: any) => ({
     timestamp: log.updated_at,
@@ -253,14 +253,14 @@ async function getTimeline(supabase: any, limit: number): Promise<Response> {
     county_name: COUNTY_INFO[log.county_code]?.name || 'Unknown',
     event_type: getEventType(log),
     status: log.status,
-    progress: log.total_parcels > 0 
+    progress: log.total_parcels > 0
       ? Math.round((log.processed_parcels / log.total_parcels) * 100)
       : 0,
     parcels_processed: log.processed_parcels,
     total_parcels: log.total_parcels,
     error_message: log.error_message
   })) || [];
-  
+
   return new Response(
     JSON.stringify({
       timeline,
@@ -295,13 +295,13 @@ async function getErrors(supabase: any, countyCode?: number, limit: number = 50)
     .or('status.eq.error,status.eq.completed_with_errors')
     .order('updated_at', { ascending: false })
     .limit(limit);
-  
+
   if (countyCode) {
     query = query.eq('county_code', countyCode);
   }
-  
+
   const { data: errorLogs } = await query;
-  
+
   // Get system logs for more details
   const { data: systemLogs } = await supabase
     .from('system_logs')
@@ -310,7 +310,7 @@ async function getErrors(supabase: any, countyCode?: number, limit: number = 50)
     .like('module', '%parcels%')
     .order('created_at', { ascending: false })
     .limit(limit);
-  
+
   // Transform error data
   const errors = errorLogs?.map((log: any) => ({
     timestamp: log.updated_at,
@@ -323,7 +323,7 @@ async function getErrors(supabase: any, countyCode?: number, limit: number = 50)
     can_resume: log.last_batch_index != null,
     resume_from: log.last_batch_index
   })) || [];
-  
+
   // Aggregate error statistics
   const errorStats = {
     total_errors: errors.length,
@@ -332,7 +332,7 @@ async function getErrors(supabase: any, countyCode?: number, limit: number = 50)
     common_errors: getCommonErrors(errors),
     recent_system_errors: systemLogs?.slice(0, 10) || []
   };
-  
+
   return new Response(
     JSON.stringify({
       errors,
@@ -345,14 +345,14 @@ async function getErrors(supabase: any, countyCode?: number, limit: number = 50)
 
 function getCommonErrors(errors: any[]): any[] {
   const errorCounts = new Map<string, number>();
-  
+
   errors.forEach(error => {
     if (error.error_message) {
       const key = error.error_message.substring(0, 100); // First 100 chars
       errorCounts.set(key, (errorCounts.get(key) || 0) + 1);
     }
   });
-  
+
   return Array.from(errorCounts.entries())
     .map(([message, count]) => ({ message, count }))
     .sort((a, b) => b.count - a.count)
@@ -367,14 +367,14 @@ async function getPerformance(supabase: any): Promise<Response> {
     .in('status', ['completed', 'completed_with_errors'])
     .not('completed_at', 'is', null)
     .not('started_at', 'is', null);
-  
+
   // Calculate performance metrics
   const countyPerformance = completedLogs?.map((log: any) => {
     const startTime = new Date(log.started_at).getTime();
     const endTime = new Date(log.completed_at).getTime();
     const durationMinutes = (endTime - startTime) / 1000 / 60;
     const parcelsPerMinute = durationMinutes > 0 ? Math.round(log.processed_parcels / durationMinutes) : 0;
-    
+
     return {
       county_code: log.county_code,
       county_name: COUNTY_INFO[log.county_code]?.name || 'Unknown',
@@ -386,16 +386,16 @@ async function getPerformance(supabase: any): Promise<Response> {
       efficiency_score: calculateEfficiencyScore(parcelsPerMinute, log.error_count || 0)
     };
   }) || [];
-  
+
   // Sort by performance
   const sortedBySpeed = [...countyPerformance].sort((a, b) => b.parcels_per_minute - a.parcels_per_minute);
   const sortedByEfficiency = [...countyPerformance].sort((a, b) => b.efficiency_score - a.efficiency_score);
-  
+
   // Calculate aggregates
   const totalParcels = countyPerformance.reduce((sum, c) => sum + c.parcels_processed, 0);
   const totalMinutes = countyPerformance.reduce((sum, c) => sum + c.duration_minutes, 0);
   const avgParcelsPerMinute = totalMinutes > 0 ? Math.round(totalParcels / totalMinutes) : 0;
-  
+
   // Batch size analysis
   const batchSizePerformance = new Map<number, { count: number; avgSpeed: number }>();
   countyPerformance.forEach(cp => {
@@ -404,7 +404,7 @@ async function getPerformance(supabase: any): Promise<Response> {
     existing.avgSpeed = ((existing.avgSpeed * (existing.count - 1)) + cp.parcels_per_minute) / existing.count;
     batchSizePerformance.set(cp.batch_size, existing);
   });
-  
+
   return new Response(
     JSON.stringify({
       summary: {
@@ -437,13 +437,13 @@ function calculateEfficiencyScore(parcelsPerMinute: number, errorCount: number):
 function getOptimalBatchSize(batchSizePerformance: Map<number, { count: number; avgSpeed: number }>): number {
   let optimalSize = 1000;
   let maxSpeed = 0;
-  
+
   batchSizePerformance.forEach((stats, size) => {
     if (stats.avgSpeed > maxSpeed && stats.count >= 3) { // Need at least 3 samples
       maxSpeed = stats.avgSpeed;
       optimalSize = size;
     }
   });
-  
+
   return optimalSize;
 }

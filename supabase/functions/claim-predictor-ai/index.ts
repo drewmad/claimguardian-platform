@@ -189,13 +189,13 @@ async function predictClaimOutcome(
         description: 'Active hurricane season - insurers expect claims'
       })
     }
-    
+
     floridaFactors.push({
       type: 'hurricane_season',
       impact: 'Claims processed faster during declared emergencies',
       consideration: 'Document wind speed and storm surge data'
     })
-    
+
     recommendations.push('Include NOAA weather data and wind speed reports')
     recommendations.push('Document all temporary repairs to prevent further damage')
   }
@@ -212,13 +212,13 @@ async function predictClaimOutcome(
         description: 'Coastal properties face additional flood claim scrutiny'
       })
     }
-    
+
     floridaFactors.push({
       type: 'flood_zone',
       impact: 'FEMA flood zone designation affects coverage',
       consideration: 'Verify flood insurance policy is active and separate from homeowners'
     })
-    
+
     recommendations.push('Confirm flood insurance policy is active')
     recommendations.push('Document high water marks and flood depth')
   }

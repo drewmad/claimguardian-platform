@@ -60,7 +60,7 @@ const DOCUMENT_TEMPLATES: DocumentTemplate[] = [
     fields: [
       { id: 'policy_number', label: 'Policy Number', type: 'text', required: true },
       { id: 'date_of_loss', label: 'Date of Loss', type: 'date', required: true },
-      { id: 'type_of_damage', label: 'Type of Damage', type: 'select', required: true, 
+      { id: 'type_of_damage', label: 'Type of Damage', type: 'select', required: true,
         options: ['Hurricane', 'Flood', 'Fire', 'Wind', 'Hail', 'Water Leak', 'Other'] },
       { id: 'damage_description', label: 'Damage Description', type: 'textarea', required: true },
       { id: 'estimated_amount', label: 'Estimated Damage Amount', type: 'number', required: false }
@@ -154,7 +154,7 @@ export default function DocumentGeneratorPage() {
 
     setIsGenerating(true)
     const startTime = Date.now()
-    
+
     try {
       // Add user info to form data
       const completeData = {
@@ -166,7 +166,7 @@ export default function DocumentGeneratorPage() {
 
       const prompt = `Generate a professional ${selectedTemplate.title} for an insurance claim with the following details:
 
-${Object.entries(completeData).map(([key, value]) => 
+${Object.entries(completeData).map(([key, value]) =>
   `${key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}: ${value}`
 ).join('\n')}
 
@@ -199,7 +199,7 @@ The letter should be ready to send after adding the recipient's information.`
           'claude-3-sonnet': 0.003,
           'grok-beta': 0.002
         }
-        
+
         const tokens = Math.ceil(responseLength / 4) // Rough token estimate
         const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
         return parseFloat(cost.toFixed(6))
@@ -231,7 +231,7 @@ The letter should be ready to send after adding the recipient's information.`
       } catch (primaryError) {
         // Try fallback model
         const fallbackProvider = getProviderFromModel(fallbackModel)
-        
+
         try {
           const response = await aiClient.chat([
             { role: 'system', content: 'You are an expert insurance claim documentation specialist with deep knowledge of Florida property insurance laws and regulations.' },
@@ -305,10 +305,10 @@ The letter should be ready to send after adding the recipient's information.`
             <div className="mb-8 relative">
               {/* Premium Background Orb */}
               <div className={liquidGlass.orbs.header} />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className={liquidGlass.links.button}
                 >
                   ← Back to AI Tools
@@ -395,8 +395,8 @@ The letter should be ready to send after adding the recipient's information.`
                                 <p className="text-xs text-gray-400 mt-1">
                                   {template.description}
                                 </p>
-                                <Badge 
-                                  variant="outline" 
+                                <Badge
+                                  variant="outline"
                                   className="mt-2 text-xs capitalize text-gray-400 border-gray-600"
                                 >
                                   {template.category}

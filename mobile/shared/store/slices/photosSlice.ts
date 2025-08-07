@@ -121,7 +121,7 @@ export const retryFailedUploads = createAsyncThunk<
     try {
       const state = getState() as any
       const failedPhotos = state.photos.items.filter((p: Photo) => p.upload_status === 'failed')
-      
+
       const retryResults = await Promise.allSettled(
         failedPhotos.map((photo: Photo) => dispatch(uploadPhoto(photo.id)).unwrap())
       )
@@ -278,7 +278,7 @@ const photosSlice = createSlice({
     // Statistics calculation
     updateStats: (state) => {
       const totalSizeBytes = state.items.reduce((sum, photo) => sum + photo.file_size, 0)
-      
+
       state.stats = {
         totalPhotos: state.items.length,
         pendingUpload: state.items.filter(p => p.upload_status === 'pending').length,
@@ -289,8 +289,8 @@ const photosSlice = createSlice({
     },
 
     // Photo metadata updates
-    updatePhotoMetadata: (state, action: PayloadAction<{ 
-      photoId: string; 
+    updatePhotoMetadata: (state, action: PayloadAction<{
+      photoId: string;
       metadata: Partial<Pick<Photo, 'latitude' | 'longitude' | 'width' | 'height'>>
     }>) => {
       const photo = state.items.find(p => p.id === action.payload.photoId)
@@ -323,7 +323,7 @@ const photosSlice = createSlice({
 
     // Clean up orphaned photos (not linked to any assessment/damage item)
     removeOrphanedPhotos: (state) => {
-      state.items = state.items.filter(photo => 
+      state.items = state.items.filter(photo =>
         photo.assessment_id || photo.damage_item_id
       )
       photosSlice.caseReducers.updateStats(state)
@@ -363,7 +363,7 @@ const photosSlice = createSlice({
       .addCase(uploadPhoto.fulfilled, (state, action) => {
         const photoId = action.payload.id
         state.uploading = state.uploading.filter(id => id !== photoId)
-        
+
         const index = state.items.findIndex(p => p.id === photoId)
         if (index !== -1) {
           state.items[index] = action.payload
@@ -373,7 +373,7 @@ const photosSlice = createSlice({
       .addCase(uploadPhoto.rejected, (state, action) => {
         const photoId = action.meta.arg
         state.uploading = state.uploading.filter(id => id !== photoId)
-        
+
         const photo = state.items.find(p => p.id === photoId)
         if (photo) {
           photo.upload_status = 'failed'

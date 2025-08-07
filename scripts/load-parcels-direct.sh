@@ -50,12 +50,12 @@ process_batch() {
     local start=$1
     local batch_num=$(( ($start / $BATCH_SIZE) + 1 ))
     local end=$(( $start + $BATCH_SIZE ))
-    
+
     echo -e "${YELLOW}Processing batch ${batch_num}/${TOTAL_BATCHES} (records ${start}-${end})...${NC}"
-    
+
     # Extract batch of features and create SQL
     jq --arg start "$start" --arg size "$BATCH_SIZE" '
-    .features[$start | tonumber:($start | tonumber) + ($size | tonumber)] | 
+    .features[$start | tonumber:($start | tonumber) + ($size | tonumber)] |
     map({
         CO_NO: 15,
         PARCEL_ID: .properties.PARCEL_ID,
@@ -88,13 +88,13 @@ process_batch() {
         import_batch: "charlotte_2024_direct",
         source_file: "charlotte_parcels_2024.geojson"
     })' "$DATA_FILE" > "/tmp/batch_${batch_num}.json"
-    
+
     # Count records in batch
     local count=$(jq 'length' "/tmp/batch_${batch_num}.json")
-    
+
     if [ "$count" -gt 0 ]; then
         echo "Batch ${batch_num}: Inserting ${count} records..."
-        
+
         # Use Python script to insert via MCP
         python3 << EOPYTHON
 import json
@@ -117,16 +117,16 @@ for r in records:
             value_parts.append(f"'{escaped}'")
         else:
             value_parts.append(str(v))
-    
+
     # Build column names and values
     cols = list(r.keys())
     vals = value_parts
-    
+
 # Split into smaller chunks if needed
 chunk_size = 100
 for i in range(0, len(records), chunk_size):
     chunk = records[i:i+chunk_size]
-    
+
     # Build SQL for chunk
     sql_values = []
     for r in chunk:
@@ -140,7 +140,7 @@ for i in range(0, len(records), chunk_size):
             else:
                 vals.append(str(v))
         sql_values.append(f"({','.join(vals)})")
-    
+
     # Create INSERT statement
     columns = ','.join(r.keys())
     sql = f"""
@@ -151,16 +151,16 @@ for i in range(0, len(records), chunk_size):
         import_batch = EXCLUDED.import_batch,
         updated_at = NOW()
     """
-    
+
     # Execute via claude mcp
     try:
         result = subprocess.run([
-            'claude', 'mcp', 
+            'claude', 'mcp',
             'supabase', 'execute_sql',
             '--project_id', 'tmlrvecuwgppbaynesji',
             '--query', sql
         ], capture_output=True, text=True)
-        
+
         if result.returncode \!= 0:
             print(f"Error in chunk: {result.stderr}")
     except Exception as e:
@@ -168,15 +168,15 @@ for i in range(0, len(records), chunk_size):
 
 print(f"Batch ${batch_num} complete")
 EOPYTHON
-        
+
         echo -e "${GREEN}✓ Batch ${batch_num} complete${NC}"
     else
         echo "Batch ${batch_num}: No records to process"
     fi
-    
+
     # Clean up
     rm -f "/tmp/batch_${batch_num}.json"
-    
+
     # Show progress
     local remaining=$(( $TOTAL_BATCHES - $batch_num ))
     echo -e "${BLUE}Progress: ${batch_num}/${TOTAL_BATCHES} batches complete, ${remaining} remaining${NC}"

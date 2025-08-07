@@ -80,8 +80,8 @@ class LoginActivityService {
         os: os.name || 'unknown'
       })
 
-      logger.info('Login activity logged', { 
-        userId, 
+      logger.info('Login activity logged', {
+        userId,
         success,
         device: device.type,
         browser: browser.name
@@ -150,7 +150,7 @@ class LoginActivityService {
 
       // Check for suspicious activity
       const recentFailures = data.filter(
-        activity => !activity.success && 
+        activity => !activity.success &&
         new Date(activity.created_at).getTime() > Date.now() - 3600000 // Last hour
       ).length
 
@@ -199,7 +199,7 @@ class LoginActivityService {
       // Check for rapid succession logins
       const rapidLogins = recentActivity.filter((activity, index) => {
         if (index === 0) return false
-        const timeDiff = new Date(recentActivity[index - 1].created_at).getTime() - 
+        const timeDiff = new Date(recentActivity[index - 1].created_at).getTime() -
                         new Date(activity.created_at).getTime()
         return timeDiff < 60000 // Less than 1 minute apart
       })

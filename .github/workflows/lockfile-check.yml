@@ -15,41 +15,41 @@ on:
 jobs:
   check-lockfile:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
-      
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
-      
+
       - name: Check lockfile sync
         run: |
           node scripts/sync-lockfile.js --ci
-      
+
       - name: Auto-fix lockfile (PR only)
         if: github.event_name == 'pull_request' && failure()
         run: |
           # Update lockfile
           pnpm install --no-frozen-lockfile
-          
+
           # Check if there are changes
           if git diff --quiet pnpm-lock.yaml; then
             echo "No lockfile changes needed"
             exit 0
           fi
-          
+
           # Commit changes
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
           git add pnpm-lock.yaml
           git commit -m "fix: update pnpm lockfile"
-          
+
       - name: Push changes
         if: github.event_name == 'pull_request' && failure()
         uses: ad-m/github-push-action@master

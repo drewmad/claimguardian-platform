@@ -12,16 +12,16 @@ describe('Property Management E2E Tests', () => {
 
   beforeEach(async () => {
     await device.reloadReactNative()
-    
+
     // Login flow - simplified for testing
     await waitFor(element(by.id('login-screen')))
       .toBeVisible()
       .withTimeout(10000)
-    
+
     await element(by.id('email-input')).typeText('test@claimguardianai.com')
     await element(by.id('password-input')).typeText('testpass123')
     await element(by.id('signin-button')).tap()
-    
+
     await waitFor(element(by.id('dashboard-screen')))
       .toBeVisible()
       .withTimeout(15000)
@@ -63,10 +63,10 @@ describe('Property Management E2E Tests', () => {
 
       await element(by.id('street-input')).typeText('123 Test Street')
       await element(by.id('city-input')).typeText('Miami')
-      
+
       await element(by.id('state-picker')).tap()
       await element(by.text('Florida')).tap()
-      
+
       await element(by.id('zip-input')).typeText('33101')
       await element(by.id('next-button')).tap()
 
@@ -79,11 +79,11 @@ describe('Property Management E2E Tests', () => {
       await element(by.id('square-feet-input')).typeText('2500')
       await element(by.id('bedrooms-input')).typeText('3')
       await element(by.id('bathrooms-input')).typeText('2')
-      
+
       // Test Florida-specific features
       await element(by.id('hurricane-shutters-switch')).tap()
       await element(by.id('impact-windows-switch')).tap()
-      
+
       await element(by.id('next-button')).tap()
 
       // Step 4: Property Value
@@ -93,11 +93,11 @@ describe('Property Management E2E Tests', () => {
 
       await element(by.id('purchase-price-input')).typeText('350000')
       await element(by.id('current-value-input')).typeText('425000')
-      
+
       // Insurance information
       await element(by.id('insurance-carrier-picker')).tap()
       await element(by.text('State Farm')).tap()
-      
+
       await element(by.id('policy-number-input')).typeText('SF123456789')
       await element(by.id('next-button')).tap()
 
@@ -186,13 +186,13 @@ describe('Property Management E2E Tests', () => {
       // Clear and enter valid Florida ZIP
       await element(by.id('zip-input')).clearText()
       await element(by.id('zip-input')).typeText('33101')
-      
+
       // Fill other required address fields
       await element(by.id('street-input')).typeText('456 Beach Drive')
       await element(by.id('city-input')).typeText('Miami Beach')
       await element(by.id('state-picker')).tap()
       await element(by.text('Florida')).tap()
-      
+
       await element(by.id('next-button')).tap()
 
       // Should proceed to details step

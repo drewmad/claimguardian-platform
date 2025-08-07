@@ -57,7 +57,7 @@ export function DocumentExtractionReview({
   const checkExistingExtraction = useCallback(async () => {
     try {
       const { data } = await getExtractionResults(documentId)
-      
+
       if (data) {
         setExtractionStatus({
           status: data.processing_status as 'idle' | 'processing' | 'completed' | 'failed',
@@ -79,7 +79,7 @@ export function DocumentExtractionReview({
 
   const startExtraction = async () => {
     setExtractionStatus({ status: 'processing' })
-    
+
     try {
       const { data, error } = await processDocumentExtraction({
         documentId,
@@ -87,9 +87,9 @@ export function DocumentExtractionReview({
       })
 
       if (error) {
-        setExtractionStatus({ 
-          status: 'failed', 
-          error 
+        setExtractionStatus({
+          status: 'failed',
+          error
         })
         toast.error(`Extraction failed: ${error}`)
         return
@@ -105,9 +105,9 @@ export function DocumentExtractionReview({
         toast.success('Document processed successfully!')
       }
     } catch {
-      setExtractionStatus({ 
-        status: 'failed', 
-        error: 'Unexpected error during processing' 
+      setExtractionStatus({
+        status: 'failed',
+        error: 'Unexpected error during processing'
       })
       toast.error('Failed to process document')
     }
@@ -117,12 +117,12 @@ export function DocumentExtractionReview({
     if (!extractionStatus.data) return
 
     setIsApplying(true)
-    
+
     try {
       // In a real implementation, we would pass the extraction ID
       // For now, we'll simulate applying the data
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       toast.success('Policy data applied successfully!')
       onApplied?.()
     } catch {
@@ -215,7 +215,7 @@ export function DocumentExtractionReview({
               </select>
             ) : (
               <p className="text-white mt-1">
-                {data.policyType ? 
+                {data.policyType ?
                   insuranceTypes.find(t => t.value === data.policyType)?.label || data.policyType
                   : 'Not found'
                 }
@@ -358,7 +358,7 @@ export function DocumentExtractionReview({
           </div>
         </CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         <div className="space-y-4">
           <div className="flex items-center gap-2 text-sm text-gray-400">
@@ -411,7 +411,7 @@ export function DocumentExtractionReview({
                   <CheckCircle className="w-5 h-5 text-green-500" />
                   <span className="text-green-400">Extraction completed</span>
                 </div>
-                
+
                 <div className="flex gap-2">
                   {!isEditing && (
                     <Button
@@ -424,7 +424,7 @@ export function DocumentExtractionReview({
                       Edit
                     </Button>
                   )}
-                  
+
                   {isEditing && (
                     <>
                       <Button

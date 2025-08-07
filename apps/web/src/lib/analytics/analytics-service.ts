@@ -45,7 +45,7 @@ class AnalyticsService {
   constructor() {
     // Generate or retrieve session ID
     this.sessionId = this.getOrCreateSessionId()
-    
+
     // Set up page visibility tracking
     if (typeof window !== 'undefined') {
       this.setupPageVisibilityTracking()
@@ -118,7 +118,7 @@ class AnalyticsService {
   public trackFeatureComplete(featureName: string, metadata?: Record<string, any>) {
     const startTime = this.featureStartTimes.get(featureName)
     const duration = startTime ? Date.now() - startTime : undefined
-    
+
     this.track('feature_completed', {
       feature: featureName,
       duration_ms: duration,
@@ -134,7 +134,7 @@ class AnalyticsService {
   public trackPageView(pagePath: string, pageTitle: string) {
     // Track time on previous page
     const timeOnPage = Date.now() - this.pageStartTime
-    
+
     const pageView: PageView = {
       page_path: pagePath,
       page_title: pageTitle,
@@ -285,7 +285,7 @@ class AnalyticsService {
       const stored = localStorage.getItem('pending_analytics') || '[]'
       const pending = JSON.parse(stored)
       pending.push(...events)
-      
+
       // Keep only last 100 events to prevent storage overflow
       const trimmed = pending.slice(-100)
       localStorage.setItem('pending_analytics', JSON.stringify(trimmed))
@@ -426,7 +426,7 @@ class AnalyticsService {
     }
 
     let sessionId = sessionStorage.getItem('analytics_session_id')
-    
+
     if (!sessionId) {
       sessionId = `${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       sessionStorage.setItem('analytics_session_id', sessionId)

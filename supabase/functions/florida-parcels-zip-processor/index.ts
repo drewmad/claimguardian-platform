@@ -28,13 +28,13 @@ serve(async (req) => {
     switch (action) {
       case 'list':
         return await listZipContents(supabase);
-      
+
       case 'extract':
         return await extractCountyData(supabase, county_code);
-        
+
       case 'process':
         return await processExtractedData(supabase, county_code);
-      
+
       default:
         throw new Error(`Invalid action: ${action}`);
     }
@@ -43,9 +43,9 @@ serve(async (req) => {
     console.error('ZIP Processor error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 400
       }
     );
   }
@@ -53,12 +53,12 @@ serve(async (req) => {
 
 async function listZipContents(supabase: any): Promise<Response> {
   console.log('Downloading ZIP file to list contents...');
-  
+
   // Download the ZIP file
   const { data: fileData, error: downloadError } = await supabase.storage
     .from('parcels')
     .download('Cadastral_Statewide.zip');
-  
+
   if (downloadError) {
     throw new Error(`Failed to download ZIP: ${downloadError.message}`);
   }
@@ -67,26 +67,26 @@ async function listZipContents(supabase: any): Promise<Response> {
   const tempDir = '/tmp/parcels';
   await ensureDir(tempDir);
   const zipPath = `${tempDir}/Cadastral_Statewide.zip`;
-  
+
   const arrayBuffer = await fileData.arrayBuffer();
   await Deno.writeFile(zipPath, new Uint8Array(arrayBuffer));
-  
+
   console.log('ZIP downloaded, extracting file list...');
-  
+
   // List files in ZIP
   const unzipProcess = new Deno.Command('unzip', {
     args: ['-l', zipPath],
     stdout: 'piped',
     stderr: 'piped',
   });
-  
+
   const { stdout, stderr } = await unzipProcess.output();
-  
+
   if (stderr.length > 0) {
     const error = new TextDecoder().decode(stderr);
     throw new Error(`Failed to list ZIP contents: ${error}`);
   }
-  
+
   const output = new TextDecoder().decode(stdout);
   const files = output.split('\n')
     .filter(line => line.includes('.'))
@@ -100,10 +100,10 @@ async function listZipContents(supabase: any): Promise<Response> {
   const geojsonFiles = files.filter(f => f.endsWith('.geojson'));
   const shpFiles = files.filter(f => f.endsWith('.shp'));
   const gdbFiles = files.filter(f => f.includes('.gdb'));
-  
+
   // Clean up
   await Deno.remove(zipPath);
-  
+
   return new Response(
     JSON.stringify({
       total_files: files.length,
@@ -122,12 +122,12 @@ async function extractCountyData(supabase: any, countyCode?: number): Promise<Re
   if (!countyCode) {
     throw new Error('County code is required for extraction');
   }
-  
+
   console.log(`Extracting data for county ${countyCode}...`);
-  
+
   // For now, we'll need to handle the actual GDB to GeoJSON conversion
   // This is a placeholder that shows the approach
-  
+
   return new Response(
     JSON.stringify({
       status: 'extraction_required',
@@ -147,7 +147,7 @@ async function extractCountyData(supabase: any, countyCode?: number): Promise<Re
 async function processExtractedData(supabase: any, countyCode?: number): Promise<Response> {
   // This would call the existing processor with the extracted GeoJSON
   const processorUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/florida-parcels-processor`;
-  
+
   const response = await fetch(processorUrl, {
     method: 'POST',
     headers: {
@@ -161,9 +161,9 @@ async function processExtractedData(supabase: any, countyCode?: number): Promise
       storage_path: `extracted/county_${countyCode}.geojson` // Assuming we extract to this path
     })
   });
-  
+
   const result = await response.json();
-  
+
   return new Response(
     JSON.stringify(result),
     { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

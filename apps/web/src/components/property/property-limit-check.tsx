@@ -21,10 +21,10 @@ interface PropertyLimitCheckProps {
   showMessage?: boolean
 }
 
-export function PropertyLimitCheck({ 
-  currentPropertyCount, 
+export function PropertyLimitCheck({
+  currentPropertyCount,
   onCanCreate,
-  showMessage = true 
+  showMessage = true
 }: PropertyLimitCheckProps) {
   const { limit } = usePermissionLimit('properties.create')
   const [canCreate, setCanCreate] = useState(true)
@@ -41,7 +41,7 @@ export function PropertyLimitCheck({
       setCanCreate(remaining > 0)
       setRemainingProperties(remaining)
     }
-    
+
     onCanCreate(canCreate)
   }, [limit, currentPropertyCount, canCreate, onCanCreate])
 

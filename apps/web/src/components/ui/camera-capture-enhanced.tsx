@@ -12,7 +12,7 @@
 
 import { useState, useRef, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Camera,
   Video,
   Square,
@@ -106,13 +106,13 @@ export function CameraCaptureEnhanced({
   const [error, setError] = useState<string | null>(null)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
-  
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const streamRef = useRef<MediaStream | null>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const recordedChunksRef = useRef<Blob[]>([])
-  
+
   const { success, error: showError, info } = useToast()
 
   // Camera constraints based on quality setting
@@ -136,7 +136,7 @@ export function CameraCaptureEnhanced({
         frameRate: { ideal: 30 }
       }
     }
-    
+
     return constraints[quality]
   }, [facing, quality])
 
@@ -144,7 +144,7 @@ export function CameraCaptureEnhanced({
   const startCamera = useCallback(async () => {
     try {
       setError(null)
-      
+
       const constraints = {
         video: getCameraConstraints(),
         audio: currentMode === 'video'
@@ -152,32 +152,32 @@ export function CameraCaptureEnhanced({
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints)
       streamRef.current = stream
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         await videoRef.current.play()
         setIsStreamActive(true)
-        
+
         success('Camera activated', {
           subtitle: `Ready to capture ${currentMode}s`
         })
       }
-      
+
       logger.track('camera_started', {
         mode: currentMode,
         facing,
         quality
       })
-      
+
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Failed to access camera'
       setError(errorMessage)
       onError?.(errorMessage)
-      
+
       showError('Camera access failed', {
         subtitle: errorMessage
       })
-      
+
       logger.error('Camera start failed', { mode: currentMode, facing }, err as Error)
     }
   }, [currentMode, facing, quality, getCameraConstraints, onError, success, showError])
@@ -188,11 +188,11 @@ export function CameraCaptureEnhanced({
       streamRef.current.getTracks().forEach(track => track.stop())
       streamRef.current = null
     }
-    
+
     if (videoRef.current) {
       videoRef.current.srcObject = null
     }
-    
+
     setIsStreamActive(false)
     setIsRecording(false)
   }, [])
@@ -201,7 +201,7 @@ export function CameraCaptureEnhanced({
   const switchCamera = useCallback(async () => {
     const newFacing: CameraFacing = facing === 'user' ? 'environment' : 'user'
     setFacing(newFacing)
-    
+
     if (isStreamActive) {
       stopCamera()
       // Small delay to ensure cleanup
@@ -220,7 +220,7 @@ export function CameraCaptureEnhanced({
       const video = videoRef.current
       const canvas = canvasRef.current
       const context = canvas.getContext('2d')
-      
+
       if (!context) return
 
       // Set canvas dimensions to video dimensions
@@ -236,7 +236,7 @@ export function CameraCaptureEnhanced({
 
         const url = URL.createObjectURL(blob)
         const thumbnail = canvas.toDataURL('image/jpeg', 0.3)
-        
+
         const capture: CapturedMedia = {
           id: `photo-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           type: 'photo',
@@ -285,11 +285,11 @@ export function CameraCaptureEnhanced({
       if (!isRecording) {
         // Start recording
         recordedChunksRef.current = []
-        
+
         const mediaRecorder = new MediaRecorder(streamRef.current, {
           mimeType: 'video/webm;codecs=vp9'
         })
-        
+
         mediaRecorderRef.current = mediaRecorder
 
         mediaRecorder.ondataavailable = (event) => {
@@ -301,10 +301,10 @@ export function CameraCaptureEnhanced({
         mediaRecorder.onstop = async () => {
           const blob = new Blob(recordedChunksRef.current, { type: 'video/webm' })
           const url = URL.createObjectURL(blob)
-          
+
           // Create thumbnail from video
           const thumbnail = await createVideoThumbnail(url)
-          
+
           const capture: CapturedMedia = {
             id: `video-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
             type: 'video',
@@ -334,7 +334,7 @@ export function CameraCaptureEnhanced({
         const recordingStartTime = Date.now()
         mediaRecorder.start()
         setIsRecording(true)
-        
+
         info('Recording started', {
           subtitle: 'Tap the record button again to stop'
         })
@@ -386,8 +386,8 @@ export function CameraCaptureEnhanced({
       }
 
       // Update capture with AI results
-      setCaptures(prev => prev.map(capture => 
-        capture.id === media.id 
+      setCaptures(prev => prev.map(capture =>
+        capture.id === media.id
           ? { ...capture, aiAnalysis }
           : capture
       ))
@@ -421,16 +421,16 @@ export function CameraCaptureEnhanced({
   const deleteCapture = useCallback((captureId: string) => {
     setCaptures(prev => {
       const updated = prev.filter(c => c.id !== captureId)
-      
+
       // Cleanup blob URL
       const capture = prev.find(c => c.id === captureId)
       if (capture) {
         URL.revokeObjectURL(capture.url)
       }
-      
+
       return updated
     })
-    
+
     if (selectedCapture === captureId) {
       setSelectedCapture(null)
     }
@@ -481,7 +481,7 @@ export function CameraCaptureEnhanced({
           playsInline
           className="w-full h-full object-cover"
         />
-        
+
         <canvas
           ref={canvasRef}
           className="hidden"
@@ -554,7 +554,7 @@ export function CameraCaptureEnhanced({
           >
             {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
           </Button>
-          
+
           <Button
             variant="ghost"
             size="sm"
@@ -596,10 +596,10 @@ export function CameraCaptureEnhanced({
             disabled={!isStreamActive}
             className={cn(
               "w-16 h-16 rounded-full border-4 border-white",
-              currentMode === 'photo' 
-                ? "bg-white hover:bg-gray-100" 
-                : isRecording 
-                ? "bg-red-600 hover:bg-red-700" 
+              currentMode === 'photo'
+                ? "bg-white hover:bg-gray-100"
+                : isRecording
+                ? "bg-red-600 hover:bg-red-700"
                 : "bg-white hover:bg-gray-100"
             )}
           >
@@ -631,15 +631,15 @@ export function CameraCaptureEnhanced({
           <h4 className="text-white font-medium mb-3">
             Captures ({captures.length}/{maxCaptures})
           </h4>
-          
+
           <div className="grid grid-cols-4 gap-2">
             {captures.map((capture) => (
               <div
                 key={capture.id}
                 className={cn(
                   "relative aspect-square rounded-lg overflow-hidden cursor-pointer border-2 transition-all",
-                  selectedCapture === capture.id 
-                    ? "border-blue-500 ring-2 ring-blue-200" 
+                  selectedCapture === capture.id
+                    ? "border-blue-500 ring-2 ring-blue-200"
                     : "border-transparent hover:border-white/30"
                 )}
                 onClick={() => setSelectedCapture(capture.id)}
@@ -649,7 +649,7 @@ export function CameraCaptureEnhanced({
                   alt={`${capture.type} capture`}
                   className="w-full h-full object-cover"
                 />
-                
+
                 {/* Type indicator */}
                 <div className="absolute top-1 left-1">
                   <Badge variant="secondary" className="text-xs">
@@ -679,7 +679,7 @@ export function CameraCaptureEnhanced({
                   >
                     <Download className="w-3 h-3 text-white" />
                   </Button>
-                  
+
                   <Button
                     variant="ghost"
                     size="sm"
@@ -724,7 +724,7 @@ export function CameraCaptureEnhanced({
                         {capture.duration && ` • ${Math.round(capture.duration)}s`}
                       </p>
                     </div>
-                    
+
                     <Button
                       variant="ghost"
                       size="sm"
@@ -745,7 +745,7 @@ export function CameraCaptureEnhanced({
                           {capture.aiAnalysis.confidence}% confidence
                         </Badge>
                       </div>
-                      
+
                       <div className="text-sm text-blue-200 space-y-1">
                         <p>Damage Type: {capture.aiAnalysis.damageAssessment.type}</p>
                         <p>Severity: {capture.aiAnalysis.damageAssessment.severity}</p>
@@ -768,7 +768,7 @@ export function CameraCaptureEnhanced({
                         Analyze with AI
                       </Button>
                     )}
-                    
+
                     <Button
                       variant="outline"
                       size="sm"
@@ -794,12 +794,12 @@ function formatFileSize(bytes: number): string {
   const units = ['B', 'KB', 'MB', 'GB']
   let size = bytes
   let unitIndex = 0
-  
+
   while (size >= 1024 && unitIndex < units.length - 1) {
     size /= 1024
     unitIndex++
   }
-  
+
   return `${size.toFixed(1)} ${units[unitIndex]}`
 }
 
@@ -808,14 +808,14 @@ async function createVideoThumbnail(videoUrl: string): Promise<string> {
     const video = document.createElement('video')
     const canvas = document.createElement('canvas')
     const context = canvas.getContext('2d')
-    
+
     video.addEventListener('loadeddata', () => {
       canvas.width = video.videoWidth
       canvas.height = video.videoHeight
       context?.drawImage(video, 0, 0)
       resolve(canvas.toDataURL('image/jpeg', 0.7))
     })
-    
+
     video.src = videoUrl
   })
 }

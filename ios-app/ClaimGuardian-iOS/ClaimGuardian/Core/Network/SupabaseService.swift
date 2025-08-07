@@ -9,22 +9,22 @@ protocol SupabaseServiceProtocol {
     func signOut() async throws
     func getCurrentUser() -> AuthUser?
     func refreshSession() async throws -> AuthUser
-    
+
     // Properties
     func fetchProperties() async throws -> [PropertyResponse]
     func createProperty(_ property: PropertyRequest) async throws -> PropertyResponse
     func updateProperty(_ property: PropertyRequest) async throws -> PropertyResponse
-    
+
     // Assessments
     func fetchAssessments(propertyId: UUID?) async throws -> [AssessmentResponse]
     func createAssessment(_ assessment: AssessmentRequest) async throws -> AssessmentResponse
     func updateAssessment(_ assessment: AssessmentRequest) async throws -> AssessmentResponse
-    
+
     // Photos & Files
     func uploadPhoto(data: Data, path: String) async throws -> String
     func downloadPhoto(path: String) async throws -> Data
     func deletePhoto(path: String) async throws
-    
+
     // AI Services
     func analyzeImage(imageData: Data, prompt: String) async throws -> AIAnalysisResponse
     func generateReport(assessmentId: UUID) async throws -> String
@@ -33,21 +33,21 @@ protocol SupabaseServiceProtocol {
 // MARK: - Supabase Service Implementation
 class SupabaseService: ObservableObject, SupabaseServiceProtocol {
     static let shared = SupabaseService()
-    
+
     private let baseURL = "https://your-supabase-url.supabase.co"
     private let apiKey = Bundle.main.object(forInfoPlistKey: "SupabaseAPIKey") as? String ?? ""
     private let session = URLSession.shared
-    
+
     @Published var currentUser: AuthUser?
     @Published var isAuthenticated = false
-    
+
     private var authToken: String?
     private var refreshToken: String?
-    
+
     init() {
         loadStoredAuth()
     }
-    
+
     // MARK: - Authentication
     func signIn(email: String, password: String) async throws -> AuthUser {
         let request = AuthRequest(email: email, password: password)
@@ -56,11 +56,11 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             method: "POST",
             body: request
         )
-        
+
         await storeAuthData(response)
         return response.user
     }
-    
+
     func signUp(email: String, password: String, metadata: [String: Any] = [:]) async throws -> AuthUser {
         let request = SignUpRequest(email: email, password: password, data: metadata)
         let response: AuthResponse = try await performRequest(
@@ -68,11 +68,11 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             method: "POST",
             body: request
         )
-        
+
         await storeAuthData(response)
         return response.user
     }
-    
+
     func signOut() async throws {
         _ = try await performRequest(
             endpoint: "/auth/v1/logout",
@@ -80,30 +80,30 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             body: Optional<String>.none,
             requiresAuth: true
         ) as EmptyResponse
-        
+
         await clearAuthData()
     }
-    
+
     func getCurrentUser() -> AuthUser? {
         return currentUser
     }
-    
+
     func refreshSession() async throws -> AuthUser {
         guard let refreshToken = refreshToken else {
             throw SupabaseError.noRefreshToken
         }
-        
+
         let request = RefreshTokenRequest(refreshToken: refreshToken)
         let response: AuthResponse = try await performRequest(
             endpoint: "/auth/v1/token?grant_type=refresh_token",
             method: "POST",
             body: request
         )
-        
+
         await storeAuthData(response)
         return response.user
     }
-    
+
     // MARK: - Properties
     func fetchProperties() async throws -> [PropertyResponse] {
         return try await performRequest(
@@ -112,7 +112,7 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     func createProperty(_ property: PropertyRequest) async throws -> PropertyResponse {
         return try await performRequest(
             endpoint: "/rest/v1/properties",
@@ -121,7 +121,7 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     func updateProperty(_ property: PropertyRequest) async throws -> PropertyResponse {
         return try await performRequest(
             endpoint: "/rest/v1/properties?id=eq.\(property.id)",
@@ -130,21 +130,21 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     // MARK: - Assessments
     func fetchAssessments(propertyId: UUID? = nil) async throws -> [AssessmentResponse] {
         var endpoint = "/rest/v1/assessments?select=*,property(*),photos(*),damage_items(*)"
         if let propertyId = propertyId {
             endpoint += "&property_id=eq.\(propertyId)"
         }
-        
+
         return try await performRequest(
             endpoint: endpoint,
             method: "GET",
             requiresAuth: true
         )
     }
-    
+
     func createAssessment(_ assessment: AssessmentRequest) async throws -> AssessmentResponse {
         return try await performRequest(
             endpoint: "/rest/v1/assessments",
@@ -153,7 +153,7 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     func updateAssessment(_ assessment: AssessmentRequest) async throws -> AssessmentResponse {
         return try await performRequest(
             endpoint: "/rest/v1/assessments?id=eq.\(assessment.id)",
@@ -162,7 +162,7 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     // MARK: - Storage
     func uploadPhoto(data: Data, path: String) async throws -> String {
         var request = URLRequest(url: URL(string: "\(baseURL)/storage/v1/object/photos/\(path)")!)
@@ -170,47 +170,47 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
         request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
         request.setValue("image/jpeg", forHTTPHeaderField: "Content-Type")
         request.httpBody = data
-        
+
         let (_, response) = try await session.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw SupabaseError.uploadFailed
         }
-        
+
         return "\(baseURL)/storage/v1/object/public/photos/\(path)"
     }
-    
+
     func downloadPhoto(path: String) async throws -> Data {
         let url = URL(string: "\(baseURL)/storage/v1/object/public/photos/\(path)")!
         let (data, response) = try await session.data(from: url)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw SupabaseError.downloadFailed
         }
-        
+
         return data
     }
-    
+
     func deletePhoto(path: String) async throws {
         var request = URLRequest(url: URL(string: "\(baseURL)/storage/v1/object/photos/\(path)")!)
         request.httpMethod = "DELETE"
         request.setValue("Bearer \(authToken ?? "")", forHTTPHeaderField: "Authorization")
-        
+
         let (_, response) = try await session.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
             throw SupabaseError.deleteFailed
         }
     }
-    
+
     // MARK: - AI Services
     func analyzeImage(imageData: Data, prompt: String) async throws -> AIAnalysisResponse {
         let base64Image = imageData.base64EncodedString()
         let request = AIAnalysisRequest(image: base64Image, prompt: prompt)
-        
+
         return try await performRequest(
             endpoint: "/functions/v1/analyze-damage",
             method: "POST",
@@ -218,7 +218,7 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             requiresAuth: true
         )
     }
-    
+
     func generateReport(assessmentId: UUID) async throws -> String {
         let request = ReportRequest(assessmentId: assessmentId)
         let response: ReportResponse = try await performRequest(
@@ -227,10 +227,10 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
             body: request,
             requiresAuth: true
         )
-        
+
         return response.reportUrl
     }
-    
+
     // MARK: - Private Methods
     private func performRequest<T: Codable, U: Codable>(
         endpoint: String,
@@ -238,33 +238,33 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
         body: T? = nil,
         requiresAuth: Bool = false
     ) async throws -> U {
-        
+
         guard let url = URL(string: baseURL + endpoint) else {
             throw SupabaseError.invalidURL
         }
-        
+
         var request = URLRequest(url: url)
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.setValue(apiKey, forHTTPHeaderField: "apikey")
-        
+
         if requiresAuth {
             guard let authToken = authToken else {
                 throw SupabaseError.notAuthenticated
             }
             request.setValue("Bearer \(authToken)", forHTTPHeaderField: "Authorization")
         }
-        
+
         if let body = body {
             request.httpBody = try JSONEncoder().encode(body)
         }
-        
+
         let (data, response) = try await session.data(for: request)
-        
+
         guard let httpResponse = response as? HTTPURLResponse else {
             throw SupabaseError.invalidResponse
         }
-        
+
         if httpResponse.statusCode == 401 {
             // Try to refresh token
             if requiresAuth {
@@ -281,56 +281,56 @@ class SupabaseService: ObservableObject, SupabaseServiceProtocol {
                 throw SupabaseError.authenticationFailed
             }
         }
-        
+
         guard 200...299 ~= httpResponse.statusCode else {
             throw SupabaseError.httpError(httpResponse.statusCode)
         }
-        
+
         return try JSONDecoder().decode(U.self, from: data)
     }
-    
+
     @MainActor
     private func storeAuthData(_ response: AuthResponse) {
         self.currentUser = response.user
         self.authToken = response.accessToken
         self.refreshToken = response.refreshToken
         self.isAuthenticated = true
-        
+
         // Store in keychain
         KeychainHelper.store(response.accessToken, forKey: "access_token")
         KeychainHelper.store(response.refreshToken ?? "", forKey: "refresh_token")
-        
+
         // Store user data
         if let userData = try? JSONEncoder().encode(response.user) {
             UserDefaults.standard.set(userData, forKey: "current_user")
         }
     }
-    
+
     @MainActor
     private func clearAuthData() {
         self.currentUser = nil
         self.authToken = nil
         self.refreshToken = nil
         self.isAuthenticated = false
-        
+
         KeychainHelper.delete(forKey: "access_token")
         KeychainHelper.delete(forKey: "refresh_token")
         UserDefaults.standard.removeObject(forKey: "current_user")
     }
-    
+
     private func loadStoredAuth() {
         if let token = KeychainHelper.load(forKey: "access_token"),
            let refreshToken = KeychainHelper.load(forKey: "refresh_token"),
            let userData = UserDefaults.standard.data(forKey: "current_user"),
            let user = try? JSONDecoder().decode(AuthUser.self, from: userData) {
-            
+
             DispatchQueue.main.async {
                 self.authToken = token
                 self.refreshToken = refreshToken
                 self.currentUser = user
                 self.isAuthenticated = true
             }
-            
+
             // Validate token
             Task {
                 do {
@@ -357,7 +357,7 @@ struct AuthResponse: Codable {
     let refreshToken: String?
     let user: AuthUser
     let expiresIn: Int
-    
+
     enum CodingKeys: String, CodingKey {
         case accessToken = "access_token"
         case refreshToken = "refresh_token"
@@ -375,17 +375,17 @@ struct SignUpRequest: Codable {
     let email: String
     let password: String
     let data: [String: Any]
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(email, forKey: .email)
         try container.encode(password, forKey: .password)
-        
+
         // Convert [String: Any] to encodable format
         let encodableData = data.compactMapValues { AnyCodable($0) }
         try container.encode(encodableData, forKey: .data)
     }
-    
+
     enum CodingKeys: String, CodingKey {
         case email, password, data
     }
@@ -393,7 +393,7 @@ struct SignUpRequest: Codable {
 
 struct RefreshTokenRequest: Codable {
     let refreshToken: String
-    
+
     enum CodingKeys: String, CodingKey {
         case refreshToken = "refresh_token"
     }
@@ -490,14 +490,14 @@ struct ReportResponse: Codable {
 // MARK: - Helper for Any type encoding
 struct AnyCodable: Codable {
     let value: Any
-    
+
     init<T>(_ value: T) {
         self.value = value
     }
-    
+
     init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
-        
+
         if let boolValue = try? container.decode(Bool.self) {
             value = boolValue
         } else if let intValue = try? container.decode(Int.self) {
@@ -514,10 +514,10 @@ struct AnyCodable: Codable {
             value = NSNull()
         }
     }
-    
+
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
-        
+
         switch value {
         case let boolValue as Bool:
             try container.encode(boolValue)
@@ -550,7 +550,7 @@ enum SupabaseError: LocalizedError {
     case downloadFailed
     case deleteFailed
     case httpError(Int)
-    
+
     var errorDescription: String? {
         switch self {
         case .invalidURL:

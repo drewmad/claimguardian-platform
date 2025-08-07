@@ -69,7 +69,7 @@ function logSecure(
   requestId?: string
 ) {
   const sanitizedData = data ? sanitizeLogData(data) : undefined
-  
+
   console.log(JSON.stringify({
     timestamp: new Date().toISOString(),
     level,
@@ -84,7 +84,7 @@ function logSecure(
 function sanitizeLogData(data: Record<string, unknown>): Record<string, unknown> {
   const sensitive = ['password', 'token', 'apiKey', 'ssn', 'email', 'phone', 'creditCard']
   const sanitized: Record<string, unknown> = {}
-  
+
   for (const [key, value] of Object.entries(data)) {
     if (sensitive.some(s => key.toLowerCase().includes(s))) {
       sanitized[key] = '[REDACTED]'
@@ -94,7 +94,7 @@ function sanitizeLogData(data: Record<string, unknown>): Record<string, unknown>
       sanitized[key] = value
     }
   }
-  
+
   return sanitized
 }
 
@@ -105,7 +105,7 @@ async function checkRateLimit(
   functionName: string
 ): Promise<boolean> {
   const windowStart = new Date(Date.now() - RATE_LIMIT_WINDOW_MS)
-  
+
   // Get current request count
   const { data: limits, error } = await supabase
     .from('api_rate_limits')
@@ -121,7 +121,7 @@ async function checkRateLimit(
   }
 
   const currentCount = limits?.request_count || 0
-  
+
   if (currentCount >= RATE_LIMIT_MAX_REQUESTS) {
     return false
   }
@@ -180,7 +180,7 @@ Deno.serve(async (req: Request) => {
   const requestId = crypto.randomUUID()
   const origin = req.headers.get('origin')
   const headers = getSecurityHeaders(origin)
-  
+
   // Handle CORS preflight
   if (req.method === 'OPTIONS') {
     return new Response(null, { status: 204, headers })
@@ -189,10 +189,10 @@ Deno.serve(async (req: Request) => {
   // Only allow POST
   if (req.method !== 'POST') {
     return new Response(
-      JSON.stringify({ 
-        success: false, 
+      JSON.stringify({
+        success: false,
         error: 'Method not allowed',
-        requestId 
+        requestId
       }),
       { status: 405, headers }
     )
@@ -216,10 +216,10 @@ Deno.serve(async (req: Request) => {
     if (!authHeader) {
       logSecure('warn', 'Missing authorization header', {}, requestId)
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Missing authorization header',
-          requestId 
+          requestId
         }),
         { status: 401, headers }
       )
@@ -228,14 +228,14 @@ Deno.serve(async (req: Request) => {
     // Validate token and get user
     const token = authHeader.replace('Bearer ', '')
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-    
+
     if (authError || !user) {
       logSecure('warn', 'Invalid authentication', { error: authError?.message }, requestId)
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Invalid authentication',
-          requestId 
+          requestId
         }),
         { status: 401, headers }
       )
@@ -248,10 +248,10 @@ Deno.serve(async (req: Request) => {
     if (!rateLimitOk) {
       logSecure('warn', 'Rate limit exceeded', { userId: user.id }, requestId)
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Rate limit exceeded',
-          requestId 
+          requestId
         }),
         { status: 429, headers }
       )
@@ -265,10 +265,10 @@ Deno.serve(async (req: Request) => {
     } catch (error) {
       logSecure('warn', 'Invalid request body', { error: error.message }, requestId)
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Invalid request format',
-          requestId 
+          requestId
         }),
         { status: 400, headers }
       )
@@ -283,24 +283,24 @@ Deno.serve(async (req: Request) => {
     )
 
     if (!hasAccess) {
-      logSecure('warn', 'Access denied', { 
+      logSecure('warn', 'Access denied', {
         userId: user.id,
-        resourceId: body.resourceId 
+        resourceId: body.resourceId
       }, requestId)
-      
+
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: 'Access denied',
-          requestId 
+          requestId
         }),
         { status: 403, headers }
       )
     }
 
     // Get client IP for audit
-    const ipAddress = req.headers.get('x-forwarded-for') || 
-                     req.headers.get('x-real-ip') || 
+    const ipAddress = req.headers.get('x-forwarded-for') ||
+                     req.headers.get('x-real-ip') ||
                      undefined
 
     // Audit the access
@@ -316,10 +316,10 @@ Deno.serve(async (req: Request) => {
     // =====================================================
     // YOUR BUSINESS LOGIC HERE
     // =====================================================
-    
+
     // Example: Process the request
     const result = await processRequest(body, user.id, supabase)
-    
+
     // =====================================================
     // END BUSINESS LOGIC
     // =====================================================
@@ -347,10 +347,10 @@ Deno.serve(async (req: Request) => {
 
     // Return generic error (don't expose internals)
     return new Response(
-      JSON.stringify({ 
-        success: false, 
+      JSON.stringify({
+        success: false,
         error: 'Internal server error',
-        requestId 
+        requestId
       }),
       { status: 500, headers }
     )
@@ -368,7 +368,7 @@ async function processRequest(
 ): Promise<any> {
   // Implement your business logic here
   // This is just an example
-  
+
   switch (body.action) {
     case 'create':
       return await createResource(body.data, userId, supabase)

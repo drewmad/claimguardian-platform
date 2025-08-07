@@ -12,14 +12,14 @@ echo ""
 execute_sql() {
     local query="$1"
     local description="$2"
-    
+
     echo "📝 $description"
-    
+
     response=$(curl -s -X POST "$API_URL" \
         -H "Authorization: Bearer $AUTH_TOKEN" \
         -H "Content-Type: application/json" \
         -d "{\"query\": $(echo "$query" | jq -Rs .)}")
-    
+
     if echo "$response" | jq -e '.error' > /dev/null 2>&1; then
         echo "❌ Error: $(echo "$response" | jq -r '.error')"
         return 1
@@ -33,16 +33,16 @@ execute_sql() {
 # Step 1: Create enum types
 echo "🏷️ Step 1: Creating enum types..."
 execute_sql "
-DO \$\$ 
+DO \$\$
 BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'property_type') THEN
         CREATE TYPE property_type AS ENUM ('residential', 'commercial', 'land', 'mixed_use');
     END IF;
-    
+
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'occupancy_status') THEN
         CREATE TYPE occupancy_status AS ENUM ('owner_occupied', 'tenant_occupied', 'vacant', 'seasonal');
     END IF;
-    
+
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'damage_severity') THEN
         CREATE TYPE damage_severity AS ENUM ('minor', 'moderate', 'major', 'total_loss');
     END IF;
@@ -52,7 +52,7 @@ END \$\$;
 # Step 2: Check current state
 echo -e "\n🔍 Step 2: Checking current database state..."
 execute_sql "
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM properties) as properties_count,
     (SELECT COUNT(*) FROM pg_type WHERE typname IN ('property_type', 'occupancy_status', 'damage_severity')) as enum_count,
     (SELECT COUNT(*) FROM information_schema.tables WHERE table_name LIKE 'property%' AND table_schema = 'public') as table_count
@@ -93,7 +93,7 @@ CREATE TABLE properties (
     updated_at TIMESTAMPTZ DEFAULT NOW(),
     version INTEGER DEFAULT 1,
     CONSTRAINT valid_location CHECK (
-        (latitude IS NULL AND longitude IS NULL) OR 
+        (latitude IS NULL AND longitude IS NULL) OR
         (latitude IS NOT NULL AND longitude IS NOT NULL)
     )
 );
@@ -125,7 +125,7 @@ INSERT INTO properties (
     id, user_id, address, city, state, zip_code, county,
     year_built, square_footage, current_value, created_at, updated_at
 )
-SELECT 
+SELECT
     id, user_id,
     COALESCE(street_address, name, '') as address,
     COALESCE(city, '') as city,
@@ -162,7 +162,7 @@ CREATE POLICY \"Users can delete own properties\" ON properties
 # Final verification
 echo -e "\n✅ Step 8: Verifying migration..."
 execute_sql "
-SELECT 
+SELECT
     (SELECT COUNT(*) FROM properties) as new_properties_count,
     (SELECT COUNT(*) FROM properties_old) as old_properties_count,
     (SELECT COUNT(*) FROM property_insurance) as insurance_count,

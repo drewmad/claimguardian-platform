@@ -11,11 +11,11 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  CheckCircle2, 
-  Circle, 
-  Clock, 
-  AlertCircle, 
+import {
+  CheckCircle2,
+  Circle,
+  Clock,
+  AlertCircle,
   XCircle,
   FileCheck,
   Camera,
@@ -123,7 +123,7 @@ export function WorkflowStatus({
 
   const getStepIcon = (step: WorkflowStep) => {
     const Icon = stepIcons[step.type]
-    
+
     switch (step.status) {
       case 'completed':
         return <CheckCircle2 className="h-5 w-5 text-green-400" />
@@ -183,12 +183,12 @@ export function WorkflowStatus({
               Automated evidence collection and validation workflow
             </CardDescription>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Badge className={statusBadgeStyles[workflow.status]}>
               {workflow.status}
             </Badge>
-            
+
             {workflow.status === 'active' && onPause && (
               <Button
                 variant="outline"
@@ -200,7 +200,7 @@ export function WorkflowStatus({
                 Pause
               </Button>
             )}
-            
+
             {workflow.status === 'paused' && onResume && (
               <Button
                 variant="outline"
@@ -225,8 +225,8 @@ export function WorkflowStatus({
               {workflow.progress}% • {timeRemaining}
             </span>
           </div>
-          <Progress 
-            value={workflow.progress} 
+          <Progress
+            value={workflow.progress}
             className="h-3 bg-gray-700"
           />
         </div>
@@ -236,7 +236,7 @@ export function WorkflowStatus({
           <h4 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
             Workflow Steps
           </h4>
-          
+
           <div className="space-y-1">
             {workflow.steps.map((step, index) => (
               <div

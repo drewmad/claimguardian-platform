@@ -89,7 +89,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
 
       setInsights(data.insights || [])
       onInsightsUpdate?.(data.insights || [])
-      
+
       toast.success(`Loaded ${data.insights?.length || 0} privacy-protected insights`)
     } catch (error) {
       console.error('Failed to load insights:', error)
@@ -130,7 +130,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
       toast.success(data.message)
       setShowContributionForm(false)
       setContributionData({ propertyType: 'residential' })
-      
+
       // Reload insights to include new contribution
       await loadInsights()
     } catch (error) {
@@ -286,7 +286,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
           <Alert className="bg-green-900/20 border-green-600/30">
             <Shield className="h-4 w-4 text-green-400" />
             <AlertDescription className="text-green-200">
-              <strong>Privacy Guarantee:</strong> Your data will be anonymized and noise will be added using differential privacy 
+              <strong>Privacy Guarantee:</strong> Your data will be anonymized and noise will be added using differential privacy
               (ε = {privacyLevel === 'high' ? '0.5' : '1.0'}). No personal information will be stored or shared.
             </AlertDescription>
           </Alert>
@@ -435,7 +435,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
               <CheckCircle className="w-8 h-8 text-green-400 mb-3" />
               <h4 className="font-semibold text-gray-200 mb-2">Differential Privacy</h4>
               <p className="text-gray-400">
-                Mathematical noise is added to all statistics, ensuring individual contributions cannot be identified 
+                Mathematical noise is added to all statistics, ensuring individual contributions cannot be identified
                 while maintaining statistical accuracy.
               </p>
             </div>
@@ -443,7 +443,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
               <CheckCircle className="w-8 h-8 text-green-400 mb-3" />
               <h4 className="font-semibold text-gray-200 mb-2">Data Anonymization</h4>
               <p className="text-gray-400">
-                All personal identifiers are removed and data is grouped into broad categories before any processing 
+                All personal identifiers are removed and data is grouped into broad categories before any processing
                 or storage occurs.
               </p>
             </div>
@@ -451,7 +451,7 @@ export function PrivacyPreservingAnalytics({ onInsightsUpdate }: PrivacyPreservi
               <CheckCircle className="w-8 h-8 text-green-400 mb-3" />
               <h4 className="font-semibold text-gray-200 mb-2">Privacy Budget</h4>
               <p className="text-gray-400">
-                Each query consumes a privacy budget (ε), ensuring total privacy loss is mathematically bounded 
+                Each query consumes a privacy budget (ε), ensuring total privacy loss is mathematically bounded
                 and controlled.
               </p>
             </div>

@@ -8,13 +8,13 @@ cd /Users/madengineering/ClaimGuardian/data/florida/charlotte_chunks
 # Create cleaned versions with only the columns that exist in the table
 for file in charlotte_part_*.csv; do
     echo "Processing $file..."
-    
+
     # Extract header and map to lowercase
     head -1 "$file" | tr '[:upper:]' '[:lower:]' > "${file%.csv}_clean.csv"
-    
+
     # Extract data rows (skip header)
     tail -n +2 "$file" >> "${file%.csv}_clean.csv"
-    
+
     echo "Created ${file%.csv}_clean.csv"
 done
 

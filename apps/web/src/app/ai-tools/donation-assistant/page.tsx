@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Package, Camera, Upload,
   Building, Plus,
   X, Info, Heart, TrendingUp, Receipt, Shield
@@ -63,7 +63,7 @@ export default function DonationAssistantPage() {
   const [donationDate, setDonationDate] = useState(new Date().toISOString().split('T')[0])
   const [showCameraCapture, setShowCameraCapture] = useState(false)
   const [isAnalyzing, setIsAnalyzing] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const categories = [
@@ -95,16 +95,16 @@ export default function DonationAssistantPage() {
       fair: 0.15,
       poor: 0.05
     }
-    
+
     const baseValue = item.originalPrice || item.estimatedValue || 0
     const fmv = baseValue * (conditionMultiplier[item.condition as keyof typeof conditionMultiplier] || 0.25)
-    
+
     return Math.round(fmv * 100) / 100
   }
 
   const handleImageCapture = async (file: File) => {
     setIsAnalyzing(true)
-    
+
     // Simulate AI analysis
     setTimeout(() => {
       // Mock AI detection results
@@ -114,20 +114,20 @@ export default function DonationAssistantPage() {
         estimatedValue: 150,
         condition: 'good' as const
       }
-      
+
       setCurrentItem({
         ...currentItem,
         ...mockResults,
         fairMarketValue: calculateFairMarketValue({ ...currentItem, ...mockResults })
       })
-      
+
       // Convert file to data URL for preview
       const reader = new FileReader()
       reader.onload = (e) => {
         setCurrentItem(prev => ({ ...prev, imageUrl: e.target?.result as string }))
       }
       reader.readAsDataURL(file)
-      
+
       setIsAnalyzing(false)
       setShowCameraCapture(false)
       toast.success('Item analyzed successfully!')
@@ -146,7 +146,7 @@ export default function DonationAssistantPage() {
       toast.error('Please provide item name and category')
       return
     }
-    
+
     const newItem: DonationItem = {
       id: Date.now().toString(),
       name: currentItem.name,
@@ -160,7 +160,7 @@ export default function DonationAssistantPage() {
       dateAcquired: currentItem.dateAcquired,
       originalPrice: currentItem.originalPrice
     }
-    
+
     setItems([...items, newItem])
     setCurrentItem({ condition: 'good', quantity: 1 })
     toast.success('Item added to donation list')
@@ -180,7 +180,7 @@ export default function DonationAssistantPage() {
       toast.error('Please select a charity')
       return
     }
-    
+
     const receiptData = {
       donorName: 'John Doe', // Would come from user profile
       donorAddress: '123 Main St, City, ST 12345',
@@ -191,7 +191,7 @@ export default function DonationAssistantPage() {
       receiptNumber: `DON-${Date.now()}`,
       taxYear: new Date(donationDate).getFullYear()
     }
-    
+
     // Generate PDF or download JSON
     const blob = new Blob([JSON.stringify(receiptData, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -199,7 +199,7 @@ export default function DonationAssistantPage() {
     a.href = url
     a.download = `donation-receipt-${receiptData.receiptNumber}.json`
     a.click()
-    
+
     toast.success('Donation receipt generated!')
   }
 
@@ -210,8 +210,8 @@ export default function DonationAssistantPage() {
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -306,8 +306,8 @@ export default function DonationAssistantPage() {
                         {/* Category */}
                         <div>
                           <Label htmlFor="category" className="text-white">Category</Label>
-                          <Select 
-                            value={currentItem.category || ''} 
+                          <Select
+                            value={currentItem.category || ''}
                             onValueChange={(value) => setCurrentItem({ ...currentItem, category: value })}
                           >
                             <SelectTrigger className="bg-gray-700 border-gray-600">
@@ -324,8 +324,8 @@ export default function DonationAssistantPage() {
                         {/* Condition */}
                         <div>
                           <Label htmlFor="condition" className="text-white">Condition</Label>
-                          <Select 
-                            value={currentItem.condition} 
+                          <Select
+                            value={currentItem.condition}
                             onValueChange={(value) => {
                               setCurrentItem({ ...currentItem, condition: value as DonationItem['condition'] })
                               if (currentItem.originalPrice || currentItem.estimatedValue) {
@@ -371,8 +371,8 @@ export default function DonationAssistantPage() {
                             value={currentItem.originalPrice || ''}
                             onChange={(e) => {
                               const price = parseFloat(e.target.value) || 0
-                              setCurrentItem({ 
-                                ...currentItem, 
+                              setCurrentItem({
+                                ...currentItem,
                                 originalPrice: price,
                                 fairMarketValue: calculateFairMarketValue({ ...currentItem, originalPrice: price })
                               })
@@ -558,7 +558,7 @@ export default function DonationAssistantPage() {
                       <Receipt className="h-4 w-4 mr-2" />
                       Generate Tax Receipt
                     </Button>
-                    
+
                     <Alert className="mt-4 bg-blue-900/20 border-blue-600/30">
                       <Info className="h-4 w-4 text-blue-400" />
                       <AlertDescription className="text-blue-200">
@@ -594,7 +594,7 @@ export default function DonationAssistantPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Camera Capture Modal */}
         {showCameraCapture && (
           <CameraCapture

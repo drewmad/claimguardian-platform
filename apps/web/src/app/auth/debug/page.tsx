@@ -17,20 +17,20 @@ export default function AuthDebugPage() {
   const auth = useAuth()
   const [debugInfo, setDebugInfo] = useState<Record<string, unknown>>({})
   const [apiDebug, setApiDebug] = useState<Record<string, unknown> | null>(null)
-  
+
   useEffect(() => {
     const checkAuth = async () => {
       const supabase = createClient()
-      
+
       // Check user
       const { data: { user }, error: userError } = await supabase.auth.getUser()
-      
+
       // Check session
       const { data: { session }, error: sessionError } = await supabase.auth.getSession()
-      
+
       // Test connection
       const { error: testError } = await supabase.from('_test').select('*').limit(1)
-      
+
       setDebugInfo({
         timestamp: new Date().toISOString(),
         env: {
@@ -60,7 +60,7 @@ export default function AuthDebugPage() {
           sessionWarning: auth.sessionWarning
         }
       })
-      
+
       // Fetch API debug info
       try {
         const response = await fetch('/api/auth/debug')
@@ -70,29 +70,29 @@ export default function AuthDebugPage() {
         setApiDebug({ error: 'Failed to fetch API debug info' })
       }
     }
-    
+
     checkAuth()
   }, [auth])
-  
+
   return (
     <div className="min-h-screen bg-gray-900 p-8">
       <div className="max-w-4xl mx-auto space-y-6">
         <h1 className="text-3xl font-bold text-white mb-8">Auth Debug Information</h1>
-        
+
         <Card className="bg-gray-800 border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Client-Side Debug</h2>
           <pre className="text-sm text-gray-300 overflow-auto">
             {JSON.stringify(debugInfo, null, 2)}
           </pre>
         </Card>
-        
+
         <Card className="bg-gray-800 border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Server-Side Debug</h2>
           <pre className="text-sm text-gray-300 overflow-auto">
             {JSON.stringify(apiDebug, null, 2)}
           </pre>
         </Card>
-        
+
         <Card className="bg-gray-800 border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Quick Actions</h2>
           <div className="space-y-4">
@@ -102,7 +102,7 @@ export default function AuthDebugPage() {
             >
               Go to Sign In
             </button>
-            
+
             <button
               onClick={async () => {
                 const supabase = createClient()

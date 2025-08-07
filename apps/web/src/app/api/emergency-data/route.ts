@@ -22,7 +22,7 @@ interface EmergencyDataRequest {
 export async function POST(req: NextRequest) {
   try {
     const body: EmergencyDataRequest = await req.json();
-    
+
     const {
       lat,
       lon,
@@ -71,7 +71,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // WEATHER DATA
     // =====================================================
-    
+
     if (includeWeather) {
       // Current conditions
       const { data: currentWeather } = await supabase
@@ -105,7 +105,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // FEMA DATA
     // =====================================================
-    
+
     if (includeFEMA) {
       // Active disasters
       const { data: disasters } = await supabase
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // ALERTS & WARNINGS
     // =====================================================
-    
+
     if (includeAlerts) {
       // Active weather alerts
       const { data: weatherAlerts } = await supabase
@@ -187,7 +187,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // PREDICTIVE ANALYTICS
     // =====================================================
-    
+
     if (includePredictions) {
       const predictions = await generatePredictions({
         location: { latitude, longitude },
@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // RISK ASSESSMENT
     // =====================================================
-    
+
     const riskAssessment = calculateComprehensiveRisk({
       weather: response.data.weather,
       fema: response.data.fema,
@@ -215,7 +215,7 @@ export async function POST(req: NextRequest) {
     // =====================================================
     // RECOMMENDATIONS
     // =====================================================
-    
+
     const recommendations = generateRecommendations(riskAssessment, response.data);
     response.recommendations = recommendations;
 
@@ -251,15 +251,15 @@ function analyzeWeatherTrends(historical: any[]): any {
 
 function calculateTrend(values: number[]): string {
   if (values.length < 2) return 'stable';
-  
+
   const firstHalf = values.slice(0, Math.floor(values.length / 2));
   const secondHalf = values.slice(Math.floor(values.length / 2));
-  
+
   const firstAvg = firstHalf.reduce((sum, v) => sum + v, 0) / firstHalf.length;
   const secondAvg = secondHalf.reduce((sum, v) => sum + v, 0) / secondHalf.length;
-  
+
   const change = ((secondAvg - firstAvg) / firstAvg) * 100;
-  
+
   if (change > 5) return 'increasing';
   if (change < -5) return 'decreasing';
   return 'stable';
@@ -333,12 +333,12 @@ function getHighestSeverity(alerts: any[]): string {
   if (!alerts || alerts.length === 0) return 'none';
 
   const severities = alerts.map(a => a.severity?.toLowerCase()).filter(Boolean);
-  
+
   if (severities.includes('extreme')) return 'extreme';
   if (severities.includes('severe')) return 'severe';
   if (severities.includes('moderate')) return 'moderate';
   if (severities.includes('minor')) return 'minor';
-  
+
   return 'unknown';
 }
 
@@ -349,17 +349,17 @@ function getRequiredActions(alerts: any[]): string[] {
     if (alert.severity === 'extreme' || alert.severity === 'severe') {
       actions.add('Monitor emergency communications');
     }
-    
+
     if (alert.event?.includes('Hurricane') || alert.event?.includes('Tornado')) {
       actions.add('Review evacuation plans');
       actions.add('Secure property');
     }
-    
+
     if (alert.event?.includes('Flood')) {
       actions.add('Move valuables to higher ground');
       actions.add('Avoid flood-prone areas');
     }
-    
+
     if (alert.instruction) {
       actions.add(alert.instruction);
     }
@@ -377,10 +377,10 @@ async function generatePredictions(data: any): Promise<any> {
 
   // Short-term (24-48 hours)
   if (data.weather?.forecast) {
-    const severeWeatherRisk = data.weather.forecast.some((f: any) => 
+    const severeWeatherRisk = data.weather.forecast.some((f: any) =>
       f.precipitation_probability > 70 || f.wind_speed > 30
     );
-    
+
     predictions.shortTerm.severeWeatherLikely = severeWeatherRisk;
     predictions.shortTerm.confidence = 0.85;
   }
@@ -418,17 +418,17 @@ function calculateDisasterProbability(data: any): number {
 
 function calculateSeasonalRisk(date: Date): string {
   const month = date.getMonth();
-  
+
   // Hurricane season (June-November)
   if (month >= 5 && month <= 10) {
     return 'high';
   }
-  
+
   // Winter storms (December-February)
   if (month >= 11 || month <= 1) {
     return 'moderate';
   }
-  
+
   return 'low';
 }
 
@@ -518,13 +518,13 @@ function getRiskLevel(risk: number): string {
 
 function getPrimaryConcern(factors: any): string {
   const concerns = Object.entries(factors).sort((a, b) => (b[1] as number) - (a[1] as number));
-  
+
   if (concerns.length === 0) return 'none';
-  
+
   const [concern, value] = concerns[0];
-  
+
   if ((value as number) < 30) return 'none';
-  
+
   switch (concern) {
     case 'weather': return 'Severe weather conditions';
     case 'disasters': return 'Active disaster declarations';
@@ -551,7 +551,7 @@ function generateRecommendations(riskAssessment: any, data: any): any {
   // Alert-based recommendations
   if (data.alerts?.active?.length > 0) {
     recommendations.immediate.push('Monitor official emergency communications');
-    
+
     data.alerts.actionRequired?.forEach((action: string) => {
       recommendations.immediate.push(action);
     });

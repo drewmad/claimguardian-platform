@@ -69,7 +69,7 @@ class AICostMonitor {
     userId?: string
     requestType: string
   }> = []
-  
+
   private alertCallbacks: Array<(alert: CostAlert) => void> = []
 
   constructor() {
@@ -133,7 +133,7 @@ class AICostMonitor {
     }
 
     this.spendingHistory.push(costEntry)
-    
+
     // Keep only last 30 days of history
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
     this.spendingHistory = this.spendingHistory.filter(
@@ -142,7 +142,7 @@ class AICostMonitor {
 
     // Update relevant budgets
     this.updateBudgetSpending(transaction.cost, transaction.featureId, transaction.userId)
-    
+
     // Check for alerts
     this.checkAlerts()
   }
@@ -166,13 +166,13 @@ class AICostMonitor {
   private transactionAppliedToBudget(budget: CostBudget, featureId?: string, userId?: string): boolean {
     // Global budgets (no specific feature/user) apply to all transactions
     if (!budget.featureId && !budget.userId) return true
-    
+
     // Feature-specific budgets
     if (budget.featureId && budget.featureId === featureId) return true
-    
+
     // User-specific budgets
     if (budget.userId && budget.userId === userId) return true
-    
+
     return false
   }
 
@@ -228,7 +228,7 @@ class AICostMonitor {
 
     // Check for spending spikes
     this.checkSpendingSpikes()
-    
+
     // Check predictive alerts
     this.checkPredictiveAlerts()
   }
@@ -239,10 +239,10 @@ class AICostMonitor {
   private checkSpendingSpikes(): void {
     const last24Hours = this.getSpendingInPeriod(24 * 60 * 60 * 1000)
     const previous24Hours = this.getSpendingInPeriod(24 * 60 * 60 * 1000, 24 * 60 * 60 * 1000)
-    
+
     if (previous24Hours > 0) {
       const increasePercentage = ((last24Hours - previous24Hours) / previous24Hours) * 100
-      
+
       if (increasePercentage > 200) { // 200% increase
         this.createAlert({
           type: 'spike_detected',
@@ -259,10 +259,10 @@ class AICostMonitor {
    */
   private checkPredictiveAlerts(): void {
     const metrics = this.getCostMetrics()
-    
+
     // Check if predicted monthly spend exceeds any monthly budgets
     const monthlyBudgets = Array.from(this.budgets.values()).filter(b => b.type === 'monthly' && b.isActive)
-    
+
     for (const budget of monthlyBudgets) {
       if (metrics.predictedMonthlySpend > budget.amount * 0.9) { // 90% of budget
         this.createAlert({
@@ -282,7 +282,7 @@ class AICostMonitor {
    */
   private createAlert(alertData: Omit<CostAlert, 'id' | 'timestamp' | 'isResolved'>): void {
     // Check if similar alert already exists and is unresolved
-    const existingAlert = this.alerts.find(alert => 
+    const existingAlert = this.alerts.find(alert =>
       !alert.isResolved &&
       alert.type === alertData.type &&
       alert.budgetId === alertData.budgetId &&
@@ -305,7 +305,7 @@ class AICostMonitor {
     }
 
     this.alerts.unshift(alert) // Add to beginning
-    
+
     // Keep only last 100 alerts
     this.alerts = this.alerts.slice(0, 100)
 
@@ -370,7 +370,7 @@ class AICostMonitor {
     // Determine cost trend
     const lastWeekSpend = this.getSpendingInPeriod(weekMs)
     const previousWeekSpend = this.getSpendingInPeriod(weekMs, weekMs)
-    
+
     let costTrend: 'increasing' | 'decreasing' | 'stable' = 'stable'
     if (previousWeekSpend > 0) {
       const trendPercentage = ((lastWeekSpend - previousWeekSpend) / previousWeekSpend) * 100
@@ -416,7 +416,7 @@ class AICostMonitor {
     if (!budget) return false
 
     Object.assign(budget, updates)
-    
+
     // Recalculate remaining if amount changed
     if ('amount' in updates) {
       budget.remaining = Math.max(0, budget.amount - budget.spent)
@@ -443,8 +443,8 @@ class AICostMonitor {
    * Get active alerts
    */
   getAlerts(includeResolved = false): CostAlert[] {
-    return includeResolved 
-      ? this.alerts 
+    return includeResolved
+      ? this.alerts
       : this.alerts.filter(alert => !alert.isResolved)
   }
 
@@ -465,7 +465,7 @@ class AICostMonitor {
    */
   onAlert(callback: (alert: CostAlert) => void): () => void {
     this.alertCallbacks.push(callback)
-    
+
     // Return unsubscribe function
     return () => {
       const index = this.alertCallbacks.indexOf(callback)
@@ -513,13 +513,13 @@ class AICostMonitor {
    */
   private resetExpiredBudgets(): void {
     const now = new Date()
-    
+
     for (const budget of this.budgets.values()) {
       if (budget.resetDate <= now) {
         budget.spent = 0
         budget.remaining = budget.amount
         budget.resetDate = this.getNextResetDate(budget.type)
-        
+
         console.log(`Budget "${budget.name}" has been reset`)
       }
     }
@@ -530,28 +530,28 @@ class AICostMonitor {
    */
   private getNextResetDate(type: CostBudget['type']): Date {
     const now = new Date()
-    
+
     switch (type) {
       case 'daily':
         const tomorrow = new Date(now)
         tomorrow.setDate(tomorrow.getDate() + 1)
         tomorrow.setHours(0, 0, 0, 0)
         return tomorrow
-        
+
       case 'weekly':
         const nextWeek = new Date(now)
         nextWeek.setDate(nextWeek.getDate() + (7 - nextWeek.getDay()))
         nextWeek.setHours(0, 0, 0, 0)
         return nextWeek
-        
+
       case 'monthly':
         const nextMonth = new Date(now.getFullYear(), now.getMonth() + 1, 1)
         return nextMonth
-        
+
       case 'yearly':
         const nextYear = new Date(now.getFullYear() + 1, 0, 1)
         return nextYear
-        
+
       default:
         return new Date(now.getTime() + 24 * 60 * 60 * 1000) // Default to 1 day
     }

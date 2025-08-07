@@ -12,12 +12,12 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  CheckCircle, 
-  XCircle, 
-  Loader2, 
-  Mail, 
-  Clock, 
+import {
+  CheckCircle,
+  XCircle,
+  Loader2,
+  Mail,
+  Clock,
   RefreshCw,
   ExternalLink,
   Shield,
@@ -40,12 +40,12 @@ import { cn } from '@/lib/utils'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
 
-export type VerificationStatus = 
-  | 'pending' 
-  | 'verifying' 
-  | 'success' 
-  | 'error' 
-  | 'expired' 
+export type VerificationStatus =
+  | 'pending'
+  | 'verifying'
+  | 'success'
+  | 'error'
+  | 'expired'
   | 'resent'
   | 'rate_limited'
 
@@ -84,37 +84,37 @@ export function EmailVerificationWizard({
     userEmail: initialEmail,
     verificationType
   })
-  
+
   const [countdown, setCountdown] = useState(0)
   const [isPolling, setIsPolling] = useState(false)
   const pollingInterval = useRef<NodeJS.Timeout>()
   const countdownInterval = useRef<NodeJS.Timeout>()
-  
+
   const { success, error, info, loading } = useToast()
   const { addNotification } = useNotifications()
 
   // Auto-polling for verification status
   const startPolling = useCallback(() => {
     if (isPolling) return
-    
+
     setIsPolling(true)
     pollingInterval.current = setInterval(async () => {
       try {
         const supabase = createClient()
         const { data: { user }, error } = await supabase.auth.getUser()
-        
+
         if (error) {
           logger.error('Polling error during verification check', {}, error)
           return
         }
-        
+
         if (user && user.email_confirmed_at) {
           setState(prev => ({ ...prev, status: 'success' }))
           setIsPolling(false)
           if (pollingInterval.current) {
             clearInterval(pollingInterval.current)
           }
-          
+
           success('Email verified successfully!', {
             actions: [
               {
@@ -123,7 +123,7 @@ export function EmailVerificationWizard({
               }
             ]
           })
-          
+
           addNotification({
             title: 'Email Verification Complete',
             message: 'Your email has been successfully verified. You can now access all features.',
@@ -151,7 +151,7 @@ export function EmailVerificationWizard({
   // Countdown timer for resend button
   const startCountdown = useCallback((seconds: number) => {
     setCountdown(seconds)
-    
+
     countdownInterval.current = setInterval(() => {
       setCountdown(prev => {
         if (prev <= 1) {
@@ -169,17 +169,17 @@ export function EmailVerificationWizard({
   // Send verification email
   const sendVerificationEmail = useCallback(async (email: string) => {
     try {
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         status: 'verifying',
         canResend: false,
         attempts: prev.attempts + 1
       }))
-      
+
       const toastId = loading('Sending verification email...', { persistent: true })
-      
+
       const supabase = createClient()
-      
+
       // Handle resend based on verification type
       let resendError = null
       if (verificationType === 'recovery') {
@@ -199,11 +199,11 @@ export function EmailVerificationWizard({
         })
         resendError = error
       }
-      
+
       if (resendError) {
         if (resendError.message.includes('rate limit') || resendError.message.includes('too many')) {
-          setState(prev => ({ 
-            ...prev, 
+          setState(prev => ({
+            ...prev,
             status: 'rate_limited',
             message: 'Too many attempts. Please wait before requesting another email.',
             nextResendTime: Date.now() + 60000 // 1 minute
@@ -211,8 +211,8 @@ export function EmailVerificationWizard({
           startCountdown(60)
           error('Rate limited. Please wait before requesting another verification email.')
         } else {
-          setState(prev => ({ 
-            ...prev, 
+          setState(prev => ({
+            ...prev,
             status: 'error',
             message: resendError.message || 'Failed to send verification email'
           }))
@@ -220,17 +220,17 @@ export function EmailVerificationWizard({
         }
         return false
       }
-      
-      setState(prev => ({ 
-        ...prev, 
+
+      setState(prev => ({
+        ...prev,
         status: 'resent',
         message: 'Verification email sent successfully',
         timestamp: Date.now()
       }))
-      
+
       startCountdown(30) // 30 second cooldown
       startPolling()
-      
+
       success('Verification email sent!', {
         subtitle: 'Check your inbox and spam folder',
         actions: [
@@ -251,17 +251,17 @@ export function EmailVerificationWizard({
           }
         ]
       })
-      
-      logger.track('verification_email_sent', { 
-        email, 
+
+      logger.track('verification_email_sent', {
+        email,
         type: verificationType,
         attempt: state.attempts + 1
       })
-      
+
       return true
     } catch (err) {
-      setState(prev => ({ 
-        ...prev, 
+      setState(prev => ({
+        ...prev,
         status: 'error',
         message: 'An unexpected error occurred while sending verification email'
       }))
@@ -379,15 +379,15 @@ export function EmailVerificationWizard({
           <div className="mx-auto mb-4 w-16 h-16 rounded-full bg-white dark:bg-gray-800 flex items-center justify-center shadow-md">
             <Icon className={cn("w-8 h-8", statusConfig.color)} />
           </div>
-          
+
           <CardTitle className="text-xl font-semibold">
             {statusConfig.title}
           </CardTitle>
-          
+
           <p className="text-sm text-gray-600 dark:text-gray-400">
             {statusConfig.description}
           </p>
-          
+
           {state.userEmail && (
             <Badge variant="outline" className="mt-2">
               {state.userEmail}
@@ -415,9 +415,9 @@ export function EmailVerificationWizard({
                   Your email has been successfully verified!
                 </AlertDescription>
               </Alert>
-              
-              <Button 
-                onClick={onSuccess} 
+
+              <Button
+                onClick={onSuccess}
                 className="w-full bg-green-600 hover:bg-green-700"
               >
                 <Zap className="w-4 h-4 mr-2" />
@@ -459,7 +459,7 @@ export function EmailVerificationWizard({
                 Cancel
               </Button>
             )}
-            
+
             {showSkipOption && state.status !== 'success' && (
               <Button variant="ghost" onClick={onSuccess} className="flex-1">
                 Skip for Now
@@ -494,7 +494,7 @@ function ResendVerificationForm({
 
   const handleResend = async () => {
     if (!email || !canResend) return
-    
+
     setIsLoading(true)
     try {
       await onResend(email)
@@ -552,12 +552,12 @@ function ResendVerificationForm({
 }
 
 // Verification status card for use in other components
-export function VerificationStatusCard({ 
-  user, 
-  onRequestVerification 
-}: { 
+export function VerificationStatusCard({
+  user,
+  onRequestVerification
+}: {
   user: any
-  onRequestVerification?: () => void 
+  onRequestVerification?: () => void
 }) {
   const isVerified = user?.email_confirmed_at
   const email = user?.email
@@ -570,8 +570,8 @@ export function VerificationStatusCard({
     >
       <Card className={cn(
         "border-l-4",
-        isVerified 
-          ? "border-green-500 bg-green-50 dark:bg-green-900/10" 
+        isVerified
+          ? "border-green-500 bg-green-50 dark:bg-green-900/10"
           : "border-orange-500 bg-orange-50 dark:bg-orange-900/10"
       )}>
         <CardContent className="p-4">
@@ -582,7 +582,7 @@ export function VerificationStatusCard({
               ) : (
                 <Mail className="w-5 h-5 text-orange-600" />
               )}
-              
+
               <div>
                 <p className="font-medium text-sm">
                   {isVerified ? 'Email Verified' : 'Email Verification Required'}

@@ -12,7 +12,7 @@ if [ -f .env.local ]; then
     # Extract specific variables we need
     SUPABASE_URL=$(grep "^NEXT_PUBLIC_SUPABASE_URL=" .env.local | cut -d '=' -f2)
     SUPABASE_PASSWORD=$(grep "^SUPABASE_PASSWORD=" .env.local | cut -d '=' -f2)
-    
+
     # Construct DATABASE_URL if not found
     if [ -z "$DATABASE_URL" ]; then
         DATABASE_URL="postgresql://postgres:${SUPABASE_PASSWORD}@db.tmlrvecuwgppbaynesji.supabase.co:5432/postgres"
@@ -200,7 +200,7 @@ BEGIN
     INTO v_distance
     FROM geospatial.critical_facilities cf
     WHERE cf.facility_type = p_facility_type;
-    
+
     RETURN COALESCE(v_distance, 999999); -- Return large number if no facility found
 END;
 $$ LANGUAGE plpgsql;
@@ -226,7 +226,7 @@ BEGIN
     JOIN geospatial.hazard_types ht ON hz.hazard_type_code = ht.code
     WHERE ST_Intersects(p_geom, hz.geom)
     AND (hz.expiration_date IS NULL OR hz.expiration_date > CURRENT_DATE);
-    
+
     RETURN COALESCE(v_hazards, '[]'::jsonb);
 END;
 $$ LANGUAGE plpgsql;
@@ -254,33 +254,33 @@ DECLARE
 BEGIN
     -- Get parcel geometry
     SELECT geom INTO v_geom FROM geospatial.parcels WHERE parcel_id = p_parcel_id;
-    
+
     IF v_geom IS NULL THEN
         RETURN;
     END IF;
-    
+
     -- Get all hazard zones
     v_hazards := geospatial.get_hazard_zones(v_geom);
-    
+
     -- Calculate risk scores by category
-    SELECT 
+    SELECT
         COALESCE(MAX(CASE WHEN h->>'category' = 'flood' THEN (h->>'risk_weight')::numeric ELSE 0 END), 0),
         COALESCE(MAX(CASE WHEN h->>'category' = 'fire' THEN (h->>'risk_weight')::numeric ELSE 0 END), 0),
         COALESCE(MAX(CASE WHEN h->>'category' = 'wind' THEN (h->>'risk_weight')::numeric ELSE 0 END), 0),
         COALESCE(MAX(CASE WHEN h->>'category' = 'surge' THEN (h->>'risk_weight')::numeric ELSE 0 END), 0)
     INTO v_flood_risk, v_wildfire_risk, v_wind_risk, v_surge_risk
     FROM jsonb_array_elements(v_hazards) h;
-    
+
     -- Calculate composite score (weighted average)
     v_composite := (v_flood_risk * 0.3 + v_wildfire_risk * 0.2 + v_wind_risk * 0.25 + v_surge_risk * 0.25);
-    
+
     -- Build risk factors JSON
     v_factors := jsonb_build_object(
         'hazard_zones', v_hazards,
         'fire_station_distance', geospatial.distance_to_nearest_facility(v_geom, 'fire_station'),
         'hospital_distance', geospatial.distance_to_nearest_facility(v_geom, 'hospital')
     );
-    
+
     RETURN QUERY SELECT v_flood_risk, v_wildfire_risk, v_wind_risk, v_surge_risk, v_composite, v_factors;
 END;
 $$ LANGUAGE plpgsql;
@@ -291,7 +291,7 @@ $$ LANGUAGE plpgsql;
 
 -- View for parcels with current risk assessment
 CREATE OR REPLACE VIEW geospatial.parcels_with_risk AS
-SELECT 
+SELECT
     p.*,
     pra.flood_risk_score,
     pra.wildfire_risk_score,
@@ -310,7 +310,7 @@ LEFT JOIN LATERAL (
 
 -- View for active events with affected parcels count
 CREATE OR REPLACE VIEW geospatial.active_events_impact AS
-SELECT 
+SELECT
     ae.*,
     COUNT(DISTINCT p.parcel_id) as affected_parcels_count,
     jsonb_agg(DISTINCT p.parcel_id) FILTER (WHERE p.parcel_id IS NOT NULL) as affected_parcel_ids
@@ -370,24 +370,24 @@ CREATE POLICY "Users can view risk assessments for their parcels" ON geospatial.
 DO $$
 BEGIN
     IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns 
-        WHERE table_schema = 'public' 
-        AND table_name = 'properties' 
+        SELECT 1 FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = 'properties'
         AND column_name = 'parcel_id'
     ) THEN
-        ALTER TABLE public.properties 
+        ALTER TABLE public.properties
         ADD COLUMN parcel_id VARCHAR(50),
-        ADD CONSTRAINT fk_properties_parcel 
-            FOREIGN KEY (parcel_id) 
+        ADD CONSTRAINT fk_properties_parcel
+            FOREIGN KEY (parcel_id)
             REFERENCES geospatial.parcels(parcel_id);
-        
+
         CREATE INDEX idx_properties_parcel ON public.properties(parcel_id);
     END IF;
 END $$;
 
 -- Add risk scores to properties view
 CREATE OR REPLACE VIEW public.properties_with_risk AS
-SELECT 
+SELECT
     p.*,
     pr.flood_risk_score,
     pr.wildfire_risk_score,

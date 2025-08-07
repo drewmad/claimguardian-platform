@@ -35,26 +35,26 @@ const sqlContent = fs.readFileSync(path.join(__dirname, '..', 'fix-database.sql'
 async function executeSqlDirectly() {
   // For direct SQL execution, we need to use the connection string
   // However, we need the database password which is different from the service role key
-  
+
   console.log('\n⚠️  Direct SQL execution requires database password\n');
   console.log('To apply the fixes, you have several options:\n');
-  
+
   console.log('Option 1: Use Supabase Dashboard (Recommended)');
   console.log('=========================================');
   console.log('1. Go to: https://supabase.com/dashboard/project/' + projectRef + '/sql/new');
   console.log('2. Copy and paste the contents of fix-database.sql');
   console.log('3. Click "Run"\n');
-  
+
   console.log('Option 2: Use Supabase CLI');
   console.log('==========================');
   console.log('1. Get your database password from:');
   console.log('   https://supabase.com/dashboard/project/' + projectRef + '/settings/database');
   console.log('2. Run: PGPASSWORD=<your-db-password> psql -h db.' + projectRef + '.supabase.co -U postgres -d postgres -f fix-database.sql\n');
-  
+
   console.log('Option 3: Create a database function');
   console.log('====================================');
   console.log('We can create a temporary function to execute the SQL...\n');
-  
+
   // Try to create a function that we can call via RPC
   const createFunctionSql = `
     CREATE OR REPLACE FUNCTION apply_critical_fixes()
@@ -67,28 +67,28 @@ async function executeSqlDirectly() {
     END;
     $$;
   `;
-  
+
   console.log('Creating temporary function to apply fixes...');
-  
+
   // We still can't execute this without direct DB access
   console.log('\n❌ Cannot execute DDL statements via REST API\n');
-  
+
   // Final attempt - check if we can at least verify the current state
   console.log('Checking current database state...\n');
-  
+
   const response = await fetch(`${SUPABASE_URL}/rest/v1/scraper_logs?limit=1`, {
     headers: {
       'apikey': SERVICE_ROLE_KEY,
       'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
     }
   });
-  
+
   if (response.status === 404) {
     console.log('❌ scraper_logs table does not exist');
     console.log('\nPlease use Option 1 above to create it.');
   } else if (response.ok) {
     console.log('✅ scraper_logs table already exists!');
-    
+
     // Test insert
     const insertResponse = await fetch(`${SUPABASE_URL}/rest/v1/scraper_logs`, {
       method: 'POST',
@@ -105,7 +105,7 @@ async function executeSqlDirectly() {
         metadata: { test: true }
       })
     });
-    
+
     if (insertResponse.status === 201) {
       const data = await insertResponse.json();
       console.log('✅ Successfully inserted test record:', data);
@@ -113,7 +113,7 @@ async function executeSqlDirectly() {
       console.log('❌ Failed to insert test record:', insertResponse.status);
     }
   }
-  
+
   // Also check claims_overview
   console.log('\nChecking claims_overview...');
   const claimsResponse = await fetch(`${SUPABASE_URL}/rest/v1/claims_overview?limit=1`, {
@@ -122,10 +122,10 @@ async function executeSqlDirectly() {
       'Authorization': `Bearer ${SERVICE_ROLE_KEY}`,
     }
   });
-  
+
   if (claimsResponse.ok) {
     console.log('✅ claims_overview is accessible');
-    
+
     // Check if it still has the security issue by looking at columns
     const headResponse = await fetch(`${SUPABASE_URL}/rest/v1/claims_overview?limit=0`, {
       headers: {
@@ -134,7 +134,7 @@ async function executeSqlDirectly() {
         'Prefer': 'count=exact'
       }
     });
-    
+
     // Try to detect if user_email column exists (which would indicate the security issue)
     console.log('   Note: Cannot verify if security fix is applied via API');
   } else {

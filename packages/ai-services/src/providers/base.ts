@@ -20,17 +20,17 @@ export abstract class AIProvider {
   }
 
   abstract isAvailable(): boolean
-  
+
   abstract extractDocument(
     fileUrl: string,
     prompt: string
   ): Promise<AIResponse>
-  
+
   abstract generateText(
     prompt: string,
     context?: Record<string, unknown>
   ): Promise<AIResponse<string>>
-  
+
   abstract analyzeImage(
     imageUrl: string,
     prompt: string

@@ -132,8 +132,8 @@ export function WorkflowManagement() {
   const [isCreating, setIsCreating] = useState(false);
 
   const toggleWorkflow = (workflowId: string) => {
-    setWorkflows(prev => prev.map(wf => 
-      wf.id === workflowId 
+    setWorkflows(prev => prev.map(wf =>
+      wf.id === workflowId
         ? { ...wf, status: wf.status === 'active' ? 'inactive' : 'active' }
         : wf
     ));
@@ -205,7 +205,7 @@ export function WorkflowManagement() {
               .filter(wf => tab === 'all' || wf.category === tab)
               .map(workflow => {
                 const CategoryIcon = getCategoryIcon(workflow.category);
-                
+
                 return (
                   <Card key={workflow.id}>
                     <CardContent className="p-6">
@@ -218,15 +218,15 @@ export function WorkflowManagement() {
                               {workflow.status}
                             </Badge>
                           </div>
-                          
+
                           <p className="text-gray-600 mb-4">{workflow.description}</p>
-                          
+
                           <div className="flex items-center space-x-6 text-sm text-gray-500">
                             <div className="flex items-center space-x-1">
                               <Clock className="h-4 w-4" />
                               <span>
-                                {workflow.trigger.type === 'schedule' 
-                                  ? workflow.trigger.schedule 
+                                {workflow.trigger.type === 'schedule'
+                                  ? workflow.trigger.schedule
                                   : workflow.trigger.event}
                               </span>
                             </div>
@@ -241,7 +241,7 @@ export function WorkflowManagement() {
                               <span>{workflow.runCount} runs</span>
                             </div>
                           </div>
-                          
+
                           <div className="mt-4 flex items-center space-x-2">
                             {workflow.actions.map((action, index) => {
                               const Icon = action.icon;
@@ -259,7 +259,7 @@ export function WorkflowManagement() {
                             })}
                           </div>
                         </div>
-                        
+
                         <div className="flex items-center space-x-2">
                           <Switch
                             checked={workflow.status === 'active'}
@@ -314,7 +314,7 @@ export function WorkflowManagement() {
                 className="mt-1"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="workflow-description">Description</Label>
               <Input
@@ -323,7 +323,7 @@ export function WorkflowManagement() {
                 className="mt-1"
               />
             </div>
-            
+
             <div>
               <Label htmlFor="workflow-trigger">Trigger</Label>
               <Select>
@@ -340,7 +340,7 @@ export function WorkflowManagement() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             <div>
               <Label>Actions</Label>
               <div className="mt-2 space-y-2">
@@ -360,7 +360,7 @@ export function WorkflowManagement() {
                 })}
               </div>
             </div>
-            
+
             <div className="flex justify-end space-x-2">
               <Button variant="outline" onClick={() => setIsCreating(false)}>
                 Cancel

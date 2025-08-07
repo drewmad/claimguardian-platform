@@ -15,12 +15,12 @@ These consents are captured during the signup process:
 - **Display**: Links to full documents, checkbox required
 
 #### AI Disclaimer
-- **When**: During signup form  
+- **When**: During signup form
 - **Text**: "I understand that ClaimGuardian's AI tools provide guidance only and may contain errors. AI-generated content should be reviewed and verified. This is not a replacement for professional legal or insurance advice."
 - **Frequency**: Once at signup, re-consent if AI capabilities significantly change
 - **Legal Coverage**: Protects against reliance on AI errors, hallucinations, or misinterpretations
 
-#### Age Verification  
+#### Age Verification
 - **When**: During signup form
 - **Method**: Simple checkbox "I confirm I am 18 years of age or older"
 - **Why**: COPPA compliance, insurance regulations require adult consent
@@ -36,7 +36,7 @@ These consents are captured during the signup process:
 
 #### Florida Residency Verification
 - **When**: After signup, when adding first property
-- **Method**: 
+- **Method**:
   1. User enters property address
   2. System validates ZIP code is in Florida (32xxx-34xxx)
   3. Optional: Geolocation verification when on property
@@ -53,13 +53,13 @@ These are shown in a modal before user can create their first claim:
 - **Text**: "IMPORTANT: ClaimGuardian is NOT a licensed public adjuster. We cannot negotiate with insurance companies on your behalf for a fee. We provide information and document organization tools only."
 - **Legal Requirement**: Florida law requires this disclosure
 
-#### Legal Advice Disclaimer  
+#### Legal Advice Disclaimer
 - **When**: First claim creation attempt
 - **Text**: "ClaimGuardian does not provide legal advice. For legal matters regarding your insurance claim, consult a licensed Florida attorney."
 - **Legal Requirement**: Prevents unauthorized practice of law
 
 #### Insurance Cooperation Notice
-- **When**: First claim creation attempt  
+- **When**: First claim creation attempt
 - **Text**: "You must continue to cooperate with your insurance company as required by your policy. Using ClaimGuardian does not change your policy obligations."
 - **Legal Requirement**: Ensures policyholder compliance
 
@@ -106,7 +106,7 @@ This function checks that all required consents are provided before allowing sig
 - Lists any missing consents for the UI to highlight
 - Florida-specific consents (adjuster notice, etc.) are DEFAULT false because they're shown AFTER signup
 
-### link_consent_to_user Function  
+### link_consent_to_user Function
 After successful user creation, this function:
 1. Takes the user ID and consent choices
 2. Creates records in user_consents table for each consent type
@@ -188,7 +188,7 @@ Every consent action logged with:
 SIGNUP PAGE:
 ✓ Email/Password
 ✓ I accept Terms of Service
-✓ I accept Privacy Policy  
+✓ I accept Privacy Policy
 ✓ I understand AI limitations
 ✓ I am 18 or older
 [Create Account]
@@ -198,7 +198,7 @@ PROFILE COMPLETION:
   - Street Address [________]
   - City [________]
   - ZIP [_____] ← Validates Florida
-  
+
 FIRST CLAIM:
 → Important Notices (Modal)
   ✓ Not a public adjuster

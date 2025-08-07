@@ -28,10 +28,10 @@ import { SearchFilterBar, type InsuranceFilterOptions } from '@/components/insur
 import { InsuranceStatsCards } from '@/components/insurance/insurance-stats-cards'
 import { PropertyPolicyCard } from '@/components/insurance/property-policy-card'
 import { BulkActions, useBulkSelection, BulkCheckbox } from '@/components/ui/bulk-actions'
-import { 
-  fadeInUp, 
-  staggerContainer, 
-  staggerItem, 
+import {
+  fadeInUp,
+  staggerContainer,
+  staggerItem,
   cardHover,
   pageTransition
 } from '@/lib/animations'
@@ -99,12 +99,12 @@ function InsuranceDashboardContent() {
     sortOrder: 'asc',
     dateRange: {}
   })
-  
+
   // Empty data by default - will be populated from database
   const [policies] = useState<Policy[]>([])
   const [coverages] = useState<Coverage[]>([])
   const [properties] = useState<Property[]>([])
-  
+
   // Bulk selection for policies
   const bulkSelection = useBulkSelection(properties)
 
@@ -175,7 +175,7 @@ function InsuranceDashboardContent() {
                 <ArrowLeft className="w-4 h-4" />
                 Back to Portfolio
               </button>
-              
+
               <div className="flex justify-between items-start">
                 <div>
                   <h1 className="text-3xl font-bold text-white mb-2">{selectedProperty.name}</h1>
@@ -359,7 +359,7 @@ function InsuranceDashboardContent() {
 
   return (
     <DashboardLayout>
-      <motion.div 
+      <motion.div
         className="p-6 bg-gray-900 min-h-screen"
         variants={pageTransition}
         initial="initial"
@@ -368,7 +368,7 @@ function InsuranceDashboardContent() {
       >
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Header */}
-          <motion.div 
+          <motion.div
             className="flex justify-between items-start mb-8"
             variants={fadeInUp}
           >
@@ -376,7 +376,7 @@ function InsuranceDashboardContent() {
               <h1 className="text-3xl font-bold text-white mb-2">Insurance Dashboard</h1>
               <p className="text-gray-400">An overview of all your insurance policies and coverage.</p>
             </div>
-            <motion.button 
+            <motion.button
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -388,7 +388,7 @@ function InsuranceDashboardContent() {
 
           {/* Search and Filter */}
           <motion.div variants={fadeInUp}>
-            <SearchFilterBar 
+            <SearchFilterBar
               onFiltersChange={setFilters}
               availableCarriers={Array.from(new Set(policies.map(p => p.carrier)))}
               availablePolicyTypes={Array.from(new Set(policies.map(p => p.type)))}
@@ -437,7 +437,7 @@ function InsuranceDashboardContent() {
 
           {/* Stats Overview Cards */}
           <motion.div variants={fadeInUp}>
-            <InsuranceStatsCards 
+            <InsuranceStatsCards
               totalCoverage={totalCoverage}
               totalPremium={totalPremium}
               activePolicies={activePolicies}
@@ -445,7 +445,7 @@ function InsuranceDashboardContent() {
           </motion.div>
 
           {/* Property Grouped Policies */}
-          <motion.div 
+          <motion.div
             className="space-y-6"
             variants={staggerContainer}
             initial="initial"
@@ -453,7 +453,7 @@ function InsuranceDashboardContent() {
           >
             {properties.length === 0 ? (
               <motion.div variants={staggerItem}>
-                <InsuranceEmptyState 
+                <InsuranceEmptyState
                   onAddProperty={() => router.push('/dashboard/property')}
                   onAddPolicy={() => {/* TODO: Add policy modal */}}
                 />
@@ -462,7 +462,7 @@ function InsuranceDashboardContent() {
               properties.map((property) => {
               const propertyPolicies = policies.filter(p => property.policies.includes(p.id))
               const isExpanded = expandedProperty === property.id
-              
+
               return (
                 <motion.div key={property.id} variants={staggerItem}>
                   <motion.div
@@ -472,7 +472,7 @@ function InsuranceDashboardContent() {
                     whileTap="tap"
                   >
                     <Card variant="property" className="overflow-hidden">
-                      <CardHeader 
+                      <CardHeader
                         className="cursor-pointer hover:bg-gray-700/20 transition-colors"
                         onClick={() => setExpandedProperty(isExpanded ? null : property.id)}
                       >
@@ -499,7 +499,7 @@ function InsuranceDashboardContent() {
                           </motion.div>
                         </div>
                       </CardHeader>
-                  
+
                   <AnimatePresence>
                     {isExpanded && (
                       <motion.div
@@ -518,15 +518,15 @@ function InsuranceDashboardContent() {
                               const Icon = getPolicyIcon(policy.type)
                               const isWindstorm = policy.type.toLowerCase() === 'windstorm'
                               const windDeductible = isWindstorm ? `2% ($${(policy.coverage * 0.02 / 1000).toFixed(0)},000)` : null
-                              
+
                               return (
-                                <motion.div 
+                                <motion.div
                                   key={policy.id}
                                   variants={staggerItem}
                                   whileHover={{ scale: 1.01 }}
                                   whileTap={{ scale: 0.99 }}
                                 >
-                                  <div 
+                                  <div
                                     className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 hover:bg-gray-700/50 transition-colors cursor-pointer"
                                     onClick={() => router.push(`/dashboard/insurance/policy/${policy.id}`)}
                                   >
@@ -540,7 +540,7 @@ function InsuranceDashboardContent() {
                                 <p className="text-sm text-gray-400">Dwelling Coverage</p>
                               </div>
                             </div>
-                            
+
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                               <div>
                                 <p className="text-gray-400 mb-1">Deductible</p>
@@ -574,15 +574,15 @@ function InsuranceDashboardContent() {
                                 </motion.div>
                               )
                             })}
-                            
+
                             {propertyPolicies.length === 0 && (
-                              <motion.div 
+                              <motion.div
                                 variants={staggerItem}
                                 className="text-center py-8"
                               >
                                 <Shield className="w-12 h-12 text-gray-600 mx-auto mb-3" />
                                 <p className="text-gray-400">No policies for this property</p>
-                                <motion.button 
+                                <motion.button
                                   className="mt-4 text-blue-400 hover:text-blue-300 text-sm"
                                   whileHover={{ scale: 1.05 }}
                                   whileTap={{ scale: 0.95 }}

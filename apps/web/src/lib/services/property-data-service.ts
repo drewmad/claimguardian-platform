@@ -42,14 +42,14 @@ class PropertyDataService {
   // NOTE: This service is currently unused. If activated, it should use server-side API keys
   // and be moved to a server action or Edge Function for security
   private googleApiKey = process.env.GOOGLE_MAPS_API_KEY // Fixed: Use server-side key
-  
+
   /**
    * Fetch property data using Google Places API and other sources
    */
   async fetchPropertyData(address: AddressComponents): Promise<PropertyDataResponse | null> {
     try {
       logger.info('Fetching property data', { address })
-      
+
       // IMPORTANT: This is currently returning MOCK DATA
       // Real integration requires API keys from:
       // - Zillow API (GetDeepSearchResults)
@@ -57,10 +57,10 @@ class PropertyDataService {
       // - County property appraiser databases
       // - Florida Department of Revenue API
       // - FEMA Flood Map Service Center API
-      
+
       // TODO: Replace with real API calls when keys are available
       logger.warn('Using mock property data - real API integration pending')
-      
+
       const mockData: PropertyDataResponse = {
         estimatedValue: this.estimatePropertyValue(address),
         yearBuilt: this.estimateYearBuilt(),
@@ -77,14 +77,14 @@ class PropertyDataService {
         schoolDistrict: this.getSchoolDistrict(address.city),
         neighborhood: this.getNeighborhood(address.city)
       }
-      
+
       return mockData
     } catch (error) {
       logger.error('Error fetching property data', { error })
       return null
     }
   }
-  
+
   /**
    * Get property details from Google Places API
    */
@@ -93,16 +93,16 @@ class PropertyDataService {
       logger.warn('Google Maps API key not configured')
       return null
     }
-    
+
     try {
       const response = await fetch(
         `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${this.googleApiKey}`
       )
-      
+
       if (!response.ok) {
         throw new Error('Failed to fetch place details')
       }
-      
+
       const data = await response.json()
       return data.result
     } catch (error) {
@@ -110,7 +110,7 @@ class PropertyDataService {
       return null
     }
   }
-  
+
   /**
    * Estimate property value based on location
    */
@@ -126,12 +126,12 @@ class PropertyDataService {
       '32801': 480000, // Orlando
       '33602': 520000, // Tampa
     }
-    
+
     const baseValue = zipValues[address.zip] || 400000
     const variance = baseValue * 0.3
     return Math.floor(baseValue + (Math.random() * variance * 2 - variance))
   }
-  
+
   /**
    * Estimate year built
    */
@@ -139,21 +139,21 @@ class PropertyDataService {
     // Random year between 1970 and 2020
     return Math.floor(Math.random() * 50) + 1970
   }
-  
+
   /**
    * Get flood zone based on ZIP code
    */
   private getFloodZone(zip: string): string {
     // Coastal ZIPs are more likely to be in flood zones
     const coastalZips = ['33139', '33140', '33141', '33154', '33160', '33931', '33957']
-    
+
     if (coastalZips.includes(zip)) {
       return Math.random() > 0.5 ? 'AE' : 'VE'
     }
-    
+
     return Math.random() > 0.7 ? 'X' : 'AE'
   }
-  
+
   /**
    * Get school district based on city
    */
@@ -170,10 +170,10 @@ class PropertyDataService {
       'Clearwater': 'Pinellas County Schools',
       'West Palm Beach': 'Palm Beach County School District'
     }
-    
+
     return districts[city] || `${city} School District`
   }
-  
+
   /**
    * Get neighborhood name based on city
    */
@@ -185,12 +185,12 @@ class PropertyDataService {
       'Orlando': ['Winter Park', 'College Park', 'Baldwin Park', 'Dr. Phillips'],
       'Port Charlotte': ['Deep Creek', 'Murdock', 'El Jobean', 'Edgewater']
     }
-    
+
     const cityNeighborhoods = neighborhoods[city]
     if (cityNeighborhoods) {
       return cityNeighborhoods[Math.floor(Math.random() * cityNeighborhoods.length)]
     }
-    
+
     return `${city} Central`
   }
 }

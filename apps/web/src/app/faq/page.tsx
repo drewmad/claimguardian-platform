@@ -78,14 +78,14 @@ export default function FAQPage() {
       <div className="container mx-auto px-4 py-16 max-w-4xl">
         {/* Header */}
         <div className="mb-12">
-          <Link 
+          <Link
             href="/"
             className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6"
           >
             <ChevronLeft className="w-4 h-4" />
             Back to Home
           </Link>
-          
+
           <h1 className="text-4xl font-bold text-white mb-4">Frequently Asked Questions</h1>
           <p className="text-xl text-slate-300">
             Get answers to common questions about ClaimGuardian and our AI-powered insurance claim assistance.
@@ -102,7 +102,7 @@ export default function FAQPage() {
                 </div>
                 <h2 className="text-2xl font-semibold text-white">{section.category}</h2>
               </div>
-              
+
               <div className="space-y-6">
                 {section.questions.map((faq, faqIndex) => (
                   <div key={faqIndex} className="border-b border-slate-700 last:border-b-0 pb-6 last:pb-0">

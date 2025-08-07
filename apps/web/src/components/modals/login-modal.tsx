@@ -48,7 +48,7 @@ export function LoginModal() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     // Check honeypot field - if filled, it's likely a bot
     if (honeypot) {
       logger.warn('Honeypot triggered on login', {
@@ -62,11 +62,11 @@ export function LoginModal() {
       }, 2000)
       return
     }
-    
+
     setLoading(true)
     try {
       await signIn(email, password)
-      
+
       // The auth provider will handle the redirect on success
       // We'll only reach here if there's an error
       // Modal will close automatically on successful redirect
@@ -82,21 +82,21 @@ export function LoginModal() {
     if (!checkLimit()) {
       return
     }
-    
+
     try {
       setResending(true)
       setResendSuccess(false)
-      
+
       const { error } = await authService.resendConfirmationEmail(email)
-      
+
       if (error) {
         logger.error('Failed to resend verification email', {}, error instanceof Error ? error : new Error(String(error)))
         return
       }
-      
+
       setResendSuccess(true)
       logger.track('verification_email_resent', { email })
-      
+
       // Reset success state after 5 seconds
       setTimeout(() => {
         setResendSuccess(false)
@@ -111,7 +111,7 @@ export function LoginModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-      
+
       <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
         <div className="relative p-6">
@@ -221,8 +221,8 @@ export function LoginModal() {
 
           {error && (
             <div className={`border rounded-lg p-3 ${
-              error.code === 'AUTH_EMAIL_NOT_VERIFIED' 
-                ? 'bg-yellow-500/10 border-yellow-500/20' 
+              error.code === 'AUTH_EMAIL_NOT_VERIFIED'
+                ? 'bg-yellow-500/10 border-yellow-500/20'
                 : 'bg-red-500/10 border-red-500/20'
             }`}>
               {error.code === 'AUTH_EMAIL_NOT_VERIFIED' ? (
@@ -259,14 +259,14 @@ export function LoginModal() {
                     <AlertCircle className="w-5 h-5 text-red-400 flex-shrink-0 mt-0.5" />
                     <p className="text-red-400 text-sm">{error.message}</p>
                   </div>
-                  {error.message.includes('refresh_token_not_found') || 
+                  {error.message.includes('refresh_token_not_found') ||
                    error.message.includes('Invalid Refresh Token') ? (
                     <div className="mt-2">
                       <p className="text-xs text-red-300 mb-2">
                         This may be due to expired session cookies. Try clearing your cookies:
                       </p>
-                      <a 
-                        href="/api/auth/clear-cookies" 
+                      <a
+                        href="/api/auth/clear-cookies"
                         onClick={(e) => {
                           e.preventDefault()
                           window.location.href = '/api/auth/clear-cookies'

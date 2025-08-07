@@ -48,7 +48,7 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
         timestamp: new Date().toISOString(),
         referrer: document.referrer,
       };
-      
+
       logger.info('Unauthenticated user attempted to access protected route', redirectInfo);
       logger.warn('Route blocked - unauthenticated user', {
         path: window.location.pathname,
@@ -56,7 +56,7 @@ function ProtectedRouteInner({ children }: ProtectedRouteProps) {
         userId: undefined,
         ...redirectInfo
       });
-      
+
       logger.warn('[ProtectedRoute] REDIRECT TO "/" - No authenticated user', redirectInfo);
       router.push('/');
     }

@@ -23,13 +23,13 @@ async function makeAuthenticatedRequest(url: string, body: any, useServiceKey = 
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${useServiceKey ? SUPABASE_SERVICE_KEY : SUPABASE_ANON_KEY}`
   }
-  
+
   const response = await fetch(url, {
     method: 'POST',
     headers,
     body: JSON.stringify(body)
   })
-  
+
   return response
 }
 
@@ -47,10 +47,10 @@ Deno.test("ML Model Management - Deploy Model", async () => {
       }
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(ML_MODEL_MGMT_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.deploymentId)
   assertEquals(result.success, true)
@@ -64,10 +64,10 @@ Deno.test("ML Model Management - Monitor Model", async () => {
       window: '1hour'
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(ML_MODEL_MGMT_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.metrics)
   assertExists(result.metrics.accuracy)
@@ -82,10 +82,10 @@ Deno.test("ML Model Management - Drift Detection", async () => {
       windowHours: 24
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(ML_MODEL_MGMT_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.driftReport)
   assertExists(result.driftReport.severity)
@@ -109,10 +109,10 @@ Deno.test("Federated Learning - Register Node", async () => {
       }
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(FEDERATED_LEARNING_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.nodeId)
   assertEquals(result.status, 'registered')
@@ -131,10 +131,10 @@ Deno.test("Federated Learning - Start Round", async () => {
       }
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(FEDERATED_LEARNING_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.roundId)
   assertExists(result.roundNumber)
@@ -153,10 +153,10 @@ Deno.test("Spatial AI - Analyze Property", async () => {
       }
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(SPATIAL_AI_URL, request)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.data.imageAnalysis)
   assertExists(result.data.environmental3D)
@@ -171,10 +171,10 @@ Deno.test("Spatial AI - Generate Embeddings", async () => {
       includeTypes: ['spatial', 'risk', 'visual']
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(SPATIAL_AI_URL, request)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertExists(result.data.embeddings)
   assertExists(result.data.embeddings.spatial)
@@ -203,10 +203,10 @@ Deno.test("AR Drone - Process Imagery", async () => {
       vegetationAnalysis: false
     }
   }
-  
+
   const response = await makeAuthenticatedRequest(AR_DRONE_URL, request, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertEquals(result.success, true)
   assertExists(result.data.processedImages)
@@ -217,7 +217,7 @@ Deno.test("AR Drone - Process Imagery", async () => {
 Deno.test("Environmental Data Sync - Trigger Sync", async () => {
   const response = await makeAuthenticatedRequest(ENV_DATA_SYNC_URL, {}, true)
   assertEquals(response.status, 200)
-  
+
   const result = await response.json()
   assertEquals(result.success, true)
   assertExists(result.data.counties)
@@ -230,7 +230,7 @@ Deno.test("ML Pipeline - Property Risk Assessment E2E", async () => {
   // Step 1: Sync environmental data
   const syncResponse = await makeAuthenticatedRequest(ENV_DATA_SYNC_URL, {}, true)
   assertEquals(syncResponse.status, 200)
-  
+
   // Step 2: Analyze property with spatial AI
   const analyzeRequest = {
     action: 'analyze_property',
@@ -243,11 +243,11 @@ Deno.test("ML Pipeline - Property Risk Assessment E2E", async () => {
       }
     }
   }
-  
+
   const analyzeResponse = await makeAuthenticatedRequest(SPATIAL_AI_URL, analyzeRequest)
   assertEquals(analyzeResponse.status, 200)
   const analysisResult = await analyzeResponse.json()
-  
+
   // Step 3: Generate embeddings
   const embeddingRequest = {
     action: 'generate_embeddings',
@@ -256,10 +256,10 @@ Deno.test("ML Pipeline - Property Risk Assessment E2E", async () => {
       includeTypes: ['spatial', 'risk', 'visual', 'structural']
     }
   }
-  
+
   const embeddingResponse = await makeAuthenticatedRequest(SPATIAL_AI_URL, embeddingRequest)
   assertEquals(embeddingResponse.status, 200)
-  
+
   // Step 4: Risk assessment
   const riskRequest = {
     action: 'assess_risk',
@@ -267,11 +267,11 @@ Deno.test("ML Pipeline - Property Risk Assessment E2E", async () => {
       propertyId: 'e2e-test-property'
     }
   }
-  
+
   const riskResponse = await makeAuthenticatedRequest(SPATIAL_AI_URL, riskRequest)
   assertEquals(riskResponse.status, 200)
   const riskResult = await riskResponse.json()
-  
+
   // Verify complete pipeline results
   assertExists(riskResult.data.overallRisk)
   assertExists(riskResult.data.riskFactors)
@@ -285,34 +285,34 @@ Deno.test("Database - ML Operations Tables Exist", async () => {
     .from('ml_model_versions')
     .select('id')
     .limit(1)
-  
+
   assertEquals(mvError, null)
   assertExists(modelVersions)
-  
+
   // Check ml_model_deployments table
   const { data: deployments, error: depError } = await supabaseService
     .from('ml_model_deployments')
     .select('id')
     .limit(1)
-  
+
   assertEquals(depError, null)
   assertExists(deployments)
-  
+
   // Check federated_learning_rounds table
   const { data: fedRounds, error: fedError } = await supabaseService
     .from('federated_learning_rounds')
     .select('id')
     .limit(1)
-  
+
   assertEquals(fedError, null)
   assertExists(fedRounds)
-  
+
   // Check ai_explanations table
   const { data: explanations, error: expError } = await supabaseService
     .from('ai_explanations')
     .select('id')
     .limit(1)
-  
+
   assertEquals(expError, null)
   assertExists(explanations)
 })

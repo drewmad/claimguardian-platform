@@ -61,9 +61,9 @@ serve(async (req) => {
         const response = await fetch(
           `${county.url}/query?where=OBJECTID>${lastObjectId}&outFields=*&f=json&resultRecordCount=500`
         )
-        
+
         const data = await response.json()
-        
+
         if (data.features && data.features.length > 0) {
           // Process and store features
           const records = data.features.map((feature: any) => ({
@@ -73,7 +73,7 @@ serve(async (req) => {
             data_hash: await crypto.subtle.digest(
               'SHA-256',
               new TextEncoder().encode(JSON.stringify(feature))
-            ).then(buf => 
+            ).then(buf =>
               Array.from(new Uint8Array(buf))
                 .map(b => b.toString(16).padStart(2, '0'))
                 .join('')
@@ -90,7 +90,7 @@ serve(async (req) => {
 
           // Update last processed ID
           const maxObjectId = Math.max(...data.features.map((f: any) => f.attributes.OBJECTID))
-          
+
           await supabaseClient
             .from('scraper_runs')
             .update({
@@ -114,7 +114,7 @@ serve(async (req) => {
           timestamp: new Date().toISOString(),
           message: `Error processing ${county.name}:`, error
         }));
-        
+
         await supabaseClient
           .from('scraper_runs')
           .update({

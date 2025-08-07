@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
     const mode = searchParams.get('mode') // 'all' | 'needed'
 
     let documents
-    
+
     if (mode === 'needed' && userId) {
       // Get documents that need user acceptance
       documents = await legalServiceServer.getDocumentsNeedingAcceptance(userId)
@@ -31,7 +31,7 @@ export async function GET(request: NextRequest) {
     }
 
     // Add cache headers for better performance
-    const response = NextResponse.json({ 
+    const response = NextResponse.json({
       data: documents,
       count: documents.length,
       timestamp: new Date().toISOString()
@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
 
     // Cache for 5 minutes
     response.headers.set('Cache-Control', 'public, max-age=300, stale-while-revalidate=60')
-    
+
     return response
 
   } catch (error) {
     logger.error('Failed to fetch legal documents', {}, error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json(
       { error: 'Failed to fetch legal documents' },
       { status: 500 }

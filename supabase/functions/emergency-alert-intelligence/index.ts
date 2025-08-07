@@ -149,14 +149,14 @@ async function getActiveAlerts(lat: number, lng: number, options: any): Promise<
   try {
     // Real implementation would query multiple alert sources
     // For now, generate comprehensive mock data based on location and season
-    
+
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
       message: `[Emergency Alerts] Fetching alerts for: ${lat}, ${lng}`
     }));
     return generateMockAlertData(lat, lng, options)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -171,9 +171,9 @@ function generateMockAlertData(lat: number, lng: number, options: any): any {
   const isFloridaLocation = lat > 24 && lat < 31 && lng > -88 && lng < -79
   const currentMonth = new Date().getMonth()
   const isHurricaneSeason = currentMonth >= 5 && currentMonth <= 10 // June-November
-  
+
   const alerts = []
-  
+
   // Generate hurricane-related alerts for Florida during hurricane season
   if (isFloridaLocation && isHurricaneSeason && Math.random() > 0.6) {
     alerts.push({
@@ -202,7 +202,7 @@ function generateMockAlertData(lat: number, lng: number, options: any): any {
       ]
     })
   }
-  
+
   // Generate flood warnings for low-lying areas
   if (isFloridaLocation && Math.random() > 0.7) {
     alerts.push({
@@ -230,7 +230,7 @@ function generateMockAlertData(lat: number, lng: number, options: any): any {
       ]
     })
   }
-  
+
   // Generate tornado watch during stormy weather
   if (Math.random() > 0.8) {
     alerts.push({
@@ -258,7 +258,7 @@ function generateMockAlertData(lat: number, lng: number, options: any): any {
       ]
     })
   }
-  
+
   return {
     alerts,
     location: { lat, lng },
@@ -271,7 +271,7 @@ function generateHurricaneTracking(lat: number, lng: number): any {
   const isFloridaLocation = lat > 24 && lat < 31 && lng > -88 && lng < -79
   const currentMonth = new Date().getMonth()
   const isHurricaneSeason = currentMonth >= 5 && currentMonth <= 10
-  
+
   if (!isHurricaneSeason || !isFloridaLocation || Math.random() > 0.4) {
     return {
       activeStorms: [],
@@ -279,11 +279,11 @@ function generateHurricaneTracking(lat: number, lng: number): any {
       preparednessRecommendations: ['Monitor weather conditions during hurricane season']
     }
   }
-  
+
   // Generate mock active hurricane
   const stormNames = ['Alex', 'Bonnie', 'Colin', 'Danielle', 'Earl', 'Fiona', 'Gaston', 'Hermine']
   const stormName = stormNames[Math.floor(Math.random() * stormNames.length)]
-  
+
   const activeStorms = [{
     name: `Hurricane ${stormName}`,
     basin: 'Atlantic',
@@ -304,7 +304,7 @@ function generateHurricaneTracking(lat: number, lng: number): any {
     evacuationRecommended: Math.random() > 0.5,
     trackingCone: generateTrackingCone(lat, lng)
   }]
-  
+
   return {
     activeStorms,
     seasonalOutlook: `Active hurricane season - ${stormName} poses significant threat to Florida`,
@@ -321,25 +321,25 @@ function generateHurricaneTracking(lat: number, lng: number): any {
 function generateTrackingCone(centerLat: number, centerLng: number): Array<{ lat: number, lng: number, time: string }> {
   const cone = []
   const baseTime = Date.now()
-  
+
   for (let i = 0; i <= 5; i++) { // 5-day forecast
     const time = new Date(baseTime + i * 24 * 60 * 60 * 1000)
     const uncertainty = i * 0.5 // Increasing uncertainty over time
-    
+
     cone.push({
       lat: centerLat + (i * 0.3) + (Math.random() - 0.5) * uncertainty,
       lng: centerLng - (i * 0.2) + (Math.random() - 0.5) * uncertainty,
       time: time.toISOString()
     })
   }
-  
+
   return cone
 }
 
 function generateFloodMonitoring(lat: number, lng: number): any {
   const isCoastal = Math.abs(lng) < 81 // Rough approximation for Florida coast
   const elevation = 5 + Math.random() * 15 // Low elevation typical of Florida
-  
+
   return {
     currentConditions: {
       floodStage: elevation < 8 ? 'action' : 'normal',
@@ -421,17 +421,17 @@ function generateRiskSummary(alerts: any[], intelligence: EmergencyAlertIntellig
   const severeCounts = alerts.filter(a => a.severity === 'severe').length
   const moderateCounts = alerts.filter(a => a.severity === 'moderate').length
   const minorCounts = alerts.filter(a => a.severity === 'minor').length
-  
+
   const immediateThreats = alerts
     .filter(a => a.urgency === 'immediate' && a.directThreat)
     .map(a => a.title)
-  
+
   const todayRisks = alerts
     .filter(a => a.urgency === 'expected')
     .map(a => a.type)
-  
+
   let preparednessLevel: 'minimal' | 'standard' | 'heightened' | 'maximum' = 'minimal'
-  
+
   if (severeCounts > 0 || immediateThreats.length > 0) {
     preparednessLevel = 'maximum'
   } else if (moderateCounts > 1 || todayRisks.length > 2) {
@@ -439,12 +439,12 @@ function generateRiskSummary(alerts: any[], intelligence: EmergencyAlertIntellig
   } else if (moderateCounts > 0 || todayRisks.length > 0) {
     preparednessLevel = 'standard'
   }
-  
+
   const weekAheadRisks = []
   if (intelligence.hurricaneTracking?.activeStorms?.length) {
     weekAheadRisks.push('Hurricane approach possible')
   }
-  
+
   return {
     immediateThreats,
     todayRisks,
@@ -492,7 +492,7 @@ Deno.serve(async (req: Request) => {
 
     // Get emergency alert data
     const alertData = await getActiveAlerts(location.lat, location.lng, options)
-    
+
     let intelligence: EmergencyAlertIntelligence = {}
 
     switch (monitoringType) {
@@ -501,22 +501,22 @@ Deno.serve(async (req: Request) => {
         break
 
       case 'hurricane-tracking':
-        intelligence.activeAlerts = alertData.alerts.filter((alert: any) => 
-          alert.type.toLowerCase().includes('hurricane') || 
+        intelligence.activeAlerts = alertData.alerts.filter((alert: any) =>
+          alert.type.toLowerCase().includes('hurricane') ||
           alert.type.toLowerCase().includes('tropical')
         )
         intelligence.hurricaneTracking = generateHurricaneTracking(location.lat, location.lng)
         break
 
       case 'flood-warnings':
-        intelligence.activeAlerts = alertData.alerts.filter((alert: any) => 
+        intelligence.activeAlerts = alertData.alerts.filter((alert: any) =>
           alert.type.toLowerCase().includes('flood')
         )
         intelligence.floodMonitoring = generateFloodMonitoring(location.lat, location.lng)
         break
 
       case 'fire-alerts':
-        intelligence.activeAlerts = alertData.alerts.filter((alert: any) => 
+        intelligence.activeAlerts = alertData.alerts.filter((alert: any) =>
           alert.type.toLowerCase().includes('fire')
         )
         // Fire alerts would be more relevant for western states
@@ -567,7 +567,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Emergency Alert Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

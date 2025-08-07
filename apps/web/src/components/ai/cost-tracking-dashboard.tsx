@@ -12,11 +12,11 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  DollarSign, 
-  TrendingUp, 
-  Clock, 
-  AlertTriangle, 
+import {
+  DollarSign,
+  TrendingUp,
+  Clock,
+  AlertTriangle,
   CheckCircle2,
   Zap
 } from 'lucide-react'
@@ -44,9 +44,9 @@ export function CostTrackingDashboard() {
         <AlertTriangle className="h-4 w-4" />
         <AlertDescription>
           Failed to load cost tracking data: {error}
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="ml-2"
             onClick={refreshUsage}
           >
@@ -65,7 +65,7 @@ export function CostTrackingDashboard() {
     )
   }
 
-  const budgetColor = budgetStatus ? 
+  const budgetColor = budgetStatus ?
     costTrackingUtils.getBudgetColor(budgetStatus.percentageUsed) : 'green'
 
   return (
@@ -79,8 +79,8 @@ export function CostTrackingDashboard() {
               <strong>Budget Alert:</strong> {alerts[0]}
               {alerts.length > 1 && ` (+${alerts.length - 1} more)`}
             </div>
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               size="sm"
               onClick={dismissAllAlerts}
             >
@@ -105,11 +105,11 @@ export function CostTrackingDashboard() {
                   {costTrackingUtils.formatCost(budgetStatus.budgetAmount)} used
                 </CardDescription>
               </div>
-              <Badge 
+              <Badge
                 variant={budgetColor === 'green' ? 'default' : 'destructive'}
                 className={
-                  budgetColor === 'green' ? 'bg-green-500' : 
-                  budgetColor === 'yellow' ? 'bg-yellow-500' : 
+                  budgetColor === 'green' ? 'bg-green-500' :
+                  budgetColor === 'yellow' ? 'bg-yellow-500' :
                   'bg-red-500'
                 }
               >
@@ -118,8 +118,8 @@ export function CostTrackingDashboard() {
             </div>
           </CardHeader>
           <CardContent>
-            <Progress 
-              value={Math.min(budgetStatus.percentageUsed, 100)} 
+            <Progress
+              value={Math.min(budgetStatus.percentageUsed, 100)}
               className="h-2"
             />
           </CardContent>
@@ -162,7 +162,7 @@ export function CostTrackingDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {usage.totalRequests > 0 
+              {usage.totalRequests > 0
                 ? costTrackingUtils.formatCost(usage.totalCost / usage.totalRequests)
                 : '$0.000000'
               }
@@ -205,7 +205,7 @@ export function CostTrackingDashboard() {
                 </div>
               )
             })}
-            
+
             {Object.keys(usage.costByTool).length === 0 && (
               <div className="text-center py-4 text-gray-400">
                 No AI tools used this month
@@ -246,7 +246,7 @@ export function CostTrackingDashboard() {
                   </div>
                 </div>
               ))}
-            
+
             {Object.keys(usage.dailyUsage).length === 0 && (
               <div className="text-center py-4 text-gray-400">
                 No daily usage data available
@@ -299,8 +299,8 @@ export function CostTrackingDashboard() {
 
       {/* Refresh Button */}
       <div className="flex justify-end">
-        <Button 
-          variant="outline" 
+        <Button
+          variant="outline"
           onClick={refreshUsage}
           className="flex items-center gap-2"
         >

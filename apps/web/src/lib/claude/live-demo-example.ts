@@ -32,13 +32,13 @@ const createSmartComponent = withCompleteLearning(
   },
   async () => {
     console.log('🧠 Claude Learning System ACTIVE - analyzing previous learnings...')
-    
+
     // The system automatically:
     // 1. Queries similar component generation tasks
     // 2. Applies previous TypeScript patterns
     // 3. Uses React best practices from learnings
     // 4. Monitors approach efficiency
-    
+
     const componentCode = `
 import React from 'react'
 import { cn } from '@/lib/utils'
@@ -66,7 +66,7 @@ export function SmartNotification({
   className
 }: NotificationProps) {
   const [isVisible, setIsVisible] = React.useState(true)
-  
+
   // Auto-dismiss after duration
   React.useEffect(() => {
     if (duration > 0) {
@@ -76,12 +76,12 @@ export function SmartNotification({
       return () => clearTimeout(timer)
     }
   }, [duration])
-  
+
   const handleDismiss = () => {
     setIsVisible(false)
     setTimeout(() => onDismiss?.(id), 300) // Wait for animation
   }
-  
+
   const getIcon = () => {
     switch (type) {
       case 'success': return <CheckCircle className="h-5 w-5 text-green-500" />
@@ -90,7 +90,7 @@ export function SmartNotification({
       case 'info': return <Info className="h-5 w-5 text-blue-500" />
     }
   }
-  
+
   const getBackgroundColor = () => {
     switch (type) {
       case 'success': return 'bg-green-50 border-green-200 dark:bg-green-900/20'
@@ -99,9 +99,9 @@ export function SmartNotification({
       case 'info': return 'bg-blue-50 border-blue-200 dark:bg-blue-900/20'
     }
   }
-  
+
   if (!isVisible) return null
-  
+
   return (
     <div
       className={cn(
@@ -117,7 +117,7 @@ export function SmartNotification({
       <div className="flex-shrink-0">
         {getIcon()}
       </div>
-      
+
       {/* Content */}
       <div className="flex-1 min-w-0">
         <h4 className="text-sm font-semibold text-gray-900 dark:text-gray-100">
@@ -127,7 +127,7 @@ export function SmartNotification({
           {message}
         </p>
       </div>
-      
+
       {/* Dismiss button */}
       {dismissible && (
         <button
@@ -145,21 +145,21 @@ export function SmartNotification({
 // Hook for managing notifications
 export function useNotifications() {
   const [notifications, setNotifications] = React.useState<NotificationProps[]>([])
-  
+
   const addNotification = React.useCallback((notification: Omit<NotificationProps, 'id'>) => {
     const id = \`notification-\${Date.now()}-\${Math.random().toString(36).substr(2, 9)}\`
     setNotifications(prev => [...prev, { ...notification, id }])
     return id
   }, [])
-  
+
   const removeNotification = React.useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id))
   }, [])
-  
+
   const clearAll = React.useCallback(() => {
     setNotifications([])
   }, [])
-  
+
   return {
     notifications,
     addNotification,
@@ -168,28 +168,28 @@ export function useNotifications() {
   }
 }
 `
-    
+
     console.log('✅ Component generated with applied learnings!')
     console.log('🔍 Reflection will analyze: TypeScript usage, React patterns, accessibility')
-    
+
     return componentCode
   }
 )
 
 /**
- * Example 2: Quick Learning for File Modification  
+ * Example 2: Quick Learning for File Modification
  */
 const improveExistingComponent = quickLearn.fileModification(
   'Add error boundary to existing component',
   'src/components/ui/smart-notification.tsx',
   async () => {
     console.log('🧠 Quick Learn: Applying file modification best practices...')
-    
+
     // System automatically applies learnings like:
     // - Always read file first
     // - Use proper TypeScript patterns
     // - Maintain existing code style
-    
+
     return 'Error boundary added with learning insights applied!'
   }
 )
@@ -199,15 +199,15 @@ const improveExistingComponent = quickLearn.fileModification(
  */
 const debugWithLearning = quickLearn.debugging(
   'Fix TypeScript errors in notification system',
-  'src/components/ui/smart-notification.tsx', 
+  'src/components/ui/smart-notification.tsx',
   async () => {
     console.log('🧠 Debug Mode: Using previous debugging patterns...')
-    
+
     // System applies debugging learnings like:
     // - Check type definitions first
     // - Look for common TypeScript issues
     // - Apply fixes that worked before
-    
+
     return 'TypeScript errors resolved using learned patterns!'
   }
 )
@@ -219,12 +219,12 @@ const analyzeWithContext = quickLearn.analysis(
   'Analyze notification system performance and suggest improvements',
   async () => {
     console.log('🧠 Analysis Mode: Applying previous analysis patterns...')
-    
+
     // System provides context like:
     // - Previous performance analysis approaches
     // - Common optimization patterns
     // - Best practices for React performance
-    
+
     return {
       performanceIssues: [
         'Re-renders on every notification change',
@@ -249,45 +249,45 @@ const analyzeWithContext = quickLearn.analysis(
  */
 export async function demonstrateLearningSystem() {
   console.log('🚀 Starting Complete Learning System Demonstration...\n')
-  
+
   try {
     // Example 1: Generate component with full learning
     console.log('1️⃣ Generating smart component with learning system...')
     const componentResult = await createSmartComponent()
     console.log('✅ Component created successfully!')
     console.log('📊 Learning data captured for future component generation tasks\n')
-    
+
     // Example 2: File modification with quick learning
     console.log('2️⃣ Improving component with quick learning...')
     const modificationResult = await improveExistingComponent()
     console.log('✅ Component improved with applied learnings!\n')
-    
+
     // Example 3: Debugging with learning context
     console.log('3️⃣ Debugging with previous patterns...')
     const debugResult = await debugWithLearning()
     console.log('✅ Bugs fixed using learned debugging approaches!\n')
-    
+
     // Example 4: Analysis with context
     console.log('4️⃣ Analyzing with learned patterns...')
     const analysisResult = await analyzeWithContext()
     console.log('✅ Analysis complete with previous insights applied!')
     console.log('📈 Performance recommendations generated\n')
-    
+
     console.log('🎉 Complete Learning System Demo Finished!')
     console.log('🧠 All tasks contributed to Claude\'s learning database')
     console.log('📊 Future similar tasks will be faster and more accurate')
-    
+
     return {
       success: true,
       tasksCompleted: 4,
       learningsGenerated: 'Multiple patterns learned and applied',
       nextSteps: 'System ready for production use'
     }
-    
+
   } catch (error) {
     console.error('❌ Demo encountered error:', error)
     console.log('🧠 Error logged to learning system for future improvement')
-    
+
     // Even errors contribute to learning!
     return {
       success: false,
@@ -314,7 +314,7 @@ export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<a
     complexity?: 'simple' | 'medium' | 'complex'
   }
 ): T {
-  
+
   const wrappedFunction = withCompleteLearning(
     options.taskType,
     functionName,
@@ -328,7 +328,7 @@ export function wrapExistingFunction<T extends (...args: unknown[]) => Promise<a
     },
     originalFunction
   )
-  
+
   return wrappedFunction as T
 }
 
@@ -339,27 +339,27 @@ export function smartWrap<T extends (...args: unknown[]) => Promise<any>>(
   functionName: string,
   originalFunction: T
 ): T {
-  
+
   // Auto-detect task type from function name
   let taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' = 'analysis'
-  
+
   if (functionName.includes('create') || functionName.includes('generate')) {
     taskType = 'code-generation'
   } else if (functionName.includes('edit') || functionName.includes('modify') || functionName.includes('update')) {
-    taskType = 'file-modification'  
+    taskType = 'file-modification'
   } else if (functionName.includes('debug') || functionName.includes('fix')) {
     taskType = 'debugging'
   } else if (functionName.includes('plan')) {
     taskType = 'planning'
   }
-  
+
   return wrapExistingFunction(functionName, originalFunction, { taskType })
 }
 
 // Export everything for easy usage
 export {
   createSmartComponent,
-  improveExistingComponent, 
+  improveExistingComponent,
   debugWithLearning,
   analyzeWithContext
 }

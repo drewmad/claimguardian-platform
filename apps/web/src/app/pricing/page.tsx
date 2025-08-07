@@ -167,17 +167,17 @@ export default function PricingPage() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/auth/signup">
-              <Button 
-                size="lg" 
+              <Button
+                size="lg"
                 className="bg-white text-blue-600 hover:bg-gray-100 font-semibold px-8 py-4 text-lg"
               >
                 Start free trial
               </Button>
             </Link>
             <Link href="/contact">
-              <Button 
-                size="lg" 
-                variant="outline" 
+              <Button
+                size="lg"
+                variant="outline"
                 className="bg-transparent text-white border-2 border-white hover:bg-white hover:text-blue-600 font-semibold px-8 py-4 text-lg"
               >
                 Contact sales

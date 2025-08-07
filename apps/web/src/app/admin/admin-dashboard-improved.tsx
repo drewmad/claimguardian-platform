@@ -88,7 +88,7 @@ export function AdminDashboardImproved() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'User Management', 'AI & ML', 'Developer Tools'])
-  
+
   // Handle tab query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab')
@@ -98,7 +98,7 @@ export function AdminDashboardImproved() {
   }, [searchParams])
 
   const toggleCategory = (category: string) => {
-    setExpandedCategories(prev => 
+    setExpandedCategories(prev =>
       prev.includes(category)
         ? prev.filter(c => c !== category)
         : [...prev, category]
@@ -290,7 +290,7 @@ export function AdminDashboardImproved() {
                     <CardTitle>Quick Actions</CardTitle>
                   </CardHeader>
                   <CardContent className="space-y-2">
-                    <Button 
+                    <Button
                       variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('users')}
@@ -298,7 +298,7 @@ export function AdminDashboardImproved() {
                       <Users className="mr-2 h-4 w-4" />
                       Manage Users
                     </Button>
-                    <Button 
+                    <Button
                       variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('permissions')}
@@ -306,7 +306,7 @@ export function AdminDashboardImproved() {
                       <Lock className="mr-2 h-4 w-4" />
                       Permissions
                     </Button>
-                    <Button 
+                    <Button
                       variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('ai-models')}
@@ -314,7 +314,7 @@ export function AdminDashboardImproved() {
                       <Brain className="mr-2 h-4 w-4" />
                       Configure AI
                     </Button>
-                    <Button 
+                    <Button
                       variant="secondary"
                       className="w-full justify-start"
                       onClick={() => setActiveTab('errors')}
@@ -328,37 +328,37 @@ export function AdminDashboardImproved() {
             </div>
           </div>
         )
-      
+
       case 'users':
         return <UsersManagement />
-      
+
       case 'permissions':
         return <PermissionsManagement />
-        
+
       case 'ai-models':
         return <MLOperationsDashboard />
-        
+
       case 'ai-costs':
         return <AICostsDashboard />
-      
+
       case 'ai-cache':
         return <AICacheDashboard />
-        
+
       case 'ml-operations':
         return <MLOperationsDashboard />
-      
+
       case 'claude-learning':
         return <ClaudeLearningDashboard />
-      
+
       case 'document-extraction':
         return <EnhancedExtractionTester />
-      
+
       case 'ab-testing':
         return <ABTestDashboard />
-        
+
       case 'errors':
         return <ErrorDashboard />
-      
+
       case 'parcel-search':
         return (
           <div className="space-y-6">
@@ -373,10 +373,10 @@ export function AdminDashboardImproved() {
             </div>
           </div>
         )
-      
+
       case 'legal-docs':
         return <LegalDocumentsTab />
-      
+
       default:
         return (
           <div className="flex items-center justify-center h-96">
@@ -441,7 +441,7 @@ export function AdminDashboardImproved() {
                   <Layers className="h-4 w-4" />
                 )}
               </button>
-              
+
               {(sidebarOpen && expandedCategories.includes(section.category)) && (
                 <div className="space-y-1">
                   {section.items.map((item) => {
@@ -528,7 +528,7 @@ export function AdminDashboardImproved() {
                   className="pl-10 w-64 bg-slate-800 border-slate-700"
                 />
               </div>
-              <Button 
+              <Button
                 variant="secondary"
                 size="sm"
                 className="border-slate-700"

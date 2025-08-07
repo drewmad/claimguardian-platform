@@ -134,9 +134,9 @@ export function DocumentIntelligenceSystem() {
 
         // Process with AI
         const analysis = await analyzeDocument(file, newDoc.id)
-        
-        setDocuments(prev => prev.map(doc => 
-          doc.id === newDoc.id 
+
+        setDocuments(prev => prev.map(doc =>
+          doc.id === newDoc.id
             ? { ...doc, ...analysis, status: 'completed' }
             : doc
         ))
@@ -144,9 +144,9 @@ export function DocumentIntelligenceSystem() {
         toast.success(`Successfully analyzed ${file.name}`)
       } catch (error: any) {
         console.error('Document processing error:', error)
-        
-        setDocuments(prev => prev.map(doc => 
-          doc.id === newDoc.id 
+
+        setDocuments(prev => prev.map(doc =>
+          doc.id === newDoc.id
             ? { ...doc, status: 'error' }
             : doc
         ))
@@ -171,10 +171,10 @@ export function DocumentIntelligenceSystem() {
 
   const analyzeDocument = async (file: File, docId: string): Promise<Partial<DocumentAnalysis>> => {
     const startTime = Date.now()
-    
+
     // Convert file to base64 for AI processing
     const base64 = await fileToBase64(file)
-    
+
     // Determine document type based on content
     const typePrompt = `Analyze this document and determine its type. Categories: policy, claim, invoice, report, correspondence, evidence, other. Also extract key information like policy numbers, dates, amounts, names, and addresses. Return as JSON.`
 
@@ -225,7 +225,7 @@ export function DocumentIntelligenceSystem() {
       }
     } catch (error) {
       console.error('AI analysis error:', error)
-      
+
       // Fallback analysis
       return {
         documentType: guessDocumentType(file.name),
@@ -259,7 +259,7 @@ export function DocumentIntelligenceSystem() {
 
   const extractEntities = (text: string): DocumentAnalysis['entities'] => {
     const entities: DocumentAnalysis['entities'] = []
-    
+
     // Extract dates
     const dateRegex = /\b\d{1,2}\/\d{1,2}\/\d{2,4}\b/g
     const dates = text.match(dateRegex) || []
@@ -290,8 +290,8 @@ export function DocumentIntelligenceSystem() {
       'claim amount', 'property damage', 'liability', 'hurricane',
       'flood damage', 'wind damage', 'replacement cost', 'actual cash value'
     ]
-    
-    return phrases.filter(phrase => 
+
+    return phrases.filter(phrase =>
       text.toLowerCase().includes(phrase.toLowerCase())
     )
   }
@@ -299,22 +299,22 @@ export function DocumentIntelligenceSystem() {
   const analyzeSentiment = (text: string): 'positive' | 'negative' | 'neutral' => {
     const positive = ['approved', 'covered', 'accepted', 'confirmed', 'valid']
     const negative = ['denied', 'rejected', 'excluded', 'invalid', 'expired']
-    
+
     const positiveCount = positive.filter(word => text.toLowerCase().includes(word)).length
     const negativeCount = negative.filter(word => text.toLowerCase().includes(word)).length
-    
+
     if (positiveCount > negativeCount) return 'positive'
     if (negativeCount > positiveCount) return 'negative'
     return 'neutral'
   }
 
   const filteredDocuments = documents.filter(doc => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       doc.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       doc.summary?.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     const matchesFilter = filterType === 'all' || doc.documentType === filterType
-    
+
     return matchesSearch && matchesFilter
   })
 
@@ -337,13 +337,13 @@ export function DocumentIntelligenceSystem() {
     }
 
     setProcessing(true)
-    
+
     for (const doc of pendingDocs) {
       // Simulate processing each document
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
-      setDocuments(prev => prev.map(d => 
-        d.id === doc.id 
+
+      setDocuments(prev => prev.map(d =>
+        d.id === doc.id
           ? { ...d, status: 'completed', aiConfidence: 90 + Math.random() * 10 }
           : d
       ))
@@ -552,7 +552,7 @@ export function DocumentIntelligenceSystem() {
                         <div>
                           <h4 className="font-medium">{doc.fileName}</h4>
                           <p className="text-sm text-gray-500">
-                            {new Date(doc.uploadDate).toLocaleDateString()} • 
+                            {new Date(doc.uploadDate).toLocaleDateString()} •
                             {(doc.fileSize / 1024).toFixed(1)}KB
                           </p>
                           {doc.summary && (
@@ -712,7 +712,7 @@ export function DocumentIntelligenceSystem() {
                       Average coverage amount: $
                       {documents
                         .filter(d => d.extractedData?.coverageAmount)
-                        .reduce((sum, d) => sum + (d.extractedData?.coverageAmount || 0), 0) / 
+                        .reduce((sum, d) => sum + (d.extractedData?.coverageAmount || 0), 0) /
                         Math.max(documents.filter(d => d.extractedData?.coverageAmount).length, 1)
                       }
                     </p>
@@ -724,7 +724,7 @@ export function DocumentIntelligenceSystem() {
                       Compliance Rate
                     </h4>
                     <p className="text-sm text-gray-600">
-                      {(((documents.length - documents.filter(d => d.complianceFlags && d.complianceFlags.length > 0).length) / 
+                      {(((documents.length - documents.filter(d => d.complianceFlags && d.complianceFlags.length > 0).length) /
                         Math.max(documents.length, 1)) * 100).toFixed(0)}% compliant
                     </p>
                   </div>
@@ -738,7 +738,7 @@ export function DocumentIntelligenceSystem() {
                         <cat.icon className={`h-4 w-4 mr-2 ${cat.color}`} />
                         <span className="text-sm flex-1">{cat.name}</span>
                         <div className="w-32 bg-gray-200 rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-blue-500 h-2 rounded-full"
                             style={{ width: `${(cat.count / Math.max(documents.length, 1)) * 100}%` }}
                           />

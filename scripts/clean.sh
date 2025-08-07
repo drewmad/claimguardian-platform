@@ -146,22 +146,22 @@ run_validate() {
 # Health check
 check_health() {
     print_header "Codebase Health Check"
-    
+
     print_info "Counting lint issues..."
     LINT_COUNT=$(pnpm lint:list 2>&1 | grep -E "(error|warning)" | wc -l | tr -d ' ')
     echo "Lint issues: $LINT_COUNT"
-    
+
     print_info "Counting type errors..."
     TYPE_COUNT=$(pnpm type-check 2>&1 | grep -E "error TS" | wc -l | tr -d ' ')
     echo "Type errors: $TYPE_COUNT"
-    
+
     print_info "Checking test status..."
     if pnpm test 2>&1 | grep -q "failed"; then
         print_error "Some tests are failing"
     else
         print_success "All tests passing"
     fi
-    
+
     print_info "Checking build..."
     if pnpm build --dry-run 2>&1 | grep -q "error"; then
         print_error "Build would fail"

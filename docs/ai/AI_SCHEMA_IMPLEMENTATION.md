@@ -81,7 +81,7 @@ The AI-first schema enhancements have been successfully applied to ClaimGuardian
 ```sql
 -- Example usage:
 SELECT * FROM find_similar_properties(
-  'your-property-uuid', 
+  'your-property-uuid',
   10
 );
 ```
@@ -90,8 +90,8 @@ SELECT * FROM find_similar_properties(
 ```sql
 -- Example usage:
 SELECT * FROM get_ai_usage_stats(
-  auth.uid(), 
-  NOW() - INTERVAL '30 days', 
+  auth.uid(),
+  NOW() - INTERVAL '30 days',
   NOW()
 );
 ```
@@ -113,7 +113,7 @@ SELECT * FROM get_ai_usage_stats(
      model: "text-embedding-3-large",
      input: `${property.address} ${property.type} ${property.squareFootage}sqft built ${property.yearBuilt}`
    });
-   
+
    // Update property with embedding
    await supabase
      .from('properties')

@@ -60,7 +60,7 @@ export function FAQ() {
         <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
           Everything you need to know about building your property's digital twin and preserving your legacy.
         </p>
-        
+
         <div className="max-w-3xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
             <div
@@ -72,13 +72,13 @@ export function FAQ() {
                 className="w-full px-6 py-4 text-left flex items-center justify-between hover:bg-slate-800/70 transition-colors"
               >
                 <span className="font-semibold text-lg pr-4">{faq.question}</span>
-                <ChevronDown 
+                <ChevronDown
                   className={`w-5 h-5 text-slate-400 transition-transform flex-shrink-0 ${
                     openIndex === index ? 'rotate-180' : ''
                   }`}
                 />
               </button>
-              
+
               {openIndex === index && (
                 <div className="px-6 pb-4">
                   <p className="text-slate-400 leading-relaxed">{faq.answer}</p>

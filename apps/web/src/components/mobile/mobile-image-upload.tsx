@@ -147,7 +147,7 @@ export function MobileImageUpload({
       />
 
       <div className="p-8 text-center">
-        
+
           {loading ? (
             <motion.div
               key="loading"
@@ -172,7 +172,7 @@ export function MobileImageUpload({
                   <ImageIcon className="w-8 h-8 text-gray-400" />
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-white font-medium mb-1">Upload an image</p>
                 <p className="text-sm text-gray-400">or drag and drop</p>
@@ -189,7 +189,7 @@ export function MobileImageUpload({
                   <Upload className="w-4 h-4 mr-2" />
                   Choose File
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   size="sm"
@@ -202,7 +202,7 @@ export function MobileImageUpload({
               </div>
             </motion.div>
           )}
-        
+
       </div>
     </div>
   )

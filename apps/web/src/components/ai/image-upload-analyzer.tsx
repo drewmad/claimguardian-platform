@@ -49,7 +49,7 @@ export function ImageUploadAnalyzer({
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     setError(null)
-    
+
     // Validate file count
     if (files.length + acceptedFiles.length > maxFiles) {
       setError(`Maximum ${maxFiles} images allowed`)
@@ -65,7 +65,7 @@ export function ImageUploadAnalyzer({
 
     // Create previews
     const newPreviews = acceptedFiles.map(file => URL.createObjectURL(file))
-    
+
     setFiles(prev => [...prev, ...acceptedFiles])
     setPreviews(prev => [...prev, ...newPreviews])
   }, [files.length, maxFiles, maxSize])
@@ -73,12 +73,12 @@ export function ImageUploadAnalyzer({
   const handleCameraCapture = (imageData: string, file: File) => {
     setShowCamera(false)
     setError(null)
-    
+
     if (files.length >= maxFiles) {
       setError(`Maximum ${maxFiles} images allowed`)
       return
     }
-    
+
     setFiles(prev => [...prev, file])
     setPreviews(prev => [...prev, imageData])
   }
@@ -235,7 +235,7 @@ export function ImageUploadAnalyzer({
           </div>
         )}
       </div>
-      
+
       {/* Camera Capture Modal */}
       {showCamera && (
         <CameraCapture

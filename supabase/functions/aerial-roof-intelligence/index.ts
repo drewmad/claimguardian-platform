@@ -69,16 +69,16 @@ async function analyzeRoofFromAerialView(lat: number, lng: number): Promise<any>
   // Using Google's Aerial View API (when available) or Solar API for roof analysis
   try {
     const solarUrl = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(solarUrl)
     if (response.ok) {
       const solarData = await response.json()
       return solarData
     }
-    
+
     // Fallback to mock analysis based on satellite imagery
     return await mockRoofAnalysis(lat, lng)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -92,9 +92,9 @@ async function analyzeRoofFromAerialView(lat: number, lng: number): Promise<any>
 async function mockRoofAnalysis(lat: number, lng: number): Promise<any> {
   // Mock roof analysis based on location characteristics
   // In production, this would use computer vision on aerial imagery
-  
+
   const locationFactor = (lat + lng) % 1 // Semi-random based on coordinates
-  
+
   return {
     name: `buildings/${Math.floor(Math.random() * 1000000)}`,
     center: { latitude: lat, longitude: lng },
@@ -156,7 +156,7 @@ function analyzeRoofCondition(aerialData: any, location: { lat: number, lng: num
   let condition: 'excellent' | 'good' | 'fair' | 'poor' | 'damaged' = 'good'
   const imageryDate = aerialData.imageryDate
   const imageAge = 2024 - (imageryDate?.year || 2024)
-  
+
   if (imageAge > 2) condition = 'fair' // Older imagery may not show recent improvements
   if (pitch < 10) condition = 'fair' // Low pitch roofs have more issues
   if (sunshineHours > 3200) condition = 'fair' // High sun exposure causes wear
@@ -188,15 +188,15 @@ function analyzeRoofCondition(aerialData: any, location: { lat: number, lng: num
 function assessDamage(aerialData: any, damageReportDate?: string): any {
   // Mock damage assessment - in production, this would compare before/after imagery
   const hasRecentDamage = damageReportDate && new Date(damageReportDate) > new Date(Date.now() - 365 * 24 * 60 * 60 * 1000)
-  
+
   let damagePercentage = 0
   let damageType: string[] = []
   let affectedAreas: string[] = []
-  
+
   if (hasRecentDamage) {
     // Simulate hurricane damage assessment
     damagePercentage = Math.floor(Math.random() * 30) + 5 // 5-35% damage
-    
+
     if (damagePercentage > 20) {
       damageType.push('Missing shingles', 'Exposed decking')
       affectedAreas.push('Northwest section', 'Chimney area')
@@ -212,7 +212,7 @@ function assessDamage(aerialData: any, damageReportDate?: string): any {
   const repairEstimate = {
     min: damagePercentage * 150, // $150 per % damage (rough estimate)
     max: damagePercentage * 250,
-    priority: damagePercentage > 20 ? 'immediate' as const : 
+    priority: damagePercentage > 20 ? 'immediate' as const :
              damagePercentage > 10 ? 'urgent' as const :
              damagePercentage > 5 ? 'scheduled' as const : 'cosmetic' as const
   }
@@ -256,7 +256,7 @@ function analyzeSolarPotential(aerialData: any): any {
 
   const obstacleAnalysis = []
   const roofSegment = aerialData.roofSegmentStats?.[0]
-  
+
   if (roofSegment?.pitchDegrees < 10) {
     obstacleAnalysis.push('Low roof pitch may reduce efficiency')
   }
@@ -266,7 +266,7 @@ function analyzeSolarPotential(aerialData: any): any {
   if (roofSegment?.stats.areaMeters2 < 50) {
     obstacleAnalysis.push('Limited roof area for large installations')
   }
-  
+
   return {
     viableSurfaceArea: Math.round(viableSurfaceArea),
     annualEnergyPotential: Math.round(annualEnergyPotential),
@@ -331,7 +331,7 @@ Deno.serve(async (req: Request) => {
 
     // Get aerial imagery data
     const aerialData = await analyzeRoofFromAerialView(location.lat, location.lng)
-    
+
     // Generate aerial imagery URLs
     intelligence.aerialUrls = {
       satellite: await getAerialImagery(location.lat, location.lng, { zoom: 20, mapType: 'satellite' }),
@@ -388,7 +388,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Aerial Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

@@ -46,11 +46,11 @@ export default function Error({
               <AlertCircle className="w-8 h-8 text-red-500" />
             </div>
           </div>
-          
+
           <h1 className="text-2xl font-bold text-white mb-2">
             Something went wrong
           </h1>
-          
+
           <p className="text-gray-400 mb-6">
             {error.message || 'An unexpected error occurred. Please try again.'}
           </p>

@@ -14,7 +14,7 @@ import { createClient } from '@/lib/supabase/server'
 
 export async function GET() {
   const supabase = await createClient()
-  
+
   const results = {
     status: 'checking',
     tables: {
@@ -52,10 +52,10 @@ export async function GET() {
 
     return NextResponse.json(results, { status: 200 })
   } catch (error) {
-    return NextResponse.json({ 
-      status: 'error', 
+    return NextResponse.json({
+      status: 'error',
       error: error instanceof Error ? error.message : 'Unknown error',
-      results 
+      results
     }, { status: 500 })
   }
 }

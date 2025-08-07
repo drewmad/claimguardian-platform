@@ -68,50 +68,50 @@ trap cleanup EXIT
 # Check dependencies
 check_dependencies() {
     log "Checking dependencies..."
-    
+
     local missing_deps=()
-    
+
     # Check for required commands
     for cmd in jq ogr2ogr psql python3; do
         if ! command -v "$cmd" &> /dev/null; then
             missing_deps+=("$cmd")
         fi
     done
-    
+
     if [[ ${#missing_deps[@]} -ne 0 ]]; then
         error "Missing required dependencies: ${missing_deps[*]}"
         error "Please install the missing dependencies and try again."
         exit 1
     fi
-    
+
     # Check for GDAL/OGR with PostgreSQL support
     if ! ogr2ogr --formats | grep -q "PostgreSQL"; then
         error "ogr2ogr does not have PostgreSQL support. Please install GDAL with PostgreSQL support."
         exit 1
     fi
-    
+
     log "All dependencies satisfied"
 }
 
 # Validate configuration
 validate_config() {
     log "Validating configuration..."
-    
+
     if [[ -z "$SUPABASE_URL" ]]; then
         error "SUPABASE_URL is required"
         exit 1
     fi
-    
+
     if [[ -z "$SUPABASE_SERVICE_KEY" ]]; then
         error "SUPABASE_SERVICE_KEY is required"
         exit 1
     fi
-    
+
     if [[ -z "$DB_PASSWORD" ]]; then
         error "Database password is required (SUPABASE_DB_PASSWORD or DB_PASSWORD)"
         exit 1
     fi
-    
+
     # Extract database connection details from Supabase URL if not provided
     if [[ -z "$DB_HOST" ]]; then
         DB_HOST=$(echo "$SUPABASE_URL" | sed -n 's|https://\([^.]*\)\.supabase\.co.*|\1|p')
@@ -122,7 +122,7 @@ validate_config() {
             exit 1
         fi
     fi
-    
+
     log "Configuration validated"
     info "Database host: $DB_HOST"
     info "Database port: $DB_PORT"
@@ -133,24 +133,24 @@ validate_config() {
 # Test database connection
 test_db_connection() {
     log "Testing database connection..."
-    
+
     if ! PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" > /dev/null 2>&1; then
         error "Failed to connect to database"
         error "Please check your database credentials and network connectivity"
         exit 1
     fi
-    
+
     log "Database connection successful"
 }
 
 # Create temporary directory
 setup_temp_dir() {
     log "Setting up temporary directory..."
-    
+
     if [[ -d "$TEMP_DIR" ]]; then
         rm -rf "$TEMP_DIR"
     fi
-    
+
     mkdir -p "$TEMP_DIR"
     log "Temporary directory created: $TEMP_DIR"
 }
@@ -158,32 +158,32 @@ setup_temp_dir() {
 # Find and validate data files
 find_data_files() {
     log "Finding parcel data files..."
-    
+
     if [[ ! -d "$DATA_DIR" ]]; then
         error "Data directory not found: $DATA_DIR"
         exit 1
     fi
-    
+
     local data_files=()
     while IFS= read -r -d '' file; do
         data_files+=("$file")
     done < <(find "$DATA_DIR" -name "*_parcels_*.json" -print0)
-    
+
     if [[ ${#data_files[@]} -eq 0 ]]; then
         error "No parcel data files found in $DATA_DIR"
         error "Please run fetch_parcels.py first to download the data"
         exit 1
     fi
-    
+
     log "Found ${#data_files[@]} parcel data files"
-    
+
     # Validate file integrity
     if [[ "$SKIP_VALIDATION" != "true" ]]; then
         log "Validating data files..."
-        
+
         for file in "${data_files[@]}"; do
             local md5_file="${file%.*}.md5"
-            
+
             if [[ -f "$md5_file" ]]; then
                 if ! (cd "$(dirname "$file")" && md5sum -c "$(basename "$md5_file")" > /dev/null 2>&1); then
                     error "Checksum validation failed for: $file"
@@ -192,17 +192,17 @@ find_data_files() {
             else
                 warn "No checksum file found for: $file"
             fi
-            
+
             # Validate JSON structure
             if ! jq -e '.metadata.county and .parcels' "$file" > /dev/null 2>&1; then
                 error "Invalid JSON structure in: $file"
                 exit 1
             fi
         done
-        
+
         log "All data files validated"
     fi
-    
+
     echo "${data_files[@]}"
 }
 
@@ -210,9 +210,9 @@ find_data_files() {
 merge_data_files() {
     local data_files=("$@")
     local merged_file="$TEMP_DIR/merged_parcels.json"
-    
+
     log "Merging ${#data_files[@]} data files..."
-    
+
     # Create merged JSON structure
     cat > "$merged_file" << 'EOF'
 {
@@ -225,7 +225,7 @@ merge_data_files() {
     "parcels": []
 }
 EOF
-    
+
     # Python script to merge files
     python3 << EOF
 import json
@@ -248,25 +248,25 @@ source_files = []
 # Process each data file
 for file_path in data_files:
     print(f"Processing: {file_path}")
-    
+
     try:
         with open(file_path) as f:
             data = json.load(f)
-        
+
         # Extract parcels
         parcels = data.get('parcels', [])
         merged_data['parcels'].extend(parcels)
-        
+
         # Update metadata
         county = data.get('metadata', {}).get('county')
         if county and county not in counties:
             counties.append(county)
-        
+
         source_files.append(str(Path(file_path).name))
         total_parcels += len(parcels)
-        
+
         print(f"  Added {len(parcels)} parcels from {county}")
-        
+
     except Exception as e:
         print(f"  Error processing {file_path}: {e}")
         sys.exit(1)
@@ -282,7 +282,7 @@ with open(merged_file, 'w') as f:
 
 print(f"Merged {total_parcels} parcels from {len(counties)} counties")
 EOF
-    
+
     log "Data files merged successfully"
     echo "$merged_file"
 }
@@ -291,9 +291,9 @@ EOF
 convert_to_geojson() {
     local input_file="$1"
     local output_file="$TEMP_DIR/parcels.geojson"
-    
+
     log "Converting to GeoJSON format..."
-    
+
     # Python script to convert JSON to GeoJSON
     python3 << EOF
 import json
@@ -305,13 +305,13 @@ output_file = "$output_file"
 try:
     with open(input_file) as f:
         data = json.load(f)
-    
+
     # Create GeoJSON structure
     geojson = {
         "type": "FeatureCollection",
         "features": []
     }
-    
+
     # Convert each parcel to GeoJSON feature
     for parcel in data['parcels']:
         feature = {
@@ -343,20 +343,20 @@ try:
             },
             "geometry": parcel.get('geometry')
         }
-        
+
         geojson["features"].append(feature)
-    
+
     # Save GeoJSON
     with open(output_file, 'w') as f:
         json.dump(geojson, f, indent=2)
-    
+
     print(f"Converted {len(data['parcels'])} parcels to GeoJSON format")
-    
+
 except Exception as e:
     print(f"Error converting to GeoJSON: {e}")
     sys.exit(1)
 EOF
-    
+
     log "Conversion to GeoJSON completed"
     echo "$output_file"
 }
@@ -364,12 +364,12 @@ EOF
 # Import data using ogr2ogr
 import_with_ogr2ogr() {
     local geojson_file="$1"
-    
+
     log "Importing data to Supabase using ogr2ogr..."
-    
+
     # Connection string
     local conn_string="PG:host=$DB_HOST port=$DB_PORT dbname=$DB_NAME user=$DB_USER password=$DB_PASSWORD"
-    
+
     # Build ogr2ogr command
     local ogr_cmd=(
         ogr2ogr
@@ -386,12 +386,12 @@ import_with_ogr2ogr() {
         -skipfailures
         -progress
     )
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log "DRY RUN: Would execute: ${ogr_cmd[*]}"
         return 0
     fi
-    
+
     # Execute ogr2ogr
     if "${ogr_cmd[@]}" 2>&1 | tee -a "$LOG_FILE"; then
         log "Data import completed successfully"
@@ -404,15 +404,15 @@ import_with_ogr2ogr() {
 # Create indexes and constraints
 create_indexes() {
     log "Creating indexes and constraints..."
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log "DRY RUN: Would create indexes and constraints"
         return 0
     fi
-    
+
     # SQL script for indexes and constraints
     local sql_script="$TEMP_DIR/create_indexes.sql"
-    
+
     cat > "$sql_script" << 'EOF'
 -- Create indexes for performance
 CREATE INDEX CONCURRENTLY IF NOT EXISTS idx_florida_parcels_county ON florida_parcels(county);
@@ -436,7 +436,7 @@ COMMENT ON COLUMN florida_parcels.geom IS 'Parcel geometry (polygon)';
 -- Update table statistics
 ANALYZE florida_parcels;
 EOF
-    
+
     # Execute SQL script
     if PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -f "$sql_script" > /dev/null 2>&1; then
         log "Indexes and constraints created successfully"
@@ -448,15 +448,15 @@ EOF
 # Generate import summary
 generate_summary() {
     log "Generating import summary..."
-    
+
     if [[ "$DRY_RUN" == "true" ]]; then
         log "DRY RUN: Would generate import summary"
         return 0
     fi
-    
+
     # Query database for summary statistics
     local summary_sql="
-        SELECT 
+        SELECT
             COUNT(*) as total_parcels,
             COUNT(DISTINCT county) as total_counties,
             MIN(assessed_value) as min_assessed_value,
@@ -466,26 +466,26 @@ generate_summary() {
             COUNT(*) FILTER (WHERE flood_zone IS NOT NULL) as flood_zone_parcels
         FROM florida_parcels;
     "
-    
+
     local county_summary_sql="
-        SELECT 
+        SELECT
             county,
             COUNT(*) as parcel_count,
             AVG(assessed_value) as avg_assessed_value
-        FROM florida_parcels 
-        GROUP BY county 
+        FROM florida_parcels
+        GROUP BY county
         ORDER BY parcel_count DESC;
     "
-    
+
     log "Import Summary:"
     log "==============="
-    
+
     PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "$summary_sql" | tee -a "$LOG_FILE"
-    
+
     log ""
     log "County Summary:"
     log "==============="
-    
+
     PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "$county_summary_sql" | tee -a "$LOG_FILE"
 }
 
@@ -493,40 +493,40 @@ generate_summary() {
 main() {
     log "Starting FDOT parcel data import to Supabase"
     log "=============================================="
-    
+
     # Check dependencies
     check_dependencies
-    
+
     # Validate configuration
     validate_config
-    
+
     # Test database connection
     test_db_connection
-    
+
     # Setup temporary directory
     setup_temp_dir
-    
+
     # Find and validate data files
     local data_files
     IFS=' ' read -r -a data_files <<< "$(find_data_files)"
-    
+
     # Merge data files
     local merged_file
     merged_file=$(merge_data_files "${data_files[@]}")
-    
+
     # Convert to GeoJSON
     local geojson_file
     geojson_file=$(convert_to_geojson "$merged_file")
-    
+
     # Import with ogr2ogr
     import_with_ogr2ogr "$geojson_file"
-    
+
     # Create indexes
     create_indexes
-    
+
     # Generate summary
     generate_summary
-    
+
     log "Import process completed successfully!"
     log "Log file: $LOG_FILE"
 }

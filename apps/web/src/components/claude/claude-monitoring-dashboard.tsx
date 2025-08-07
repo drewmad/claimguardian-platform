@@ -197,7 +197,7 @@ export function ClaudeMonitoringDashboard() {
       const interval = setInterval(fetchDashboardData, refreshInterval)
       return () => clearInterval(interval)
     }
-    
+
     return undefined
   }, [fetchDashboardData, autoRefresh, refreshInterval])
 
@@ -315,13 +315,13 @@ export function ClaudeMonitoringDashboard() {
               <p className="text-gray-400">Real-time system health and performance monitoring</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-4">
             <Badge variant={data.systemStatus.status === 'healthy' ? 'default' : 'destructive'} className="text-sm">
               {getStatusIcon(data.systemStatus.status)}
               <span className="ml-2">{data.systemStatus.status.toUpperCase()}</span>
             </Badge>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -331,7 +331,7 @@ export function ClaudeMonitoringDashboard() {
               {autoRefresh ? <Pause className="h-4 w-4 mr-2" /> : <Play className="h-4 w-4 mr-2" />}
               {autoRefresh ? 'Pause' : 'Resume'}
             </Button>
-            
+
             <Button
               variant="outline"
               size="sm"
@@ -486,20 +486,20 @@ export function ClaudeMonitoringDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => new Date(value).toLocaleTimeString()}
                     />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="successRate" 
-                      stroke="#10B981" 
+                    <Line
+                      type="monotone"
+                      dataKey="successRate"
+                      stroke="#10B981"
                       strokeWidth={2}
                       dot={false}
                     />
@@ -518,20 +518,20 @@ export function ClaudeMonitoringDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => new Date(value).toLocaleTimeString()}
                     />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="executionTime" 
-                      stroke="#3B82F6" 
+                    <Area
+                      type="monotone"
+                      dataKey="executionTime"
+                      stroke="#3B82F6"
                       fill="#3B82F6"
                       fillOpacity={0.5}
                     />
@@ -575,7 +575,7 @@ export function ClaudeMonitoringDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     />
                   </PieChart>
@@ -603,7 +603,7 @@ export function ClaudeMonitoringDashboard() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="category" stroke="#9CA3AF" />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     />
                     <Bar dataKey="count" fill="#EF4444" />
@@ -656,13 +656,13 @@ export function ClaudeMonitoringDashboard() {
                   <Info className="h-4 w-4" />
                   <AlertTitle>Recommendation: {data.abTestResults.recommendation.toUpperCase()}</AlertTitle>
                   <AlertDescription>
-                    {data.abTestResults.recommendation === 'rollout' && 
+                    {data.abTestResults.recommendation === 'rollout' &&
                       'The learning system shows significant improvement. Consider rolling out to all users.'}
-                    {data.abTestResults.recommendation === 'continue_testing' && 
+                    {data.abTestResults.recommendation === 'continue_testing' &&
                       'Continue gathering data to reach statistical significance.'}
-                    {data.abTestResults.recommendation === 'rollback' && 
+                    {data.abTestResults.recommendation === 'rollback' &&
                       'The learning system is underperforming. Consider investigating issues.'}
-                    {data.abTestResults.recommendation === 'inconclusive' && 
+                    {data.abTestResults.recommendation === 'inconclusive' &&
                       'Results are inconclusive. More data needed for a clear recommendation.'}
                   </AlertDescription>
                 </Alert>
@@ -689,22 +689,22 @@ export function ClaudeMonitoringDashboard() {
                     <PolarGrid stroke="#374151" />
                     <PolarAngleAxis dataKey="metric" stroke="#9CA3AF" />
                     <PolarRadiusAxis stroke="#9CA3AF" />
-                    <Radar 
-                      name="Control" 
-                      dataKey="control" 
-                      stroke="#EF4444" 
-                      fill="#EF4444" 
-                      fillOpacity={0.3} 
+                    <Radar
+                      name="Control"
+                      dataKey="control"
+                      stroke="#EF4444"
+                      fill="#EF4444"
+                      fillOpacity={0.3}
                     />
-                    <Radar 
-                      name="Treatment" 
-                      dataKey="treatment" 
-                      stroke="#10B981" 
-                      fill="#10B981" 
-                      fillOpacity={0.3} 
+                    <Radar
+                      name="Treatment"
+                      dataKey="treatment"
+                      stroke="#10B981"
+                      fill="#10B981"
+                      fillOpacity={0.3}
                     />
                     <Legend />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     />
                   </RadarChart>
@@ -801,20 +801,20 @@ export function ClaudeMonitoringDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => new Date(value).toLocaleTimeString()}
                     />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="learningRate" 
-                      stroke="#8B5CF6" 
+                    <Line
+                      type="monotone"
+                      dataKey="learningRate"
+                      stroke="#8B5CF6"
                       strokeWidth={2}
                       dot={false}
                     />
@@ -898,8 +898,8 @@ export function ClaudeMonitoringDashboard() {
                     </span>
                     <span className="text-sm font-medium">{data.resourceUsage.cpu.toFixed(1)}%</span>
                   </div>
-                  <Progress 
-                    value={data.resourceUsage.cpu} 
+                  <Progress
+                    value={data.resourceUsage.cpu}
                     className={data.resourceUsage.cpu > 80 ? '[&>div]:bg-red-500' : ''}
                   />
                 </div>
@@ -911,7 +911,7 @@ export function ClaudeMonitoringDashboard() {
                     </span>
                     <span className="text-sm font-medium">{data.resourceUsage.memory.toFixed(1)}%</span>
                   </div>
-                  <Progress 
+                  <Progress
                     value={data.resourceUsage.memory}
                     className={data.resourceUsage.memory > 80 ? '[&>div]:bg-red-500' : ''}
                   />
@@ -924,7 +924,7 @@ export function ClaudeMonitoringDashboard() {
                     </span>
                     <span className="text-sm font-medium">{data.resourceUsage.storage.toFixed(1)}%</span>
                   </div>
-                  <Progress 
+                  <Progress
                     value={data.resourceUsage.storage}
                     className={data.resourceUsage.storage > 80 ? '[&>div]:bg-red-500' : ''}
                   />
@@ -968,7 +968,7 @@ export function ClaudeMonitoringDashboard() {
                         <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                         <XAxis dataKey="resource" stroke="#9CA3AF" />
                         <YAxis stroke="#9CA3AF" />
-                        <Tooltip 
+                        <Tooltip
                           contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                         />
                         <Bar dataKey="cost" fill="#3B82F6" />
@@ -1020,7 +1020,7 @@ export function ClaudeMonitoringDashboard() {
                   </div>
                   <div className="flex justify-between">
                     <span className="text-sm text-gray-400">System Health</span>
-                    <Badge 
+                    <Badge
                       variant={
                         data.feedbackMetrics.systemHealth === 'healthy' ? 'default' :
                         data.feedbackMetrics.systemHealth === 'warning' ? 'secondary' : 'destructive'
@@ -1112,45 +1112,45 @@ export function ClaudeMonitoringDashboard() {
               <ResponsiveContainer width="100%" height={400}>
                 <LineChart data={historicalData}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                  <XAxis 
-                    dataKey="time" 
+                  <XAxis
+                    dataKey="time"
                     stroke="#9CA3AF"
                     tickFormatter={(value) => new Date(value).toLocaleTimeString()}
                   />
                   <YAxis stroke="#9CA3AF" />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     labelStyle={{ color: '#9CA3AF' }}
                   />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="successRate" 
-                    stroke="#10B981" 
+                  <Line
+                    type="monotone"
+                    dataKey="successRate"
+                    stroke="#10B981"
                     strokeWidth={2}
                     dot={false}
                     name="Success Rate"
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="learningRate" 
-                    stroke="#8B5CF6" 
+                  <Line
+                    type="monotone"
+                    dataKey="learningRate"
+                    stroke="#8B5CF6"
                     strokeWidth={2}
                     dot={false}
                     name="Learning Rate"
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="errorRate" 
-                    stroke="#EF4444" 
+                  <Line
+                    type="monotone"
+                    dataKey="errorRate"
+                    stroke="#EF4444"
                     strokeWidth={2}
                     dot={false}
                     name="Error Rate"
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="throughput" 
-                    stroke="#F59E0B" 
+                  <Line
+                    type="monotone"
+                    dataKey="throughput"
+                    stroke="#F59E0B"
                     strokeWidth={2}
                     dot={false}
                     name="Throughput"

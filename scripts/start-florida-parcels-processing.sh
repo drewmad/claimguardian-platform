@@ -24,7 +24,7 @@ fi
 # Function to check orchestrator status
 check_status() {
     echo -e "${BLUE}Checking current processing status...${NC}"
-    
+
     curl -s -X POST \
         https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/florida-parcels-orchestrator \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
@@ -36,14 +36,14 @@ check_status() {
 start_processing() {
     local mode=$1
     echo -e "${GREEN}Starting processing in ${mode} mode...${NC}"
-    
+
     local body='{"action": "start", "mode": "'${mode}'", "batch_size": 1000, "parallel_counties": 2}'
-    
+
     if [ "$mode" == "specific" ]; then
         # For testing, let's start with Charlotte County (8)
         body='{"action": "start", "mode": "specific", "counties": [8], "batch_size": 1000}'
     fi
-    
+
     curl -s -X POST \
         https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/florida-parcels-orchestrator \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
@@ -54,7 +54,7 @@ start_processing() {
 # Function to monitor progress
 monitor_progress() {
     echo -e "${BLUE}Getting processing dashboard...${NC}"
-    
+
     curl -s -X POST \
         https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/florida-parcels-monitor \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \

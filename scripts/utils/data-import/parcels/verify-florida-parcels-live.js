@@ -13,7 +13,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -24,7 +24,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       if (result.rows && result.rows.length > 0) {
@@ -54,37 +54,37 @@ async function verifyFloridaParcels() {
     },
     {
       name: 'Check table columns',
-      query: `SELECT COUNT(*) as column_count 
-              FROM information_schema.columns 
+      query: `SELECT COUNT(*) as column_count
+              FROM information_schema.columns
               WHERE table_name = 'florida_parcels'`
     },
     {
       name: 'Check indexes',
-      query: `SELECT COUNT(*) as index_count 
-              FROM pg_indexes 
+      query: `SELECT COUNT(*) as index_count
+              FROM pg_indexes
               WHERE tablename = 'florida_parcels'`
     },
     {
       name: 'Check RLS policies',
-      query: `SELECT COUNT(*) as policy_count 
-              FROM pg_policies 
+      query: `SELECT COUNT(*) as policy_count
+              FROM pg_policies
               WHERE tablename = 'florida_parcels'`
     },
     {
       name: 'Check functions',
-      query: `SELECT proname as function_name 
-              FROM pg_proc 
-              WHERE proname IN ('search_parcels_by_owner', 'get_parcel_with_county', 
+      query: `SELECT proname as function_name
+              FROM pg_proc
+              WHERE proname IN ('search_parcels_by_owner', 'get_parcel_with_county',
                                'get_parcel_stats_by_county', 'link_parcel_to_county')
               ORDER BY proname`
     },
     {
       name: 'Check county connection',
-      query: `SELECT 
+      query: `SELECT
                 conname as constraint_name,
                 pg_get_constraintdef(oid) as constraint_definition
-              FROM pg_constraint 
-              WHERE conrelid = 'florida_parcels'::regclass 
+              FROM pg_constraint
+              WHERE conrelid = 'florida_parcels'::regclass
               AND contype = 'f'`
     },
     {
@@ -107,7 +107,7 @@ async function verifyFloridaParcels() {
   // Summary
   console.log('\n📊 Verification Summary:');
   console.log('='.repeat(50));
-  
+
   if (allSuccess) {
     console.log('\n✅ Florida Parcels table is LIVE and fully configured!');
     console.log('\n🎯 Table Features Confirmed:');
@@ -118,21 +118,21 @@ async function verifyFloridaParcels() {
     console.log('  ✓ Connected to florida_counties table');
     console.log('  ✓ Automatic county linking trigger active');
     console.log('  ✓ Ready for parcel data imports');
-    
+
     console.log('\n📝 Key Table Information:');
     console.log('  • Table: florida_parcels');
     console.log('  • Primary Key: id (BIGSERIAL)');
     console.log('  • Unique Key: parcel_id');
     console.log('  • County Link: county_fips (12001-12133) → florida_counties');
     console.log('  • Major Fields: jv (Just Value), lnd_val (Land Value), own_name, phy_addr1');
-    
+
     console.log('\n🔍 Available Functions:');
     console.log('  • search_parcels_by_owner(owner_name, county_fips?, limit?)');
     console.log('  • get_parcel_with_county(parcel_id)');
     console.log('  • get_parcel_stats_by_county(county_code?)');
     console.log('  • get_parcel_counts_by_county()');
     console.log('  • check_florida_parcels_status()');
-    
+
   } else {
     console.log('\n⚠️  Some verifications failed. Please review the errors above.');
   }

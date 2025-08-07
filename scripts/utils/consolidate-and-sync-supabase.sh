@@ -44,25 +44,25 @@ log_info "Checking remote migrations status..."
 
 # First, let's check what migrations exist on remote
 REMOTE_MIGRATIONS=$(psql "postgresql://postgres:${DB_PASSWORD}@db.${PROJECT_REF}.supabase.co:5432/postgres" -t -c "
-SELECT name FROM supabase_migrations.schema_migrations 
-WHERE name NOT LIKE '00000000000000%' 
+SELECT name FROM supabase_migrations.schema_migrations
+WHERE name NOT LIKE '00000000000000%'
 ORDER BY name;" 2>/dev/null || echo "")
 
 if [ -n "$REMOTE_MIGRATIONS" ]; then
     log_info "Found remote migrations to consolidate:"
     echo "$REMOTE_MIGRATIONS"
-    
+
     read -p "Do you want to consolidate these remote migrations? (y/n): " -n 1 -r
     echo
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         log_info "Consolidating remote migrations..."
-        
+
         # Step 3: Create a consolidated schema from current remote state
         log_info "Dumping current remote database state (with all migrations applied)..."
-        
+
         # Create temp file for consolidated schema
         TEMP_SCHEMA="/tmp/supabase_consolidated_$(date +%Y%m%d_%H%M%S).sql"
-        
+
         # Dump the entire schema (this includes all applied migrations)
         pg_dump "postgresql://postgres:${DB_PASSWORD}@db.${PROJECT_REF}.supabase.co:5432/postgres" \
             --schema-only \
@@ -86,17 +86,17 @@ if [ -n "$REMOTE_MIGRATIONS" ]; then
             --exclude-schema=net \
             --exclude-schema=supabase_migrations \
             > ${TEMP_SCHEMA}
-        
+
         log_success "Remote schema dumped to temporary file"
-        
+
         # Step 4: Clear remote migrations table (optional - requires careful consideration)
         log_warn "To fully consolidate, we would need to clear the remote migrations table."
         log_warn "This is a destructive operation and should be done through Supabase Dashboard."
         log_info "For now, we'll use the dumped schema as the consolidated version."
-        
+
         # Move temp schema to be our new schema
         mv ${TEMP_SCHEMA} ${SCHEMA_FILE}
-        
+
         log_success "Remote schema consolidated to ${SCHEMA_FILE}"
     else
         log_info "Skipping remote consolidation, using current remote schema as-is"
@@ -148,13 +148,13 @@ log_success "Production schema saved to ${SCHEMA_FILE}"
 # Step 6: Archive local migrations if they exist
 if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
     log_info "Found local migrations. Archiving them..."
-    
+
     BACKUP_DIR="supabase/migrations.archive.$(date +%Y%m%d_%H%M%S)"
     mkdir -p ${BACKUP_DIR}
-    
+
     # Move migrations to archive
     mv supabase/migrations/*.sql ${BACKUP_DIR}/
-    
+
     # Update migrations README
     cat > supabase/migrations/README.md << EOF
 # Migrations Consolidated and Archived
@@ -176,7 +176,7 @@ All migration history is captured in the schema.sql file.
 2. Future changes should be made directly to schema.sql
 3. Apply changes using: supabase db push
 EOF
-    
+
     log_success "Local migrations archived to ${BACKUP_DIR}"
 else
     # Create README if it doesn't exist

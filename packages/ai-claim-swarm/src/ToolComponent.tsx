@@ -39,8 +39,8 @@ export function ToolComponent() {
             onCapture={captureImage}
             className="rounded-md border border-gray-700"
           />
-          <Button 
-            onClick={submitMedia} 
+          <Button
+            onClick={submitMedia}
             disabled={loading}
             className="w-full"
           >

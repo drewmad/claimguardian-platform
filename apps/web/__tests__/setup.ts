@@ -109,7 +109,7 @@ global.IntersectionObserver = class IntersectionObserver {
   root: Element | Document | null = null
   rootMargin: string = ''
   thresholds: ReadonlyArray<number> = []
-  
+
   constructor(
     callback: IntersectionObserverCallback,
     options?: IntersectionObserverInit
@@ -118,7 +118,7 @@ global.IntersectionObserver = class IntersectionObserver {
     this.rootMargin = options?.rootMargin || ''
     this.thresholds = options?.threshold ? (Array.isArray(options.threshold) ? options.threshold : [options.threshold]) : []
   }
-  
+
   observe(_target: Element): void {}
   unobserve(_target: Element): void {}
   disconnect(): void {}
@@ -144,10 +144,10 @@ const originalConsole = { ...console }
 beforeEach(() => {
   // Reset all mocks before each test
   jest.clearAllMocks()
-  
+
   // Reset fetch mock
   ;(global.fetch as jest.Mock).mockClear()
-  
+
   // Suppress console outputs during tests unless explicitly testing them
   console.log = jest.fn()
   console.info = jest.fn()

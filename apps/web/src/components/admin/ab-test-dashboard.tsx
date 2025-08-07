@@ -213,7 +213,7 @@ export function ABTestDashboard() {
         // const response = await fetch('/api/admin/ab-tests')
         // const data = await response.json()
         // setAbTests(data.tests)
-        
+
         // Mock implementation
         await new Promise(resolve => setTimeout(resolve, 500))
         setAbTests(MOCK_AB_TESTS)
@@ -235,10 +235,10 @@ export function ABTestDashboard() {
       paused: { color: 'bg-yellow-600/20 text-yellow-400 border-yellow-600/30', icon: Pause },
       completed: { color: 'bg-blue-600/20 text-blue-400 border-blue-600/30', icon: CheckCircle }
     }
-    
+
     const config = configs[status]
     const Icon = config.icon
-    
+
     return (
       <Badge className={config.color}>
         <Icon className="w-3 h-3 mr-1" />
@@ -251,7 +251,7 @@ export function ABTestDashboard() {
     const { model_a, model_b } = test.metrics
     const scoreA = (model_a.success_rate * 0.4) + (model_a.user_rating * 20) + ((3000 - model_a.avg_time * 1000) / 30)
     const scoreB = (model_b.success_rate * 0.4) + (model_b.user_rating * 20) + ((3000 - model_b.avg_time * 1000) / 30)
-    
+
     if (Math.abs(scoreA - scoreB) < 5) return 'tie'
     return scoreA > scoreB ? 'A' : 'B'
   }
@@ -419,14 +419,14 @@ export function ABTestDashboard() {
                     <div className="flex justify-between text-sm mb-2">
                       <span className="text-gray-400">Test Progress</span>
                       <span className="text-white">
-                        {Math.round(((new Date().getTime() - new Date(test.start_date).getTime()) / 
+                        {Math.round(((new Date().getTime() - new Date(test.start_date).getTime()) /
                         (new Date(test.end_date!).getTime() - new Date(test.start_date).getTime())) * 100)}%
                       </span>
                     </div>
-                    <Progress 
-                      value={Math.round(((new Date().getTime() - new Date(test.start_date).getTime()) / 
-                      (new Date(test.end_date!).getTime() - new Date(test.start_date).getTime())) * 100)} 
-                      className="h-2" 
+                    <Progress
+                      value={Math.round(((new Date().getTime() - new Date(test.start_date).getTime()) /
+                      (new Date(test.end_date!).getTime() - new Date(test.start_date).getTime())) * 100)}
+                      className="h-2"
                     />
                   </div>
 
@@ -589,8 +589,8 @@ export function ABTestDashboard() {
                         <div className="flex items-start justify-between mb-2">
                           <div className="flex items-center gap-2">
                             <Badge className={`text-xs ${
-                              feedback.variant === 'A' 
-                                ? 'bg-green-600/20 text-green-300 border-green-600/30' 
+                              feedback.variant === 'A'
+                                ? 'bg-green-600/20 text-green-300 border-green-600/30'
                                 : 'bg-purple-600/20 text-purple-300 border-purple-600/30'
                             }`}>
                               Variant {feedback.variant}

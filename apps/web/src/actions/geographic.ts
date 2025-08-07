@@ -55,15 +55,15 @@ interface ZipCode {
 export async function getStates() {
   try {
     const supabase = await await createClient()
-    
+
     const { data, error } = await supabase
       .from('states')
       .select('*')
       .eq('active', true)
       .order('name')
-    
+
     if (error) throw error
-    
+
     return { data: data as State[], error: null }
   } catch (error) {
     logger.error('Error fetching states:', toError(error))
@@ -74,7 +74,7 @@ export async function getStates() {
 export async function getCounties(stateCode?: string) {
   try {
     const supabase = await await createClient()
-    
+
     let query = supabase
       .from('counties')
       .select(`
@@ -82,15 +82,15 @@ export async function getCounties(stateCode?: string) {
         states!inner(code, name)
       `)
       .eq('active', true)
-    
+
     if (stateCode) {
       query = query.eq('states.code', stateCode)
     }
-    
+
     const { data, error } = await query.order('name')
-    
+
     if (error) throw error
-    
+
     return { data: data as (County & { states: { code: string; name: string } })[], error: null }
   } catch (error) {
     logger.error('Error fetching counties:', toError(error))
@@ -101,7 +101,7 @@ export async function getCounties(stateCode?: string) {
 export async function getCities(countyId?: number, stateCode?: string) {
   try {
     const supabase = await await createClient()
-    
+
     let query = supabase
       .from('cities')
       .select(`
@@ -110,25 +110,25 @@ export async function getCities(countyId?: number, stateCode?: string) {
         states!inner(code, name)
       `)
       .eq('active', true)
-    
+
     if (countyId) {
       query = query.eq('county_id', countyId)
     }
-    
+
     if (stateCode) {
       query = query.eq('states.code', stateCode)
     }
-    
+
     const { data, error } = await query.order('name')
-    
+
     if (error) throw error
-    
-    return { 
-      data: data as (City & { 
+
+    return {
+      data: data as (City & {
         counties: { name: string; fips_code: string }
-        states: { code: string; name: string } 
-      })[], 
-      error: null 
+        states: { code: string; name: string }
+      })[],
+      error: null
     }
   } catch (error) {
     logger.error('Error fetching cities:', toError(error))
@@ -139,7 +139,7 @@ export async function getCities(countyId?: number, stateCode?: string) {
 export async function getZipCodes(zipCode?: string, cityId?: number, countyId?: number) {
   try {
     const supabase = await await createClient()
-    
+
     let query = supabase
       .from('zip_codes')
       .select(`
@@ -149,30 +149,30 @@ export async function getZipCodes(zipCode?: string, cityId?: number, countyId?: 
         states!inner(code, name)
       `)
       .eq('active', true)
-    
+
     if (zipCode) {
       query = query.eq('zip_code', zipCode)
     }
-    
+
     if (cityId) {
       query = query.eq('city_id', cityId)
     }
-    
+
     if (countyId) {
       query = query.eq('county_id', countyId)
     }
-    
+
     const { data, error } = await query.order('zip_code')
-    
+
     if (error) throw error
-    
-    return { 
-      data: data as (ZipCode & { 
+
+    return {
+      data: data as (ZipCode & {
         cities: { name: string }
         counties: { name: string; fips_code: string }
-        states: { code: string; name: string } 
-      })[], 
-      error: null 
+        states: { code: string; name: string }
+      })[],
+      error: null
     }
   } catch (error) {
     logger.error('Error fetching ZIP codes:', toError(error))
@@ -196,7 +196,7 @@ export async function validateAddress({
     if (zipCode && state === 'FL') {
       const { getZipCodeInfo } = await import('@/data/florida-zip-codes')
       const zipInfo = getZipCodeInfo(zipCode)
-      
+
       if (zipInfo) {
         return {
           data: {
@@ -220,10 +220,10 @@ export async function validateAddress({
         }
       }
     }
-    
+
     // Fall back to database query
     const supabase = await await createClient()
-    
+
     let query = supabase
       .from('zip_codes')
       .select(`
@@ -233,25 +233,25 @@ export async function validateAddress({
         states!inner(code, name)
       `)
       .eq('active', true)
-    
+
     if (zipCode) {
       query = query.eq('zip_code', zipCode)
     }
-    
+
     if (state) {
       query = query.eq('states.code', state)
     }
-    
+
     if (county) {
       query = query.ilike('counties.name', `%${county}%`)
     }
-    
+
     if (city) {
       query = query.ilike('cities.name', `%${city}%`)
     }
-    
+
     const { data, error } = await query.limit(10)
-    
+
     if (error) {
       // If database fails, return not found
       logger.warn('Database query failed, using local data only:', error)
@@ -264,7 +264,7 @@ export async function validateAddress({
         error: null
       }
     }
-    
+
     const isValid = data && data.length > 0
     const suggestions = data?.map((item: {
       zip_code: string;
@@ -279,14 +279,14 @@ export async function validateAddress({
       state: item.states.code,
       fullCity: item.primary_city
     })) || []
-    
-    return { 
-      data: { 
-        isValid, 
+
+    return {
+      data: {
+        isValid,
         suggestions,
         exactMatch: isValid && data.length === 1 ? suggestions[0] : null
-      }, 
-      error: null 
+      },
+      error: null
     }
   } catch (error) {
     logger.error('Error validating address:', toError(error))
@@ -365,6 +365,6 @@ export async function getFloridaCountiesFallback() {
     { id: 66, name: 'Walton County', fips_code: '12131' },
     { id: 67, name: 'Washington County', fips_code: '12133' }
   ]
-  
+
   return { data: floridaCounties, error: null }
 }

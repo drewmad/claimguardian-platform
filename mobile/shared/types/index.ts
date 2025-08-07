@@ -221,9 +221,9 @@ export interface PaginatedResponse<T> {
 }
 
 // Sync Event Types
-export type SyncEventType = 
+export type SyncEventType =
   | 'sync_started'
-  | 'sync_progress' 
+  | 'sync_progress'
   | 'sync_completed'
   | 'sync_failed'
   | 'entity_synced'
@@ -242,8 +242,8 @@ export interface SyncEvent {
 export type RootStackParamList = {
   '(tabs)': undefined
   'property/[id]': { id: string }
-  'assessment/[id]': { id: string }  
-  'camera': { 
+  'assessment/[id]': { id: string }
+  'camera': {
     assessment_id?: string
     damage_item_id?: string
     return_screen: string
@@ -260,6 +260,6 @@ export type RootStackParamList = {
 export type TabsParamList = {
   index: undefined
   properties: undefined
-  assessments: undefined  
+  assessments: undefined
   sync: undefined
 }

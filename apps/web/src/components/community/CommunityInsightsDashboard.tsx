@@ -266,7 +266,7 @@ export function CommunityInsightsDashboard() {
                     <Tooltip />
                   </PieChart>
                 </ResponsiveContainer>
-                
+
                 <div className="space-y-4">
                   {damageTypes.map((type) => (
                     <div key={type.name} className="flex items-center justify-between">
@@ -306,7 +306,7 @@ export function CommunityInsightsDashboard() {
                   <Bar dataKey="claims" fill="#82ca9d" name="Active Claims" />
                 </BarChart>
               </ResponsiveContainer>
-              
+
               <div className="mt-6 space-y-3">
                 {neighborhoodActivity.map((area) => (
                   <div key={area.area} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
@@ -356,7 +356,7 @@ export function CommunityInsightsDashboard() {
                   <div>
                     <h4 className="font-medium text-blue-900">Settlement Trend</h4>
                     <p className="text-sm text-blue-700 mt-1">
-                      Claims with complete photo documentation settle 62% faster in your area. 
+                      Claims with complete photo documentation settle 62% faster in your area.
                       Average settlement time: 14 days vs 36 days.
                     </p>
                   </div>

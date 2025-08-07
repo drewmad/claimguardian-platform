@@ -48,30 +48,30 @@ const COUNTY_FIPS = {
 function loadEnvVars() {
   const envPath = path.join(__dirname, '..', '.env.local')
   const envContent = fs.readFileSync(envPath, 'utf8')
-  
+
   const urlMatch = envContent.match(/^NEXT_PUBLIC_SUPABASE_URL=(.+)$/m)
   const url = urlMatch ? urlMatch[1].replace(/["']/g, '').trim() : null
-  
+
   const keyMatch = envContent.match(/^NEXT_PUBLIC_SUPABASE_ANON_KEY=(.+?)$/m)
   const anonKey = keyMatch ? keyMatch[1].split('\\n')[0].replace(/["']/g, '').trim() : null
-  
+
   if (!url || !anonKey) {
     throw new Error('Missing required environment variables')
   }
-  
+
   return { url, anonKey }
 }
 
 // Convert geometry
 function convertToWKT(geometry) {
   if (!geometry || !geometry.rings) return null
-  
+
   try {
     const rings = geometry.rings.map(ring => {
       const coords = ring.map(([lon, lat]) => `${lon} ${lat}`).join(',')
       return `(${coords})`
     }).join(',')
-    
+
     return `SRID=4326;MULTIPOLYGON((${rings}))`
   } catch (err) {
     console.error('Geometry conversion error:', err)
@@ -82,7 +82,7 @@ function convertToWKT(geometry) {
 // Fetch from FDOT
 async function fetchParcels(layerId, offset = 0, limit = 100) {
   const url = `https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer/${layerId}/query`
-  
+
   const params = new URLSearchParams({
     where: '1=1',
     outFields: '*',
@@ -92,19 +92,19 @@ async function fetchParcels(layerId, offset = 0, limit = 100) {
     returnGeometry: 'true',
     outSR: '4326'
   })
-  
+
   const response = await fetch(`${url}?${params}`)
   if (!response.ok) {
     throw new Error(`FDOT API error: ${response.status}`)
   }
-  
+
   return response.json()
 }
 
 // Process parcel
 function processParcel(feature, countyName, countyFips) {
   const { attributes, geometry } = feature
-  
+
   const propertyAddress = [
     attributes.PHY_ADDR1,
     attributes.PHY_ADDR2,
@@ -112,7 +112,7 @@ function processParcel(feature, countyName, countyFips) {
     attributes.PHY_STATE,
     attributes.PHY_ZIPCD
   ].filter(Boolean).join(' ').trim()
-  
+
   return {
     id: crypto.randomUUID(),
     parcel_id: attributes.PARCEL_ID || attributes.PARCELNO,
@@ -145,12 +145,12 @@ async function bulkInsertParcels(supabaseUrl, anonKey, parcels) {
     },
     body: JSON.stringify({ parcels })
   })
-  
+
   if (!response.ok) {
     const error = await response.text()
     throw new Error(`Edge Function error: ${response.status} - ${error}`)
   }
-  
+
   return response.json()
 }
 
@@ -158,33 +158,33 @@ async function bulkInsertParcels(supabaseUrl, anonKey, parcels) {
 async function loadParcels(county, maxRecords = 1000) {
   console.log(`\n🏗️  Loading parcels for ${county} County...`)
   console.log('🔐 Using authenticated Edge Function for secure access')
-  
+
   const layerId = COUNTY_LAYERS[county.toUpperCase()]
   const countyFips = COUNTY_FIPS[county.toUpperCase()]
-  
+
   if (!layerId || !countyFips) {
     console.error(`❌ Unknown county: ${county}`)
     return { success: 0, errors: 0 }
   }
-  
+
   const { url, anonKey } = loadEnvVars()
-  
+
   let offset = 0
   let totalSuccess = 0
   let totalErrors = 0
   const batchSize = 50 // Smaller batches for Edge Function
-  
+
   while (totalSuccess + totalErrors < maxRecords) {
     try {
       // Fetch from FDOT
       console.log(`📥 Fetching records ${offset} to ${offset + batchSize}...`)
       const data = await fetchParcels(layerId, offset, batchSize)
-      
+
       if (!data.features || data.features.length === 0) {
         console.log('✅ No more records to process')
         break
       }
-      
+
       // Process features
       const parcels = []
       for (const feature of data.features) {
@@ -198,18 +198,18 @@ async function loadParcels(county, maxRecords = 1000) {
           totalErrors++
         }
       }
-      
+
       if (parcels.length > 0) {
         console.log(`💾 Sending ${parcels.length} parcels to Edge Function...`)
-        
+
         // Call Edge Function
         const result = await bulkInsertParcels(url, anonKey, parcels)
-        
+
         totalSuccess += result.successful
         totalErrors += result.errors
-        
+
         console.log(`✅ Batch result: ${result.successful} successful, ${result.errors} errors`)
-        
+
         // Show first few errors if any
         if (result.errorDetails && result.errorDetails.length > 0) {
           console.log('❌ Sample errors:')
@@ -218,21 +218,21 @@ async function loadParcels(county, maxRecords = 1000) {
           })
         }
       }
-      
+
       if (data.features.length < batchSize) {
         console.log('✅ Reached end of data')
         break
       }
-      
+
       offset += batchSize
-      
+
       // Rate limiting
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
     } catch (err) {
       console.error('❌ Batch error:', err.message)
       totalErrors += batchSize
-      
+
       // If authentication error, stop
       if (err.message.includes('401') || err.message.includes('403')) {
         console.error('\n🚫 Authentication failed. Please ensure you are logged in to ClaimGuardian.')
@@ -240,7 +240,7 @@ async function loadParcels(county, maxRecords = 1000) {
       }
     }
   }
-  
+
   return { success: totalSuccess, errors: totalErrors }
 }
 
@@ -250,27 +250,27 @@ async function main() {
   console.log('=' * 50)
   console.log('⚠️  This script requires authentication.')
   console.log('   Please ensure you are logged in to ClaimGuardian.')
-  
+
   const args = process.argv.slice(2)
   const county = args[0] || 'MONROE'
   const maxRecords = parseInt(args[1]) || 100
-  
+
   console.log(`\nLoading up to ${maxRecords} records from ${county} County`)
-  
+
   try {
     const result = await loadParcels(county, maxRecords)
-    
+
     console.log('\n📊 Final Results:')
     console.log(`✅ Successfully loaded: ${result.success} parcels`)
     console.log(`❌ Errors: ${result.errors}`)
-    
+
     if (result.errors > 0 && result.success === 0) {
       console.log('\n💡 Tip: If you see authentication errors, you may need to:')
       console.log('   1. Log in to ClaimGuardian at https://claimguardianai.com')
       console.log('   2. Use a valid authentication token')
       console.log('   3. Contact support for data loading assistance')
     }
-    
+
   } catch (err) {
     console.error('Fatal error:', err)
     process.exit(1)

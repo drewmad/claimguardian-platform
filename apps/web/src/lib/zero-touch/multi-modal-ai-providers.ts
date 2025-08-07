@@ -22,7 +22,7 @@ export interface AIProvider {
 
 export class MultiModalAIOrchestrator {
   private providers: Map<string, AIProvider> = new Map()
-  
+
   constructor(private config: {
     openaiKey?: string
     geminiKey?: string
@@ -85,7 +85,7 @@ export class MultiModalAIOrchestrator {
   }> {
     // Select optimal providers based on document type
     const selectedProviders = this.selectProviders(documentType, floridaContext)
-    
+
     // Run parallel analysis with all selected providers
     const analyses = await Promise.allSettled(
       selectedProviders.map(async provider => ({
@@ -101,7 +101,7 @@ export class MultiModalAIOrchestrator {
 
     // Build consensus from multiple AI providers
     const consensus = this.buildConsensus(successfulAnalyses)
-    
+
     // Calculate overall confidence
     const confidence = this.calculateConfidence(successfulAnalyses, consensus)
 
@@ -114,7 +114,7 @@ export class MultiModalAIOrchestrator {
 
   private selectProviders(documentType?: string, floridaContext?: any): AIProvider[] {
     const providers = Array.from(this.providers.values())
-    
+
     // For Florida hurricane/flood claims, prioritize xAI and Claude
     if (floridaContext?.hurricane || floridaContext?.flood) {
       return providers.sort((a, b) => {
@@ -140,24 +140,24 @@ export class MultiModalAIOrchestrator {
   private async analyzeWithOpenAI(data: any): Promise<any> {
     const openai = new OpenAI({ apiKey: this.config.openaiKey! })
     const base64 = await this.fileToBase64(data.fileData)
-    
+
     const response = await openai.chat.completions.create({
       model: "gpt-4-vision-preview",
       messages: [
         {
           role: "system",
-          content: `You are an expert document analyzer for Florida insurance claims. 
+          content: `You are an expert document analyzer for Florida insurance claims.
             Extract all relevant information and return structured JSON.`
         },
         {
           role: "user",
           content: [
-            { 
-              type: "text", 
-              text: `Analyze this document. Context: ${JSON.stringify(data.floridaContext || {})}` 
+            {
+              type: "text",
+              text: `Analyze this document. Context: ${JSON.stringify(data.floridaContext || {})}`
             },
-            { 
-              type: "image_url", 
+            {
+              type: "image_url",
               image_url: { url: `data:${data.fileData.type};base64,${base64}` }
             }
           ]
@@ -165,30 +165,30 @@ export class MultiModalAIOrchestrator {
       ],
       response_format: { type: "json_object" }
     })
-    
+
     return JSON.parse(response.choices[0].message.content!)
   }
 
   private async analyzeWithGemini(data: any): Promise<any> {
     const gemini = new GoogleGenerativeAI(this.config.geminiKey!)
     const model = gemini.getGenerativeModel({ model: "gemini-1.5-pro-vision" })
-    
+
     const base64 = await this.fileToBase64(data.fileData)
     const result = await model.generateContent([
-      `Analyze this insurance document for a Florida property claim. 
+      `Analyze this insurance document for a Florida property claim.
        Extract: document type, dates, amounts, parties, damage descriptions.
        Context: ${JSON.stringify(data.floridaContext || {})}
        Return structured JSON.`,
       { inlineData: { data: base64, mimeType: data.fileData.type } }
     ])
-    
+
     return JSON.parse(result.response.text())
   }
 
   private async analyzeWithClaude(data: any): Promise<any> {
     const anthropic = new Anthropic({ apiKey: this.config.anthropicKey! })
     const base64 = await this.fileToBase64(data.fileData)
-    
+
     const response = await anthropic.messages.create({
       model: "claude-3-opus-20240229",
       max_tokens: 4000,
@@ -218,7 +218,7 @@ export class MultiModalAIOrchestrator {
         }
       ]
     })
-    
+
     const content = response.content[0]
     return JSON.parse(content.type === 'text' ? content.text : '{}')
   }
@@ -226,9 +226,9 @@ export class MultiModalAIOrchestrator {
   private async analyzeWithXAI(data: any): Promise<any> {
     // xAI Grok integration for advanced multi-modal analysis
     // Grok excels at real-time analysis and anomaly detection
-    
+
     const base64 = await this.fileToBase64(data.fileData)
-    
+
     const response = await fetch('https://api.x.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -258,9 +258,9 @@ export class MultiModalAIOrchestrator {
                   3. Anomaly detection (fraudulent patterns, inconsistencies)
                   4. Florida-specific context correlation
                   5. Temporal analysis (damage progression, claim timing)
-                  
+
                   Florida Context: ${JSON.stringify(data.floridaContext || {})}
-                  
+
                   Return detailed JSON with confidence scores for each finding.`
               },
               {
@@ -321,14 +321,14 @@ export class MultiModalAIOrchestrator {
   private findConsensusValue(analyses: any[], field: string): any {
     const values = analyses.map(a => a.result[field]).filter(v => v)
     if (values.length === 0) return null
-    
+
     // Find most common value
     const counts = new Map()
     values.forEach(v => {
       const key = JSON.stringify(v)
       counts.set(key, (counts.get(key) || 0) + 1)
     })
-    
+
     const sorted = Array.from(counts.entries()).sort((a, b) => b[1] - a[1])
     return JSON.parse(sorted[0][0])
   }
@@ -347,7 +347,7 @@ export class MultiModalAIOrchestrator {
   private mergeAmounts(analyses: unknown[]): unknown[] {
     const amounts: unknown[] = []
     const seen = new Set()
-    
+
     analyses.forEach((a: unknown) => {
       const analysis = a as any
       if (analysis.result?.amounts && Array.isArray(analysis.result.amounts)) {
@@ -360,19 +360,19 @@ export class MultiModalAIOrchestrator {
         })
       }
     })
-    
+
     return amounts
   }
 
   private mergeEntities(analyses: any[]): any {
     const entities = {}
-    
+
     analyses.forEach(a => {
       if (a.result.entities) {
         Object.assign(entities, a.result.entities)
       }
     })
-    
+
     return entities
   }
 
@@ -381,14 +381,14 @@ export class MultiModalAIOrchestrator {
     if (xaiAnalysis?.result?.damageAssessment) {
       return xaiAnalysis.result.damageAssessment
     }
-    
+
     // Fallback to other providers
     const assessments = analyses
       .map(a => a.result.damageAssessment)
       .filter(d => d)
-    
+
     if (assessments.length === 0) return null
-    
+
     return {
       severity: this.findConsensusValue(analyses, 'damageAssessment.severity'),
       types: this.mergeArrays(assessments.map(a => a.types)),
@@ -402,7 +402,7 @@ export class MultiModalAIOrchestrator {
     if (xaiAnalysis?.result?.anomalies) {
       return xaiAnalysis.result.anomalies
     }
-    
+
     const allAnomalies: unknown[] = []
     analyses.forEach((a: unknown) => {
       const analysis = a as any
@@ -410,13 +410,13 @@ export class MultiModalAIOrchestrator {
         allAnomalies.push(...analysis.result.anomalies)
       }
     })
-    
+
     return this.deduplicateAnomalies(allAnomalies)
   }
 
   private mergeAssociations(analyses: unknown[]): unknown[] {
     const associations = new Map()
-    
+
     analyses.forEach((a: unknown) => {
       const analysis = a as any
       if (analysis.result?.associations && Array.isArray(analysis.result.associations)) {
@@ -428,7 +428,7 @@ export class MultiModalAIOrchestrator {
         })
       }
     })
-    
+
     return Array.from(associations.values())
   }
 
@@ -442,27 +442,27 @@ export class MultiModalAIOrchestrator {
       buildingCode: null,
       sinkholeRisk: false
     }
-    
+
     analyses.forEach(a => {
       if (a.result.floridaSpecific) {
         Object.assign(floridaData, a.result.floridaSpecific)
       }
     })
-    
+
     return floridaData
   }
 
   private generateConsensusName(analyses: any[]): string {
     const names = analyses.map(a => a.result.suggestedName).filter(n => n)
     if (names.length === 0) return 'document_' + Date.now()
-    
+
     // Use the most detailed/specific name
     return names.sort((a, b) => b.length - a.length)[0]
   }
 
   private extractUniqueFindings(providerResult: any, consensus: any): unknown[] {
     const unique: unknown[] = []
-    
+
     // Find findings unique to this provider
     Object.keys(providerResult).forEach(key => {
       if (!consensus[key] || JSON.stringify(consensus[key]) !== JSON.stringify(providerResult[key])) {
@@ -472,7 +472,7 @@ export class MultiModalAIOrchestrator {
         })
       }
     })
-    
+
     return unique
   }
 
@@ -480,23 +480,23 @@ export class MultiModalAIOrchestrator {
     if (analyses.length === 1) {
       return analyses[0].result.confidence || 0.7
     }
-    
+
     // Calculate agreement score
     let agreementScore = 0
     const fields = ['documentType', 'category', 'dates', 'amounts']
-    
+
     fields.forEach(field => {
       const values = analyses.map(a => JSON.stringify(a.result[field]))
       const uniqueValues = new Set(values).size
       agreementScore += (analyses.length - uniqueValues + 1) / analyses.length
     })
-    
+
     const baseConfidence = agreementScore / fields.length
-    
+
     // Boost confidence if xAI is involved (due to its advanced capabilities)
     const hasXAI = analyses.some(a => a.provider === 'xAI Grok')
     const xaiBoost = hasXAI ? 0.1 : 0
-    
+
     return Math.min(baseConfidence + xaiBoost, 0.99)
   }
 

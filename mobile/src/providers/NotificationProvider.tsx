@@ -17,19 +17,19 @@ interface NotificationContextType {
   isInitialized: boolean
   hasPermission: boolean
   pushToken: string | null
-  
+
   // Notifications
   disasterAlerts: NotificationData[]
   systemNotifications: NotificationData[]
   unreadCount: number
-  
+
   // Methods
   requestPermission: () => Promise<boolean>
   clearBadge: () => Promise<void>
   sendTestNotification: () => Promise<void>
   markAsRead: (notificationId: string) => void
   clearAllNotifications: () => void
-  
+
   // Settings
   notificationSettings: {
     disasterAlerts: boolean
@@ -51,7 +51,7 @@ interface NotificationProviderProps {
 
 export function NotificationProvider({ children }: NotificationProviderProps) {
   const dispatch = useAppDispatch()
-  
+
   // Redux selectors
   const isOnline = useAppSelector(state => state.network.isOnline)
   const currentLocation = useAppSelector(state => state.location.currentLocation)
@@ -92,20 +92,20 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
   const initializeNotifications = async () => {
     try {
       console.log('Initializing push notifications...')
-      
+
       const initialized = await pushNotificationService.initialize()
-      
+
       if (initialized) {
         const permissions = await pushNotificationService.checkPermissions()
         const token = await pushNotificationService.getPushToken()
-        
+
         setIsInitialized(true)
         setHasPermission(permissions.granted)
         setPushToken(token)
-        
+
         // Load existing notifications
         await loadStoredNotifications()
-        
+
         console.log('Push notifications initialized successfully')
       } else {
         console.warn('Push notifications could not be initialized')
@@ -124,7 +124,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
       ])
 
       setDisasterAlerts(disasters)
-      
+
       // Combine weather alerts with system notifications for now
       setSystemNotifications([
         ...weather,
@@ -168,13 +168,13 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     try {
       const granted = await pushNotificationService.requestPermissions()
       setHasPermission(granted)
-      
+
       if (granted && !isInitialized) {
         await initializeNotifications()
       }
-      
+
       return granted
-      
+
     } catch (error) {
       console.error('Failed to request notification permission:', error)
       return false
@@ -197,13 +197,13 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
         'Test Notification',
         'This is a test notification to verify your settings are working correctly.'
       )
-      
+
       Alert.alert(
         'Test Sent',
         'A test notification has been sent. It should appear shortly.',
         [{ text: 'OK' }]
       )
-      
+
     } catch (error) {
       console.error('Failed to send test notification:', error)
       Alert.alert(
@@ -216,17 +216,17 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   const markAsRead = (notificationId: string): void => {
     // Mark specific notification as read
-    setDisasterAlerts(prev => 
-      prev.map(alert => 
-        alert.data.alertId === notificationId 
+    setDisasterAlerts(prev =>
+      prev.map(alert =>
+        alert.data.alertId === notificationId
           ? { ...alert, data: { ...alert.data, read: true } }
           : alert
       )
     )
-    
-    setSystemNotifications(prev => 
-      prev.map(notification => 
-        notification.data.id === notificationId 
+
+    setSystemNotifications(prev =>
+      prev.map(notification =>
+        notification.data.id === notificationId
           ? { ...notification, data: { ...notification.data, read: true } }
           : notification
       )
@@ -245,7 +245,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 
   const updateSettings = (settings: Partial<NotificationContextType['notificationSettings']>): void => {
     setNotificationSettings(prev => ({ ...prev, ...settings }))
-    
+
     // Save settings to AsyncStorage or API
     // This would be implemented based on your storage strategy
   }
@@ -263,7 +263,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     try {
       // This would subscribe to disaster alerts for the user's location
       console.log('Subscribing to location-based alerts for:', location)
-      
+
       // Mock disaster alert for demonstration
       if (__DEV__) {
         setTimeout(() => {
@@ -297,7 +297,7 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
           // }, 10000)
         }, 1000)
       }
-      
+
     } catch (error) {
       console.error('Failed to subscribe to location-based alerts:', error)
     }
@@ -309,19 +309,19 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
     isInitialized,
     hasPermission,
     pushToken,
-    
+
     // Notifications
     disasterAlerts,
     systemNotifications,
     unreadCount,
-    
+
     // Methods
     requestPermission,
     clearBadge,
     sendTestNotification,
     markAsRead,
     clearAllNotifications,
-    
+
     // Settings
     notificationSettings,
     updateSettings
@@ -337,23 +337,23 @@ export function NotificationProvider({ children }: NotificationProviderProps) {
 // Hook to use notification context
 export function useNotifications(): NotificationContextType {
   const context = useContext(NotificationContext)
-  
+
   if (context === undefined) {
     throw new Error('useNotifications must be used within a NotificationProvider')
   }
-  
+
   return context
 }
 
 // Hook for disaster alerts specifically
 export function useDisasterAlerts() {
   const { disasterAlerts, notificationSettings } = useNotifications()
-  
+
   return {
     alerts: disasterAlerts.filter(alert => alert.type === 'disaster_alert'),
     isEnabled: notificationSettings.disasterAlerts,
-    criticalAlerts: disasterAlerts.filter(alert => 
-      alert.type === 'disaster_alert' && 
+    criticalAlerts: disasterAlerts.filter(alert =>
+      alert.type === 'disaster_alert' &&
       (alert.severity === 'critical' || alert.severity === 'emergency')
     )
   }
@@ -362,7 +362,7 @@ export function useDisasterAlerts() {
 // Hook for system notifications specifically
 export function useSystemNotifications() {
   const { systemNotifications, notificationSettings } = useNotifications()
-  
+
   return {
     notifications: systemNotifications,
     assessmentUpdates: systemNotifications.filter(n => n.type === 'assessment_update'),

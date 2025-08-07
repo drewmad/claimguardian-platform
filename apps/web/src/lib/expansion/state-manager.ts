@@ -131,22 +131,22 @@ export interface StateConfiguration {
   stateCode: string
   stateName: string
   isActive: boolean
-  
+
   // Legal and regulatory configuration
   insuranceRegulations: InsuranceRegulations
-  
+
   // Data sources and integrations
   dataSources: DataSources
-  
+
   // Insurance market characteristics
   marketData: MarketData
-  
+
   // Operational configuration
   operations: Operations
-  
+
   // Feature flags and customizations
   features: Features
-  
+
   // Deployment configuration
   deployment: {
     status: 'planning' | 'development' | 'testing' | 'staging' | 'production'
@@ -154,7 +154,7 @@ export interface StateConfiguration {
     migrationComplete: boolean
     dataLoadStatus: DataLoadStatus
   }
-  
+
   metadata: {
     createdAt: Date
     updatedAt: Date
@@ -259,7 +259,7 @@ class StateExpansionManager {
       if (!data) return null
 
       const config = this.parseStateConfiguration(data as StateConfigurationRow)
-      
+
       // Cache the result
       this.configCache.set(cacheKey, config)
       setTimeout(() => this.configCache.delete(cacheKey), this.cacheExpiry)
@@ -348,7 +348,7 @@ class StateExpansionManager {
       stateCode: stateCode.toUpperCase(),
       stateName,
       isActive: false,
-      
+
       insuranceRegulations: {
         requiresLicense: true,
         regulatoryBody: `${stateName} Department of Insurance`,
@@ -364,7 +364,7 @@ class StateExpansionManager {
           supplemental_claim: 90
         }
       },
-      
+
       dataSources: {
         parcelData: {
           provider: 'TBD',
@@ -381,7 +381,7 @@ class StateExpansionManager {
           regionCode: stateCode.toLowerCase()
         }
       },
-      
+
       marketData: {
         majorCarriers: [],
         averagePremium: 0,
@@ -389,7 +389,7 @@ class StateExpansionManager {
         catastropheRisk: [],
         seasonalPatterns: {}
       },
-      
+
       operations: {
         timezone: 'America/New_York', // Default, to be updated
         businessHours: {
@@ -400,7 +400,7 @@ class StateExpansionManager {
         supportLanguages: ['en'],
         localOffice: undefined
       },
-      
+
       features: {
         enabledFeatures: [
           'basic_claims',
@@ -413,7 +413,7 @@ class StateExpansionManager {
         ],
         customizations: {}
       },
-      
+
       deployment: {
         status: 'planning',
         migrationComplete: false,
@@ -423,7 +423,7 @@ class StateExpansionManager {
           integrations: 'pending'
         }
       },
-      
+
       metadata: {
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -476,7 +476,7 @@ class StateExpansionManager {
     if (config.insuranceRegulations.regulatoryBody !== 'TBD') breakdown.regulatory += 5
     if (config.insuranceRegulations.complianceRequirements.length > 0) breakdown.regulatory += 5
     if (Object.keys(config.insuranceRegulations.fillingDeadlines).length > 0) breakdown.regulatory += 10
-    
+
     if (breakdown.regulatory < 15) {
       blockers.push('Incomplete regulatory requirements')
       recommendations.push('Complete regulatory compliance analysis')
@@ -701,7 +701,7 @@ class StateExpansionManager {
    * Check if a state is supported
    */
   isStateSupported(stateCode: string): Promise<boolean> {
-    return this.getStateConfiguration(stateCode).then(config => 
+    return this.getStateConfiguration(stateCode).then(config =>
       config !== null && config.isActive
     )
   }
@@ -731,7 +731,7 @@ class StateExpansionManager {
     warnings: string[]
   }> {
     const config = await this.getStateConfiguration(stateCode)
-    
+
     if (!config) {
       return {
         isValid: false,
@@ -770,8 +770,8 @@ class StateExpansionManager {
   // Private helper methods
   private parseStateConfiguration(data: StateConfigurationRow): StateConfiguration {
     // Validate data types with proper fallbacks
-    const insuranceRegulations = isValidInsuranceRegulations(data.insurance_regulations) 
-      ? data.insurance_regulations 
+    const insuranceRegulations = isValidInsuranceRegulations(data.insurance_regulations)
+      ? data.insurance_regulations
       : this.getDefaultInsuranceRegulations()
 
     const dataSources = isValidDataSources(data.data_sources)

@@ -71,13 +71,13 @@ ClaimGuardian uses a dark theme with consistent color usage:
 Standardized card system with 7 variants for consistent UI across the application.
 
 ```typescript
-export type CardVariant = 
-  | 'default' 
-  | 'insurance' 
-  | 'property' 
-  | 'claim' 
-  | 'elevated' 
-  | 'interactive' 
+export type CardVariant =
+  | 'default'
+  | 'insurance'
+  | 'property'
+  | 'claim'
+  | 'elevated'
+  | 'interactive'
   | 'danger'
 
 // Usage Examples
@@ -109,7 +109,7 @@ export type CardVariant =
 Specialized badge system with 19 variants for insurance context.
 
 ```typescript
-export type InsuranceBadgeVariant = 
+export type InsuranceBadgeVariant =
   | 'active' | 'expired' | 'pending'
   | 'coverage-adequate' | 'coverage-low' | 'coverage-high'
   | 'premium-low' | 'premium-high'
@@ -232,9 +232,9 @@ export const staggerContainer: Variants = {
 
 // Hover Effects
 export const hoverScale: Variants = {
-  hover: { 
-    scale: 1.02, 
-    transition: { duration: 0.2 } 
+  hover: {
+    scale: 1.02,
+    transition: { duration: 0.2 }
   }
 }
 
@@ -249,7 +249,7 @@ export const hoverScale: Variants = {
 
 **Available Animations:**
 - `fadeInUp` - Fade in with upward slide
-- `fadeInDown` - Fade in with downward slide  
+- `fadeInDown` - Fade in with downward slide
 - `slideInLeft` - Slide in from left
 - `slideInRight` - Slide in from right
 - `scaleIn` - Scale up from center
@@ -267,7 +267,7 @@ import { fadeInUp, staggerContainer } from '@/lib/animations'
 
 export function AnimatedComponent() {
   return (
-    <motion.div 
+    <motion.div
       variants={staggerContainer}
       initial="initial"
       animate="animate"
@@ -360,8 +360,8 @@ const bulkSelection = useBulkSelection(items)
 Visual progress indicators with customizable styling.
 
 ```typescript
-<Progress 
-  value={75} 
+<Progress
+  value={75}
   variant="success"
   size="lg"
   showLabel={true}
@@ -390,8 +390,8 @@ export function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <motion.div 
-          variants={staggerContainer} 
+        <motion.div
+          variants={staggerContainer}
           className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8"
         >
           {stats.map((stat, index) => (
@@ -481,14 +481,14 @@ interface ComponentProps {
   onAction?: (data: any) => void
 }
 
-export function ComponentName({ 
-  title, 
-  description, 
+export function ComponentName({
+  title,
+  description,
   variant = 'default',
-  onAction 
+  onAction
 }: ComponentProps) {
   // Component logic
-  
+
   return (
     <motion.div variants={fadeInUp} className="component-styles">
       {/* Component JSX */}
@@ -535,7 +535,7 @@ When creating new components, ensure:
 
 ### Planned Components
 - Data visualization charts
-- Mobile-optimized components  
+- Mobile-optimized components
 - Print-friendly layouts
 - Keyboard shortcut system
 - Advanced search components

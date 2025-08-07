@@ -19,22 +19,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog'
-import { 
-  Crown, 
-  Home, 
-  TrendingUp, 
-  Zap, 
-  Users, 
-  AlertTriangle, 
+import {
+  Crown,
+  Home,
+  TrendingUp,
+  Zap,
+  Users,
+  AlertTriangle,
   Plus,
   CreditCard,
   Check
 } from 'lucide-react'
 import { UserTier } from '@/lib/permissions/permission-checker'
-import { 
-  getPropertyPricing, 
+import {
+  getPropertyPricing,
   checkPropertyLimit,
-  createAdditionalPropertySubscription 
+  createAdditionalPropertySubscription
 } from '@/actions/user-tiers'
 
 interface PropertyLimitModalProps {
@@ -65,12 +65,12 @@ interface PropertyPricing {
   isUnlimited: boolean
 }
 
-export function PropertyLimitModal({ 
-  isOpen, 
-  onClose, 
-  onUpgrade, 
-  onPayPerProperty, 
-  userId 
+export function PropertyLimitModal({
+  isOpen,
+  onClose,
+  onUpgrade,
+  onPayPerProperty,
+  userId
 }: PropertyLimitModalProps) {
   const [limitInfo, setLimitInfo] = useState<PropertyLimitInfo | null>(null)
   const [pricing, setPricing] = useState<PropertyPricing | null>(null)
@@ -86,7 +86,7 @@ export function PropertyLimitModal({
   const loadPropertyInfo = async () => {
     try {
       setLoading(true)
-      
+
       const [limitResult, pricingResult] = await Promise.all([
         checkPropertyLimit(userId),
         getPropertyPricing(userId)
@@ -111,7 +111,7 @@ export function PropertyLimitModal({
 
     try {
       setProcessingPayment(true)
-      
+
       const result = await createAdditionalPropertySubscription({
         userId,
         additionalProperties: 1
@@ -262,8 +262,8 @@ export function PropertyLimitModal({
                       </span>
                     </div>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     className="w-full bg-blue-600 hover:bg-blue-700"
                     onClick={handlePayPerProperty}
                     disabled={processingPayment}
@@ -304,8 +304,8 @@ export function PropertyLimitModal({
                       </span>
                     </div>
                   </div>
-                  
-                  <Button 
+
+                  <Button
                     className="w-full bg-purple-600 hover:bg-purple-700"
                     onClick={onUpgrade}
                   >

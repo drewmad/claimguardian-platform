@@ -50,7 +50,7 @@ export function useClaimSwarm() {
     try {
       const result = await claimSwarmService.processMedia(sessionId, media)
       setAnalysis(result.analysis)
-      
+
       // Clear media after successful submission
       setMedia([])
     } catch (error) {

@@ -50,7 +50,7 @@ export const pageTransition: Variants = {
 // Container for staggered children
 export const staggerContainer: Variants = {
   animate: {
-    transition: { 
+    transition: {
       staggerChildren: 0.1,
       delayChildren: 0.1
     }
@@ -60,8 +60,8 @@ export const staggerContainer: Variants = {
 // Basic entrance animations
 export const fadeInUp: Variants = {
   initial: { opacity: 0, y: 20 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.3, ease: "easeOut" }
   }
@@ -69,8 +69,8 @@ export const fadeInUp: Variants = {
 
 export const fadeInDown: Variants = {
   initial: { opacity: 0, y: -20 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     y: 0,
     transition: { duration: 0.3, ease: "easeOut" }
   }
@@ -78,8 +78,8 @@ export const fadeInDown: Variants = {
 
 export const slideInLeft: Variants = {
   initial: { opacity: 0, x: -30 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     x: 0,
     transition: { duration: 0.3, ease: "easeOut" }
   }
@@ -87,8 +87,8 @@ export const slideInLeft: Variants = {
 
 export const slideInRight: Variants = {
   initial: { opacity: 0, x: 30 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     x: 0,
     transition: { duration: 0.3, ease: "easeOut" }
   }
@@ -96,8 +96,8 @@ export const slideInRight: Variants = {
 
 export const scaleIn: Variants = {
   initial: { opacity: 0, scale: 0.9 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     scale: 1,
     transition: { duration: 0.3, ease: "easeOut" }
   }
@@ -105,8 +105,8 @@ export const scaleIn: Variants = {
 
 export const rotateIn: Variants = {
   initial: { opacity: 0, rotate: -10 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     rotate: 0,
     transition: { duration: 0.4, ease: "easeOut" }
   }
@@ -114,11 +114,11 @@ export const rotateIn: Variants = {
 
 export const bounceIn: Variants = {
   initial: { opacity: 0, scale: 0.3 },
-  animate: { 
-    opacity: 1, 
+  animate: {
+    opacity: 1,
     scale: 1,
-    transition: { 
-      duration: 0.5, 
+    transition: {
+      duration: 0.5,
       ease: "easeOut",
       type: "spring",
       damping: 15
@@ -128,21 +128,21 @@ export const bounceIn: Variants = {
 
 // Interactive animations
 export const hoverScale: Variants = {
-  hover: { 
-    scale: 1.02, 
-    transition: { duration: 0.2, ease: "easeOut" } 
+  hover: {
+    scale: 1.02,
+    transition: { duration: 0.2, ease: "easeOut" }
   }
 }
 
 export const hoverGlow: Variants = {
-  hover: { 
+  hover: {
     boxShadow: "0 10px 30px rgba(0, 255, 0, 0.2)",
-    transition: { duration: 0.2 } 
+    transition: { duration: 0.2 }
   }
 }
 
 export const pressScale: Variants = {
-  tap: { 
+  tap: {
     scale: 0.98,
     transition: { duration: 0.1 }
   }
@@ -157,15 +157,15 @@ export const modalOverlay: Variants = {
 
 export const modalContent: Variants = {
   initial: { opacity: 0, scale: 0.95, y: 20 },
-  animate: { 
-    opacity: 1, 
-    scale: 1, 
+  animate: {
+    opacity: 1,
+    scale: 1,
     y: 0,
     transition: { duration: 0.3, ease: "easeOut" }
   },
-  exit: { 
-    opacity: 0, 
-    scale: 0.95, 
+  exit: {
+    opacity: 0,
+    scale: 0.95,
     y: 20,
     transition: { duration: 0.2 }
   }
@@ -173,11 +173,11 @@ export const modalContent: Variants = {
 
 export const drawerSlide: Variants = {
   initial: { x: "100%" },
-  animate: { 
+  animate: {
     x: 0,
     transition: { duration: 0.4, ease: "easeOut" }
   },
-  exit: { 
+  exit: {
     x: "100%",
     transition: { duration: 0.3, ease: "easeIn" }
   }
@@ -187,10 +187,10 @@ export const drawerSlide: Variants = {
 export const pulse: Variants = {
   animate: {
     opacity: [0.5, 1, 0.5],
-    transition: { 
-      duration: 2, 
-      repeat: Infinity, 
-      ease: "easeInOut" 
+    transition: {
+      duration: 2,
+      repeat: Infinity,
+      ease: "easeInOut"
     }
   }
 }
@@ -198,10 +198,10 @@ export const pulse: Variants = {
 export const spinner: Variants = {
   animate: {
     rotate: 360,
-    transition: { 
-      duration: 1, 
-      repeat: Infinity, 
-      ease: "linear" 
+    transition: {
+      duration: 1,
+      repeat: Infinity,
+      ease: "linear"
     }
   }
 }
@@ -219,7 +219,7 @@ import { pageTransition, staggerContainer, fadeInUp } from '@/lib/animations'
 
 export function DashboardPage() {
   return (
-    <motion.div 
+    <motion.div
       variants={pageTransition}
       initial="initial"
       animate="animate"
@@ -249,7 +249,7 @@ import { staggerContainer, fadeInUp } from '@/lib/animations'
 
 export function AnimatedList({ items }) {
   return (
-    <motion.div 
+    <motion.div
       variants={staggerContainer}
       initial="initial"
       animate="animate"
@@ -395,7 +395,7 @@ export function InsuranceDashboard() {
         <motion.div variants={fadeInUp}>
           <SearchFilterBar onFiltersChange={setFilters} />
         </motion.div>
-        
+
         <motion.div variants={fadeInUp}>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             {stats.map((stat, index) => (
@@ -420,7 +420,7 @@ export function InsuranceDashboard() {
 ```typescript
 export function AnimatedForm() {
   const [step, setStep] = useState(1)
-  
+
   return (
     <motion.div variants={fadeInUp}>
       <AnimatePresence mode="wait">
@@ -472,7 +472,7 @@ export function LoadingComponent() {
 <motion.div variants={fadeInUp} />
 
 // ❌ Bad - Inline animations
-<motion.div 
+<motion.div
   initial={{ opacity: 0, y: 20 }}
   animate={{ opacity: 1, y: 0 }}
 />
@@ -562,19 +562,19 @@ import { useEffect, useState } from 'react'
 
 export function useReducedMotion() {
   const [shouldReduceMotion, setShouldReduceMotion] = useState(false)
-  
+
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
     setShouldReduceMotion(mediaQuery.matches)
-    
+
     const handleChange = (e: MediaQueryListEvent) => {
       setShouldReduceMotion(e.matches)
     }
-    
+
     mediaQuery.addEventListener('change', handleChange)
     return () => mediaQuery.removeEventListener('change', handleChange)
   }, [])
-  
+
   return shouldReduceMotion
 }
 ```
@@ -584,7 +584,7 @@ export function useReducedMotion() {
 // Maintain focus during animations
 export function AnimatedButton({ children, ...props }) {
   const buttonRef = useRef<HTMLButtonElement>(null)
-  
+
   return (
     <motion.button
       ref={buttonRef}

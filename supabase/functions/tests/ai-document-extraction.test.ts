@@ -27,7 +27,7 @@ global.fetch = vi.fn()
 describe('AI Document Extraction Edge Function', () => {
   beforeEach(() => {
     vi.clearAllMocks()
-    
+
     // Setup environment variables mock
     ;(global.Deno.env.get as any).mockImplementation((key: string) => {
       const envVars = {
@@ -357,7 +357,7 @@ describe('AI Document Extraction Edge Function', () => {
 
     it('should rate limit requests per IP', async () => {
       const clientIP = '192.168.1.1'
-      
+
       // Simulate multiple rapid requests from same IP
       for (let i = 0; i < 10; i++) {
         const mockRequest = new Request('https://test.com', {
@@ -371,7 +371,7 @@ describe('AI Document Extraction Edge Function', () => {
 
         const { default: handler } = await import('../../ai-document-extraction/index.ts')
         const response = await handler(mockRequest)
-        
+
         if (i >= 5) { // Assuming rate limit of 5 requests
           expect(response.status).toBe(429)
           const result = await response.json()
@@ -418,7 +418,7 @@ describe('AI Document Extraction Edge Function', () => {
 
     it('should log successful extractions', async () => {
       const consoleSpy = vi.spyOn(console, 'info')
-      
+
       const mockRequest = new Request('https://test.com', {
         method: 'POST',
         body: JSON.stringify({

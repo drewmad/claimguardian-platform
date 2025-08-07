@@ -12,7 +12,7 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   X,
   Shield,
   Users,
@@ -42,7 +42,7 @@ interface ModalState {
 export function EnhancedSocialLoginModal() {
   const { activeModal, closeModal, openModal } = useModalStore()
   const [state, setState] = useState<ModalState>({ step: 'selection' })
-  
+
   const { success, error, info } = useToast()
 
   // Reset state when modal opens/closes
@@ -56,10 +56,10 @@ export function EnhancedSocialLoginModal() {
   if (activeModal !== 'socialLogin') return null
 
   const handleSocialSuccess = (provider: SocialProvider, userData: any) => {
-    setState({ 
-      step: 'success', 
-      selectedProvider: provider, 
-      user: userData 
+    setState({
+      step: 'success',
+      selectedProvider: provider,
+      user: userData
     })
 
     success(`Signed in with ${getProviderName(provider)}!`, {
@@ -82,9 +82,9 @@ export function EnhancedSocialLoginModal() {
   }
 
   const handleSocialError = (errorMessage: string) => {
-    setState({ 
-      step: 'error', 
-      error: errorMessage 
+    setState({
+      step: 'error',
+      error: errorMessage
     })
 
     error('Social login failed', {
@@ -101,7 +101,7 @@ export function EnhancedSocialLoginModal() {
   const getProviderName = (provider: SocialProvider): string => {
     switch (provider) {
       case 'google': return 'Google'
-      case 'microsoft': return 'Microsoft'
+      case 'azure': return 'Microsoft'
       case 'linkedin': return 'LinkedIn'
     }
   }
@@ -115,7 +115,7 @@ export function EnhancedSocialLoginModal() {
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={closeModal}
       />
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -123,7 +123,7 @@ export function EnhancedSocialLoginModal() {
         className="relative bg-slate-800 rounded-2xl max-w-lg w-full shadow-2xl overflow-hidden"
       >
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
-        
+
         <div className="relative">
           <button
             onClick={closeModal}
@@ -184,11 +184,11 @@ function SelectionStep({ onSuccess, onError, onEmailSignIn }: SelectionStepProps
         <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
           <Shield className="w-8 h-8 text-white" />
         </div>
-        
+
         <CardTitle className="text-2xl text-white">
           Choose Your Sign In Method
         </CardTitle>
-        
+
         <p className="text-gray-400">
           Select your preferred way to access ClaimGuardian
         </p>
@@ -254,7 +254,7 @@ function SelectionStep({ onSuccess, onError, onEmailSignIn }: SelectionStepProps
         <Alert>
           <Shield className="w-4 h-4" />
           <AlertDescription className="text-xs">
-            <strong>Privacy Protected:</strong> We never access your social media posts or contacts. 
+            <strong>Privacy Protected:</strong> We never access your social media posts or contacts.
             Only basic profile information (name, email) is shared securely.
           </AlertDescription>
         </Alert>
@@ -270,10 +270,10 @@ interface SuccessStepProps {
 }
 
 function SuccessStep({ provider, user, onContinue }: SuccessStepProps) {
-  const getProviderName = (p: SocialProvider) => {
+  const getProviderName = (p: SocialProvider): string => {
     switch (p) {
       case 'google': return 'Google'
-      case 'microsoft': return 'Microsoft'  
+      case 'azure': return 'Microsoft'
       case 'linkedin': return 'LinkedIn'
     }
   }
@@ -289,11 +289,11 @@ function SuccessStep({ provider, user, onContinue }: SuccessStepProps) {
         <div className="w-16 h-16 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
           <CheckCircle className="w-8 h-8 text-white" />
         </div>
-        
+
         <CardTitle className="text-2xl text-white">
           Welcome to ClaimGuardian!
         </CardTitle>
-        
+
         <p className="text-gray-400">
           Successfully signed in with {getProviderName(provider)}
         </p>
@@ -344,11 +344,11 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
         <div className="w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
           <AlertTriangle className="w-8 h-8 text-white" />
         </div>
-        
+
         <CardTitle className="text-2xl text-white">
           Sign In Failed
         </CardTitle>
-        
+
         <p className="text-gray-400">
           We couldn't complete your social login
         </p>
@@ -380,7 +380,7 @@ function ErrorStep({ error, onRetry, onCancel }: ErrorStepProps) {
         </div>
 
         <div className="text-center">
-          <button 
+          <button
             onClick={() => window.open('mailto:support@claimguardianai.com?subject=Social Login Help', '_blank')}
             className="text-sm text-blue-400 hover:text-blue-300 flex items-center gap-1 mx-auto"
           >

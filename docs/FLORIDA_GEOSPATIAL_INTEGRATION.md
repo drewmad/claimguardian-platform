@@ -124,7 +124,7 @@ Main dashboard component displaying comprehensive risk assessment:
 ```tsx
 import { PropertyRiskDashboard } from '@/components/risk/PropertyRiskDashboard'
 
-<PropertyRiskDashboard 
+<PropertyRiskDashboard
   propertyId={property.id}
   propertyName={property.name}
   parcelId={property.parcelId}
@@ -139,7 +139,7 @@ Component for finding and linking parcels to properties:
 ```tsx
 import { ParcelSearch } from '@/components/risk/ParcelSearch'
 
-<ParcelSearch 
+<ParcelSearch
   propertyId={property.id}
   currentParcelId={property.parcelId}
   onParcelLinked={(parcelId) => handleParcelLinked(parcelId)}
@@ -203,7 +203,7 @@ const { data, error } = await getPortfolioRiskSummary()
 The composite risk score is calculated as a weighted average:
 
 - **Flood Risk**: 30% weight
-- **Wind Risk**: 25% weight  
+- **Wind Risk**: 25% weight
 - **Storm Surge Risk**: 25% weight
 - **Wildfire Risk**: 20% weight
 
@@ -218,13 +218,13 @@ Additional factors:
 
 ```sql
 -- Check data freshness
-SELECT 
+SELECT
     'parcels' as dataset,
     COUNT(*) as record_count,
     MAX(last_updated) as last_update
 FROM geospatial.parcels
 UNION ALL
-SELECT 
+SELECT
     'active_events',
     COUNT(*),
     MAX(updated_at)
@@ -281,7 +281,7 @@ WHERE status = 'active';
    ```bash
    # Check logs
    tail -f /var/log/claimguardian/geospatial-sync-*.log
-   
+
    # Verify database connection
    psql $DATABASE_URL -c "SELECT 1"
    ```

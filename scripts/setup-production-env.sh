@@ -24,7 +24,7 @@ if [ -f ".env.local" ]; then
     SUPABASE_URL=$(grep "NEXT_PUBLIC_SUPABASE_URL" .env.local | cut -d '=' -f2)
     SUPABASE_ANON_KEY=$(grep "NEXT_PUBLIC_SUPABASE_ANON_KEY" .env.local | cut -d '=' -f2)
     SUPABASE_SERVICE_KEY=$(grep "SUPABASE_SERVICE_ROLE_KEY" .env.local | cut -d '=' -f2)
-    
+
     echo "# Required Supabase variables:"
     echo "vercel env add NEXT_PUBLIC_SUPABASE_URL production"
     echo "# Value: $SUPABASE_URL"

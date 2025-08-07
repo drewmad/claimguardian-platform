@@ -22,7 +22,7 @@ const packageMappings = {
 
 async function extractImports(content) {
   const imports = new Set();
-  
+
   // Match various import patterns
   const importPatterns = [
     /import\s+.*?\s+from\s+['"`]([^'"`]+)['"`]/g,
@@ -34,7 +34,7 @@ async function extractImports(content) {
     let match;
     while ((match = pattern.exec(content)) !== null) {
       let pkg = match[1];
-      
+
       // Handle scoped packages and subpaths
       if (pkg.startsWith('@')) {
         const parts = pkg.split('/');
@@ -44,7 +44,7 @@ async function extractImports(content) {
       } else {
         pkg = pkg.split('/')[0];
       }
-      
+
       // Filter out relative imports
       if (!pkg.startsWith('.') && !pkg.startsWith('/')) {
         imports.add(pkg);
@@ -57,7 +57,7 @@ async function extractImports(content) {
 
 async function updateDependencies() {
   console.log('🔄 Starting dependency synchronization...\n');
-  
+
   const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ignorePatterns,
   });
@@ -68,9 +68,9 @@ async function updateDependencies() {
     if (!fileExtensions.includes(path.extname(file))) {
       continue;
     }
-    
+
     const content = await readFile(file, 'utf-8');
-    
+
     // Skip files without metadata
     if (!content.includes('@fileMetadata')) {
       continue;
@@ -78,7 +78,7 @@ async function updateDependencies() {
 
     // Extract current dependencies
     const actualImports = await extractImports(content);
-    
+
     if (actualImports.length === 0) {
       continue;
     }
@@ -90,20 +90,20 @@ async function updateDependencies() {
     }
 
     const metadataBlock = metadataMatch[1];
-    
+
     // Check if dependencies already exist and are accurate
     const depsMatch = metadataBlock.match(/@dependencies\s+(\[.*?\])/s);
-    
+
     let needsUpdate = false;
     let currentDeps = [];
-    
+
     if (depsMatch) {
       try {
         currentDeps = JSON.parse(depsMatch[1].replace(/'/g, '"'));
         // Compare arrays (order doesn't matter)
         const currentSet = new Set(currentDeps);
         const actualSet = new Set(actualImports);
-        needsUpdate = currentSet.size !== actualSet.size || 
+        needsUpdate = currentSet.size !== actualSet.size ||
                      ![...currentSet].every(dep => actualSet.has(dep));
       } catch (e) {
         needsUpdate = true;
@@ -115,7 +115,7 @@ async function updateDependencies() {
     if (needsUpdate) {
       let updatedMetadata;
       const depsString = JSON.stringify(actualImports).replace(/"/g, '"');
-      
+
       if (depsMatch) {
         // Update existing dependencies
         updatedMetadata = metadataBlock.replace(
@@ -142,7 +142,7 @@ async function updateDependencies() {
       // Update the file
       const updatedContent = content.replace(metadataBlock, updatedMetadata);
       await writeFile(file, updatedContent, 'utf-8');
-      
+
       console.log(`📦 Updated dependencies in ${file}`);
       console.log(`   Dependencies: ${actualImports.join(', ')}\n`);
       filesUpdated++;
@@ -154,7 +154,7 @@ async function updateDependencies() {
   } else {
     console.log('✅ All file dependencies are already up to date.');
   }
-  
+
   process.exit(0);
 }
 

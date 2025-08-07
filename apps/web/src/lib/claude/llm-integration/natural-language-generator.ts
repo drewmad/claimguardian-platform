@@ -139,7 +139,7 @@ export class NaturalLanguageGenerator {
     popularTopics: string[]
   } {
     const descriptions = Array.from(this.generationHistory.values())
-    
+
     const byType: Record<string, number> = {}
     let totalReadingTime = 0
 

@@ -75,7 +75,7 @@ export function EmptyState({
         <div className="absolute inset-0 opacity-5">
           <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600" />
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10">
           {/* Icon */}
@@ -100,7 +100,7 @@ export function EmptyState({
               {actions.map((action, index) => {
                 const ActionIcon = action.icon
                 const isExternal = action.href?.startsWith('http')
-                
+
                 if (action.href) {
                   return (
                     <a
@@ -111,7 +111,7 @@ export function EmptyState({
                       rel={isExternal ? 'noopener noreferrer' : undefined}
                       className={cn(
                         'inline-flex items-center gap-2 px-4 py-2 rounded-lg transition-colors',
-                        action.variant === 'secondary' 
+                        action.variant === 'secondary'
                           ? 'bg-gray-700 hover:bg-gray-600 text-white'
                           : action.variant === 'outline'
                           ? 'border border-gray-600 hover:bg-gray-700 text-gray-300'
@@ -123,7 +123,7 @@ export function EmptyState({
                     </a>
                   )
                 }
-                
+
                 return (
                   <Button
                     key={index}
@@ -190,9 +190,9 @@ export function EmptyState({
 }
 
 // Insurance-specific empty states
-export function InsuranceEmptyState({ onAddPolicy, onAddProperty }: { 
+export function InsuranceEmptyState({ onAddPolicy, onAddProperty }: {
   onAddPolicy?: () => void
-  onAddProperty?: () => void 
+  onAddProperty?: () => void
 }) {
   return (
     <EmptyState

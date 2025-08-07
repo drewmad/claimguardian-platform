@@ -77,7 +77,7 @@ Deno.serve(async (req) => {
 
     // Determine what type of photo this should be based on progress
     const allAngles = ['overview', 'close_up', 'context', 'surrounding_area', 'supporting_evidence']
-    const nextRequiredAngle = allAngles.find(angle => 
+    const nextRequiredAngle = allAngles.find(angle =>
       !sessionProgress.completedAngles.includes(angle)
     )
 
@@ -112,7 +112,7 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Error in damage-doc-copilot function:', error)
-    
+
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : String(error) || 'Internal server error',
@@ -127,16 +127,16 @@ Deno.serve(async (req) => {
 })
 
 async function analyzeImage(
-  imageUrl: string, 
-  expectedAngle: string | undefined, 
+  imageUrl: string,
+  expectedAngle: string | undefined,
   progress: any
 ): Promise<GuidanceResult> {
   // Simulate AI image analysis
   // In production, this would use actual computer vision APIs
-  
+
   const isComplete = progress.current >= progress.total - 1
   const quality = Math.floor(Math.random() * 30) + 70 // 70-100 quality score
-  
+
   if (isComplete) {
     return {
       nextStep: '✅ Documentation complete! All required angles captured with good quality.',
@@ -161,7 +161,7 @@ async function analyzeImage(
   }
 
   const guidance = DOCUMENTATION_GUIDANCE[expectedAngle as keyof typeof DOCUMENTATION_GUIDANCE]
-  
+
   return {
     nextStep: guidance.instruction,
     done: false,
@@ -179,11 +179,11 @@ function calculateImageQuality(imageAnalysis: any): number {
   // This would use actual computer vision metrics in production
   // For now, return a simulated quality score
   let score = 70
-  
+
   // Simulate quality checks
   if (imageAnalysis.lighting === 'good') score += 10
   if (imageAnalysis.focus === 'sharp') score += 10
   if (imageAnalysis.framing === 'appropriate') score += 10
-  
+
   return Math.min(100, score)
 }

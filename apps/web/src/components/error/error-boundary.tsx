@@ -12,11 +12,11 @@
 
 import { Component, ReactNode, ErrorInfo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  AlertTriangle, 
-  RefreshCcw, 
-  Home, 
-  MessageCircle, 
+import {
+  AlertTriangle,
+  RefreshCcw,
+  Home,
+  MessageCircle,
   Bug,
   Copy,
   ExternalLink,
@@ -74,7 +74,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 
   static getDerivedStateFromError(error: Error): Partial<ErrorBoundaryState> {
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     return {
       hasError: true,
       error,
@@ -205,15 +205,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 }
 
 // Default error fallback component
-function DefaultErrorFallback({ 
-  error, 
-  errorInfo, 
-  resetError, 
-  retryCount, 
-  errorId, 
-  level, 
+function DefaultErrorFallback({
+  error,
+  errorInfo,
+  resetError,
+  retryCount,
+  errorId,
+  level,
   context,
-  maxRetries = 3 
+  maxRetries = 3
 }: ErrorFallbackProps & { maxRetries?: number }) {
   const canRetry = retryCount < maxRetries
   const isPageLevel = level === 'page'
@@ -242,9 +242,9 @@ function DefaultErrorFallback({
       })
   }
 
-  const errorTitle = isCritical 
+  const errorTitle = isCritical
     ? 'Critical System Error'
-    : isPageLevel 
+    : isPageLevel
     ? 'Page Load Error'
     : 'Component Error'
 
@@ -289,14 +289,14 @@ function DefaultErrorFallback({
                 </div>
               )}
             </motion.div>
-            
+
             <CardTitle className={cn(
               "text-xl font-semibold",
               isCritical ? "text-red-800 dark:text-red-200" : "text-orange-800 dark:text-orange-200"
             )}>
               {errorTitle}
             </CardTitle>
-            
+
             <div className="flex items-center justify-center gap-2 mt-2">
               <Badge variant="outline" className="text-xs">
                 Error ID: {errorId.slice(-8)}
@@ -308,13 +308,13 @@ function DefaultErrorFallback({
               )}
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <div className="text-center">
               <p className="text-gray-600 dark:text-gray-300 mb-4">
                 {errorMessage}
               </p>
-              
+
               {retryCount > 0 && (
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   Retry attempt: {retryCount}/{maxRetries}
@@ -330,9 +330,9 @@ function DefaultErrorFallback({
                   Try Again
                 </Button>
               )}
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 onClick={() => window.location.href = '/dashboard'}
               >
                 <Home className="w-4 h-4 mr-2" />
@@ -351,7 +351,7 @@ function DefaultErrorFallback({
                 <Copy className="w-4 h-4 mr-2" />
                 Copy Error Details
               </Button>
-              
+
               <Button
                 variant="ghost"
                 size="sm"
@@ -361,7 +361,7 @@ function DefaultErrorFallback({
                 <MessageCircle className="w-4 h-4 mr-2" />
                 Report Issue
               </Button>
-              
+
               {process.env.NODE_ENV === 'development' && (
                 <Button
                   variant="ghost"
@@ -413,7 +413,7 @@ function DefaultErrorFallback({
 export function useErrorHandler() {
   const handleError = (error: Error, context?: string) => {
     const errorId = `manual_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     logger.error('Manual error handled', {
       error: {
         name: error.name,
@@ -432,11 +432,11 @@ export function useErrorHandler() {
   const reportError = (error: Error | string, context?: string, extra?: Record<string, any>) => {
     const errorObj = typeof error === 'string' ? new Error(error) : error
     const errorId = handleError(errorObj, context)
-    
+
     if (extra) {
       logger.info('Additional error context', { errorId, extra })
     }
-    
+
     return errorId
   }
 
@@ -444,9 +444,9 @@ export function useErrorHandler() {
 }
 
 // Specialized error boundaries for different use cases
-export function PageErrorBoundary({ children, onError }: { 
+export function PageErrorBoundary({ children, onError }: {
   children: ReactNode
-  onError?: (error: Error, errorInfo: ErrorInfo, errorId: string) => void 
+  onError?: (error: Error, errorInfo: ErrorInfo, errorId: string) => void
 }) {
   return (
     <ErrorBoundary
@@ -461,14 +461,14 @@ export function PageErrorBoundary({ children, onError }: {
   )
 }
 
-export function ComponentErrorBoundary({ 
-  children, 
-  context, 
-  onError 
-}: { 
+export function ComponentErrorBoundary({
+  children,
+  context,
+  onError
+}: {
   children: ReactNode
   context?: string
-  onError?: (error: Error, errorInfo: ErrorInfo, errorId: string) => void 
+  onError?: (error: Error, errorInfo: ErrorInfo, errorId: string) => void
 }) {
   return (
     <ErrorBoundary

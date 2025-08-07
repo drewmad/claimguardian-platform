@@ -49,19 +49,19 @@ interface ClaimData {
   dateOfLoss: string
   timeOfLoss: string
   discoveredDate: string
-  
+
   // Step 2: Property & Location
   propertyId?: string
   propertyAddress: string
   damageLocation: string[] // Multiple rooms/areas
-  
+
   // Step 3: Damage Details
   description: string
   causeOfLoss: string
   immediateActions: string
   emergencyRepairs: boolean
   emergencyRepairCost?: number
-  
+
   // Step 4: Insurance Info
   policyId?: string
   policyNumber: string
@@ -72,11 +72,11 @@ interface ClaimData {
   adjusterName?: string
   adjusterPhone?: string
   adjusterEmail?: string
-  
+
   // Step 5: Documentation
   photos: File[]
   documents: File[]
-  
+
   // Step 6: Review & Estimate
   estimatedCost?: number
   deductible?: number
@@ -172,7 +172,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
   const [currentStep, setCurrentStep] = useState(0)
   const [loading, setLoading] = useState(false)
   const [saving, setSaving] = useState(false)
-  
+
   const [claimData, setClaimData] = useState<Partial<ClaimData>>({
     propertyId,
     damageLocation: [],
@@ -240,7 +240,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
     setSaving(true)
     try {
       const supabase = createBrowserSupabaseClient()
-      
+
       // Save claim draft
       const { error } = await supabase
         .from('claims')
@@ -258,7 +258,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
         .single()
 
       if (error) throw error
-      
+
       toast.success('Draft saved')
     } catch (error) {
       logger.error('Error saving draft:', error)
@@ -272,7 +272,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
     setLoading(true)
     try {
       const supabase = createBrowserSupabaseClient()
-      
+
       // Create claim
       const { data: claim, error: claimError } = await supabase
         .from('claims')
@@ -316,7 +316,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
       }
 
       toast.success('Claim submitted successfully!')
-      
+
       if (onComplete) {
         onComplete(claim.id)
       } else {
@@ -425,8 +425,8 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
                         if (e.target.checked) {
                           updateClaimData({ damageLocation: [...locations, area] })
                         } else {
-                          updateClaimData({ 
-                            damageLocation: locations.filter(l => l !== area) 
+                          updateClaimData({
+                            damageLocation: locations.filter(l => l !== area)
                           })
                         }
                       }}
@@ -494,8 +494,8 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
                       id="repair-cost"
                       type="number"
                       value={claimData.emergencyRepairCost || ''}
-                      onChange={(e) => updateClaimData({ 
-                        emergencyRepairCost: parseFloat(e.target.value) 
+                      onChange={(e) => updateClaimData({
+                        emergencyRepairCost: parseFloat(e.target.value)
                       })}
                       className="pl-10"
                       placeholder="0.00"
@@ -600,9 +600,9 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
                 Upload all evidence to support your claim. You can add more files later from the claim details page.
               </p>
             </div>
-            
+
             {/* Use the EvidenceManager component for a better experience */}
-            <EvidenceManager 
+            <EvidenceManager
               claimId={`draft-${Date.now()}`} // Temporary ID for draft
               onUpdate={(evidence) => {
                 // Note: This is a simplified conversion - in production you'd handle this better
@@ -617,7 +617,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
           <div className="space-y-6">
             <div className="bg-gray-800 rounded-lg p-6 space-y-4">
               <h3 className="font-semibold text-lg mb-4">Claim Summary</h3>
-              
+
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <span className="text-gray-400">Damage Type:</span>
@@ -673,8 +673,8 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
                   id="estimated-cost"
                   type="number"
                   value={claimData.estimatedCost || ''}
-                  onChange={(e) => updateClaimData({ 
-                    estimatedCost: parseFloat(e.target.value) 
+                  onChange={(e) => updateClaimData({
+                    estimatedCost: parseFloat(e.target.value)
                   })}
                   className="pl-10"
                   placeholder="0.00"
@@ -695,7 +695,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
 
             <div className="bg-blue-600/20 border border-blue-600 rounded-lg p-4">
               <p className="text-sm text-blue-400">
-                By submitting this claim, you confirm that all information provided is accurate 
+                By submitting this claim, you confirm that all information provided is accurate
                 and complete to the best of your knowledge.
               </p>
             </div>
@@ -720,7 +720,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
             <ArrowLeft className="mr-2 h-4 w-4" />
             Back to {getParentInfo().parentLabel}
           </Button>
-          
+
           <h1 className="text-3xl font-bold mb-2">Create New Claim</h1>
           <p className="text-gray-400">
             Follow the steps below to document and submit your insurance claim
@@ -734,7 +734,7 @@ export function ClaimCreationWizard({ propertyId, onComplete, onCancel }: ClaimC
             {WIZARD_STEPS.map((step, index) => {
               const isActive = index === currentStep
               const isCompleted = index < currentStep
-              
+
               return (
                 <div
                   key={step.id}

@@ -43,7 +43,7 @@ export class ClaimAssistant {
         this.providers.set('gemini', gemini)
       }
     }
-    
+
     if (process.env.OPENAI_API_KEY) {
       const openai = new OpenAIProvider({ apiKey: process.env.OPENAI_API_KEY })
       if (this.isAvailable(openai)) {
@@ -83,7 +83,7 @@ export class ClaimAssistant {
 
           // Parse the response into structured guidance
           const guidance = this.parseGuidanceResponse(response.text)
-          
+
           return {
             success: true,
             data: JSON.stringify(guidance),
@@ -185,14 +185,14 @@ Format your response as a structured guide that's easy to follow.`
 
     try {
       const response = await pRetry(
-        async () => provider.generateText({ 
-          prompt, 
-          userId: context.userId as string, 
-          feature: 'document-categorizer' 
+        async () => provider.generateText({
+          prompt,
+          userId: context.userId as string,
+          feature: 'document-categorizer'
         }),
         { retries: 2 }
       )
-      
+
       return {
         success: true,
         data: response.text,
@@ -216,14 +216,14 @@ Format your response as a structured guide that's easy to follow.`
 - Amount claimed: ${context.amountClaimed}
 
 Include all necessary legal language and formatting for Florida insurance claims.`,
-      
+
       'appeal': `Generate an appeal letter for a denied insurance claim with the following details:
 - Original claim number: ${context.claimNumber}
 - Denial reason: ${context.denialReason}
 - Supporting evidence: ${context.evidence}
 
 Make it professional and compelling, citing relevant Florida insurance statutes.`,
-      
+
       'complaint': `Generate a formal complaint letter to the Florida Department of Financial Services regarding:
 - Insurance company: ${context.insurerName}
 - Issue: ${context.issue}

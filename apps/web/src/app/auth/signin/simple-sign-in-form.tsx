@@ -37,30 +37,30 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
+
     // Clear any existing errors
     setError(null)
-    
+
     // Basic validation
     if (!email || !password) {
       setError('Please enter both email and password')
       return
     }
-    
+
     setIsLoading(true)
-    
+
     try {
       const { data, error: signInError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
-      
+
       if (signInError) {
         setError(signInError.message)
         setIsLoading(false)
         return
       }
-      
+
       if (data?.user) {
         // Successful sign in - redirect to dashboard
         router.push('/dashboard')

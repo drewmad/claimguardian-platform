@@ -79,8 +79,8 @@ export function AchievementCard({
   onClick
 }: AchievementCardProps) {
   const [showAnimation, setShowAnimation] = useState(false)
-  const progress = achievement.nextLevelPoints > 0 
-    ? (achievement.currentPoints / achievement.nextLevelPoints) * 100 
+  const progress = achievement.nextLevelPoints > 0
+    ? (achievement.currentPoints / achievement.nextLevelPoints) * 100
     : 100
 
   const Icon = iconMap[achievement.icon as keyof typeof iconMap] || iconMap[achievement.category]
@@ -98,7 +98,7 @@ export function AchievementCard({
   }, [achievement.isNew, animate])
 
   const cardContent = (
-    <Card 
+    <Card
       className={cn(
         "bg-gray-800 border-gray-700 transition-all duration-300 cursor-pointer",
         "hover:border-gray-600 hover:shadow-lg hover:scale-[1.02]",
@@ -150,10 +150,10 @@ export function AchievementCard({
               )}
             </div>
           </div>
-          
+
           <div className="flex flex-col items-end gap-1">
             {achievement.currentLevel > 0 && (
-              <Badge 
+              <Badge
                 className={cn(
                   "font-semibold",
                   achievement.currentLevel === 1 && "bg-orange-600/20 text-orange-400 border-orange-600/30",
@@ -185,9 +185,9 @@ export function AchievementCard({
                 {achievement.currentPoints} / {achievement.nextLevelPoints} points
               </span>
             </div>
-            
-            <Progress 
-              value={progress} 
+
+            <Progress
+              value={progress}
               className={cn(
                 "h-2 bg-gray-700",
                 achievement.currentLevel === 0 && "[&>div]:bg-gray-500",
@@ -197,7 +197,7 @@ export function AchievementCard({
                 achievement.currentLevel === 4 && "[&>div]:bg-purple-500"
               )}
             />
-            
+
             {achievement.currentLevel < achievement.maxLevel && (
               <p className="text-xs text-gray-500">
                 {achievement.nextLevelPoints - achievement.currentPoints} points to{' '}
@@ -211,7 +211,7 @@ export function AchievementCard({
               <p className="text-xs text-gray-500 mb-2">Earned:</p>
               <div className="flex flex-wrap gap-2">
                 {achievement.earnedAt.map((date, index) => (
-                  <Badge 
+                  <Badge
                     key={index}
                     variant="outline"
                     className="text-xs border-gray-600 text-gray-400"
@@ -232,7 +232,7 @@ export function AchievementCard({
       {showAnimation ? (
         <motion.div
           initial={{ scale: 0.8, opacity: 0 }}
-          animate={{ 
+          animate={{
             scale: [1, 1.05, 1],
             opacity: 1
           }}

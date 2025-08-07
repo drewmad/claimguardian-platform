@@ -119,7 +119,7 @@ export class EmailNotificationService {
             <div class="content">
               <p>Hello,</p>
               <p>Your ClaimGuardian subscription has been <strong>${changeType}</strong> effective ${effectiveDate}.</p>
-              
+
               <div style="text-align: center; margin: 30px 0;">
                 <span class="tier-badge tier-old">${notification.oldTier}</span>
                 <span style="margin: 0 20px; font-size: 24px;">→</span>
@@ -134,19 +134,19 @@ export class EmailNotificationService {
 
               <div class="benefits">
                 <h3>Your new benefits include:</h3>
-                ${this.getTierBenefits(notification.newTier).map(benefit => 
+                ${this.getTierBenefits(notification.newTier).map(benefit =>
                   `<div class="benefit-item">${benefit}</div>`
                 ).join('')}
               </div>
 
               <p>You can manage your subscription and view usage details in your dashboard.</p>
-              
+
               <div style="text-align: center;">
                 <a href="https://claimguardianai.com/dashboard" class="button">View Dashboard</a>
               </div>
 
               <p>If you have any questions, please don't hesitate to contact our support team.</p>
-              
+
               <p>Best regards,<br>The ClaimGuardian Team</p>
             </div>
             <div class="footer">
@@ -160,18 +160,18 @@ export class EmailNotificationService {
 
     const text = `
       Your ClaimGuardian subscription has been ${changeType}
-      
+
       From: ${notification.oldTier}
       To: ${notification.newTier}
       Effective: ${effectiveDate}
-      
+
       ${notification.reason ? `Reason: ${notification.reason}` : ''}
-      
+
       Your new benefits include:
       ${this.getTierBenefits(notification.newTier).map(benefit => `• ${benefit}`).join('\n')}
-      
+
       Manage your subscription: https://claimguardianai.com/dashboard
-      
+
       Best regards,
       The ClaimGuardian Team
     `
@@ -212,7 +212,7 @@ export class EmailNotificationService {
             <div class="content">
               <p>Hello,</p>
               <p>Your permissions for your <strong>${notification.tier}</strong> tier have been updated:</p>
-              
+
               ${notification.changedPermissions.map(change => `
                 <div class="permission ${change.granted ? 'granted' : 'revoked'}">
                   <div class="permission-name">
@@ -223,13 +223,13 @@ export class EmailNotificationService {
               `).join('')}
 
               <p>These changes are effective immediately. You can view your current permissions in your dashboard.</p>
-              
+
               <div style="text-align: center; margin: 30px 0;">
                 <a href="https://claimguardianai.com/dashboard" style="display: inline-block; padding: 12px 24px; background: #007bff; color: white; text-decoration: none; border-radius: 6px;">View Dashboard</a>
               </div>
 
               <p>If you have questions about these changes, please contact our support team.</p>
-              
+
               <p>Best regards,<br>The ClaimGuardian Team</p>
             </div>
             <div class="footer">
@@ -242,18 +242,18 @@ export class EmailNotificationService {
 
     const text = `
       Your ClaimGuardian permissions have been updated
-      
+
       Tier: ${notification.tier}
-      
+
       Changes:
-      ${notification.changedPermissions.map(change => 
+      ${notification.changedPermissions.map(change =>
         `${change.granted ? '✅' : '❌'} ${this.formatPermissionName(change.permission)}${change.reason ? ` (${change.reason})` : ''}`
       ).join('\n')}
-      
+
       View your dashboard: https://claimguardianai.com/dashboard
-      
+
       Changed by: ${notification.changedBy}
-      
+
       Best regards,
       The ClaimGuardian Team
     `
@@ -267,7 +267,7 @@ export class EmailNotificationService {
   private generateUsageLimitEmail(notification: UsageLimitNotification): { subject: string; html: string; text: string } {
     const isNearLimit = notification.percentageUsed >= 80
     const isOverLimit = notification.percentageUsed >= 100
-    
+
     let subject = `Usage notification: ${notification.limitType} at ${notification.percentageUsed.toFixed(1)}%`
     if (isOverLimit) {
       subject = `⚠️ ${notification.limitType} limit exceeded`
@@ -301,11 +301,11 @@ export class EmailNotificationService {
             <div class="content">
               <p>Hello,</p>
               <p>Your ${notification.limitType.replace('_', ' ')} usage for your <strong>${notification.tier}</strong> tier:</p>
-              
+
               <div class="usage-bar">
                 <div class="usage-fill"></div>
               </div>
-              
+
               <div class="stats">
                 <span><strong>Used:</strong> ${notification.currentUsage.toLocaleString()}</span>
                 <span><strong>Limit:</strong> ${notification.limit.toLocaleString()}</span>
@@ -329,7 +329,7 @@ export class EmailNotificationService {
               </div>
 
               <p>You can monitor your usage and manage your account in your dashboard.</p>
-              
+
               <p>Best regards,<br>The ClaimGuardian Team</p>
             </div>
             <div class="footer">
@@ -342,17 +342,17 @@ export class EmailNotificationService {
 
     const text = `
       Usage notification: ${notification.limitType.replace('_', ' ')}
-      
+
       Tier: ${notification.tier}
       Used: ${notification.currentUsage.toLocaleString()}
       Limit: ${notification.limit.toLocaleString()}
       Percentage: ${notification.percentageUsed.toFixed(1)}%
-      
+
       ${isOverLimit ? 'LIMIT EXCEEDED: Your access may be restricted.' : isNearLimit ? 'APPROACHING LIMIT: Consider upgrading.' : ''}
-      
+
       Upgrade your plan: https://claimguardianai.com/pricing
       View dashboard: https://claimguardianai.com/dashboard
-      
+
       Best regards,
       The ClaimGuardian Team
     `
@@ -365,7 +365,7 @@ export class EmailNotificationService {
    */
   async sendTierChangeNotification(notification: TierChangeNotification): Promise<{ success: boolean; error?: string }> {
     const emailTemplate = this.generateTierChangeEmail(notification)
-    
+
     return await this.sendEmail({
       to: notification.userEmail,
       subject: emailTemplate.subject,
@@ -379,7 +379,7 @@ export class EmailNotificationService {
    */
   async sendPermissionChangeNotification(notification: PermissionChangeNotification): Promise<{ success: boolean; error?: string }> {
     const emailTemplate = this.generatePermissionChangeEmail(notification)
-    
+
     return await this.sendEmail({
       to: notification.userEmail,
       subject: emailTemplate.subject,
@@ -393,7 +393,7 @@ export class EmailNotificationService {
    */
   async sendUsageLimitNotification(notification: UsageLimitNotification): Promise<{ success: boolean; error?: string }> {
     const emailTemplate = this.generateUsageLimitEmail(notification)
-    
+
     return await this.sendEmail({
       to: notification.userEmail,
       subject: emailTemplate.subject,
@@ -453,7 +453,7 @@ export class EmailNotificationService {
         'Dedicated support'
       ]
     }
-    
+
     return benefits[tier] || []
   }
 

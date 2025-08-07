@@ -10,31 +10,31 @@ export interface AIToolUsage {
   toolName: string
   sessionId?: string
   requestType: 'text' | 'image' | 'audio' | 'multimodal'
-  
+
   // Input metrics
   inputTokens: number
   inputTextLength: number
   inputImagesCount: number
   inputAudioSeconds: number
-  
+
   // Output metrics
   outputTokens: number
   outputTextLength: number
   processingTimeMs: number
-  
+
   // Cost breakdown
   costInput: number
   costOutput: number
   costImages: number
   costAudio: number
-  
+
   // Context
   featureUsed?: string
   modelVersion?: string
   temperature?: number
   maxTokens?: number
   customParameters?: Record<string, any>
-  
+
   success: boolean
   errorMessage?: string
 }
@@ -133,27 +133,27 @@ class CostTrackingService {
           ai_tool_id: tool.id,
           session_id: usage.sessionId,
           request_type: usage.requestType,
-          
+
           input_tokens: usage.inputTokens,
           input_text_length: usage.inputTextLength,
           input_images_count: usage.inputImagesCount,
           input_audio_seconds: usage.inputAudioSeconds,
-          
+
           output_tokens: usage.outputTokens,
           output_text_length: usage.outputTextLength,
           processing_time_ms: usage.processingTimeMs,
-          
+
           cost_input: costInput,
           cost_output: costOutput,
           cost_images: costImages,
           cost_audio: costAudio,
-          
+
           request_ip: userIp,
           user_agent: userAgent,
           feature_used: usage.featureUsed,
           success: usage.success,
           error_message: usage.errorMessage,
-          
+
           model_version: usage.modelVersion,
           temperature: usage.temperature,
           max_tokens: usage.maxTokens,
@@ -214,7 +214,7 @@ class CostTrackingService {
       })
 
       if (error) throw error
-      
+
       const result = data[0]
       return {
         totalCost: parseFloat(result?.total_cost || '0'),
@@ -330,13 +330,13 @@ class CostTrackingService {
       try {
         const tools = await this.getAITools()
         const tool = tools.find(t => t.name === toolName)
-        
+
         if (!tool) {
           resolve(0)
           return
         }
 
-        const cost = 
+        const cost =
           (inputTokens * tool.costPerInputToken) +
           (estimatedOutputTokens * tool.costPerOutputToken) +
           (imageCount * (tool.costPerImage || 0)) +
@@ -490,7 +490,7 @@ class CostTrackingService {
     try {
       const { data: { user } } = await this.supabase.auth.getUser()
       const targetUserId = userId || user?.id
-      
+
       if (!targetUserId) return
 
       // This would typically be done by a database trigger or scheduled function

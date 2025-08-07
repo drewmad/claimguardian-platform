@@ -39,7 +39,7 @@ export default function ClaimEvidencePage() {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to {getParentInfo().parentLabel}
             </Button>
-            
+
             <h1 className="text-3xl font-bold mb-2">Claim Evidence</h1>
             <p className="text-gray-400">
               Upload and manage all supporting documents for claim #{claimId}
@@ -47,7 +47,7 @@ export default function ClaimEvidencePage() {
           </div>
 
           {/* Evidence Manager */}
-          <EvidenceManager 
+          <EvidenceManager
             claimId={claimId}
             onUpdate={(evidence) => {
               logger.info('Evidence updated:', evidence)
@@ -58,4 +58,3 @@ export default function ClaimEvidencePage() {
     </ProtectedRoute>
   )
 }
-

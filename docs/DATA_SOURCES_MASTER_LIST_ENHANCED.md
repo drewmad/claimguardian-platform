@@ -143,7 +143,7 @@ Last Updated: July 28, 2025
 
 | Source | URL | Update Frequency | Schedule | Purpose |
 |--------|-----|------------------|----------|---------|
-| **ISO ClaimSearch** | `https://www.verisk.com/claimsearch/api/` | Real-time | Continuous | Claims history | 
+| **ISO ClaimSearch** | `https://www.verisk.com/claimsearch/api/` | Real-time | Continuous | Claims history |
 | **PCS Catastrophe Data** | `https://www.verisk.com/pcs/api/` | Post-event | Within 48 hours | Cat event data |
 | **Florida Hurricane Cat Fund** | `https://www.sbafla.com/fhcf/api/` | Post-event | As needed | Hurricane claims |
 
@@ -260,7 +260,7 @@ Last Updated: July 28, 2025
 
 ### Free Tier Limits
 - NOAA APIs: 1000 requests/hour
-- Census API: 500 requests/hour  
+- Census API: 500 requests/hour
 - Google Maps: $200 monthly credit
 - OpenWeatherMap: 60 calls/minute
 

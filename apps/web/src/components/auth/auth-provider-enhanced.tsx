@@ -81,12 +81,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter()
   const initializationRef = useRef(false)
   const serverSyncIntervalRef = useRef<NodeJS.Timeout | null>(null)
-  
+
   // Sync with server state periodically
   const syncWithServerState = useCallback(async () => {
     try {
       const isValid = await validateSessionAction()
-      
+
       if (!isValid && user) {
         logger.warn('Server session invalid, logging out user')
         setUser(null)
@@ -116,10 +116,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const initializeAuth = async () => {
       try {
         logger.info('Initializing authentication with server sync')
-        
+
         // Get initial user
         const { data: { user: initialUser }, error: userError } = await supabase.auth.getUser()
-        
+
         if (userError) {
           logger.error('Failed to get initial user', {}, userError)
           await handleAuthError(userError, supabase)
@@ -130,11 +130,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           return
         }
-        
+
         // Validate session with server
         if (initialUser) {
           const isServerValid = await validateSessionAction()
-          
+
           if (!isServerValid) {
             logger.warn('Server validation failed for initial session')
             await supabase.auth.signOut()
@@ -145,10 +145,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             return
           }
         }
-        
+
         // Validate session for security
         const validatedUser = await validateSession(supabase)
-        
+
         if (!validatedUser && initialUser) {
           logger.warn('Client validation failed, clearing session')
           if (mounted) {
@@ -163,20 +163,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           setUser(validatedUser)
           setLoading(false)
           setError(null)
-          
+
           if (validatedUser) {
             const { data: { session } } = await supabase.auth.getSession()
             const now = Date.now() / 1000
             const timeUntilExpiry = session!.expires_at! - now
-            
+
             logger.setUser({
               id: validatedUser.id,
               email: validatedUser.email
             })
-            
+
             if (timeUntilExpiry > 60) {
               sessionManager.startMonitoring()
-              
+
               // Start server sync interval (every 5 minutes)
               serverSyncIntervalRef.current = setInterval(syncWithServerState, 5 * 60 * 1000)
             }
@@ -228,19 +228,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
           logger.info('Auth state changed', { event, userId: session?.user?.id })
-          
+
           if (!mounted) return
-          
+
           // Handle token errors
           if (event === 'TOKEN_REFRESHED' && session === null) {
             logger.error('Token refresh failed - session is null')
             await handleAuthError({ message: 'refresh_token_not_found' }, supabase)
             return
           }
-          
+
           // Update user state
           setUser(session?.user ?? null)
-          
+
           // Update logger context
           if (session?.user) {
             logger.setUser({
@@ -255,14 +255,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           switch (event) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
-              
+
               if (session) {
                 const now = Date.now() / 1000
                 const timeUntilExpiry = session.expires_at! - now
-                
+
                 if (timeUntilExpiry > 60) {
                   sessionManager.startMonitoring()
-                  
+
                   // Start server sync for new session
                   if (serverSyncIntervalRef.current) {
                     clearInterval(serverSyncIntervalRef.current)
@@ -270,42 +270,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
                   serverSyncIntervalRef.current = setInterval(syncWithServerState, 5 * 60 * 1000)
                 }
               }
-              
+
               setLoading(false)
               router.refresh()
               break
-              
+
             case 'SIGNED_OUT':
               logger.track('user_signed_out')
               sessionManager.stopMonitoring()
-              
+
               // Stop server sync
               if (serverSyncIntervalRef.current) {
                 clearInterval(serverSyncIntervalRef.current)
                 serverSyncIntervalRef.current = null
               }
-              
+
               setLoading(false)
               router.push('/')
               break
-              
+
             case 'TOKEN_REFRESHED':
               logger.info('Token refreshed successfully')
               // Validate with server after token refresh
               syncWithServerState()
               break
-              
+
             case 'PASSWORD_RECOVERY':
               logger.track('password_recovery_initiated')
               break
-              
+
             case 'USER_UPDATED':
               logger.info('User data updated')
               break
           }
         }
       )
-      
+
       authSubscription = subscription
     }
 
@@ -331,14 +331,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const refreshSession = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       // Try server refresh first
       const serverSuccess = await refreshSessionAction()
-      
+
       if (serverSuccess) {
         // Then refresh client
         const { data: { session }, error } = await supabase.auth.refreshSession()
-        
+
         if (!error && session) {
           setUser(session.user)
           setSessionWarning(false)
@@ -364,9 +364,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data: userData, error } = await authService.signIn({ email, password })
-      
+
       if (error) {
         setError(error)
         return false
@@ -377,7 +377,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         // Let auth state change handler manage navigation
         return true
       }
-      
+
       return false
     } catch (err) {
       logger.error('Unexpected signin error', {}, err instanceof Error ? err : new Error(String(err)))
@@ -397,9 +397,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data: userData, error } = await authService.signUp(data)
-      
+
       if (error) {
         setError(error)
         return false
@@ -409,7 +409,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.track('signup_success', { userId: userData.id })
         return true
       }
-      
+
       return false
     } catch (err) {
       logger.error('Unexpected signup error', {}, err instanceof Error ? err : new Error(String(err)))
@@ -429,9 +429,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { error } = await authService.signOut()
-      
+
       if (error) {
         setError(error)
         setLoading(false)
@@ -440,13 +440,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       logger.track('signout_success')
       setUser(null)
-      
+
       // Clear server sync interval
       if (serverSyncIntervalRef.current) {
         clearInterval(serverSyncIntervalRef.current)
         serverSyncIntervalRef.current = null
       }
-      
+
       // Router navigation will be handled by auth state change
     } catch (err) {
       logger.error('Unexpected signout error', {}, err instanceof Error ? err : new Error(String(err)))
@@ -464,9 +464,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { error } = await authService.resetPassword(email)
-      
+
       if (error) {
         setError(error)
         return
@@ -490,9 +490,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data, error } = await authService.updatePassword(newPassword)
-      
+
       if (error) {
         setError(error)
         return

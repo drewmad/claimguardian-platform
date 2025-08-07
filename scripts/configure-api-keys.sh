@@ -38,12 +38,12 @@ check_secret() {
 set_secret() {
     local secret_name="$1"
     local secret_value="$2"
-    
+
     if [[ -z "$secret_value" ]]; then
         echo -e "${YELLOW}⚠️  Skipping $secret_name (no value provided)${NC}"
         return 1
     fi
-    
+
     echo -e "${BLUE}Setting $secret_name...${NC}"
     if supabase secrets set "$secret_name=$secret_value" --linked; then
         echo -e "${GREEN}✅ $secret_name set successfully${NC}"
@@ -101,10 +101,10 @@ echo ""
 if [[ ${#MISSING_SECRETS[@]} -gt 0 ]]; then
     echo -e "${YELLOW}📝 Missing secrets detected. Let's set them up:${NC}"
     echo ""
-    
+
     for secret in "${MISSING_SECRETS[@]}"; do
         echo -e "${BLUE}${secret}:${NC} ${SECRETS[$secret]}"
-        
+
         # Special instructions for each service
         case "$secret" in
             "OPENAI_API_KEY")
@@ -123,11 +123,11 @@ if [[ ${#MISSING_SECRETS[@]} -gt 0 ]]; then
                 echo "  Get from: https://x.ai/api"
                 ;;
         esac
-        
+
         echo -n "Enter value (or press Enter to skip): "
         read -s secret_value
         echo ""
-        
+
         if [[ -n "$secret_value" ]]; then
             set_secret "$secret" "$secret_value"
         fi
@@ -177,7 +177,7 @@ ClaimGuardian uses several third-party APIs that require authentication. This gu
 - **Used by**: ai-document-extraction, analyze-damage-with-policy, policy-chat, ocr-document
 - **Get from**: https://platform.openai.com/api-keys
 - **Pricing**: Pay per token usage
-- **Setup**: 
+- **Setup**:
   ```bash
   supabase secrets set OPENAI_API_KEY=sk-... --linked
   ```

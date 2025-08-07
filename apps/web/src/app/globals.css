@@ -46,23 +46,23 @@
   .btn-primary {
     @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-accent-blue border border-transparent rounded-xl shadow-lg transition-all duration-200 hover:bg-opacity-90 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent-blue focus:ring-offset-bgPrimary;
   }
-  
+
   .btn-secondary {
     @apply inline-flex items-center justify-center px-6 py-3 text-base font-semibold text-white bg-bgTertiary border border-border rounded-xl shadow-lg transition-all duration-200 hover:bg-opacity-90 hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 focus:ring-offset-bgPrimary;
   }
-  
+
   .card-bg {
     @apply bg-bgSecondary/70 border border-border/50 backdrop-blur-xl;
   }
-  
+
   .form-input {
     @apply bg-bgTertiary border border-border text-textPrimary focus:border-accent-blue focus:ring-2 focus:ring-accent-blue/30 focus:outline-none;
   }
-  
+
   .form-input.input-error {
     @apply border-danger-red focus:border-danger-red focus:ring-danger-red/30;
   }
-  
+
   .error-message {
     @apply text-danger-red text-sm mt-1;
   }

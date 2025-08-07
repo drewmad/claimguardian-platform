@@ -165,11 +165,11 @@ export class FloridaComplianceManager {
       const badFaithCheck = await this.assessBadFaithRisk(claimId)
       if (badFaithCheck.riskLevel === 'high' || badFaithCheck.riskLevel === 'critical') {
         violations.push('High bad faith risk detected')
-        riskLevel = Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4, 
-                            badFaithCheck.riskLevel === 'high' ? 3 : 4) === 1 ? 'low' : 
-                            Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4, 
-                            badFaithCheck.riskLevel === 'high' ? 3 : 4) === 2 ? 'medium' : 
-                            Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4, 
+        riskLevel = Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4,
+                            badFaithCheck.riskLevel === 'high' ? 3 : 4) === 1 ? 'low' :
+                            Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4,
+                            badFaithCheck.riskLevel === 'high' ? 3 : 4) === 2 ? 'medium' :
+                            Math.max(riskLevel === 'low' ? 1 : riskLevel === 'medium' ? 2 : riskLevel === 'high' ? 3 : 4,
                             badFaithCheck.riskLevel === 'high' ? 3 : 4) === 3 ? 'high' : 'critical'
       }
 
@@ -243,16 +243,16 @@ export class FloridaComplianceManager {
         incidentDate,
         reportedDate,
         acknowledgmentDeadline,
-        acknowledgmentCompleted: claim.florida_compliance?.[0]?.initial_contact_completed_at ? 
+        acknowledgmentCompleted: claim.florida_compliance?.[0]?.initial_contact_completed_at ?
           new Date(claim.florida_compliance[0].initial_contact_completed_at) : undefined,
         investigationDeadline,
-        investigationCompleted: claim.florida_compliance?.[0]?.investigation_completed_at ? 
+        investigationCompleted: claim.florida_compliance?.[0]?.investigation_completed_at ?
           new Date(claim.florida_compliance[0].investigation_completed_at) : undefined,
         decisionDeadline,
-        decisionRendered: claim.florida_compliance?.[0]?.decision_rendered_at ? 
+        decisionRendered: claim.florida_compliance?.[0]?.decision_rendered_at ?
           new Date(claim.florida_compliance[0].decision_rendered_at) : undefined,
         paymentDeadline,
-        paymentCompleted: claim.florida_compliance?.[0]?.payment_completed_at ? 
+        paymentCompleted: claim.florida_compliance?.[0]?.payment_completed_at ?
           new Date(claim.florida_compliance[0].payment_completed_at) : undefined,
         daysRemaining: Math.ceil((decisionDeadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24)),
         violationRisk: 'low',
@@ -361,7 +361,7 @@ export class FloridaComplianceManager {
       const requiredDocs = ['policy', 'claim_form', 'damage_assessment']
       const availableDocs = claim.claim_documents?.map((doc: { document_type: string }) => doc.document_type) || []
       const missingDocs = requiredDocs.filter(doc => !availableDocs.includes(doc))
-      
+
       if (missingDocs.length > 0) {
         riskFactors.push(`Missing required documentation: ${missingDocs.join(', ')}`)
         mitigationActions.push('Gather all required documentation immediately')
@@ -522,7 +522,7 @@ export class FloridaComplianceManager {
         Boolean(aob.assignment_date)
 
       let complianceStatus: 'compliant' | 'incomplete' | 'non_compliant' = 'compliant'
-      
+
       if (!documentationComplete) {
         complianceStatus = 'incomplete'
       }
@@ -574,7 +574,7 @@ export class FloridaComplianceManager {
       const isExpired = licenseExpiry < now
 
       let complianceStatus: 'compliant' | 'expired' | 'non_compliant' = 'compliant'
-      
+
       if (isExpired) {
         complianceStatus = 'expired'
       }
@@ -697,7 +697,7 @@ export class FloridaComplianceManager {
 
       // Determine overall compliance
       const hasViolations = !checks.insuranceCode.compliant || !checks.promptPayment.compliant
-      const hasHighRisk = checks.insuranceCode.riskLevel === 'high' || 
+      const hasHighRisk = checks.insuranceCode.riskLevel === 'high' ||
                          checks.insuranceCode.riskLevel === 'critical' ||
                          checks.badFaith.riskLevel === 'high' ||
                          checks.badFaith.riskLevel === 'critical'
@@ -780,7 +780,7 @@ export class ComplianceChecker {
   }> {
     try {
       const comprehensive = await this.floridaManager.runComprehensiveComplianceCheck(claimId)
-      
+
       // Calculate compliance score
       let score = 100
       if (comprehensive.riskLevel === 'medium') score = 75

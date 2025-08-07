@@ -5,7 +5,7 @@ source scripts/utils/common.sh
 check_project_root
 
 case "$1" in
-  import) 
+  import)
     log_info "Starting parallel data import..."
     if [ -f "./scripts/utils/run-parallel-import.sh" ]; then
         ./scripts/utils/run-parallel-import.sh
@@ -13,7 +13,7 @@ case "$1" in
         log_error "Import script not found in utils"
     fi
     ;;
-  verify) 
+  verify)
     log_info "Verifying import completion..."
     if [ -f "./scripts/utils/verify-import-complete.js" ]; then
         node scripts/utils/verify-import-complete.js
@@ -21,12 +21,12 @@ case "$1" in
         log_error "Verification script not found in utils"
     fi
     ;;
-  clean) 
+  clean)
     log_warn "Cleaning processed data..."
     rm -rf data/processed/*
     log_info "Processed data cleaned"
     ;;
-  *) 
-    echo "Usage: ./scripts/data.sh {import|verify|clean}" 
+  *)
+    echo "Usage: ./scripts/data.sh {import|verify|clean}"
     ;;
 esac

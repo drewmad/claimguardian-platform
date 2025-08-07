@@ -103,12 +103,12 @@ log "Pre-restore backup completed"
 case $RESTORE_MODE in
     "full")
         log "Performing full database restore..."
-        
+
         # Drop existing connections (if needed)
         log "Terminating existing connections..."
         psql -h $SUPABASE_HOST -p $SUPABASE_PORT -U $SUPABASE_USER -d postgres -c \
             "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$SUPABASE_DB' AND pid <> pg_backend_pid();"
-        
+
         # Restore database
         pg_restore \
             -h $SUPABASE_HOST \
@@ -123,19 +123,19 @@ case $RESTORE_MODE in
             --single-transaction \
             "$BACKUP_PATH"
         ;;
-        
+
     "schema")
         log "Performing schema-only restore..."
-        
+
         # Restore schema
         psql -h $SUPABASE_HOST -p $SUPABASE_PORT -U $SUPABASE_USER -d $SUPABASE_DB \
             --single-transaction \
             --file="$BACKUP_PATH"
         ;;
-        
+
     "data")
         log "Performing data-only restore..."
-        
+
         # Restore data only
         pg_restore \
             -h $SUPABASE_HOST \
@@ -149,10 +149,10 @@ case $RESTORE_MODE in
             --single-transaction \
             "$BACKUP_PATH"
         ;;
-        
+
     "table")
         log "Performing table restore: $TABLE_NAME"
-        
+
         # Restore specific table
         pg_restore \
             -h $SUPABASE_HOST \
@@ -168,7 +168,7 @@ case $RESTORE_MODE in
             --table=$TABLE_NAME \
             "$BACKUP_PATH"
         ;;
-        
+
     *)
         log "ERROR: Invalid restore mode: $RESTORE_MODE"
         usage

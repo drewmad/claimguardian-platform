@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Sparkles, Brain, Camera, FileText, MessageCircle, 
+  Sparkles, Brain, Camera, FileText, MessageCircle,
   BarChart3, Shield, Zap, ChevronRight, ChevronLeft,
   X, Play, CheckCircle, ArrowRight, Info, Star,
   Upload, Wand2, Bot, Eye, TrendingUp, AlertCircle
@@ -163,18 +163,18 @@ interface AIToolsIntroductionProps {
   isModal?: boolean
 }
 
-export function AIToolsIntroduction({ 
-  onComplete, 
-  onSkip, 
-  selectedTools = [], 
-  isModal = true 
+export function AIToolsIntroduction({
+  onComplete,
+  onSkip,
+  selectedTools = [],
+  isModal = true
 }: AIToolsIntroductionProps) {
   const router = useRouter()
   const [currentStep, setCurrentStep] = useState(0)
   const [selectedToolIds, setSelectedToolIds] = useState<string[]>(selectedTools)
   const [viewMode, setViewMode] = useState<'overview' | 'detail' | 'selection'>('overview')
   const [currentToolIndex, setCurrentToolIndex] = useState(0)
-  
+
   const totalSteps = 3 // Overview, Tool Details, Selection
   const progress = ((currentStep + 1) / totalSteps) * 100
   const currentTool = AI_TOOLS[currentToolIndex]
@@ -187,14 +187,14 @@ export function AIToolsIntroduction({
   const handleNext = () => {
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1)
-      
+
       // Update view mode based on step
       if (currentStep === 0) {
         setViewMode('detail')
       } else if (currentStep === 1) {
         setViewMode('selection')
       }
-      
+
       logger.track('ai_tools_introduction_step', { step: currentStep + 1 })
     } else {
       handleComplete()
@@ -204,7 +204,7 @@ export function AIToolsIntroduction({
   const handlePrevious = () => {
     if (currentStep > 0) {
       setCurrentStep(currentStep - 1)
-      
+
       // Update view mode based on step
       if (currentStep === 1) {
         setViewMode('overview')
@@ -215,14 +215,14 @@ export function AIToolsIntroduction({
   }
 
   const handleComplete = () => {
-    logger.track('ai_tools_introduction_completed', { 
+    logger.track('ai_tools_introduction_completed', {
       selectedTools: selectedToolIds,
-      toolsCount: selectedToolIds.length 
+      toolsCount: selectedToolIds.length
     })
-    
+
     // Save selected tools preference
     localStorage.setItem('selected_ai_tools', JSON.stringify(selectedToolIds))
-    
+
     toast.success(`Great! You've selected ${selectedToolIds.length} AI tools to explore.`)
     onComplete?.()
   }
@@ -264,7 +264,7 @@ export function AIToolsIntroduction({
         </div>
         <h2 className="text-3xl font-bold text-white">AI-Powered Tools</h2>
         <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-          ClaimGuardian's AI tools help you document damage, understand policies, 
+          ClaimGuardian's AI tools help you document damage, understand policies,
           and navigate insurance claims with confidence.
         </p>
       </div>
@@ -328,7 +328,7 @@ export function AIToolsIntroduction({
           <div className="text-left">
             <h3 className="text-lg font-semibold text-white mb-2">Powered by Advanced AI</h3>
             <p className="text-sm text-gray-300 mb-3">
-              Our AI tools use state-of-the-art machine learning models including 
+              Our AI tools use state-of-the-art machine learning models including
               OpenAI GPT-4 and Google Gemini to provide accurate, helpful insights.
             </p>
             <div className="flex items-center gap-4 text-xs text-gray-400">
@@ -440,7 +440,7 @@ export function AIToolsIntroduction({
               </>
             )}
           </Button>
-          
+
           {/* Navigation between tools */}
           <div className="flex items-center justify-center gap-4">
             <Button
@@ -453,7 +453,7 @@ export function AIToolsIntroduction({
               <ChevronLeft className="w-4 h-4 mr-1" />
               Previous
             </Button>
-            
+
             <div className="flex gap-1">
               {AI_TOOLS.map((_, index) => (
                 <button
@@ -465,7 +465,7 @@ export function AIToolsIntroduction({
                 />
               ))}
             </div>
-            
+
             <Button
               variant="ghost"
               size="sm"
@@ -503,7 +503,7 @@ export function AIToolsIntroduction({
         {AI_TOOLS.map((tool) => {
           const Icon = tool.icon
           const isSelected = selectedToolIds.includes(tool.id)
-          
+
           return (
             <Card
               key={tool.id}
@@ -523,7 +523,7 @@ export function AIToolsIntroduction({
                       isSelected ? 'text-blue-400' : 'text-gray-400'
                     }`} />
                   </div>
-                  
+
                   <div className="flex-1">
                     <div className="flex items-center gap-2 mb-1">
                       <h3 className="font-semibold text-white">{tool.title}</h3>
@@ -540,7 +540,7 @@ export function AIToolsIntroduction({
                     </div>
                     <p className="text-sm text-gray-400">{tool.description}</p>
                   </div>
-                  
+
                   <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
                     isSelected
                       ? 'border-blue-500 bg-blue-500'

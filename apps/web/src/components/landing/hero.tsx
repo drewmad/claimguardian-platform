@@ -48,8 +48,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   const [ref, isInView] = useInView({ threshold: 0.1 })
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -73,7 +73,7 @@ const GuardianShieldIcon = () => (
 )
 
 export function Hero() {
-  
+
   const pills = [
     { label: 'Homeowners', icon: Home },
     { label: 'Renters', icon: KeyRound },
@@ -92,7 +92,7 @@ export function Hero() {
           <div className="aurora aurora-3"></div>
           <div className="aurora aurora-4"></div>
         </div>
-        
+
         <style jsx>{`
           .aurora {
             position: absolute;
@@ -123,7 +123,7 @@ export function Hero() {
             100% { transform: translate(30%, -80%) scale(1.2); opacity: 0.15; }
           }
         `}</style>
-        
+
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-16 pb-24">
           <AnimatedSection>
@@ -131,26 +131,26 @@ export function Hero() {
               Founded in Florida, by a Florida Family, Exclusively for Floridians.
             </div>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={100}>
             <h1 className="font-slab text-4xl md:text-6xl font-bold max-w-4xl mx-auto leading-tight md:leading-snug flex flex-col md:flex-row items-center justify-center gap-6">
               <GuardianShieldIcon />
               Your Property Guardian
             </h1>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={200}>
             <p className="mt-4 text-2xl md:text-3xl font-semibold text-primary">
               Your AI Guardian Never Sleeps. Because Florida Never Does.
             </p>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={300}>
             <p className="mt-6 max-w-3xl mx-auto text-lg text-gray-300 leading-relaxed">
               ClaimGuardian guards everything you own, rent, or manage—including that boat you've used twice since buying it. Your personal AI <span className="font-semibold text-primary/90">Guardian</span> documents your stuff (even the manatee mailbox), tracks when your AC needs its monthly blessing, and maximizes claims when frozen iguanas damage your roof or love bugs cause $2,000 in paint damage. <span className="italic text-primary/80">Because Florida's gonna Florida</span>, but with <span className="font-semibold text-primary/90">Guardian</span> watching over you, your assets don't have to suffer.
             </p>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={400}>
             <div className="mt-10">
               <Link
@@ -162,7 +162,7 @@ export function Hero() {
               </Link>
             </div>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={500}>
             <div className="mt-12 flex flex-wrap gap-3 justify-center">
               {pills.map(pill => (
@@ -175,7 +175,7 @@ export function Hero() {
           </AnimatedSection>
         </div>
       </section>
-      
+
       {/* Results Section */}
       <section className="px-4 md:px-8 py-16 bg-[#0a0e1a]">
         <AnimatedSection>

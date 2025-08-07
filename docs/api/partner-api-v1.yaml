@@ -3,61 +3,61 @@ info:
   title: ClaimGuardian Partner API
   description: |
     # ClaimGuardian Partner API v1
-    
+
     Welcome to the ClaimGuardian Partner API - a comprehensive white-label solution for insurance carriers, MGAs, and property management companies.
-    
+
     ## Overview
-    
+
     The ClaimGuardian Partner API enables insurance carriers to integrate our AI-powered claims processing platform into their existing systems, providing:
-    
+
     - **AI-Powered Damage Assessment**: Automated property damage analysis using computer vision and machine learning
     - **Document Processing**: Intelligent OCR and document classification for claims documentation
     - **Property Intelligence**: Real-time property valuation, risk assessment, and historical data
     - **Claims Lifecycle Management**: Complete claims processing workflow from FNOL to settlement
     - **White-Label Branding**: Fully customizable experience with your company's branding
     - **Real-Time Webhooks**: Event-driven notifications for seamless integration
-    
+
     ## Target Markets
-    
+
     - **Regional Insurance Companies** (50-10,000 customers)
     - **MGAs/MGUs** (Managing General Agents/Underwriters)
     - **InsurTech Companies** building claims management solutions
     - **Property Management Companies** with self-insurance programs
-    
+
     ## Getting Started
-    
+
     1. **Contact Sales**: Reach out to our partner team for onboarding
     2. **Receive API Keys**: Get sandbox and production API keys
     3. **Configure Branding**: Set up white-label customizations
     4. **Integrate**: Use our SDKs or REST API directly
     5. **Go Live**: Process real claims with full support
-    
+
     ## Authentication
-    
+
     All API requests require authentication using API keys in the Authorization header:
-    
+
     ```
     Authorization: Bearer pk_live_your_api_key_here
     ```
-    
+
     ## Rate Limits
-    
+
     API requests are rate limited based on your subscription tier:
     - **Starter**: 1,000 requests/hour
-    - **Professional**: 10,000 requests/hour  
+    - **Professional**: 10,000 requests/hour
     - **Enterprise**: 100,000 requests/hour
     - **Custom**: Negotiated limits
-    
+
     ## Webhooks
-    
+
     Stay informed of claim status changes and processing updates through our webhook system.
-    
+
     ## Support
-    
+
     - **Documentation**: https://docs.claimguardianai.com/partner-api
     - **Developer Support**: api-support@claimguardianai.com
     - **Status Page**: https://status.claimguardianai.com
-    
+
   version: 1.0.0
   contact:
     name: ClaimGuardian API Team
@@ -80,7 +80,7 @@ security:
 tags:
   - name: Claims Management
     description: Create, update, and manage insurance claims
-  - name: Document Processing  
+  - name: Document Processing
     description: Upload and process claim-related documents
   - name: Property Intelligence
     description: Property data, valuations, and risk assessments
@@ -101,13 +101,13 @@ paths:
       summary: List claims
       description: |
         Retrieve a paginated list of claims for your organization.
-        
+
         **Filters Available:**
         - Status filtering (draft, submitted, under_review, approved, denied, settled)
         - Date range filtering
         - Policy number search
         - Custom field filtering based on your configuration
-        
+
         **Use Cases:**
         - Dashboard claim listings
         - Report generation
@@ -129,7 +129,7 @@ paths:
             format: date-time
             example: "2024-01-01T00:00:00Z"
         - name: date_to
-          in: query  
+          in: query
           description: Filter claims to date (ISO 8601)
           schema:
             type: string
@@ -239,20 +239,20 @@ paths:
           $ref: '#/components/responses/RateLimitExceeded'
         '500':
           $ref: '#/components/responses/InternalServerError'
-    
+
     post:
       tags: [Claims Management]
       summary: Create a new claim
       description: |
         Create a new insurance claim in the ClaimGuardian system.
-        
+
         **Key Features:**
         - Automatic claim number generation
         - Property intelligence integration
         - AI damage assessment (if enabled)
         - Automated workflow triggers
         - Real-time webhook notifications
-        
+
         **Processing Flow:**
         1. Validate claim data and policy information
         2. Create or link to existing property record
@@ -260,7 +260,7 @@ paths:
         4. Trigger AI processing pipeline (if configured)
         5. Send webhook notification to your system
         6. Return claim details with next steps
-        
+
         **White-Label Features:**
         - Custom claim numbering format
         - Configurable required fields
@@ -386,7 +386,7 @@ paths:
       summary: Get claim details
       description: |
         Retrieve detailed information about a specific claim.
-        
+
         **Included Data:**
         - Complete claim information
         - Property details and valuation
@@ -429,14 +429,14 @@ paths:
       summary: Update claim information
       description: |
         Update specific fields of an existing claim.
-        
+
         **Updatable Fields:**
         - Status changes (with workflow validation)
         - Adjuster information
         - Estimated amounts
         - Settlement information
         - Internal notes and metadata
-        
+
         **Workflow Rules:**
         Status transitions are validated based on your configuration:
         - submitted → under_review → approved/denied → settled
@@ -510,25 +510,25 @@ paths:
                             type: array
                             items:
                               $ref: '#/components/schemas/Document'
-    
+
     post:
       tags: [Document Processing]
       summary: Upload claim document
       description: |
         Upload a document for AI processing and analysis.
-        
+
         **Supported File Types:**
         - Images: JPEG, PNG, HEIC, WebP (up to 50MB)
         - Documents: PDF, Word, Excel (up to 50MB)
         - Videos: MP4, MOV (up to 200MB for property walkthroughs)
-        
+
         **AI Processing Features:**
         - **OCR Text Extraction**: Extract text from images and PDFs
         - **Document Classification**: Automatically categorize document types
         - **Damage Detection**: Identify and assess property damage in photos
         - **Content Validation**: Verify document authenticity and completeness
         - **Data Extraction**: Pull structured data from forms and receipts
-        
+
         **Processing Pipeline:**
         1. File validation and virus scanning
         2. Secure upload to encrypted storage
@@ -605,14 +605,14 @@ paths:
                   code: "unsupported_file_type"
                   message: "File type not supported. Please upload JPEG, PNG, PDF, or Word documents."
 
-  # Property Intelligence Endpoints  
+  # Property Intelligence Endpoints
   /partner/v1/properties/{propertyId}:
     get:
       tags: [Property Intelligence]
       summary: Get property intelligence
       description: |
         Get comprehensive property information including valuation, risk assessment, and historical data.
-        
+
         **Data Sources:**
         - Public records and tax assessments
         - MLS and real estate transaction history
@@ -620,7 +620,7 @@ paths:
         - Crime statistics and neighborhood data
         - Satellite imagery and aerial photography
         - Building permits and renovation history
-        
+
         **Risk Assessment Factors:**
         - Fire risk based on construction and location
         - Flood risk from FEMA and local data
@@ -654,7 +654,7 @@ paths:
       summary: Search properties by address
       description: |
         Search for property information by address with intelligent matching.
-        
+
         **Search Capabilities:**
         - Fuzzy address matching
         - Partial address searches
@@ -727,7 +727,7 @@ paths:
       summary: Create webhook endpoint
       description: |
         Create a new webhook endpoint to receive real-time notifications.
-        
+
         **Available Events:**
         - `claim.created` - New claim submitted
         - `claim.updated` - Claim information changed
@@ -739,7 +739,7 @@ paths:
         - `user.created` - New user registered
         - `billing.usage_warning` - Approaching usage limits
         - `billing.limit_exceeded` - Usage limits exceeded
-        
+
         **Security Features:**
         - HMAC-SHA256 signature verification
         - IP whitelist filtering
@@ -773,11 +773,11 @@ components:
       scheme: bearer
       description: |
         Partner API authentication using Bearer token format.
-        
-        **API Key Format:** 
+
+        **API Key Format:**
         - Production: `pk_live_32CharacterKey`
         - Sandbox: `pk_test_32CharacterKey`
-        
+
         **Usage:**
         ```
         Authorization: Bearer pk_live_your_api_key_here
@@ -807,7 +807,7 @@ components:
         code:
           type: string
           description: Machine-readable error code
-          enum: 
+          enum:
             - invalid_api_key
             - expired_api_key
             - insufficient_permissions
@@ -1174,7 +1174,7 @@ components:
           maximum: 1
           description: Document quality score for OCR accuracy
 
-    # Property Intelligence Schemas  
+    # Property Intelligence Schemas
     PropertySummary:
       type: object
       properties:

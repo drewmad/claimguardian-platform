@@ -11,8 +11,8 @@
 
 import { GeminiProvider } from '../providers/gemini.provider';
 import { GeminiStrategy } from '../strategies/gemini-strategy';
-import { 
-  AIProviderConfig 
+import {
+  AIProviderConfig
 } from '../types/index';
 
 export interface FloridaClaimAnalysis {
@@ -54,11 +54,11 @@ export interface PolicyExtractionResult {
 
 export class GeminiInsuranceService {
   private provider: GeminiProvider;
-  
+
   constructor(config: AIProviderConfig) {
     this.provider = new GeminiProvider(config);
   }
-  
+
   /**
    * Analyze hurricane damage using Gemini 2.0's advanced vision
    * FREE with Gemini 2.0 Flash Experimental!
@@ -68,10 +68,10 @@ export class GeminiInsuranceService {
     propertyDetails?: Record<string, unknown>
   ): Promise<FloridaClaimAnalysis> {
     const prompt = GeminiStrategy.getInsurancePrompts('florida-hurricane-assessment');
-    
+
     // Process multiple images for comprehensive analysis
     const analyses = await Promise.all(
-      images.map(image => 
+      images.map(image =>
         this.provider.analyzeImage({
           imageBase64: image,
           prompt: prompt + '\n\nProperty details: ' + JSON.stringify(propertyDetails || {}),
@@ -82,15 +82,15 @@ export class GeminiInsuranceService {
         })
       )
     );
-    
+
     // Combine analyses from multiple angles
     const combinedPrompt = `Based on these multiple damage assessments, provide a comprehensive Florida hurricane claim analysis:
-    
+
 ${analyses.map((a, i) => `Image ${i + 1} Analysis: ${a.text}`).join('\n\n')}
 
 Synthesize into a single comprehensive assessment following Florida insurance requirements.
 Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, repairTimeline, redFlags[], documentationStatus, nextSteps[]`;
-    
+
     const result = await this.provider.generateText({
       prompt: combinedPrompt,
       feature: 'damage-analyzer',
@@ -99,10 +99,10 @@ Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, r
       maxTokens: 4096,
       responseFormat: 'json'
     });
-    
+
     return JSON.parse(result.text) as FloridaClaimAnalysis;
   }
-  
+
   /**
    * Extract policy details from documents - FREE with Gemini 2.0!
    */
@@ -120,7 +120,7 @@ Format as JSON with: damageType, severity (1-10), coverageType, estimatedCost, r
 
 Format the response as structured JSON matching the PolicyExtractionResult interface.
 Be precise with numbers and percentages. For hurricane deductibles, preserve percentage format (e.g., "2%" not 0.02).`;
-    
+
     const result = await this.provider.analyzeImage({
       imageBase64: documentBase64,
       prompt,
@@ -129,10 +129,10 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
       temperature: 0.3, // Very low for accuracy
       maxTokens: 8192
     });
-    
+
     return JSON.parse(result.text) as PolicyExtractionResult;
   }
-  
+
   /**
    * Batch process multiple claims - Optimized for Gemini 2.0's free tier
    */
@@ -145,13 +145,13 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
   ): Promise<Map<string, FloridaClaimAnalysis>> {
     const config = GeminiStrategy.getBatchConfiguration(claims.length);
     const results = new Map<string, FloridaClaimAnalysis>();
-    
+
     console.log(`[GeminiInsurance] Processing ${claims.length} claims in batches of ${config.batchSize} using ${config.model}`);
-    
+
     // Process in optimized batches
     for (let i = 0; i < claims.length; i += config.batchSize) {
       const batch = claims.slice(i, i + config.batchSize);
-      
+
       const batchPromises = batch.map(async claim => {
         try {
           const analysis = await this.analyzeHurricaneDamage(
@@ -164,21 +164,21 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
           return null;
         }
       });
-      
+
       const batchResults = config.parallel
         ? await Promise.all(batchPromises)
         : await this.processSequentially(batchPromises);
-      
+
       for (const result of batchResults) {
         if (result) {
           results.set(result.id, result.analysis);
         }
       }
     }
-    
+
     return results;
   }
-  
+
   /**
    * Compare multiple insurance policies
    */
@@ -190,7 +190,7 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
     bestValue: string;
   }> {
     const prompt = GeminiStrategy.getInsurancePrompts('policy-comparison');
-    
+
     const result = await this.provider.generateText({
       prompt: prompt + '\n\nPolicies to compare:\n' + JSON.stringify(policies, null, 2),
       feature: 'document-extractor',
@@ -199,10 +199,10 @@ Be precise with numbers and percentages. For hurricane deductibles, preserve per
       maxTokens: 8192,
       responseFormat: 'json'
     });
-    
+
     return JSON.parse(result.text);
   }
-  
+
   /**
    * Generate claim documentation using Gemini's comprehensive output
    */
@@ -230,7 +230,7 @@ The report should include:
 
 Format as a professional report suitable for insurance adjuster review.
 Use clear sections, bullet points, and tables where appropriate.`;
-    
+
     const result = await this.provider.generateText({
       prompt,
       feature: 'communication-helper',
@@ -238,10 +238,10 @@ Use clear sections, bullet points, and tables where appropriate.`;
       temperature: 0.5,
       maxTokens: 8192
     });
-    
+
     return result.text;
   }
-  
+
   /**
    * Validate claim against Florida regulations
    */
@@ -266,7 +266,7 @@ Check for:
 6. Public adjuster involvement rules
 
 Return a structured validation report with any violations, warnings, and important deadlines.`;
-    
+
     const result = await this.provider.generateText({
       prompt,
       feature: 'document-extractor',
@@ -275,10 +275,10 @@ Return a structured validation report with any violations, warnings, and importa
       maxTokens: 4096,
       responseFormat: 'json'
     });
-    
+
     return JSON.parse(result.text);
   }
-  
+
   /**
    * Helper to process promises sequentially
    */
@@ -291,7 +291,7 @@ Return a structured validation report with any violations, warnings, and importa
     }
     return results;
   }
-  
+
   /**
    * Get cost analysis for current usage
    */
@@ -306,11 +306,11 @@ Return a structured validation report with any violations, warnings, and importa
     savingsPercent: number;
   } {
     // All these are FREE with Gemini 2.0 Flash Experimental!
-    const totalVolume = 
-      monthlyUsage.hurricaneAnalysis + 
-      monthlyUsage.policyExtraction + 
+    const totalVolume =
+      monthlyUsage.hurricaneAnalysis +
+      monthlyUsage.policyExtraction +
       monthlyUsage.claimReports;
-    
+
     return {
       geminiCost: 0, // FREE!
       openAICost: totalVolume * 0.05, // Approximate GPT-4V cost

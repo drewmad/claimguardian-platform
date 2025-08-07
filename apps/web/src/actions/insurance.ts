@@ -55,7 +55,7 @@ export interface PolicyWithProperty extends InsurancePolicy {
 export async function getUserPolicies(): Promise<{ data: PolicyWithProperty[] | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -94,7 +94,7 @@ export async function getUserPolicies(): Promise<{ data: PolicyWithProperty[] | 
 export async function getPolicyById(policyId: string): Promise<{ data: PolicyWithProperty | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -134,7 +134,7 @@ export async function getPolicyById(policyId: string): Promise<{ data: PolicyWit
 export async function createPolicy(policy: Omit<InsurancePolicy, 'id' | 'user_id' | 'created_at' | 'updated_at'>): Promise<{ data: InsurancePolicy | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -165,7 +165,7 @@ export async function createPolicy(policy: Omit<InsurancePolicy, 'id' | 'user_id
 export async function updatePolicy(policyId: string, updates: Partial<InsurancePolicy>): Promise<{ data: InsurancePolicy | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -196,7 +196,7 @@ export async function updatePolicy(policyId: string, updates: Partial<InsuranceP
 export async function deletePolicy(policyId: string): Promise<{ error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { error: 'Not authenticated' }
@@ -224,7 +224,7 @@ export async function deletePolicy(policyId: string): Promise<{ error: string | 
 export async function getPolicyClaims(policyId: string): Promise<{ data: any[] | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -252,7 +252,7 @@ export async function getPolicyClaims(policyId: string): Promise<{ data: any[] |
 export async function getPolicyDocuments(policyId: string): Promise<{ data: any[] | null; error: string | null }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: user } = await supabase.auth.getUser()
     if (!user?.user) {
       return { data: null, error: 'Not authenticated' }
@@ -278,19 +278,19 @@ export async function getPolicyDocuments(policyId: string): Promise<{ data: any[
 }
 
 // Helper function to calculate policy statistics
-export async function getPolicyStatistics(): Promise<{ 
+export async function getPolicyStatistics(): Promise<{
   data: {
     totalCoverage: number
     totalPremium: number
     activePolicies: number
     expiringPolicies: number
     totalClaims: number
-  } | null; 
-  error: string | null 
+  } | null;
+  error: string | null
 }> {
   try {
     const { data: policies, error } = await getUserPolicies()
-    
+
     if (error || !policies) {
       return { data: null, error: error || 'No policies found' }
     }

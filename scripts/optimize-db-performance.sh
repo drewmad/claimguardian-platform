@@ -96,7 +96,7 @@ $$;
 
 -- User statistics (refresh periodically)
 CREATE MATERIALIZED VIEW IF NOT EXISTS user_stats AS
-SELECT 
+SELECT
     user_id,
     COUNT(DISTINCT p.id) as property_count,
     COUNT(DISTINCT c.id) as claim_count,
@@ -126,7 +126,7 @@ VACUUM ANALYZE user_activity_log;
 
 -- Create a view to monitor slow queries (requires pg_stat_statements)
 CREATE OR REPLACE VIEW slow_queries AS
-SELECT 
+SELECT
     query,
     calls,
     total_exec_time / 1000 as total_seconds,
@@ -207,7 +207,7 @@ SELECT * FROM slow_queries;
 
 2. Monitor table bloat:
 ```sql
-SELECT 
+SELECT
     schemaname,
     tablename,
     n_dead_tup,

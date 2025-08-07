@@ -23,7 +23,7 @@ async function executeSQLFile() {
     const sqlContent = fs.readFileSync(sqlPath, 'utf8');
 
     console.log('Executing SQL via Supabase API...');
-    
+
     // Use the Supabase REST API to execute SQL
     const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc`, {
       method: 'POST',
@@ -41,7 +41,7 @@ async function executeSQLFile() {
     if (!response.ok) {
       const error = await response.text();
       console.error('Failed to execute SQL:', error);
-      
+
       // Try alternative approach - execute via pg endpoint
       console.log('\nTrying alternative approach...');
       const pgResponse = await fetch(`${SUPABASE_URL}/pg`, {
@@ -62,7 +62,7 @@ async function executeSQLFile() {
     }
 
     console.log('✅ Property schema applied successfully!');
-    
+
     // Insert migration record
     console.log('Recording migration...');
     const migrationRecord = await fetch(`${SUPABASE_URL}/rest/v1/supabase_migrations.schema_migrations`, {

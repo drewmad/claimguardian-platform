@@ -12,8 +12,8 @@
 
 import { Button } from '@claimguardian/ui'
 import { format } from 'date-fns'
-import { 
-  FileText, Upload, Shield, DollarSign, 
+import {
+  FileText, Upload, Shield, DollarSign,
   AlertCircle, Plus, Eye, Download,
   Home, Droplets, Wind, AlertTriangle
 } from 'lucide-react'
@@ -28,7 +28,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 
 const PolicyUpload = dynamic(
   () => import('@/components/policy/policy-upload').then(mod => ({ default: mod.PolicyUpload })),
-  { 
+  {
     ssr: false,
     loading: () => <div className="text-gray-400">Loading upload component...</div>
   }
@@ -157,7 +157,7 @@ function PoliciesContent() {
                     <div className="bg-gray-700/50 rounded-lg p-4">
                       <p className="text-sm text-gray-400 mb-1">Flood</p>
                       <p className="text-xl font-semibold text-white">
-                        {activePolicy.flood_deductible 
+                        {activePolicy.flood_deductible
                           ? formatDeductible(activePolicy.flood_deductible)
                           : 'Not Covered'
                         }
@@ -227,7 +227,7 @@ function PoliciesContent() {
               <CardContent>
                 <div className="space-y-3">
                   {policies.map(policy => (
-                    <div 
+                    <div
                       key={policy.id}
                       className="bg-gray-700/50 rounded-lg p-4 flex items-center justify-between"
                     >

@@ -44,11 +44,11 @@ export async function POST(request: NextRequest) {
   try {
     // Get raw body for signature verification
     const rawBody = await request.text()
-    
+
     // Get signature from headers
     const signature = request.headers.get('resend-signature')
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET
-    
+
     if (!signature || !webhookSecret) {
       logger.warn('Missing webhook signature or secret')
       return NextResponse.json(
@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-    
+
     // Verify signature
     if (!verifyWebhookSignature(rawBody, signature, webhookSecret)) {
       logger.warn('Invalid webhook signature')
@@ -65,17 +65,17 @@ export async function POST(request: NextRequest) {
         { status: 401 }
       )
     }
-    
+
     // Parse webhook event
     const event: ResendWebhookEvent = JSON.parse(rawBody)
-    
+
     logger.info('Resend webhook received', {
       type: event.type,
       emailId: event.data.email_id
     })
-    
+
     const supabase = await createClient()
-    
+
     // Map event type to status
     const statusMap: Record<string, string> = {
       'email.sent': 'sent',
@@ -85,28 +85,28 @@ export async function POST(request: NextRequest) {
       'email.bounced': 'bounced',
       'email.complained': 'bounced'
     }
-    
+
     const status = statusMap[event.type]
     if (!status) {
       logger.warn('Unknown webhook event type', { type: event.type })
       return NextResponse.json({ received: true })
     }
-    
+
     // Update email log status
     const { error } = await supabase.rpc('update_email_status', {
       p_resend_id: event.data.email_id,
       p_status: status,
       p_timestamp: new Date(event.created_at).toISOString()
     })
-    
+
     if (error) {
-      logger.error('Failed to update email status', { 
+      logger.error('Failed to update email status', {
         emailId: event.data.email_id,
-        error 
+        error
       })
       // Don't return error to Resend - we don't want them to retry
     }
-    
+
     // Handle bounces and complaints
     if (event.type === 'email.bounced' || event.type === 'email.complained') {
       // Log the issue for manual review
@@ -115,12 +115,12 @@ export async function POST(request: NextRequest) {
         email: event.data.to[0],
         reason: event.data.bounce_type || event.data.complaint_type
       })
-      
+
       // TODO: Implement suppression list or notification to admin
     }
-    
+
     return NextResponse.json({ received: true })
-    
+
   } catch (error) {
     logger.error('Error processing Resend webhook', {}, error as Error)
     // Return success to prevent retries
@@ -130,8 +130,8 @@ export async function POST(request: NextRequest) {
 
 // Resend requires GET endpoint for webhook verification
 export async function GET() {
-  return NextResponse.json({ 
+  return NextResponse.json({
     message: 'Resend webhook endpoint',
-    status: 'active' 
+    status: 'active'
   })
 }

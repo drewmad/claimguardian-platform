@@ -122,15 +122,15 @@ PROGRESS=0
 for COUNTY_CODE in "${!COUNTIES[@]}"; do
     COUNTY_NAME="${COUNTIES[$COUNTY_CODE]}"
     OUTPUT_FILE="$OUTPUT_DIR/county_${COUNTY_CODE}_${COUNTY_NAME}.geojson"
-    
+
     ((PROGRESS++))
     echo -ne "${BLUE}[$PROGRESS/$TOTAL]${NC} Converting ${COUNTY_NAME} County (CO_NO=$COUNTY_CODE)... "
-    
+
     # Log start
     echo "" >> "$LOG_FILE"
     echo "County $COUNTY_CODE - $COUNTY_NAME" >> "$LOG_FILE"
     echo "Started: $(date)" >> "$LOG_FILE"
-    
+
     # Convert using ogr2ogr (without progress bar for cleaner output)
     if ogr2ogr \
         -f "GeoJSON" \
@@ -139,7 +139,7 @@ for COUNTY_CODE in "${!COUNTIES[@]}"; do
         "$OUTPUT_FILE" \
         "$GDB_PATH" \
         CADASTRAL_DOR 2>> "$LOG_FILE"; then
-        
+
         # Check if file has content
         if [[ -s "$OUTPUT_FILE" ]]; then
             FILE_SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
@@ -182,7 +182,7 @@ if [[ -d "$OUTPUT_DIR" ]] && [[ $(ls -A "$OUTPUT_DIR"/*.geojson 2>/dev/null | wc
     echo -e "  • Directory: $OUTPUT_DIR"
     echo -e "  • Total Size: $TOTAL_SIZE"
     echo ""
-    
+
     # Show largest files
     echo -e "${BLUE}Largest Counties:${NC}"
     du -h "$OUTPUT_DIR"/*.geojson 2>/dev/null | sort -hr | head -5 | while read size file; do

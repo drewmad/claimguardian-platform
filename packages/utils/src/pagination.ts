@@ -83,7 +83,7 @@ export function normalizePaginationParams(params?: PaginationParams): {
     Math.max(1, params?.limit || PAGINATION_DEFAULTS.limit)
   )
   const offset = calculateOffset(page, limit)
-  
+
   return { page, limit, offset }
 }
 
@@ -96,7 +96,7 @@ export function createPaginationMeta(
   total: number
 ): PaginationMeta {
   const totalPages = Math.ceil(total / limit)
-  
+
   return {
     page,
     limit,
@@ -139,11 +139,11 @@ export function createCursorPaginationMeta<T extends { id: string | number }>(
   return {
     limit,
     hasMore,
-    nextCursor: hasMore && data.length > 0 
-      ? createCursor(data[data.length - 1]) 
+    nextCursor: hasMore && data.length > 0
+      ? createCursor(data[data.length - 1])
       : undefined,
-    previousCursor: data.length > 0 
-      ? createCursor(data[0]) 
+    previousCursor: data.length > 0
+      ? createCursor(data[0])
       : undefined
   }
 }
@@ -158,7 +158,7 @@ export function paginateArray<T>(
   const { page, limit, offset } = normalizePaginationParams(params)
   const paginatedData = array.slice(offset, offset + limit)
   const meta = createPaginationMeta(page, limit, array.length)
-  
+
   return {
     data: paginatedData,
     meta
@@ -194,14 +194,14 @@ export function buildCursorPaginationClause(
   orderBy: string
 } {
   const normalizedLimit = Math.min(limit, PAGINATION_DEFAULTS.maxLimit)
-  
+
   if (!cursor) {
     return {
       limit: normalizedLimit,
       orderBy: direction === 'forward' ? 'ORDER BY id ASC' : 'ORDER BY id DESC'
     }
   }
-  
+
   const parsed = parseCursor(cursor)
   if (!parsed) {
     return {
@@ -209,11 +209,11 @@ export function buildCursorPaginationClause(
       orderBy: direction === 'forward' ? 'ORDER BY id ASC' : 'ORDER BY id DESC'
     }
   }
-  
+
   return {
     limit: normalizedLimit,
-    whereClause: direction === 'forward' 
-      ? `id > '${parsed.id}'` 
+    whereClause: direction === 'forward'
+      ? `id > '${parsed.id}'`
       : `id < '${parsed.id}'`,
     orderBy: direction === 'forward' ? 'ORDER BY id ASC' : 'ORDER BY id DESC'
   }

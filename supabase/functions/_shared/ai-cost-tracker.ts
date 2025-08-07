@@ -95,7 +95,7 @@ export class AICostTracker {
   async logUsage(log: AIUsageLog): Promise<void> {
     try {
       const responseTimeMs = log.responseTimeMs || (Date.now() - this.startTime)
-      
+
       const { error } = await this.supabase.rpc('log_ai_usage', {
         p_user_id: log.userId,
         p_provider: log.provider,
@@ -141,7 +141,7 @@ export class AICostTracker {
       throw error
     } finally {
       const responseTimeMs = Date.now() - startTime
-      
+
       // Log the usage
       await this.logUsage({
         userId,

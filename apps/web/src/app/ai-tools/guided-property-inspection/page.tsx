@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Camera, Home, CheckCircle, AlertCircle, ChevronRight,
   ListChecks, FileText, Clock, Target,
   Zap, Info, Play, Pause, SkipForward, ChevronLeft, Flag,
@@ -88,7 +88,7 @@ export default function GuidedPropertyInspectionPage() {
   const [currentNote, setCurrentNote] = useState('')
   const [completedCount, setCompletedCount] = useState(0)
   const [issueCount, setIssueCount] = useState(0)
-  
+
   const [rooms, setRooms] = useState<InspectionRoom[]>([
     {
       id: '1',
@@ -230,13 +230,13 @@ export default function GuidedPropertyInspectionPage() {
   const currentRoom = rooms[currentRoomIndex]
   const currentArea = currentRoom?.areas[currentAreaIndex]
   const currentCheckpoint = currentArea?.checkpoints[currentCheckpointIndex]
-  
-  const totalCheckpoints = rooms.reduce((total, room) => 
-    total + room.areas.reduce((areaTotal, area) => 
+
+  const totalCheckpoints = rooms.reduce((total, room) =>
+    total + room.areas.reduce((areaTotal, area) =>
       areaTotal + area.checkpoints.length, 0), 0)
-  
-  const completedCheckpoints = rooms.reduce((total, room) => 
-    total + room.areas.reduce((areaTotal, area) => 
+
+  const completedCheckpoints = rooms.reduce((total, room) =>
+    total + room.areas.reduce((areaTotal, area) =>
       areaTotal + area.checkpoints.filter(cp => cp.condition).length, 0), 0)
 
   const progressPercentage = (completedCheckpoints / totalCheckpoints) * 100
@@ -267,16 +267,16 @@ export default function GuidedPropertyInspectionPage() {
     const updatedRooms = [...rooms]
     const checkpoint = updatedRooms[currentRoomIndex].areas[currentAreaIndex].checkpoints[currentCheckpointIndex]
     checkpoint.condition = condition
-    
+
     if (condition === 'poor' || condition === 'critical') {
       updatedRooms[currentRoomIndex].issues++
       setIssueCount(issueCount + 1)
       checkpoint.priority = condition === 'critical' ? 'urgent' : 'high'
     }
-    
+
     setRooms(updatedRooms)
     setCompletedCount(completedCount + 1)
-    
+
     // Auto-advance to next checkpoint
     setTimeout(() => {
       handleNext()
@@ -285,7 +285,7 @@ export default function GuidedPropertyInspectionPage() {
 
   const handleNext = () => {
     const currentArea = rooms[currentRoomIndex].areas[currentAreaIndex]
-    
+
     if (currentCheckpointIndex < currentArea.checkpoints.length - 1) {
       setCurrentCheckpointIndex(currentCheckpointIndex + 1)
     } else if (currentAreaIndex < rooms[currentRoomIndex].areas.length - 1) {
@@ -296,7 +296,7 @@ export default function GuidedPropertyInspectionPage() {
       const updatedRooms = [...rooms]
       updatedRooms[currentRoomIndex].status = 'completed'
       setRooms(updatedRooms)
-      
+
       setCurrentRoomIndex(currentRoomIndex + 1)
       setCurrentAreaIndex(0)
       setCurrentCheckpointIndex(0)
@@ -351,8 +351,8 @@ export default function GuidedPropertyInspectionPage() {
       inspectionDate: new Date(),
       inspector: 'Property Owner',
       totalIssues: issueCount,
-      criticalIssues: rooms.reduce((total, room) => 
-        total + room.areas.reduce((areaTotal, area) => 
+      criticalIssues: rooms.reduce((total, room) =>
+        total + room.areas.reduce((areaTotal, area) =>
           areaTotal + area.checkpoints.filter(cp => cp.condition === 'critical').length, 0), 0),
       rooms: rooms,
       recommendations: [
@@ -366,7 +366,7 @@ export default function GuidedPropertyInspectionPage() {
         longTerm: 10000
       }
     }
-    
+
     // Download report
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
@@ -383,8 +383,8 @@ export default function GuidedPropertyInspectionPage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -419,7 +419,7 @@ export default function GuidedPropertyInspectionPage() {
                             This guided inspection will walk you through each area of your property systematically. Take photos and notes as needed.
                           </AlertDescription>
                         </Alert>
-                        
+
                         <div className="grid grid-cols-2 gap-4">
                           <div className="bg-gray-700/50 rounded-lg p-4">
                             <p className="text-sm text-gray-400 mb-1">Total Checkpoints</p>
@@ -448,7 +448,7 @@ export default function GuidedPropertyInspectionPage() {
                           ))}
                         </div>
 
-                        <Button 
+                        <Button
                           onClick={handleStartInspection}
                           className="w-full bg-blue-600 hover:bg-blue-700"
                           size="lg"
@@ -662,8 +662,8 @@ export default function GuidedPropertyInspectionPage() {
 
                           {currentCheckpoint?.photo && (
                             <div className="relative">
-                              <img 
-                                src={currentCheckpoint.photo} 
+                              <img
+                                src={currentCheckpoint.photo}
                                 alt={`Inspection photo for ${currentCheckpoint.item}`}
                                 className="w-full h-48 object-cover rounded-lg"
                               />
@@ -694,8 +694,8 @@ export default function GuidedPropertyInspectionPage() {
                               onClick={handleNext}
                               className="flex-1 bg-blue-600 hover:bg-blue-700"
                             >
-                              {currentRoomIndex === rooms.length - 1 && 
-                               currentAreaIndex === currentRoom.areas.length - 1 && 
+                              {currentRoomIndex === rooms.length - 1 &&
+                               currentAreaIndex === currentRoom.areas.length - 1 &&
                                currentCheckpointIndex === currentArea.checkpoints.length - 1 ? (
                                 <>
                                   Complete Inspection
@@ -749,8 +749,8 @@ export default function GuidedPropertyInspectionPage() {
                                 )}
                               </div>
                               {index === currentRoomIndex && (
-                                <Progress 
-                                  value={(currentAreaIndex * 100) / room.areas.length} 
+                                <Progress
+                                  value={(currentAreaIndex * 100) / room.areas.length}
                                   className="h-1"
                                 />
                               )}
@@ -797,7 +797,7 @@ export default function GuidedPropertyInspectionPage() {
             )}
           </div>
         </div>
-        
+
         {/* Camera Capture Modal */}
         {showCameraCapture && (
           <CameraCapture

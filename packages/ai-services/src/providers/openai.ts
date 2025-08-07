@@ -62,7 +62,7 @@ export class OpenAIProvider extends AIProvider {
       })
 
       const text = completion.choices[0].message.content || ''
-      
+
       // Extract JSON from response
       const jsonMatch = text.match(/\{[\s\S]*\}/)
       if (!jsonMatch) {
@@ -97,14 +97,14 @@ export class OpenAIProvider extends AIProvider {
 
     try {
       const messages: unknown[] = []
-      
+
       if (context) {
         messages.push({
           role: 'system',
           content: `Context: ${JSON.stringify(context)}`
         })
       }
-      
+
       messages.push({
         role: 'user',
         content: prompt

@@ -13,11 +13,11 @@
 import { createContext, useContext, ReactNode, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { toast as sonnerToast, Toaster, ExternalToast } from 'sonner'
-import { 
-  CheckCircle, 
-  AlertTriangle, 
-  X, 
-  Info, 
+import {
+  CheckCircle,
+  AlertTriangle,
+  X,
+  Info,
   AlertCircle,
   Loader2,
   Clock,
@@ -85,7 +85,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const getIcon = (variant: ToastVariant, customIcon?: React.ComponentType<any>) => {
     if (customIcon) return customIcon
-    
+
     switch (variant) {
       case 'success': return CheckCircle
       case 'error': return AlertCircle
@@ -114,7 +114,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   }
 
   const createCustomToast = useCallback((message: string, options: CustomToastOptions = {}) => {
-    const { 
+    const {
       variant = 'default',
       title,
       subtitle,
@@ -175,20 +175,20 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const contextValue: ToastContextValue = {
     toast: createCustomToast,
-    
-    success: (message, options = {}) => 
+
+    success: (message, options = {}) =>
       createCustomToast(message, { ...options, variant: 'success' }),
-    
-    error: (message, options = {}) => 
+
+    error: (message, options = {}) =>
       createCustomToast(message, { ...options, variant: 'error' }),
-    
-    warning: (message, options = {}) => 
+
+    warning: (message, options = {}) =>
       createCustomToast(message, { ...options, variant: 'warning' }),
-    
-    info: (message, options = {}) => 
+
+    info: (message, options = {}) =>
       createCustomToast(message, { ...options, variant: 'info' }),
-    
-    loading: (message, options = {}) => 
+
+    loading: (message, options = {}) =>
       createCustomToast(message, { ...options, variant: 'loading', persistent: true }),
 
     promise: async <T,>(
@@ -199,32 +199,32 @@ export function ToastProvider({ children }: { children: ReactNode }) {
         error: string | ((error: Error) => string)
       }
     ) => {
-      const loadingToast = createCustomToast(options.loading, { 
-        variant: 'loading', 
-        persistent: true 
+      const loadingToast = createCustomToast(options.loading, {
+        variant: 'loading',
+        persistent: true
       })
 
       try {
         const result = await promise
-        
+
         sonnerToast.dismiss(loadingToast)
-        
-        const successMessage = typeof options.success === 'function' 
-          ? options.success(result) 
+
+        const successMessage = typeof options.success === 'function'
+          ? options.success(result)
           : options.success
-          
+
         createCustomToast(successMessage, { variant: 'success' })
-        
+
         return result
       } catch (error) {
         sonnerToast.dismiss(loadingToast)
-        
-        const errorMessage = typeof options.error === 'function' 
-          ? options.error(error as Error) 
+
+        const errorMessage = typeof options.error === 'function'
+          ? options.error(error as Error)
           : options.error
-          
+
         createCustomToast(errorMessage, { variant: 'error' })
-        
+
         throw error
       }
     },
@@ -299,7 +299,7 @@ function RichToast({
     if (actionLoading !== null) return
 
     setActionLoading(index)
-    
+
     try {
       await action.onClick()
     } catch (error) {
@@ -328,21 +328,21 @@ function RichToast({
               variant === 'loading' && "animate-spin"
             )} />
           </div>
-          
+
           <div className="ml-3 w-0 flex-1">
             {title && (
               <p className="text-sm font-medium">
                 {title}
               </p>
             )}
-            
+
             <p className={cn(
               "text-sm",
               title ? "mt-1 text-opacity-90" : "font-medium"
             )}>
               {message}
             </p>
-            
+
             {subtitle && (
               <p className="mt-1 text-xs opacity-75">
                 {subtitle}
@@ -438,10 +438,10 @@ function getVariantStyles(variant: ToastVariant) {
 }
 
 // Custom toaster component with enhanced features
-export function CustomToaster({ 
+export function CustomToaster({
   position = 'top-right',
   theme = 'system',
-  ...props 
+  ...props
 }: {
   position?: ToastPosition
   theme?: 'light' | 'dark' | 'system'
@@ -471,7 +471,7 @@ export function CustomToaster({
 // Specialized toast functions for common use cases
 export const toastPresets = {
   // Property-related toasts
-  propertyAdded: (propertyName: string) => 
+  propertyAdded: (propertyName: string) =>
     sonnerToast.success(`${propertyName} has been added to your portfolio`, {
       icon: <CheckCircle className="w-4 h-4" />
     }),

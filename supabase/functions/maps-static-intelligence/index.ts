@@ -108,7 +108,7 @@ function generateStaticMapUrl(
         marker.size || 'normal',
         marker.label || String.fromCharCode(65 + index) // A, B, C, etc.
       ].join('|')
-      
+
       params.append('markers', `${markerStyle}|${marker.lat},${marker.lng}`)
     })
   }
@@ -122,11 +122,11 @@ function generateStaticMapUrl(
           `weight:${overlay.weight || 2}`,
           overlay.fillColor ? `fillcolor:${overlay.fillColor}` : null
         ].filter(Boolean).join('|')
-        
+
         const coordinates = overlay.coordinates
           .map((coord: any) => `${coord.lat},${coord.lng}`)
           .join('|')
-        
+
         params.append('path', `${pathStyle}|${coordinates}`)
       }
     })
@@ -142,7 +142,7 @@ function generateStaticMapUrl(
 
 function generatePropertyOverviewMaps(location: { lat: number, lng: number }, address?: string): any {
   const baseOptions = { zoom: 17, size: '800x600', scale: 2 }
-  
+
   // Primary property marker
   const propertyMarker = {
     lat: location.lat,
@@ -181,7 +181,7 @@ function generatePropertyOverviewMaps(location: { lat: number, lng: number }, ad
 
 function generateDamageAssessmentMaps(location: { lat: number, lng: number }): any {
   const baseOptions = { zoom: 19, size: '800x600', scale: 2 }
-  
+
   // Simulate damage markers around the property
   const damageMarkers = [
     { lat: location.lat + 0.0001, lng: location.lng + 0.0001, color: 'red', label: '1', severity: 'severe' },
@@ -222,7 +222,7 @@ function generateDamageAssessmentMaps(location: { lat: number, lng: number }): a
       lat: marker.lat,
       lng: marker.lng,
       severity: marker.severity as 'minor' | 'moderate' | 'severe',
-      type: marker.severity === 'severe' ? 'Roof damage' : 
+      type: marker.severity === 'severe' ? 'Roof damage' :
             marker.severity === 'moderate' ? 'Siding damage' : 'Cosmetic damage'
     }))
   }
@@ -230,7 +230,7 @@ function generateDamageAssessmentMaps(location: { lat: number, lng: number }): a
 
 function generateNeighborhoodContext(location: { lat: number, lng: number }): any {
   const contextMaps = generatePropertyOverviewMaps(location)
-  
+
   // Mock nearby structures analysis
   const nearbyStructures = [
     { type: 'Residential', distance: 25, relevance: 'Similar construction age and materials' },
@@ -239,15 +239,15 @@ function generateNeighborhoodContext(location: { lat: number, lng: number }): an
   ]
 
   const accessPoints = [
-    { 
-      type: 'road' as const, 
-      coordinates: { lat: location.lat + 0.0005, lng: location.lng }, 
-      condition: 'Paved - good access for emergency vehicles' 
+    {
+      type: 'road' as const,
+      coordinates: { lat: location.lat + 0.0005, lng: location.lng },
+      condition: 'Paved - good access for emergency vehicles'
     },
-    { 
-      type: 'driveway' as const, 
-      coordinates: { lat: location.lat + 0.0002, lng: location.lng + 0.0001 }, 
-      condition: 'Concrete - clear access to property' 
+    {
+      type: 'driveway' as const,
+      coordinates: { lat: location.lat + 0.0002, lng: location.lng + 0.0001 },
+      condition: 'Concrete - clear access to property'
     }
   ]
 
@@ -267,30 +267,30 @@ function generateNeighborhoodContext(location: { lat: number, lng: number }): an
 
 function generateRiskVisualization(location: { lat: number, lng: number }): any {
   const riskBaseOptions = { zoom: 14, size: '800x600', scale: 2 }
-  
+
   // Mock emergency services
   const emergencyServices = [
-    { 
-      type: 'Fire Station', 
-      location: { lat: location.lat + 0.01, lng: location.lng + 0.008 }, 
-      distance: 1.2 
+    {
+      type: 'Fire Station',
+      location: { lat: location.lat + 0.01, lng: location.lng + 0.008 },
+      distance: 1.2
     },
-    { 
-      type: 'Hospital', 
-      location: { lat: location.lat - 0.015, lng: location.lng + 0.012 }, 
-      distance: 2.8 
+    {
+      type: 'Hospital',
+      location: { lat: location.lat - 0.015, lng: location.lng + 0.012 },
+      distance: 2.8
     },
-    { 
-      type: 'Police Station', 
-      location: { lat: location.lat + 0.008, lng: location.lng - 0.006 }, 
-      distance: 1.6 
+    {
+      type: 'Police Station',
+      location: { lat: location.lat + 0.008, lng: location.lng - 0.006 },
+      distance: 1.6
     }
   ]
 
   const emergencyMarkers = emergencyServices.map((service, index) => ({
     lat: service.location.lat,
     lng: service.location.lng,
-    color: service.type === 'Fire Station' ? 'red' : 
+    color: service.type === 'Fire Station' ? 'red' :
            service.type === 'Hospital' ? 'green' : 'blue',
     label: service.type.charAt(0),
     size: 'small' as const
@@ -329,7 +329,7 @@ function analyzeMapIntelligence(location: { lat: number, lng: number }, analysis
         insights.push('Elevation assessment recommended for flood risk')
       }
       break
-    
+
     case 'damage-assessment':
       insights.push('High-resolution imagery available for detailed damage analysis')
       insights.push('Multiple vantage points captured for comprehensive assessment')
@@ -338,7 +338,7 @@ function analyzeMapIntelligence(location: { lat: number, lng: number }, analysis
         insights.push('Damage pattern consistent with hurricane wind patterns')
       }
       break
-    
+
     case 'neighborhood-context':
       insights.push('Property density and construction types analyzed')
       insights.push('Access routes and emergency service proximity mapped')
@@ -383,7 +383,7 @@ Deno.serve(async (req: Request) => {
     }));
 
     // Generate primary map
-    const primaryMapUrl = analysisType === 'custom' ? 
+    const primaryMapUrl = analysisType === 'custom' ?
       generateStaticMapUrl(location, mapType, options) :
       generateStaticMapUrl(location, mapType, { zoom: options.zoom || 17, size: options.size || '800x600', scale: 2 })
 
@@ -400,11 +400,11 @@ Deno.serve(async (req: Request) => {
       case 'property-overview':
         intelligence.contextualMaps = generatePropertyOverviewMaps(location, location.address)
         break
-      
+
       case 'damage-assessment':
         intelligence.claimsContext = generateDamageAssessmentMaps(location)
         break
-      
+
       case 'neighborhood-context':
         const neighborhoodData = generateNeighborhoodContext(location)
         intelligence.contextualMaps = neighborhoodData.contextualMaps
@@ -445,7 +445,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Maps Static Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

@@ -129,13 +129,13 @@ export class QueryOptimizer {
   private cache: Map<string, CacheEntry> = new Map()
   private queryMetrics: QueryMetrics[] = []
   private indexRecommendations: IndexRecommendation[] = []
-  
+
   constructor(supabase: SupabaseClient) {
     this.supabase = supabase
-    
+
     // Start cleanup interval for cache
     setInterval(() => this.cleanupCache(), 5 * 60 * 1000) // 5 minutes
-    
+
     // Start metrics aggregation
     setInterval(() => this.aggregateMetrics(), 10 * 60 * 1000) // 10 minutes
   }
@@ -161,7 +161,7 @@ export class QueryOptimizer {
     const startTime = performance.now()
     const queryId = this.generateQueryId(query, params)
     const queryHash = this.hashQuery(query, params)
-    
+
     const {
       cacheTTL = 5 * 60 * 1000, // 5 minutes default
       enableCache = true,
@@ -186,9 +186,9 @@ export class QueryOptimizer {
           tableName,
           operation
         }
-        
+
         this.recordMetrics(metrics)
-        
+
         return {
           data: cached.data,
           error: null,
@@ -200,7 +200,7 @@ export class QueryOptimizer {
     try {
       // Execute the query using standard Supabase query builder
       let supabaseQuery = this.supabase.from(tableName)
-      
+
       // Parse and execute query - simplified implementation
       const result = await this.executeQuery(query, params, tableName)
 
@@ -246,7 +246,7 @@ export class QueryOptimizer {
 
     } catch (error) {
       const executionTime = performance.now() - startTime
-      
+
       logger.error('Query execution failed', {
         queryId,
         executionTime,
@@ -290,7 +290,7 @@ export class QueryOptimizer {
       const { data, error } = await this.supabase
         .from(tableName)
         .select('*')
-      
+
       return { data: data || [], error }
     } catch (error) {
       return { data: [], error }
@@ -372,8 +372,8 @@ export class QueryOptimizer {
     try {
       // Get query statistics
       const totalQueries = this.queryMetrics.length
-      const averageExecutionTime = totalQueries > 0 
-        ? this.queryMetrics.reduce((sum, m) => sum + m.executionTime, 0) / totalQueries 
+      const averageExecutionTime = totalQueries > 0
+        ? this.queryMetrics.reduce((sum, m) => sum + m.executionTime, 0) / totalQueries
         : 0
       const slowQueries = this.queryMetrics.filter(m => m.executionTime > 1000).length
       const cacheHits = this.queryMetrics.filter(m => m.cacheHit).length
@@ -481,7 +481,7 @@ export class QueryOptimizer {
 
   private recordMetrics(metrics: QueryMetrics): void {
     this.queryMetrics.push(metrics)
-    
+
     if (this.queryMetrics.length > 1000) {
       this.queryMetrics.shift()
     }
@@ -493,7 +493,7 @@ export class QueryOptimizer {
 
   private parseQueryPlan(planData: any): Omit<QueryPlan, 'suggestions'> {
     const plan = planData[0]?.Plan || {}
-    
+
     return {
       query: '',
       planTime: plan['Planning Time'] || 0,
@@ -530,10 +530,10 @@ export class QueryOptimizer {
 
   private async generateIndexRecommendations(): Promise<IndexRecommendation[]> {
     const recommendations: IndexRecommendation[] = []
-    
+
     const slowQueries = this.queryMetrics.filter(m => m.executionTime > 500)
     const tableQueryCounts: Record<string, number> = {}
-    
+
     for (const query of slowQueries) {
       tableQueryCounts[query.tableName] = (tableQueryCounts[query.tableName] || 0) + 1
     }
@@ -565,7 +565,7 @@ export class QueryOptimizer {
     if (recentMetrics.length > 0) {
       const avgTime = recentMetrics.reduce((sum, m) => sum + m.executionTime, 0) / recentMetrics.length
       const slowQueries = recentMetrics.filter(m => m.executionTime > 1000).length
-      
+
       logger.info('Query performance summary', {
         timeWindow: '10min',
         totalQueries: recentMetrics.length,
@@ -582,7 +582,7 @@ export class QueryOptimizer {
 export function createQueryOptimizer(): QueryOptimizer {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
   const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  
+
   const supabase = createClient(supabaseUrl, supabaseKey)
   return new QueryOptimizer(supabase)
 }
@@ -615,7 +615,7 @@ class FloridaParcelQueryOptimizer {
   }> {
     // Build query based on options
     const query = this.buildParcelQuery(options)
-    
+
     // Use the enhanced query optimizer
     const result = await this.queryOptimizer.executeOptimized(
       query.sql,
@@ -682,17 +682,17 @@ class FloridaParcelQueryOptimizer {
 
     // Build base query
     let query = 'SELECT '
-    
+
     // Optimize column selection
     const columns = this.getOptimizedColumns(options)
     query += columns.join(', ')
-    
+
     query += ' FROM florida_parcels'
-    
+
     // Build WHERE clause with optimal ordering
     const whereConditions: string[] = []
     const parameters: unknown[] = []
-    
+
     // Geographic queries - most selective first
     if (options.counties && options.counties.length > 0) {
       whereConditions.push(`county_name = ANY($${parameters.length + 1})`)
@@ -701,7 +701,7 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = Math.floor(estimatedRows / 67 * options.counties.length) // 67 counties
       estimatedCost += 10
     }
-    
+
     if (options.zipCodes && options.zipCodes.length > 0) {
       whereConditions.push(`site_zip = ANY($${parameters.length + 1})`)
       parameters.push(options.zipCodes)
@@ -709,7 +709,7 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = Math.floor(estimatedRows / 1000 * options.zipCodes.length)
       estimatedCost += 15
     }
-    
+
     // Spatial queries
     if (options.bounds) {
       // Use spatial index for bounding box queries
@@ -731,7 +731,7 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = Math.floor(estimatedRows * 0.05)
       estimatedCost += 30
     }
-    
+
     // Text search optimization
     if (options.ownerName) {
       // Use trigram index for fuzzy matching
@@ -741,7 +741,7 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = Math.floor(estimatedRows * 0.01)
       estimatedCost += 25
     }
-    
+
     if (options.parcelId) {
       // Exact match on indexed column
       whereConditions.push(`parcel_id = $${parameters.length + 1}`)
@@ -750,7 +750,7 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = 1
       estimatedCost += 5
     }
-    
+
     // Numeric range queries
     if (options.justValue) {
       if (options.justValue.min !== undefined) {
@@ -765,15 +765,15 @@ class FloridaParcelQueryOptimizer {
       estimatedRows = Math.floor(estimatedRows * 0.2)
       estimatedCost += 15
     }
-    
+
     // Build final query
     if (whereConditions.length > 0) {
       query += ' WHERE ' + whereConditions.join(' AND ')
     }
-    
+
     // Add ordering for consistent results
     query += ' ORDER BY parcel_id'
-    
+
     // Add pagination
     if (options.limit) {
       query += ` LIMIT ${options.limit}`
@@ -782,7 +782,7 @@ class FloridaParcelQueryOptimizer {
     if (options.offset) {
       query += ` OFFSET ${options.offset}`
     }
-    
+
     return {
       query,
       parameters,
@@ -807,9 +807,9 @@ class FloridaParcelQueryOptimizer {
       'land_value',
       'bldg_value'
     ]
-    
+
     const columns = [...baseColumns]
-    
+
     // Add geometry columns only if needed
     if (options.includeGeometry) {
       columns.push('lat', 'lng')
@@ -823,24 +823,24 @@ class FloridaParcelQueryOptimizer {
       // Need coordinates for spatial queries
       columns.push('lat', 'lng')
     }
-    
+
     // Add optional detail columns
     if (options.includeOwnerDetails) {
       columns.push('own_addr1', 'own_addr2', 'own_city', 'own_state', 'own_zip')
     }
-    
+
     if (options.yearBuilt) {
       columns.push('year_built')
     }
-    
+
     if (options.livingArea) {
       columns.push('tot_lvg_area')
     }
-    
+
     if (options.useCode) {
       columns.push('dor_uc', 'pa_uc')
     }
-    
+
     return columns
   }
 
@@ -854,18 +854,18 @@ class FloridaParcelQueryOptimizer {
     if (!this.supabase) {
       throw new Error('Database connection not available')
     }
-    
+
     const startTime = Date.now()
-    
+
     try {
       // Note: Direct SQL execution is not available through RPC without proper setup
       // For now, return empty array to prevent TypeScript errors
       // In production, you would need to implement proper SQL execution functions
       console.warn('Query optimizer attempted to execute raw SQL - not implemented:', plan.query)
-      
+
       // Track execution time
       plan.executionTime = Date.now() - startTime
-      
+
       return {
         data: [],
         partitions: [] // Would be populated from query analysis
@@ -881,10 +881,10 @@ class FloridaParcelQueryOptimizer {
    */
   async getOptimizationRecommendations(): Promise<OptimizationStrategy[]> {
     const recommendations: OptimizationStrategy[] = []
-    
+
     // Analyze query statistics
     const stats = this.analyzeQueryPatterns()
-    
+
     // Index recommendations
     if (stats.slowQueries.some(q => q.includes('own_name'))) {
       recommendations.push({
@@ -893,12 +893,12 @@ class FloridaParcelQueryOptimizer {
         impact: 'high',
         implementation: `
           CREATE EXTENSION IF NOT EXISTS pg_trgm;
-          CREATE INDEX idx_florida_parcels_own_name_trgm 
+          CREATE INDEX idx_florida_parcels_own_name_trgm
           ON florida_parcels USING gin(own_name gin_trgm_ops);
         `
       })
     }
-    
+
     // Partitioning recommendations
     if (stats.totalRows > 10000000) {
       recommendations.push({
@@ -910,15 +910,15 @@ class FloridaParcelQueryOptimizer {
           CREATE TABLE florida_parcels_partitioned (
             LIKE florida_parcels INCLUDING ALL
           ) PARTITION BY LIST (county_name);
-          
+
           -- Create partitions for each county
-          CREATE TABLE florida_parcels_miami_dade 
-          PARTITION OF florida_parcels_partitioned 
+          CREATE TABLE florida_parcels_miami_dade
+          PARTITION OF florida_parcels_partitioned
           FOR VALUES IN ('MIAMI-DADE');
         `
       })
     }
-    
+
     // Materialized view recommendations
     if (stats.frequentAggregations) {
       recommendations.push({
@@ -927,7 +927,7 @@ class FloridaParcelQueryOptimizer {
         impact: 'medium',
         implementation: `
           CREATE MATERIALIZED VIEW mv_county_statistics AS
-          SELECT 
+          SELECT
             county_name,
             COUNT(*) as parcel_count,
             AVG(just_value) as avg_value,
@@ -935,13 +935,13 @@ class FloridaParcelQueryOptimizer {
             COUNT(DISTINCT own_name) as unique_owners
           FROM florida_parcels
           GROUP BY county_name;
-          
-          CREATE INDEX idx_mv_county_stats_county 
+
+          CREATE INDEX idx_mv_county_stats_county
           ON mv_county_statistics(county_name);
         `
       })
     }
-    
+
     // Query rewrite recommendations
     if (stats.inefficientPatterns.length > 0) {
       recommendations.push({
@@ -951,7 +951,7 @@ class FloridaParcelQueryOptimizer {
         implementation: this.generateQueryRewriteExamples(stats.inefficientPatterns)
       })
     }
-    
+
     return recommendations
   }
 
@@ -966,14 +966,14 @@ class FloridaParcelQueryOptimizer {
     frequentAggregations: boolean
   } {
     const allStats = Array.from(this.queryStats.values()).flat()
-    
+
     // Find slow queries (> 1 second)
     const slowQueries = allStats
       .filter(s => s.executionTime > 1000)
       .map(() => 'slow_query') // Would map to actual queries in production
-    
+
     // Find frequently used patterns
-    
+
     return {
       slowQueries,
       frequentQueries: [],
@@ -988,34 +988,34 @@ class FloridaParcelQueryOptimizer {
    */
   private generateQueryRewriteExamples(patterns: string[]): string {
     const examples: string[] = []
-    
+
     examples.push(`
       -- Instead of multiple OR conditions:
-      SELECT * FROM florida_parcels 
-      WHERE county_name = 'MIAMI-DADE' 
-         OR county_name = 'BROWARD' 
+      SELECT * FROM florida_parcels
+      WHERE county_name = 'MIAMI-DADE'
+         OR county_name = 'BROWARD'
          OR county_name = 'PALM BEACH';
-      
+
       -- Use IN or ANY:
-      SELECT * FROM florida_parcels 
+      SELECT * FROM florida_parcels
       WHERE county_name = ANY(ARRAY['MIAMI-DADE', 'BROWARD', 'PALM BEACH']);
     `)
-    
+
     examples.push(`
       -- Instead of LIKE with leading wildcard:
       SELECT * FROM florida_parcels WHERE own_name LIKE '%SMITH%';
-      
+
       -- Use trigram index with ILIKE:
       SELECT * FROM florida_parcels WHERE own_name ILIKE '%SMITH%';
     `)
-    
+
     return examples.join('\n\n')
   }
 
   /**
    * Cache management
    */
-  private generateCacheKey(operation: string, params: unknown): string { 
+  private generateCacheKey(operation: string, params: unknown): string {
     return `${operation}:${JSON.stringify(params)}`
   }
 
@@ -1033,7 +1033,7 @@ class FloridaParcelQueryOptimizer {
       result,
       timestamp: Date.now()
     })
-    
+
     // Limit cache size
     if (this.queryCache.size > 1000) {
       const firstKey = this.queryCache.keys().next().value
@@ -1049,12 +1049,12 @@ class FloridaParcelQueryOptimizer {
   private trackQueryStats(operation: string, stats: QueryStats): void {
     const existing = this.queryStats.get(operation) || []
     existing.push(stats)
-    
+
     // Keep last 100 queries per operation
     if (existing.length > 100) {
       existing.shift()
     }
-    
+
     this.queryStats.set(operation, existing)
   }
 
@@ -1076,7 +1076,7 @@ class FloridaParcelQueryOptimizer {
       const avgExecutionTime = stats.reduce((sum, s) => sum + s.executionTime, 0) / totalQueries
       const cacheHits = stats.filter(s => s.cacheHit).length
       const avgRowsReturned = stats.reduce((sum, s) => sum + s.rowsReturned, 0) / totalQueries
-      
+
       return {
         name,
         avgExecutionTime,
@@ -1085,7 +1085,7 @@ class FloridaParcelQueryOptimizer {
         avgRowsReturned
       }
     })
-    
+
     return {
       operations,
       recommendations: []
@@ -1096,10 +1096,10 @@ class FloridaParcelQueryOptimizer {
 // Export singleton instance
 export const parcelQueryOptimizer = new FloridaParcelQueryOptimizer()
 
-export type { 
-  ParcelQueryOptions, 
-  GeoQueryOptions, 
-  QueryPlan, 
-  QueryStats, 
-  OptimizationStrategy 
+export type {
+  ParcelQueryOptions,
+  GeoQueryOptions,
+  QueryPlan,
+  QueryStats,
+  OptimizationStrategy
 }

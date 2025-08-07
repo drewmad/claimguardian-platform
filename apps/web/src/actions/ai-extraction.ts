@@ -41,7 +41,7 @@ export interface ExtractionRecord {
 export async function processDocumentExtraction(params: ProcessExtractionParams) {
   try {
     const supabase = await await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -58,10 +58,10 @@ export async function processDocumentExtraction(params: ProcessExtractionParams)
       .single()
 
     if (docError || !document) {
-      logger.error('Document not found or access denied', { 
-        documentId: params.documentId, 
+      logger.error('Document not found or access denied', {
+        documentId: params.documentId,
         userId: user.id,
-        error: docError 
+        error: docError
       })
       return { data: null, error: 'Document not found or access denied' }
     }
@@ -104,9 +104,9 @@ export async function processDocumentExtraction(params: ProcessExtractionParams)
       .createSignedUrl(document.file_path, 3600) // 1 hour expiry
 
     if (urlError) {
-      logger.error('Failed to create signed URL for document', { 
+      logger.error('Failed to create signed URL for document', {
         error: urlError,
-        filePath: document.file_path 
+        filePath: document.file_path
       })
       return { data: null, error: 'Failed to access document for processing' }
     }
@@ -163,12 +163,12 @@ export async function processDocumentExtraction(params: ProcessExtractionParams)
 
     return { data: updatedExtraction, error: null }
   } catch (error) {
-    logger.error('Unexpected error during document extraction', { 
+    logger.error('Unexpected error during document extraction', {
       error,
-      documentId: params.documentId 
+      documentId: params.documentId
     })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -180,7 +180,7 @@ export async function processDocumentExtraction(params: ProcessExtractionParams)
 export async function getExtractionResults(documentId: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -210,8 +210,8 @@ export async function getExtractionResults(documentId: string) {
     return { data: extraction, error: null }
   } catch (error) {
     logger.error('Unexpected error fetching extraction results', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -223,7 +223,7 @@ export async function getExtractionResults(documentId: string) {
 export async function applyExtractionToProperty(extractionId: string, propertyId: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -269,17 +269,17 @@ export async function applyExtractionToProperty(extractionId: string, propertyId
 
       const { data: policy, error: policyError } = await supabase
         .from('policies')
-        .upsert(policyData, { 
+        .upsert(policyData, {
           onConflict: 'property_id,policy_number,policy_type',
-          ignoreDuplicates: false 
+          ignoreDuplicates: false
         })
         .select()
         .single()
 
       if (policyError) {
-        logger.error('Failed to create/update policy from extraction', { 
+        logger.error('Failed to create/update policy from extraction', {
           error: policyError,
-          extractionId 
+          extractionId
         })
         return { data: null, error: policyError.message }
       }
@@ -287,9 +287,9 @@ export async function applyExtractionToProperty(extractionId: string, propertyId
       // Mark extraction as applied
       await supabase
         .from('document_extractions')
-        .update({ 
-          applied_to_property: true, 
-          applied_at: new Date().toISOString() 
+        .update({
+          applied_to_property: true,
+          applied_at: new Date().toISOString()
         })
         .eq('id', extractionId)
 
@@ -309,8 +309,8 @@ export async function applyExtractionToProperty(extractionId: string, propertyId
     return { data: null, error: 'Insufficient data to create policy record' }
   } catch (error) {
     logger.error('Unexpected error applying extraction to property', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }

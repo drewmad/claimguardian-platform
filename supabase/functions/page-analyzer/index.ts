@@ -89,11 +89,11 @@ async function fetchPageContent(url: string): Promise<{ html: string; metadata: 
     }
 
     const html = await response.text()
-    
+
     // Basic metadata extraction
     const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i)
     const descriptionMatch = html.match(/<meta\s+name=["']description["']\s+content=["']([^"']+)["']/i)
-    
+
     return {
       html,
       metadata: {
@@ -114,10 +114,10 @@ function extractTextContent(html: string): string {
   // Remove script and style tags
   let text = html.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
   text = text.replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
-  
+
   // Remove HTML tags
   text = text.replace(/<[^>]+>/g, ' ')
-  
+
   // Decode HTML entities
   text = text.replace(/&nbsp;/g, ' ')
   text = text.replace(/&amp;/g, '&')
@@ -125,10 +125,10 @@ function extractTextContent(html: string): string {
   text = text.replace(/&gt;/g, '>')
   text = text.replace(/&quot;/g, '"')
   text = text.replace(/&#39;/g, "'")
-  
+
   // Clean up whitespace
   text = text.replace(/\s+/g, ' ').trim()
-  
+
   return text
 }
 
@@ -194,7 +194,7 @@ Return ONLY valid JSON, no additional text.`
   try {
     // Use OpenAI by default, with Gemini as fallback
     let result: string
-    
+
     if (OPENAI_API_KEY) {
       const response = await fetch('https://api.openai.com/v1/chat/completions', {
         method: 'POST',
@@ -229,7 +229,7 @@ Return ONLY valid JSON, no additional text.`
     } else if (GEMINI_API_KEY) {
       const genAI = new GoogleGenerativeAI(GEMINI_API_KEY)
       const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
-      
+
       const geminiResult = await model.generateContent(prompt)
       result = geminiResult.response.text()
     } else {
@@ -322,13 +322,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
   try {
     // Parse request body
     const body: PageAnalysisRequest = await req.json()
-    
+
     // Validate URL
     if (!body.url) {
       return new Response(
         JSON.stringify({ success: false, error: 'URL is required' }),
-        { 
-          status: 400, 
+        {
+          status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
@@ -340,8 +340,8 @@ Deno.serve(async (req: Request): Promise<Response> => {
     } catch {
       return new Response(
         JSON.stringify({ success: false, error: 'Invalid URL format' }),
-        { 
-          status: 400, 
+        {
+          status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
@@ -351,10 +351,10 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Fetch page content
     const pageContent = await fetchPageContent(body.url)
-    
+
     // Extract text content
     const textContent = extractTextContent(pageContent.html)
-    
+
     // Analyze with AI
     const analysis = await analyzePageWithAI(
       { ...pageContent, text: textContent },
@@ -386,7 +386,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify(response),
-      { 
+      {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
@@ -394,9 +394,9 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   } catch (error) {
     console.error('Page analysis error:', error)
-    
+
     const processingTime = Date.now() - startTime
-    
+
     // Track failed usage
     await trackUsage(
       undefined,
@@ -414,7 +414,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify(errorResponse),
-      { 
+      {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }

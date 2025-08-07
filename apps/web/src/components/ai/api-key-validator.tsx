@@ -25,10 +25,10 @@ interface APIKeyValidatorProps {
   children: React.ReactNode
 }
 
-export function APIKeyValidator({ 
-  onValidation, 
-  requiredProviders = ['openai', 'gemini'], 
-  children 
+export function APIKeyValidator({
+  onValidation,
+  requiredProviders = ['openai', 'gemini'],
+  children
 }: APIKeyValidatorProps) {
   const [hasOpenAI, setHasOpenAI] = useState(false)
   const [hasGemini, setHasGemini] = useState(false)
@@ -41,13 +41,13 @@ export function APIKeyValidator({
         const status = await aiClient.checkKeys()
         setHasOpenAI(status.hasOpenAIKey)
         setHasGemini(status.hasGeminiKey)
-        
+
         const hasRequiredKeys = requiredProviders.some(provider => {
           if (provider === 'openai') return status.hasOpenAIKey
           if (provider === 'gemini') return status.hasGeminiKey
           return false
         })
-        
+
         onValidation(hasRequiredKeys)
       } catch (error) {
         logger.error('Failed to check API keys:', error)
@@ -83,7 +83,7 @@ export function APIKeyValidator({
               <p className="text-amber-200 mb-4">
                 This AI tool requires API keys to function. Please configure the required providers:
               </p>
-              
+
               <div className="space-y-2 mb-6">
                 {needsOpenAI && (
                   <div className="flex items-center gap-2">

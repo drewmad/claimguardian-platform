@@ -316,7 +316,7 @@ export class ICSIntegrationService {
    */
   async generateICS201(incidentId: string): Promise<ICSForm> {
     const incident = await this.getIncident(incidentId)
-    
+
     const form: ICSForm = {
       id: this.generateFormId(),
       form_number: 'ICS-201',
@@ -352,7 +352,7 @@ export class ICSIntegrationService {
    */
   async generateICS202(incidentId: string, objectives: ICSObjective[]): Promise<ICSForm> {
     const incident = await this.getIncident(incidentId)
-    
+
     const form: ICSForm = {
       id: this.generateFormId(),
       form_number: 'ICS-202',
@@ -389,7 +389,7 @@ export class ICSIntegrationService {
    */
   async generateICS203(incidentId: string): Promise<ICSForm> {
     const incident = await this.getIncident(incidentId)
-    
+
     const form: ICSForm = {
       id: this.generateFormId(),
       form_number: 'ICS-203',
@@ -453,7 +453,7 @@ export class ICSIntegrationService {
    * Update incident status and generate situation report
    */
   async updateIncidentStatus(
-    incidentId: string, 
+    incidentId: string,
     updates: Partial<ICSIncident>
   ): Promise<ICSIncident> {
     const incident = await this.getIncident(incidentId)
@@ -535,7 +535,7 @@ export class ICSIntegrationService {
   private getOrganizationSummary(organization: ICSOrganization): any {
     return {
       incident_commander: organization.incident_commander.name,
-      command_staff_assigned: Object.keys(organization.command_staff).filter(key => 
+      command_staff_assigned: Object.keys(organization.command_staff).filter(key =>
         organization.command_staff[key as keyof typeof organization.command_staff]
       ).length,
       general_staff_assigned: Object.keys(organization.general_staff).filter(key =>
@@ -563,7 +563,7 @@ export class ICSIntegrationService {
   private getSafetyConsiderations(incident: ICSIncident): string[] {
     // Generate safety considerations based on incident type
     const considerations = []
-    
+
     switch (incident.incident_type) {
       case IncidentType.HURRICANE:
         considerations.push('High winds and flying debris', 'Flooding potential', 'Power line hazards')
@@ -587,7 +587,7 @@ export class ICSIntegrationService {
 
   private buildOrganizationChart(organization: ICSOrganization): any[] {
     const assignments = []
-    
+
     // Incident Commander
     assignments.push({
       position: 'Incident Commander',
@@ -636,7 +636,7 @@ export class ICSIntegrationService {
 
   private async generateSituationReport(incidentId: string): Promise<SituationReport> {
     const incident = await this.getIncident(incidentId)
-    
+
     const report: SituationReport = {
       id: `SITREP-${Date.now()}`,
       incident_id: incidentId,

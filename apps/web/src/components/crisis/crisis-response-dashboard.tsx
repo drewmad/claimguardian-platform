@@ -15,14 +15,14 @@ import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Checkbox } from '@/components/ui/checkbox'
-import { 
-  AlertTriangle, 
-  Shield, 
-  MapPin, 
-  Clock, 
-  CheckCircle2, 
-  Users, 
-  Phone, 
+import {
+  AlertTriangle,
+  Shield,
+  MapPin,
+  Clock,
+  CheckCircle2,
+  Users,
+  Phone,
   Home,
   Car,
   Building,
@@ -79,7 +79,7 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
   const loadCrisisData = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       // Load active crisis events
       const crises = await crisisResponseCoordinator.monitorCrisisEvents(userId)
       setActiveCrises(crises)
@@ -130,14 +130,14 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
     try {
       const status: 'pending' | 'in_progress' | 'completed' | 'skipped' | 'not_applicable' = completed ? 'completed' : 'pending'
       await crisisResponseCoordinator.updateActionStatus(activeResponse.id, actionId, status)
-      
+
       // Update local state
       const updatedActions = activeResponse.action_plan.map(action =>
-        action.id === actionId 
+        action.id === actionId
           ? { ...action, completion_status: status }
           : action
       )
-      
+
       setActiveResponse({
         ...activeResponse,
         action_plan: updatedActions
@@ -351,7 +351,7 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                         </Button>
                       </div>
                     </div>
-                    
+
                     {crisis.timing.peak_impact && (
                       <div className="mt-3 p-3 bg-yellow-900/20 rounded-lg border border-yellow-600/20">
                         <p className="text-yellow-400 text-sm">
@@ -410,8 +410,8 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                     <div>
                       <p className="text-sm text-gray-400">Overall Progress</p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Progress 
-                          value={activeResponse.progress.completion_percentage} 
+                        <Progress
+                          value={activeResponse.progress.completion_percentage}
                           className="flex-1"
                         />
                         <span className="text-sm font-medium text-white">
@@ -425,11 +425,11 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                     <div>
                       <p className="text-sm text-gray-400">Critical Actions</p>
                       <div className="flex items-center space-x-2 mt-1">
-                        <Progress 
-                          value={activeResponse.progress.critical_actions_total > 0 
-                            ? (activeResponse.progress.critical_actions_completed / activeResponse.progress.critical_actions_total) * 100 
+                        <Progress
+                          value={activeResponse.progress.critical_actions_total > 0
+                            ? (activeResponse.progress.critical_actions_completed / activeResponse.progress.critical_actions_total) * 100
                             : 0
-                          } 
+                          }
                           className="flex-1"
                         />
                         <span className="text-sm font-medium text-white">
@@ -449,13 +449,13 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {activeResponse.action_plan.map((action, index) => (
-                    <div 
-                      key={action.id} 
+                    <div
+                      key={action.id}
                       className={`border rounded-lg p-4 ${
-                        action.completion_status === 'completed' 
-                          ? 'border-green-600/20 bg-green-900/10' 
-                          : action.priority === 'critical' 
-                            ? 'border-red-600/20 bg-red-900/10' 
+                        action.completion_status === 'completed'
+                          ? 'border-green-600/20 bg-green-900/10'
+                          : action.priority === 'critical'
+                            ? 'border-red-600/20 bg-red-900/10'
                             : 'border-gray-700'
                       }`}
                     >
@@ -470,8 +470,8 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                         <div className="flex-1">
                           <div className="flex items-center justify-between">
                             <h4 className={`font-medium ${
-                              action.completion_status === 'completed' 
-                                ? 'text-green-400 line-through' 
+                              action.completion_status === 'completed'
+                                ? 'text-green-400 line-through'
                                 : 'text-white'
                             }`}>
                               {action.title}
@@ -538,10 +538,10 @@ export function CrisisResponseDashboard({ userId, className }: CrisisResponseDas
                         <div className="flex items-center space-x-4 mt-2 text-sm">
                           <span className="text-gray-400">{resource.contact.address}</span>
                           {resource.capacity && (
-                            <Badge 
-                              variant="outline" 
+                            <Badge
+                              variant="outline"
                               className={
-                                resource.capacity.availability === 'available' 
+                                resource.capacity.availability === 'available'
                                   ? 'border-green-500/20 text-green-400'
                                   : resource.capacity.availability === 'limited'
                                     ? 'border-yellow-500/20 text-yellow-400'

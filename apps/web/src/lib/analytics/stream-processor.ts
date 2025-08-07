@@ -49,7 +49,7 @@ class AnalyticsStreamProcessor {
   private config: StreamConfig
   private processingTimer: NodeJS.Timeout | null = null
   private supabase: unknown // In production, use proper Supabase client type
-  
+
   // Aggregation windows
   private windows = {
     '1m': new Map<string, AggregatedMetrics>(),
@@ -98,7 +98,7 @@ class AnalyticsStreamProcessor {
     }
 
     this.eventBuffer.push(streamEvent)
-    
+
     // Trigger immediate flush if buffer is full
     if (this.eventBuffer.length >= this.config.batchSize) {
       this.flushEvents()
@@ -147,7 +147,7 @@ class AnalyticsStreamProcessor {
    */
   private updateAggregations(event: StreamEvent): void {
     const now = new Date()
-    
+
     // Update each time window
     this.updateWindow('1m', now, event)
     this.updateWindow('5m', now, event)
@@ -159,13 +159,13 @@ class AnalyticsStreamProcessor {
    * Update specific time window aggregation
    */
   private updateWindow(
-    interval: '1m' | '5m' | '1h' | '1d', 
-    timestamp: Date, 
+    interval: '1m' | '5m' | '1h' | '1d',
+    timestamp: Date,
     event: StreamEvent
   ): void {
     const windowKey = this.getWindowKey(interval, timestamp)
     const window = this.windows[interval]
-    
+
     let metrics = window.get(windowKey)
     if (!metrics) {
       metrics = this.createEmptyMetrics(interval, timestamp)
@@ -176,7 +176,7 @@ class AnalyticsStreamProcessor {
     if (event.eventType === 'ai_request') {
       const metadata = event.metadata
       metrics.metrics.totalRequests++
-      
+
       if (metadata.cacheHit) {
         metrics.metrics.cacheHitRate = this.updateRunningAverage(
           metrics.metrics.cacheHitRate,
@@ -259,7 +259,7 @@ class AnalyticsStreamProcessor {
     // Sort and limit top features/models
     metrics.metrics.topFeatures.sort((a, b) => b.requests - a.requests)
     metrics.metrics.topFeatures = metrics.metrics.topFeatures.slice(0, 10)
-    
+
     metrics.metrics.modelPerformance.sort((a, b) => b.requests - a.requests)
     metrics.metrics.modelPerformance = metrics.metrics.modelPerformance.slice(0, 10)
   }
@@ -268,8 +268,8 @@ class AnalyticsStreamProcessor {
    * Calculate running average
    */
   private updateRunningAverage(
-    currentAvg: number, 
-    newValue: number, 
+    currentAvg: number,
+    newValue: number,
     count: number
   ): number {
     return ((currentAvg * (count - 1)) + newValue) / count
@@ -280,7 +280,7 @@ class AnalyticsStreamProcessor {
    */
   private getWindowKey(interval: '1m' | '5m' | '1h' | '1d', timestamp: Date): string {
     const date = new Date(timestamp)
-    
+
     switch (interval) {
       case '1m':
         date.setSeconds(0, 0)
@@ -295,7 +295,7 @@ class AnalyticsStreamProcessor {
         date.setHours(0, 0, 0, 0)
         break
     }
-    
+
     return `${interval}_${date.getTime()}`
   }
 
@@ -303,7 +303,7 @@ class AnalyticsStreamProcessor {
    * Create empty metrics object
    */
   private createEmptyMetrics(
-    interval: '1m' | '5m' | '1h' | '1d', 
+    interval: '1m' | '5m' | '1h' | '1d',
     timestamp: Date
   ): AggregatedMetrics {
     return {
@@ -374,14 +374,14 @@ class AnalyticsStreamProcessor {
    */
   private async flushAggregations(): Promise<void> {
     const now = Date.now()
-    
+
     for (const [interval, windowMap] of Object.entries(this.windows)) {
       const metricsToFlush: AggregatedMetrics[] = []
-      
+
       // Find completed windows
       for (const [key, metrics] of windowMap.entries()) {
         const windowEnd = this.getWindowEnd(metrics.interval, metrics.timestamp)
-        
+
         if (windowEnd < now) {
           metricsToFlush.push(metrics)
           windowMap.delete(key)
@@ -426,7 +426,7 @@ class AnalyticsStreamProcessor {
       '1h': 60 * 60 * 1000,
       '1d': 24 * 60 * 60 * 1000
     }
-    
+
     return timestamp.getTime() + (duration[interval as keyof typeof duration] || 0)
   }
 
@@ -437,7 +437,7 @@ class AnalyticsStreamProcessor {
     if (!this.supabase) return
 
     const now = new Date()
-    
+
     try {
       // Clean up raw events
       const rawCutoff = new Date(now.getTime() - this.config.retentionPolicy.raw * 24 * 60 * 60 * 1000)
@@ -543,7 +543,7 @@ class AnalyticsStreamProcessor {
    */
   updateConfig(config: Partial<StreamConfig>): void {
     this.config = { ...this.config, ...config }
-    
+
     // Restart processing with new config
     this.stop()
     this.startProcessing()

@@ -24,7 +24,7 @@ interface FeatureModelMapping {
 export async function GET() {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('ai_model_configs')
       .select('*')
@@ -121,10 +121,10 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    
+
     // Get current user (admin check could be added here)
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json(
         { error: 'Unauthorized' },
@@ -146,9 +146,9 @@ export async function POST(request: NextRequest) {
       throw error
     }
 
-    logger.info('AI model configuration updated', { 
+    logger.info('AI model configuration updated', {
       userId: user.id,
-      featuresConfigured: featureMappings.length 
+      featuresConfigured: featureMappings.length
     })
 
     return NextResponse.json({ success: true })
@@ -165,7 +165,7 @@ export async function POST(request: NextRequest) {
 export async function PATCH(request: NextRequest) {
   try {
     const supabase = await createClient()
-    
+
     // This would typically query a model_usage_stats table
     // For now, return mock data
     const stats = {

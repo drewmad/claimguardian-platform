@@ -62,7 +62,7 @@ async function runMigration() {
   // First, let's try to execute a simple query to test connection
   console.log('Testing connection...');
   const testResult = await executeSQL('SELECT 1');
-  
+
   if (!testResult.success) {
     console.error('Connection test failed:', testResult.error);
     console.log('\nThe migration SQL has been prepared. Please execute it manually:');
@@ -81,11 +81,11 @@ async function runMigration() {
   for (let i = 0; i < statements.length; i++) {
     const statement = statements[i];
     const preview = statement.substring(0, 50).replace(/\n/g, ' ') + '...';
-    
+
     process.stdout.write(`[${i + 1}/${statements.length}] Executing: ${preview} `);
-    
+
     const result = await executeSQL(statement + ';');
-    
+
     if (result.success) {
       console.log('✓');
       successCount++;
@@ -93,7 +93,7 @@ async function runMigration() {
       console.log('✗');
       console.error(`  Error: ${result.error}`);
       errorCount++;
-      
+
       // Ask if should continue
       if (i < statements.length - 1) {
         console.log('  Continuing with next statement...');
@@ -102,7 +102,7 @@ async function runMigration() {
   }
 
   console.log(`\nMigration completed: ${successCount} successful, ${errorCount} failed`);
-  
+
   if (errorCount > 0) {
     console.log('\nSome statements failed. This might be because:');
     console.log('- Tables/types already exist');

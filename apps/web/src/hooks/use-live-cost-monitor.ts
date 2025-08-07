@@ -170,7 +170,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
 
     try {
       const success = await webSocketCostMonitor.initialize()
-      
+
       if (success && !isCleanedUpRef.current) {
         const subscribed = webSocketCostMonitor.subscribe(
           subscriberIdRef.current,
@@ -193,7 +193,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
 
           // Load initial metrics
           await loadInitialMetrics()
-          
+
           console.log('Live cost monitor connected successfully')
         } else {
           throw new Error('Failed to subscribe to updates')
@@ -204,7 +204,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
 
     } catch (error) {
       console.error('Connection failed:', error)
-      
+
       setState(prev => ({
         ...prev,
         connectionStatus: {
@@ -229,7 +229,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
     setState(prev => {
       const attempts = prev.connectionStatus.reconnectAttempts
       const delay = Math.min(1000 * Math.pow(2, attempts), 30000) // Max 30 seconds
-      
+
       reconnectTimeoutRef.current = setTimeout(() => {
         reconnectTimeoutRef.current = null
         if (!isCleanedUpRef.current) {
@@ -253,7 +253,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
       const response = await fetch('/api/admin/ai-costs/quick-stats')
       if (response.ok) {
         const data = await response.json()
-        
+
         setState(prev => ({
           ...prev,
           metrics: {
@@ -290,7 +290,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
     if (state.connectionStatus.isConnected) {
       webSocketCostMonitor.unsubscribe(subscriberIdRef.current)
     }
-    
+
     setState(prev => ({
       ...prev,
       connectionStatus: {
@@ -317,7 +317,7 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
     setState(prev => ({
       ...prev,
       alerts: prev.alerts.map(alert =>
-        alert.id === alertId 
+        alert.id === alertId
           ? { ...alert, acknowledged: true, isNew: false }
           : alert
       )
@@ -375,27 +375,27 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
   // Effects
   useEffect(() => {
     isCleanedUpRef.current = false
-    
+
     if (autoConnect) {
       connect()
     }
-    
+
     setupFallbackPolling()
 
     return () => {
       isCleanedUpRef.current = true
-      
+
       // Cleanup WebSocket
       if (webSocketCostMonitor.isConnected()) {
         webSocketCostMonitor.unsubscribe(subscriberIdRef.current)
       }
-      
+
       // Cleanup timers
       if (fallbackIntervalRef.current) {
         clearInterval(fallbackIntervalRef.current)
         fallbackIntervalRef.current = null
       }
-      
+
       if (reconnectTimeoutRef.current) {
         clearTimeout(reconnectTimeoutRef.current)
         reconnectTimeoutRef.current = null
@@ -419,21 +419,21 @@ export function useLiveCostMonitor(options: LiveCostMonitorOptions = {}) {
   return {
     // State
     ...state,
-    
+
     // Connection management
     connect,
     disconnect,
     reconnect,
-    
+
     // Alert management
     acknowledgeAlert,
     clearAlert,
     clearAllAlerts,
     sendTestAlert,
-    
+
     // Metrics
     refreshMetrics: loadInitialMetrics,
-    
+
     // Utility
     playAlertSound
   }

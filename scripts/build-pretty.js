@@ -129,7 +129,7 @@ build.stderr.on('data', (data) => {
 
 build.on('close', (code) => {
   console.log('\n' + '─'.repeat(50) + '\n');
-  
+
   // Show package summary
   console.log(`${colors.bright}📦 Package Build Summary:${colors.reset}`);
   packageProgress.forEach((progress, pkg) => {
@@ -137,9 +137,9 @@ build.on('close', (code) => {
     const duration = progress.duration ? `(${progress.duration}ms)` : '';
     console.log(`  ${icon} ${pkg} ${colors.dim}${duration}${colors.reset}`);
   });
-  
+
   console.log('\n' + '─'.repeat(50) + '\n');
-  
+
   if (code === 0) {
     console.log(`${colors.green}${colors.bright}✨ Build completed successfully!${colors.reset}`);
   } else {

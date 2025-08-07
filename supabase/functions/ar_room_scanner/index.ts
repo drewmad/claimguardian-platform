@@ -9,7 +9,7 @@ const corsHeaders = {
 
 interface ARScanPoint {
   x: number
-  y: number  
+  y: number
   z: number
   timestamp: number
   confidence: number
@@ -54,30 +54,30 @@ interface FloorPlanData {
 // Convert AR scan points to room measurements using geometric analysis
 function processARScanData(scanData: ARScanData): RoomMeasurement {
   const { points } = scanData
-  
+
   if (points.length < 4) {
     throw new Error('Insufficient scan points for room analysis')
   }
 
   // Filter high-confidence points
   const validPoints = points.filter(p => p.confidence > 0.7)
-  
+
   // Group points by height (floor/ceiling detection)
   const floorPoints = validPoints.filter(p => p.y < -1.0) // Below eye level
   const wallPoints = validPoints.filter(p => p.y >= -1.0 && p.y <= 1.0)
-  
+
   // Find room boundaries using convex hull algorithm
   const boundaries = findRoomBoundaries(wallPoints)
-  
+
   // Calculate room dimensions
   const corners = boundaries.corners
   const width = Math.abs(corners[0].x - corners[1].x)
   const length = Math.abs(corners[1].z - corners[2].z)
   const height = calculateRoomHeight(floorPoints, wallPoints)
-  
+
   const area = width * length
   const perimeter = 2 * (width + length)
-  
+
   // Calculate confidence based on scan coverage
   const scanCoverage = calculateScanCoverage(validPoints, area)
   const confidence = Math.min(0.95, scanCoverage * 0.8 + 0.2)
@@ -103,7 +103,7 @@ function findRoomBoundaries(wallPoints: ARScanPoint[]) {
   const maxX = Math.max(...wallPoints.map(p => p.x))
   const minZ = Math.min(...wallPoints.map(p => p.z))
   const maxZ = Math.max(...wallPoints.map(p => p.z))
-  
+
   // Assume rectangular room for simplicity
   const corners = [
     { x: minX, y: 0, z: minZ },
@@ -111,7 +111,7 @@ function findRoomBoundaries(wallPoints: ARScanPoint[]) {
     { x: maxX, y: 0, z: maxZ },
     { x: minX, y: 0, z: maxZ }
   ]
-  
+
   return { corners }
 }
 
@@ -119,10 +119,10 @@ function calculateRoomHeight(floorPoints: ARScanPoint[], wallPoints: ARScanPoint
   if (floorPoints.length === 0 || wallPoints.length === 0) {
     return 2.5 // Default ceiling height in meters
   }
-  
+
   const avgFloorHeight = floorPoints.reduce((sum, p) => sum + p.y, 0) / floorPoints.length
   const maxWallHeight = Math.max(...wallPoints.map(p => p.y))
-  
+
   return Math.abs(maxWallHeight - avgFloorHeight) || 2.5
 }
 
@@ -130,7 +130,7 @@ function calculateScanCoverage(points: ARScanPoint[], roomArea: number): number 
   // Estimate scan coverage based on point density and distribution
   const pointDensity = points.length / Math.max(roomArea, 1)
   const normalizedDensity = Math.min(1.0, pointDensity / 10) // Assume 10 points per sq meter is good coverage
-  
+
   return normalizedDensity
 }
 
@@ -138,7 +138,7 @@ function generateFloorPlan(rooms: Array<{ measurements: RoomMeasurement; type: s
   let totalArea = 0
   const processedRooms = rooms.map((room, index) => {
     totalArea += room.measurements.area
-    
+
     return {
       id: `room_${index + 1}`,
       name: `${room.type.charAt(0).toUpperCase() + room.type.slice(1)} ${index + 1}`,
@@ -205,7 +205,7 @@ Deno.serve(async (req: Request) => {
 
       // Process AR scan data into room measurements
       const measurements = processARScanData(scanData as ARScanData)
-      
+
       // Store scan session in database
       const { data: scanSession, error: scanError } = await supabase
         .from('ar_scan_sessions')
@@ -296,7 +296,7 @@ Deno.serve(async (req: Request) => {
     } else if (action === 'start_session') {
       // Initialize new AR scanning session
       const newSessionId = crypto.randomUUID()
-      
+
       return new Response(
         JSON.stringify({
           success: true,

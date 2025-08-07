@@ -96,7 +96,7 @@ class AlertDeliverySystem {
         // Client-side initialization
         const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
         const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-        
+
         if (supabaseUrl && supabaseAnonKey) {
           this.supabase = createClient(supabaseUrl, supabaseAnonKey)
         }
@@ -132,7 +132,7 @@ class AlertDeliverySystem {
 
     // Execute all deliveries in parallel
     const deliveryResults = await Promise.allSettled(deliveryPromises)
-    
+
     deliveryResults.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         results.push(result.value)
@@ -290,7 +290,7 @@ class AlertDeliverySystem {
         throw new Error('Slack webhook URL not configured')
       }
 
-      const color = alert.severity === 'critical' ? '#ff0000' : 
+      const color = alert.severity === 'critical' ? '#ff0000' :
                    alert.severity === 'warning' ? '#ff9900' : '#36a64f'
 
       const slackPayload = {
@@ -366,7 +366,7 @@ class AlertDeliverySystem {
     try {
       // This would integrate with a push notification service like Firebase
       // For now, we'll use a placeholder implementation
-      
+
       const pushPayload = {
         title: alert.title,
         body: alert.message,
@@ -399,7 +399,7 @@ class AlertDeliverySystem {
 
   private getEmailTemplate(alert: AlertPayload): string {
     const template = this.config.email.templates[alert.type as keyof typeof this.config.email.templates]
-    
+
     if (!template) {
       return `
         <h2>${alert.title}</h2>

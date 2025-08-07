@@ -57,7 +57,7 @@ async function getPollenData(lat: number, lng: number, days: number = 5): Promis
   try {
     // Google Pollen API
     const url = `https://pollen.googleapis.com/v1/forecast:lookup?key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const requestBody = {
       location: {
         longitude: lng,
@@ -95,19 +95,19 @@ async function getPollenData(lat: number, lng: number, days: number = 5): Promis
 function generateMockPollenData(lat: number, lng: number, days: number): any {
   const forecast = []
   const baseDate = new Date()
-  
+
   for (let i = 0; i < days; i++) {
     const date = new Date(baseDate)
     date.setDate(date.getDate() + i)
-    
+
     // Florida has high pollen in spring/fall
     const month = date.getMonth()
     const isHighPollenSeason = (month >= 2 && month <= 5) || (month >= 8 && month <= 10)
-    
+
     const grassIndex = isHighPollenSeason ? Math.floor(Math.random() * 3) + 2 : Math.floor(Math.random() * 2) + 1
     const treeIndex = isHighPollenSeason ? Math.floor(Math.random() * 4) + 3 : Math.floor(Math.random() * 2) + 1
     const weedIndex = isHighPollenSeason ? Math.floor(Math.random() * 3) + 2 : Math.floor(Math.random() * 2) + 1
-    
+
     forecast.push({
       date: {
         year: date.getFullYear(),
@@ -145,7 +145,7 @@ function generateMockPollenData(lat: number, lng: number, days: number): any {
       ]
     })
   }
-  
+
   return { dailyInfo: forecast }
 }
 
@@ -153,7 +153,7 @@ async function getAirQuality(lat: number, lng: number): Promise<any> {
   try {
     // Google Air Quality API
     const url = `https://airquality.googleapis.com/v1/currentConditions:lookup?key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const requestBody = {
       location: {
         longitude: lng,
@@ -195,11 +195,11 @@ async function getAirQuality(lat: number, lng: number): Promise<any> {
 function generateMockAirQualityData(lat: number, lng: number): any {
   // Florida generally has good air quality
   const aqi = Math.floor(Math.random() * 60) + 20 // 20-80 range
-  
+
   let category = "Good"
   if (aqi > 50) category = "Moderate"
   if (aqi > 100) category = "Unhealthy for Sensitive Groups"
-  
+
   return {
     dateTime: new Date().toISOString(),
     regionCode: "us",
@@ -235,7 +235,7 @@ async function getTimezone(lat: number, lng: number): Promise<any> {
   try {
     const timestamp = Math.floor(Date.now() / 1000)
     const url = `https://maps.googleapis.com/maps/api/timezone/json?location=${lat},${lng}&timestamp=${timestamp}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(url)
     if (response.ok) {
       const data = await response.json()
@@ -263,7 +263,7 @@ async function getTimezone(lat: number, lng: number): Promise<any> {
 async function getElevation(lat: number, lng: number): Promise<any> {
   try {
     const url = `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lng}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(url)
     if (response.ok) {
       const data = await response.json()
@@ -295,9 +295,9 @@ async function getDistanceMatrix(origin: { lat: number, lng: number }, destinati
     const destinationString = destinations.map(dest => `${dest.lat},${dest.lng}`).join('|')
     const units = options.distanceUnits === 'metric' ? 'metric' : 'imperial'
     const mode = options.distanceMode || 'driving'
-    
+
     const url = `https://maps.googleapis.com/maps/api/distancematrix/json?origins=${origin.lat},${origin.lng}&destinations=${destinationString}&units=${units}&mode=${mode}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(url)
     if (response.ok) {
       const data = await response.json()
@@ -317,7 +317,7 @@ async function getDistanceMatrix(origin: { lat: number, lng: number }, destinati
       duration: { text: `${Math.floor(Math.random() * 30 + 5)} mins`, value: Math.floor(Math.random() * 1800 + 300) },
       status: "OK"
     }))
-    
+
     return {
       status: "OK",
       rows: [{ elements }]
@@ -343,7 +343,7 @@ function analyzePollenIntelligence(pollenData: any): any {
 
   const pollenTypes = today.pollenTypeInfo || []
   const maxIndex = Math.max(...pollenTypes.map((p: any) => p.indexInfo?.value || 0))
-  
+
   let riskLevel: 'low' | 'moderate' | 'high' | 'very-high' = 'low'
   if (maxIndex >= 4) riskLevel = 'very-high'
   else if (maxIndex >= 3) riskLevel = 'high'
@@ -376,7 +376,7 @@ function analyzeAirQualityIntelligence(airQualityData: any): any {
   const aqi = airQualityData?.indexes?.[0]?.aqi || 50
   const category = airQualityData?.indexes?.[0]?.category || 'Good'
   const pollutants = airQualityData?.pollutants || []
-  
+
   const healthRecommendations = []
   if (aqi <= 50) {
     healthRecommendations.push('Air quality is satisfactory for outdoor activities')
@@ -399,7 +399,7 @@ function analyzeAirQualityIntelligence(airQualityData: any): any {
 
 function analyzeElevationIntelligence(elevationData: any): any {
   const elevation = elevationData?.results?.[0]?.elevation || 0
-  
+
   let floodRisk: 'low' | 'moderate' | 'high' = 'low'
   if (elevation < 5) floodRisk = 'high'
   else if (elevation < 15) floodRisk = 'moderate'
@@ -422,7 +422,7 @@ function analyzeElevationIntelligence(elevationData: any): any {
 
 function analyzeDistanceIntelligence(distanceData: any, destinations: Array<{ lat: number, lng: number, name: string }>): any {
   const elements = distanceData?.rows?.[0]?.elements || []
-  
+
   const destinationAnalysis = destinations.map((dest, index) => {
     const element = elements[index] || {}
     return {
@@ -501,11 +501,11 @@ Deno.serve(async (req: Request) => {
 
         case 'timezone':
           const timezoneData = await getTimezone(location.lat, location.lng)
-          const currentTime = new Date().toLocaleString('en-US', { 
-            timeZone: timezoneData.timeZoneId || 'America/New_York' 
+          const currentTime = new Date().toLocaleString('en-US', {
+            timeZone: timezoneData.timeZoneId || 'America/New_York'
           })
-          return { 
-            api, 
+          return {
+            api,
             data: {
               timeZoneId: timezoneData.timeZoneId,
               timeZoneName: timezoneData.timeZoneName,
@@ -532,7 +532,7 @@ Deno.serve(async (req: Request) => {
     })
 
     const results = await Promise.allSettled(promises)
-    
+
     // Compile results
     results.forEach((result) => {
       if (result.status === 'fulfilled') {
@@ -561,7 +561,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Environmental Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

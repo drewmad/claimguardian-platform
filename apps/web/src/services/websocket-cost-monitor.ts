@@ -52,27 +52,27 @@ class WebSocketCostMonitor {
       // Initialize Supabase client
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      
+
       if (!supabaseUrl || !supabaseAnonKey) {
         console.error('Missing Supabase configuration for WebSocket monitor')
         return false
       }
 
       this.supabase = createClient(supabaseUrl, supabaseAnonKey)
-      
+
       // Load user cost thresholds
       await this.loadCostThresholds()
-      
+
       // Set up real-time subscriptions
       await this.setupRealtimeSubscriptions()
-      
+
       // Start metrics monitoring
       this.startMetricsMonitoring()
-      
+
       this.isInitialized = true
       console.log('WebSocket cost monitor initialized successfully')
       return true
-      
+
     } catch (error) {
       console.error('Failed to initialize WebSocket cost monitor:', error)
       return false
@@ -101,7 +101,7 @@ class WebSocketCostMonitor {
       })
 
       console.log(`Loaded ${thresholds?.length || 0} cost thresholds`)
-      
+
     } catch (error) {
       console.error('Failed to load cost thresholds:', error)
     }
@@ -135,7 +135,7 @@ class WebSocketCostMonitor {
         .subscribe()
 
       console.log('Real-time subscriptions established')
-      
+
     } catch (error) {
       console.error('Failed to setup realtime subscriptions:', error)
     }
@@ -145,7 +145,7 @@ class WebSocketCostMonitor {
     try {
       const cost = parseFloat(usageLog.cost_total || 0)
       const userId = usageLog.user_id
-      
+
       if (!userId || cost <= 0) return
 
       // Check if this triggers any budget alerts
@@ -173,15 +173,15 @@ class WebSocketCostMonitor {
       }
 
       this.broadcastUpdate(update)
-      
+
     } catch (error) {
       console.error('Error handling usage log:', error)
     }
   }
 
   private async checkBudgetThresholds(
-    userId: string, 
-    newCost: number, 
+    userId: string,
+    newCost: number,
     threshold: CostThreshold,
     usageLog: any
   ): Promise<void> {
@@ -197,7 +197,7 @@ class WebSocketCostMonitor {
 
       const currentSpending = parseFloat(todaySpending?.[0]?.total_cost || 0)
       const dailyBudget = threshold.daily_budget
-      
+
       if (dailyBudget <= 0) return
 
       const percentageUsed = (currentSpending / dailyBudget) * 100
@@ -205,12 +205,12 @@ class WebSocketCostMonitor {
       // Check if any alert thresholds are exceeded
       for (const alertThreshold of threshold.alert_thresholds) {
         if (percentageUsed >= alertThreshold) {
-          
+
           // Check cooldown period (don't spam alerts)
           const lastAlert = threshold.last_alert_sent
           const cooldownMinutes = 60 // 1 hour cooldown
           const now = new Date()
-          
+
           if (lastAlert) {
             const lastAlertTime = new Date(lastAlert)
             const minutesSinceLastAlert = (now.getTime() - lastAlertTime.getTime()) / 60000
@@ -237,7 +237,7 @@ class WebSocketCostMonitor {
           break // Only send one alert per update
         }
       }
-      
+
     } catch (error) {
       console.error('Error checking budget thresholds:', error)
     }
@@ -253,7 +253,7 @@ class WebSocketCostMonitor {
     try {
       if (!this.supabase) return
 
-      const severity = alertData.percentageUsed >= 95 ? 'critical' : 
+      const severity = alertData.percentageUsed >= 95 ? 'critical' :
                       alertData.percentageUsed >= 80 ? 'warning' : 'info'
 
       // Insert alert to database
@@ -290,7 +290,7 @@ class WebSocketCostMonitor {
       }
 
       this.broadcastUpdate(update)
-      
+
     } catch (error) {
       console.error('Error creating budget alert:', error)
     }
@@ -305,7 +305,7 @@ class WebSocketCostMonitor {
           total_cost: alert.current_spend,
           timestamp: alert.created_at,
           message: alert.message,
-          severity: alert.alert_level === 'critical' ? 'critical' : 
+          severity: alert.alert_level === 'critical' ? 'critical' :
                    alert.alert_level === 'warning' ? 'warning' : 'info',
           metadata: {
             alert_id: alert.id,
@@ -317,7 +317,7 @@ class WebSocketCostMonitor {
       }
 
       this.broadcastUpdate(update)
-      
+
     } catch (error) {
       console.error('Error handling cost alert:', error)
     }
@@ -336,7 +336,7 @@ class WebSocketCostMonitor {
 
       // Get usage metrics for the last minute
       const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString()
-      
+
       const { data: recentLogs } = await this.supabase
         .from('ai_usage_logs')
         .select('cost_total, success, processing_time_ms')
@@ -378,7 +378,7 @@ class WebSocketCostMonitor {
         }
         this.broadcastUpdate(update)
       }
-      
+
     } catch (error) {
       console.error('Error checking usage metrics:', error)
     }
@@ -427,7 +427,7 @@ class WebSocketCostMonitor {
     this.thresholds.clear()
     this.supabase = null
     this.isInitialized = false
-    
+
     console.log('WebSocket cost monitor destroyed')
   }
 

@@ -189,14 +189,14 @@ export function ComplianceChecker() {
 
   const runComplianceCheck = async () => {
     setChecking(true);
-    
+
     try {
       // Simulate compliance check
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // In production, this would call the compliance Edge Function
       setReport(mockReport);
-      
+
       if (mockReport.criticalIssues > 0) {
         toast.error(`${mockReport.criticalIssues} critical compliance issues found`);
       } else if (mockReport.warnings > 0) {
@@ -214,14 +214,14 @@ export function ComplianceChecker() {
 
   const applyAutoFixes = async () => {
     const fixableItems = report?.items.filter(item => item.autoFixable && item.status !== 'compliant') || [];
-    
+
     if (fixableItems.length === 0) {
       toast.info('No auto-fixable issues found');
       return;
     }
-    
+
     toast.success(`Applying ${fixableItems.length} automatic fixes...`);
-    
+
     // Simulate applying fixes
     setTimeout(() => {
       toast.success('Automatic fixes applied successfully');
@@ -328,7 +328,7 @@ export function ComplianceChecker() {
                   <option value="CLM-2024-0881">CLM-2024-0881 - Fire Damage</option>
                 </select>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <Checkbox
                   id="auto-fix"
@@ -338,7 +338,7 @@ export function ComplianceChecker() {
                 <Label htmlFor="auto-fix">Enable Auto-Fix</Label>
               </div>
             </div>
-            
+
             <Button
               onClick={runComplianceCheck}
               disabled={checking || !selectedClaim}
@@ -434,7 +434,7 @@ export function ComplianceChecker() {
               <AlertCircle className="h-4 w-4 text-red-600" />
               <AlertTitle className="text-red-900">Critical Compliance Issues Detected</AlertTitle>
               <AlertDescription className="text-red-700">
-                Your claim has {report.criticalIssues} critical compliance issues that must be resolved immediately 
+                Your claim has {report.criticalIssues} critical compliance issues that must be resolved immediately
                 to avoid claim denial or legal complications.
                 {autoFix && (
                   <Button
@@ -603,7 +603,7 @@ export function ComplianceChecker() {
                   </div>
                 ))}
               </div>
-              
+
               <div className="flex justify-end mt-4 space-x-2">
                 <Button variant="outline">
                   <Download className="h-4 w-4 mr-2" />

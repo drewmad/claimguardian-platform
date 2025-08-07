@@ -16,15 +16,15 @@ export async function GET() {
   try {
     const cookieStore = await cookies()
     const supabase = await createClient()
-    
+
     // Sign out from Supabase
     await supabase.auth.signOut()
-    
+
     // Clear all auth-related cookies
     const allCookies = cookieStore.getAll()
-    
+
     allCookies.forEach(cookie => {
-      if (cookie.name.includes('sb-') || 
+      if (cookie.name.includes('sb-') ||
           cookie.name.includes('auth') ||
           cookie.name === 'supabase-auth-token') {
         cookieStore.set(cookie.name, '', {
@@ -37,7 +37,7 @@ export async function GET() {
         })
       }
     })
-    
+
     // Redirect to sign in page with success message
     return NextResponse.redirect(new URL('/auth/signin?message=Session cleared. Please sign in again.', process.env.NEXT_PUBLIC_APP_URL || 'https://claimguardianai.com'))
   } catch (error) {

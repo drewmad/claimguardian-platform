@@ -99,14 +99,14 @@ import { useSubscription } from '@/hooks/use-subscription'
 
 function MyComponent() {
   const subscription = useSubscription()
-  
+
   // Check if user can use feature
   const canAnalyze = subscription.checkFeatureAccess('aiRequests', 1)
   if (!canAnalyze.allowed) {
     toast.error(canAnalyze.message)
     return
   }
-  
+
   // Proceed with AI analysis...
 }
 ```

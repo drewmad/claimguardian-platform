@@ -11,14 +11,14 @@
 'use client'
 
 import { Button } from '@claimguardian/ui'
-import { 
-  AlertCircle, 
-  CheckCircle, 
-  Clock, 
-  Database, 
-  Loader2, 
-  RefreshCw, 
-  MapPin, 
+import {
+  AlertCircle,
+  CheckCircle,
+  Clock,
+  Database,
+  Loader2,
+  RefreshCw,
+  MapPin,
   Home,
   Activity,
   TrendingUp
@@ -59,7 +59,7 @@ export default function ParcelDashboard() {
   const [recentBatches, setRecentBatches] = useState<ImportBatch[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  
+
   const supabase = createClient()
 
   const fetchData = useCallback(async () => {
@@ -69,18 +69,18 @@ export default function ParcelDashboard() {
         .from('properties_summary')
         .select('*')
         .order('property_count', { ascending: false })
-      
+
       if (statsError) throw statsError
-      
+
       // Fetch recent import batches
       const { data: batchesData, error: batchesError } = await supabase
         .from('parcel_import_batches')
         .select('*')
         .order('started_at', { ascending: false })
         .limit(10)
-      
+
       if (batchesError) throw batchesError
-      
+
       setStats(statsData || [])
       setRecentBatches(batchesData || [])
     } catch (error) {
@@ -94,7 +94,7 @@ export default function ParcelDashboard() {
   const triggerIngest = async (dataSource: string) => {
     try {
       setRefreshing(true)
-      
+
       const { error } = await supabase.functions.invoke('florida-parcel-monitor', {
         body: {
           action: 'trigger_ingest',
@@ -102,9 +102,9 @@ export default function ParcelDashboard() {
           force_refresh: false
         }
       })
-      
+
       if (error) throw error
-      
+
       // Refresh data after triggering ingest
       setTimeout(fetchData, 2000)
     } catch (error) {
@@ -115,7 +115,7 @@ export default function ParcelDashboard() {
   const enrichProperties = async (dataSource?: string) => {
     try {
       setRefreshing(true)
-      
+
       const { error } = await supabase.functions.invoke('property-ai-enrichment', {
         body: {
           action: 'batch_enrich',
@@ -125,9 +125,9 @@ export default function ParcelDashboard() {
           include_relationships: true
         }
       })
-      
+
       if (error) throw error
-      
+
       setTimeout(fetchData, 2000)
     } catch (error) {
       logger.error('Error enriching properties:', error)
@@ -136,10 +136,10 @@ export default function ParcelDashboard() {
 
   useEffect(() => {
     fetchData()
-    
+
     // Refresh every 30 seconds
     const interval = setInterval(fetchData, 30000)
-    
+
     return () => clearInterval(interval)
   }, [fetchData])
 
@@ -191,7 +191,7 @@ export default function ParcelDashboard() {
 
   const totalProperties = stats.reduce((sum, stat) => sum + stat.property_count, 0)
   const totalAcres = stats.reduce((sum, stat) => sum + stat.total_acres, 0)
-  const avgPropertyValue = stats.length > 0 
+  const avgPropertyValue = stats.length > 0
     ? stats.reduce((sum, stat) => sum + (stat.avg_property_value * stat.property_count), 0) / totalProperties
     : 0
 
@@ -411,7 +411,7 @@ export default function ParcelDashboard() {
                 </div>
               </div>
             ))}
-            
+
             {recentBatches.length === 0 && (
               <div className="text-center py-8 text-gray-500 dark:text-gray-400">
                 No import batches found

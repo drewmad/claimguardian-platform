@@ -14,10 +14,10 @@ export { getMetricsCollector, recordMetric, recordDatabaseQuery, recordAPICall }
 
 // Error tracking with Sentry
 export * from './sentry'
-export { 
-  initializeSentry, 
-  withErrorBoundary, 
-  profileComponent, 
+export {
+  initializeSentry,
+  withErrorBoundary,
+  profileComponent,
   captureError,
   withTransaction,
   identifyUser,
@@ -27,7 +27,7 @@ export {
 
 // User behavior analytics
 export * from './analytics'
-export { 
+export {
   getAnalytics,
   identify,
   track,

@@ -63,7 +63,7 @@ export function DepreciationAlerts({ alerts, onDismiss, onAction }: Depreciation
         {alerts.map((alert, index) => {
           const Icon = getAlertIcon(alert.type)
           const color = getAlertColor(alert.severity)
-          
+
           return (
             <Alert key={index} variant={color} className="bg-gray-900 border-gray-700">
               <Icon className="h-4 w-4" />

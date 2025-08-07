@@ -46,8 +46,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   const [ref, isInView] = useInView({ threshold: 0.1 })
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -127,7 +127,7 @@ export function PropertyLifecycle() {
             {Object.entries(phases).map(([key, phase], index) => {
               const Icon = phase.icon
               const isActive = activePhase === key
-              
+
               return (
                 <button
                   key={key}
@@ -135,13 +135,13 @@ export function PropertyLifecycle() {
                   className="relative group"
                 >
                   {/* Connection line removed per user request */}
-                  
+
                   {/* Icon circle */}
                   <div className={`
                     relative z-10 w-12 h-12 md:w-16 md:h-16 rounded-full flex items-center justify-center
                     transition-all duration-300 transform
-                    ${isActive 
-                      ? `bg-${phase.color}-600/30 border-2 border-${phase.color}-400 scale-110` 
+                    ${isActive
+                      ? `bg-${phase.color}-600/30 border-2 border-${phase.color}-400 scale-110`
                       : 'bg-gray-800/50 border-2 border-gray-700 hover:border-gray-600'
                     }
                   `}>
@@ -150,7 +150,7 @@ export function PropertyLifecycle() {
                       ${isActive ? `text-${phase.color}-400` : 'text-gray-400'}
                     `} />
                   </div>
-                  
+
                   {/* Label */}
                   <div className={`
                     absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs md:text-sm font-medium
@@ -187,12 +187,12 @@ export function PropertyLifecycle() {
                     return <Icon className="w-8 h-8 text-white" />
                   })()}
                 </div>
-                
+
                 <div className="flex-1">
                   <h3 className="text-2xl font-bold text-white mb-4">
                     {phases[activePhase].title}
                   </h3>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {phases[activePhase].features.map((feature, index) => (
                       <div key={index} className="flex items-center gap-3">

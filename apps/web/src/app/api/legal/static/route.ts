@@ -33,19 +33,19 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const type = searchParams.get('type')
-    
+
     if (!type || !LEGAL_DOCS[type as keyof typeof LEGAL_DOCS]) {
       return NextResponse.json(
         { error: 'Invalid document type' },
         { status: 400 }
       )
     }
-    
+
     const docConfig = LEGAL_DOCS[type as keyof typeof LEGAL_DOCS]
     const filePath = join(process.cwd(), 'legal', docConfig.file)
-    
+
     const content = await readFile(filePath, 'utf-8')
-    
+
     // Create a document object that matches the expected interface
     const document = {
       id: `static-${type}`,
@@ -59,9 +59,9 @@ export async function GET(request: NextRequest) {
       sha256_hash: 'static-hash-' + Date.now(),
       storage_url: null
     }
-    
+
     return NextResponse.json({ data: document })
-    
+
   } catch (error) {
     logger.error('Failed to load legal document:', error)
     return NextResponse.json(

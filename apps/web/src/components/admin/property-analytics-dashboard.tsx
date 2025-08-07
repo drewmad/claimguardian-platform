@@ -13,17 +13,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
-import { 
-  Home, 
-  MapPin, 
-  TrendingUp, 
+import {
+  Home,
+  MapPin,
+  TrendingUp,
   TrendingDown,
   DollarSign,
   AlertTriangle,
@@ -143,7 +143,7 @@ const RISK_COLORS = {
 const PROPERTY_TYPE_COLORS = {
   'Single Family': '#3B82F6',
   'Townhome': '#10B981',
-  'Condo': '#F59E0B', 
+  'Condo': '#F59E0B',
   'Mobile Home': '#EF4444',
   'Multi-Family': '#8B5CF6',
   'Commercial': '#06B6D4'
@@ -151,7 +151,7 @@ const PROPERTY_TYPE_COLORS = {
 
 const HURRICANE_ZONE_COLORS = {
   'A': '#DC2626', // Highest risk
-  'AE': '#EF4444', 
+  'AE': '#EF4444',
   'AH': '#F59E0B',
   'AO': '#FCD34D',
   'X': '#10B981', // Moderate/Low risk
@@ -180,7 +180,7 @@ export function PropertyAnalyticsDashboard() {
   const loadPropertyData = async () => {
     try {
       setLoading(true)
-      
+
       // Load all property analytics data in parallel
       const [
         overviewData,
@@ -191,11 +191,11 @@ export function PropertyAnalyticsDashboard() {
         marketData,
         gapsData
       ] = await Promise.all([
-        supabase.rpc('get_property_overview', { 
+        supabase.rpc('get_property_overview', {
           days: parseInt(timeRange),
           county_filter: selectedCounty === 'all' ? null : selectedCounty
         }),
-        supabase.rpc('get_property_trends', { 
+        supabase.rpc('get_property_trends', {
           days: parseInt(timeRange),
           county_filter: selectedCounty === 'all' ? null : selectedCounty
         }),
@@ -207,7 +207,7 @@ export function PropertyAnalyticsDashboard() {
           county_filter: selectedCounty === 'all' ? null : selectedCounty
         }),
         supabase.rpc('get_property_types_analysis'),
-        supabase.rpc('get_market_analysis', { 
+        supabase.rpc('get_market_analysis', {
           county_filter: selectedCounty === 'all' ? null : selectedCounty
         }),
         supabase.rpc('get_insurance_gaps', {
@@ -231,12 +231,12 @@ export function PropertyAnalyticsDashboard() {
       setPropertyTypes(typesData.data || [])
       setMarketAnalysis(marketData.data || [])
       setInsuranceGaps(gapsData.data || [])
-      
+
       setError(null)
     } catch (err) {
       console.error('Error loading property data:', err)
       setError('Failed to load property analytics data')
-      
+
       // Mock data for development using real Florida property scenarios
       setOverview({
         total_properties: 4567,
@@ -278,7 +278,7 @@ export function PropertyAnalyticsDashboard() {
           flood_zone: 'AE'
         },
         {
-          property_id: 'PROP-2024-002', 
+          property_id: 'PROP-2024-002',
           address: '456 Bayshore Blvd, Tampa, FL 33606',
           county: 'Hillsborough',
           risk_score: 78,
@@ -350,7 +350,7 @@ export function PropertyAnalyticsDashboard() {
         },
         {
           property_id: 'PROP-2024-002',
-          address: '456 Bayshore Blvd, Tampa, FL 33606', 
+          address: '456 Bayshore Blvd, Tampa, FL 33606',
           county: 'Hillsborough',
           property_value: 425000,
           insurance_coverage: 300000,
@@ -547,15 +547,15 @@ export function PropertyAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <ComposedChart data={trends}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="month" 
+                    <XAxis
+                      dataKey="month"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                       tickFormatter={(value) => new Date(value + '-01').toLocaleDateString('en-US', { month: 'short' })}
                     />
                     <YAxis yAxisId="left" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                     <YAxis yAxisId="right" orientation="right" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number, name) => [
@@ -573,10 +573,10 @@ export function PropertyAnalyticsDashboard() {
                       strokeWidth={2}
                       name="Avg Property Value"
                     />
-                    <Bar 
-                      yAxisId="right" 
-                      dataKey="properties_added" 
-                      fill="#10B981" 
+                    <Bar
+                      yAxisId="right"
+                      dataKey="properties_added"
+                      fill="#10B981"
                       name="Properties Added"
                     />
                     <defs>
@@ -609,13 +609,13 @@ export function PropertyAnalyticsDashboard() {
                       dataKey="count"
                     >
                       {propertyTypes.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={PROPERTY_TYPE_COLORS[entry.type as keyof typeof PROPERTY_TYPE_COLORS] || '#6B7280'} 
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={PROPERTY_TYPE_COLORS[entry.type as keyof typeof PROPERTY_TYPE_COLORS] || '#6B7280'}
                         />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       formatter={(value: number, name, props) => [
                         `${value} properties (${formatCurrency(props.payload.avg_value)} avg)`,
@@ -650,8 +650,8 @@ export function PropertyAnalyticsDashboard() {
                       <tr key={idx} className="border-b border-gray-700/50">
                         <td className="py-3">
                           <div className="flex items-center gap-2">
-                            <div 
-                              className="w-3 h-3 rounded-full" 
+                            <div
+                              className="w-3 h-3 rounded-full"
                               style={{ backgroundColor: PROPERTY_TYPE_COLORS[type.type as keyof typeof PROPERTY_TYPE_COLORS] || '#6B7280' }}
                             />
                             <span className="text-gray-300 font-medium">{type.type}</span>
@@ -661,7 +661,7 @@ export function PropertyAnalyticsDashboard() {
                         <td className="text-right py-3 text-gray-300">{formatCurrency(type.avg_value)}</td>
                         <td className="text-right py-3 text-gray-300">{formatCurrency(type.avg_insurance)}</td>
                         <td className="text-center py-3">
-                          <Badge 
+                          <Badge
                             variant="outline"
                             className={type.risk_level === 'high' ? 'border-red-500 text-red-500' : type.risk_level === 'medium' ? 'border-yellow-500 text-yellow-500' : 'border-green-500 text-green-500'}
                           >
@@ -709,8 +709,8 @@ export function PropertyAnalyticsDashboard() {
                         <td className="py-3 text-gray-300">{property.county}</td>
                         <td className="text-center py-3">
                           <div className="flex items-center justify-center space-x-2">
-                            <div 
-                              className="w-2 h-2 rounded-full" 
+                            <div
+                              className="w-2 h-2 rounded-full"
                               style={{ backgroundColor: getRiskColor(property.risk_score) }}
                             />
                             <span className="text-gray-300">{property.risk_score}</span>
@@ -737,7 +737,7 @@ export function PropertyAnalyticsDashboard() {
                           </div>
                         </td>
                         <td className="text-center py-3">
-                          <Badge 
+                          <Badge
                             variant="outline"
                             style={{
                               borderColor: HURRICANE_ZONE_COLORS[property.hurricane_zone as keyof typeof HURRICANE_ZONE_COLORS],
@@ -801,8 +801,8 @@ export function PropertyAnalyticsDashboard() {
                         <td className="text-right py-3 text-gray-300">{formatCurrency(geo.avg_insurance)}</td>
                         <td className="text-center py-3">
                           <div className="flex items-center justify-center space-x-2">
-                            <div 
-                              className="w-2 h-2 rounded-full" 
+                            <div
+                              className="w-2 h-2 rounded-full"
                               style={{ backgroundColor: getRiskColor(geo.risk_score) }}
                             />
                             <span className="text-gray-300">{geo.risk_score}</span>

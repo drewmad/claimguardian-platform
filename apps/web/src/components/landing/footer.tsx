@@ -16,13 +16,13 @@ import { useState } from 'react'
 import { COLORS } from '@/lib/constants'
 
 // Legal Modal Component
-const LegalModal = ({ 
-  isOpen, 
-  onClose, 
-  title, 
-  content, 
-  icon: Icon 
-}: { 
+const LegalModal = ({
+  isOpen,
+  onClose,
+  title,
+  content,
+  icon: Icon
+}: {
   isOpen: boolean
   onClose: () => void
   title: string
@@ -276,7 +276,7 @@ export function Footer() {
           </p>
           <div className="space-y-2 text-sm text-gray-300">
             <p className="flex items-center gap-2">
-              <Mail size={16} /> 
+              <Mail size={16} />
               <a href="mailto:support@claimguardian.com" className="hover:text-white">support@claimguardian.com</a>
             </p>
             <p className="text-xs text-gray-400 mt-4">
@@ -284,7 +284,7 @@ export function Footer() {
             </p>
           </div>
         </div>
-        
+
         <div>
           <h4 className="font-bold mb-4 text-white">AI Tools</h4>
           <ul className="space-y-2 text-sm text-gray-300">
@@ -294,7 +294,7 @@ export function Footer() {
             <li><a href="/ai-tools/evidence-organizer" className="hover:text-green-400 transition-colors">Evidence Organizer</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold mb-4 text-white">Quick Start</h4>
           <ul className="space-y-2 text-sm text-gray-300">
@@ -304,7 +304,7 @@ export function Footer() {
             <li><a href="/hurricane-prep" className="hover:text-blue-400 transition-colors">Hurricane Prep</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold mb-4 text-white">Resources</h4>
           <ul className="space-y-2 text-sm text-gray-300">
@@ -314,29 +314,29 @@ export function Footer() {
             <li><a href="/contact" className="hover:text-purple-400 transition-colors">Contact Support</a></li>
           </ul>
         </div>
-        
+
         <div>
           <h4 className="font-bold mb-4 text-white">Legal</h4>
           <ul className="space-y-2 text-sm text-gray-300">
             <li>
-              <button 
-                onClick={() => openModal('privacy')} 
+              <button
+                onClick={() => openModal('privacy')}
                 className="hover:text-white transition-colors text-left"
               >
                 Privacy Policy
               </button>
             </li>
             <li>
-              <button 
-                onClick={() => openModal('terms')} 
+              <button
+                onClick={() => openModal('terms')}
                 className="hover:text-white transition-colors text-left"
               >
                 Terms of Service
               </button>
             </li>
             <li>
-              <button 
-                onClick={() => openModal('aiUse')} 
+              <button
+                onClick={() => openModal('aiUse')}
                 className="hover:text-white transition-colors text-left"
               >
                 AI Use Agreement

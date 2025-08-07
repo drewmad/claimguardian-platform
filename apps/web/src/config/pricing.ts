@@ -59,7 +59,7 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
       annually: ''
     }
   },
-  
+
   homeowner: {
     id: 'homeowner',
     name: 'Homeowner Essentials',
@@ -92,7 +92,7 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
     },
     popular: true
   },
-  
+
   landlord: {
     id: 'landlord',
     name: 'Landlord Pro',
@@ -126,7 +126,7 @@ export const PRICING_PLANS: Record<string, PricingPlan> = {
       annually: process.env.NEXT_PUBLIC_STRIPE_PRICE_LANDLORD_ANNUALLY || ''
     }
   },
-  
+
   enterprise: {
     id: 'enterprise',
     name: 'Enterprise',
@@ -180,18 +180,18 @@ export const getPlanLimits = (planId: string) => {
 }
 
 export const checkLimit = (
-  planId: string, 
-  resource: keyof PricingPlan['limits'], 
+  planId: string,
+  resource: keyof PricingPlan['limits'],
   currentUsage: number
 ): { allowed: boolean; limit: number; usage: number } => {
   const limits = getPlanLimits(planId)
   const limit = limits[resource]
-  
+
   // -1 means unlimited
   if (limit === -1) {
     return { allowed: true, limit: -1, usage: currentUsage }
   }
-  
+
   return {
     allowed: currentUsage < limit,
     limit,

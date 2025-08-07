@@ -54,7 +54,7 @@ const API_TESTS = [
   { key: 'air-quality', name: 'Air Quality', icon: Activity, color: 'red', category: 'Google Maps' },
   { key: 'solar', name: 'Solar Potential', icon: Sun, color: 'yellow', category: 'Google Maps' },
   { key: 'timezone', name: 'Time Zone', icon: Timer, color: 'pink', category: 'Google Maps' },
-  
+
   // Additional Intelligence APIs
   { key: 'noaa-weather', name: 'NOAA Weather Intelligence', icon: CloudRain, color: 'teal', category: 'Weather Intelligence' },
   { key: 'zillow-property', name: 'Zillow Property Intelligence', icon: Home, color: 'emerald', category: 'Property Intelligence' },
@@ -68,7 +68,7 @@ export default function MapsIntelligencePage() {
     lat: 25.7617,
     lng: -80.1918
   })
-  
+
   const [testResults, setTestResults] = useState<Record<string, TestResult>>({})
   const [isRunningAll, setIsRunningAll] = useState(false)
   const [unifiedResults, setUnifiedResults] = useState<UnifiedResults | null>(null)
@@ -87,7 +87,7 @@ export default function MapsIntelligencePage() {
 
     try {
       let result
-      
+
       switch (apiKey) {
         case 'address-validation':
           result = await googleMapsService.validateAddress(testLocation.address)
@@ -220,10 +220,10 @@ export default function MapsIntelligencePage() {
       }
 
       const duration = Date.now() - startTime
-      
+
       // Handle different response formats
       let success, data, error, cached
-      
+
       if (apiKey === 'noaa-weather' || apiKey === 'zillow-property' || apiKey === 'satellite-imagery' || apiKey === 'emergency-alerts') {
         // Supabase function response format
         success = !result.error && result.data?.success !== false
@@ -237,7 +237,7 @@ export default function MapsIntelligencePage() {
         error = (result as unknown as Record<string, unknown>).error
         cached = (result as unknown as Record<string, unknown>).cached as boolean
       }
-      
+
       updateTestResult(apiKey, {
         status: success ? 'success' : 'error',
         duration,
@@ -258,7 +258,7 @@ export default function MapsIntelligencePage() {
 
   const runAllTests = async () => {
     setIsRunningAll(true)
-    
+
     // Reset all results
     const resetResults: Record<string, TestResult> = {}
     API_TESTS.forEach(test => {
@@ -269,13 +269,13 @@ export default function MapsIntelligencePage() {
     // Run all tests in parallel
     const promises = API_TESTS.map(test => runSingleTest(test.key))
     await Promise.allSettled(promises)
-    
+
     setIsRunningAll(false)
   }
 
   const runUnifiedIntelligence = async () => {
     setUnifiedResults({ status: 'loading' })
-    
+
     try {
       const result = await googleMapsService.getCompletePropertyIntelligence(testLocation)
       setUnifiedResults(result as UnifiedResults)
@@ -386,7 +386,7 @@ export default function MapsIntelligencePage() {
             {['Google Maps', 'Weather Intelligence', 'Property Intelligence', 'Advanced Intelligence'].map(category => {
               const categoryTests = API_TESTS.filter(test => test.category === category)
               if (categoryTests.length === 0) return null
-              
+
               return (
                 <div key={category} className="space-y-4">
                   <h3 className="text-xl font-semibold text-white border-b border-gray-700 pb-2">
@@ -396,7 +396,7 @@ export default function MapsIntelligencePage() {
                     {categoryTests.map((test) => {
                       const Icon = test.icon
                       const result = testResults[test.key]
-                      
+
                       return (
                         <Card key={test.key} className={`bg-gray-800 border-gray-700 ${getStatusColor(result?.status)} transition-all`}>
                           <CardHeader className="pb-2">
@@ -417,7 +417,7 @@ export default function MapsIntelligencePage() {
                             >
                               {result?.status === 'testing' ? 'Testing...' : 'Test API'}
                             </Button>
-                            
+
                             {result && (
                               <div className="space-y-2 text-xs">
                                 {result.duration && (
@@ -425,7 +425,7 @@ export default function MapsIntelligencePage() {
                                     Duration: {result.duration}ms {result.cached && '(cached)'}
                                   </div>
                                 )}
-                                
+
                                 {result.status === 'success' && result.data && (
                                   <details className="text-gray-300">
                                     <summary className="cursor-pointer text-green-400">View Response</summary>
@@ -434,7 +434,7 @@ export default function MapsIntelligencePage() {
                                     </pre>
                                   </details>
                                 )}
-                                
+
                                 {result.status === 'error' && result.error && (
                                   <div className="text-red-400 p-2 bg-red-900/20 rounded">
                                     {result.error}
@@ -450,7 +450,7 @@ export default function MapsIntelligencePage() {
                 </div>
               )
             })}
-            
+
           </TabsContent>
 
           <TabsContent value="unified" className="space-y-6">
@@ -483,13 +483,13 @@ export default function MapsIntelligencePage() {
                     {unifiedResults.success ? (
                       <div className="space-y-4">
                         <div className="text-green-400 font-semibold">✅ Complete Intelligence Gathered Successfully</div>
-                        
+
                         {/* Static Map Preview */}
                         {unifiedResults.data && 'staticMapUrl' in unifiedResults.data && unifiedResults.data.staticMapUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Property Satellite View:</h4>
-                            <img 
-                              src={unifiedResults.data.staticMapUrl as string} 
+                            <img
+                              src={unifiedResults.data.staticMapUrl as string}
                               alt="Property satellite view"
                               className="rounded-lg border border-gray-600"
                             />
@@ -500,8 +500,8 @@ export default function MapsIntelligencePage() {
                         {unifiedResults.data && 'streetViewUrl' in unifiedResults.data && unifiedResults.data.streetViewUrl && (
                           <div>
                             <h4 className="text-white font-medium mb-2">Street View:</h4>
-                            <img 
-                              src={unifiedResults.data.streetViewUrl as string} 
+                            <img
+                              src={unifiedResults.data.streetViewUrl as string}
                               alt="Property street view"
                               className="rounded-lg border border-gray-600"
                             />

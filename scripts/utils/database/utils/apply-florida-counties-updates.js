@@ -23,7 +23,7 @@ const updateFiles = [
 async function executeSQL(sql, filename) {
   try {
     console.log(`\n📄 Applying ${filename}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -34,7 +34,7 @@ async function executeSQL(sql, filename) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${filename} applied successfully`);
       return { success: true };
@@ -52,31 +52,31 @@ async function executeSQL(sql, filename) {
 
 async function verifyUpdates() {
   console.log('\n🔍 Verifying updates...');
-  
+
   const verificationQueries = [
     {
       name: 'Check populated phone numbers',
-      query: `SELECT COUNT(*) as counties_with_phones 
-              FROM florida_counties 
+      query: `SELECT COUNT(*) as counties_with_phones
+              FROM florida_counties
               WHERE building_dept_phone IS NOT NULL`
     },
     {
       name: 'Check wind speed requirements',
-      query: `SELECT COUNT(*) as counties_with_wind_speed 
-              FROM florida_counties 
+      query: `SELECT COUNT(*) as counties_with_wind_speed
+              FROM florida_counties
               WHERE wind_speed_requirement IS NOT NULL`
     },
     {
       name: 'Check high wind counties',
-      query: `SELECT county_name, wind_speed_requirement 
-              FROM florida_counties 
-              WHERE wind_speed_requirement >= 170 
+      query: `SELECT county_name, wind_speed_requirement
+              FROM florida_counties
+              WHERE wind_speed_requirement >= 170
               ORDER BY wind_speed_requirement DESC`
     },
     {
       name: 'Check emergency websites',
-      query: `SELECT COUNT(*) as counties_with_emergency_info 
-              FROM florida_counties 
+      query: `SELECT COUNT(*) as counties_with_emergency_info
+              FROM florida_counties
               WHERE emergency_mgmt_website IS NOT NULL`
     }
   ];
@@ -107,7 +107,7 @@ async function applyUpdates() {
 
   for (const file of updateFiles) {
     const migrationPath = path.join(__dirname, '../supabase/migrations_ai', file);
-    
+
     if (!fs.existsSync(migrationPath)) {
       console.error(`❌ File not found: ${file}`);
       results.push({ file, success: false, error: 'File not found' });
@@ -122,13 +122,13 @@ async function applyUpdates() {
   // Summary
   console.log('\n📊 Update Summary:');
   console.log('='.repeat(50));
-  
+
   const successful = results.filter(r => r.success).length;
   const failed = results.filter(r => !r.success).length;
-  
+
   console.log(`✅ Successful: ${successful}/${updateFiles.length}`);
   console.log(`❌ Failed: ${failed}/${updateFiles.length}`);
-  
+
   if (failed > 0) {
     console.log('\n❌ Failed updates:');
     results.filter(r => !r.success).forEach(r => {
@@ -146,7 +146,7 @@ async function applyUpdates() {
     console.log('   ✓ Hurricane evacuation zone URLs');
     console.log('   ✓ Citizens Insurance service center locations');
     console.log('   ✓ Updated building code versions');
-    
+
     // Run verification
     await verifyUpdates();
   } else {

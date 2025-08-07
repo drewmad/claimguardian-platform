@@ -40,7 +40,7 @@ interface ErrorStore {
   errors: GlobalError[]
   errorCount: number
   lastErrorTime: number
-  
+
   addError: (error: Omit<GlobalError, 'id' | 'timestamp'>) => string
   removeError: (id: string) => void
   clearErrors: () => void
@@ -58,7 +58,7 @@ export const useErrorStore = create<ErrorStore>((set, get) => ({
   addError: (errorData) => {
     const id = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
     const timestamp = Date.now()
-    
+
     const error: GlobalError = {
       ...errorData,
       id,
@@ -134,22 +134,22 @@ interface ErrorContextValue {
 const ErrorContext = createContext<ErrorContextValue | undefined>(undefined)
 
 export function ErrorProvider({ children }: { children: ReactNode }) {
-  const { 
-    errors, 
-    addError, 
-    removeError, 
+  const {
+    errors,
+    addError,
+    removeError,
     clearErrors,
     hasErrors,
     hasErrorLevel
   } = useErrorStore()
 
   const reportError = useCallback((
-    error: Error | string, 
-    context?: string, 
+    error: Error | string,
+    context?: string,
     level: GlobalError['level'] = 'error'
   ): string => {
     const message = typeof error === 'string' ? error : error.message
-    
+
     return addError({
       message,
       level,
@@ -189,9 +189,9 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
       event.preventDefault()
-      
-      const error = event.reason instanceof Error 
-        ? event.reason 
+
+      const error = event.reason instanceof Error
+        ? event.reason
         : new Error(String(event.reason))
 
       reportError(error, 'Unhandled Promise Rejection', 'error')
@@ -199,7 +199,7 @@ export function ErrorProvider({ children }: { children: ReactNode }) {
 
     const handleError = (event: ErrorEvent) => {
       event.preventDefault()
-      
+
       reportError(
         event.error || new Error(event.message),
         `${event.filename}:${event.lineno}:${event.colno}`,
@@ -293,7 +293,7 @@ function ErrorCard({ error, onClose }: { error: GlobalError; onClose: () => void
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3 flex-1 min-w-0">
               <Icon className="w-5 h-5 flex-shrink-0 mt-0.5 text-current" />
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center space-x-2 mb-1">
                   <Badge variant="outline" className="text-xs">
@@ -305,11 +305,11 @@ function ErrorCard({ error, onClose }: { error: GlobalError; onClose: () => void
                     </Badge>
                   )}
                 </div>
-                
+
                 <p className="text-sm font-medium text-gray-900 dark:text-gray-100 break-words">
                   {error.message}
                 </p>
-                
+
                 {error.action && (
                   <Button
                     size="sm"
@@ -367,7 +367,7 @@ export function ErrorCollector() {
               Clear
             </Button>
           </div>
-          
+
           <div className="space-y-1 max-h-40 overflow-y-auto">
             {errors.slice(-5).map((error) => (
               <div key={error.id} className="text-xs">
@@ -402,7 +402,7 @@ export function withErrorReporting<P extends object>(
 
     useEffect(() => {
       const componentName = Component.displayName || Component.name || 'Unknown'
-      
+
       // Report component mount
       if (process.env.NODE_ENV === 'development') {
         console.log(`Component mounted: ${componentName}`)

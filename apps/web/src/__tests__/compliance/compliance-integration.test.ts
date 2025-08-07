@@ -40,15 +40,15 @@ vi.mock('@/lib/supabase/server', () => ({
       }))
     })),
     auth: {
-      getUser: vi.fn(() => Promise.resolve({ 
-        data: { user: { id: 'test-user-id' } }, 
-        error: null 
+      getUser: vi.fn(() => Promise.resolve({
+        data: { user: { id: 'test-user-id' } },
+        error: null
       }))
     },
     storage: {
       from: vi.fn(() => ({
         upload: vi.fn(() => Promise.resolve({ error: null })),
-        getPublicUrl: vi.fn(() => ({ 
+        getPublicUrl: vi.fn(() => ({
           data: { publicUrl: 'https://test.com/test.pdf' }
         }))
       }))
@@ -111,7 +111,7 @@ describe('Compliance System Integration Tests', () => {
       expect(result).toHaveProperty('violations')
       expect(result).toHaveProperty('recommendations')
       expect(result).toHaveProperty('riskLevel')
-      
+
       expect(Array.isArray(result.violations)).toBe(true)
       expect(Array.isArray(result.recommendations)).toBe(true)
       expect(['low', 'medium', 'high', 'critical']).toContain(result.riskLevel)
@@ -134,7 +134,7 @@ describe('Compliance System Integration Tests', () => {
       expect(result.timeline).toHaveProperty('decisionDeadline')
       expect(result.timeline).toHaveProperty('paymentDeadline')
       expect(result.timeline).toHaveProperty('daysRemaining')
-      
+
       expect(typeof result.timeline.daysRemaining).toBe('number')
     })
 
@@ -311,7 +311,7 @@ describe('Compliance System Integration Tests', () => {
       expect(result).toHaveProperty('requestId')
       expect(result).toHaveProperty('status')
       expect(result).toHaveProperty('responseBy')
-      
+
       expect(['accepted', 'rejected']).toContain(result.status)
       expect(result.responseBy instanceof Date).toBe(true)
       expect(typeof result.requestId).toBe('string')
@@ -590,7 +590,7 @@ describe('Compliance System Integration Tests', () => {
       expect(document).toHaveProperty('id')
       expect(document).toHaveProperty('documentType', 'assignment_of_benefits')
       expect(document).toHaveProperty('requiresSignature')
-      expect(document.complianceChecks.some(check => 
+      expect(document.complianceChecks.some(check =>
         check.checkName.includes('Florida Statute') && check.reference === '627.7152'
       )).toBe(true)
     })
@@ -711,7 +711,7 @@ describe('Compliance System Integration Tests', () => {
 
       expect(submissionResult).toHaveProperty('success')
       expect(submissionResult).toHaveProperty('submissionId')
-      
+
       if (submissionResult.success) {
         expect(typeof submissionResult.submissionId).toBe('string')
         expect(submissionResult.submissionId!.length).toBeGreaterThan(0)
@@ -909,15 +909,15 @@ describe('Compliance System Integration Tests', () => {
       // Mock malformed claim data
       vi.mocked(createClient().from('claims').select).mockReturnValueOnce({
         eq: vi.fn(() => ({
-          single: vi.fn(() => Promise.resolve({ 
-            data: { id: 'test-id', invalid_field: 'bad data' }, 
-            error: null 
+          single: vi.fn(() => Promise.resolve({
+            data: { id: 'test-id', invalid_field: 'bad data' },
+            error: null
           }))
         }))
       } as any)
 
       const floridaManager = new FloridaComplianceManager()
-      
+
       // Should not throw, should handle gracefully
       const result = await floridaManager.checkInsuranceCodeCompliance('test-claim-id')
       expect(result).toHaveProperty('violations')
@@ -948,7 +948,7 @@ describe('Compliance System Integration Tests', () => {
 
     it('should handle concurrent compliance operations', async () => {
       const floridaManager = new FloridaComplianceManager()
-      
+
       // Run multiple compliance checks concurrently
       const promises = [
         floridaManager.checkInsuranceCodeCompliance('test-claim-1'),
@@ -957,7 +957,7 @@ describe('Compliance System Integration Tests', () => {
       ]
 
       const results = await Promise.all(promises)
-      
+
       expect(results).toHaveLength(3)
       results.forEach(result => {
         expect(result).toHaveProperty('compliant')

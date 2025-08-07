@@ -48,7 +48,7 @@ export class LearningAssistant {
   async searchLearnings(query: LearningQuery): Promise<LearningSuggestion[]> {
     try {
       const cacheKey = this.generateCacheKey(query)
-      
+
       // Check cache first
       if (this.cache.has(cacheKey)) {
         return this.cache.get(cacheKey)!
@@ -68,10 +68,10 @@ export class LearningAssistant {
 
       // Enhance results with context
       const suggestions = await this.enhanceResults(textResults || [])
-      
+
       // Cache results
       this.cache.set(cacheKey, suggestions)
-      
+
       return suggestions
     } catch (error) {
       logger.error('Error in learning search', { query }, error as Error)
@@ -159,7 +159,7 @@ export class LearningAssistant {
   async getStats(period: 'week' | 'month' | 'all' = 'month') {
     try {
       const startDate = this.getStartDate(period)
-      
+
       const { data, error } = await this.supabase
         .from('learnings')
         .select('category_id, severity, created_at')
@@ -203,7 +203,7 @@ export class LearningAssistant {
     if (errorMessage.includes('Cannot find module')) {
       fixes.push('npm install', 'Check import path spelling', 'Verify package is installed')
     }
-    
+
     if (errorMessage.includes('Type') && errorMessage.includes('is not assignable')) {
       fixes.push('Check type definitions', 'Verify function return types', 'Add type assertions if needed')
     }
@@ -284,7 +284,7 @@ export class LearningAssistant {
 
   private async groupByCategory(data: Array<{ category_id?: string }>) {
     const categoryMap = new Map<string, number>()
-    
+
     // Get category names
     const categoryIds = [...new Set(data.map(d => d.category_id).filter(Boolean))]
     const { data: categories } = await this.supabase
@@ -305,7 +305,7 @@ export class LearningAssistant {
   private calculateTrends(data: Array<{ created_at: string }>) {
     // Group by week
     const weeklyData = new Map<string, number>()
-    
+
     data.forEach(item => {
       const date = new Date(item.created_at)
       const weekKey = `${date.getFullYear()}-W${Math.floor(date.getDate() / 7)}`
@@ -317,7 +317,7 @@ export class LearningAssistant {
     if (weeks.length < 2) return 'stable'
 
     const recent = weeks.slice(-2)
-    const trend = recent[1][1] > recent[0][1] ? 'increasing' : 
+    const trend = recent[1][1] > recent[0][1] ? 'increasing' :
                   recent[1][1] < recent[0][1] ? 'decreasing' : 'stable'
 
     return trend

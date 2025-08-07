@@ -36,46 +36,46 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
 
     // Wrap query methods with type safety
     const methods = ['select', 'insert', 'update', 'upsert', 'delete'] as const
-    
+
     methods.forEach(method => {
       if (queryBuilder[method]) {
         const original = (queryBuilder as any)[method]
-        
+
         ;(queryBuilder as any)[method] = function(...args: unknown[]) {
           queryInfo.operation = method
           queryInfo.startTime = Date.now()
-          
+
           const result = original(...args)
-          
+
           // Monitor the promise
           if (result && typeof result.then === 'function') {
             return result
               .then((response: { data?: unknown[] }) => {
                 const duration = Date.now() - queryInfo.startTime
-                
+
                 recordDatabaseQuery({
                   queryName: `${queryInfo.table}.${queryInfo.operation}`,
                   duration,
                   rowCount: response?.data?.length,
                   timestamp: Date.now()
                 })
-                
+
                 return response
               })
               .catch((error: Error) => {
                 const duration = Date.now() - queryInfo.startTime
-                
+
                 recordDatabaseQuery({
                   queryName: `${queryInfo.table}.${queryInfo.operation}`,
                   duration,
                   error: error.message,
                   timestamp: Date.now()
                 })
-                
+
                 throw error
               })
           }
-          
+
           return result
         }
       }
@@ -88,9 +88,9 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   const originalRpcTyped = originalRpc as Function
   ;(client as any).rpc = function(fn: string, args?: unknown, options?: unknown) {
     const startTime = Date.now()
-    
+
     const queryBuilder = originalRpcTyped.call(client, fn, args, options)
-    
+
     // Wrap the execute methods for query builders
     if (queryBuilder && typeof queryBuilder.then === 'function') {
       const originalThen = queryBuilder.then.bind(queryBuilder)
@@ -119,22 +119,22 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
         )
       }
     }
-    
+
     return queryBuilder
   }
 
   // Monitor auth operations with correct method names
   const authMethods = ['signInWithPassword', 'signUp', 'signOut', 'resetPasswordForEmail'] as const
-  
+
   authMethods.forEach(method => {
     if (originalAuth[method]) {
       const original = (originalAuth as any)[method]
-      
+
       ;(originalAuth as any)[method] = function(...args: unknown[]) {
         const startTime = Date.now()
-        
+
         const result = original(...args)
-        
+
         // Handle both sync and async results
         if (result && typeof result.then === 'function') {
           return result
@@ -146,7 +146,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                 duration: Date.now() - startTime,
                 timestamp: Date.now()
               })
-              
+
               return response
             })
             .catch((error: unknown) => {
@@ -157,11 +157,11 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                 duration: Date.now() - startTime,
                 timestamp: Date.now()
               })
-              
+
               throw error
             })
         }
-        
+
         return result
       }
     }
@@ -170,17 +170,17 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
   // Monitor storage operations
   if (originalStorage) {
     const storageMethods = ['upload', 'download', 'remove', 'list'] as const
-    
+
     const monitorBucket = (bucket: any) => {
       storageMethods.forEach(method => {
         if (bucket[method]) {
           const original = bucket[method]
-          
+
           bucket[method] = function(...args: unknown[]) {
             const startTime = Date.now()
-            
+
             const result = original(...args)
-            
+
             if (result && typeof result.then === 'function') {
               return result
                 .then((response: { data?: { size?: number } }) => {
@@ -192,7 +192,7 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                     size: response?.data?.size,
                     timestamp: Date.now()
                   })
-                  
+
                   return response
                 })
                 .catch((error: Error) => {
@@ -203,16 +203,16 @@ export function monitorSupabaseClient(client: SupabaseClient): SupabaseClient {
                     duration: Date.now() - startTime,
                     timestamp: Date.now()
                   })
-                  
+
                   throw error
                 })
             }
-            
+
             return result
           }
         }
       })
-      
+
       return bucket
     }
 

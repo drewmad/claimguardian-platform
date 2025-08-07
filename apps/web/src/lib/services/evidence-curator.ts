@@ -82,9 +82,9 @@ export interface WorkflowStep {
   priority: number
 }
 
-export type EvidenceCategory = 
+export type EvidenceCategory =
   | 'damage_photos'
-  | 'property_photos' 
+  | 'property_photos'
   | 'receipts_invoices'
   | 'estimates_quotes'
   | 'insurance_documents'
@@ -133,7 +133,7 @@ export class EvidenceCuratorService {
         },
         {
           category: 'damage_photos' as EvidenceCategory,
-          step_name: 'Interior Damage Documentation', 
+          step_name: 'Interior Damage Documentation',
           required: ['water_damage', 'ceiling_damage', 'floor_damage'],
           estimated_time: 45
         },
@@ -177,7 +177,7 @@ export class EvidenceCuratorService {
 
       // Generate AI analysis
       const analysis = await this.generateAIAnalysis(file, fileUrl)
-      
+
       // Calculate quality scores
       const qualityScore = this.calculateQualityScore(analysis, file)
       const completenessScore = this.calculateCompletenessScore(analysis)
@@ -271,7 +271,7 @@ Provide JSON response with:
   "quality_score": 85,
   "metadata": {
     "clarity": "high|medium|low",
-    "lighting": "good|fair|poor", 
+    "lighting": "good|fair|poor",
     "angle": "optimal|acceptable|poor",
     "completeness": "complete|partial|incomplete"
   }
@@ -386,7 +386,7 @@ Provide JSON response with:
     metadata: Record<string, any>
   } {
     const isImage = file.type.startsWith('image/')
-    
+
     return {
       category: isImage ? 'damage_photos' : 'insurance_documents',
       subcategory: isImage ? 'general_damage' : 'document',
@@ -451,19 +451,19 @@ Provide JSON response with:
 
     if (analysis.metadata?.clarity === 'high') score += 15
     else if (analysis.metadata?.clarity === 'medium') score += 5
-    
+
     if (analysis.metadata?.lighting === 'good') score += 10
     else if (analysis.metadata?.lighting === 'fair') score += 5
-    
+
     if (analysis.metadata?.angle === 'optimal') score += 10
     else if (analysis.metadata?.angle === 'acceptable') score += 5
-    
+
     if (analysis.metadata?.completeness === 'complete') score += 15
     else if (analysis.metadata?.completeness === 'partial') score += 8
 
     // File size considerations
     if (file.size > 1024 * 1024) score += 5 // High resolution bonus
-    
+
     return Math.min(100, Math.max(0, score))
   }
 
@@ -472,12 +472,12 @@ Provide JSON response with:
    */
   private calculateCompletenessScore(analysis: any): number {
     let score = 60 // Base score
-    
+
     score += analysis.detected_elements.length * 5
     score += analysis.tags.length * 3
-    
+
     if (analysis.detailed_analysis.length > 100) score += 10
-    
+
     return Math.min(100, Math.max(0, score))
   }
 
@@ -518,19 +518,19 @@ Provide JSON response with:
     try {
       // Get existing evidence for claim
       const existingEvidence = await this.getClaimEvidence(claimId)
-      
+
       // Get claim type to determine required evidence
       const claimType = await this.getClaimType(claimId)
-      
+
       const gaps: EvidenceGap[] = []
-      
+
       // Define required evidence by category
       const requiredEvidence = this.getRequiredEvidenceByClaimType(claimType)
-      
+
       // Check for missing categories
       for (const [category, requirements] of Object.entries(requiredEvidence)) {
         const existingInCategory = existingEvidence.filter(e => e.category === category)
-        
+
         if (existingInCategory.length === 0) {
           gaps.push({
             category: category as EvidenceCategory,
@@ -548,7 +548,7 @@ Provide JSON response with:
         } else {
           // Check quality of existing evidence
           const avgQuality = existingInCategory.reduce((sum, e) => sum + e.quality_score, 0) / existingInCategory.length
-          
+
           if (avgQuality < 70) {
             gaps.push({
               category: category as EvidenceCategory,
@@ -639,7 +639,7 @@ Provide JSON response with:
   async createEvidenceWorkflow(claimId: string, claimType: string): Promise<EvidenceWorkflow | null> {
     try {
       const template = this.WORKFLOW_TEMPLATES[claimType as keyof typeof this.WORKFLOW_TEMPLATES] || this.WORKFLOW_TEMPLATES.hurricane
-      
+
       const steps: WorkflowStep[] = template.steps.map((step, index) => ({
         id: `step-${index + 1}`,
         step_name: step.step_name,

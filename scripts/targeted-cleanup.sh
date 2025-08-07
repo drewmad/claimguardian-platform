@@ -73,7 +73,7 @@ success "Removed duplicate configs"
 info "Removing recently created fix scripts..."
 recent_scripts=(
     "scripts/fix-broken-logging.js"
-    "scripts/fix-critical-flaws.sh"  
+    "scripts/fix-critical-flaws.sh"
     "scripts/fix-remaining-logging.js"
     "scripts/fix-specific-logging.js"
 )

@@ -15,15 +15,15 @@ import React from 'react'
 import { useDamageCopilot } from './useDamageCopilot'
 
 export function ToolComponent() {
-  const { 
-    guidance, 
-    complete, 
+  const {
+    guidance,
+    complete,
     progress,
     capturedImages,
     qualityScore,
-    capture, 
+    capture,
     resetSession,
-    loading 
+    loading
   } = useDamageCopilot()
 
   return (
@@ -38,7 +38,7 @@ export function ToolComponent() {
         {complete && (
           <div className="flex items-center gap-2">
             <span className="text-green-400 font-medium">✓ Complete</span>
-            <Button 
+            <Button
               onClick={resetSession}
               variant="outline"
               className="text-sm"
@@ -48,11 +48,11 @@ export function ToolComponent() {
           </div>
         )}
       </CardHeader>
-      
+
       <CardContent className="space-y-6">
         {/* Progress Indicator */}
         <div className="w-full bg-gray-700 rounded-full h-2">
-          <div 
+          <div
             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
             style={{ width: `${(progress.current / progress.total) * 100}%` }}
           />
@@ -65,7 +65,7 @@ export function ToolComponent() {
             className="rounded-md border border-gray-700"
             disabled={complete || loading}
           />
-          
+
           {loading && (
             <div className="flex items-center justify-center py-4">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
@@ -78,8 +78,8 @@ export function ToolComponent() {
         <div className="space-y-2">
           <h3 className="font-medium text-white">AI Guidance</h3>
           <div className={`p-4 rounded-md border ${
-            complete 
-              ? 'bg-green-900/20 border-green-700' 
+            complete
+              ? 'bg-green-900/20 border-green-700'
               : 'bg-blue-900/20 border-blue-700'
           }`}>
             <p className={`text-sm ${
@@ -96,7 +96,7 @@ export function ToolComponent() {
             <h3 className="font-medium text-white">Documentation Quality</h3>
             <div className="flex items-center gap-3">
               <div className="flex-1 bg-gray-700 rounded-full h-2">
-                <div 
+                <div
                   className={`h-2 rounded-full transition-all duration-300 ${
                     qualityScore >= 80 ? 'bg-green-600' :
                     qualityScore >= 60 ? 'bg-yellow-600' : 'bg-red-600'
@@ -123,8 +123,8 @@ export function ToolComponent() {
                 <div key={index} className="relative">
                   <div className="aspect-square bg-gray-700 rounded-md overflow-hidden">
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img 
-                      src={URL.createObjectURL(image.file)} 
+                    <img
+                      src={URL.createObjectURL(image.file)}
                       alt={`Damage evidence ${index + 1}`}
                       className="w-full h-full object-cover"
                     />

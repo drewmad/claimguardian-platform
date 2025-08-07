@@ -157,7 +157,7 @@ function getCountyFips(coNo) {
 // Transform row data
 function transformRow(row) {
   const transformed = {};
-  
+
   // Map columns from uppercase to lowercase
   for (const [csvCol, dbCol] of Object.entries(columnMapping)) {
     if (row[csvCol] !== undefined && row[csvCol] !== '') {
@@ -170,24 +170,24 @@ function transformRow(row) {
       }
     }
   }
-  
+
   // Add county_fips based on co_no
   if (transformed.co_no) {
     transformed.county_fips = getCountyFips(transformed.co_no);
   }
-  
+
   return transformed;
 }
 
 // Main import function
 async function importParcels(csvPath, options = {}) {
-  const { 
-    batchSize = 100, 
+  const {
+    batchSize = 100,
     skipErrors = false,
     limit = null,
-    testMode = false 
+    testMode = false
   } = options;
-  
+
   console.log('🏘️  Florida Parcels CSV Import');
   console.log('=' .repeat(50));
   console.log(`📄 CSV File: ${csvPath}`);
@@ -196,7 +196,7 @@ async function importParcels(csvPath, options = {}) {
   console.log(`🧪 Test Mode: ${testMode}`);
   if (limit) console.log(`📊 Limit: ${limit} records`);
   console.log('');
-  
+
   const stats = {
     total: 0,
     processed: 0,
@@ -205,7 +205,7 @@ async function importParcels(csvPath, options = {}) {
     skipped: 0,
     startTime: Date.now()
   };
-  
+
   const parser = fs
     .createReadStream(csvPath)
     .pipe(parse({
@@ -214,34 +214,34 @@ async function importParcels(csvPath, options = {}) {
       trim: true,
       cast: false
     }));
-  
+
   let batch = [];
-  
+
   for await (const row of parser) {
     stats.total++;
-    
+
     // Check limit
     if (limit && stats.total > limit) {
       console.log(`\n📊 Reached limit of ${limit} records`);
       break;
     }
-    
+
     try {
       const transformed = transformRow(row);
-      
+
       // Skip if no parcel_id
       if (!transformed.parcel_id) {
         stats.skipped++;
         continue;
       }
-      
+
       batch.push(transformed);
-      
+
       // Process batch when full
       if (batch.length >= batchSize) {
         await processBatch(batch, stats, testMode);
         batch = [];
-        
+
         // Progress update
         if (stats.processed % 1000 === 0) {
           const elapsed = (Date.now() - stats.startTime) / 1000;
@@ -249,7 +249,7 @@ async function importParcels(csvPath, options = {}) {
           console.log(`⏱️  Processed: ${stats.processed} | Rate: ${rate} records/sec | Errors: ${stats.errors}`);
         }
       }
-      
+
     } catch (error) {
       stats.errors++;
       if (!skipErrors) {
@@ -258,12 +258,12 @@ async function importParcels(csvPath, options = {}) {
       }
     }
   }
-  
+
   // Process remaining batch
   if (batch.length > 0) {
     await processBatch(batch, stats, testMode);
   }
-  
+
   // Final stats
   const elapsed = (Date.now() - stats.startTime) / 1000;
   console.log('\n' + '=' .repeat(50));
@@ -285,26 +285,26 @@ async function processBatch(batch, stats, testMode) {
     stats.processed += batch.length;
     return;
   }
-  
+
   try {
     const { data, error } = await supabase
       .from('florida_parcels')
-      .upsert(batch, { 
+      .upsert(batch, {
         onConflict: 'parcel_id',
-        ignoreDuplicates: false 
+        ignoreDuplicates: false
       });
-    
+
     if (error) {
       throw error;
     }
-    
+
     stats.processed += batch.length;
     stats.inserted += batch.length;
-    
+
   } catch (error) {
     console.error(`\n❌ Batch insert error:`, error.message);
     stats.errors += batch.length;
-    
+
     // Try individual inserts if batch fails
     if (error.code === '23505') { // Duplicate key
       console.log('🔄 Retrying individual inserts...');
@@ -312,11 +312,11 @@ async function processBatch(batch, stats, testMode) {
         try {
           const { error: insertError } = await supabase
             .from('florida_parcels')
-            .upsert(record, { 
+            .upsert(record, {
               onConflict: 'parcel_id',
-              ignoreDuplicates: true 
+              ignoreDuplicates: true
             });
-          
+
           if (!insertError) {
             stats.inserted++;
           }
@@ -331,7 +331,7 @@ async function processBatch(batch, stats, testMode) {
 // CLI interface
 if (require.main === module) {
   const args = process.argv.slice(2);
-  
+
   if (args.length === 0) {
     console.log('Usage: node import-florida-parcels-csv.js <csv-file> [options]');
     console.log('\nOptions:');
@@ -343,7 +343,7 @@ if (require.main === module) {
     console.log('  node import-florida-parcels-csv.js parcels.csv --batch-size=500 --skip-errors');
     process.exit(1);
   }
-  
+
   const csvPath = args[0];
   const options = {
     batchSize: 100,
@@ -351,7 +351,7 @@ if (require.main === module) {
     limit: null,
     testMode: false
   };
-  
+
   // Parse options
   args.slice(1).forEach(arg => {
     if (arg.startsWith('--batch-size=')) {
@@ -364,13 +364,13 @@ if (require.main === module) {
       options.testMode = true;
     }
   });
-  
+
   // Check if file exists
   if (!fs.existsSync(csvPath)) {
     console.error(`❌ File not found: ${csvPath}`);
     process.exit(1);
   }
-  
+
   // Run import
   importParcels(csvPath, options)
     .then(() => {

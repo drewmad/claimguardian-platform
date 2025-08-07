@@ -56,7 +56,7 @@ interface FederatedLearningRound {
 
 export function useMLDeployments() {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['ml-deployments'],
     queryFn: async () => {
@@ -72,7 +72,7 @@ export function useMLDeployments() {
         `)
         .eq('status', 'active')
         .order('deployed_at', { ascending: false })
-      
+
       if (error) throw error
       return data as ModelDeployment[]
     },
@@ -82,7 +82,7 @@ export function useMLDeployments() {
 
 export function useMLMetrics(deploymentId: string, window: '1min' | '5min' | '1hour' | '1day' = '5min') {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['ml-metrics', deploymentId, window],
     queryFn: async () => {
@@ -93,7 +93,7 @@ export function useMLMetrics(deploymentId: string, window: '1min' | '5min' | '1h
         .eq('metric_window', window)
         .order('metric_timestamp', { ascending: false })
         .limit(20)
-      
+
       if (error) throw error
       return data as MLMetrics[]
     },
@@ -104,7 +104,7 @@ export function useMLMetrics(deploymentId: string, window: '1min' | '5min' | '1h
 
 export function useFederatedLearning(modelFamily?: string) {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['federated-learning', modelFamily],
     queryFn: async () => {
@@ -113,13 +113,13 @@ export function useFederatedLearning(modelFamily?: string) {
         .select('*')
         .order('round_number', { ascending: false })
         .limit(10)
-      
+
       if (modelFamily) {
         query = query.eq('model_family', modelFamily)
       }
-      
+
       const { data, error } = await query
-      
+
       if (error) throw error
       return data as FederatedLearningRound[]
     },
@@ -129,7 +129,7 @@ export function useFederatedLearning(modelFamily?: string) {
 
 export function useModelDriftCheck(deploymentId: string) {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['model-drift', deploymentId],
     queryFn: async () => {
@@ -138,7 +138,7 @@ export function useModelDriftCheck(deploymentId: string) {
           p_deployment_id: deploymentId,
           p_window_hours: 24
         })
-      
+
       if (error) throw error
       return data
     },
@@ -149,7 +149,7 @@ export function useModelDriftCheck(deploymentId: string) {
 
 export function usePromoteModel() {
   const supabase = createClient()
-  
+
   return useMutation({
     mutationFn: async ({
       modelVersionId,
@@ -166,7 +166,7 @@ export function usePromoteModel() {
           p_deployment_config: deploymentConfig,
           p_traffic_percentage: trafficPercentage
         })
-      
+
       if (error) throw error
       return data
     }
@@ -175,7 +175,7 @@ export function usePromoteModel() {
 
 export function useStreamingMetrics(processorName: string) {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['streaming-metrics', processorName],
     queryFn: async () => {
@@ -184,18 +184,18 @@ export function useStreamingMetrics(processorName: string) {
         .select('*')
         .eq('processor_name', processorName)
         .single()
-      
+
       if (processorError) throw processorError
-      
+
       const { data: results, error: resultsError } = await supabase
         .from('stream_analytics_results')
         .select('*')
         .eq('processor_id', processor.id)
         .order('window_end', { ascending: false })
         .limit(50)
-      
+
       if (resultsError) throw resultsError
-      
+
       return {
         processor,
         results
@@ -208,7 +208,7 @@ export function useStreamingMetrics(processorName: string) {
 // Hook for A/B test monitoring
 export function useABTestResults(modelFamily: string) {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: ['ab-test-results', modelFamily],
     queryFn: async () => {
@@ -236,7 +236,7 @@ export function useABTestResults(modelFamily: string) {
         .gt('traffic_percentage', 0)
         .lt('traffic_percentage', 100)
         .order('deployed_at', { ascending: false })
-      
+
       if (error) throw error
       return data
     },

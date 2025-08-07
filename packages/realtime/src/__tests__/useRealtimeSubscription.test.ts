@@ -41,7 +41,7 @@ describe('useRealtimeSubscription', () => {
   })
 
   it('should be an alias for useRealtimeTable', () => {
-    const { result } = renderHook(() => 
+    const { result } = renderHook(() =>
       useRealtimeSubscription(mockSupabase, 'claims', {
         onInsert: vi.fn()
       })
@@ -58,7 +58,7 @@ describe('useRealtimeSubscription', () => {
 
   it('should accept optional parameters', () => {
     expect(() => {
-      renderHook(() => 
+      renderHook(() =>
         useRealtimeSubscription(mockSupabase, 'claims')
       )
     }).not.toThrow()
@@ -70,7 +70,7 @@ describe('useRealtimeSubscription', () => {
     const onDelete = vi.fn()
 
     expect(() => {
-      renderHook(() => 
+      renderHook(() =>
         useRealtimeSubscription(mockSupabase, 'claims', {
           onInsert,
           onUpdate,

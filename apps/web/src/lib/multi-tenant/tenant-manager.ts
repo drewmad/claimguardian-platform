@@ -130,7 +130,7 @@ export interface EnterpriseOrganization {
   subscriptionTier: 'starter' | 'professional' | 'enterprise'
   billingCycle: 'monthly' | 'annual'
   subscriptionStatus: 'trial' | 'active' | 'past_due' | 'canceled' | 'paused'
-  
+
   // Limits and usage
   userLimit: number
   propertyLimit: number
@@ -142,7 +142,7 @@ export interface EnterpriseOrganization {
   currentClaims: number
   currentAiRequests: number
   currentStorageGb: number
-  
+
   // Organization details
   configuration: OrganizationConfiguration
   featureFlags: Record<string, boolean>
@@ -155,7 +155,7 @@ export interface EnterpriseOrganization {
   businessLicenseNumber?: string
   insuranceLicenseNumber?: string
   taxId?: string
-  
+
   // Security and compliance
   ssoEnabled?: boolean
   ssoProvider?: string
@@ -165,7 +165,7 @@ export interface EnterpriseOrganization {
   dataRegion?: string
   complianceRequirements?: string[]
   dataRetentionPolicy?: Record<string, unknown>
-  
+
   // Status and billing
   isActive: boolean
   trialEndsAt?: Date
@@ -173,7 +173,7 @@ export interface EnterpriseOrganization {
   stripeCustomerId?: string
   billingEmail?: string
   primaryContactId?: string
-  
+
   // Metadata
   createdAt: Date
   updatedAt: Date
@@ -388,10 +388,10 @@ class TenantManager {
       if (!userRole) return null
 
       const user = this.parseOrganizationUser(userRole as OrganizationUserRow)
-      
+
       // Build permissions map
       const permissions = this.buildPermissions(user.role, userRole.permissions || [])
-      
+
       // Build features map
       const features = organization.featureFlags
 
@@ -784,7 +784,7 @@ class TenantManager {
       subscriptionTier: data.subscription_tier,
       billingCycle: data.billing_cycle,
       subscriptionStatus: data.subscription_status,
-      
+
       userLimit: data.user_limit,
       propertyLimit: data.property_limit,
       claimLimit: data.claim_limit,
@@ -795,7 +795,7 @@ class TenantManager {
       currentClaims: data.current_claims,
       currentAiRequests: data.current_ai_requests,
       currentStorageGb: data.current_storage_gb,
-      
+
       configuration: data.configuration || {},
       featureFlags: data.feature_flags || {},
       branding: data.branding || {},
@@ -807,7 +807,7 @@ class TenantManager {
       businessLicenseNumber: data.business_license_number,
       insuranceLicenseNumber: data.insurance_license_number,
       taxId: data.tax_id,
-      
+
       ssoEnabled: data.sso_enabled,
       ssoProvider: data.sso_provider,
       ssoConfiguration: data.sso_configuration,
@@ -816,14 +816,14 @@ class TenantManager {
       dataRegion: data.data_region,
       complianceRequirements: data.compliance_requirements,
       dataRetentionPolicy: data.data_retention_policy,
-      
+
       isActive: data.is_active,
       trialEndsAt: data.trial_ends_at ? new Date(data.trial_ends_at) : undefined,
       subscriptionId: data.subscription_id,
       stripeCustomerId: data.stripe_customer_id,
       billingEmail: data.billing_email,
       primaryContactId: data.primary_contact_id,
-      
+
       createdAt: new Date(data.created_at),
       updatedAt: new Date(data.updated_at)
     }

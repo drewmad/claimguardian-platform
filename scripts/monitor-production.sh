@@ -46,7 +46,7 @@ for func in "${FUNCTIONS[@]}"; do
     STATUS=$(curl -s -X OPTIONS "https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/$func" \
         -H "Origin: https://claimguardianai.com" \
         -w "%{http_code}" -o /dev/null)
-    
+
     if [ "$STATUS" = "204" ] || [ "$STATUS" = "200" ]; then
         echo -e "${GREEN}✓ OK (HTTP $STATUS)${NC}"
     else

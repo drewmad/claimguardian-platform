@@ -25,26 +25,26 @@ export function FloridaDisclosuresProvider({ children }: { children: ReactNode }
   const [isOpen, setIsOpen] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [hasSeenDisclosures, setHasSeenDisclosures] = useState(false)
-  
+
   const showDisclosures = (userId: string) => {
     setUserId(userId)
     setIsOpen(true)
   }
-  
+
   const handleAccept = () => {
     setIsOpen(false)
     setHasSeenDisclosures(true)
   }
-  
+
   const handleCancel = () => {
     setIsOpen(false)
   }
-  
+
   return (
     <FloridaDisclosuresContext.Provider value={{ showDisclosures, hasSeenDisclosures }}>
       {children}
       {userId && (
-        <FloridaDisclosuresModal 
+        <FloridaDisclosuresModal
           open={isOpen}
           onAccept={handleAccept}
           onCancel={handleCancel}

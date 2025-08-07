@@ -195,7 +195,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 async function importChunk() {
     const chunkName = path.basename(chunkFile);
     console.log(`Processing ${chunkName}...`);
-    
+
     try {
         // Read CSV file
         const fileContent = fs.readFileSync(chunkFile, 'utf-8');
@@ -205,7 +205,7 @@ async function importChunk() {
             cast: true,
             cast_date: false
         });
-        
+
         // Transform records for database
         const parcels = records.map(record => ({
             // Map CSV columns to database columns
@@ -333,28 +333,28 @@ async function importChunk() {
             import_batch: importBatch,
             data_source: 'FL_DOR_CSV'
         }));
-        
+
         if (dryRun === 'true') {
             console.log(`DRY RUN: Would insert ${parcels.length} records`);
             console.log('Sample record:', JSON.stringify(parcels[0], null, 2).substring(0, 500) + '...');
             return { success: parcels.length, failed: 0 };
         }
-        
+
         // Insert in smaller sub-batches to avoid timeouts
         const subBatchSize = 100;
         let successCount = 0;
         let failedCount = 0;
-        
+
         for (let i = 0; i < parcels.length; i += subBatchSize) {
             const batch = parcels.slice(i, i + subBatchSize);
-            
+
             const { data, error } = await supabase
                 .from('florida_parcels')
                 .upsert(batch, {
                     onConflict: 'CO_NO,PARCEL_ID',
                     ignoreDuplicates: false
                 });
-            
+
             if (error) {
                 console.error(`Error inserting batch ${i}-${i + batch.length}:`, error.message);
                 failedCount += batch.length;
@@ -362,10 +362,10 @@ async function importChunk() {
                 successCount += batch.length;
             }
         }
-        
+
         console.log(`${chunkName}: Inserted ${successCount}, Failed ${failedCount}`);
         return { success: successCount, failed: failedCount };
-        
+
     } catch (error) {
         console.error(`Error processing ${chunkName}:`, error.message);
         return { success: 0, failed: records.length };
@@ -405,7 +405,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
             total_records: ${FILE_SIZE},
             status: 'running'
         });
-    
+
     if (error) console.error('Error recording import status:', error);
     else console.log('Import status recorded');
 })();
@@ -429,7 +429,7 @@ for chunk in "$TEMP_DIR"/*.csv; do
     while [ $(jobs -r | wc -l) -ge $PARALLEL_JOBS ]; do
         sleep 0.1
     done
-    
+
     {
         node "$TEMP_DIR/import_chunk.js" "$chunk" "$IMPORT_BATCH" "$COUNTY_NO" "$DRY_RUN"
         if [ $? -eq 0 ]; then
@@ -461,7 +461,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
         .select('*', { count: 'exact', head: true })
         .eq('CO_NO', ${COUNTY_NO})
         .eq('import_batch', '${IMPORT_BATCH}');
-    
+
     const { error } = await supabase
         .from('florida_parcels_import_status')
         .update({
@@ -471,7 +471,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
             status: 'completed'
         })
         .eq('import_batch', '${IMPORT_BATCH}');
-    
+
     if (error) console.error('Error updating import status:', error);
     else console.log(\`Import complete: \${count || 0} records imported\`);
 })();

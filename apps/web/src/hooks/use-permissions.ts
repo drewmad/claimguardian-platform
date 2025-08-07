@@ -71,14 +71,14 @@ export function usePermissions(permissionNames: string[]) {
       setIsLoading(true)
       try {
         const results: Record<string, boolean> = {}
-        
+
         // Check all permissions in parallel
         await Promise.all(
           permissionNames.map(async (name) => {
             results[name] = await checkUserPermission(name)
           })
         )
-        
+
         setPermissions(results)
       } catch (error) {
         console.error('Error checking permissions:', error)
@@ -128,28 +128,28 @@ export function useUserSubscription() {
 // Hook to check if user has any of the specified permissions
 export function useHasAnyPermission(permissionNames: string[]) {
   const { permissions, isLoading } = usePermissions(permissionNames)
-  
+
   const hasAny = Object.values(permissions).some(hasPermission => hasPermission)
-  
+
   return { hasAnyPermission: hasAny, isLoading }
 }
 
 // Hook to check if user has all of the specified permissions
 export function useHasAllPermissions(permissionNames: string[]) {
   const { permissions, isLoading } = usePermissions(permissionNames)
-  
-  const hasAll = permissionNames.length > 0 && 
+
+  const hasAll = permissionNames.length > 0 &&
     permissionNames.every(name => permissions[name] === true)
-  
+
   return { hasAllPermissions: hasAll, isLoading }
 }
 
 // Hook to get permission limits
 export function usePermissionLimit(permissionName: string) {
   const { permissions } = useUserPermissions()
-  
+
   const permission = permissions.find((p: UserPermission) => p.permission_name === permissionName)
-  
+
   return {
     limit: permission?.limit_value || null,
     metadata: permission?.metadata || {}

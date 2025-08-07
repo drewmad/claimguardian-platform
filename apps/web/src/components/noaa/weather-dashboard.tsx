@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Cloud, 
-  Wind, 
-  Droplets, 
-  AlertTriangle, 
+import {
+  Cloud,
+  Wind,
+  Droplets,
+  AlertTriangle,
   MapPin,
   Gauge,
   Thermometer,

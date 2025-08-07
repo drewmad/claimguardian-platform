@@ -43,7 +43,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      
+
       - name: Check for CI skip
         id: check-skip
         run: |
@@ -52,13 +52,13 @@ jobs:
           else
             echo "skip=false" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Detect affected packages
         id: affected
         run: |
           # Get list of changed files
           CHANGED_FILES=$(git diff --name-only ${{ github.event.before }} ${{ github.sha }} || git diff --name-only HEAD~1)
-          
+
           # Determine affected packages
           if echo "$CHANGED_FILES" | grep -q "^apps/web/"; then
             echo "packages=web" >> $GITHUB_OUTPUT
@@ -104,7 +104,7 @@ jobs:
         # Only run install if the cache didn't exist
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: pnpm install --frozen-lockfile
-      
+
       - name: Setup Turborepo cache
         run: |
           # Configure Turborepo for remote caching
@@ -301,16 +301,16 @@ jobs:
           key: ${{ env.TURBO_CACHE_KEY }}
           restore-keys: |
             turbo-${{ runner.os }}-
-      
+
       - name: Build all packages with Turbo
         run: pnpm turbo build --cache-dir=.turbo
-      
+
       - name: Check bundle size
         run: |
           # Get bundle size
           BUNDLE_SIZE=$(du -sh apps/web/.next | cut -f1)
           echo "Bundle size: $BUNDLE_SIZE"
-          
+
           # Fail if bundle is too large (e.g., > 50MB)
           SIZE_MB=$(du -sm apps/web/.next | cut -f1)
           if [ $SIZE_MB -gt 50 ]; then
@@ -388,7 +388,7 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           scope: ${{ secrets.VERCEL_ORG_ID }}
-      
+
       - name: Wait for deployment
         run: |
           echo "Deployment URL: ${{ steps.vercel-deploy.outputs.deployment-url }}"
@@ -402,17 +402,17 @@ jobs:
             echo "Waiting for deployment... (attempt $i/60)"
             sleep 10
           done
-      
+
       - name: Run health checks
         run: |
           DEPLOYMENT_URL="${{ steps.vercel-deploy.outputs.deployment-url }}"
-          
+
           # Check main page
           curl -f "${DEPLOYMENT_URL}/" || exit 1
-          
+
           # Check API health
           curl -f "${DEPLOYMENT_URL}/api/health" || exit 1
-          
+
           # Check critical routes
           for route in "/login" "/properties" "/claims"; do
             curl -f "${DEPLOYMENT_URL}${route}" || echo "Warning: Route ${route} returned error"
@@ -464,14 +464,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Check database migrations
         run: |
           # Ensure no breaking schema changes
           if [ -f "supabase/schema.sql" ]; then
             echo "✅ Schema file found"
           fi
-      
+
       - name: Deploy to Vercel Production
         id: vercel-deploy-prod
         uses: amondnet/vercel-action@v25
@@ -481,31 +481,31 @@ jobs:
           vercel-project-id: ${{ secrets.VERCEL_PROJECT_ID }}
           vercel-args: '--prod'
           scope: ${{ secrets.VERCEL_ORG_ID }}
-      
+
       - name: Verify production deployment
         run: |
           PROD_URL="https://claimguardianai.com"
-          
+
           # Wait for deployment propagation
           sleep 30
-          
+
           # Health checks
           echo "Running production health checks..."
-          
+
           # Check main site
           HTTP_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PROD_URL}/")
           if [ $HTTP_STATUS -ne 200 ]; then
             echo "❌ Main site returned $HTTP_STATUS"
             exit 1
           fi
-          
+
           # Check API health
           API_STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PROD_URL}/api/health")
           if [ $API_STATUS -ne 200 ]; then
             echo "❌ API health check failed with $API_STATUS"
             exit 1
           fi
-          
+
           # Check critical features
           for endpoint in "/login" "/ai-tools" "/properties"; do
             STATUS=$(curl -s -o /dev/null -w "%{http_code}" "${PROD_URL}${endpoint}")
@@ -513,9 +513,9 @@ jobs:
               echo "⚠️  Endpoint ${endpoint} returned $STATUS"
             fi
           done
-          
+
           echo "✅ All production health checks passed!"
-      
+
       - name: Monitor Web Vitals
         run: |
           # Check Core Web Vitals using Google PageSpeed API
@@ -539,7 +539,7 @@ jobs:
           # Vercel automatically keeps previous deployments
           # We can trigger a rollback by promoting the previous deployment
           # This would require Vercel API integration
-      
+
       - name: Notify deployment status
         if: always()
         uses: 8398a7/action-slack@v3
@@ -566,15 +566,15 @@ jobs:
         run: |
           echo "Monitoring production for 5 minutes..."
           PROD_URL="https://claimguardianai.com"
-          
+
           for i in {1..5}; do
             sleep 60
             echo "Health check $i/5"
-            
+
             # Check response times
             RESPONSE_TIME=$(curl -o /dev/null -s -w '%{time_total}' "${PROD_URL}/api/health")
             echo "API response time: ${RESPONSE_TIME}s"
-            
+
             # Alert if response time > 3s
             if (( $(echo "$RESPONSE_TIME > 3" | bc -l) )); then
               echo "⚠️  High API response time detected!"

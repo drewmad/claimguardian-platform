@@ -68,7 +68,7 @@ class ErrorBoundary extends Component<Props, State> {
       userMessage: 'Unable to connect to our servers. Please try again.',
       technicalMessage: 'Fetch operation failed'
     }],
-    
+
     // Authentication errors
     ['AuthError', {
       severity: 'high',
@@ -84,7 +84,7 @@ class ErrorBoundary extends Component<Props, State> {
       userMessage: 'You need to sign in to access this feature.',
       technicalMessage: 'Unauthorized access attempt'
     }],
-    
+
     // Validation errors
     ['ValidationError', {
       severity: 'low',
@@ -93,7 +93,7 @@ class ErrorBoundary extends Component<Props, State> {
       userMessage: 'Please check your input and try again.',
       technicalMessage: 'Input validation failed'
     }],
-    
+
     // Runtime errors
     ['ChunkLoadError', {
       severity: 'medium',
@@ -109,7 +109,7 @@ class ErrorBoundary extends Component<Props, State> {
       userMessage: 'An unexpected error occurred. Our team has been notified.',
       technicalMessage: 'Reference error in application code'
     }],
-    
+
     // Critical errors
     ['InternalError', {
       severity: 'critical',
@@ -133,7 +133,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   static getDerivedStateFromError(error: Error): Partial<State> {
     const errorId = `error_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     return {
       hasError: true,
       error,
@@ -144,10 +144,10 @@ class ErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     const errorId = this.state.errorId || 'unknown'
-    
+
     // Classify the error
     const classified = this.classifyError(error)
-    
+
     // Log error with classification
     logger.error('React error boundary caught error', {
       errorId,
@@ -200,9 +200,9 @@ class ErrorBoundary extends Component<Props, State> {
   }
 
   private async reportError(
-    error: Error, 
-    errorInfo: ErrorInfo, 
-    classified: ClassifiedError, 
+    error: Error,
+    errorInfo: ErrorInfo,
+    classified: ClassifiedError,
     errorId: string
   ) {
     try {
@@ -230,7 +230,7 @@ class ErrorBoundary extends Component<Props, State> {
 
   private retry = () => {
     this.setState({ isRecovering: true })
-    
+
     // Simulate recovery delay
     setTimeout(() => {
       this.setState({
@@ -258,7 +258,7 @@ class ErrorBoundary extends Component<Props, State> {
   render() {
     if (this.state.hasError) {
       const classified = this.classifyError(this.state.error!)
-      
+
       // Use custom fallback component if provided
       if (this.props.fallbackComponent) {
         const FallbackComponent = this.props.fallbackComponent
@@ -331,7 +331,7 @@ class ErrorBoundary extends Component<Props, State> {
                   {this.state.isRecovering ? 'Retrying...' : 'Try Again'}
                 </button>
               )}
-              
+
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={this.goBack}
@@ -340,7 +340,7 @@ class ErrorBoundary extends Component<Props, State> {
                   <ArrowLeft className="w-4 h-4" />
                   Go Back
                 </button>
-                
+
                 <button
                   onClick={this.goHome}
                   className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors"

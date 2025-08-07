@@ -12,9 +12,9 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  DollarSign, 
-  TrendingUp, 
+import {
+  DollarSign,
+  TrendingUp,
   TrendingDown,
   AlertTriangle,
   CheckCircle2,
@@ -92,21 +92,21 @@ export function LiveCostDashboard() {
 
   const initializeConnection = useCallback(async () => {
     setConnectionStatus('connecting')
-    
+
     try {
       const success = await webSocketCostMonitor.initialize()
-      
+
       if (success) {
         // Subscribe to real-time updates
         const subscribed = webSocketCostMonitor.subscribe('live-dashboard', handleRealtimeUpdate)
-        
+
         if (subscribed) {
           setIsConnected(true)
           setConnectionStatus('connected')
-          
+
           // Load initial metrics
           await loadInitialMetrics()
-          
+
           console.log('Live cost dashboard connected')
         } else {
           throw new Error('Failed to subscribe to updates')
@@ -114,12 +114,12 @@ export function LiveCostDashboard() {
       } else {
         throw new Error('Failed to initialize WebSocket monitor')
       }
-      
+
     } catch (error) {
       console.error('Connection failed:', error)
       setIsConnected(false)
       setConnectionStatus('disconnected')
-      
+
       // Retry connection in 30 seconds
       setTimeout(() => {
         if (!isConnected) {
@@ -171,7 +171,7 @@ export function LiveCostDashboard() {
 
       // Auto-mark as read after 10 seconds
       setTimeout(() => {
-        setRealtimeAlerts(prev => 
+        setRealtimeAlerts(prev =>
           prev.map(a => a.id === alert.id ? { ...a, isNew: false } : a)
         )
       }, 10000)
@@ -184,7 +184,7 @@ export function LiveCostDashboard() {
     if (update.type === 'cost_update' && update.data.cost_delta) {
       newMetrics.totalCostToday += update.data.cost_delta
       newMetrics.requestsToday += 1
-      
+
       if (update.data.tool_name) {
         newMetrics.topCostTool = update.data.tool_name
       }
@@ -285,7 +285,7 @@ export function LiveCostDashboard() {
           <h1 className="text-2xl font-bold text-white">Live Cost Dashboard</h1>
           <p className="text-gray-400">Real-time AI cost monitoring and alerts</p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           {/* Connection Status */}
           <div className={`flex items-center gap-2 ${connectionStatusColor}`}>
@@ -426,7 +426,7 @@ export function LiveCostDashboard() {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm font-medium text-gray-400">Success Rate</CardTitle>
                   <CheckCircle2 className={`h-4 w-4 ${
-                    metrics.successRate > 0.95 ? 'text-green-400' : 
+                    metrics.successRate > 0.95 ? 'text-green-400' :
                     metrics.successRate > 0.90 ? 'text-yellow-400' : 'text-red-400'
                   }`} />
                 </div>
@@ -435,8 +435,8 @@ export function LiveCostDashboard() {
                 <div className="text-2xl font-bold text-white">
                   {(metrics.successRate * 100).toFixed(1)}%
                 </div>
-                <Progress 
-                  value={metrics.successRate * 100} 
+                <Progress
+                  value={metrics.successRate * 100}
                   className="h-1 mt-2"
                 />
               </CardContent>
@@ -524,7 +524,7 @@ export function LiveCostDashboard() {
                       </div>
                     ) : (
                       realtimeAlerts.map(alert => (
-                        <div 
+                        <div
                           key={alert.id}
                           className={`p-4 rounded border ${
                             alert.severity === 'critical' ? 'bg-red-500/10 border-red-500/20' :
@@ -566,22 +566,22 @@ export function LiveCostDashboard() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => testAlert('info')}
                     className="w-full"
                   >
                     Test Info Alert
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => testAlert('warning')}
                     className="w-full text-yellow-400 border-yellow-400"
                   >
                     Test Warning Alert
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => testAlert('critical')}
                     className="w-full text-red-400 border-red-400"
                   >
@@ -610,7 +610,7 @@ export function LiveCostDashboard() {
                   </div>
                 ) : (
                   recentUpdates.map((update, index) => (
-                    <div 
+                    <div
                       key={index}
                       className="flex items-center justify-between p-2 rounded bg-gray-700/50"
                     >

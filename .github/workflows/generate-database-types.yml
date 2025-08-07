@@ -19,32 +19,32 @@ on:
 jobs:
   generate-types:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
-      
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '24'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-      
+
       - name: Generate database types
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -52,10 +52,10 @@ jobs:
           DEBUG: ${{ inputs.debug }}
         run: |
           echo "🔄 Generating database types..."
-          
+
           # Navigate to web app directory
           cd apps/web
-          
+
           # Generate types using the linked project
           if [ "$DEBUG" = "true" ]; then
             echo "Debug: Running type generation with verbose output"
@@ -63,7 +63,7 @@ jobs:
           else
             pnpm db:types
           fi
-          
+
           # Verify the generated file
           if [ -f "../../packages/db/src/types/database.types.ts" ]; then
             echo "✅ Types generated successfully"
@@ -73,7 +73,7 @@ jobs:
             echo "❌ Error: Types file was not generated"
             exit 1
           fi
-      
+
       - name: Check for changes
         id: check_changes
         run: |
@@ -85,44 +85,44 @@ jobs:
             echo "✅ Changes detected in generated types"
             git diff --stat packages/db/src/types/database.types.ts
           fi
-      
+
       - name: Commit and push changes
         if: steps.check_changes.outputs.changed == 'true'
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          
+
           # Stage the changes
           git add packages/db/src/types/database.types.ts
-          
+
           # Create commit message with details
           COMMIT_MSG="chore(db): Auto-generate database types
 
-Generated from supabase/schema.sql
-Project: tmlrvecuwgppbaynesji
-Schemas: public, claims, properties"
-          
+          Generated from supabase/schema.sql
+          Project: tmlrvecuwgppbaynesji
+          Schemas: public, claims, properties"
+
           # Commit the changes
           git commit -m "$COMMIT_MSG"
-          
+
           # Push to the current branch
           git push origin HEAD
-          
+
           echo "✅ Changes committed and pushed successfully"
-      
+
       - name: Verify type compilation
         if: steps.check_changes.outputs.changed == 'true'
         run: |
           echo "🔍 Verifying TypeScript compilation..."
           pnpm --filter @claimguardian/db type-check
           echo "✅ Type compilation successful"
-      
+
       - name: Create summary
         if: always()
         run: |
           echo "## Database Type Generation Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          
+
           if [ "${{ steps.check_changes.outputs.changed }}" = "true" ]; then
             echo "✅ **Types updated successfully**" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
@@ -133,7 +133,7 @@ Schemas: public, claims, properties"
           else
             echo "ℹ️ **No changes detected** - Types are up to date" >> $GITHUB_STEP_SUMMARY
           fi
-          
+
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Configuration" >> $GITHUB_STEP_SUMMARY
           echo "- **Project ID**: tmlrvecuwgppbaynesji" >> $GITHUB_STEP_SUMMARY

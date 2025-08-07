@@ -60,27 +60,27 @@ export interface Photo {
   timestamp: string
   location?: PhotoLocation
   metadata?: PhotoMetadata
-  
+
   // Assessment context
   assessmentId?: string
   propertyId?: string
   roomName?: string
   category?: string
   subcategory?: string
-  
+
   // User annotations
   notes?: string
   tags?: string[]
   audioNotes?: AudioNotes
-  
+
   // AI analysis
   analysis?: PhotoAnalysis
-  
+
   // Sync status
   syncStatus: 'pending' | 'syncing' | 'synced' | 'failed'
   lastSyncAttempt?: string
   syncError?: string
-  
+
   // Timestamps
   createdAt: string
   updatedAt: string
@@ -90,12 +90,12 @@ export interface PhotosState {
   photos: Photo[]
   selectedPhotos: string[]
   currentPhoto?: string
-  
+
   // Loading states
   isLoading: boolean
   isAnalyzing: boolean
   isSyncing: boolean
-  
+
   // Filters and sorting
   filters: {
     assessmentId?: string
@@ -110,10 +110,10 @@ export interface PhotosState {
   }
   sortBy: 'timestamp' | 'filename' | 'damageScore' | 'estimatedCost'
   sortOrder: 'asc' | 'desc'
-  
+
   // Error handling
   error: string | null
-  
+
   // Statistics
   stats: {
     totalPhotos: number
@@ -183,7 +183,7 @@ const photosSlice = createSlice({
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       }
-      
+
       state.photos.unshift(photo)
       state.stats.totalPhotos = state.photos.length
       state.stats.pendingSyncPhotos = state.photos.filter(p => p.syncStatus === 'pending').length
@@ -261,10 +261,10 @@ const photosSlice = createSlice({
       }
     },
 
-    updatePhotoSyncStatus: (state, action: PayloadAction<{ 
-      photoId: string 
+    updatePhotoSyncStatus: (state, action: PayloadAction<{
+      photoId: string
       status: Photo['syncStatus']
-      error?: string 
+      error?: string
     }>) => {
       const photo = state.photos.find(p => p.id === action.payload.photoId)
       if (photo) {
@@ -283,9 +283,9 @@ const photosSlice = createSlice({
       state.filters = {}
     },
 
-    setSorting: (state, action: PayloadAction<{ 
+    setSorting: (state, action: PayloadAction<{
       sortBy: PhotosState['sortBy']
-      sortOrder: PhotosState['sortOrder'] 
+      sortOrder: PhotosState['sortOrder']
     }>) => {
       state.sortBy = action.payload.sortBy
       state.sortOrder = action.payload.sortOrder
@@ -401,13 +401,13 @@ function updateStats(state: PhotosState) {
   state.stats.totalPhotos = state.photos.length
   state.stats.analyzedPhotos = state.photos.filter(p => p.analysis).length
   state.stats.pendingSyncPhotos = state.photos.filter(p => p.syncStatus === 'pending').length
-  
+
   const photosWithDamage = state.photos.filter(p => p.analysis?.estimatedCost)
   state.stats.totalEstimatedDamage = photosWithDamage.reduce(
-    (sum, p) => sum + (p.analysis?.estimatedCost || 0), 
+    (sum, p) => sum + (p.analysis?.estimatedCost || 0),
     0
   )
-  
+
   const photosWithScore = state.photos.filter(p => p.analysis?.damageScore)
   state.stats.averageDamageScore = photosWithScore.length > 0
     ? photosWithScore.reduce((sum, p) => sum + (p.analysis?.damageScore || 0), 0) / photosWithScore.length
@@ -487,9 +487,9 @@ function getFilteredPhotos(state: PhotosState): Photo[] {
 // Selectors (for use with useAppSelector)
 export const selectAllPhotos = (state: { photos: PhotosState }) => state.photos.photos
 export const selectFilteredPhotos = (state: { photos: PhotosState }) => getFilteredPhotos(state.photos)
-export const selectSelectedPhotos = (state: { photos: PhotosState }) => 
+export const selectSelectedPhotos = (state: { photos: PhotosState }) =>
   state.photos.photos.filter(p => state.photos.selectedPhotos.includes(p.id))
-export const selectCurrentPhoto = (state: { photos: PhotosState }) => 
+export const selectCurrentPhoto = (state: { photos: PhotosState }) =>
   state.photos.photos.find(p => p.id === state.photos.currentPhoto)
 export const selectPhotoById = (photoId: string) => (state: { photos: PhotosState }) =>
   state.photos.photos.find(p => p.id === photoId)

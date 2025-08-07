@@ -82,7 +82,7 @@ export function isGeminiContent(content: unknown): content is { parts: Array<{ t
   return (
     hasProperty(content, 'parts') &&
     Array.isArray(content.parts) &&
-    content.parts.every(part => 
+    content.parts.every(part =>
       hasProperty(part, 'text') && typeof part.text === 'string'
     )
   )

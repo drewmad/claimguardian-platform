@@ -401,7 +401,7 @@ cron.yaml.backup
 !/supabase/migrations/README.md
 
 # ==============================================================================
-# AGENT/CLI SPECIFIC  
+# AGENT/CLI SPECIFIC
 # ==============================================================================
 # Gemini CLI artifacts
 .gemini-clipboard/
@@ -506,7 +506,7 @@ chromatic-build-*
 # ==============================================================================
 # DEPLOYMENT & PRODUCTION
 # ==============================================================================
-# Static export directories  
+# Static export directories
 out/
 export/
 
@@ -566,7 +566,7 @@ assets/generated/
 !docs/*.zip
 
 # ==============================================================================
-# SECURITY & COMPLIANCE  
+# SECURITY & COMPLIANCE
 # ==============================================================================
 # Audit reports
 audit-report.html

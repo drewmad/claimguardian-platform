@@ -10,7 +10,7 @@
 import { promises as fs } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import { 
+import {
   claudeKnowledgeTransfer,
   completeLearningSystem,
   claudeSharedPatterns
@@ -26,7 +26,7 @@ async function exportLearnings() {
     // Get current date for filename
     const date = new Date().toISOString().split('T')[0]
     const exportDir = path.join(__dirname, '..', '..', 'exports', 'claude-learning')
-    
+
     // Create export directory if it doesn't exist
     await fs.mkdir(exportDir, { recursive: true })
 
@@ -159,7 +159,7 @@ Generated: ${new Date().toISOString()}
 
 ## Top Categories
 
-${exportData.statistics.topCategories.map(cat => 
+${exportData.statistics.topCategories.map(cat =>
   `- **${cat.category}**: ${cat.count} items`
 ).join('\n')}
 
@@ -197,7 +197,7 @@ ${exportData.learnings
 - **Applied**: ${l.appliedCount} times
 - **Tags**: ${l.tags.join(', ')}
 
-**Mistakes**: 
+**Mistakes**:
 ${l.mistakes.map(m => `- ${m}`).join('\n')}
 
 **Learnings**:

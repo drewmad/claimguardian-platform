@@ -10,36 +10,36 @@ on:
 jobs:
   generate-types:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - uses: pnpm/action-setup@v4
         with:
           version: 10.13.1
-      
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
           cache: 'pnpm'
-      
+
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
-      
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-      
+
       - name: Generate types
         run: |
           cd apps/web
           pnpm db:types
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
-      
+
       - name: Check for changes
         id: check_changes
         run: |
@@ -48,7 +48,7 @@ jobs:
           else
             echo "changed=true" >> $GITHUB_OUTPUT
           fi
-      
+
       - name: Commit and push if changed
         if: steps.check_changes.outputs.changed == 'true'
         run: |

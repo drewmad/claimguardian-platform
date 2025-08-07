@@ -4,7 +4,7 @@
 ClaimGuardian's authentication system uses Supabase Auth with custom error handling, session management, and compliance tracking.
 
 ## Architecture
-- **Primary Auth**: Supabase GoTrue with JWT tokens  
+- **Primary Auth**: Supabase GoTrue with JWT tokens
 - **Session Management**: Real-time monitoring with auto-refresh
 - **Profile Creation**: Database triggers (NOT manual inserts)
 - **Compliance**: Legal consent tracking and audit trails
@@ -13,7 +13,7 @@ ClaimGuardian's authentication system uses Supabase Auth with custom error handl
 
 ## Critical Files
 - `basic-signup-form.tsx` - Simple email/password signup
-- `multi-step-signup-form.tsx` - Full compliance signup flow 
+- `multi-step-signup-form.tsx` - Full compliance signup flow
 - `actions.ts` - Server actions for auth operations
 - `middleware.ts` - Route protection and validation
 

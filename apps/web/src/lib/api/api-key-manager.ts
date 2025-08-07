@@ -93,7 +93,7 @@ export class APIKeyManager {
       }
 
       logger.info(`API key created for user ${userId}: ${name}`)
-      
+
       return {
         key: apiKey,
         plainTextKey
@@ -139,7 +139,7 @@ export class APIKeyManager {
         .select('usage_count')
         .eq('id', data.id)
         .single()
-      
+
       await supabase
         .from('api_keys')
         .update({

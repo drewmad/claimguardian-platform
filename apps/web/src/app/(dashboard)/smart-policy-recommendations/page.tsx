@@ -14,7 +14,7 @@ export default function SmartPolicyRecommendationsPage() {
   return (
     <DashboardLayout>
       <div className="container mx-auto p-6 max-w-7xl">
-        <SmartRecommendationsDashboard 
+        <SmartRecommendationsDashboard
           userId={userId}
           className="space-y-6"
         />

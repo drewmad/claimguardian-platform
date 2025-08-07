@@ -146,8 +146,8 @@ export default function CommunityIntelligencePage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -162,7 +162,7 @@ export default function CommunityIntelligencePage() {
                     Beta
                   </Badge>
                 </div>
-                <button 
+                <button
                   onClick={() => setShowRealAnalytics(!showRealAnalytics)}
                   className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
                 >

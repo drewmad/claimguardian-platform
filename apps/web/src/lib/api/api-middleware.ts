@@ -45,8 +45,8 @@ export class APIMiddleware {
       const authResult = await this.authenticateRequest(request)
       if (!authResult.success) {
         return this.createErrorResponse(
-          401, 
-          'Unauthorized', 
+          401,
+          'Unauthorized',
           authResult.error || 'Invalid API key',
           requestInfo,
           startTime
@@ -75,7 +75,7 @@ export class APIMiddleware {
 
       // 4. Execute the API handler
       const response = await handler(request, context)
-      
+
       // 5. Log successful request
       await this.logRequest(context, requestInfo, response.status, Date.now() - startTime)
 
@@ -86,7 +86,7 @@ export class APIMiddleware {
 
     } catch (error) {
       logger.error('API middleware error:', error)
-      
+
       const errorResponse = this.createErrorResponse(
         500,
         'Internal Server Error',
@@ -171,9 +171,9 @@ export class APIMiddleware {
 
     // Check if endpoint requires specific permissions
     const requiredPermissions = this.getRequiredPermissions(requestInfo.endpoint, requestInfo.method, permissionMap)
-    
+
     // Check if user has required permissions
-    return requiredPermissions.every(permission => 
+    return requiredPermissions.every(permission =>
       context.permissions.includes(permission) || context.permissions.includes('*')
     )
   }
@@ -183,7 +183,7 @@ export class APIMiddleware {
    */
   private getRequiredPermissions(endpoint: string, method: string, permissionMap: Record<string, string[]>): string[] {
     // Find matching endpoint pattern
-    const matchingPattern = Object.keys(permissionMap).find(pattern => 
+    const matchingPattern = Object.keys(permissionMap).find(pattern =>
       endpoint.startsWith(pattern)
     )
 
@@ -192,7 +192,7 @@ export class APIMiddleware {
     }
 
     const basePermissions = permissionMap[matchingPattern]
-    
+
     // For read operations, only require read permission
     if (method === 'GET') {
       return basePermissions.filter(p => p.endsWith('.read'))
@@ -208,7 +208,7 @@ export class APIMiddleware {
   private async getUserTier(userId: string): Promise<string> {
     try {
       const supabase = await createClient()
-      
+
       const { data } = await supabase
         .from('user_profiles')
         .select('tier')
@@ -229,8 +229,8 @@ export class APIMiddleware {
     const url = new URL(request.url)
     const endpoint = url.pathname
     const method = request.method
-    const ipAddress = request.headers.get('x-forwarded-for') || 
-                     request.headers.get('x-real-ip') || 
+    const ipAddress = request.headers.get('x-forwarded-for') ||
+                     request.headers.get('x-real-ip') ||
                      'unknown'
     const userAgent = request.headers.get('user-agent') || 'unknown'
     const contentLength = request.headers.get('content-length')
@@ -340,9 +340,9 @@ export class APIMiddleware {
    */
   private addRateLimitHeaders(response: NextResponse, rateLimitResult: RateLimitResult): void {
     response.headers.set('X-RateLimit-Limit', rateLimitResult.limit_value.toString())
-    response.headers.set('X-RateLimit-Remaining', 
+    response.headers.set('X-RateLimit-Remaining',
       Math.max(0, rateLimitResult.limit_value - rateLimitResult.current_usage).toString())
-    response.headers.set('X-RateLimit-Reset', 
+    response.headers.set('X-RateLimit-Reset',
       Math.floor(rateLimitResult.reset_time.getTime() / 1000).toString())
   }
 

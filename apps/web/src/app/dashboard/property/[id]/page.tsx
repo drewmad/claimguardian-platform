@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Info, Building, Wrench, FileText,
   MapPin, Shield, CheckCircle, Wind, Award, Plus,
   AlertCircle, Camera, ChevronRight, Edit, ArrowLeft,
@@ -62,7 +62,7 @@ function PropertyDetailContent() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [showPhotoUploadModal, setShowPhotoUploadModal] = useState(false)
-  
+
   // Property state - will be loaded from Supabase
   const [property, setProperty] = useState<Record<string, unknown> | null>(null)
 
@@ -83,14 +83,14 @@ function PropertyDetailContent() {
     lotSize: 0,
     value: 0
   })
-  
+
   // Address parsing helper
   const parseAddress = (addressString: string) => {
     // Simple address parsing - could be enhanced with Google Places API
     const parts = addressString.split(',').map(part => part.trim())
     const stateZipPart = parts[2] || ''
     const stateZipMatch = stateZipPart.match(/^([A-Z]{2})\s+(\d{5}(?:-\d{4})?)$/)
-    
+
     return {
       street1: parts[0] || '',
       street2: '',
@@ -100,7 +100,7 @@ function PropertyDetailContent() {
       county: parts[1] === 'Port Charlotte' ? 'Charlotte County' : ''
     }
   }
-  
+
   const formatAddress = (addressParts: Record<string, string>) => {
     const parts = []
     if (addressParts.street1) parts.push(addressParts.street1)
@@ -158,7 +158,7 @@ function PropertyDetailContent() {
 
         const { data, error } = await getProperty({ propertyId })
         if (error) throw error
-        
+
         if (data) {
           // Transform new schema data to display format
           const addressString = data.full_address || `${data.street_address}, ${data.city}, ${data.state} ${data.zip_code}`
@@ -284,7 +284,7 @@ function PropertyDetailContent() {
         setLoading(false)
       }
     }
-    
+
     loadProperty()
   }, [propertyId])
 
@@ -293,7 +293,7 @@ function PropertyDetailContent() {
     try {
       logger.info('[PROPERTY SAVE] Starting save for property:', propertyId)
       logger.info('[PROPERTY SAVE] Edit form data:', editForm)
-      
+
       // Reconstruct address from individual fields
       const fullAddress = formatAddress({
         street1: editForm.street1,
@@ -302,7 +302,7 @@ function PropertyDetailContent() {
         state: editForm.state,
         zip: editForm.zip
       })
-      
+
       const updates = {
         name: editForm.name,
         address: fullAddress,
@@ -316,18 +316,18 @@ function PropertyDetailContent() {
           county: editForm.county
         }
       }
-      
+
       logger.info('[PROPERTY SAVE] Sending updates:', updates)
-      
+
       const { data, error } = await updateProperty({ propertyId, updates })
-      
+
       if (error) {
         logger.error('[PROPERTY SAVE] Update failed:', error)
         throw error
       }
-      
+
       logger.info('[PROPERTY SAVE] Update successful:', data)
-      
+
       // Update local state with saved data
       setProperty({
         ...property,
@@ -388,7 +388,7 @@ function PropertyDetailContent() {
   const handleAddSystem = () => {
     // Ensure we stay on the home-systems tab
     setActiveSubTab('home-systems')
-    
+
     const newSystem = {
       id: Date.now(),
       name: 'New System',
@@ -484,7 +484,7 @@ function PropertyDetailContent() {
         <div className="max-w-7xl mx-auto space-y-6">
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm text-gray-400 mb-4">
-            <button 
+            <button
               onClick={navigateToParent}
               className="flex items-center gap-1 hover:text-white transition-colors"
             >
@@ -507,7 +507,7 @@ function PropertyDetailContent() {
               </p>
             </div>
             {!isEditing && (
-              <Button 
+              <Button
                 onClick={handleEditClick}
                 className="bg-blue-600 hover:bg-blue-700"
               >
@@ -765,7 +765,7 @@ function PropertyDetailContent() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-3">
-                    <button 
+                    <button
                       onClick={handleUpdatePhotos}
                       className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <span className="flex items-center gap-3">
@@ -774,7 +774,7 @@ function PropertyDetailContent() {
                       </span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
-                    <button 
+                    <button
                       onClick={handleViewDocuments}
                       className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <span className="flex items-center gap-3">
@@ -783,7 +783,7 @@ function PropertyDetailContent() {
                       </span>
                       <ChevronRight className="w-5 h-5 text-gray-400" />
                     </button>
-                    <button 
+                    <button
                       onClick={handleEditClick}
                       className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                     >
@@ -839,14 +839,14 @@ function PropertyDetailContent() {
             <div className="space-y-6">
               <div className="flex justify-between items-center">
                 <h3 className="text-lg font-semibold text-white">Home Systems</h3>
-                <button 
+                <button
                   onClick={handleAddSystem}
                   className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                   <Plus className="w-4 h-4" />
                   Add System
                 </button>
               </div>
-              
+
               <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 {systems.length === 0 ? (
                   <Card className="bg-gray-800 border-gray-700 col-span-full">
@@ -939,14 +939,14 @@ function PropertyDetailContent() {
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
                   <h3 className="text-lg font-semibold text-white">Building Structures</h3>
-                  <button 
+                  <button
                     onClick={handleAddStructure}
                     className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2 text-sm">
                     <Plus className="w-4 h-4" />
                     Add Structure
                   </button>
                 </div>
-                
+
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {structures.length === 0 ? (
                     <Card className="bg-gray-800 border-gray-700 col-span-full">
@@ -1010,7 +1010,7 @@ function PropertyDetailContent() {
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-white">Upload Property Photos</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-4">
               {/* Drop Zone */}
               <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-gray-500 transition-colors cursor-pointer">

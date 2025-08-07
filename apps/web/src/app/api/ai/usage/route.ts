@@ -20,7 +20,7 @@ export const GET = cacheable({ endpoint: 'ai_usage' })(async (request: NextReque
 
     // Get current month usage
     const usage = await costTrackingService.getUserUsageCurrentMonth()
-    
+
     // Get budget status
     const budgetStatus = await costTrackingService.checkBudgetStatus()
 

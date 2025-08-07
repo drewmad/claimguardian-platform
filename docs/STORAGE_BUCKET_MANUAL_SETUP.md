@@ -20,7 +20,7 @@ The MCP SQL interface cannot create storage buckets directly.
    - **Name**: `policy-documents`
    - **Public bucket**: ❌ Unchecked (keep it private)
    - **File size limit**: `52428800` (50MB)
-   - **Allowed MIME types**: 
+   - **Allowed MIME types**:
      ```
      application/pdf
      image/png
@@ -92,7 +92,7 @@ CREATE POLICY "Users can upload their own policy documents"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -100,7 +100,7 @@ CREATE POLICY "Users can view their own policy documents"
 ON storage.objects FOR SELECT
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -108,7 +108,7 @@ CREATE POLICY "Users can delete their own policy documents"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -116,7 +116,7 @@ CREATE POLICY "Users can update their own policy documents"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 ```

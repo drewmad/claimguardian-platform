@@ -6,36 +6,36 @@
  * @status stable
  */
 
-export type LegalDocumentType = 
+export type LegalDocumentType =
   | 'privacy_policy'
   | 'terms_of_service'
   | 'ai_use_agreement'
   | 'cookie_policy'
   | 'data_processing_agreement';
 
-export type ConsentActionType = 
+export type ConsentActionType =
   | 'accepted'
   | 'declined'
   | 'withdrawn'
   | 'updated';
 
-export type ConsentMethod = 
+export type ConsentMethod =
   | 'signup'
   | 'settings'
   | 'prompted'
   | 'auto_update';
 
-export type ConsentFlow = 
+export type ConsentFlow =
   | 'standard'
   | 'gdpr'
   | 'ccpa';
 
-export type DeviceType = 
+export type DeviceType =
   | 'mobile'
   | 'tablet'
   | 'desktop';
 
-export type LogoutReason = 
+export type LogoutReason =
   | 'user'
   | 'timeout'
   | 'admin'
@@ -153,17 +153,17 @@ export interface SignupData {
   firstName?: string;
   lastName?: string;
   phone?: string;
-  
+
   // Legal consents
   acceptedDocuments: string[]; // Array of document IDs
-  
+
   // Device tracking data
   ipAddress?: string;
   userAgent?: string;
   deviceFingerprint?: string;
   deviceType?: 'mobile' | 'tablet' | 'desktop';
   screenResolution?: string;
-  
+
   // Location data
   geolocation?: {
     country?: string;
@@ -174,7 +174,7 @@ export interface SignupData {
     latitude?: number;
     longitude?: number;
   };
-  
+
   // Attribution data
   referrer?: string;
   landingPage?: string;
@@ -185,7 +185,7 @@ export interface SignupData {
     term?: string;
     content?: string;
   };
-  
+
   // Consent flags
   gdprConsent?: boolean;
   marketingConsent?: boolean;
@@ -198,7 +198,7 @@ export interface EnhancedProfile {
   user_id: string;
   created_at: string;
   updated_at: string;
-  
+
   // New compliance fields
   signup_ip_address?: string;
   signup_user_agent?: string;

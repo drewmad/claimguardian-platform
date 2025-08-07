@@ -57,7 +57,7 @@ export function LegalConsentForm({
       setError('')
 
       let docs: LegalDocument[]
-      
+
       if (mode === 'update' && userId) {
         // Load only documents that need acceptance
         docs = await legalServiceClientFix.getDocumentsNeedingAcceptance(userId)
@@ -67,7 +67,7 @@ export function LegalConsentForm({
       }
 
       setDocuments(docs)
-      
+
       // Initialize acceptance state
       const initialState: DocumentState = {}
       docs.forEach(doc => {
@@ -88,7 +88,7 @@ export function LegalConsentForm({
   }, [loadDocuments])
 
   useEffect(() => {
-    const allAccepted = documents.length > 0 && 
+    const allAccepted = documents.length > 0 &&
       documents.every(doc => acceptedDocs[doc.id] === true)
     onConsentChange?.(allAccepted)
   }, [acceptedDocs, documents, onConsentChange])
@@ -110,7 +110,7 @@ export function LegalConsentForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!onSubmit || submitting) return
 
     const acceptedDocumentIds = Object.entries(acceptedDocs)
@@ -125,10 +125,10 @@ export function LegalConsentForm({
     try {
       setSubmitting(true)
       setError('')
-      
+
       await onSubmit(acceptedDocumentIds)
       setSuccess(true)
-      
+
       logger.track('legal_consent_submitted', {
         userId,
         documentCount: acceptedDocumentIds.length,
@@ -232,7 +232,7 @@ export function LegalConsentForm({
             {mode === 'signup' ? 'Required Consents' : 'Updated Legal Documents'}
           </h3>
           <p className="text-sm text-blue-300/80">
-            {mode === 'signup' 
+            {mode === 'signup'
               ? 'By creating an account, you confirm you have read and agree to:'
               : 'We\'ve updated our legal documents. Please review and accept the new versions:'
             }
@@ -268,7 +268,7 @@ export function LegalConsentForm({
           disabled={submitting || disabled || Object.values(acceptedDocs).some(v => !v)}
           className="w-full btn-primary py-3 font-semibold disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {submitting ? 'Recording Consent...' : 
+          {submitting ? 'Recording Consent...' :
            mode === 'signup' ? 'Accept and Create Account' : 'Accept Updated Terms'}
         </button>
       )}
@@ -304,8 +304,8 @@ function LegalDocumentItem({
 }: LegalDocumentItemProps) {
   return (
     <div className={`border rounded-lg p-4 transition-colors ${
-      accepted 
-        ? 'border-green-500/30 bg-green-500/5' 
+      accepted
+        ? 'border-green-500/30 bg-green-500/5'
         : 'border-slate-600 hover:border-slate-500'
     }`}>
       <div className="flex items-start gap-3">
@@ -319,15 +319,15 @@ function LegalDocumentItem({
             className="w-5 h-5 bg-slate-700 border border-slate-600 rounded text-blue-500 focus:ring-2 focus:ring-blue-500 mt-0.5"
           />
           {/* Larger clickable area around checkbox */}
-          <label 
+          <label
             htmlFor={`consent-${document.id}`}
             className="absolute inset-0 w-8 h-8 -m-1.5 cursor-pointer rounded-full"
             title="Click to toggle consent"
           />
         </div>
-        
+
         <div className="flex-1 min-w-0">
-          <label 
+          <label
             htmlFor={`consent-${document.id}`}
             className="block cursor-pointer"
           >
@@ -347,7 +347,7 @@ function LegalDocumentItem({
               <span className="text-slate-400"> ({document.version})</span>
             </div>
           </label>
-          
+
           <div className="flex items-center gap-4 text-xs text-slate-500">
             <span className="flex items-center gap-1">
               <FileText className="w-3 h-3" />

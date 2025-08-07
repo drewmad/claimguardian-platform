@@ -37,7 +37,7 @@ interface ResponsiveModalProps {
 
 const sizeClasses = {
   sm: 'max-w-sm',
-  md: 'max-w-md', 
+  md: 'max-w-md',
   lg: 'max-w-lg',
   xl: 'max-w-xl',
   full: 'max-w-[95vw] max-h-[95vh]'
@@ -76,7 +76,7 @@ export function ResponsiveModal({
     const checkIsMobile = () => {
       setIsMobile(window.innerWidth < mobileBreakpoint)
     }
-    
+
     checkIsMobile()
     window.addEventListener('resize', checkIsMobile)
     return () => window.removeEventListener('resize', checkIsMobile)
@@ -115,14 +115,14 @@ export function ResponsiveModal({
   // Handle swipe to close on mobile
   const handleDrag = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (!enableSwipeToClose || !isMobile) return
-    
+
     const { offset } = info
     setDragOffset(Math.max(0, offset.y))
   }, [enableSwipeToClose, isMobile])
 
   const handleDragEnd = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     if (!enableSwipeToClose || !isMobile) return
-    
+
     const { offset, velocity } = info
     const threshold = 150
     const velocityThreshold = 500
@@ -180,7 +180,7 @@ export function ResponsiveModal({
 
   const getModalClasses = () => {
     let classes = 'relative bg-white dark:bg-gray-900 shadow-2xl'
-    
+
     if (isMobile) {
       classes += ' w-full max-w-none'
       if (mobileSlideUp) {
@@ -205,7 +205,7 @@ export function ResponsiveModal({
     if (isMobile && mobileSlideUp) {
       return position === 'top' ? 'justify-start' : 'justify-end'
     }
-    
+
     switch (position) {
       case 'top': return 'justify-start items-start pt-16'
       case 'bottom': return 'justify-end items-end pb-16'
@@ -225,7 +225,7 @@ export function ResponsiveModal({
           exit="exit"
           onClick={handleOverlayClick}
         />
-        
+
         <div className={`relative z-10 flex w-full ${getModalPosition()}`}>
           <motion.div
             ref={modalRef}
@@ -236,7 +236,7 @@ export function ResponsiveModal({
             }}
             variants={modalVariants}
             initial="hidden"
-            animate="visible" 
+            animate="visible"
             exit="exit"
             drag={enableSwipeToClose && isMobile ? 'y' : false}
             dragConstraints={{ top: 0 }}
@@ -261,7 +261,7 @@ export function ResponsiveModal({
                     </h2>
                   )}
                 </div>
-                
+
                 <div className="flex items-center gap-2">
                   {!isMobile && (
                     <button
@@ -276,7 +276,7 @@ export function ResponsiveModal({
                       )}
                     </button>
                   )}
-                  
+
                   {showCloseButton && (
                     <button
                       onClick={onClose}
@@ -306,15 +306,15 @@ export function ResponsiveModal({
 // Hook for responsive modal state management
 export function useResponsiveModal() {
   const [isOpen, setIsOpen] = useState(false)
-  
+
   const openModal = useCallback(() => {
     setIsOpen(true)
   }, [])
-  
+
   const closeModal = useCallback(() => {
     setIsOpen(false)
   }, [])
-  
+
   return {
     isOpen,
     openModal,

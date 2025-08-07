@@ -5,7 +5,7 @@ The ClaimGuardian database has grown significantly with advanced features. This 
 ## 🚨 The Problem
 
 - **Database Size**: 200GB+ with Florida parcel data
-- **Table Count**: 50+ tables with complex relationships  
+- **Table Count**: 50+ tables with complex relationships
 - **Type Generation**: 99,093 tokens (exceeds 25K limit)
 - **Performance**: Slower queries due to large schemas
 - **Complexity**: Many features may not be needed initially
@@ -103,12 +103,12 @@ psql -f scripts/simplify-multitenant.sql
 
 # See table sizes
 psql -c "
-SELECT 
+SELECT
   schemaname,
   tablename,
   pg_size_pretty(pg_total_relation_size(schemaname||'.'||tablename)) as size,
   pg_total_relation_size(schemaname||'.'||tablename) as bytes
-FROM pg_tables 
+FROM pg_tables
 WHERE schemaname = 'public'
 ORDER BY pg_total_relation_size(schemaname||'.'||tablename) DESC
 LIMIT 20;
@@ -154,7 +154,7 @@ Remove imports and references to removed tables:
 // import { getAIMetrics } from '@/actions/ai-analytics'
 
 // Remove these if you simplified multi-tenant
-// import { getOrganizationBilling } from '@/actions/multi-tenant' 
+// import { getOrganizationBilling } from '@/actions/multi-tenant'
 // import { getExpansionPlans } from '@/actions/expansion'
 
 // Keep essential imports
@@ -223,7 +223,7 @@ curl -X POST http://localhost:3000/api/auth/login
 # Test property creation
 curl -X POST http://localhost:3000/api/properties
 
-# Test claim creation  
+# Test claim creation
 curl -X POST http://localhost:3000/api/claims
 ```
 
@@ -253,7 +253,7 @@ pnpm test -- --skip-pattern="ai-analytics|parcel|expansion"
 - **Before**: 5-10 second queries on large tables
 - **After**: Sub-second queries on focused tables
 
-### Build Performance  
+### Build Performance
 - **Before**: Type generation fails (99K+ tokens)
 - **After**: Type generation succeeds (<5K tokens)
 
@@ -332,14 +332,14 @@ Keep track of your database size:
 
 ```sql
 -- Add to monitoring dashboard
-SELECT 
+SELECT
   'Database Size' as metric,
   pg_size_pretty(pg_database_size(current_database())) as value;
 
-SELECT 
+SELECT
   'Table Count' as metric,
   count(*) as value
-FROM information_schema.tables 
+FROM information_schema.tables
 WHERE table_schema = 'public';
 ```
 
@@ -347,10 +347,10 @@ WHERE table_schema = 'public';
 
 ### For New Projects
 1. **Start with Minimal Core** - Add features as needed
-2. **Use targeted type generation** - Avoid massive auto-generated files  
+2. **Use targeted type generation** - Avoid massive auto-generated files
 3. **Plan for growth** - Design schema to be easily expandable
 
-### For Existing Projects  
+### For Existing Projects
 1. **Remove AI infrastructure first** - Biggest immediate impact
 2. **Evaluate parcel data need** - 200GB savings if not required
 3. **Simplify gradually** - Test after each slimming step

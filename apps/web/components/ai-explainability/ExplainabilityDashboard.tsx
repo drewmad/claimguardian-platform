@@ -121,8 +121,8 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
         <button
           onClick={() => setExplanationMethod('shap')}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'shap' 
-              ? 'bg-blue-600 text-white' 
+            explanationMethod === 'shap'
+              ? 'bg-blue-600 text-white'
               : 'bg-gray-200 text-gray-700'
           }`}
         >
@@ -131,8 +131,8 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
         <button
           onClick={() => setExplanationMethod('lime')}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'lime' 
-              ? 'bg-blue-600 text-white' 
+            explanationMethod === 'lime'
+              ? 'bg-blue-600 text-white'
               : 'bg-gray-200 text-gray-700'
           }`}
         >
@@ -141,8 +141,8 @@ export function ExplainabilityDashboard({ predictionId, propertyId, modelVersion
         <button
           onClick={() => setExplanationMethod('attention')}
           className={`px-4 py-2 rounded ${
-            explanationMethod === 'attention' 
-              ? 'bg-blue-600 text-white' 
+            explanationMethod === 'attention'
+              ? 'bg-blue-600 text-white'
               : 'bg-gray-200 text-gray-700'
           }`}
         >

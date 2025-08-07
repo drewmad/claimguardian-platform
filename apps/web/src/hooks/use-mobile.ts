@@ -127,7 +127,7 @@ export function useSafeArea() {
   useEffect(() => {
     const updateSafeArea = () => {
       const computedStyle = getComputedStyle(document.documentElement)
-      
+
       setSafeArea({
         top: parseInt(computedStyle.getPropertyValue('--sat') || '0'),
         right: parseInt(computedStyle.getPropertyValue('--sar') || '0'),

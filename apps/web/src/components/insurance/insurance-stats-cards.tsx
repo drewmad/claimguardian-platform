@@ -20,7 +20,7 @@ interface InsuranceStatsProps {
 
 export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicies }: InsuranceStatsProps) {
   return (
-    <motion.div 
+    <motion.div
       className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8"
       variants={staggerContainer}
       initial="initial"
@@ -36,7 +36,7 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
           <Card variant="insurance">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <motion.div 
+                <motion.div
                   className="w-12 h-12 bg-blue-600/20 rounded-lg flex items-center justify-center"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
@@ -54,7 +54,7 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
           </Card>
         </motion.div>
       </motion.div>
-      
+
       <motion.div variants={staggerItem}>
         <motion.div
           variants={cardHover}
@@ -65,7 +65,7 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
           <Card variant="insurance">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <motion.div 
+                <motion.div
                   className="w-12 h-12 bg-green-600/20 rounded-lg flex items-center justify-center"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}
@@ -83,7 +83,7 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
           </Card>
         </motion.div>
       </motion.div>
-      
+
       <motion.div variants={staggerItem}>
         <motion.div
           variants={cardHover}
@@ -94,7 +94,7 @@ export function InsuranceStatsCards({ totalCoverage, totalPremium, activePolicie
           <Card variant="insurance">
             <CardContent className="p-6">
               <div className="flex items-center gap-4">
-                <motion.div 
+                <motion.div
                   className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center"
                   whileHover={{ scale: 1.1 }}
                   transition={{ duration: 0.2 }}

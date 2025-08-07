@@ -55,7 +55,7 @@ async function checkTable(tableName) {
       req.destroy();
       resolve(false);
     });
-    
+
     req.end();
   });
 }
@@ -80,14 +80,14 @@ async function main() {
   ];
 
   console.log('Checking tables...\n');
-  
+
   let successCount = 0;
   let failCount = 0;
 
   for (const table of tables) {
     process.stdout.write(`  ${table.padEnd(30, '.')}`);
     const exists = await checkTable(table);
-    
+
     if (exists) {
       console.log(' ✅');
       successCount++;

@@ -244,14 +244,14 @@ export const TouchCard = forwardRef<HTMLDivElement, TouchCardProps>(
                 onClick={handleFavoriteClick}
                 className={cn(
                   'p-2 rounded-full transition-colors',
-                  isFavorited 
-                    ? 'bg-red-100 text-red-600 dark:bg-red-900/30' 
+                  isFavorited
+                    ? 'bg-red-100 text-red-600 dark:bg-red-900/30'
                     : 'bg-white/80 text-gray-600 hover:bg-white dark:bg-gray-800/80'
                 )}
                 aria-label={isFavorited ? 'Remove from favorites' : 'Add to favorites'}
               >
-                <Heart 
-                  className={cn('w-4 h-4', isFavorited && 'fill-current')} 
+                <Heart
+                  className={cn('w-4 h-4', isFavorited && 'fill-current')}
                 />
               </motion.button>
             )}
@@ -263,14 +263,14 @@ export const TouchCard = forwardRef<HTMLDivElement, TouchCardProps>(
                 onClick={handleBookmarkClick}
                 className={cn(
                   'p-2 rounded-full transition-colors',
-                  isBookmarked 
-                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30' 
+                  isBookmarked
+                    ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30'
                     : 'bg-white/80 text-gray-600 hover:bg-white dark:bg-gray-800/80'
                 )}
                 aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
               >
-                <Bookmark 
-                  className={cn('w-4 h-4', isBookmarked && 'fill-current')} 
+                <Bookmark
+                  className={cn('w-4 h-4', isBookmarked && 'fill-current')}
                 />
               </motion.button>
             )}

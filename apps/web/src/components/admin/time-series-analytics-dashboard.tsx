@@ -19,11 +19,11 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { TrendingUp, TrendingDown, Activity, AlertTriangle, Clock, DollarSign, Target, BarChart3, LineChart as LineChartIcon, Filter, Download, RefreshCw, Eye, AlertCircle } from 'lucide-react'
 import { LineChart, Line, AreaChart, Area, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { aiTimeSeriesAnalyzer } from '@/lib/analytics/time-series-analyzer'
-import type { 
-  AIPerformanceAnalysis, 
-  AnomalyPoint, 
+import type {
+  AIPerformanceAnalysis,
+  AnomalyPoint,
   PerformanceTrend,
-  ComparisonAnalysis 
+  ComparisonAnalysis
 } from '@/lib/analytics/time-series-analyzer'
 import { toast } from 'sonner'
 import type { TooltipFormatter } from './types'
@@ -70,10 +70,10 @@ export function TimeSeriesAnalyticsDashboard() {
   const loadAnalytics = async () => {
     try {
       setLoading(true)
-      
+
       const endTime = new Date()
       const startTime = new Date()
-      
+
       // Calculate start time based on timeframe
       switch (selectedTimeframe) {
         case '1h':
@@ -109,7 +109,7 @@ export function TimeSeriesAnalyticsDashboard() {
       if (comparisonMode) {
         const comparisonStart = new Date(startTime)
         const comparisonEnd = new Date(endTime)
-        
+
         // Compare with previous period
         const periodDuration = endTime.getTime() - startTime.getTime()
         comparisonStart.setTime(startTime.getTime() - periodDuration)
@@ -139,7 +139,7 @@ export function TimeSeriesAnalyticsDashboard() {
 
   const handleExportData = () => {
     if (!analysis) return
-    
+
     const exportData = {
       timeframe: analysis.timeframe,
       metrics: analysis.metrics,
@@ -158,7 +158,7 @@ export function TimeSeriesAnalyticsDashboard() {
     link.click()
     document.body.removeChild(link)
     URL.revokeObjectURL(url)
-    
+
     toast.success('Analytics data exported')
   }
 
@@ -181,7 +181,7 @@ export function TimeSeriesAnalyticsDashboard() {
 
   const prepareChartData = (metric: string) => {
     if (!analysis) return []
-    
+
     // This would be populated from the actual time series data
     // For now, returning mock data structure
     return Array.from({ length: 24 }, (_, i) => ({
@@ -319,7 +319,7 @@ export function TimeSeriesAnalyticsDashboard() {
                      metricName === 'errorRate' ? AlertTriangle :
                      metricName === 'cost' ? DollarSign : Target
 
-          const trendKey = metrics.trend === 'increasing' ? 'improving' : 
+          const trendKey = metrics.trend === 'increasing' ? 'improving' :
                            metrics.trend === 'decreasing' ? 'degrading' : 'stable'
           const TrendIcon = TREND_ICONS[trendKey as keyof typeof TREND_ICONS]
 
@@ -345,8 +345,8 @@ export function TimeSeriesAnalyticsDashboard() {
                     P99: {formatMetricValue(metricName, metrics.percentile99)}
                   </span>
                 </div>
-                <Badge 
-                  variant={metrics.trend === 'increasing' ? 'default' : 
+                <Badge
+                  variant={metrics.trend === 'increasing' ? 'default' :
                           metrics.trend === 'decreasing' ? 'destructive' : 'secondary'}
                   className="text-xs mt-2"
                 >
@@ -381,12 +381,12 @@ export function TimeSeriesAnalyticsDashboard() {
                   <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={prepareChartData(metricName)}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
-                        dataKey="time" 
+                      <XAxis
+                        dataKey="time"
                         stroke="#9CA3AF"
                         fontSize={12}
                       />
-                      <YAxis 
+                      <YAxis
                         stroke="#9CA3AF"
                         fontSize={12}
                         tickFormatter={(value) => formatMetricValue(metricName, value)}
@@ -482,8 +482,8 @@ export function TimeSeriesAnalyticsDashboard() {
                     significance: trend.significance * 100
                   }))}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="metric" 
+                    <XAxis
+                      dataKey="metric"
                       stroke="#9CA3AF"
                       fontSize={12}
                       angle={-45}
@@ -525,7 +525,7 @@ export function TimeSeriesAnalyticsDashboard() {
                   {analysis.anomalies.slice(0, 10).map((anomaly, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">
                       <div className="flex items-center gap-3">
-                        <div 
+                        <div
                           className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: SEVERITY_COLORS[anomaly.severity] }}
                         />
@@ -619,7 +619,7 @@ export function TimeSeriesAnalyticsDashboard() {
                     </div>
                     <div className="text-gray-400">Overall Improvement Score</div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     {comparison.significantChanges.map((change, index) => (
                       <div key={index} className="flex items-center justify-between p-3 bg-gray-700/50 rounded-lg">

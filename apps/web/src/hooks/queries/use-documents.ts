@@ -12,7 +12,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
-import { 
+import {
   uploadDocument,
   getDocumentInsights,
   uploadPolicyDocument,
@@ -26,7 +26,7 @@ import {
 export const documentKeys = {
   all: ['documents'] as const,
   lists: () => [...documentKeys.all, 'list'] as const,
-  list: (filters?: { propertyId?: string }) => 
+  list: (filters?: { propertyId?: string }) =>
     [...documentKeys.lists(), filters] as const,
   details: () => [...documentKeys.all, 'detail'] as const,
   detail: (id: string) => [...documentKeys.details(), id] as const,
@@ -59,7 +59,7 @@ export function useDocumentUrl(id: string) {
 // Upload document mutation
 export function useUploadDocument() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: uploadPolicyDocument,
     onSuccess: (result) => {
@@ -81,7 +81,7 @@ export function useUploadDocument() {
 // Create document record mutation
 export function useCreateDocumentRecord() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: createDocumentRecord,
     onSuccess: (result) => {
@@ -102,7 +102,7 @@ export function useCreateDocumentRecord() {
 // Delete document mutation
 export function useDeleteDocument() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: (id: string) => deletePolicyDocument(id),
     onSuccess: (result, id) => {

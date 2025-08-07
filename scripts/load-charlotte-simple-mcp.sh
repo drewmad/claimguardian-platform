@@ -49,12 +49,12 @@ echo ""
 for ((batch=0; batch<10; batch++)); do
     START_IDX=$((batch * BATCH_SIZE))
     END_IDX=$(((batch + 1) * BATCH_SIZE))
-    
+
     echo -ne "${BLUE}Batch $((batch + 1))/10: Extracting records ${START_IDX}-${END_IDX}...${NC}"
-    
+
     # Extract batch and create simplified SQL
     jq --arg start "$START_IDX" --arg end "$END_IDX" '
-    .features[$start | tonumber:$end | tonumber] | 
+    .features[$start | tonumber:$end | tonumber] |
     map(
       "(" +
       "15," +                                          # CO_NO
@@ -66,12 +66,12 @@ for ((batch=0; batch<10; batch++)); do
       ("'\''" + (.properties.PHY_ADDR1 // "" | gsub("'\''"; "'\'''\''")) + "'\''") + "," +
       "'\''FLORIDA_DOR_2024'\''" +
       ")"
-    ) | 
-    "INSERT INTO florida_parcels (CO_NO, PARCEL_ID, county_fips, JV, LND_VAL, OWN_NAME, PHY_ADDR1, data_source) VALUES " + 
-    join(",") + 
+    ) |
+    "INSERT INTO florida_parcels (CO_NO, PARCEL_ID, county_fips, JV, LND_VAL, OWN_NAME, PHY_ADDR1, data_source) VALUES " +
+    join(",") +
     " ON CONFLICT (CO_NO, PARCEL_ID) DO UPDATE SET JV = EXCLUDED.JV, LND_VAL = EXCLUDED.LND_VAL, updated_at = NOW();"
     ' "$DATA_FILE" > /tmp/batch_${batch}.sql 2>/dev/null
-    
+
     # Check if SQL was generated
     if [ -s "/tmp/batch_${batch}.sql" ]; then
         # Execute via MCP
@@ -79,14 +79,14 @@ for ((batch=0; batch<10; batch++)); do
         RESULT=$(claude mcp supabase execute_sql \
           --project_id tmlrvecuwgppbaynesji \
           --query "$SQL" 2>&1 || echo "ERROR")
-        
+
         if [[ "$RESULT" == *"ERROR"* ]] || [[ "$RESULT" == *"error"* ]]; then
             echo -e "\r${RED}✗ Batch $((batch + 1)): Failed${NC}"
             echo "Error: $RESULT" | head -2
         else
             echo -e "\r${GREEN}✓ Batch $((batch + 1)): Completed${NC}"
         fi
-        
+
         rm -f "/tmp/batch_${batch}.sql"
     else
         echo -e "\r${YELLOW}○ Batch $((batch + 1)): No data${NC}"

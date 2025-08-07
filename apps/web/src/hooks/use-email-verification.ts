@@ -58,10 +58,10 @@ export function useEmailVerification(): EmailVerificationState & EmailVerificati
   const checkStatus = useCallback(async () => {
     try {
       setState(prev => ({ ...prev, isLoading: true, error: null }))
-      
+
       const supabase = createClient()
       const { data: { user }, error: userError } = await supabase.auth.getUser()
-      
+
       if (userError) {
         setState(prev => ({
           ...prev,
@@ -71,7 +71,7 @@ export function useEmailVerification(): EmailVerificationState & EmailVerificati
         }))
         return
       }
-      
+
       setState(prev => ({
         ...prev,
         isVerified: !!user?.email_confirmed_at,
@@ -79,13 +79,13 @@ export function useEmailVerification(): EmailVerificationState & EmailVerificati
         user,
         isLoading: false
       }))
-      
+
       logger.track('verification_status_checked', {
         isVerified: !!user?.email_confirmed_at,
         hasUser: !!user,
         email: user?.email
       })
-      
+
     } catch (err) {
       setState(prev => ({
         ...prev,
@@ -246,11 +246,11 @@ export function useEmailVerification(): EmailVerificationState & EmailVerificati
         isLoading: false,
         error: 'Unexpected error sending verification email'
       }))
-      
+
       error('Failed to send verification email', {
         subtitle: 'Please try again in a moment'
       })
-      
+
       logger.error('Unexpected error resending verification email', { email: targetEmail }, err as Error)
       return false
     }
@@ -299,7 +299,7 @@ export function useEmailVerification(): EmailVerificationState & EmailVerificati
 // Utility hook for components that just need to know verification status
 export function useVerificationStatus() {
   const { isVerified, email, user, isLoading, checkStatus } = useEmailVerification()
-  
+
   return {
     isVerified,
     email,

@@ -41,7 +41,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     version: '1.0',
     template: `Analyze the attached image. Identify the main personal property item. Provide its name, a suggested category (e.g., Electronics, Furniture, Appliance), an estimated replacement value as a number, a detailed description including brand, model, and key visual features, and a serial number if visible.`
   },
-  
+
   // Construction & Damage Analysis
   materialAnalysis: {
     id: 'materialAnalysis',
@@ -55,7 +55,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     version: '1.0',
     template: `Analyze the provided image(s) for visible damage. Identify the type of damage (water, wind, fire, etc.), estimate the severity (minor, moderate, severe), describe the affected area and materials, and provide repair recommendations.`
   },
-  
+
   // Document Processing
   documentSorter: {
     id: 'documentSorter',
@@ -69,7 +69,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     version: '1.0',
     template: `From the attached image of an insurance policy declarations page, perform OCR and extract the required fields.`
   },
-  
+
   // Claim Analysis
   settlementAnalysis: {
     id: 'settlementAnalysis',
@@ -78,13 +78,13 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     template: `
       You are an expert public adjuster AI. Your task is to analyze the provided insurance settlement offer against the user's documented claim data.
       Provide a detailed, structured analysis in JSON format based on the provided schema.
-      
+
       CONTEXT:
       - **Settlement Offer Text**: """{offerText}"""
       - **User's Claim Data**: {claimJson}
       - **Affected Asset Data**: {assetJson}
       - **Applicable Policy**: {policyJson}
-      
+
       INSTRUCTIONS:
       1. Parse the settlement offer to identify line items and amounts.
       2. Compare each offer item to the user's claim evidence and inventory.
@@ -100,7 +100,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     version: '1.0',
     template: `Based on the provided claim data, generate a professional insurance claim narrative that includes: the date and cause of loss, detailed description of damages, affected property areas, immediate actions taken, and current status of the property.`
   },
-  
+
   // Maintenance & Recommendations
   maintenanceSuggestions: {
     id: 'maintenanceSuggestions',
@@ -108,7 +108,7 @@ export const PROMPT_TEMPLATES: Record<string, PromptTemplate> = {
     version: '1.0',
     template: `Given this home system: {systemJson}, generate a list of 3 relevant maintenance suggestions suitable for Florida.`
   },
-  
+
   // Communication Assistance
   emailDraft: {
     id: 'emailDraft',

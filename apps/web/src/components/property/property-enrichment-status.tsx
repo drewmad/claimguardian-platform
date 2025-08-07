@@ -10,11 +10,11 @@
 
 import { Card } from '@claimguardian/ui'
 import { Button } from '@claimguardian/ui'
-import { 
-  AlertCircle, 
-  MapPin, 
-  Mountain, 
-  Shield, 
+import {
+  AlertCircle,
+  MapPin,
+  Mountain,
+  Shield,
   Home,
   Eye,
   RefreshCw,
@@ -35,7 +35,7 @@ interface PropertyEnrichmentData {
   id: string
   version: number
   is_current: boolean
-  
+
   // Location
   plus_code?: string
   neighborhood?: string
@@ -44,13 +44,13 @@ interface PropertyEnrichmentData {
   state_code: string
   formatted_address: string
   address_components?: Record<string, unknown>
-  
+
   // Elevation & Risk
   elevation_meters?: number
   elevation_resolution?: number
   flood_zone?: string
   flood_risk_score?: number
-  
+
   // Visual Documentation
   street_view_data?: {
     front?: string
@@ -65,7 +65,7 @@ interface PropertyEnrichmentData {
     available?: boolean
   }
   imagery_captured_at?: string
-  
+
   // Emergency Services
   fire_protection?: {
     protection_class?: string | number
@@ -94,13 +94,13 @@ interface PropertyEnrichmentData {
       distance_meters: number
     }
   }
-  
+
   // Risk Assessment
   distance_to_coast_meters?: number
   hurricane_evacuation_zone?: string
   storm_surge_zone?: string
   wind_zone?: string
-  
+
   // Insurance Factors
   insurance_risk_factors?: {
     overall_score?: number
@@ -113,7 +113,7 @@ interface PropertyEnrichmentData {
     wind_score?: number
   }
   insurance_territory_code?: string
-  
+
   // Metadata
   source_apis?: Record<string, unknown>
   api_costs?: {
@@ -247,7 +247,7 @@ export function PropertyEnrichmentStatus({
               <p className="text-gray-600 mb-4">
                 Property data has not been enriched yet. Enrich now to get comprehensive risk assessment and documentation.
               </p>
-              <Button 
+              <Button
                 onClick={handleEnrich}
                 disabled={enriching || !latitude || !longitude}
               >
@@ -272,7 +272,7 @@ export function PropertyEnrichmentStatus({
                     {enrichmentData.elevation_meters?.toFixed(1)}m
                   </p>
                 </div>
-                
+
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <Home className="h-8 w-8 text-green-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Flood Zone</p>
@@ -280,7 +280,7 @@ export function PropertyEnrichmentStatus({
                     {enrichmentData.flood_zone || 'N/A'}
                   </p>
                 </div>
-                
+
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <Shield className="h-8 w-8 text-orange-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Hurricane Zone</p>
@@ -288,7 +288,7 @@ export function PropertyEnrichmentStatus({
                     {enrichmentData.hurricane_evacuation_zone || 'None'}
                   </p>
                 </div>
-                
+
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <MapPin className="h-8 w-8 text-purple-500 mx-auto mb-2" />
                   <p className="text-sm text-gray-600">Protection Class</p>
@@ -317,7 +317,7 @@ export function PropertyEnrichmentStatus({
                     </>
                   )}
                 </Button>
-                
+
                 <Button
                   variant="secondary"
                   size="sm"
@@ -326,7 +326,7 @@ export function PropertyEnrichmentStatus({
                   <Eye className="mr-2 h-4 w-4" />
                   {showImages ? 'Hide' : 'View'} Images
                 </Button>
-                
+
                 {isExpired && (
                   <Button
                     variant="secondary"
@@ -375,7 +375,7 @@ export function PropertyEnrichmentStatus({
                       </div>
                       <div>
                         <span className="text-gray-600">Distance to Coast:</span> {
-                          enrichmentData.distance_to_coast_meters 
+                          enrichmentData.distance_to_coast_meters
                             ? `${(enrichmentData.distance_to_coast_meters / 1000).toFixed(1)} km`
                             : 'N/A'
                         }
@@ -388,7 +388,7 @@ export function PropertyEnrichmentStatus({
                     <div className="space-y-1 text-sm">
                       {enrichmentData.fire_protection?.nearest_station && (
                         <div>
-                          <span className="text-gray-600">Fire Station:</span> {enrichmentData.fire_protection.nearest_station.name} 
+                          <span className="text-gray-600">Fire Station:</span> {enrichmentData.fire_protection.nearest_station.name}
                           ({(enrichmentData.fire_protection.nearest_station.distance_meters / 1000).toFixed(1)} km)
                         </div>
                       )}
@@ -445,8 +445,8 @@ export function PropertyEnrichmentStatus({
                       return (
                         <div key={direction} className="text-center">
                           <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
-                            <Image 
-                              src={typeof data === 'string' ? data : ''} 
+                            <Image
+                              src={typeof data === 'string' ? data : ''}
                               alt={`Street view ${direction}`}
                               fill
                               className="object-cover"
@@ -457,7 +457,7 @@ export function PropertyEnrichmentStatus({
                       )
                     })}
                   </div>
-                  
+
                   {enrichmentData.aerial_view_data && (
                     <div className="mt-4">
                       <p className="text-sm font-medium mb-2">Aerial Views</p>
@@ -465,8 +465,8 @@ export function PropertyEnrichmentStatus({
                         {Object.entries(enrichmentData.aerial_view_data).map(([zoom, url]) => (
                           <div key={zoom} className="text-center">
                             <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
-                              <Image 
-                                src={url as string} 
+                              <Image
+                                src={url as string}
                                 alt={`Aerial view ${zoom}`}
                                 fill
                                 className="object-cover"

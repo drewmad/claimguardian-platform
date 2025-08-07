@@ -95,7 +95,7 @@ class AuthService {
   async signUp(data: SignUpData): Promise<AuthResponse<User>> {
     try {
       logger.info('[AUTH DEBUG] Basic signup - no validation')
-      
+
       // ULTRA SIMPLE: Just create the user account with minimal data
       const { data: authData, error } = await this.supabase.auth.signUp({
         email: data.email,
@@ -130,7 +130,7 @@ class AuthService {
           name: error.name,
           stack: error.stack
         })
-        
+
         // Check if this is a network/server error
         if (error.status === 500 || error.status === 503) {
           logger.error('[AUTH DEBUG] Server error detected. Possible causes:')
@@ -140,7 +140,7 @@ class AuthService {
           logger.error('4. Database migrations not applied')
           logger.error('Invalid Supabase URL:', new Error(`Invalid configuration: ${process.env.NEXT_PUBLIC_SUPABASE_URL}`))
         }
-        
+
         throw this.handleAuthError(error)
       }
 
@@ -163,15 +163,15 @@ class AuthService {
       })
 
       logger.info('User signup successful', { userId: authData.user.id })
-      
+
       // SIMPLIFIED: Basic compliance data is already stored in user metadata
-      logger.info('User created with basic compliance data', { 
+      logger.info('User created with basic compliance data', {
         userId: authData.user.id,
         termsAccepted: true,
         privacyAccepted: true,
         ageVerified: data.over18
       })
-      
+
       // Simple success logging
       console.log('[AUTH DEBUG] User signup completed successfully', {
         userId: authData.user.id,
@@ -179,7 +179,7 @@ class AuthService {
         emailConfirmationSent: !authData.user?.email_confirmed_at
       })
 
-      
+
       return { data: authData.user }
     } catch (error) {
       console.error('[AUTH DEBUG] Signup process failed', {
@@ -190,13 +190,13 @@ class AuthService {
         } : error,
         timestamp: new Date().toISOString()
       })
-      
+
       logger.error('Signup failed', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'An unexpected error occurred during signup',
@@ -213,7 +213,7 @@ class AuthService {
   async signIn(data: SignInData): Promise<AuthResponse<User>> {
     try {
       logger.info('Attempting user signin', { email: data.email })
-      
+
       // Enhanced debugging
       console.log('[AUTH DEBUG] SignIn attempt:', {
         email: data.email,
@@ -222,12 +222,12 @@ class AuthService {
         timestamp: new Date().toISOString(),
         supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL
       })
-      
+
       const { data: authData, error } = await this.supabase.auth.signInWithPassword({
         email: data.email,
         password: data.password
       })
-      
+
       console.log('[AUTH DEBUG] SignIn response:', {
         hasUser: !!authData?.user,
         hasSession: !!authData?.session,
@@ -251,7 +251,7 @@ class AuthService {
       }
 
       logger.info('User signin successful', { userId: authData.user.id })
-      
+
       // Track login activity
       try {
         await loginActivityService.logLoginAttempt(
@@ -261,11 +261,11 @@ class AuthService {
       } catch (trackingError) {
         logger.warn('Failed to track login activity:', trackingError)
       }
-      
+
       return { data: authData.user }
     } catch (error) {
       logger.error('Signin failed', error instanceof Error ? error : new Error(String(error)))
-      
+
       // Track failed login attempt
       try {
         await loginActivityService.logLoginAttempt(
@@ -276,11 +276,11 @@ class AuthService {
       } catch (trackingError) {
         logger.warn('Failed to track failed login:', trackingError)
       }
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'An unexpected error occurred during signin',
@@ -297,7 +297,7 @@ class AuthService {
   async signOut(): Promise<AuthResponse<void>> {
     try {
       logger.info('Attempting user signout')
-      
+
       const { error } = await this.supabase.auth.signOut()
 
       if (error) {
@@ -308,11 +308,11 @@ class AuthService {
       return { data: undefined }
     } catch (error) {
       logger.error('Signout failed', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'An unexpected error occurred during signout',
@@ -329,7 +329,7 @@ class AuthService {
   async resetPassword(email: string): Promise<AuthResponse<void>> {
     try {
       logger.info('Attempting password reset', { email })
-      
+
       const { error } = await this.supabase.auth.resetPasswordForEmail(email, {
         redirectTo: getAuthCallbackURL('/auth/reset-password'),
       })
@@ -342,11 +342,11 @@ class AuthService {
       return { data: undefined }
     } catch (error) {
       logger.error('Password reset failed', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'An unexpected error occurred during password reset',
@@ -363,7 +363,7 @@ class AuthService {
   async updatePassword(newPassword: string): Promise<AuthResponse<User>> {
     try {
       logger.info('Attempting password update')
-      
+
       const { data, error } = await this.supabase.auth.updateUser({
         password: newPassword
       })
@@ -383,11 +383,11 @@ class AuthService {
       return { data: data.user }
     } catch (error) {
       logger.error('Password update failed', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'An unexpected error occurred during password update',
@@ -404,7 +404,7 @@ class AuthService {
   async resendConfirmationEmail(email: string): Promise<AuthResponse<void>> {
     try {
       logger.info('Attempting to resend confirmation email', { email })
-      
+
       const { error } = await this.supabase.auth.resend({
         type: 'signup',
         email: email,
@@ -421,11 +421,11 @@ class AuthService {
       return { data: undefined }
     } catch (error) {
       logger.error('Failed to resend confirmation email', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'Failed to resend confirmation email',
@@ -450,11 +450,11 @@ class AuthService {
       return { data: user }
     } catch (error) {
       logger.error('Failed to get current user', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'Failed to get current user',
@@ -486,11 +486,11 @@ class AuthService {
       return { data: session.user }
     } catch (error) {
       logger.error('Failed to refresh session', error instanceof Error ? error : new Error(String(error)))
-      
+
       if (error instanceof AuthError) {
         return { error }
       }
-      
+
       return {
         error: new AuthError(
           'Failed to refresh session',
@@ -515,15 +515,15 @@ class AuthService {
       timestamp: new Date().toISOString(),
       rawError: JSON.stringify(error)
     }
-    
+
     logger.error('Supabase auth error', errorDetails)
 
     // Always log auth errors for debugging
     logger.error('[ClaimGuardian Auth Error] Full details:', errorDetails)
-    
+
     // Log the raw error object
     logger.error('[ClaimGuardian Auth Error] Raw error:', error)
-    
+
     // If there's additional error info, log it
     if (error.stack) {
       logger.error('[ClaimGuardian Auth Error] Stack trace:', new Error(error.stack))
@@ -531,7 +531,7 @@ class AuthService {
 
     // Map Supabase error codes to our error codes
     // Check both message and status for better error mapping
-    if (error.message?.toLowerCase().includes('invalid login credentials') || 
+    if (error.message?.toLowerCase().includes('invalid login credentials') ||
         error.message?.toLowerCase().includes('invalid credentials')) {
       return new AuthError(
         'Invalid email or password',
@@ -539,7 +539,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.message?.toLowerCase().includes('user already registered')) {
       return new AuthError(
         'An account with this email already exists',
@@ -547,7 +547,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.message?.toLowerCase().includes('email not confirmed')) {
       return new AuthError(
         'Please verify your email before signing in',
@@ -555,7 +555,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.message?.toLowerCase().includes('invalid email')) {
       return new AuthError(
         'Please enter a valid email address',
@@ -563,7 +563,7 @@ class AuthService {
         error
       )
     }
-    
+
     // Handle status-based errors
     if (error.status === 400) {
       return new AuthError(
@@ -572,7 +572,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.status === 401) {
       return new AuthError(
         'Authentication failed. Please check your credentials.',
@@ -580,7 +580,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.status === 429) {
       return new AuthError(
         'Too many attempts. Please try again later',
@@ -588,7 +588,7 @@ class AuthService {
         error
       )
     }
-    
+
     if (error.status === 500 || error.status === 503) {
       return new AuthError(
         'Service temporarily unavailable. Please try again later.',
@@ -596,7 +596,7 @@ class AuthService {
         error
       )
     }
-    
+
     // Default error with more helpful message
     return new AuthError(
       error.message || 'An unexpected error occurred. Please try again.',

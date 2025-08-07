@@ -22,7 +22,7 @@ const statusMapping = {
 
 async function fixMetadata() {
   console.log('🔧 Starting metadata fixes...\n');
-  
+
   const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ignorePatterns,
   });
@@ -33,9 +33,9 @@ async function fixMetadata() {
     if (!fileExtensions.includes(path.extname(file))) {
       continue;
     }
-    
+
     const content = await readFile(file, 'utf-8');
-    
+
     // Skip files without metadata
     if (!content.includes('@fileMetadata')) {
       continue;
@@ -56,12 +56,12 @@ async function fixMetadata() {
     // Fix unquoted @purpose values
     const purposeRegex = /@purpose\s+([^"\n]+?)(?=\n|\*\/)/g;
     const purposeMatches = [...updatedContent.matchAll(purposeRegex)];
-    
+
     for (const match of purposeMatches) {
       const [fullMatch, purposeText] = match;
       // Only fix if it's not already quoted and doesn't contain special markers
-      if (!purposeText.trim().startsWith('"') && 
-          !purposeText.includes('@') && 
+      if (!purposeText.trim().startsWith('"') &&
+          !purposeText.includes('@') &&
           !purposeText.includes('*')) {
         const quotedPurpose = `"${purposeText.trim()}"`;
         updatedContent = updatedContent.replace(fullMatch, `@purpose ${quotedPurpose}`);
@@ -73,15 +73,15 @@ async function fixMetadata() {
     const metadataMatch = updatedContent.match(/(\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\/)/);
     if (metadataMatch) {
       const metadataBlock = metadataMatch[1];
-      
+
       // Check if @dependencies is missing
       if (!metadataBlock.includes('@dependencies')) {
         // Try to extract actual imports
         const imports = await extractBasicImports(updatedContent);
-        
+
         if (imports.length > 0) {
           const depsString = JSON.stringify(imports);
-          
+
           // Add @dependencies after @purpose if it exists
           const purposeMatch = metadataBlock.match(/(@purpose\s+.*)/);
           if (purposeMatch) {
@@ -128,13 +128,13 @@ async function fixMetadata() {
   } else {
     console.log('\n✅ No metadata issues found to fix.');
   }
-  
+
   process.exit(0);
 }
 
 async function extractBasicImports(content) {
   const imports = new Set();
-  
+
   // Basic import pattern matching
   const importPatterns = [
     /import\s+.*?\s+from\s+['"`]([^'"`]+)['"`]/g,
@@ -145,7 +145,7 @@ async function extractBasicImports(content) {
     let match;
     while ((match = pattern.exec(content)) !== null) {
       let pkg = match[1];
-      
+
       // Handle scoped packages
       if (pkg.startsWith('@')) {
         const parts = pkg.split('/');
@@ -155,12 +155,12 @@ async function extractBasicImports(content) {
       } else {
         pkg = pkg.split('/')[0];
       }
-      
+
       // Filter out relative imports and common non-packages
-      if (!pkg.startsWith('.') && 
-          !pkg.startsWith('/') && 
-          pkg !== 'node:fs' && 
-          pkg !== 'node:path' && 
+      if (!pkg.startsWith('.') &&
+          !pkg.startsWith('/') &&
+          pkg !== 'node:fs' &&
+          pkg !== 'node:path' &&
           !pkg.startsWith('node:')) {
         imports.add(pkg);
       }

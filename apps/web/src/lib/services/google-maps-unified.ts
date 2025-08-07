@@ -124,13 +124,13 @@ export class GoogleMapsUnifiedService {
   // ========== CORE UTILITIES ==========
 
   private async makeRequest<T>(
-    endpoint: string, 
-    params: Record<string, any>, 
+    endpoint: string,
+    params: Record<string, any>,
     apiType: string,
     cacheTtl?: number
   ): Promise<UnifiedResponse<T>> {
     const cacheKey = `${apiType}:${JSON.stringify(params)}`
-    
+
     // Check cache first
     if (this.config.cache.enabled) {
       const cached = this.cache.get(cacheKey)
@@ -252,7 +252,7 @@ export class GoogleMapsUnifiedService {
   // ========== API 3: WEATHER API ==========
 
   async getWeatherForClaims(location: PropertyLocation, dateRange?: { start: Date; end: Date }): Promise<UnifiedResponse<any>> {
-    const endpoint = dateRange 
+    const endpoint = dateRange
       ? `${this.config.baseUrls.weather}/onecall/timemachine`
       : `${this.config.baseUrls.weather}/onecall`
 
@@ -510,7 +510,7 @@ export class GoogleMapsUnifiedService {
 
   getRateLimitStatus(): Record<string, { used: number; limit: number; resetTime?: number }> {
     const status: Record<string, any> = {}
-    
+
     Object.keys(this.config.rateLimits).forEach(api => {
       const tracker = this.rateLimitTrackers.get(api)
       status[api] = {

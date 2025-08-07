@@ -85,13 +85,13 @@ export interface Claim {
   assetId: string
   policyId: string
   claimNumber?: string
-  
+
   // Incident details
   dateOfLoss: string
   incidentType: 'Hurricane' | 'Wind' | 'Hail' | 'Water' | 'Fire' | 'Lightning' | 'Theft' | 'Vandalism' | 'Other'
   description: string
   causeOfLoss?: string
-  
+
   // Status and amounts
   status: ClaimStatus
   filedDate?: string
@@ -101,29 +101,29 @@ export interface Claim {
   deductible?: number
   settlementAmount?: number
   paidAmount?: number
-  
+
   // Detailed breakdown
   lineItems?: ClaimLineItem[]
-  
+
   // Evidence and documentation
   evidence: ClaimEvidence[]
-  
+
   // People involved
   contacts?: ClaimContact[]
   adjusterName?: string
   adjusterPhone?: string
   adjusterEmail?: string
   adjusterNotes?: string
-  
+
   // History and payments
   statusHistory: ClaimStatusHistory[]
   payments?: ClaimPayment[]
-  
+
   // Additional fields
   isEmergency?: boolean
   temporaryRepairsAmount?: number
   additionalLivingExpenses?: number
-  
+
   // Metadata
   createdAt: string
   updatedAt: string

@@ -98,13 +98,13 @@ export function ClaudeLearningDashboard() {
     try {
       // Load comprehensive learning system statistics
       const learningStats = await completeLearningSystem.getLearningStats()
-      
+
       // Load reflection statistics
       const reflectionStats = claudeSelfReflection.getReflectionStats()
-      
+
       // Load trigger statistics
       const triggerStats = reflectionTriggers.getTriggerStats()
-      
+
       // Calculate system statistics
       const systemStats: ClaudeSystemStats = {
         totalTasks: reflectionStats.totalReflections + 156, // Mock additional tasks
@@ -118,7 +118,7 @@ export function ClaudeLearningDashboard() {
         topImprovementAreas: learningStats.topImprovementAreas,
         efficiencyTrend: learningStats.efficiencyTrend
       }
-      
+
       // Mock task breakdown data
       const taskBreakdownData: TaskBreakdown = {
         codeGeneration: 45,
@@ -127,7 +127,7 @@ export function ClaudeLearningDashboard() {
         analysis: 12,
         planning: 8
       }
-      
+
       // Mock performance metrics
       const performanceData: PerformanceMetrics = {
         avgExecutionTime: 142.5, // seconds
@@ -136,10 +136,10 @@ export function ClaudeLearningDashboard() {
         learningApplication: 0.84,
         approachDirectness: 0.71
       }
-      
+
       // Load production error monitoring data
       const healthCheckData = await productionErrorMonitor.performDatabaseHealthCheck()
-      
+
       // Mock recent activity with production insights
       const recentActivityData: RecentActivity[] = [
         {
@@ -183,7 +183,7 @@ export function ClaudeLearningDashboard() {
           metadata: { taskType: 'integration', monitoring: 'enabled' }
         }
       ]
-      
+
       // Mock production error patterns (would be from actual logs)
       const productionErrorData: ProductionErrorPattern[] = [
         {
@@ -215,14 +215,14 @@ export function ClaudeLearningDashboard() {
           severity: 'critical'
         }
       ]
-      
+
       setStats(systemStats)
       setTaskBreakdown(taskBreakdownData)
       setPerformanceMetrics(performanceData)
       setRecentActivity(recentActivityData)
       setProductionErrors(productionErrorData)
       setHealthChecks(healthCheckData)
-      
+
     } catch (error) {
       console.error('Failed to load dashboard data:', error)
     } finally {
@@ -331,7 +331,7 @@ export function ClaudeLearningDashboard() {
                 {isSystemEnabled ? 'Active' : 'Paused'}
               </Badge>
             </div>
-        
+
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
@@ -351,7 +351,7 @@ export function ClaudeLearningDashboard() {
               </>
             )}
           </Button>
-          
+
           <div className="flex gap-1">
             {(['day', 'week', 'month'] as const).map(range => (
               <Button
@@ -365,7 +365,7 @@ export function ClaudeLearningDashboard() {
               </Button>
             ))}
           </div>
-          
+
           <Button variant="outline" size="sm" onClick={loadDashboardData} className="border-gray-700">
             <RefreshCw className="h-4 w-4" />
           </Button>
@@ -495,7 +495,7 @@ export function ClaudeLearningDashboard() {
                         {performanceMetrics.avgExecutionTime}s
                       </span>
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-300">Tool Efficiency</span>
@@ -505,7 +505,7 @@ export function ClaudeLearningDashboard() {
                       </div>
                       <Progress value={performanceMetrics.toolEfficiency * 100} className="h-2" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-300">Learning Application</span>
@@ -515,7 +515,7 @@ export function ClaudeLearningDashboard() {
                       </div>
                       <Progress value={performanceMetrics.learningApplication * 100} className="h-2" />
                     </div>
-                    
+
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-sm text-gray-300">Approach Directness</span>
@@ -783,7 +783,7 @@ export function ClaudeLearningDashboard() {
                         Learned to consistently apply ClaimGuardian dark theme patterns and TypeScript interfaces
                       </p>
                     </div>
-                    
+
                     <div className="p-3 bg-green-900/20 border border-green-800 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <Wrench className="h-4 w-4 text-green-400" />
@@ -793,7 +793,7 @@ export function ClaudeLearningDashboard() {
                         Developed systematic approaches for authentication and middleware debugging
                       </p>
                     </div>
-                    
+
                     <div className="p-3 bg-purple-900/20 border border-purple-800 rounded-lg">
                       <div className="flex items-center gap-2 mb-2">
                         <Search className="h-4 w-4 text-purple-400" />
@@ -805,7 +805,7 @@ export function ClaudeLearningDashboard() {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h4 className="text-lg font-medium text-white">Recent Improvements</h4>
                   <div className="space-y-3">
@@ -818,7 +818,7 @@ export function ClaudeLearningDashboard() {
                         +27%
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                       <div>
                         <p className="text-sm font-medium text-white">Error Resolution</p>
@@ -828,7 +828,7 @@ export function ClaudeLearningDashboard() {
                         +18%
                       </Badge>
                     </div>
-                    
+
                     <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                       <div>
                         <p className="text-sm font-medium text-white">Task Completion Time</p>
@@ -865,7 +865,7 @@ export function ClaudeLearningDashboard() {
                       {getActivityTypeIcon(activity.type)}
                       {getStatusIcon(activity.status)}
                     </div>
-                    
+
                     <div className="flex-1 min-w-0">
                       <p className="text-sm font-medium text-white truncate">
                         {activity.description}
@@ -881,7 +881,7 @@ export function ClaudeLearningDashboard() {
                         ))}
                       </div>
                     </div>
-                    
+
                     <Button variant="ghost" size="sm" className="opacity-50 hover:opacity-100">
                       <Eye className="h-4 w-4" />
                     </Button>
@@ -928,7 +928,7 @@ export function ClaudeLearningDashboard() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <h4 className="text-lg font-medium text-white">Learning Configuration</h4>
                   <div className="space-y-3">
@@ -946,7 +946,7 @@ export function ClaudeLearningDashboard() {
                         ))}
                       </div>
                     </div>
-                    
+
                     <div className="p-3 bg-gray-700 rounded-lg">
                       <p className="text-sm font-medium text-white mb-2">Auto-Learning</p>
                       <Badge variant="secondary">Enabled</Badge>
@@ -954,7 +954,7 @@ export function ClaudeLearningDashboard() {
                         Automatically capture learnings from task completion
                       </p>
                     </div>
-                    
+
                     <div className="p-3 bg-gray-700 rounded-lg">
                       <p className="text-sm font-medium text-white mb-2">Learning Retention</p>
                       <p className="text-sm text-white">100 recent reflections</p>
@@ -965,7 +965,7 @@ export function ClaudeLearningDashboard() {
                   </div>
                 </div>
               </div>
-              
+
               <div className="flex gap-3 pt-4 border-t border-gray-700">
                 <Button variant="outline" className="border-gray-600">
                   <Download className="h-4 w-4 mr-2" />

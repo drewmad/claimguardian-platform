@@ -12,8 +12,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Smartphone, Monitor, Tablet, CheckCircle, 
+import {
+  Smartphone, Monitor, Tablet, CheckCircle,
   ArrowRight, Eye, Zap, Shield, Hand
 } from 'lucide-react'
 
@@ -117,7 +117,7 @@ export default function ModalDemoPage() {
             Responsive Modal System
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Experience our enhanced mobile-first modals with touch interactions, 
+            Experience our enhanced mobile-first modals with touch interactions,
             visual feedback, and seamless responsive design.
           </p>
         </motion.div>

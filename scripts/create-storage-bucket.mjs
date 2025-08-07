@@ -30,7 +30,7 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 
 async function createPolicyDocumentsBucket() {
   console.log('🚀 Creating policy-documents storage bucket...')
-  
+
   try {
     // Create the bucket
     const { data, error } = await supabase.storage.createBucket('policy-documents', {
@@ -42,19 +42,19 @@ async function createPolicyDocumentsBucket() {
     if (error) {
       if (error.message.includes('already exists')) {
         console.log('ℹ️  Bucket already exists, updating configuration...')
-        
+
         // Update bucket configuration if it exists
         const { error: updateError } = await supabase.storage.updateBucket('policy-documents', {
           public: false,
           fileSizeLimit: 52428800,
           allowedMimeTypes: ['application/pdf', 'image/png', 'image/jpeg', 'image/jpg']
         })
-        
+
         if (updateError) {
           console.error('❌ Failed to update bucket:', updateError.message)
           return false
         }
-        
+
         console.log('✅ Bucket configuration updated successfully')
       } else {
         console.error('❌ Failed to create bucket:', error.message)
@@ -80,7 +80,7 @@ CREATE POLICY "Users can upload their own policy documents"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -88,7 +88,7 @@ CREATE POLICY "Users can view their own policy documents"
 ON storage.objects FOR SELECT
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -96,7 +96,7 @@ CREATE POLICY "Users can delete their own policy documents"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -104,12 +104,12 @@ CREATE POLICY "Users can update their own policy documents"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
     `)
     console.log('--- END SQL ---\n')
-    
+
     return true
   } catch (error) {
     console.error('❌ Unexpected error:', error)

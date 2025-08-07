@@ -12,10 +12,10 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  RefreshCw, 
-  Play, 
-  Square, 
+import {
+  RefreshCw,
+  Play,
+  Square,
   RotateCcw,
   Sparkles,
   Loader2,
@@ -25,10 +25,10 @@ import {
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Skeleton, 
-  SkeletonText, 
-  SkeletonCard, 
+import {
+  Skeleton,
+  SkeletonText,
+  SkeletonCard,
   SkeletonTable,
   PropertyCardSkeleton,
   DashboardStatsSkeleton,
@@ -44,11 +44,11 @@ import {
   ProgressIndicator,
   StepIndicator
 } from '@/components/ui/loading-overlay'
-import { 
-  PageLoader, 
-  DashboardLoader, 
-  ModalLoader, 
-  ComponentLoader 
+import {
+  PageLoader,
+  DashboardLoader,
+  ModalLoader,
+  ComponentLoader
 } from '@/components/loading/page-loader'
 import { useLoadingState, useAsyncOperation, useMultiStepLoading } from '@/hooks/use-loading-state'
 
@@ -64,7 +64,7 @@ export default function LoadingDemoPage() {
   const [activeDemo, setActiveDemo] = useState<string | null>(null)
   const [progress, setProgress] = useState(0)
   const [currentStep, setCurrentStep] = useState(0)
-  
+
   // Demo loading states
   const basicLoader = useLoadingState({ key: 'basic-demo' })
   const { execute: executeAsyncDemo } = useAsyncOperation()
@@ -88,7 +88,7 @@ export default function LoadingDemoPage() {
 
   const runBasicLoadingDemo = async () => {
     basicLoader.startLoading('Running basic loading demo...')
-    
+
     // Simulate loading stages
     setTimeout(() => basicLoader.updateMessage('Processing data...'), 1000)
     setTimeout(() => basicLoader.updateMessage('Almost done...'), 2000)
@@ -112,14 +112,14 @@ export default function LoadingDemoPage() {
 
   const runMultiStepDemo = async () => {
     multiStep.resetSteps()
-    
+
     for (let i = 0; i < demoSteps.length; i++) {
       const step = demoSteps[i]
       multiStep.startStep(step, `Processing ${step}...`)
-      
+
       // Simulate processing time
       await new Promise(resolve => setTimeout(resolve, 800))
-      
+
       multiStep.completeStep(step)
     }
   }
@@ -172,17 +172,17 @@ export default function LoadingDemoPage() {
               <Skeleton className="h-4 w-2/3" />
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Text Skeleton</h4>
             <SkeletonText lines={3} width="full" />
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Card Skeleton</h4>
             <SkeletonCard showImage={true} showAvatar={true} textLines={2} />
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Table Skeleton</h4>
             <SkeletonTable rows={3} columns={4} showHeader={true} />
@@ -205,7 +205,7 @@ export default function LoadingDemoPage() {
               color="blue"
             />
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Step Indicator</h4>
             <StepIndicator
@@ -213,7 +213,7 @@ export default function LoadingDemoPage() {
               currentStep={currentStep}
             />
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Multi-Step Loading</h4>
             <div className="space-y-3">
@@ -259,7 +259,7 @@ export default function LoadingDemoPage() {
                 </p>
               </div>
             </ComponentLoader>
-            
+
             <div className="mt-3 space-x-2">
               <Button onClick={runBasicLoadingDemo} disabled={basicLoader.isLoading}>
                 {basicLoader.isLoading ? (
@@ -274,9 +274,9 @@ export default function LoadingDemoPage() {
                   </>
                 )}
               </Button>
-              
-              <Button 
-                variant="outline" 
+
+              <Button
+                variant="outline"
                 onClick={runAsyncDemo}
                 disabled={basicLoader.isLoading}
               >
@@ -296,7 +296,7 @@ export default function LoadingDemoPage() {
                 backdrop={true}
                 className="h-24 bg-gray-50 dark:bg-gray-800 rounded relative"
               />
-              
+
               <LoadingOverlay
                 isLoading={true}
                 message="Processing with sparkles..."
@@ -304,7 +304,7 @@ export default function LoadingDemoPage() {
                 backdrop={true}
                 className="h-24 bg-gray-50 dark:bg-gray-800 rounded relative"
               />
-              
+
               <LoadingOverlay
                 isLoading={true}
                 message="Analyzing data..."
@@ -312,7 +312,7 @@ export default function LoadingDemoPage() {
                 backdrop={true}
                 className="h-24 bg-gray-50 dark:bg-gray-800 rounded relative"
               />
-              
+
               <LoadingOverlay
                 isLoading={true}
                 message="Syncing..."
@@ -338,12 +338,12 @@ export default function LoadingDemoPage() {
               <PropertyCardSkeleton />
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Dashboard Stats</h4>
             <DashboardStatsSkeleton />
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Claim Cards</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -351,7 +351,7 @@ export default function LoadingDemoPage() {
               <ClaimCardSkeleton />
             </div>
           </div>
-          
+
           <div>
             <h4 className="font-medium mb-4">Modal Loading</h4>
             <Card>
@@ -385,7 +385,7 @@ export default function LoadingDemoPage() {
             Loading States Demo
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Comprehensive showcase of loading states, progress indicators, 
+            Comprehensive showcase of loading states, progress indicators,
             and skeleton loaders for enhanced user experience.
           </p>
         </motion.div>
@@ -403,8 +403,8 @@ export default function LoadingDemoPage() {
               variant={activeDemo === demo.id ? 'default' : 'outline'}
               onClick={() => setActiveDemo(activeDemo === demo.id ? null : demo.id)}
               className={
-                activeDemo === demo.id 
-                  ? 'bg-blue-600 hover:bg-blue-700' 
+                activeDemo === demo.id
+                  ? 'bg-blue-600 hover:bg-blue-700'
                   : 'border-white/20 text-white hover:bg-white/10'
               }
             >
@@ -419,8 +419,8 @@ export default function LoadingDemoPage() {
             <motion.div
               key={demo.id}
               initial={{ opacity: 0, y: 40 }}
-              animate={{ 
-                opacity: activeDemo === demo.id || activeDemo === null ? 1 : 0.3, 
+              animate={{
+                opacity: activeDemo === demo.id || activeDemo === null ? 1 : 0.3,
                 y: 0,
                 scale: activeDemo === demo.id ? 1 : activeDemo === null ? 1 : 0.95
               }}
@@ -440,8 +440,8 @@ export default function LoadingDemoPage() {
                         {demo.description}
                       </p>
                     </div>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className="border-blue-500 text-blue-400"
                     >
                       Interactive

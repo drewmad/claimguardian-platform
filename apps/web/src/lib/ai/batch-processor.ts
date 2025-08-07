@@ -152,7 +152,7 @@ class AIBatchProcessor {
 
     } catch (error) {
       console.error('Batch processing error:', error)
-      
+
       // Reject all requests in processing queue
       this.processingQueue.forEach(req => {
         req.reject(new Error('Batch processing failed'))
@@ -211,13 +211,13 @@ class AIBatchProcessor {
       const cacheResults = await Promise.allSettled(
         requests.map(async (request) => {
           if (!request.messages) return null
-          
+
           const cached = await aiCacheManager.getCachedResponse(
             request.messages,
             featureId,
             'batch-processing'
           )
-          
+
           if (cached) {
             request.resolve({
               response: cached.response,
@@ -227,16 +227,16 @@ class AIBatchProcessor {
             })
             return { request, cached: true }
           }
-          
+
           return { request, cached: false }
         })
       )
 
       // Filter out cached requests
       const uncachedRequests = cacheResults
-        .filter((result, index) => 
-          result.status === 'fulfilled' && 
-          result.value && 
+        .filter((result, index) =>
+          result.status === 'fulfilled' &&
+          result.value &&
           !result.value.cached
         )
         .map((result, index) => requests[index])
@@ -258,7 +258,7 @@ class AIBatchProcessor {
         chunk.map(async (request) => {
           try {
             const startTime = Date.now()
-            
+
             if (!request.messages) {
               throw new Error('No messages provided for chat request')
             }
@@ -313,7 +313,7 @@ class AIBatchProcessor {
         chunk.map(async (request) => {
           try {
             const startTime = Date.now()
-            
+
             if (!request.imageAnalysis) {
               throw new Error('No image analysis data provided')
             }
@@ -391,7 +391,7 @@ class AIBatchProcessor {
    */
   private updateMetrics(batchSize: number, processingTime: number): void {
     this.metrics.batchesProcessed++
-    
+
     // Update average batch size
     const totalProcessed = this.metrics.avgBatchSize * (this.metrics.batchesProcessed - 1) + batchSize
     this.metrics.avgBatchSize = totalProcessed / this.metrics.batchesProcessed
@@ -404,12 +404,12 @@ class AIBatchProcessor {
   /**
    * Get current batch processing metrics
    */
-  getMetrics(): BatchMetrics & { 
+  getMetrics(): BatchMetrics & {
     queueLength: number
     isProcessing: boolean
     estimatedWaitTime: number
   } {
-    const estimatedWaitTime = this.requestQueue.length > 0 
+    const estimatedWaitTime = this.requestQueue.length > 0
       ? Math.max(0, this.config.maxWaitTime - (Date.now() - (this.requestQueue[0]?.timestamp || Date.now())))
       : 0
 
@@ -441,14 +441,14 @@ class AIBatchProcessor {
    */
   clearQueue(): number {
     const queueLength = this.requestQueue.length
-    
+
     // Reject all pending requests
     this.requestQueue.forEach(request => {
       request.reject(new Error('Queue cleared by administrator'))
     })
-    
+
     this.requestQueue = []
-    
+
     if (this.batchTimeout) {
       clearTimeout(this.batchTimeout)
       this.batchTimeout = null
@@ -477,7 +477,7 @@ class AIBatchProcessor {
       return acc
     }, {} as Record<string, number>)
 
-    const oldestRequest = this.requestQueue.length > 0 
+    const oldestRequest = this.requestQueue.length > 0
       ? Date.now() - Math.min(...this.requestQueue.map(r => r.timestamp))
       : null
 

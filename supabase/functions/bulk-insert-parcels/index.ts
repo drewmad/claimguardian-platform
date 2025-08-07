@@ -2,8 +2,8 @@ import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from 'jsr:@supabase/supabase-js@2'
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
-    ? 'https://claimguardianai.com' 
+  'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production'
+    ? 'https://claimguardianai.com'
     : 'http://localhost:3000',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     const token = authHeader.replace('Bearer ', '')
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
-    
+
     // Only allow if the provided token matches service role key
     if (token !== supabaseServiceKey) {
       return new Response(JSON.stringify({ error: 'Unauthorized - service role required' }), {
@@ -99,7 +99,7 @@ Deno.serve(async (req) => {
 
     console.log(`Bulk insert complete: ${successful} successful, ${errors} errors`)
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
       successful,
       errors,

@@ -4,7 +4,7 @@
  * @owner db-team
  * @status active
  */
- 
+
 
 exports.shorthands = undefined;
 
@@ -60,7 +60,7 @@ BEGIN
     p_user_agent,
     'new'
   ) RETURNING id INTO v_error_id;
-  
+
   RETURN v_error_id;
 END;
 $function$;

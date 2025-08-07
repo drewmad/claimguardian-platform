@@ -18,7 +18,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { store, persistor } from '../shared/store'
 import { LoadingScreen } from '../shared/components/LoadingScreen'
 import { NetworkProvider } from '../shared/providers/NetworkProvider'
-import { LocationProvider } from '../shared/providers/LocationProvider' 
+import { LocationProvider } from '../shared/providers/LocationProvider'
 import { CameraProvider } from '../shared/providers/CameraProvider'
 import { DatabaseProvider } from '../shared/providers/DatabaseProvider'
 
@@ -31,7 +31,7 @@ export default function RootLayout() {
   const initializeDatabase = async () => {
     try {
       const db = SQLite.openDatabase('claimguardian.db')
-      
+
       // Create tables for offline data storage
       db.transaction(tx => {
         // Properties table
@@ -179,55 +179,55 @@ export default function RootLayout() {
                         },
                       }}
                     >
-                      <Stack.Screen 
-                        name="(tabs)" 
-                        options={{ 
+                      <Stack.Screen
+                        name="(tabs)"
+                        options={{
                           headerShown: false,
                           title: 'ClaimGuardian'
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="property/[id]" 
-                        options={{ 
+                      <Stack.Screen
+                        name="property/[id]"
+                        options={{
                           title: 'Property Details',
                           presentation: 'card'
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="assessment/[id]" 
-                        options={{ 
+                      <Stack.Screen
+                        name="assessment/[id]"
+                        options={{
                           title: 'Damage Assessment',
                           presentation: 'card'
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="camera" 
-                        options={{ 
+                      <Stack.Screen
+                        name="camera"
+                        options={{
                           title: 'Capture Photo',
                           presentation: 'modal',
                           headerShown: false
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="photo-review" 
-                        options={{ 
+                      <Stack.Screen
+                        name="photo-review"
+                        options={{
                           title: 'Review Photo',
                           presentation: 'modal'
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="sync-status" 
-                        options={{ 
+                      <Stack.Screen
+                        name="sync-status"
+                        options={{
                           title: 'Sync Status',
                           presentation: 'modal'
-                        }} 
+                        }}
                       />
-                      <Stack.Screen 
-                        name="settings" 
-                        options={{ 
+                      <Stack.Screen
+                        name="settings"
+                        options={{
                           title: 'Settings',
                           presentation: 'modal'
-                        }} 
+                        }}
                       />
                     </Stack>
                   </CameraProvider>

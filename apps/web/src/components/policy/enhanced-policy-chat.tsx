@@ -39,7 +39,7 @@ export function EnhancedPolicyChat({ userId }: EnhancedPolicyChatProps) {
   const [uploadedPolicy, setUploadedPolicy] = useState<{ url: string; name: string } | null>(null)
   const [uploading, setUploading] = useState(false)
   const supabase = createBrowserSupabaseClient()
-  
+
 
   const handleFileUpload = useCallback(async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -90,7 +90,7 @@ export function EnhancedPolicyChat({ userId }: EnhancedPolicyChatProps) {
     setUploadedPolicy(null)
   }, [])
 
-  
+
 
   return (
     <div className="space-y-4">

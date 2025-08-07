@@ -4,7 +4,7 @@
 
 ### 1. Created Missing Tables
 - **policy_documents**: Table for storing insurance policy document metadata
-- **document_extractions**: Table for AI-extracted data from documents  
+- **document_extractions**: Table for AI-extracted data from documents
 - **learnings**: Table for Claude Learning System to store AI improvements
 
 ### 2. Created Missing Views

@@ -15,17 +15,17 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET() {
   try {
     const supabase = await createClient()
-    
+
     // Test 1: Check if we can connect to Supabase
     await supabase
       .from('_test_connection')
       .select('*')
       .limit(1)
       .maybeSingle()
-    
+
     // Test 2: Check auth status
     const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
+
     // Test 3: Validate session with getSession() if user exists
     let session = null
     let sessionError = null
@@ -34,11 +34,11 @@ export async function GET() {
       session = data.session
       sessionError = error
     }
-    
+
     // Test 4: Check if auth schema exists
     const { data: authSchema, error: schemaError } = await supabase
       .rpc('to_regclass', { rel_name: 'auth.users' })
-    
+
     return NextResponse.json({
       status: 'success',
       tests: {

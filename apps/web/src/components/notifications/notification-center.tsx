@@ -12,11 +12,11 @@
 
 import { useState, useEffect, createContext, useContext, ReactNode } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Bell, 
+import {
+  Bell,
   BellOff,
-  Check, 
-  X, 
+  Check,
+  X,
   Trash2,
   MarkAsUnread,
   Settings,
@@ -38,12 +38,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Checkbox } from '@/components/ui/checkbox'
-import { 
-  Popover, 
-  PopoverContent, 
-  PopoverTrigger 
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger
 } from '@/components/ui/popover'
-import { 
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -150,18 +150,18 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
     }
 
     setNotifications(prev => [notification, ...prev.slice(0, 99)]) // Keep max 100 notifications
-    
+
     return id
   }
 
   const markAsRead = (id: string) => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, read: true } : n)
     )
   }
 
   const markAllAsRead = () => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => ({ ...n, read: true }))
     )
   }
@@ -171,7 +171,7 @@ export function NotificationProvider({ children }: { children: ReactNode }) {
   }
 
   const archiveNotification = (id: string) => {
-    setNotifications(prev => 
+    setNotifications(prev =>
       prev.map(n => n.id === id ? { ...n, archived: true } : n)
     )
   }
@@ -232,7 +232,7 @@ export function NotificationBell({ className }: { className?: string }) {
           )}
         </Button>
       </PopoverTrigger>
-      
+
       <PopoverContent className="w-96 p-0" align="end">
         <NotificationCenter />
       </PopoverContent>
@@ -242,13 +242,13 @@ export function NotificationBell({ className }: { className?: string }) {
 
 // Main notification center component
 export function NotificationCenter() {
-  const { 
-    notifications, 
-    stats, 
-    markAsRead, 
-    markAllAsRead, 
+  const {
+    notifications,
+    stats,
+    markAsRead,
+    markAllAsRead,
     deleteNotification,
-    clearAll 
+    clearAll
   } = useNotifications()
 
   const [filter, setFilter] = useState<'all' | 'unread' | 'urgent'>('all')
@@ -330,7 +330,7 @@ export function NotificationCenter() {
                 Mark all read
               </Button>
             )}
-            
+
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" size="sm">
@@ -343,7 +343,7 @@ export function NotificationCenter() {
                   <Check className="w-4 h-4 mr-2" />
                   Mark all as read
                 </DropdownMenuItem>
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   onClick={clearAll}
                   className="text-red-600 dark:text-red-400"
                 >
@@ -411,7 +411,7 @@ export function NotificationCenter() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               {Object.keys(stats.byType).map((type) => (
-                <DropdownMenuItem 
+                <DropdownMenuItem
                   key={type}
                   onClick={() => setSelectedType(type as PersistentNotification['type'])}
                 >
@@ -470,7 +470,7 @@ function NotificationItem({
     if (actionLoading) return
 
     setActionLoading(action.id)
-    
+
     try {
       await action.handler()
       if (!notification.read) {
@@ -486,7 +486,7 @@ function NotificationItem({
   const formatTimestamp = (timestamp: number) => {
     const now = Date.now()
     const diff = now - timestamp
-    
+
     if (diff < 60000) return 'Just now'
     if (diff < 3600000) return `${Math.floor(diff / 60000)}m ago`
     if (diff < 86400000) return `${Math.floor(diff / 3600000)}h ago`
@@ -523,16 +523,16 @@ function NotificationItem({
                 </h4>
                 {getPriorityBadge(notification.priority)}
               </div>
-              
+
               <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                 {notification.message}
               </p>
-              
+
               <div className="flex items-center justify-between mt-2">
                 <span className="text-xs text-gray-500">
                   {formatTimestamp(notification.timestamp)}
                 </span>
-                
+
                 <div className="flex items-center space-x-1">
                   {notification.actions && notification.actions.length > 0 && (
                     <Button
@@ -548,7 +548,7 @@ function NotificationItem({
                       )} />
                     </Button>
                   )}
-                  
+
                   {!notification.read && (
                     <Button
                       variant="ghost"
@@ -559,7 +559,7 @@ function NotificationItem({
                       <Check className="w-3 h-3" />
                     </Button>
                   )}
-                  
+
                   <Button
                     variant="ghost"
                     size="sm"

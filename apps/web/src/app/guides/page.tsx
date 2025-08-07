@@ -27,7 +27,7 @@ export default function GuidesPage() {
               Guides & Resources
             </span>
           </h1>
-          
+
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
             Comprehensive guides to help you maximize your property's potential and build generational wealth.
           </p>
@@ -37,7 +37,7 @@ export default function GuidesPage() {
             <p className="text-gray-400 mb-6">
               We're building a comprehensive library of guides to help you master property intelligence:
             </p>
-            
+
             <div className="grid md:grid-cols-3 gap-6 text-left">
               <div className="bg-gray-800/30 rounded-lg p-4">
                 <h3 className="font-semibold text-green-400 mb-2">Getting Started</h3>
@@ -48,7 +48,7 @@ export default function GuidesPage() {
                   <li>• Initial inventory</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-800/30 rounded-lg p-4">
                 <h3 className="font-semibold text-blue-400 mb-2">Advanced Management</h3>
                 <ul className="space-y-1 text-sm text-gray-400">
@@ -58,7 +58,7 @@ export default function GuidesPage() {
                   <li>• ROI tracking</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-800/30 rounded-lg p-4">
                 <h3 className="font-semibold text-purple-400 mb-2">Legacy Building</h3>
                 <ul className="space-y-1 text-sm text-gray-400">

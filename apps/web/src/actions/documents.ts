@@ -29,7 +29,7 @@ export interface DocumentUpload {
 export async function uploadDocument(documentData: DocumentUpload): Promise<{ success: boolean; error?: string; documentId?: string }> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -80,7 +80,7 @@ export async function uploadDocument(documentData: DocumentUpload): Promise<{ su
 export async function getDocumentInsights(): Promise<{ success: boolean; insights?: DocumentInsight[]; error?: string }> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -241,7 +241,7 @@ export async function uploadPolicyDocument(data: { files: FileList; propertyId: 
   }
 
   const content = await file.text() // Simple text extraction - in production would use AI
-  
+
   return uploadDocument({
     title: file.name,
     content,
@@ -256,7 +256,7 @@ export async function uploadPolicyDocument(data: { files: FileList; propertyId: 
 export async function getPolicyDocuments(propertyId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
       return { success: false, error: 'Authentication required', data: null }
@@ -285,7 +285,7 @@ export async function getPolicyDocuments(propertyId: string) {
 export async function deletePolicyDocument(documentId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
       return { success: false, error: 'Authentication required', data: null }
@@ -313,7 +313,7 @@ export async function deletePolicyDocument(documentId: string) {
 export async function getDocumentDownloadUrl(documentId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
       return { success: false, error: 'Authentication required', data: null }

@@ -68,19 +68,19 @@ export function AICacheDashboard() {
   const loadCacheData = async () => {
     try {
       setRefreshing(true)
-      
+
       // Get cache metrics
       const currentMetrics = aiCacheManager.getCacheMetrics()
       setMetrics(currentMetrics)
-      
+
       // Get feature-specific statistics
       const stats = aiCacheManager.getFeatureStats()
       setFeatureStats(stats)
-      
+
       // Get cache export data for charts
       const exportData = aiCacheManager.exportCacheData()
       setCacheData(exportData)
-      
+
       setLoading(false)
     } catch (error) {
       console.error('Error loading cache data:', error)
@@ -129,7 +129,7 @@ export function AICacheDashboard() {
     .reduce((acc, item, index) => {
       const existing = acc.find((d: CostSavingsData) => d.hour === Math.floor(index / 4))
       const costSaved = item.cost * (item.accessCount - 1) // Saved cost from cache hits
-      
+
       if (existing) {
         existing.saved += costSaved
       } else {
@@ -165,18 +165,18 @@ export function AICacheDashboard() {
           <p className="text-gray-400">Monitor intelligent caching performance and cost savings</p>
         </div>
         <div className="flex gap-3">
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={handleClearExpired}
             disabled={refreshing}
           >
             <RotateCcw className="mr-2 h-4 w-4" />
             Clear Expired
           </Button>
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             onClick={loadCacheData}
             disabled={refreshing}
           >
@@ -274,7 +274,7 @@ export function AICacheDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value, percent }) => 
+                      label={({ name, value, percent }) =>
                         `${name}: ${value} (${((percent || 0) * 100).toFixed(1)}%)`
                       }
                       outerRadius={100}
@@ -285,7 +285,7 @@ export function AICacheDashboard() {
                         <Cell key={`cell-${index}`} fill={entry.color} />
                       ))}
                     </Pie>
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                     />
                   </PieChart>
@@ -302,13 +302,13 @@ export function AICacheDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={costSavingsData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="label" 
+                    <XAxis
+                      dataKey="label"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       formatter={(value: number) => [`$${value.toFixed(3)}`, 'Cost Saved']}
                     />
@@ -338,8 +338,8 @@ export function AICacheDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={featureUsageData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="feature" 
+                    <XAxis
+                      dataKey="feature"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 11 }}
                       angle={-45}
@@ -347,7 +347,7 @@ export function AICacheDashboard() {
                       height={80}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                     />
                     <Bar dataKey="count" fill="#3B82F6" />
@@ -470,7 +470,7 @@ export function AICacheDashboard() {
                 <div className="flex justify-between">
                   <span className="text-gray-400">Cache Efficiency:</span>
                   <span className="text-green-400 font-medium">
-                    {metrics?.hitRate && metrics.hitRate > 50 ? 'Excellent' : 
+                    {metrics?.hitRate && metrics.hitRate > 50 ? 'Excellent' :
                      metrics?.hitRate && metrics.hitRate > 25 ? 'Good' : 'Improving'}
                   </span>
                 </div>
@@ -496,7 +496,7 @@ export function AICacheDashboard() {
                     <RotateCcw className="mr-2 h-4 w-4" />
                     Clear Expired Entries
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     className="w-full justify-start"
@@ -505,7 +505,7 @@ export function AICacheDashboard() {
                     <Activity className="mr-2 h-4 w-4" />
                     Refresh Analytics
                   </Button>
-                  
+
                   <Button
                     variant="outline"
                     className="w-full justify-start"
@@ -530,7 +530,7 @@ export function AICacheDashboard() {
                     <div className="flex justify-between">
                       <span className="text-gray-400">Cache Age:</span>
                       <span className="text-white">
-                        {cacheData.length > 0 
+                        {cacheData.length > 0
                           ? Math.round((Date.now() - Math.min(...cacheData.map(d => d.timestamp))) / (1000 * 60 * 60))
                           : 0}h
                       </span>

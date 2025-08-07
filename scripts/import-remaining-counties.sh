@@ -44,7 +44,7 @@ log "Will process in parallel with adaptive batch sizing"
 # Check which ones are already imported
 for COUNTY in "${REMAINING_COUNTIES[@]}"; do
     IFS=' ' read -r CODE NAME <<< "$COUNTY"
-    
+
     # Check if already imported
     EXISTING=$(PGPASSWORD="$DB_PASSWORD" psql \
         -h "$DB_HOST" \
@@ -53,12 +53,12 @@ for COUNTY in "${REMAINING_COUNTIES[@]}"; do
         -d postgres \
         -t -A \
         -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = $CODE;" 2>/dev/null || echo "0")
-    
+
     if [ "$EXISTING" -gt 0 ]; then
         log "County $CODE ($NAME) already has $EXISTING parcels - skipping"
     else
         log "County $CODE ($NAME) needs import - adding to queue"
-        
+
         # Determine if this is a large county that needs batching
         case $CODE in
             60)  # Palm Beach - very large

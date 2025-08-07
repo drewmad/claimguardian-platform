@@ -148,7 +148,7 @@ export class AIContentValidationService {
         try {
           const result = await this.testOpenAIModel(model, prompt)
           results.push(result)
-          
+
           // Small delay between requests to be respectful to API
           await new Promise(resolve => setTimeout(resolve, 1000))
         } catch (error) {
@@ -178,7 +178,7 @@ export class AIContentValidationService {
 
   private async testOpenAIModel(model: string, prompt: string): Promise<APIValidationResult> {
     const startTime = Date.now()
-    
+
     // Get our estimated cost before making the request
     const estimatedTokens = this.estimateTokenCount(prompt)
     const estimatedCost = this.calculateOpenAICost(model, estimatedTokens, estimatedTokens)
@@ -239,7 +239,7 @@ export class AIContentValidationService {
         try {
           const result = await this.testGeminiModel(modelName, prompt)
           results.push(result)
-          
+
           // Small delay between requests
           await new Promise(resolve => setTimeout(resolve, 1000))
         } catch (error) {
@@ -269,7 +269,7 @@ export class AIContentValidationService {
 
   private async testGeminiModel(model: string, prompt: string): Promise<APIValidationResult> {
     const startTime = Date.now()
-    
+
     // Get our estimated cost before making the request
     const estimatedTokens = this.estimateTokenCount(prompt)
     const estimatedCost = this.calculateGeminiCost(model, estimatedTokens, estimatedTokens)
@@ -337,7 +337,7 @@ export class AIContentValidationService {
     }
 
     const modelPricing = pricing[model] || pricing['gpt-3.5-turbo']
-    
+
     return (inputTokens / 1000 * modelPricing.input) + (outputTokens / 1000 * modelPricing.output)
   }
 
@@ -349,7 +349,7 @@ export class AIContentValidationService {
     }
 
     const modelPricing = pricing[model] || pricing['gemini-1.5-flash']
-    
+
     return (inputTokens / 1000 * modelPricing.input) + (outputTokens / 1000 * modelPricing.output)
   }
 
@@ -366,8 +366,8 @@ export class AIContentValidationService {
 
     // Calculate average cost accuracy
     const successfulResults = results.filter(r => r.success)
-    const averageCostAccuracy = successfulResults.length > 0 
-      ? successfulResults.reduce((sum, r) => sum + r.costAccuracy, 0) / successfulResults.length 
+    const averageCostAccuracy = successfulResults.length > 0
+      ? successfulResults.reduce((sum, r) => sum + r.costAccuracy, 0) / successfulResults.length
       : 0
 
     // Calculate total tokens used
@@ -400,11 +400,11 @@ export class AIContentValidationService {
     Object.entries(modelGroups).forEach(([modelKey, modelResults]) => {
       const successfulModelResults = modelResults.filter(r => r.success)
       modelPerformance[modelKey] = {
-        averageLatency: successfulModelResults.length > 0 
-          ? successfulModelResults.reduce((sum, r) => sum + r.latency, 0) / successfulModelResults.length 
+        averageLatency: successfulModelResults.length > 0
+          ? successfulModelResults.reduce((sum, r) => sum + r.latency, 0) / successfulModelResults.length
           : 0,
-        costAccuracy: successfulModelResults.length > 0 
-          ? successfulModelResults.reduce((sum, r) => sum + r.costAccuracy, 0) / successfulModelResults.length 
+        costAccuracy: successfulModelResults.length > 0
+          ? successfulModelResults.reduce((sum, r) => sum + r.costAccuracy, 0) / successfulModelResults.length
           : 0,
         reliability: (successfulModelResults.length / modelResults.length) * 100
       }
@@ -564,7 +564,7 @@ export class AIContentValidationService {
 
   async validateAllAIFeatures(): Promise<ValidationReport[]> {
     console.log('🔍 Running comprehensive AI cost validation across all features')
-    
+
     const results = await Promise.all([
       this.validateDamageAnalyzer(),
       this.validatePolicyAdvisor(),
@@ -589,13 +589,13 @@ export const validateAICosts = new AIContentValidationService()
 
 export async function runProductionAIValidation(): Promise<ValidationReport[]> {
   console.log('🚀 Starting production AI cost validation')
-  
+
   try {
     const results = await validateAICosts.validateAllAIFeatures()
-    
+
     console.log('✅ Production validation completed successfully')
     return results
-    
+
   } catch (error) {
     console.error('❌ Production validation failed:', error)
     throw error

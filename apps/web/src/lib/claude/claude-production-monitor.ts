@@ -162,7 +162,7 @@ class ClaudeProductionMonitor {
     const group = Math.random() < this.config.abTestTreatmentPercentage
       ? 'treatment'
       : 'control'
-    
+
     this.abTestGroups.set(sessionId, group)
     return group
   }
@@ -303,7 +303,7 @@ class ClaudeProductionMonitor {
     // Performance anomaly (spike in execution time)
     const avgTime = metrics.avgExecutionTime
     const historicalAvgTime = this.getHistoricalAverage('duration')
-    
+
     if (avgTime > historicalAvgTime * this.config.anomalyThresholds.durationSpike) {
       this.createAnomaly(
         'performance',
@@ -319,7 +319,7 @@ class ClaudeProductionMonitor {
     // Volume anomaly (spike in task volume)
     const tpm = metrics.tasksPerMinute
     const historicalTpm = this.getHistoricalAverage('tpm')
-    
+
     if (tpm > historicalTpm * this.config.anomalyThresholds.volumeSpike) {
       this.createAnomaly(
         'volume',
@@ -345,7 +345,7 @@ class ClaudeProductionMonitor {
     context: Record<string, any>
   ): void {
     const anomalyId = `anomaly_${type}_${Date.now()}`
-    
+
     // Avoid creating duplicate unresolved anomalies
     const existing = Array.from(this.anomalies.values()).find(
       a => a.type === type && !a.resolved
@@ -441,7 +441,7 @@ class ClaudeProductionMonitor {
     // In production, would use proper statistical tests
     const sampleSizeEffect = Math.min(control.taskCount, treatment.taskCount) / 100
     const effectSize = control.avgExecutionTime > 0 ? Math.abs(control.avgExecutionTime - treatment.avgExecutionTime) / control.avgExecutionTime : 0
-    
+
     return Math.min(0.99, sampleSizeEffect * effectSize * 2)
   }
 
@@ -451,7 +451,7 @@ class ClaudeProductionMonitor {
   private cleanupOldLogs(): void {
     const now = Date.now()
     const cutoffTime = now - this.config.logRetentionHours * 60 * 60 * 1000
-    
+
     const originalCount = this.taskHistory.length
     this.taskHistory = this.taskHistory.filter(task => task.endTime > cutoffTime)
     const removedCount = originalCount - this.taskHistory.length

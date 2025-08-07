@@ -10,7 +10,7 @@
 
 import { logger } from '@/lib/logger'
 
-export type Result<T, E = Error> = 
+export type Result<T, E = Error> =
   | { success: true; data: T; error?: never }
   | { success: false; data?: never; error: E }
 
@@ -65,7 +65,7 @@ class CircuitBreaker {
 
   private onSuccess(): void {
     this.failureCount = 0
-    
+
     if (this.state === 'half-open') {
       this.successCount++
       if (this.successCount >= 3) { // Require 3 successes to close
@@ -104,7 +104,7 @@ export class AsyncErrorHandler {
     } catch (error) {
       const contextMessage = context ? ` in ${context}` : ''
       logger.error(`Operation failed${contextMessage}`, {}, error instanceof Error ? error : new Error(String(error)))
-      
+
       return {
         success: false,
         error: error instanceof Error ? error : new Error(String(error))
@@ -140,7 +140,7 @@ export class AsyncErrorHandler {
         return { success: true, data }
       } catch (error) {
         lastError = error instanceof Error ? error : new Error(String(error))
-        
+
         // Check if we should retry this error
         if (finalConfig.retryCondition && !finalConfig.retryCondition(lastError)) {
           break
@@ -154,7 +154,7 @@ export class AsyncErrorHandler {
             attempt,
             maxAttempts: finalConfig.maxAttempts
           })
-          
+
           await this.delay(delay)
         }
       }
@@ -162,7 +162,7 @@ export class AsyncErrorHandler {
 
     const contextMessage = context ? ` in ${context}` : ''
     logger.error(`Operation failed after ${finalConfig.maxAttempts} attempts${contextMessage}`, {}, lastError || undefined)
-    
+
     return {
       success: false,
       error: lastError || new Error('Unknown error')
@@ -189,7 +189,7 @@ export class AsyncErrorHandler {
     } catch (error) {
       const contextMessage = context ? ` in ${context}` : ''
       logger.error(`Operation timed out${contextMessage}`, {}, error instanceof Error ? error : new Error(String(error)))
-      
+
       return {
         success: false,
         error: error instanceof Error ? error : new Error(String(error))
@@ -229,7 +229,7 @@ export class AsyncErrorHandler {
         breakerKey,
         state: breaker.getState()
       })
-      
+
       return {
         success: false,
         error: error instanceof Error ? error : new Error(String(error))
@@ -250,12 +250,12 @@ export class AsyncErrorHandler {
       context?: string
     } = {}
   ): Promise<Result<T>> {
-    const { 
-      retryConfig, 
-      timeoutConfig, 
-      circuitBreakerKey, 
-      circuitBreakerConfig, 
-      context 
+    const {
+      retryConfig,
+      timeoutConfig,
+      circuitBreakerKey,
+      circuitBreakerConfig,
+      context
     } = options
 
     // Wrap operation with timeout if configured
@@ -273,9 +273,9 @@ export class AsyncErrorHandler {
       const originalOperation = finalOperation
       finalOperation = async () => {
         const result = await this.executeWithCircuitBreaker(
-          originalOperation, 
-          circuitBreakerKey, 
-          circuitBreakerConfig, 
+          originalOperation,
+          circuitBreakerKey,
+          circuitBreakerConfig,
           context
         )
         if (!result.success) throw result.error
@@ -292,7 +292,7 @@ export class AsyncErrorHandler {
   }
 
   private calculateDelay(attempt: number, config: RetryConfig): number {
-    let delay = config.exponential 
+    let delay = config.exponential
       ? config.baseDelay * Math.pow(2, attempt - 1)
       : config.baseDelay
 
@@ -324,7 +324,7 @@ export class AsyncErrorHandler {
         'ENOTFOUND',
         'ETIMEDOUT'
       ]
-      return networkErrors.some(keyword => 
+      return networkErrors.some(keyword =>
         error.message.toLowerCase().includes(keyword.toLowerCase()) ||
         error.name.toLowerCase().includes(keyword.toLowerCase())
       )
@@ -333,9 +333,9 @@ export class AsyncErrorHandler {
     serverErrors: (error: Error): boolean => {
       // Retry on 5xx errors but not 4xx client errors
       const message = error.message.toLowerCase()
-      return message.includes('500') || 
-             message.includes('502') || 
-             message.includes('503') || 
+      return message.includes('500') ||
+             message.includes('502') ||
+             message.includes('503') ||
              message.includes('504') ||
              message.includes('internal server error')
     },
@@ -365,7 +365,7 @@ export async function withRetry<T>(
 ): Promise<Result<T>> {
   return asyncErrorHandler.executeWithRetry(
     operation,
-    { 
+    {
       maxAttempts,
       retryCondition: AsyncErrorHandler.retryConditions.temporaryErrors
     },

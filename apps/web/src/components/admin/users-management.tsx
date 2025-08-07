@@ -17,7 +17,7 @@ import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Checkbox } from '@/components/ui/checkbox'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -132,7 +132,7 @@ export function UsersManagement() {
   const [bulkOperation, setBulkOperation] = useState<'change_tier' | 'suspend' | 'activate' | 'delete'>('change_tier')
   const [bulkTier, setBulkTier] = useState<UserTier>('free')
   const [bulkReason, setBulkReason] = useState('')
-  
+
   const supabase = createBrowserSupabaseClient()
   const { toast } = useToast()
 
@@ -145,7 +145,7 @@ export function UsersManagement() {
   const loadUsers = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch users from user_profiles
       const { data: profilesData, error: profilesError } = await supabase
         .from('user_profiles')
@@ -156,12 +156,12 @@ export function UsersManagement() {
 
       // Create user objects with tier and usage information
       const usersList: User[] = []
-      
+
       for (const profile of profilesData || []) {
         // Get tier info for each user
         const tierInfo = await getUserTierInfo(profile.user_id)
         const usageStats = await getUserUsageStats(profile.user_id)
-        
+
         const user: User = {
           id: profile.user_id,
           email: profile.email || 'No email',
@@ -186,18 +186,18 @@ export function UsersManagement() {
             claimsLimit: tierInfo.data.user_tiers.claims_limit
           } : undefined
         }
-        
+
         usersList.push(user)
       }
 
       setUsers(usersList)
-      
+
       // Create profiles map
       const profilesMap = profilesData?.reduce((acc, profile) => {
         acc[profile.user_id] = profile
         return acc
       }, {} as Record<string, UserProfile>) || {}
-      
+
       setProfiles(profilesMap)
     } catch (error) {
       console.error('Error loading users:', error)
@@ -400,16 +400,16 @@ export function UsersManagement() {
   }
 
   const filteredUsers = users.filter(user => {
-    const matchesSearch = 
+    const matchesSearch =
       user.email.toLowerCase().includes(searchQuery.toLowerCase()) ||
       user.metadata?.full_name?.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     const matchesRole = roleFilter === 'all' || user.role === roleFilter
-    const matchesStatus = 
+    const matchesStatus =
       statusFilter === 'all' ||
       (statusFilter === 'active' && user.is_active) ||
       (statusFilter === 'inactive' && !user.is_active)
-    
+
     const matchesTier = tierFilter === 'all' || user.tier === tierFilter
 
     return matchesSearch && matchesRole && matchesStatus && matchesTier
@@ -484,8 +484,8 @@ export function UsersManagement() {
           <p className="text-gray-400 mt-1">Manage user accounts, roles, and permissions</p>
         </div>
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={exportUsers}
             className="border-gray-700"
           >
@@ -516,7 +516,7 @@ export function UsersManagement() {
                 <p className="text-xs text-gray-500 mt-1">{stats.active_users} active</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-400">Monthly Revenue</CardTitle>
@@ -526,7 +526,7 @@ export function UsersManagement() {
                 <p className="text-xs text-gray-500 mt-1">Recurring monthly</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-400">New This Week</CardTitle>
@@ -536,7 +536,7 @@ export function UsersManagement() {
                 <p className="text-xs text-gray-500 mt-1">{stats.new_users_today} today</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium text-gray-400">Suspended</CardTitle>
@@ -656,7 +656,7 @@ export function UsersManagement() {
             <TableHeader>
               <TableRow className="border-gray-700">
                 <TableHead className="text-gray-400 w-8">
-                  <Checkbox 
+                  <Checkbox
                     checked={filteredUsers.length > 0 && selectedUsers.length === filteredUsers.length}
                     onCheckedChange={(checked) => {
                       if (checked) {
@@ -726,8 +726,8 @@ export function UsersManagement() {
                               AI: {user.usage.aiRequestsThisMonth}/{user.limits.aiRequestsLimit === -1 ? '∞' : user.limits.aiRequestsLimit}
                             </span>
                           </div>
-                          <Progress 
-                            value={getUsagePercentage(user.usage.aiRequestsThisMonth, user.limits.aiRequestsLimit)} 
+                          <Progress
+                            value={getUsagePercentage(user.usage.aiRequestsThisMonth, user.limits.aiRequestsLimit)}
                             className="h-1"
                           />
                         </div>
@@ -735,11 +735,11 @@ export function UsersManagement() {
                     </div>
                   </TableCell>
                   <TableCell>
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={
-                        user.role === 'admin' 
-                          ? 'border-yellow-500 text-yellow-500' 
+                        user.role === 'admin'
+                          ? 'border-yellow-500 text-yellow-500'
                           : user.role === 'support'
                           ? 'border-blue-500 text-blue-500'
                           : 'border-gray-500 text-gray-500'
@@ -750,7 +750,7 @@ export function UsersManagement() {
                   </TableCell>
                   <TableCell>
                     <div className="space-y-1">
-                      <Badge 
+                      <Badge
                         variant="outline"
                         className={
                           user.is_active
@@ -958,7 +958,7 @@ export function UsersManagement() {
                 </SelectContent>
               </Select>
             </div>
-            
+
             {bulkOperation === 'change_tier' && (
               <div>
                 <Label htmlFor="tier">New Tier</Label>
@@ -982,7 +982,7 @@ export function UsersManagement() {
                 </Select>
               </div>
             )}
-            
+
             <div>
               <Label htmlFor="reason">Reason (optional)</Label>
               <Input
@@ -1056,8 +1056,8 @@ export function UsersManagement() {
                         <p className="text-sm text-gray-400">
                           of {selectedUser.limits.aiRequestsLimit === -1 ? 'unlimited' : selectedUser.limits.aiRequestsLimit}
                         </p>
-                        <Progress 
-                          value={getUsagePercentage(selectedUser.usage.aiRequestsThisMonth, selectedUser.limits.aiRequestsLimit)} 
+                        <Progress
+                          value={getUsagePercentage(selectedUser.usage.aiRequestsThisMonth, selectedUser.limits.aiRequestsLimit)}
                           className="mt-2"
                         />
                       </CardContent>
@@ -1078,8 +1078,8 @@ export function UsersManagement() {
                         <p className="text-sm text-gray-400">
                           of {selectedUser.limits.storageLimit === -1 ? 'unlimited' : `${selectedUser.limits.storageLimit} MB`}
                         </p>
-                        <Progress 
-                          value={getUsagePercentage(selectedUser.usage.storageUsedMB, selectedUser.limits.storageLimit)} 
+                        <Progress
+                          value={getUsagePercentage(selectedUser.usage.storageUsedMB, selectedUser.limits.storageLimit)}
                           className="mt-2"
                         />
                       </CardContent>
@@ -1100,8 +1100,8 @@ export function UsersManagement() {
                         <p className="text-sm text-gray-400">
                           of {selectedUser.limits.propertiesLimit === -1 ? 'unlimited' : selectedUser.limits.propertiesLimit}
                         </p>
-                        <Progress 
-                          value={getUsagePercentage(selectedUser.usage.propertiesCount, selectedUser.limits.propertiesLimit)} 
+                        <Progress
+                          value={getUsagePercentage(selectedUser.usage.propertiesCount, selectedUser.limits.propertiesLimit)}
                           className="mt-2"
                         />
                       </CardContent>
@@ -1122,8 +1122,8 @@ export function UsersManagement() {
                         <p className="text-sm text-gray-400">
                           of {selectedUser.limits.claimsLimit === -1 ? 'unlimited' : selectedUser.limits.claimsLimit}
                         </p>
-                        <Progress 
-                          value={getUsagePercentage(selectedUser.usage.claimsCount, selectedUser.limits.claimsLimit)} 
+                        <Progress
+                          value={getUsagePercentage(selectedUser.usage.claimsCount, selectedUser.limits.claimsLimit)}
                           className="mt-2"
                         />
                       </CardContent>

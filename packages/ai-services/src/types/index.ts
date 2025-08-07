@@ -27,14 +27,14 @@ export interface AIResponse {
 }
 
 // Request types
-export type AIFeature = 
-  | 'clara' 
-  | 'clarity' 
-  | 'max' 
-  | 'sentinel' 
-  | 'generic' 
-  | 'document-categorizer' 
-  | 'damage-analyzer' 
+export type AIFeature =
+  | 'clara'
+  | 'clarity'
+  | 'max'
+  | 'sentinel'
+  | 'generic'
+  | 'document-categorizer'
+  | 'damage-analyzer'
   | 'document-extractor'
   | 'hurricane-analyzer'
   | 'policy-analysis'

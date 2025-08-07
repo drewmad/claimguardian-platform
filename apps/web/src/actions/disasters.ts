@@ -62,7 +62,7 @@ export async function getDisasterHubData() {
     const isAtRisk = alerts.some(() => {
       // This is a simplified check. A real implementation would do a spatial intersection here.
       // For now, we assume any alert returned by the query puts the property at risk.
-      return true; 
+      return true;
     });
     return {
       ...property,

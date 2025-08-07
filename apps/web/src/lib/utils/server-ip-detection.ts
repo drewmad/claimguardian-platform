@@ -17,7 +17,7 @@ import { logger } from '@/lib/logger'
 export async function getClientIPAddress(): Promise<string> {
   try {
     const headersList = await headers()
-    
+
     // Priority order for IP detection (most reliable first)
     const ipSources = [
       // Cloudflare
@@ -33,7 +33,7 @@ export async function getClientIPAddress(): Promise<string> {
       headersList.get('forwarded-for'),
       headersList.get('forwarded')
     ]
-    
+
     // Find first valid IP address
     for (const ip of ipSources) {
       if (ip && isValidIP(ip)) {
@@ -41,16 +41,16 @@ export async function getClientIPAddress(): Promise<string> {
         return ip
       }
     }
-    
+
     // Fallback - this shouldn't happen in production with proper load balancer config
-    logger.warn('No valid IP found in headers, using fallback', { 
+    logger.warn('No valid IP found in headers, using fallback', {
       headers: Object.fromEntries(
-        Array.from(headersList.entries()).filter(([key]) => 
+        Array.from(headersList.entries()).filter(([key]) =>
           key.toLowerCase().includes('ip') || key.toLowerCase().includes('forward')
         )
       )
     })
-    
+
     return 'unknown'
   } catch (error) {
     logger.error('Failed to detect client IP', {}, error as Error)
@@ -63,22 +63,22 @@ export async function getClientIPAddress(): Promise<string> {
  */
 function isValidIP(ip: string): boolean {
   if (!ip || ip === 'unknown') return false
-  
+
   // Remove any port numbers
   const cleanIP = ip.split(':')[0]
-  
+
   // IPv4 validation
   const ipv4Regex = /^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
   if (ipv4Regex.test(cleanIP)) {
     return !isPrivateIP(cleanIP)
   }
-  
+
   // IPv6 validation (basic)
   const ipv6Regex = /^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$/
   if (ipv6Regex.test(cleanIP)) {
     return true
   }
-  
+
   return false
 }
 
@@ -87,19 +87,19 @@ function isValidIP(ip: string): boolean {
  */
 function isPrivateIP(ip: string): boolean {
   const parts = ip.split('.').map(Number)
-  
+
   // 10.0.0.0/8
   if (parts[0] === 10) return true
-  
+
   // 172.16.0.0/12
   if (parts[0] === 172 && parts[1] >= 16 && parts[1] <= 31) return true
-  
+
   // 192.168.0.0/16
   if (parts[0] === 192 && parts[1] === 168) return true
-  
+
   // 127.0.0.0/8 (localhost)
   if (parts[0] === 127) return true
-  
+
   return false
 }
 
@@ -121,7 +121,7 @@ export async function collectServerTrackingData(): Promise<ServerTrackingData> {
     const headersList = await headers()
     const ipAddress = await getClientIPAddress()
     const userAgent = headersList.get('user-agent') || undefined
-    
+
     return {
       ipAddress,
       userAgent,
@@ -130,7 +130,7 @@ export async function collectServerTrackingData(): Promise<ServerTrackingData> {
     }
   } catch (error) {
     logger.error('Failed to collect server tracking data', {}, error as Error)
-    
+
     return {
       ipAddress: 'unknown',
       timestamp: new Date().toISOString(),

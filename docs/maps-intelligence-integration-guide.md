@@ -7,7 +7,7 @@ This guide covers how to integrate and use the comprehensive Google Maps Intelli
 
 ### Core Tables Created
 - **`maps_api_executions`** - Tracks all API calls with performance metrics
-- **`address_intelligence`** - Address validation and property risk data  
+- **`address_intelligence`** - Address validation and property risk data
 - **`weather_intelligence`** - Weather data and claims correlation
 - **`aerial_intelligence`** - Roof analysis and damage assessment
 - **`environmental_intelligence`** - Pollen, air quality, elevation data
@@ -31,11 +31,11 @@ psql -h localhost -p 54322 -U postgres -d postgres -f supabase/migrations/create
 The Maps Intelligence types and services are included in `@claimguardian/db`:
 
 ```typescript
-import { 
+import {
   MapsIntelligenceService,
   type MapsApiType,
   type PropertyIntelligenceSummary,
-  type IntelligenceResponse 
+  type IntelligenceResponse
 } from '@claimguardian/db'
 ```
 
@@ -107,7 +107,7 @@ async function weeklyWeatherMonitoring(propertyId: string) {
   })
 
   // Skip if data is less than 7 days old
-  if (recentWeather.data && 
+  if (recentWeather.data &&
       new Date(recentWeather.data.created_at) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)) {
     return recentWeather.data
   }
@@ -183,7 +183,7 @@ async function postStormDamageAssessment(propertyId: string, stormDate: string) 
 ```typescript
 async function getPropertyOverview(propertyId: string) {
   const summary = await mapsService.getPropertyIntelligenceSummary(propertyId)
-  
+
   if (summary.success) {
     console.log('Available intelligence types:', summary.data.intelligence_types)
     /*
@@ -220,7 +220,7 @@ const aerialData = await mapsService.getAerialIntelligence(propertyId, undefined
 ```typescript
 async function getCachedPropertyIntelligence(propertyId: string) {
   const cacheKey = `property_${propertyId}_complete_intelligence`
-  
+
   // Check cache first
   const cached = await mapsService.getCachedIntelligence(cacheKey)
   if (cached.data) {
@@ -229,7 +229,7 @@ async function getCachedPropertyIntelligence(propertyId: string) {
 
   // Generate new intelligence if not cached
   const intelligence = await generateCompleteIntelligence(propertyId)
-  
+
   // Cache for 24 hours
   await mapsService.setCachedIntelligence({
     property_id: propertyId,
@@ -310,7 +310,7 @@ async function dailyMaintenance() {
 async function handlePropertySubmit(formData: PropertyFormData) {
   // Create property in database
   const property = await createProperty(formData)
-  
+
   // Trigger onboarding intelligence gathering
   await Promise.all([
     onboardProperty(property.id, formData.address),
@@ -319,7 +319,7 @@ async function handlePropertySubmit(formData: PropertyFormData) {
     // Generate baseline street view documentation
     callStreetViewIntelligence(property.id)
   ])
-  
+
   // Redirect to dashboard with intelligence loading
   router.push(`/dashboard?property=${property.id}&gathering=true`)
 }
@@ -330,7 +330,7 @@ async function handlePropertySubmit(formData: PropertyFormData) {
 // When filing a claim, gather relevant intelligence
 async function fileClaimWithIntelligence(claimData: ClaimData) {
   const claimDate = claimData.incident_date
-  
+
   // Gather storm correlation data
   const weatherCorrelation = await supabase.functions.invoke('weather-claims-intelligence', {
     body: {

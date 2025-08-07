@@ -40,7 +40,7 @@ echo ""
 fix_imports() {
     local file=$1
     echo -e "${BLUE}  Fixing imports in $file${NC}"
-    
+
     # Replace npm imports with proper Deno imports
     sed -i.backup \
         -e 's/import { GoogleGenerativeAI } from "npm:@google\/generative-ai"/import { GoogleGenerativeAI } from "@google\/generative-ai"/g' \
@@ -48,7 +48,7 @@ fix_imports() {
         -e 's/import OpenAI from "npm:openai"/import OpenAI from "openai"/g' \
         -e 's/import { z } from "npm:zod"/import { z } from "https:\/\/deno.land\/x\/zod@v3.22.4\/mod.ts"/g' \
         "$file"
-    
+
     # Remove backup files
     rm -f "${file}.backup"
 }
@@ -141,7 +141,7 @@ for func in "${FUNCTIONS[@]}"; do
         "https://${PROJECT_ID}.supabase.co/functions/v1/${func}" \
         -H "Origin: https://claimguardianai.com" \
         -w "%{http_code}" -o /dev/null)
-    
+
     if [[ "$STATUS" == "200" || "$STATUS" == "204" ]]; then
         echo "✅ OK (HTTP $STATUS)"
     else

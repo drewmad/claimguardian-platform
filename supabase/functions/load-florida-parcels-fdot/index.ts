@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
-// County name to layer ID mapping for FDOT service  
+// County name to layer ID mapping for FDOT service
 // Also includes mapping to Florida FIPS county codes
 const COUNTY_LAYERS: Record<string, number> = {
   'ALACHUA': 1, 'BAKER': 2, 'BAY': 3, 'BRADFORD': 4, 'BREVARD': 5,
@@ -39,7 +39,7 @@ serve(async (req) => {
 
   try {
     const { county, offset = 0, limit = 1000 } = await req.json()
-    
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -50,7 +50,7 @@ serve(async (req) => {
 
     const countyUpper = county.toUpperCase()
     const layerId = COUNTY_LAYERS[countyUpper]
-    
+
     if (!layerId) {
       throw new Error(`Invalid county: ${county}. Valid counties: ${Object.keys(COUNTY_LAYERS).join(', ')}`)
     }
@@ -62,7 +62,7 @@ serve(async (req) => {
 
     // FDOT Parcels endpoint - each county is a separate layer
     const url = new URL(`https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer/${layerId}/query`)
-    
+
     // Build query parameters
     const params = {
       where: '1=1',
@@ -86,9 +86,9 @@ serve(async (req) => {
 
     const data = await response.json()
     const features = data.features || []
-    
+
     console.log(`Fetched ${features.length} parcels from FDOT`)
-    
+
     // Log first feature for debugging
     if (features.length > 0) {
       console.log('Sample feature:', JSON.stringify(features[0], null, 2))
@@ -110,17 +110,17 @@ serve(async (req) => {
     // Process in batches
     for (let i = 0; i < features.length; i += batchSize) {
       const batch = features.slice(i, i + batchSize)
-      
+
       try {
         const records = batch.map((feature: any) => {
           const { attributes, geometry } = feature
-          
+
           // Convert geometry to WKT
           let wkt = null
           if (geometry) {
             if (geometry.rings) {
               // Polygon or MultiPolygon
-              const rings = geometry.rings.map((ring: number[][]) => 
+              const rings = geometry.rings.map((ring: number[][]) =>
                 `(${ring.map(coord => `${coord[0]} ${coord[1]}`).join(',')})`
               ).join(',')
               wkt = `SRID=4326;MULTIPOLYGON((${rings}))`
@@ -132,11 +132,11 @@ serve(async (req) => {
               wkt = `SRID=4326;MULTIPOLYGON(((${x-delta} ${y-delta},${x+delta} ${y-delta},${x+delta} ${y+delta},${x-delta} ${y+delta},${x-delta} ${y-delta})))`
             }
           }
-          
+
           // Map FDOT fields to our schema - based on actual field names
           const ownerAddress = [attributes.OWN_ADDR1, attributes.OWN_ADDR2].filter(Boolean).join(' ').trim()
           const propertyAddress = [attributes.PHY_ADDR1, attributes.PHY_ADDR2].filter(Boolean).join(' ').trim()
-          
+
           return {
             id: crypto.randomUUID(),
             parcel_id: attributes.PARCEL_ID || attributes.PARCELNO,
@@ -169,7 +169,7 @@ serve(async (req) => {
             created_at: new Date().toISOString()
           }
         }).filter(r => r.parcel_id) // Only require parcel_id, geometry is optional
-        
+
         console.log(`Batch ${i}-${i + batchSize}: Prepared ${records.length} records for insertion`)
         if (records.length > 0) {
           // Insert records one by one to get accurate error counts
@@ -181,7 +181,7 @@ serve(async (req) => {
                 .select('id')
                 .eq('parcel_id', record.parcel_id)
                 .maybeSingle()
-              
+
               let error
               if (existing) {
                 // Update existing parcel
@@ -200,7 +200,7 @@ serve(async (req) => {
                   .insert(record)
                 error = insertError
               }
-              
+
               if (error) {
                 console.error(`Failed to insert parcel ${record.parcel_id}:`, error.message)
                 errors++
@@ -242,7 +242,7 @@ serve(async (req) => {
     console.error('Error in load-florida-parcels-fdot:', error)
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

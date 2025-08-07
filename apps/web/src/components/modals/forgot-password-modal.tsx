@@ -57,7 +57,7 @@ export function ForgotPasswordModal() {
           >
             <X className="w-5 h-5" />
           </button>
-          
+
           <h2 className="text-2xl font-bold mb-4">Check Your Email</h2>
           <p className="text-slate-300">
             We've sent a password reset link to <strong>{email}</strong>
@@ -65,7 +65,7 @@ export function ForgotPasswordModal() {
           <p className="text-slate-400 text-sm mt-2">
             Please check your email and follow the instructions to reset your password.
           </p>
-          
+
           <button
             onClick={() => {
               closeModal()
@@ -83,7 +83,7 @@ export function ForgotPasswordModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-      
+
       <div className="relative bg-slate-800 rounded-lg w-full max-w-md p-6 shadow-xl">
         <button
           onClick={closeModal}

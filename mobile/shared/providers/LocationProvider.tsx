@@ -55,15 +55,15 @@ export function LocationProvider({ children }: LocationProviderProps) {
 
         if (status !== 'granted') {
           dispatch(setError('Location permission denied'))
-          
+
           // Show permission explanation
           Alert.alert(
             'Location Permission Required',
             'ClaimGuardian needs location access to add GPS data to damage photos and assessments.',
             [
               { text: 'Cancel' },
-              { 
-                text: 'Settings', 
+              {
+                text: 'Settings',
                 onPress: () => {
                   // In a real app, we'd open device settings
                   console.log('Open device settings')
@@ -103,8 +103,8 @@ export function LocationProvider({ children }: LocationProviderProps) {
 
       try {
         const locationOptions: Location.LocationOptions = {
-          accuracy: locationState.settings.highAccuracyMode 
-            ? Location.Accuracy.BestForNavigation 
+          accuracy: locationState.settings.highAccuracyMode
+            ? Location.Accuracy.BestForNavigation
             : Location.Accuracy.Balanced,
           timeInterval: locationState.settings.updateInterval,
           distanceInterval: locationState.settings.distanceFilter,
@@ -128,7 +128,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
         )
 
         dispatch(startLocationTracking())
-        
+
       } catch (error) {
         console.error('Failed to start location tracking:', error)
         dispatch(setError(error instanceof Error ? error.message : 'Failed to start tracking'))
@@ -195,14 +195,14 @@ export function LocationProvider({ children }: LocationProviderProps) {
     const checkEmergencyConditions = () => {
       // In a real implementation, this might be triggered by:
       // - Weather alerts
-      // - Disaster notifications  
+      // - Disaster notifications
       // - User manually enabling emergency mode
       // - Integration with emergency services
-      
+
       // For now, we'll detect if user is in a hurricane-prone area during hurricane season
       if (locationState.current) {
         const { latitude, longitude } = locationState.current
-        
+
         // Florida coordinates roughly
         const isInFlorida = latitude >= 24.5 && latitude <= 31 && longitude >= -87.5 && longitude <= -80
         const isHurricaneSeason = (() => {
@@ -224,11 +224,11 @@ export function LocationProvider({ children }: LocationProviderProps) {
   useEffect(() => {
     if (locationState.current && locationState.current.accuracy) {
       const accuracy = locationState.current.accuracy
-      
+
       // Warn if GPS accuracy is poor (> 50 meters)
       if (accuracy > 50) {
         console.warn(`Poor GPS accuracy: ${accuracy.toFixed(1)}m`)
-        
+
         // Could suggest user move to better location or enable high accuracy mode
         if (!locationState.settings.highAccuracyMode) {
           // Suggest enabling high accuracy mode
@@ -249,7 +249,7 @@ export function LocationProvider({ children }: LocationProviderProps) {
   useEffect(() => {
     if (locationState.current) {
       const { latitude, longitude, accuracy } = locationState.current
-      
+
       // Validate coordinates
       if (Math.abs(latitude) > 90 || Math.abs(longitude) > 180) {
         dispatch(setError('Invalid GPS coordinates received'))

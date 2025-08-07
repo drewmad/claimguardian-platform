@@ -22,35 +22,35 @@ import { soxAuditTrailManager } from './sox-audit-trail-system'
 export interface DocumentTemplate {
   id: string
   templateName: string
-  templateType: 'claim_denial_letter' | 'settlement_agreement' | 'assignment_of_benefits' | 
+  templateType: 'claim_denial_letter' | 'settlement_agreement' | 'assignment_of_benefits' |
                'public_adjuster_contract' | 'bad_faith_notice' | 'compliance_certification' |
                'privacy_notice' | 'consent_form' | 'regulatory_filing' | 'court_document'
   version: string
-  
+
   // Template content
   htmlContent: string
   cssStyles: string
   variables: TemplateVariable[]
-  
+
   // Legal requirements
   floridaStatuteReferences: string[]
   federalLawReferences: string[]
   requiredDisclosures: string[]
   mandatoryLanguage: string[]
-  
+
   // Document specifications
   requiresSignature: boolean
   requiresNotarization: boolean
   requiresWitness: boolean
   retentionPeriod: string
-  
+
   // Compliance and quality
   legalReviewed: boolean
   reviewedBy: string
   reviewDate: Date
   approvedBy: string
   approvalDate: Date
-  
+
   // Metadata
   effectiveDate: Date
   expirationDate?: Date
@@ -82,39 +82,39 @@ export interface GeneratedDocument {
   id: string
   templateId: string
   templateVersion: string
-  
+
   // Document identification
   documentNumber: string
   documentType: string
   title: string
-  
+
   // Generated content
   htmlContent: string
   variables: Record<string, unknown>
-  
+
   // File information
   pdfPath: string
   pdfUrl: string
   fileSize: number
   fileHash: string
   pdfaCompliant: boolean
-  
+
   // Legal and compliance
   legalStatus: 'draft' | 'under_review' | 'approved' | 'executed' | 'expired' | 'voided'
   complianceChecks: ComplianceCheck[]
   digitalSignatures: DigitalSignature[]
-  
+
   // Relationships
   claimId?: string
   userId?: string
   propertyId?: string
-  
+
   // Audit information
   generatedBy: string
   generatedAt: Date
   lastModified?: Date
   modifiedBy?: string
-  
+
   metadata: Record<string, unknown>
 }
 
@@ -171,64 +171,64 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
         <p>{{companyAddress}}</p>
         <p>Phone: {{companyPhone}} | Email: {{companyEmail}}</p>
     </div>
-    
+
     <div class="date">{{currentDate}}</div>
-    
+
     <div class="recipient-info">
         {{claimantName}}<br>
         {{claimantAddress}}<br>
         {{claimantCity}}, {{claimantState}} {{claimantZip}}
     </div>
-    
+
     <div class="subject">
         RE: Claim Number {{claimNumber}} - DENIAL OF CLAIM
     </div>
-    
+
     <div class="body">
         <p>Dear {{claimantName}},</p>
-        
-        <p>After careful review and investigation of your insurance claim number {{claimNumber}} 
-        submitted on {{claimSubmissionDate}} for damages that allegedly occurred on {{dateOfLoss}}, 
+
+        <p>After careful review and investigation of your insurance claim number {{claimNumber}}
+        submitted on {{claimSubmissionDate}} for damages that allegedly occurred on {{dateOfLoss}},
         we regret to inform you that your claim has been denied.</p>
-        
+
         <p><strong>Reason for Denial:</strong></p>
         <p>{{denialReason}}</p>
-        
+
         <p><strong>Investigation Summary:</strong></p>
         <p>{{investigationSummary}}</p>
-        
+
         <p><strong>Policy Provisions:</strong></p>
         <p>This denial is based on the following policy provisions: {{policyProvisions}}</p>
     </div>
-    
+
     <div class="legal-notice">
         <p><strong>IMPORTANT NOTICE - YOUR RIGHTS UNDER FLORIDA LAW:</strong></p>
-        
-        <p><strong>RIGHT TO APPEAL:</strong> You have the right to appeal this decision. You may submit additional 
+
+        <p><strong>RIGHT TO APPEAL:</strong> You have the right to appeal this decision. You may submit additional
         documentation or request reconsideration of this claim denial within 60 days of receipt of this letter.</p>
-        
-        <p><strong>RIGHT TO FILE COMPLAINT:</strong> If you believe this claim has been improperly denied, you may 
+
+        <p><strong>RIGHT TO FILE COMPLAINT:</strong> If you believe this claim has been improperly denied, you may
         file a complaint with the Florida Office of Insurance Regulation:</p>
-        
+
         <p>Florida Office of Insurance Regulation<br>
         Consumer Services<br>
         200 East Gaines Street<br>
         Tallahassee, FL 32399-4206<br>
         Phone: 1-877-693-5236<br>
         Website: www.floir.com</p>
-        
-        <p><strong>LEGAL ACTION:</strong> You may have the right to file a lawsuit challenging this denial. 
-        Florida law provides that you must file any lawsuit within five (5) years of the date of loss, 
+
+        <p><strong>LEGAL ACTION:</strong> You may have the right to file a lawsuit challenging this denial.
+        Florida law provides that you must file any lawsuit within five (5) years of the date of loss,
         or within three (3) years after you knew or should have known of the loss, whichever is earlier.</p>
-        
-        <p><strong>APPRAISAL PROCESS:</strong> If there is a disagreement about the amount of loss, either party 
-        may demand an appraisal. Each party will select an appraiser, and the appraisers will select an umpire. 
+
+        <p><strong>APPRAISAL PROCESS:</strong> If there is a disagreement about the amount of loss, either party
+        may demand an appraisal. Each party will select an appraiser, and the appraisers will select an umpire.
         The appraisers will then determine the amount of loss.</p>
-        
-        <p class="statute-reference">This notice is provided in compliance with Florida Statutes § 626.9373 and 
+
+        <p class="statute-reference">This notice is provided in compliance with Florida Statutes § 626.9373 and
         § 627.70131 (Prompt Payment of Claims Act).</p>
     </div>
-    
+
     <div class="signature-block">
         <p>Sincerely,</p>
         <br><br><br>
@@ -238,7 +238,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
         Phone: {{adjusterPhone}}<br>
         Email: {{adjusterEmail}}</p>
     </div>
-    
+
     <div style="margin-top: 20px; font-size: 10pt;">
         <p><strong>Enclosures:</strong> {{enclosures}}</p>
         <p><strong>Document ID:</strong> {{documentId}}</p>
@@ -262,7 +262,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
     requiresNotarization: false,
     retentionPeriod: '7 years'
   },
-  
+
   {
     templateName: 'Assignment of Benefits Form',
     templateType: 'assignment_of_benefits',
@@ -289,7 +289,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
         ASSIGNMENT OF BENEFITS<br>
         STATE OF FLORIDA
     </div>
-    
+
     <div class="section">
         <p><strong>Property Owner/Insured:</strong> {{propertyOwnerName}}</p>
         <p><strong>Property Address:</strong> {{propertyAddress}}</p>
@@ -298,31 +298,31 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
         <p><strong>Claim Number:</strong> {{claimNumber}}</p>
         <p><strong>Date of Loss:</strong> {{dateOfLoss}}</p>
     </div>
-    
+
     <div class="section">
         <p><strong>Contractor/Assignee:</strong> {{contractorName}}</p>
         <p><strong>License Number:</strong> {{contractorLicense}}</p>
         <p><strong>Address:</strong> {{contractorAddress}}</p>
         <p><strong>Phone:</strong> {{contractorPhone}}</p>
     </div>
-    
+
     <div class="important-notice">
         <p><strong>IMPORTANT CONSUMER NOTICE - READ CAREFULLY</strong></p>
-        
+
         <p>This Assignment of Benefits (AOB) allows your contractor to:</p>
         <ul>
             <li>Communicate directly with your insurance company about your claim</li>
             <li>Receive insurance payments directly from your insurer</li>
             <li>File a lawsuit in your name against the insurer if necessary</li>
         </ul>
-        
+
         <p><strong>YOUR RIGHTS:</strong></p>
         <ul>
             <li>You have the right to cancel this assignment within 3 business days</li>
             <li>You can revoke this assignment at any time with written notice</li>
             <li>You have the right to receive a copy of this signed agreement</li>
         </ul>
-        
+
         <p><strong>POTENTIAL CONSEQUENCES:</strong></p>
         <ul>
             <li>You may be responsible for attorney fees if a lawsuit is filed</li>
@@ -330,12 +330,12 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
             <li>Disputes may affect your credit or result in liens on your property</li>
         </ul>
     </div>
-    
+
     <div class="section">
-        <p>I, {{propertyOwnerName}}, hereby assign and transfer to {{contractorName}} all rights, 
-        title, and interest in the insurance proceeds payable under the above-referenced insurance policy 
+        <p>I, {{propertyOwnerName}}, hereby assign and transfer to {{contractorName}} all rights,
+        title, and interest in the insurance proceeds payable under the above-referenced insurance policy
         for the repair or replacement of property damaged in the loss that occurred on {{dateOfLoss}}.</p>
-        
+
         <p>This assignment includes the right to:</p>
         <ul>
             <li>Submit proof of loss and other required documentation</li>
@@ -344,7 +344,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
             <li>Take legal action if necessary to enforce the claim</li>
         </ul>
     </div>
-    
+
     <div class="section">
         <p><strong>ACKNOWLEDGMENTS:</strong></p>
         <p>☐ I have received and read the consumer notice above</p>
@@ -352,7 +352,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
         <p>☐ I have received a copy of this signed agreement</p>
         <p>☐ I understand the potential financial consequences</p>
     </div>
-    
+
     <div class="section" style="margin-top: 30px;">
         <table width="100%">
             <tr>
@@ -368,7 +368,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
             </tr>
         </table>
     </div>
-    
+
     <div class="section" style="margin-top: 20px;">
         <table width="100%">
             <tr>
@@ -384,7 +384,7 @@ export const FLORIDA_DOCUMENT_TEMPLATES: Partial<DocumentTemplate>[] = [
             </tr>
         </table>
     </div>
-    
+
     <div class="section" style="margin-top: 30px;">
         <p class="statute-ref">This form complies with Florida Statute § 627.7152 governing Assignment of Benefits agreements.</p>
         <p><strong>Document ID:</strong> {{documentId}}</p>
@@ -452,7 +452,7 @@ export class LegalDocumentGenerator {
 
       // Process template variables
       const processedVariables = this.processVariables(template, request.variables)
-      
+
       // Generate HTML content
       const htmlContent = this.populateTemplate(template.htmlContent, processedVariables)
 
@@ -570,13 +570,13 @@ export class LegalDocumentGenerator {
               errors.push(`Variable '${variable.name}' must be a valid number`)
             }
             break
-          
+
           case 'date':
             if (!(value instanceof Date) && !Date.parse(value as string)) {
               errors.push(`Variable '${variable.name}' must be a valid date`)
             }
             break
-          
+
           case 'boolean':
             if (typeof value !== 'boolean') {
               errors.push(`Variable '${variable.name}' must be a boolean`)
@@ -587,18 +587,18 @@ export class LegalDocumentGenerator {
         // Validation rules
         if (variable.validation) {
           const validation = variable.validation
-          
+
           if (validation.pattern) {
             const pattern = new RegExp(validation.pattern)
             if (!pattern.test(String(value))) {
               errors.push(`Variable '${variable.name}' does not match required pattern`)
             }
           }
-          
+
           if (validation.maxLength && String(value).length > validation.maxLength) {
             errors.push(`Variable '${variable.name}' exceeds maximum length of ${validation.maxLength}`)
           }
-          
+
           if (validation.options && !validation.options.includes(String(value))) {
             errors.push(`Variable '${variable.name}' must be one of: ${validation.options.join(', ')}`)
           }
@@ -626,7 +626,7 @@ export class LegalDocumentGenerator {
     // Format variables based on type and options
     for (const variable of template.variables) {
       const value = processed[variable.name]
-      
+
       if (value !== undefined && value !== null) {
         switch (variable.type) {
           case 'date':
@@ -635,7 +635,7 @@ export class LegalDocumentGenerator {
               processed[variable.name] = this.formatDate(date, variable.formatOptions.dateFormat)
             }
             break
-          
+
           case 'currency':
             if (typeof value === 'number') {
               const symbol = variable.formatOptions?.currencySymbol || '$'
@@ -725,7 +725,7 @@ export class LegalDocumentGenerator {
     const year = new Date().getFullYear()
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0')
     const day = new Date().getDate().toString().padStart(2, '0')
-    
+
     // Get sequential number for today
     const { count, error } = await this.supabase
       .from('compliance.legal_documents')
@@ -796,7 +796,7 @@ export class DocumentTemplateManager {
     try {
       // For now, return built-in templates
       // In production, this would query a database
-      const builtInTemplate = FLORIDA_DOCUMENT_TEMPLATES.find(t => 
+      const builtInTemplate = FLORIDA_DOCUMENT_TEMPLATES.find(t =>
         t.templateName?.toLowerCase().includes(templateId.toLowerCase())
       )
 
@@ -874,7 +874,7 @@ export class PDFAGenerator {
       // For now, simulate PDF generation
       const mockPdfContent = Buffer.from(`PDF content for ${options.filename}`)
       const fileHash = require('crypto').createHash('sha256').update(mockPdfContent).digest('hex')
-      
+
       // In production, this would:
       // 1. Use puppeteer to generate PDF from HTML
       // 2. Use pdf-lib to ensure PDF/A compliance

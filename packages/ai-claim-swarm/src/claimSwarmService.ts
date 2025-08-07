@@ -21,7 +21,7 @@ export const claimSwarmService = {
     // Mock implementation for build compatibility
     // TODO: Move to server actions for full functionality
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     return {
       analysis: `Mock analysis for ${media.length} files in session ${sessionId}`,
       confidence: 0.8
@@ -32,7 +32,7 @@ export const claimSwarmService = {
     // Mock implementation for build compatibility
     // TODO: Move to server actions for full functionality
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     return `Mock consensus for session ${sessionId}`
   }
 }

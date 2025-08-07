@@ -33,7 +33,7 @@ echo "Time: ~5-10 minutes"
 echo
 
 echo "================================================"
-echo "METHOD B: Direct Database Connection (FASTEST)"  
+echo "METHOD B: Direct Database Connection (FASTEST)"
 echo "================================================"
 echo "1. First, get your database password from Supabase Dashboard:"
 echo "   https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/settings/database"

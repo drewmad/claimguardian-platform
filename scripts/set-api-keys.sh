@@ -31,9 +31,9 @@ echo ""
 set_secret() {
     local key_name="$1"
     local prompt_text="$2"
-    
+
     echo -e "${BLUE}Setting $key_name...${NC}"
-    
+
     # Check if already set
     if supabase secrets list 2>/dev/null | grep -q "$key_name"; then
         echo -e "${YELLOW}  ⚠️  $key_name already exists${NC}"
@@ -44,17 +44,17 @@ set_secret() {
             return
         fi
     fi
-    
+
     # Prompt for value
     echo "  $prompt_text"
     read -s -p "  Enter value: " secret_value
     echo ""
-    
+
     if [ -z "$secret_value" ]; then
         echo -e "${RED}  ✗ No value provided, skipping${NC}"
         return
     fi
-    
+
     # Set the secret
     if supabase secrets set "$key_name=$secret_value" 2>&1 | tee /tmp/secret-set.log; then
         echo -e "${GREEN}  ✓ $key_name set successfully${NC}"

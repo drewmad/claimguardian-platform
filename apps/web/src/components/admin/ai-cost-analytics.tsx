@@ -15,12 +15,12 @@ import { Label } from '@/components/ui/label'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { 
-  DollarSign, 
-  TrendingUp, 
+import {
+  DollarSign,
+  TrendingUp,
   TrendingDown,
-  Users, 
-  Zap, 
+  Users,
+  Zap,
   Clock,
   AlertCircle,
   Download,
@@ -48,7 +48,7 @@ export function AdminCostAnalytics() {
   })
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
-  
+
   const { analytics, loading, error, fetchAnalytics } = useAdminCostAnalytics()
 
   // Fetch analytics when date range changes
@@ -129,9 +129,9 @@ export function AdminCostAnalytics() {
         <AlertCircle className="h-4 w-4" />
         <AlertDescription>
           Failed to load cost analytics: {error}
-          <Button 
-            variant="outline" 
-            size="sm" 
+          <Button
+            variant="outline"
+            size="sm"
             className="ml-2"
             onClick={() => fetchAnalytics(dateRange.startDate, dateRange.endDate)}
           >
@@ -191,7 +191,7 @@ export function AdminCostAnalytics() {
           <h1 className="text-2xl font-bold text-white">AI Cost Analytics</h1>
           <p className="text-gray-400">Monitor and optimize AI usage across the platform</p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <div className="flex items-center gap-2">
             <Label htmlFor="startDate" className="text-sm text-gray-400">From</Label>
@@ -203,7 +203,7 @@ export function AdminCostAnalytics() {
               className="w-auto bg-gray-800 border-gray-700"
             />
           </div>
-          
+
           <div className="flex items-center gap-2">
             <Label htmlFor="endDate" className="text-sm text-gray-400">To</Label>
             <Input
@@ -350,7 +350,7 @@ export function AdminCostAnalytics() {
                   .map(([tool, data]) => {
                     const costPercentage = analytics.totalCost > 0 ? (data.cost / analytics.totalCost) * 100 : 0
                     const requestPercentage = analytics.totalRequests > 0 ? (data.requests / analytics.totalRequests) * 100 : 0
-                    
+
                     return (
                       <div key={tool} className="space-y-3 p-4 rounded-lg bg-gray-700/50">
                         <div className="flex items-center justify-between">
@@ -358,7 +358,7 @@ export function AdminCostAnalytics() {
                             <h3 className="text-white font-medium capitalize">
                               {tool.replace(/-/g, ' ')}
                             </h3>
-                            <Badge 
+                            <Badge
                               variant={data.successRate > 0.95 ? 'default' : 'destructive'}
                               className="text-xs"
                             >
@@ -374,7 +374,7 @@ export function AdminCostAnalytics() {
                             </div>
                           </div>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                           <div>
                             <div className="text-gray-400">Requests</div>
@@ -426,8 +426,8 @@ export function AdminCostAnalytics() {
             <CardContent>
               <div className="space-y-3">
                 {analytics.topUsers
-                  .filter(user => 
-                    searchTerm === '' || 
+                  .filter(user =>
+                    searchTerm === '' ||
                     user.email.toLowerCase().includes(searchTerm.toLowerCase())
                   )
                   .map((user, index) => (
@@ -478,7 +478,7 @@ export function AdminCostAnalytics() {
                         {(performance.successRate * 100).toFixed(1)}% success
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
                       <div>
                         <div className="text-gray-400">Avg Response Time</div>
@@ -532,7 +532,7 @@ export function AdminCostAnalytics() {
                   .map(([date, data]) => {
                     const maxCost = Math.max(...Object.values(analytics.costByDate).map(d => d.cost))
                     const costPercentage = maxCost > 0 ? (data.cost / maxCost) * 100 : 0
-                    
+
                     return (
                       <div key={date} className="flex items-center justify-between p-3 rounded bg-gray-700/30">
                         <div className="flex items-center gap-4">
@@ -584,7 +584,7 @@ export function AdminCostAnalytics() {
                     <div key={index} className="p-4 rounded-lg bg-gray-700/50 border-l-4 border-l-blue-500">
                       <div className="flex items-start justify-between mb-2">
                         <div className="flex items-center gap-3">
-                          <Badge 
+                          <Badge
                             variant={
                               suggestion.priority === 'high' ? 'destructive' :
                               suggestion.priority === 'medium' ? 'default' : 'outline'

@@ -40,7 +40,7 @@ const CACHE_FIRST_ROUTES = [
 // Install event - cache static assets
 self.addEventListener('install', (event) => {
   console.log('[SW] Install event')
-  
+
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -60,7 +60,7 @@ self.addEventListener('install', (event) => {
 // Activate event - clean up old caches
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activate event')
-  
+
   event.waitUntil(
     caches.keys()
       .then((cacheNames) => {
@@ -111,27 +111,27 @@ self.addEventListener('fetch', (event) => {
 async function networkFirst(request) {
   try {
     const networkResponse = await fetch(request)
-    
+
     // Cache successful responses
     if (networkResponse.status === 200) {
       const cache = await caches.open(RUNTIME_CACHE)
       cache.put(request, networkResponse.clone())
     }
-    
+
     return networkResponse
   } catch (error) {
     console.log('[SW] Network failed, trying cache:', request.url)
     const cachedResponse = await caches.match(request)
-    
+
     if (cachedResponse) {
       return cachedResponse
     }
-    
+
     // Return offline response for failed API calls
     return new Response(
-      JSON.stringify({ 
-        error: 'Offline', 
-        message: 'This request requires an internet connection' 
+      JSON.stringify({
+        error: 'Offline',
+        message: 'This request requires an internet connection'
       }),
       {
         status: 503,
@@ -145,29 +145,29 @@ async function networkFirst(request) {
 // Cache first strategy (for static assets)
 async function cacheFirst(request) {
   const cachedResponse = await caches.match(request)
-  
+
   if (cachedResponse) {
     return cachedResponse
   }
-  
+
   try {
     const networkResponse = await fetch(request)
-    
+
     // Cache the response
     if (networkResponse.status === 200) {
       const cache = await caches.open(RUNTIME_CACHE)
       cache.put(request, networkResponse.clone())
     }
-    
+
     return networkResponse
   } catch (error) {
     console.log('[SW] Network and cache failed for:', request.url)
-    
+
     // Return offline image for failed image requests
     if (request.destination === 'image') {
       return caches.match(OFFLINE_IMAGE)
     }
-    
+
     return new Response('Offline', { status: 503 })
   }
 }
@@ -175,7 +175,7 @@ async function cacheFirst(request) {
 // Stale while revalidate strategy (for HTML pages)
 async function staleWhileRevalidate(request) {
   const cachedResponse = await caches.match(request)
-  
+
   const networkResponsePromise = fetch(request).then(async (response) => {
     if (response.status === 200) {
       const cache = await caches.open(RUNTIME_CACHE)
@@ -183,13 +183,13 @@ async function staleWhileRevalidate(request) {
     }
     return response
   }).catch(() => null)
-  
+
   // Return cached version immediately if available
   if (cachedResponse) {
     networkResponsePromise // Update cache in background
     return cachedResponse
   }
-  
+
   // Otherwise wait for network
   try {
     return await networkResponsePromise
@@ -215,7 +215,7 @@ function isHTMLRequest(request) {
 // Background sync for form submissions
 self.addEventListener('sync', (event) => {
   console.log('[SW] Background sync event:', event.tag)
-  
+
   if (event.tag === 'property-sync') {
     event.waitUntil(syncPendingProperties())
   } else if (event.tag === 'claim-sync') {
@@ -229,7 +229,7 @@ async function syncPendingProperties() {
   try {
     const cache = await caches.open(RUNTIME_CACHE)
     const pendingProperties = await cache.match('/offline/properties')
-    
+
     if (pendingProperties) {
       const data = await pendingProperties.json()
       // Sync with server API
@@ -238,7 +238,7 @@ async function syncPendingProperties() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
-      
+
       // Clear pending data
       await cache.delete('/offline/properties')
       console.log('[SW] Properties synced successfully')
@@ -254,7 +254,7 @@ async function syncPendingClaims() {
   try {
     const cache = await caches.open(RUNTIME_CACHE)
     const pendingClaims = await cache.match('/offline/claims')
-    
+
     if (pendingClaims) {
       const data = await pendingClaims.json()
       // Sync with server API
@@ -263,7 +263,7 @@ async function syncPendingClaims() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       })
-      
+
       // Clear pending data
       await cache.delete('/offline/claims')
       console.log('[SW] Claims synced successfully')
@@ -276,7 +276,7 @@ async function syncPendingClaims() {
 // Push notification handling
 self.addEventListener('push', (event) => {
   console.log('[SW] Push notification received')
-  
+
   if (!event.data) {
     return
   }
@@ -319,7 +319,7 @@ self.addEventListener('push', (event) => {
 // Notification click handling
 self.addEventListener('notificationclick', (event) => {
   console.log('[SW] Notification click:', event.action)
-  
+
   event.notification.close()
 
   if (event.action === 'dismiss') {
@@ -350,11 +350,11 @@ self.addEventListener('notificationclick', (event) => {
 // Message handling for communication with main thread
 self.addEventListener('message', (event) => {
   console.log('[SW] Message received:', event.data)
-  
+
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
-  
+
   if (event.data && event.data.type === 'CACHE_PROPERTY') {
     // Cache property data for offline access
     caches.open(RUNTIME_CACHE).then(cache => {

@@ -135,14 +135,14 @@ export function getLiquidGlassVariant(
 ): string {
   const variantMap = {
     primary: 'primary',
-    success: 'success', 
+    success: 'success',
     warning: 'warning',
     error: 'error',
     info: 'info'
   } as const
 
   const mappedVariant = variantMap[variant]
-  
+
   switch (type) {
     case 'background':
       return liquidGlass.backgrounds[mappedVariant] || liquidGlass.backgrounds.default

@@ -14,39 +14,39 @@ const __dirname = dirname(__filename)
 
 async function checkAndFixLegalDocuments() {
   console.log('🔍 Checking legal documents...')
-  
+
   const supabase = createServiceRoleClient()
-  
+
   try {
     // First, check if legal documents exist
     const { data: existingDocs, error: checkError } = await supabase
       .from('legal_documents')
       .select('id, type, version, title')
       .eq('is_active', true)
-    
+
     if (checkError) {
       console.error('❌ Error checking legal documents:', checkError)
       throw checkError
     }
-    
+
     console.log(`📊 Found ${existingDocs?.length || 0} active legal documents`)
-    
+
     if (!existingDocs || existingDocs.length === 0) {
       console.log('⚠️  No legal documents found. Applying seed data...')
-      
+
       // Read and execute the seed SQL
       const seedPath = join(__dirname, '..', 'supabase', 'seeds', 'apply_legal_documents.sql')
       const seedSQL = readFileSync(seedPath, 'utf8')
-      
+
       // Execute the seed SQL
       const { error: seedError } = await supabase.rpc('exec_sql', {
         sql: seedSQL
       })
-      
+
       if (seedError) {
         // If exec_sql doesn't exist, try direct insert
         console.log('🔄 Using direct insert method...')
-        
+
         const documents = [
           {
             type: 'privacy_policy',
@@ -85,31 +85,31 @@ async function checkAndFixLegalDocuments() {
             requires_acceptance: true
           }
         ]
-        
+
         const { data: insertedDocs, error: insertError } = await supabase
           .from('legal_documents')
           .insert(documents)
           .select()
-        
+
         if (insertError) {
           console.error('❌ Error inserting legal documents:', insertError)
           throw insertError
         }
-        
+
         console.log('✅ Successfully inserted', insertedDocs.length, 'legal documents')
       }
-      
+
       // Verify the documents were created
       const { data: verifyDocs, error: verifyError } = await supabase
         .from('legal_documents')
         .select('id, type, version, title')
         .eq('is_active', true)
-      
+
       if (verifyError) {
         console.error('❌ Error verifying legal documents:', verifyError)
         throw verifyError
       }
-      
+
       console.log('✅ Verification complete. Active documents:')
       verifyDocs.forEach(doc => {
         console.log(`   - ${doc.title} (${doc.type} v${doc.version})`)
@@ -120,7 +120,7 @@ async function checkAndFixLegalDocuments() {
         console.log(`   - ${doc.title} (${doc.type} v${doc.version})`)
       })
     }
-    
+
   } catch (error) {
     console.error('❌ Failed to fix legal documents:', error)
     process.exit(1)

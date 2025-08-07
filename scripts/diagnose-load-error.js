@@ -45,7 +45,7 @@ async function testParcelLoad() {
     console.log('1. Fetching sample parcel from FDOT...');
     const fdotResponse = await fetch(`${fdotUrl}?${params}`);
     const fdotData = await fdotResponse.json();
-    
+
     if (!fdotData.features || fdotData.features.length === 0) {
       console.error('No features returned from FDOT');
       return;

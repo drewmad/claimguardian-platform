@@ -81,26 +81,26 @@ const supabase = createClient(
 
 async function importCharlotteData() {
     console.log('🔄 Importing Charlotte County data...');
-    
+
     try {
         // Read CSV file
         const csvContent = fs.readFileSync('data/charlotte_county/charlotte_parcels.csv', 'utf8');
         const lines = csvContent.trim().split('\n');
         const headers = lines[0].split(',');
-        
+
         console.log(\`📊 Found \${lines.length - 1} records to import\`);
-        
+
         // Process records in batches
         const batchSize = 100;
         let successCount = 0;
-        
+
         for (let i = 1; i < lines.length; i += batchSize) {
             const batch = [];
-            
+
             for (let j = i; j < Math.min(i + batchSize, lines.length); j++) {
                 const values = lines[j].split(',');
                 const record = {};
-                
+
                 headers.forEach((header, index) => {
                     let value = values[index] || null;
                     if (value) {
@@ -109,7 +109,7 @@ async function importCharlotteData() {
                     }
                     record[header] = value;
                 });
-                
+
                 // Transform to our schema format
                 const transformedRecord = {
                     parcel_id: record.PARCEL_ID,
@@ -147,18 +147,18 @@ async function importCharlotteData() {
                     source_file: 'charlotte_parcels.csv',
                     data_vintage: '2024-01-01'
                 };
-                
+
                 // Only add records with valid coordinates
                 if (transformedRecord.coordinates.lat && transformedRecord.coordinates.lng) {
                     batch.push(transformedRecord);
                 }
             }
-            
+
             if (batch.length > 0) {
                 const { error } = await supabase
                     .from('stg_properties')
                     .insert(batch);
-                
+
                 if (error) {
                     console.error(\`❌ Batch \${Math.floor(i/batchSize) + 1} error:\`, error);
                 } else {
@@ -167,14 +167,14 @@ async function importCharlotteData() {
                 }
             }
         }
-        
+
         console.log(\`\n📊 Import Summary:\`);
         console.log(\`   Total imported: \${successCount} records\`);
-        
+
         if (successCount > 0) {
             console.log('🔄 Performing atomic swap to main table...');
             const { data: swapResult, error: swapError } = await supabase.rpc('atomic_properties_swap');
-            
+
             if (swapError) {
                 console.error('❌ Swap failed:', swapError);
             } else {
@@ -182,7 +182,7 @@ async function importCharlotteData() {
                 console.log(swapResult);
             }
         }
-        
+
     } catch (error) {
         console.error('❌ Import failed:', error);
         process.exit(1);
@@ -229,12 +229,12 @@ async function verifyImport() {
             .select('*')
             .eq('county_fips', '12015')
             .limit(5);
-        
+
         if (error) throw error;
-        
+
         console.log(\`📊 Verification Results:\`);
         console.log(\`   Charlotte County properties: \${properties.length} (showing first 5)\`);
-        
+
         if (properties.length > 0) {
             console.log(\`   Sample property:\`);
             console.log(\`     Parcel ID: \${properties[0].parcel_id}\`);
@@ -242,15 +242,15 @@ async function verifyImport() {
             console.log(\`     Coordinates: \${properties[0].coordinates?.lat}, \${properties[0].coordinates?.lng}\`);
             console.log(\`     Property Value: $\${properties[0].property_value?.toLocaleString() || 'N/A'}\`);
         }
-        
+
         // Check total count
         const { count } = await supabase
             .from('properties')
             .select('*', { count: 'exact', head: true })
             .eq('county_fips', '12015');
-        
+
         console.log(\`   Total Charlotte County properties: \${count}\`);
-        
+
     } catch (error) {
         console.error('❌ Verification failed:', error);
     }

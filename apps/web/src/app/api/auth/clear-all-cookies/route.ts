@@ -14,10 +14,10 @@ export async function GET() {
   try {
     const cookieStore = await cookies()
     const allCookies = cookieStore.getAll()
-    
+
     // Clear all Supabase and auth-related cookies
     allCookies.forEach(cookie => {
-      if (cookie.name.includes('sb-') || 
+      if (cookie.name.includes('sb-') ||
           cookie.name.includes('auth') ||
           cookie.name === 'supabase-auth-token') {
         cookieStore.set(cookie.name, '', {
@@ -30,12 +30,12 @@ export async function GET() {
         })
       }
     })
-    
+
     return NextResponse.json({
       success: true,
       message: 'All auth cookies cleared',
-      clearedCookies: allCookies.filter(c => 
-        c.name.includes('sb-') || 
+      clearedCookies: allCookies.filter(c =>
+        c.name.includes('sb-') ||
         c.name.includes('auth') ||
         c.name === 'supabase-auth-token'
       ).map(c => c.name)

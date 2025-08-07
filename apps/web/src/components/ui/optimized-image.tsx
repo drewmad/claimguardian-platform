@@ -64,7 +64,7 @@ const AVATAR_SIZES = {
 const trackImagePerformance = (src: string, loadTime: number, success: boolean) => {
   if (typeof window !== 'undefined' && process.env.NODE_ENV === 'production') {
     console.log(`[Image Performance] ${src} - ${success ? 'loaded' : 'failed'} in ${loadTime}ms`)
-    
+
     // Send to analytics
     window.gtag?.('event', 'image_performance', {
       custom_map: {
@@ -111,7 +111,7 @@ export function OptimizedImage({
     setHasError(true)
     const loadTime = Date.now() - loadStartTime
     trackImagePerformance(currentSrc, loadTime, false)
-    
+
     // Try fallback if available
     if (fallbackSrc && currentSrc !== fallbackSrc) {
       setCurrentSrc(fallbackSrc)
@@ -125,7 +125,7 @@ export function OptimizedImage({
   // Error state
   if (hasError && (!fallbackSrc || currentSrc === fallbackSrc)) {
     return (
-      <div 
+      <div
         className={cn(
           "flex items-center justify-center bg-gray-800 border border-gray-700 rounded",
           className
@@ -144,7 +144,7 @@ export function OptimizedImage({
           <Loader2 className="w-6 h-6 text-gray-400 animate-spin" />
         </div>
       )}
-      
+
       <Image
         src={currentSrc}
         alt={alt}
@@ -180,7 +180,7 @@ export function PropertyImage({
   ...props
 }: PropertyImageProps) {
   const dimensions = PROPERTY_SIZES[size]
-  
+
   // Adjust dimensions based on aspect ratio
   let { width, height } = dimensions
   if (aspectRatio === 'square') {
@@ -194,7 +194,7 @@ export function PropertyImage({
 
   // Generate blur placeholder based on property type
   const blurDataURL = generatePropertyBlurData(propertyType)
-  
+
   // Fallback image based on property type
   const fallbackSrc = `/images/property-fallbacks/${propertyType || 'default'}.jpg`
 
@@ -224,7 +224,7 @@ export function AvatarImage({
   ...props
 }: AvatarImageProps) {
   const dimensions = AVATAR_SIZES[size]
-  
+
   return (
     <div className={cn("relative flex-shrink-0", className)}>
       <OptimizedImage
@@ -236,13 +236,13 @@ export function AvatarImage({
         quality={90}
         {...props}
       />
-      
+
       {/* Fallback initials if image fails */}
       {fallbackInitials && (
-        <div 
+        <div
           className="absolute inset-0 flex items-center justify-center bg-gray-600 text-white rounded-full text-sm font-medium"
-          style={{ 
-            width: dimensions, 
+          style={{
+            width: dimensions,
             height: dimensions,
             fontSize: Math.max(dimensions / 3, 10)
           }}
@@ -258,16 +258,16 @@ export function AvatarImage({
 function generatePropertyBlurData(propertyType?: string): string {
   const colors = {
     'single_family': '#1e40af', // blue
-    'townhouse': '#059669', // green  
+    'townhouse': '#059669', // green
     'condo': '#dc2626', // red
     'multi_family': '#7c3aed', // purple
     'commercial': '#ea580c', // orange
     'land': '#16a34a', // green
     'default': '#374151' // gray
   }
-  
+
   const color = colors[propertyType as keyof typeof colors] || colors.default
-  
+
   // Generate a simple blur placeholder
   return `data:image/svg+xml;base64,${btoa(
     `<svg width="40" height="30" xmlns="http://www.w3.org/2000/svg">
@@ -294,28 +294,28 @@ export const preloadImages = (srcs: string[], priority = false) => {
 // Image format detection utility
 export const getOptimalImageFormat = () => {
   if (typeof window === 'undefined') return 'webp'
-  
+
   // Check for AVIF support
   const canvas = document.createElement('canvas')
   canvas.width = 1
   canvas.height = 1
-  
+
   if (canvas.toDataURL('image/avif').indexOf('data:image/avif') === 0) {
     return 'avif'
   }
-  
+
   // Check for WebP support
   if (canvas.toDataURL('image/webp').indexOf('data:image/webp') === 0) {
     return 'webp'
   }
-  
+
   return 'jpeg'
 }
 
 // Lazy loading intersection observer utility
 export const createImageObserver = (callback: (entries: IntersectionObserverEntry[]) => void) => {
   if (typeof window === 'undefined') return null
-  
+
   return new IntersectionObserver(callback, {
     rootMargin: '50px 0px',
     threshold: 0.01

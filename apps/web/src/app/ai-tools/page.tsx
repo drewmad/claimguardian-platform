@@ -282,25 +282,25 @@ export default function AIToolsPage() {
         setKeysLoaded(true)
       }
     }
-    
+
     checkKeys()
 
     // Check online status
     setIsOnline(navigator.onLine)
     const handleOnline = () => setIsOnline(true)
     const handleOffline = () => setIsOnline(false)
-    
+
     window.addEventListener('online', handleOnline)
     window.addEventListener('offline', handleOffline)
-    
+
     return () => {
       window.removeEventListener('online', handleOnline)
       window.removeEventListener('offline', handleOffline)
     }
   }, [aiClient])
 
-  const filteredTools = selectedCategory === 'all' 
-    ? AI_TOOLS 
+  const filteredTools = selectedCategory === 'all'
+    ? AI_TOOLS
     : AI_TOOLS.filter(tool => tool.category === selectedCategory)
 
   const getStatusBadge = (status: string) => {
@@ -341,7 +341,7 @@ export default function AIToolsPage() {
               <div className="relative">
                 {/* Premium Background Orb */}
                 <div className="absolute -top-20 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-cyan-400/30 via-blue-500/20 to-purple-600/30 rounded-full blur-3xl animate-pulse opacity-30" />
-                
+
                 <div className="relative flex items-center justify-center gap-3 mb-6">
                   <div className="p-4 bg-gradient-to-br from-blue-600/30 to-purple-600/30 backdrop-blur-xl rounded-2xl border border-white/10 shadow-[0_20px_60px_rgba(59,130,246,0.3)] hover:shadow-[0_25px_80px_rgba(147,51,234,0.4)] transition-all duration-700">
                     <Sparkles className="h-10 w-10 text-cyan-300 drop-shadow-[0_0_20px_rgba(6,182,212,0.8)]" />
@@ -394,8 +394,8 @@ export default function AIToolsPage() {
                     </div>
                   </div>
                   {(!hasOpenAIKey && !hasGeminiKey) && (
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       variant="outline"
                       className="bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600"
                       onClick={() => toast.info('Configure API keys in your environment variables')}
@@ -417,8 +417,8 @@ export default function AIToolsPage() {
                     variant={selectedCategory === category.id ? 'default' : 'outline'}
                     size="sm"
                     onClick={() => setSelectedCategory(category.id)}
-                    className={selectedCategory === category.id 
-                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] backdrop-blur-md border-0' 
+                    className={selectedCategory === category.id
+                      ? 'bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] backdrop-blur-md border-0'
                       : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md shadow-[0_8px_32px_rgba(0,0,0,0.2)] hover:shadow-[0_8px_32px_rgba(59,130,246,0.1)] transition-all duration-300'
                     }
                   >
@@ -434,13 +434,13 @@ export default function AIToolsPage() {
               {filteredTools.map((tool) => {
                 const Icon = tool.icon
                 const isDisabled = tool.status === 'coming-soon' || (!hasOpenAIKey && !hasGeminiKey && tool.status === 'active')
-                
+
                 return (
-                  <Card 
-                    key={tool.id} 
+                  <Card
+                    key={tool.id}
                     className={`bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden transition-all duration-500 shadow-[0_12px_40px_rgba(0,0,0,0.3)] ${
-                      !isDisabled 
-                        ? 'hover:border-gray-600/70 hover:shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1' 
+                      !isDisabled
+                        ? 'hover:border-gray-600/70 hover:shadow-[0_20px_60px_rgba(59,130,246,0.2)] hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1'
                         : 'opacity-75'
                     }`}
                   >
@@ -464,18 +464,18 @@ export default function AIToolsPage() {
                             </div>
                           ))}
                         </div>
-                        
+
                         {tool.status === 'coming-soon' ? (
-                          <Button 
-                            className="w-full bg-gray-700 hover:bg-gray-600 text-gray-400 cursor-not-allowed" 
+                          <Button
+                            className="w-full bg-gray-700 hover:bg-gray-600 text-gray-400 cursor-not-allowed"
                             disabled
                           >
                             <Lock className="h-4 w-4 mr-2" />
                             Coming Soon
                           </Button>
                         ) : (
-                          <Link 
-                            href={tool.href} 
+                          <Link
+                            href={tool.href}
                             className="block"
                             onMouseEnter={() => {
                               // Preload components based on tool
@@ -487,7 +487,7 @@ export default function AIToolsPage() {
                               }
                             }}
                           >
-                            <Button 
+                            <Button
                               className="w-full bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(59,130,246,0.3)] hover:shadow-[0_12px_40px_rgba(59,130,246,0.4)] transition-all duration-300 backdrop-blur-md border-0"
                               disabled={!hasOpenAIKey && !hasGeminiKey}
                             >

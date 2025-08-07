@@ -152,22 +152,22 @@ log "Backup sizes - Full: ${FULL_SIZE}, Compressed: ${COMPRESSED_SIZE}"
 # Upload to S3 (if configured)
 if [ ! -z "$BACKUP_S3_BUCKET" ] && [ ! -z "$BACKUP_AWS_ACCESS_KEY_ID" ]; then
     log "Uploading backup to S3..."
-    
+
     # Install AWS CLI if not present
     if ! command -v aws &> /dev/null; then
         apk add --no-cache aws-cli
     fi
-    
+
     # Configure AWS CLI
     export AWS_ACCESS_KEY_ID=$BACKUP_AWS_ACCESS_KEY_ID
     export AWS_SECRET_ACCESS_KEY=$BACKUP_AWS_SECRET_ACCESS_KEY
     export AWS_DEFAULT_REGION=${BACKUP_S3_REGION:-"us-east-1"}
-    
+
     # Upload compressed backup
     aws s3 cp "${BACKUP_NAME}_complete.tar.gz" \
         "s3://${BACKUP_S3_BUCKET}/claimguardian/database/$(date +%Y)/$(date +%m)/${BACKUP_NAME}_complete.tar.gz" \
         --storage-class STANDARD_IA
-    
+
     if [ $? -eq 0 ]; then
         log "Backup uploaded to S3 successfully"
     else

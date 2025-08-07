@@ -1,7 +1,7 @@
 # ClaimGuardian Supabase Database - Complete Documentation
-**Project ID**: `tmlrvecuwgppbaynesji`  
-**Database**: ClaimGuardian AI-First Insurance Platform  
-**Total Tables**: 68  
+**Project ID**: `tmlrvecuwgppbaynesji`
+**Database**: ClaimGuardian AI-First Insurance Platform
+**Total Tables**: 68
 **Last Updated**: August 6, 2025
 
 ---
@@ -13,7 +13,7 @@
 
 **Settings**:
 - **RLS Enabled**: Yes
-- **Realtime Enabled**: Yes  
+- **Realtime Enabled**: Yes
 - **Primary Schema**: public
 
 **Columns** (50 total):
@@ -215,7 +215,7 @@
 - **Realtime Enabled**: No (too large for real-time)
 - **Primary Schema**: public
 
-**Record Count**: ~15+ million parcels statewide  
+**Record Count**: ~15+ million parcels statewide
 **Columns**: 138 total (complete DOR schema)
 
 **Key Columns**:
@@ -936,7 +936,7 @@
 
 ### Florida Parcel Processing Tables (3 tables)
 - **florida_parcels_processing_log**: Import process monitoring
-- **florida_parcels_processing_stats**: Performance statistics  
+- **florida_parcels_processing_stats**: Performance statistics
 - **marketing_attribution**: Marketing campaign tracking
 
 ### Profile & Activity Tables (2 tables)
@@ -968,7 +968,7 @@
 
 **Enums** (10 types):
 1. **claim_status**: draft, submitted, acknowledged, investigating, approved, denied, settled, closed, reopened, withdrawn
-2. **damage_severity**: minor, moderate, major, severe, catastrophic  
+2. **damage_severity**: minor, moderate, major, severe, catastrophic
 3. **policy_type**: homeowners, flood, wind, umbrella, condo, renters, commercial
 4. **policy_status**: active, inactive, cancelled, expired, pending
 5. **document_type**: policy, claim_form, estimate, photo, receipt, correspondence, report

@@ -14,11 +14,11 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  AlertTriangle, 
-  Activity, 
-  Users, 
-  Radio, 
+import {
+  AlertTriangle,
+  Activity,
+  Users,
+  Radio,
   FileText,
   TrendingUp,
   Clock,
@@ -124,12 +124,12 @@ export function NIMSComplianceDashboard() {
   const calculateComplianceScore = (): number => {
     // Simplified compliance scoring based on system readiness
     let score = 100
-    
+
     // Deduct points for missing critical components
     if (incidents.length === 0) score -= 10 // No active monitoring
     if (resources.length < 10) score -= 20 // Insufficient resources
     if (alerts.filter(a => a.priority === 'immediate').length > 5) score -= 15 // Too many critical alerts
-    
+
     return Math.max(0, score)
   }
 

@@ -129,12 +129,12 @@ export function SwipeAction({
           rightActions.length - 1
         )
         const action = rightActions[actionIndex]
-        
+
         if (action) {
           if (hapticFeedback) triggerHaptic(action.destructive ? 'heavy' : 'medium')
           setIsOpen('right')
           onSwipe?.('right', action.id)
-          
+
           // Auto-execute action after a brief delay
           setTimeout(() => {
             action.action()
@@ -149,12 +149,12 @@ export function SwipeAction({
           leftActions.length - 1
         )
         const action = leftActions[actionIndex]
-        
+
         if (action) {
           if (hapticFeedback) triggerHaptic(action.destructive ? 'heavy' : 'medium')
           setIsOpen('left')
           onSwipe?.('left', action.id)
-          
+
           // Auto-execute action after a brief delay
           setTimeout(() => {
             action.action()
@@ -205,7 +205,7 @@ export function SwipeAction({
   }
 
   return (
-    <div 
+    <div
       ref={constraintsRef}
       className={cn('relative overflow-hidden bg-white dark:bg-gray-800', className)}
     >
@@ -302,13 +302,13 @@ export const SwipeActionPresets = {
 }
 
 // Example usage component
-export function SwipeActionItem({ 
-  title, 
-  subtitle, 
-  onDelete, 
-  onEdit, 
+export function SwipeActionItem({
+  title,
+  subtitle,
+  onDelete,
+  onEdit,
   onShare,
-  className 
+  className
 }: {
   title: string
   subtitle?: string

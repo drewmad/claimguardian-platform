@@ -61,7 +61,7 @@ function PolicyDetailsContent() {
   const [expandedSection, setExpandedSection] = useState<string | null>(null)
   const [policy, setPolicy] = useState<PolicyDetails | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  
+
   // TODO: Fetch policy details from database
   useEffect(() => {
     // This would be replaced with actual API call
@@ -101,7 +101,7 @@ function PolicyDetailsContent() {
               <ArrowLeft className="w-4 h-4" />
               Back to Insurance
             </button>
-            
+
             <Card variant="insurance">
               <CardContent className="p-12 text-center">
                 <Shield className="w-16 h-16 text-gray-600 mx-auto mb-4" />
@@ -125,12 +125,12 @@ function PolicyDetailsContent() {
         <div className="max-w-7xl mx-auto">
           {/* Header */}
           <div className="mb-6">
-            <InsuranceBreadcrumb 
+            <InsuranceBreadcrumb
               policy={policy.carrier}
               policyId={policy.id}
               className="mb-4"
             />
-            
+
             <Card variant="insurance" className="mb-6">
               <CardContent className="p-6">
                 <div className="flex justify-between items-start">
@@ -175,7 +175,7 @@ function PolicyDetailsContent() {
                     <span className="text-gray-300">C: Personal Property</span>
                     <span className="text-white font-semibold">{formatCurrency(policy.coverages.personalProperty)}</span>
                   </div>
-                  
+
                   {/* Progress Bar */}
                   <div className="mt-4 mb-2">
                     <div className="flex justify-between text-xs text-gray-400 mb-1">
@@ -186,7 +186,7 @@ function PolicyDetailsContent() {
                       <div className="h-full bg-green-500 rounded-full" style={{ width: `${coveragePercent}%` }} />
                     </Progress>
                   </div>
-                  
+
                   <div className="flex justify-between mb-2">
                     <span className="text-gray-300">D: Loss of Use</span>
                     <span className="text-white font-semibold">{formatCurrency(policy.coverages.lossOfUse)}</span>
@@ -226,7 +226,7 @@ function PolicyDetailsContent() {
                     <p className="text-white font-medium">{new Date(policy.expirationDate).toLocaleDateString()}</p>
                   </div>
                 </div>
-                
+
                 <div className="border-t border-gray-700 pt-4">
                   <p className="text-gray-400 text-sm mb-2 flex items-center gap-2">
                     <DollarSign className="w-4 h-4" />
@@ -349,7 +349,7 @@ function PolicyDetailsContent() {
             </CardHeader>
             <CardContent>
               <div className="space-y-3">
-                <div 
+                <div
                   className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700/50 transition-colors"
                   onClick={() => setExpandedSection(expandedSection === 'lifecycle' ? null : 'lifecycle')}
                 >
@@ -365,8 +365,8 @@ function PolicyDetailsContent() {
                     </div>
                   )}
                 </div>
-                
-                <div 
+
+                <div
                   className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 cursor-pointer hover:bg-gray-700/50 transition-colors"
                   onClick={() => setExpandedSection(expandedSection === 'regulatory' ? null : 'regulatory')}
                 >

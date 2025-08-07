@@ -35,7 +35,7 @@ The ClaimGuardian Partner API is a comprehensive white-label solution designed f
 
 **ROI Metrics (Based on 1,000 policies):**
 - Total Investment: $690K (annual platform fees + integration costs)
-- Expected Annual Revenue: $1.4M+ 
+- Expected Annual Revenue: $1.4M+
 - Net ROI: 203% in Year 1
 - Break-even: Month 6
 - Payback Period: 12-18 months
@@ -46,7 +46,7 @@ The ClaimGuardian Partner API is a comprehensive white-label solution designed f
 
 1. **Regional Insurance Companies** (50-10,000 customers)
    - Property & Casualty insurers
-   - Homeowners insurance specialists  
+   - Homeowners insurance specialists
    - Wind/Hurricane specialists in Florida
    - Flood insurance providers
 
@@ -295,7 +295,7 @@ async function createClaim(claimData) {
         address: claimData.claimant.address
       }
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to create claim:', error);
@@ -311,7 +311,7 @@ async function uploadDocument(claimId, file, documentType) {
       documentType: documentType,
       description: `${documentType} for claim ${claimId}`
     });
-    
+
     return response.data;
   } catch (error) {
     console.error('Failed to upload document:', error);
@@ -345,19 +345,19 @@ app.use(express.raw({ type: 'application/json' }));
 app.post('/webhooks/claimguardian', (req, res) => {
   const signature = req.headers['x-claimguardian-signature'];
   const body = req.body;
-  
+
   // Verify webhook signature
   const expectedSignature = crypto
     .createHmac('sha256', process.env.CLAIMGUARDIAN_WEBHOOK_SECRET)
     .update(body)
     .digest('hex');
-    
+
   if (signature !== `sha256=${expectedSignature}`) {
     return res.status(401).send('Invalid signature');
   }
-  
+
   const event = JSON.parse(body);
-  
+
   // Handle different event types
   switch (event.event) {
     case 'claim.created':
@@ -375,14 +375,14 @@ app.post('/webhooks/claimguardian', (req, res) => {
     default:
       console.log(`Unhandled event type: ${event.event}`);
   }
-  
+
   res.status(200).send('OK');
 });
 
 async function handleClaimCreated(claimData) {
   // Update your system with new claim
   console.log(`New claim created: ${claimData.claimId}`);
-  
+
   // Trigger internal workflows
   await updateInternalSystem(claimData);
   await sendCustomerNotification(claimData);
@@ -391,7 +391,7 @@ async function handleClaimCreated(claimData) {
 async function handleDocumentProcessed(documentData) {
   // Handle processed document
   console.log(`Document processed: ${documentData.documentId}`);
-  
+
   if (documentData.ai_analysis.damage_detected) {
     await flagForReview(documentData.claimId);
   }
@@ -408,13 +408,13 @@ async function getPropertyRisk(address) {
       address: address,
       exact_match: false
     });
-    
+
     if (searchResult.data.properties.length > 0) {
       const property = searchResult.data.properties[0];
       const intelligence = await claimGuardian.properties.getIntelligence(
         property.property_id
       );
-      
+
       return {
         propertyId: property.property_id,
         riskScore: intelligence.data.risk_assessment.overall_score,
@@ -425,7 +425,7 @@ async function getPropertyRisk(address) {
         confidence: intelligence.data.market_value.confidence
       };
     }
-    
+
     return null;
   } catch (error) {
     console.error('Failed to get property risk:', error);
@@ -436,24 +436,24 @@ async function getPropertyRisk(address) {
 // Use property intelligence for underwriting
 async function underwriteProperty(applicationData) {
   const propertyRisk = await getPropertyRisk(applicationData.propertyAddress);
-  
+
   if (propertyRisk) {
     let premium = calculateBasePremium(applicationData);
-    
+
     // Adjust premium based on risk factors
     if (propertyRisk.floodRisk < 70) {
       premium *= 1.2; // 20% increase for high flood risk
     }
-    
+
     if (propertyRisk.fireRisk < 80) {
       premium *= 1.1; // 10% increase for moderate fire risk
     }
-    
+
     // Consider overall risk score
     if (propertyRisk.riskScore < 60) {
       premium *= 1.3; // 30% increase for high overall risk
     }
-    
+
     return {
       approved: propertyRisk.riskScore > 40, // Minimum acceptable risk
       premium: premium,
@@ -461,7 +461,7 @@ async function underwriteProperty(applicationData) {
       conditions: generateConditions(propertyRisk)
     };
   }
-  
+
   // Fallback to manual underwriting
   return { approved: false, reason: 'Property data unavailable' };
 }
@@ -496,7 +496,7 @@ composer require claimguardian/partner-api
 - **Type-safe API calls** with full TypeScript support
 - **Automatic retry logic** with exponential backoff
 - **Built-in error handling** and logging
-- **Request/response validation** 
+- **Request/response validation**
 - **Webhook verification helpers**
 - **Mock/testing utilities**
 - **Comprehensive documentation** and examples
@@ -541,7 +541,7 @@ curl -X POST https://api.claimguardianai.com/partner/v1/claims \
 
 #### Monthly Platform Fees
 - **Starter**: $2K/month (up to 100 claims)
-- **Professional**: $8K/month (up to 500 claims)  
+- **Professional**: $8K/month (up to 500 claims)
 - **Enterprise**: $15K/month (unlimited claims)
 - **Custom**: Volume-based pricing available
 
@@ -760,7 +760,7 @@ curl -X POST https://api.claimguardianai.com/partner/v1/claims \
 
 #### Regional Insurance Company Case Study
 
-**Challenge:** 
+**Challenge:**
 50-person regional insurer processing 1,500 claims annually with 15-day average processing time and 65% customer satisfaction.
 
 **Solution:**
@@ -785,7 +785,7 @@ White-label ClaimGuardian platform with custom integrations to carrier systems a
 
 **Results (18 months):**
 - **Market expansion**: Entered 3 new states
-- **Volume growth**: 250% increase in policies written  
+- **Volume growth**: 250% increase in policies written
 - **Loss ratios improved by 23%**: Better risk selection
 - **Partner satisfaction**: 95% renewal rate
 - **Revenue growth**: $3.2M additional annual revenue

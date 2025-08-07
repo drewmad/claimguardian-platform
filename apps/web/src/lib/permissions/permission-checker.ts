@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/client'
 
 export type UserTier = 'free' | 'renter' | 'essential' | 'plus' | 'pro'
 
-export type PermissionType = 
+export type PermissionType =
   | 'access_dashboard'
   | 'access_damage_analyzer'
   | 'access_policy_chat'
@@ -108,7 +108,7 @@ class PermissionChecker {
         .single()
 
       if (subscription && subscription.user_tiers) {
-        const tierData = Array.isArray(subscription.user_tiers) 
+        const tierData = Array.isArray(subscription.user_tiers)
           ? subscription.user_tiers[0] as UserTierData
           : subscription.user_tiers as UserTierData
         return {
@@ -152,7 +152,7 @@ class PermissionChecker {
   async hasPermission(userId: string, permission: PermissionType): Promise<PermissionCheckResult> {
     try {
       const userPermissions = await this.getUserPermissions(userId)
-      
+
       if (!userPermissions) {
         return {
           hasPermission: false,
@@ -179,7 +179,7 @@ class PermissionChecker {
 
       // Check tier permissions
       const hasBasePermission = userPermissions.permissions.includes(permission)
-      
+
       return {
         hasPermission: hasBasePermission,
         reason: hasBasePermission ? 'Permission granted via tier' : `Permission not available for ${userPermissions.tier} tier`
@@ -199,7 +199,7 @@ class PermissionChecker {
   async checkUsageLimit(userId: string, limitType: 'ai_requests' | 'storage' | 'properties' | 'claims'): Promise<PermissionCheckResult> {
     try {
       const userPermissions = await this.getUserPermissions(userId)
-      
+
       if (!userPermissions) {
         return {
           hasPermission: false,

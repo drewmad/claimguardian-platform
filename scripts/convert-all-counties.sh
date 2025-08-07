@@ -60,14 +60,14 @@ START_TIME=$(date +%s)
 for COUNTY_CODE in {1..67}; do
     COUNTY_NAME=${COUNTIES[$COUNTY_CODE]}
     OUTPUT_FILE="$OUTPUT_DIR/county_${COUNTY_CODE}_${COUNTY_NAME}.geojson"
-    
+
     echo -ne "${BLUE}[$((COMPLETED + 1))/$TOTAL]${NC} Converting ${COUNTY_NAME} County (CO_NO=$COUNTY_CODE)... "
-    
+
     # Log start
     echo "" >> "$LOG_FILE"
     echo "County $COUNTY_CODE - $COUNTY_NAME" >> "$LOG_FILE"
     echo "Started: $(date)" >> "$LOG_FILE"
-    
+
     # Convert using ogr2ogr
     if ogr2ogr \
         -f "GeoJSON" \
@@ -77,7 +77,7 @@ for COUNTY_CODE in {1..67}; do
         "$OUTPUT_FILE" \
         "$GDB_PATH" \
         CADASTRAL_DOR 2>> "$LOG_FILE"; then
-        
+
         # Get file size
         FILE_SIZE=$(du -h "$OUTPUT_FILE" | cut -f1)
         echo -e "${GREEN}✓${NC} ($FILE_SIZE)"

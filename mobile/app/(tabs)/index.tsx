@@ -226,19 +226,19 @@ export default function DashboardScreen() {
             >
               <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
                 <MaterialCommunityIcons name={stat.icon} size={20} color={stat.color} />
-                <Text style={{ 
-                  color: '#9CA3AF', 
-                  fontSize: 12, 
+                <Text style={{
+                  color: '#9CA3AF',
+                  fontSize: 12,
                   marginLeft: 8,
                   flex: 1
                 }}>
                   {stat.title}
                 </Text>
               </View>
-              <Text style={{ 
-                color: 'white', 
-                fontSize: 24, 
-                fontWeight: 'bold' 
+              <Text style={{
+                color: 'white',
+                fontSize: 24,
+                fontWeight: 'bold'
               }}>
                 {stat.value}
               </Text>
@@ -304,10 +304,10 @@ export default function DashboardScreen() {
             onPress={handleSyncPress}
             disabled={!network.isConnected || sync.isSyncing}
           >
-            <MaterialCommunityIcons 
-              name={sync.isSyncing ? "loading" : "cloud-sync"} 
-              size={20} 
-              color="white" 
+            <MaterialCommunityIcons
+              name={sync.isSyncing ? "loading" : "cloud-sync"}
+              size={20}
+              color="white"
               style={{ marginRight: 8 }}
             />
             <Text style={{ color: 'white', fontSize: 16, fontWeight: '600' }}>

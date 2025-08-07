@@ -23,12 +23,12 @@ class LegalServiceClientFix {
   async getActiveLegalDocuments(): Promise<LegalDocument[]> {
     try {
       const response = await fetch('/api/legal/documents')
-      
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.message || 'Failed to fetch legal documents')
       }
-      
+
       const { data } = await response.json()
       return data || []
     } catch (error) {
@@ -43,12 +43,12 @@ class LegalServiceClientFix {
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]> {
     try {
       const response = await fetch(`/api/legal/documents?mode=needed&userId=${userId}`)
-      
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.message || 'Failed to fetch documents needing acceptance')
       }
-      
+
       const { data } = await response.json()
       return data || []
     } catch (error) {
@@ -64,20 +64,20 @@ class LegalServiceClientFix {
     try {
       // First try the database endpoint
       let response = await fetch(`/api/legal/documents?type=${type}`)
-      
+
       if (!response.ok || response.status === 500) {
         // Fallback to static endpoint
         response = await fetch(`/api/legal/static?type=${type}`)
-        
+
         if (!response.ok) {
           const error = await response.json()
           throw new Error(error.message || 'Failed to fetch legal document')
         }
-        
+
         const { data } = await response.json()
         return data || null
       }
-      
+
       const { data } = await response.json()
       return data?.[0] || null
     } catch (error) {
@@ -92,12 +92,12 @@ class LegalServiceClientFix {
   async getDocumentContent(slug: string): Promise<string> {
     try {
       const response = await fetch(`/api/legal/${slug}`)
-      
+
       if (!response.ok) {
         const error = await response.json()
         throw new Error(error.message || 'Failed to fetch document content')
       }
-      
+
       // Check if response is HTML or JSON
       const contentType = response.headers.get('content-type')
       if (contentType?.includes('text/html')) {

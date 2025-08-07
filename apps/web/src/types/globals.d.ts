@@ -34,11 +34,11 @@ declare global {
         places: {
           Autocomplete: new (input: HTMLInputElement, options: Record<string, unknown>) => {
             addListener: (event: string, callback: () => void) => void
-            getPlace: () => { 
-              address_components?: Array<{ 
+            getPlace: () => {
+              address_components?: Array<{
                 types: string[]
                 long_name: string
-                short_name: string 
+                short_name: string
               }>
               formatted_address?: string
               geometry?: { location: { lat: () => number, lng: () => number } }
@@ -52,7 +52,7 @@ declare global {
     }
     initGooglePlaces?: () => void
   }
-  
+
   namespace google {
     namespace maps {
       namespace places {

@@ -26,10 +26,10 @@ interface TenantContext {
 export async function extractTenantContext(request: NextRequest): Promise<TenantContext | null> {
   const host = request.headers.get('host') || ''
   const pathname = request.nextUrl.pathname
-  
+
   // Extract organization code from subdomain or path
   let organizationCode: string | null = null
-  
+
   // Method 1: Subdomain-based routing (e.g., demo.claimguardian.ai)
   if (host.includes('.')) {
     const subdomain = host.split('.')[0]
@@ -37,7 +37,7 @@ export async function extractTenantContext(request: NextRequest): Promise<Tenant
       organizationCode = subdomain
     }
   }
-  
+
   // Method 2: Path-based routing (e.g., /org/demo-corp)
   if (!organizationCode && pathname.startsWith('/org/')) {
     const pathParts = pathname.split('/')
@@ -45,7 +45,7 @@ export async function extractTenantContext(request: NextRequest): Promise<Tenant
       organizationCode = pathParts[2]
     }
   }
-  
+
   // Method 3: Custom domain routing
   if (!organizationCode) {
     const organization = await tenantManager.getOrganizationByDomain(host)
@@ -53,21 +53,21 @@ export async function extractTenantContext(request: NextRequest): Promise<Tenant
       organizationCode = organization.organizationCode
     }
   }
-  
+
   // If no tenant context found, return null (public access)
   if (!organizationCode) {
     return null
   }
-  
+
   // Get organization details
   const organization = await tenantManager.getOrganizationByCode(organizationCode)
   if (!organization) {
     return null
   }
-  
+
   // Get customizations
   const customizations = await tenantManager.getOrganizationCustomizations(organization.id)
-  
+
   return {
     organizationId: organization.id,
     organizationCode: organization.organizationCode,
@@ -130,26 +130,26 @@ export function applyCustomizations(
   response.headers.set('X-Tenant-Code', tenantContext.organizationCode)
   response.headers.set('X-Subscription-Tier', tenantContext.subscriptionTier)
   response.headers.set('X-Subscription-Status', tenantContext.subscriptionStatus)
-  
+
   // Add feature flags
   response.headers.set('X-Feature-Flags', JSON.stringify(tenantContext.featureFlags))
-  
+
   // Add customizations for client-side theming
   if (tenantContext.customizations) {
     const theme = (tenantContext.customizations as any)?.theme || {}
     response.headers.set('X-Tenant-Theme', JSON.stringify(theme))
-    
+
     const logoUrl = (tenantContext.customizations as any)?.logoUrl
     if (logoUrl && typeof logoUrl === 'string') {
       response.headers.set('X-Tenant-Logo', logoUrl)
     }
-    
+
     const customCss = (tenantContext.customizations as any)?.customCss
     if (customCss && typeof customCss === 'string') {
       response.headers.set('X-Tenant-CSS', customCss)
     }
   }
-  
+
   return response
 }
 
@@ -162,7 +162,7 @@ export function handleTenantRouting(
 ): NextResponse | null {
   const pathname = request.nextUrl.pathname
   const searchParams = request.nextUrl.searchParams
-  
+
   // Public routes that don't require tenant context
   const publicRoutes = [
     '/api/health',
@@ -177,14 +177,14 @@ export function handleTenantRouting(
     '/contact',
     '/legal'
   ]
-  
+
   const isPublicRoute = publicRoutes.some(route => pathname.startsWith(route))
-  
+
   // Allow public routes without tenant context
   if (isPublicRoute && !tenantContext) {
     return null // Continue with normal processing
   }
-  
+
   // If no tenant context and not a public route, redirect to main site
   if (!tenantContext && !isPublicRoute) {
     const url = new URL('https://claimguardian.ai' + pathname)
@@ -193,7 +193,7 @@ export function handleTenantRouting(
     }
     return NextResponse.redirect(url)
   }
-  
+
   // If we have tenant context, ensure all app routes are tenant-aware
   if (tenantContext) {
     // Check subscription status
@@ -202,19 +202,19 @@ export function handleTenantRouting(
       suspendedUrl.pathname = '/suspended'
       return NextResponse.redirect(suspendedUrl)
     }
-    
+
     if (tenantContext.subscriptionStatus === 'cancelled') {
       const cancelledUrl = new URL(request.url)
       cancelledUrl.pathname = '/cancelled'
       return NextResponse.redirect(cancelledUrl)
     }
-    
+
     // Handle trial expiration
     if (tenantContext.subscriptionStatus === 'trial') {
       // You would check trial expiration date here
       // For now, we'll allow trial access
     }
-    
+
     // Feature-based routing restrictions
     const restrictedRoutes: Record<string, string[]> = {
       '/ai-tools/advanced': ['professional', 'enterprise', 'custom'],
@@ -222,7 +222,7 @@ export function handleTenantRouting(
       '/admin': ['enterprise', 'custom'],
       '/integrations': ['professional', 'enterprise', 'custom']
     }
-    
+
     for (const [route, allowedTiers] of Object.entries(restrictedRoutes)) {
       if (pathname.startsWith(route) && !allowedTiers.includes(tenantContext.subscriptionTier)) {
         const upgradeUrl = new URL(request.url)
@@ -231,7 +231,7 @@ export function handleTenantRouting(
         return NextResponse.redirect(upgradeUrl)
       }
     }
-    
+
     // Geographic restrictions
     if (pathname.startsWith('/properties/') || pathname.startsWith('/claims/')) {
       // Check if the state is allowed for this organization
@@ -243,7 +243,7 @@ export function handleTenantRouting(
         return NextResponse.redirect(restrictedUrl)
       }
     }
-    
+
     // Rewrite URLs to include tenant context if using path-based routing
     if (!pathname.startsWith('/org/') && !request.headers.get('host')?.includes('.')) {
       const rewriteUrl = new URL(request.url)
@@ -251,7 +251,7 @@ export function handleTenantRouting(
       return NextResponse.rewrite(rewriteUrl)
     }
   }
-  
+
   return null // Continue with normal processing
 }
 
@@ -294,29 +294,29 @@ function checkFeatureAccessInternal(
     ],
     custom: ['*'] // All features
   }
-  
+
   const allowedFeatures = tierFeatures[tenantContext.subscriptionTier] || []
-  
+
   // Custom tier has access to all features
   if (allowedFeatures.includes('*')) {
     return true
   }
-  
+
   // Check if feature is in allowed list
   if (allowedFeatures.includes(feature)) {
     return true
   }
-  
+
   // Check feature flags for overrides
   if (tenantContext.featureFlags[feature] === true) {
     return true
   }
-  
+
   // Explicitly disabled features
   if (tenantContext.featureFlags[feature] === false) {
     return false
   }
-  
+
   return false
 }
 
@@ -350,7 +350,7 @@ function getRateLimitsInternal(tenantContext: TenantContext): {
       fileUploads: 2000
     }
   }
-  
+
   return limits[tenantContext.subscriptionTier as keyof typeof limits] || limits.standard
 }
 
@@ -368,7 +368,7 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
     "frame-ancestors 'none'",
     "base-uri 'self'"
   ]
-  
+
   // Add tenant-specific domains
   const tenantDomains = [tenantContext.domain]
   if (tenantContext.customizations) {
@@ -386,11 +386,11 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
       })
     }
   }
-  
+
   if (tenantDomains.length > 0) {
     baseCSP.push(`connect-src 'self' https: ${tenantDomains.map(d => `https://${d}`).join(' ')}`)
   }
-  
+
   return baseCSP.join('; ')
 }
 
@@ -400,33 +400,33 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
 export async function tenantMiddleware(request: NextRequest): Promise<NextResponse> {
   // Extract tenant context
   const tenantContext = await extractTenantContext(request)
-  
+
   // Handle tenant-specific routing
   const routingResponse = handleTenantRouting(request, tenantContext)
   if (routingResponse) {
     return routingResponse
   }
-  
+
   // Create response
   let response = NextResponse.next()
-  
+
   // Apply tenant customizations if we have context
   if (tenantContext) {
     response = applyCustomizations(response, tenantContext)
-    
+
     // Add security headers
     response.headers.set('Content-Security-Policy', generateTenantCSPInternal(tenantContext))
     response.headers.set('X-Frame-Options', 'DENY')
     response.headers.set('X-Content-Type-Options', 'nosniff')
     response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin')
-    
+
     // Add rate limiting headers
     const rateLimits = getRateLimitsInternal(tenantContext)
     response.headers.set('X-RateLimit-API', rateLimits.apiRequests.toString())
     response.headers.set('X-RateLimit-AI', rateLimits.aiRequests.toString())
     response.headers.set('X-RateLimit-Uploads', rateLimits.fileUploads.toString())
   }
-  
+
   return response
 }
 

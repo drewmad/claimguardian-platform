@@ -18,9 +18,9 @@ NC='\033[0m' # No Color
 check() {
   local description=$1
   local command=$2
-  
+
   echo -ne "${BLUE}Checking ${description}...${NC} "
-  
+
   if eval "$command" > /dev/null 2>&1; then
     echo -e "${GREEN}✓${NC}"
     return 0

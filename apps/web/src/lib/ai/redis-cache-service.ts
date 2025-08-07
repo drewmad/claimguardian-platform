@@ -91,8 +91,8 @@ class RedisAICacheService {
    * Generate cache key from request parameters
    */
   private generateCacheKey(
-    messages: ChatMessage[], 
-    featureId: string, 
+    messages: ChatMessage[],
+    featureId: string,
     model: string,
     userId?: string
   ): string {
@@ -102,7 +102,7 @@ class RedisAICacheService {
       model,
       userId: userId || 'anonymous'
     })
-    
+
     // Simple hash function for demo (in production, use crypto.createHash)
     const hash = this.simpleHash(content)
     return `${this.options.prefix}${hash}`
@@ -125,8 +125,8 @@ class RedisAICacheService {
    * Get cached response
    */
   async get(
-    messages: ChatMessage[], 
-    featureId: string, 
+    messages: ChatMessage[],
+    featureId: string,
     model: string,
     userId?: string
   ): Promise<CachedAIResponse | null> {
@@ -138,10 +138,10 @@ class RedisAICacheService {
     try {
       // Mock Redis GET operation
       const cached = this.mockRedisStorage.get(key)
-      
+
       if (cached) {
         const parsed = JSON.parse(cached) as CachedAIResponse
-        
+
         // Check if expired
         if (Date.now() > parsed.expiresAt) {
           this.mockRedisStorage.delete(key)
@@ -204,7 +204,7 @@ class RedisAICacheService {
       // Mock Redis SET operation with TTL
       const serialized = JSON.stringify(cachedResponse)
       this.mockRedisStorage.set(key, serialized)
-      
+
       // Update size stats
       this.stats.totalSize += serialized.length
 
@@ -220,8 +220,8 @@ class RedisAICacheService {
    * Semantic similarity search for related cached responses
    */
   async findSimilar(
-    messages: ChatMessage[], 
-    featureId: string, 
+    messages: ChatMessage[],
+    featureId: string,
     model: string,
     similarityThreshold = 0.85
   ): Promise<CachedAIResponse | null> {
@@ -234,13 +234,13 @@ class RedisAICacheService {
       )
 
       const userQuery = messages[messages.length - 1]?.content || ''
-      
+
       for (const key of keys) {
         const cached = this.mockRedisStorage.get(key)
         if (!cached) continue
 
         const parsed = JSON.parse(cached) as CachedAIResponse
-        
+
         // Check if expired
         if (Date.now() > parsed.expiresAt) {
           this.mockRedisStorage.delete(key)
@@ -254,7 +254,7 @@ class RedisAICacheService {
 
         // Calculate similarity (simplified implementation)
         const similarity = this.calculateSimilarity(userQuery, parsed.response)
-        
+
         if (similarity >= similarityThreshold) {
           this.stats.hits++
           this.stats.hitRate = (this.stats.hits / this.stats.totalRequests) * 100
@@ -279,10 +279,10 @@ class RedisAICacheService {
   private calculateSimilarity(text1: string, text2: string): number {
     const words1 = text1.toLowerCase().split(/\s+/)
     const words2 = text2.toLowerCase().split(/\s+/)
-    
+
     const commonWords = words1.filter(word => words2.includes(word))
     const totalWords = new Set([...words1, ...words2]).size
-    
+
     return commonWords.length / totalWords
   }
 
@@ -291,7 +291,7 @@ class RedisAICacheService {
    */
   private updateFeatureStats(featureId: string, cost: number): void {
     const existing = this.stats.topFeatures.find(f => f.featureId === featureId)
-    
+
     if (existing) {
       existing.hits++
       existing.savings += cost
@@ -315,7 +315,7 @@ class RedisAICacheService {
     if (!this.isEnabled) return 0
 
     let cleared = 0
-    
+
     try {
       const keys = Array.from(this.mockRedisStorage.keys()).filter(
         key => key.startsWith(this.options.prefix)
@@ -352,7 +352,7 @@ class RedisAICacheService {
       )
 
       keys.forEach(key => this.mockRedisStorage.delete(key))
-      
+
       console.log(`🗑️ Cleared all ${keys.length} cache entries`)
       return keys.length
     } catch (error) {
@@ -440,7 +440,7 @@ class RedisAICacheService {
     error?: string
   }> {
     const startTime = Date.now()
-    
+
     try {
       if (!this.isEnabled) {
         return {
@@ -453,7 +453,7 @@ class RedisAICacheService {
       // Test write/read operation
       const testKey = `${this.options.prefix}health_check`
       const testValue = JSON.stringify({ timestamp: Date.now() })
-      
+
       this.mockRedisStorage.set(testKey, testValue)
       const retrieved = this.mockRedisStorage.get(testKey)
       this.mockRedisStorage.delete(testKey)

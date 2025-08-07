@@ -30,7 +30,7 @@ export async function GET(
 
     // Get the document by slug from Supabase
     const document = await legalServiceServer.getLegalDocumentBySlug(slug)
-    
+
     if (!document) {
       return NextResponse.json(
         { error: 'Document not found' },
@@ -54,7 +54,7 @@ export async function GET(
 
       // Cache for 10 minutes since legal documents don't change frequently
       response.headers.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=120')
-      
+
       return response
     }
 
@@ -62,13 +62,13 @@ export async function GET(
     if (document.storage_url) {
       try {
         const storageResponse = await fetch(document.storage_url)
-        
+
         if (!storageResponse.ok) {
           throw new Error(`Storage fetch failed: ${storageResponse.status}`)
         }
 
         const content = await storageResponse.text()
-        
+
         // Return as JSON with fetched content
         const response = NextResponse.json({
           data: {
@@ -83,14 +83,14 @@ export async function GET(
 
         // Cache for 10 minutes
         response.headers.set('Cache-Control', 'public, max-age=600, stale-while-revalidate=120')
-        
+
         return response
 
       } catch (storageError) {
-        logger.error('Failed to fetch document from storage', { 
-          slug, 
+        logger.error('Failed to fetch document from storage', {
+          slug,
           documentId: document.id,
-          storageUrl: document.storage_url 
+          storageUrl: document.storage_url
         }, storageError instanceof Error ? storageError : new Error(String(storageError)))
 
         return NextResponse.json(
@@ -108,7 +108,7 @@ export async function GET(
 
   } catch (error) {
     logger.error('Failed to fetch legal document content', { slug: 'unknown' }, error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json(
       { error: 'Failed to fetch document content' },
       { status: 500 }

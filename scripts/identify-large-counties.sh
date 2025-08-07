@@ -38,7 +38,7 @@ echo "Large counties that may need batched import:"
 echo "============================================"
 for county_info in "${LARGE_COUNTIES[@]}"; do
     IFS=':' read -r code name est_size <<< "$county_info"
-    
+
     # Check if already imported
     if echo "$IMPORTED" | grep -q "^$code$"; then
         COUNT=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = $code;" | xargs)

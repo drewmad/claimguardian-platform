@@ -35,24 +35,24 @@ FUNCTIONS_TO_FIX=(
 fix_edge_function() {
   local func_path="$1"
   local func_file="supabase/functions/$func_path/index.ts"
-  
+
   if [ ! -f "$func_file" ]; then
     echo -e "${YELLOW}  ⚠️  Function not found: $func_path${NC}"
     return 1
   fi
-  
+
   echo -e "${BLUE}Fixing $func_path...${NC}"
-  
+
   # Create a temporary file
   local temp_file=$(mktemp)
-  
+
   # Read the file and fix the corrupted lines
   while IFS= read -r line; do
     # Skip the corrupted corsHeaders line
     if [[ "$line" =~ "origin '' ALLOWED_ORIGINS.includes" ]]; then
       continue
     fi
-    
+
     # Check if this is where we need to insert the proper Deno.serve
     if [[ "$line" =~ "Deno.serve(async (req: Request)" ]] && [[ ! "$line" =~ "const origin = req.headers.get" ]]; then
       # This is a fresh Deno.serve, add origin extraction
@@ -79,10 +79,10 @@ fix_edge_function() {
       echo "$line" >> "$temp_file"
     fi
   done < "$func_file"
-  
+
   # Move the temp file back
   mv "$temp_file" "$func_file"
-  
+
   echo -e "${GREEN}  ✓ $func_path fixed${NC}"
   return 0
 }

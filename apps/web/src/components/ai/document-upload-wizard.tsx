@@ -12,7 +12,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   FileText,
   Image,
   Receipt,
@@ -46,7 +46,7 @@ import { useNotifications } from '@/components/notifications/notification-center
 import { cn } from '@/lib/utils'
 import { logger } from '@/lib/logger'
 
-export type UploadDocumentCategory = 
+export type UploadDocumentCategory =
   | 'insurance-policy'
   | 'damage-photos'
   | 'receipts'
@@ -55,7 +55,7 @@ export type UploadDocumentCategory =
   | 'correspondence'
   | 'other'
 
-export type ProcessingStep = 
+export type ProcessingStep =
   | 'upload'
   | 'categorize'
   | 'analyze'
@@ -178,7 +178,7 @@ export function DocumentUploadWizard({
   const [uploadedFiles, setUploadedFiles] = useState<EnhancedFile[]>([])
   const [processedDocuments, setProcessedDocuments] = useState<ProcessedDocument[]>([])
   const [isProcessing, setIsProcessing] = useState(false)
-  
+
   const { success, error, info } = useToast()
   const { addNotification } = useNotifications()
 
@@ -195,7 +195,7 @@ export function DocumentUploadWizard({
   // Handle file uploads
   const handleFilesChange = useCallback((files: EnhancedFile[]) => {
     setUploadedFiles(files)
-    
+
     if (files.length > 0) {
       success(`${files.length} file(s) uploaded successfully`, {
         subtitle: 'AI analysis will begin automatically'
@@ -212,13 +212,13 @@ export function DocumentUploadWizard({
 
     try {
       const processed: ProcessedDocument[] = []
-      
+
       for (let i = 0; i < uploadedFiles.length; i++) {
         const file = uploadedFiles[i]
-        
+
         // Simulate AI processing
         const aiResults = await simulateAIProcessing(file, selectedCategory)
-        
+
         const processedDoc: ProcessedDocument = {
           id: file.id,
           file,
@@ -228,7 +228,7 @@ export function DocumentUploadWizard({
           confidence: aiResults.confidence || 85,
           reviewStatus: aiResults.confidence > 90 ? 'approved' : 'needs-review'
         }
-        
+
         processed.push(processedDoc)
       }
 
@@ -272,7 +272,7 @@ export function DocumentUploadWizard({
   const handleComplete = useCallback(() => {
     setCurrentStep('complete')
     onComplete?.(processedDocuments)
-    
+
     success('Documents processed successfully!', {
       subtitle: `${processedDocuments.length} documents ready for review`
     })
@@ -314,7 +314,7 @@ export function DocumentUploadWizard({
                 Upload and process your insurance documents with AI analysis
               </p>
             </div>
-            
+
             {onCancel && (
               <Button variant="ghost" size="sm" onClick={onCancel}>
                 <X className="w-4 h-4 mr-2" />
@@ -329,15 +329,15 @@ export function DocumentUploadWizard({
               const isActive = currentStep === step
               const isCompleted = getStepIndex(currentStep) > index
               const stepNumber = index + 1
-              
+
               return (
                 <div key={step} className="flex items-center">
                   <div
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all",
-                      isActive 
-                        ? "bg-blue-500 text-white" 
-                        : isCompleted 
+                      isActive
+                        ? "bg-blue-500 text-white"
+                        : isCompleted
                         ? "bg-green-500 text-white"
                         : "bg-gray-200 text-gray-600"
                     )}
@@ -350,7 +350,7 @@ export function DocumentUploadWizard({
                   )}>
                     {step.replace('-', ' ')}
                   </span>
-                  
+
                   {index < 4 && (
                     <div className={cn(
                       "w-8 sm:w-16 h-px mx-2",
@@ -394,12 +394,12 @@ export function DocumentUploadWizard({
               <ReviewStep
                 processedDocuments={processedDocuments}
                 onApprove={(docId: string) => {
-                  setProcessedDocuments(prev => prev.map(doc => 
+                  setProcessedDocuments(prev => prev.map(doc =>
                     doc.id === docId ? { ...doc, reviewStatus: 'approved' } : doc
                   ))
                 }}
                 onNeedsReview={(docId: string) => {
-                  setProcessedDocuments(prev => prev.map(doc => 
+                  setProcessedDocuments(prev => prev.map(doc =>
                     doc.id === docId ? { ...doc, reviewStatus: 'needs-review' } : doc
                   ))
                 }}
@@ -438,7 +438,7 @@ export function DocumentUploadWizard({
                   Complete Review
                 </Button>
               )}
-              
+
               {currentStep === 'categorize' && selectedCategory && (
                 <Button onClick={() => setCurrentStep('analyze')} disabled={!canProceedToNext}>
                   <Brain className="w-4 h-4 mr-2" />
@@ -495,7 +495,7 @@ function UploadStep({ onFilesChange, maxDocuments, selectedCategory }: UploadSte
       <FileUploadEnhanced
         onFilesChange={onFilesChange}
         maxFiles={maxDocuments}
-        acceptedTypes={selectedCategory ? 
+        acceptedTypes={selectedCategory ?
           DOCUMENT_CATEGORIES.find(cat => cat.id === selectedCategory)?.acceptedTypes || ['image/*', 'application/pdf', '.pdf']
           : ['image/*', 'application/pdf', '.pdf']
         }
@@ -540,14 +540,14 @@ function CategoryStep({ selectedCategory, onCategorySelect, uploadedFiles }: Cat
         {DOCUMENT_CATEGORIES.map((category) => {
           const Icon = category.icon as React.ComponentType<{ className?: string }>
           const isSelected = selectedCategory === category.id
-          
+
           return (
             <Card
               key={category.id}
               className={cn(
                 "cursor-pointer transition-all hover:shadow-lg border-2",
-                isSelected 
-                  ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800" 
+                isSelected
+                  ? "border-blue-500 ring-2 ring-blue-200 dark:ring-blue-800"
                   : "border-gray-200 dark:border-gray-700 hover:border-blue-300"
               )}
               onClick={() => onCategorySelect(category.id)}
@@ -557,7 +557,7 @@ function CategoryStep({ selectedCategory, onCategorySelect, uploadedFiles }: Cat
                   <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", category.color)}>
                     <Icon className="w-6 h-6 text-white" />
                   </div>
-                  
+
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                       {category.name}
@@ -620,7 +620,7 @@ function ReviewStep({ processedDocuments, onApprove, onNeedsReview }: any) {
     <motion.div key="review" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
       <div className="space-y-6">
         <h3 className="text-lg font-semibold text-center">Review AI Results</h3>
-        
+
         <div className="space-y-4">
           {processedDocuments.map((doc: ProcessedDocument) => (
             <Card key={doc.id} className="border-l-4 border-l-blue-500">
@@ -632,7 +632,7 @@ function ReviewStep({ processedDocuments, onApprove, onNeedsReview }: any) {
                       Confidence: {doc.confidence}% • Category: {doc.category.replace(/-/g, ' ')}
                     </p>
                   </div>
-                  
+
                   <div className="flex gap-2">
                     <Button size="sm" variant="outline" onClick={() => onApprove(doc.id)}>
                       <CheckCircle className="w-4 h-4 mr-1" />
@@ -660,7 +660,7 @@ function CompleteStep({ processedDocuments, selectedCategory }: any) {
         <div className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto">
           <CheckCircle className="w-10 h-10 text-green-600 dark:text-green-400" />
         </div>
-        
+
         <div>
           <h3 className="text-2xl font-bold text-green-800 dark:text-green-200 mb-2">
             Processing Complete!
@@ -689,14 +689,14 @@ function getStepIndex(step: ProcessingStep): number {
 async function simulateAIProcessing(file: EnhancedFile, category: UploadDocumentCategory) {
   // Simulate processing time
   await new Promise(resolve => setTimeout(resolve, 2000))
-  
+
   // Mock AI results based on category
   const results = {
     confidence: Math.floor(Math.random() * 20) + 80,
     extractedData: generateMockExtractedData(category),
     processingTime: Math.floor(Math.random() * 3) + 1
   }
-  
+
   return results
 }
 

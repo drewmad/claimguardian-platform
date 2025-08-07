@@ -16,7 +16,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -27,7 +27,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true };
@@ -45,12 +45,12 @@ async function executeSQL(sql, description) {
 
 async function checkExistingTable() {
   const checkQuery = `
-    SELECT 
+    SELECT
       COUNT(*) as row_count,
       COUNT(DISTINCT county_fips) as county_count
     FROM florida_parcels
   `;
-  
+
   const result = await executeSQL(checkQuery, 'Checking existing parcels data');
   return result;
 }
@@ -67,10 +67,10 @@ async function applyMigration() {
 
   // First check if table has data
   const checkResult = await checkExistingTable();
-  
+
   // Read and apply migration
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/021_recreate_florida_parcels_fixed.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -81,17 +81,17 @@ async function applyMigration() {
 
   if (result.success) {
     console.log('\n🎉 Florida Parcels table created successfully!');
-    
+
     // Test the functions
     console.log('\n🧪 Testing parcel functions...');
-    
+
     const tests = [
       {
         name: 'Test parcel search function',
         query: `SELECT COUNT(*) FROM search_parcels_by_owner('TEST', NULL, 1)`
       },
       {
-        name: 'Test county statistics function', 
+        name: 'Test county statistics function',
         query: `SELECT COUNT(*) as counties FROM get_parcel_stats_by_county()`
       },
       {
@@ -112,7 +112,7 @@ async function applyMigration() {
     console.log('  ✓ County-level statistics');
     console.log('  ✓ Performance indexes on key fields');
     console.log('  ✓ Row Level Security enabled');
-    
+
     console.log('\n📝 Column Definitions:');
     console.log('  • jv = Just Value (Market Value)');
     console.log('  • av_sd/av_nsd = Assessed Value (School/Non-School)');
@@ -120,12 +120,12 @@ async function applyMigration() {
     console.log('  • lnd_val = Land Value');
     console.log('  • tot_lvg_ar = Total Living Area');
     console.log('  • no_res_unt = Number of Residential Units');
-    
+
     console.log('\n🔗 Connected to florida_counties table via:');
     console.log('  • county_fips field (12001-12133)');
     console.log('  • county_id foreign key');
     console.log('  • Automatic linking on insert/update');
-    
+
   } else {
     console.log('\n⚠️  Migration failed. Please check the error above.');
   }

@@ -20,8 +20,8 @@ export default function CrisisResponsePage() {
             Emergency detection, response coordination, and crisis management system
           </p>
         </div>
-        
-        <CrisisResponseDashboard 
+
+        <CrisisResponseDashboard
           userId={userId}
           className="space-y-6"
         />

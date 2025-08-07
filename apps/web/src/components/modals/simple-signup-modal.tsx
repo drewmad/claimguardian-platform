@@ -25,7 +25,7 @@ export function SimpleSignupModal() {
   const { signUp, error } = useAuth()
   const [loading, setLoading] = useState(false)
   const [submitted, setSubmitted] = useState(false)
-  
+
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -42,7 +42,7 @@ export function SimpleSignupModal() {
         email: formData.email,
         password: formData.password
       })
-      
+
       if (success) {
         setSubmitted(true)
       }
@@ -74,7 +74,7 @@ export function SimpleSignupModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-      
+
       <div className="relative bg-white rounded-lg p-6 max-w-md w-full">
         <button
           onClick={closeModal}

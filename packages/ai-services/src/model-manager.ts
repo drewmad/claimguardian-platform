@@ -7,11 +7,11 @@ import { OpenAI } from 'openai'
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
 export type AIProvider = 'openai' | 'gemini' | 'anthropic' | 'xai'
-export type AIModel = 
-  | 'gpt-4-turbo-preview' 
-  | 'gpt-4-vision-preview' 
+export type AIModel =
+  | 'gpt-4-turbo-preview'
+  | 'gpt-4-vision-preview'
   | 'gpt-3.5-turbo'
-  | 'gemini-pro' 
+  | 'gemini-pro'
   | 'gemini-pro-vision'
   | 'claude-3-opus'
   | 'claude-3-sonnet'
@@ -275,11 +275,11 @@ class AIModelManager {
       throw new Error('Gemini client not initialized')
     }
 
-    const geminiModel = this.geminiClient.getGenerativeModel({ 
-      model: model === 'gemini-pro' ? 'gemini-pro' : 'gemini-pro-vision' 
+    const geminiModel = this.geminiClient.getGenerativeModel({
+      model: model === 'gemini-pro' ? 'gemini-pro' : 'gemini-pro-vision'
     })
 
-    const fullPrompt = options?.systemPrompt 
+    const fullPrompt = options?.systemPrompt
       ? `${options.systemPrompt}\n\n${prompt}`
       : prompt
 
@@ -312,8 +312,8 @@ class AIModelManager {
       throw new Error('OpenAI client not initialized')
     }
 
-    const base64Image = typeof imageData === 'string' 
-      ? imageData 
+    const base64Image = typeof imageData === 'string'
+      ? imageData
       : imageData.toString('base64')
 
     const analysisPrompt = `${prompt}
@@ -333,11 +333,11 @@ Format your response as JSON.`
           role: 'user',
           content: [
             { type: 'text', text: analysisPrompt },
-            { 
-              type: 'image_url', 
-              image_url: { 
-                url: `data:image/jpeg;base64,${base64Image}` 
-              } 
+            {
+              type: 'image_url',
+              image_url: {
+                url: `data:image/jpeg;base64,${base64Image}`
+              }
             }
           ]
         }
@@ -346,7 +346,7 @@ Format your response as JSON.`
     })
 
     const response = completion.choices[0]?.message?.content || '{}'
-    
+
     try {
       const parsed = JSON.parse(response)
       return {
@@ -379,12 +379,12 @@ Format your response as JSON.`
       throw new Error('Gemini client not initialized')
     }
 
-    const geminiModel = this.geminiClient.getGenerativeModel({ 
-      model: 'gemini-pro-vision' 
+    const geminiModel = this.geminiClient.getGenerativeModel({
+      model: 'gemini-pro-vision'
     })
 
-    const base64Image = typeof imageData === 'string' 
-      ? imageData 
+    const base64Image = typeof imageData === 'string'
+      ? imageData
       : imageData.toString('base64')
 
     const analysisPrompt = `${prompt}

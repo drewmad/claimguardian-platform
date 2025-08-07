@@ -40,7 +40,7 @@ let quoteChar = '';
 for (let i = 0; i < cleanContent.length; i++) {
   const char = cleanContent[i];
   const prevChar = i > 0 ? cleanContent[i-1] : '';
-  
+
   // Handle quotes
   if ((char === "'" || char === '"') && prevChar !== '\\') {
     if (!inQuote) {
@@ -51,9 +51,9 @@ for (let i = 0; i < cleanContent.length; i++) {
       quoteChar = '';
     }
   }
-  
+
   currentStatement += char;
-  
+
   // Check for statement end
   if (char === ';' && !inQuote) {
     const stmt = currentStatement.trim();
@@ -83,7 +83,7 @@ async function executeStatement(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description}`);
       return true;

@@ -49,13 +49,13 @@ async function verifyTables() {
 
   // Check if functions exist
   console.log('\n🔍 Checking functions...')
-  
+
   try {
     const { error: captureError } = await supabase.rpc('capture_signup_data', {
       p_user_id: '00000000-0000-0000-0000-000000000000',
       p_tracking_data: {}
     })
-    
+
     if (captureError) {
       if (captureError.message.includes('function') || captureError.message.includes('does not exist')) {
         console.log('❌ capture_signup_data function: NOT FOUND')
@@ -74,7 +74,7 @@ async function verifyTables() {
       p_user_id: '00000000-0000-0000-0000-000000000000',
       p_tracking_data: {}
     })
-    
+
     if (loginError) {
       if (loginError.message.includes('function') || loginError.message.includes('does not exist')) {
         console.log('❌ log_login_activity function: NOT FOUND')

@@ -35,13 +35,13 @@ interface PersonalInfoProps {
 }
 
 export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
-  const { 
-    register, 
-    handleSubmit, 
-    watch, 
+  const {
+    register,
+    handleSubmit,
+    watch,
     setValue,
-    formState: { errors, isValid } 
-  } = useForm<PersonalInfoData>({ 
+    formState: { errors, isValid }
+  } = useForm<PersonalInfoData>({
     defaultValues,
     mode: 'onBlur'
   })
@@ -106,11 +106,11 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
       <form onSubmit={handleSubmit(onNext)} className="space-y-6" aria-label="Personal Information Form">
         <fieldset className="space-y-4">
           <legend className="sr-only">Name Information</legend>
-          
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <TextInput
               label="First Name"
-              {...register('firstName', { 
+              {...register('firstName', {
                 required: 'First name is required',
                 minLength: { value: 2, message: 'First name must be at least 2 characters' }
               })}
@@ -118,10 +118,10 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
               placeholder="Enter your first name"
               required
             />
-            
+
             <TextInput
               label="Last Name"
-              {...register('lastName', { 
+              {...register('lastName', {
                 required: 'Last name is required',
                 minLength: { value: 2, message: 'Last name must be at least 2 characters' }
               })}
@@ -134,11 +134,11 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
 
         <fieldset className="space-y-4">
           <legend className="sr-only">Contact Information</legend>
-          
+
           <TextInput
             label="Email Address"
             type="email"
-            {...register('email', { 
+            {...register('email', {
               required: 'Email address is required',
               validate: validateEmail
             })}
@@ -159,9 +159,9 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
               helperText="For emergency claim notifications and two-factor authentication"
               required
             />
-            <input 
-              type="hidden" 
-              {...register('phone', { 
+            <input
+              type="hidden"
+              {...register('phone', {
                 required: 'Phone number is required',
                 validate: validatePhone
               })}
@@ -171,10 +171,10 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
 
         <fieldset className="space-y-4">
           <legend className="sr-only">Security Information</legend>
-          
+
           <PasswordInput
             label="Password"
-            {...register('password', { 
+            {...register('password', {
               required: 'Password is required',
               validate: validatePassword
             })}
@@ -209,8 +209,8 @@ export function PersonalInfo({ onNext, defaultValues }: PersonalInfoProps) {
           </div>
         </div>
 
-        <Button 
-          type="submit" 
+        <Button
+          type="submit"
           className="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white py-3 text-lg font-medium transition-all duration-200"
           size="lg"
           disabled={!isValid}

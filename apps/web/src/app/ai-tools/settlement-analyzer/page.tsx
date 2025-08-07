@@ -63,7 +63,7 @@ export default function SettlementAnalyzerPage() {
     if (!claimAmount || !offeredAmount || !damageType) return
 
     setIsAnalyzing(true)
-    
+
     try {
       const claimValue = parseFloat(claimAmount)
       const offerValue = parseFloat(offeredAmount)
@@ -167,10 +167,10 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
             <div className="mb-8 relative">
               {/* Premium Background Orb */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-yellow-400/25 via-orange-500/20 to-amber-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className="text-yellow-400 hover:text-yellow-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-yellow-400/20 shadow-[0_8px_32px_rgba(245,158,11,0.15)] hover:shadow-[0_8px_32px_rgba(245,158,11,0.25)] transition-all duration-300"
                 >
                   ← Back to AI Tools
@@ -360,8 +360,8 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                     {/* Main Recommendation */}
                     <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(245,158,11,0.15)] transition-all duration-500">
                       <div className={`p-6 bg-gradient-to-r ${
-                        analysis.recommendation === 'accept' 
-                          ? 'from-green-900/20 to-green-800/20' 
+                        analysis.recommendation === 'accept'
+                          ? 'from-green-900/20 to-green-800/20'
                           : analysis.recommendation === 'negotiate'
                           ? 'from-yellow-900/20 to-yellow-800/20'
                           : 'from-red-900/20 to-red-800/20'
@@ -391,7 +391,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
                       </div>
                       <CardContent className="pt-6">
                         <Progress value={analysis.fairnessScore} className="h-3 mb-6" />
-                        
+
                         {/* Key Reasoning */}
                         <div className="space-y-3">
                           <h4 className="font-semibold text-white">Key Analysis Points:</h4>

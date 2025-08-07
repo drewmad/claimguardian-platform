@@ -106,7 +106,7 @@ serve(async (req) => {
 
 async function analyzeSentiment(text: string, context: string): Promise<SentimentResponse> {
   const lowerText = text.toLowerCase()
-  
+
   // Florida insurance-specific keyword analysis
   const positiveKeywords = [
     { word: 'thank', weight: 0.8 },
@@ -366,10 +366,10 @@ function generateRecommendations(
 function extractContext(text: string, keyword: string): string {
   const index = text.toLowerCase().indexOf(keyword.toLowerCase())
   if (index === -1) return ''
-  
+
   const start = Math.max(0, index - 30)
   const end = Math.min(text.length, index + keyword.length + 30)
-  
+
   return '...' + text.substring(start, end) + '...'
 }
 

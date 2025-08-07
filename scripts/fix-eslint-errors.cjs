@@ -13,7 +13,7 @@ console.log('🔧 Starting ESLint fixes...\n')
 // Step 1: Run ESLint auto-fix for fixable issues
 console.log('1️⃣ Running ESLint auto-fix...')
 try {
-  execSync('pnpm lint --fix', { 
+  execSync('pnpm lint --fix', {
     stdio: 'inherit',
     cwd: path.join(__dirname, '../apps/web')
   })
@@ -26,7 +26,7 @@ try {
 console.log('2️⃣ Removing unused imports...')
 const removeUnusedImports = () => {
   const srcDir = path.join(__dirname, '../apps/web/src')
-  
+
   // Get all TypeScript/React files
   const getAllFiles = (dir, files = []) => {
     const dirFiles = fs.readdirSync(dir)
@@ -41,18 +41,18 @@ const removeUnusedImports = () => {
     }
     return files
   }
-  
+
   const files = getAllFiles(srcDir)
   let fixedCount = 0
-  
+
   files.forEach(file => {
     let content = fs.readFileSync(file, 'utf8')
     let modified = false
-    
+
     // Remove completely unused imports
     const unusedImportRegex = /import\s+(?:{[^}]*}|[^{]*)\s+from\s+['"][^'"]+['"]\s*\n?/g
     const importMatches = content.match(unusedImportRegex) || []
-    
+
     importMatches.forEach(importLine => {
       // Extract imported items
       const namedImportsMatch = importLine.match(/import\s+{([^}]+)}\s+from/)
@@ -64,7 +64,7 @@ const removeUnusedImports = () => {
           const restOfFile = content.replace(importLine, '')
           return new RegExp(`\\b${importName}\\b`).test(restOfFile)
         })
-        
+
         if (usedImports.length === 0) {
           // Remove entire import line
           content = content.replace(importLine, '')
@@ -80,13 +80,13 @@ const removeUnusedImports = () => {
         }
       }
     })
-    
+
     if (modified) {
       fs.writeFileSync(file, content)
       fixedCount++
     }
   })
-  
+
   console.log(`✅ Fixed unused imports in ${fixedCount} files\n`)
 }
 
@@ -98,13 +98,13 @@ const fixUnescapedEntities = () => {
     .execSync(`find ${srcDir} -name "*.tsx" -o -name "*.jsx"`, { encoding: 'utf8' })
     .split('\n')
     .filter(Boolean)
-  
+
   let fixedCount = 0
-  
+
   files.forEach(file => {
     let content = fs.readFileSync(file, 'utf8')
     let modified = false
-    
+
     // Fix common unescaped entities in JSX text
     const replacements = [
       { from: /(\>)([^<]*)'([^<]*\<)/g, to: '$1$2&apos;$3' },
@@ -112,7 +112,7 @@ const fixUnescapedEntities = () => {
       { from: /(\>)([^<]*)"([^<]*\<)/g, to: '$1$2&ldquo;$3' },
       { from: /(\>)([^<]*)"([^<]*\<)/g, to: '$1$2&rdquo;$3' },
     ]
-    
+
     replacements.forEach(({ from, to }) => {
       const newContent = content.replace(from, to)
       if (newContent !== content) {
@@ -120,13 +120,13 @@ const fixUnescapedEntities = () => {
         modified = true
       }
     })
-    
+
     if (modified) {
       fs.writeFileSync(file, content)
       fixedCount++
     }
   })
-  
+
   console.log(`✅ Fixed unescaped entities in ${fixedCount} files\n`)
 }
 
@@ -144,24 +144,24 @@ const fixAnyTypes = () => {
     .execSync(`find ${srcDir} -name "*.ts" -o -name "*.tsx"`, { encoding: 'utf8' })
     .split('\n')
     .filter(Boolean)
-  
+
   let fixedCount = 0
-  
+
   files.forEach(file => {
     let content = fs.readFileSync(file, 'utf8')
-    
+
     // Replace : any with : unknown in most cases
     const newContent = content
       .replace(/:\s*any\[\]/g, ': unknown[]')
       .replace(/:\s*any\b/g, ': unknown')
       .replace(/as\s+any\b/g, 'as unknown')
-    
+
     if (newContent !== content) {
       fs.writeFileSync(file, newContent)
       fixedCount++
     }
   })
-  
+
   console.log(`✅ Replaced any types in ${fixedCount} files\n`)
 }
 
@@ -171,10 +171,10 @@ try {
   // fixUnescapedEntities()
   fixAnyTypes()
   fixUseEffectDeps()
-  
+
   // Final ESLint check
   console.log('📊 Final ESLint check...')
-  execSync('pnpm lint', { 
+  execSync('pnpm lint', {
     stdio: 'inherit',
     cwd: path.join(__dirname, '../apps/web')
   })

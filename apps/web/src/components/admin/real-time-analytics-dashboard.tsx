@@ -60,7 +60,7 @@ export function RealTimeAnalyticsDashboard() {
     try {
       const endTime = new Date()
       const startTime = new Date()
-      
+
       // Set start time based on interval
       switch (selectedInterval) {
         case '1m':
@@ -82,7 +82,7 @@ export function RealTimeAnalyticsDashboard() {
         startTime,
         endTime
       )
-      
+
       setHistoricalData(data)
       setLoading(false)
     } catch (error) {
@@ -104,7 +104,7 @@ export function RealTimeAnalyticsDashboard() {
 
       return () => clearInterval(interval)
     }
-    
+
     return undefined
   }, [selectedInterval, autoRefresh, fetchCurrentMetrics, fetchHistoricalData])
 
@@ -162,7 +162,7 @@ export function RealTimeAnalyticsDashboard() {
 
   // Prepare chart data
   const timeSeriesData = historicalData.map(metric => ({
-    time: new Date(metric.timestamp).toLocaleTimeString('en-US', { 
+    time: new Date(metric.timestamp).toLocaleTimeString('en-US', {
       hour12: false,
       hour: '2-digit',
       minute: '2-digit'
@@ -334,13 +334,13 @@ export function RealTimeAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -365,13 +365,13 @@ export function RealTimeAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -405,13 +405,13 @@ export function RealTimeAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`${value}ms`, 'Response Time']}
@@ -436,13 +436,13 @@ export function RealTimeAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <AreaChart data={timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -477,7 +477,7 @@ export function RealTimeAnalyticsDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, value, percent }) => 
+                        label={({ name, value, percent }) =>
                           `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`
                         }
                         outerRadius={100}
@@ -488,7 +488,7 @@ export function RealTimeAnalyticsDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.fill} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                         formatter={(value: number, name: string, props: { payload?: { cost?: number } }) => [
                           `Requests: ${value}`,
@@ -515,10 +515,10 @@ export function RealTimeAnalyticsDashboard() {
                   {currentStats.topFeatures.slice(0, 5).map((feature, index) => (
                     <div key={feature.featureId} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
-                          style={{ 
-                            backgroundColor: FEATURE_COLORS[feature.featureId as keyof typeof FEATURE_COLORS] || '#6B7280' 
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{
+                            backgroundColor: FEATURE_COLORS[feature.featureId as keyof typeof FEATURE_COLORS] || '#6B7280'
                           }}
                         />
                         <span className="text-white">
@@ -550,7 +550,7 @@ export function RealTimeAnalyticsDashboard() {
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={modelPerformanceData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
+                      <XAxis
                         dataKey="name"
                         stroke="#9CA3AF"
                         tick={{ fontSize: 10 }}
@@ -559,7 +559,7 @@ export function RealTimeAnalyticsDashboard() {
                         height={80}
                       />
                       <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       />
                       <Bar dataKey="requests" name="Requests">
@@ -616,13 +616,13 @@ export function RealTimeAnalyticsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={timeSeriesData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`$${value.toFixed(2)}`, 'Cost']}
@@ -651,7 +651,7 @@ export function RealTimeAnalyticsDashboard() {
                     ${currentStats.totalCost.toFixed(2)}
                   </span>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Cache Savings</span>
@@ -662,7 +662,7 @@ export function RealTimeAnalyticsDashboard() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Per Request</span>
                     <span className="text-white">
-                      ${currentStats.totalRequests > 0 
+                      ${currentStats.totalRequests > 0
                         ? (currentStats.totalCost / currentStats.totalRequests).toFixed(4)
                         : '0.0000'
                       }
@@ -671,7 +671,7 @@ export function RealTimeAnalyticsDashboard() {
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-400">Per User</span>
                     <span className="text-white">
-                      ${currentStats.activeUsers > 0 
+                      ${currentStats.activeUsers > 0
                         ? (currentStats.totalCost / currentStats.activeUsers).toFixed(2)
                         : '0.00'
                       }

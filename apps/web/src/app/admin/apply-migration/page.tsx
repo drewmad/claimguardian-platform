@@ -109,11 +109,11 @@ ADD COLUMN IF NOT EXISTS country text DEFAULT 'USA';`
     title: 'Migrate Address Data',
     description: 'Migrates existing JSONB address data to structured columns',
     sql: `UPDATE public.properties
-SET 
+SET
     street_address = TRIM(CONCAT(
         COALESCE(address->>'street1', ''),
-        CASE 
-            WHEN address->>'street2' IS NOT NULL AND address->>'street2' != '' 
+        CASE
+            WHEN address->>'street2' IS NOT NULL AND address->>'street2' != ''
             THEN ', ' || (address->>'street2')
             ELSE ''
         END
@@ -135,28 +135,28 @@ VALUES ('policy-documents', 'policy-documents', false);
 -- Create policy for authenticated users to upload their own files
 CREATE POLICY "Users can upload their own policy documents" ON storage.objects
   FOR INSERT WITH CHECK (
-    bucket_id = 'policy-documents' 
+    bucket_id = 'policy-documents'
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
 
 -- Create policy for authenticated users to view their own files
 CREATE POLICY "Users can view their own policy documents" ON storage.objects
   FOR SELECT USING (
-    bucket_id = 'policy-documents' 
+    bucket_id = 'policy-documents'
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
 
 -- Create policy for authenticated users to delete their own files
 CREATE POLICY "Users can delete their own policy documents" ON storage.objects
   FOR DELETE USING (
-    bucket_id = 'policy-documents' 
+    bucket_id = 'policy-documents'
     AND auth.uid()::text = (storage.foldername(name))[1]
   );
 
 -- Create policy for authenticated users to update their own files
 CREATE POLICY "Users can update their own policy documents" ON storage.objects
   FOR UPDATE USING (
-    bucket_id = 'policy-documents' 
+    bucket_id = 'policy-documents'
     AND auth.uid()::text = (storage.foldername(name))[1]
   );`
   },
@@ -176,12 +176,12 @@ CREATE TABLE public.policy_documents (
     description text,
     uploaded_at timestamptz DEFAULT now(),
     uploaded_by uuid NOT NULL REFERENCES auth.users(id),
-    
+
     -- Constraints
     CONSTRAINT valid_file_size CHECK (file_size > 0 AND file_size <= 52428800), -- 50MB limit
     CONSTRAINT valid_file_type CHECK (file_type IN (
         'application/pdf',
-        'image/png', 
+        'image/png',
         'image/jpeg',
         'image/jpg'
     ))

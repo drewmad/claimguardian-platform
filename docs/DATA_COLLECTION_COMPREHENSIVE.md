@@ -253,19 +253,19 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 ### Google Maps Platform APIs
 1. **Geocoding API**
    - `formatted_address`, `place_id`, `geometry.location`, `address_components`
-   
+
 2. **Address Validation API**
    - `verdict`, `DPV`, `USPS` extras, `locationConfidence`
-   
+
 3. **Elevation API**
    - `elevation` (meters above sea level), `resolution`
-   
+
 4. **Street View Static Metadata**
    - `pano_id`, `lat`, `lng`, `date` captured
-   
+
 5. **Air Quality API**
    - AQI codes, pollutants, health recommendations
-   
+
 6. **Cloud Vision API**
    - Label detection for property features
    - Object detection for damage assessment
@@ -275,10 +275,10 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 1. **Zillow/Bridge Interactive (RESO Web API)**
    - Property details, valuations, ownership history
    - Physical characteristics, financial data
-   
+
 2. **Redfin Data Center**
    - Market metrics, price trends, inventory levels
-   
+
 3. **Realtor.com**
    - Property listings, photos, neighborhood data
 
@@ -286,11 +286,11 @@ This document provides a comprehensive checklist of every data point ClaimGuardi
 1. **NOAA/NWS**
    - Historical weather data
    - Storm tracking and predictions
-   
+
 2. **USGS**
    - Water level sensors
    - Seismic activity
-   
+
 3. **NASA Earth Data**
    - Satellite imagery for change detection
    - Environmental monitoring

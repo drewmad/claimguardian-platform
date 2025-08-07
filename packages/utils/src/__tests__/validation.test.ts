@@ -12,11 +12,11 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { 
-  validateRequired, 
-  validateEmail, 
-  validatePhone, 
-  validatePassword 
+import {
+  validateRequired,
+  validateEmail,
+  validatePhone,
+  validatePassword
 } from '../validation'
 
 describe('Validation Utilities', () => {
@@ -74,7 +74,7 @@ describe('Validation Utilities', () => {
       invalidEmails.forEach(email => {
         expect(validateEmail(email)).toBe(false)
       })
-      
+
       // Handle null/undefined separately to avoid runtime errors
       expect(validateEmail(null as any)).toBe(false)
       expect(validateEmail(undefined as any)).toBe(false)
@@ -108,7 +108,7 @@ describe('Validation Utilities', () => {
       invalidPhones.forEach(phone => {
         expect(validatePhone(phone)).toBe(false)
       })
-      
+
       // Handle null/undefined separately - should return false
       expect(validatePhone(null as any)).toBe(false)
       expect(validatePhone(undefined as any)).toBe(false)

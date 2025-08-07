@@ -151,11 +151,11 @@ curl -X POST https://your-project.supabase.co/functions/v1/<function-name> \
 #### Database Issues
 ```sql
 -- Check table existence
-SELECT table_name FROM information_schema.tables 
+SELECT table_name FROM information_schema.tables
 WHERE table_schema = 'public' AND table_name LIKE 'ml_%';
 
 -- Verify function creation
-SELECT routine_name FROM information_schema.routines 
+SELECT routine_name FROM information_schema.routines
 WHERE routine_schema = 'public' AND routine_type = 'FUNCTION';
 ```
 

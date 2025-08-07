@@ -81,8 +81,8 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('Test weather API error:', error);
     return NextResponse.json(
-      { 
-        success: false, 
+      {
+        success: false,
         error: error.message,
         message: 'Check console for details'
       },

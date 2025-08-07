@@ -129,7 +129,7 @@ export default function ProactiveClaimOptimizerPage() {
     await new Promise(resolve => setTimeout(resolve, 3000))
 
     setOptimizationItems(mockOptimizationItems)
-    
+
     // Calculate claim strength
     const strength: ClaimStrength = {
       score: 65,
@@ -144,10 +144,10 @@ export default function ProactiveClaimOptimizerPage() {
     }
     setClaimStrength(strength)
     setSuccessProbability(72)
-    
+
     setIsAnalyzing(false)
     setAnalysisComplete(true)
-    
+
     toast.success('Analysis complete! Found 6 optimization opportunities')
   }
 
@@ -157,28 +157,28 @@ export default function ProactiveClaimOptimizerPage() {
         item.id === id ? { ...item, completed: !item.completed } : item
       )
     )
-    
+
     // Recalculate claim strength
-    const completedCount = optimizationItems.filter(item => 
+    const completedCount = optimizationItems.filter(item =>
       item.id === id ? !optimizationItems.find(i => i.id === id)?.completed : item.completed
     ).length + 1
-    
+
     const newScore = Math.min(95, 65 + (completedCount * 5))
     const newProbability = Math.min(95, 72 + (completedCount * 4))
-    
+
     setClaimStrength(prev => prev ? {
       ...prev,
       score: newScore,
       category: newScore >= 85 ? 'strong' : newScore >= 70 ? 'good' : newScore >= 50 ? 'fair' : 'weak'
     } : null)
-    
+
     setSuccessProbability(newProbability)
-    
+
     toast.success('Progress saved! Claim strength improved')
   }
 
-  const filteredItems = selectedCategory === 'all' 
-    ? optimizationItems 
+  const filteredItems = selectedCategory === 'all'
+    ? optimizationItems
     : optimizationItems.filter(item => item.category === selectedCategory)
 
   const getSeverityIcon = (severity: string) => {
@@ -218,10 +218,10 @@ export default function ProactiveClaimOptimizerPage() {
             <div className="mb-8 relative">
               {/* Premium Background Gradient */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-80 h-80 bg-gradient-to-br from-emerald-400/20 via-green-500/15 to-cyan-600/20 rounded-full blur-3xl animate-pulse opacity-40" />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className="text-emerald-400 hover:text-emerald-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-emerald-400/20 shadow-[0_8px_32px_rgba(34,197,94,0.15)] hover:shadow-[0_8px_32px_rgba(34,197,94,0.25)] transition-all duration-300"
                 >
                   ← Back to AI Tools
@@ -474,8 +474,8 @@ export default function ProactiveClaimOptimizerPage() {
                 {/* Optimization Items */}
                 <div className="space-y-4">
                   {filteredItems.map((item) => (
-                    <Card 
-                      key={item.id} 
+                    <Card
+                      key={item.id}
                       className={`bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500 ${item.completed ? 'opacity-75' : ''}`}
                     >
                       <CardContent className="p-6">

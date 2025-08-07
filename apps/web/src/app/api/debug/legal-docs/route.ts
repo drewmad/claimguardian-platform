@@ -20,10 +20,10 @@ import { logger } from '@/lib/logger'
 export async function GET() {
   try {
     logger.info('Debug: Testing legal documents API')
-    
+
     // Test basic connection
     const documents = await legalServiceServer.getActiveLegalDocuments()
-    
+
     return NextResponse.json({
       success: true,
       count: documents.length,
@@ -37,10 +37,10 @@ export async function GET() {
         requires_acceptance: doc.requires_acceptance
       }))
     })
-    
+
   } catch (error) {
     logger.error('Debug: Failed to load legal documents', {}, error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json({
       success: false,
       error: error instanceof Error ? error.message : String(error),

@@ -39,11 +39,11 @@ cat > process-single-county.js << 'EOF'
 const processCounty = async (countyCode, geoJsonPath) => {
   const data = await fs.readFile(geoJsonPath);
   const chunks = []; // Split into 10MB chunks
-  
+
   for (let i = 0; i < data.length; i += 10 * 1024 * 1024) {
     chunks.push(data.slice(i, i + 10 * 1024 * 1024));
   }
-  
+
   // Upload each chunk
   for (const [index, chunk] of chunks.entries()) {
     await uploadChunk(countyCode, index, chunk);

@@ -160,7 +160,7 @@ export function AIModelConfiguration() {
       })
 
       setTestResult(response.content)
-      
+
       if (response.usage) {
         toast.success(`Test successful! Tokens: ${response.usage.totalTokens}, Cost: $${response.usage.cost?.toFixed(4) || '0'}`)
       } else {
@@ -177,7 +177,7 @@ export function AIModelConfiguration() {
   const saveApiKey = async (provider: AIProvider, key: string) => {
     // In production, encrypt and save to secure storage
     setApiKeys(prev => ({ ...prev, [provider]: key }))
-    
+
     // Update environment variable (server-side only in production)
     if (provider === 'openai') {
       process.env.OPENAI_API_KEY = key
@@ -191,7 +191,7 @@ export function AIModelConfiguration() {
 
   const runBenchmark = async () => {
     toast.info('Running benchmark suite...')
-    
+
     const benchmarks = [
       { prompt: 'Summarize this in one sentence: Insurance claims are complex.', type: 'text' as const },
       { prompt: 'What are the key factors in property damage assessment?', type: 'analysis' as const },
@@ -206,7 +206,7 @@ export function AIModelConfiguration() {
           model: selectedModel
         })
         const latency = Date.now() - startTime
-        
+
         console.log(`Benchmark: ${benchmark.type} - ${latency}ms`)
       } catch (error) {
         console.error(`Benchmark failed: ${error}`)
@@ -589,14 +589,14 @@ export function AIModelConfiguration() {
 
               <div className="flex justify-between">
                 <div className="space-x-2">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setTestPrompt('Analyze a claim for hurricane damage to a residential property in Miami, FL. The property has significant roof damage and water intrusion.')}
                   >
                     <FileText className="h-4 w-4 mr-2" />
                     Claim Analysis
                   </Button>
-                  <Button 
+                  <Button
                     variant="outline"
                     onClick={() => setTestPrompt('What are the key indicators of insurance fraud in property damage claims?')}
                   >

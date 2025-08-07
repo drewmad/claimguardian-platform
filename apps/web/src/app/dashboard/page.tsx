@@ -16,8 +16,8 @@
 // Force dynamic rendering to prevent SSG issues with Supabase client
 export const dynamic = 'force-dynamic'
 
-import { 
-  Shield, Wrench, CheckCircle, 
+import {
+  Shield, Wrench, CheckCircle,
   AlertCircle, CloudRain, Wind, Droplets, Activity,
   Camera, FileText, ChevronRight,
   Package, DollarSign, Bell, Calendar, Home, Car,
@@ -131,12 +131,12 @@ const QUICK_ACCESS_ITEMS: QuickAccessItem[] = [
 
 function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
   const [showAll, setShowAll] = useState(false)
-  
+
   const primaryItems = QUICK_ACCESS_ITEMS.filter(item => item.isPrimary)
   const secondaryItems = QUICK_ACCESS_ITEMS.filter(item => !item.isPrimary)
-  
+
   const displayItems = showAll ? QUICK_ACCESS_ITEMS : primaryItems
-  
+
   return (
     <section role="region" aria-label="Quick access navigation">
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
@@ -148,9 +148,9 @@ function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
               onClick={() => router.push(item.path)}
               data-quick-access={item.id}
               className={`
-                touch-target-lg p-4 bg-gray-700/70 backdrop-blur-sm 
-                hover:bg-gray-600/80 active:scale-95 rounded-lg 
-                transition-all flex flex-col items-center gap-3 group 
+                touch-target-lg p-4 bg-gray-700/70 backdrop-blur-sm
+                hover:bg-gray-600/80 active:scale-95 rounded-lg
+                transition-all flex flex-col items-center gap-3 group
                 shadow-[0_4px_16px_rgba(0,0,0,0.2)] ${item.hoverColor}
                 focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none
               `}
@@ -158,8 +158,8 @@ function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
               role="button"
               tabIndex={0}
             >
-              <Icon 
-                className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 group-hover:scale-110 transition-transform" 
+              <Icon
+                className="h-6 w-6 sm:h-8 sm:w-8 text-purple-400 group-hover:scale-110 transition-transform"
                 aria-hidden="true"
               />
               <span className="text-sm sm:text-base text-center font-medium">
@@ -169,7 +169,7 @@ function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
           )
         })}
       </div>
-      
+
       {!showAll && secondaryItems.length > 0 && (
         <div className="flex justify-center mt-6">
           <Button
@@ -184,7 +184,7 @@ function QuickAccessGrid({ router }: { router: ReturnType<typeof useRouter> }) {
           </Button>
         </div>
       )}
-      
+
       {showAll && (
         <div className="flex justify-center mt-6">
           <Button
@@ -260,9 +260,9 @@ function DashboardContent() {
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
   const [showPropertyWizard, setShowPropertyWizard] = useState(false)
   const [showAIToolsIntro, setShowAIToolsIntro] = useState(false)
-  
+
   const onboarding = useOnboarding()
-  
+
   // Mock states for demonstration - in real app, these would come from API calls
   const [hasRecentActivity] = useState(true)
   const [hasPendingTasks] = useState(true)
@@ -320,7 +320,7 @@ function DashboardContent() {
     return (
       <DashboardLayout>
         <div className="flex items-center justify-center h-screen">
-          <div 
+          <div
             className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"
             role="status"
             aria-label="Loading dashboard"
@@ -351,9 +351,9 @@ function DashboardContent() {
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 {onboarding.hasCompletedTour && (
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     className="text-gray-400 hover:text-white hover:bg-gray-700"
                     onClick={() => setShowWelcomeTour(true)}
                     aria-label="Restart welcome tour"
@@ -362,9 +362,9 @@ function DashboardContent() {
                     <Info className="h-4 w-4" aria-hidden="true" />
                   </Button>
                 )}
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
+                <Button
+                  variant="ghost"
+                  size="sm"
                   className="text-gray-400 hover:text-white hover:bg-gray-700"
                   onClick={() => setShowAIToolsIntro(true)}
                   aria-label="Explore AI Tools"
@@ -372,9 +372,9 @@ function DashboardContent() {
                 >
                   <Zap className="h-4 w-4" aria-hidden="true" />
                 </Button>
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   className="bg-gray-700 hover:bg-gray-600 border-gray-600 touch-target"
                   aria-label="View alerts and notifications"
                 >
@@ -387,8 +387,8 @@ function DashboardContent() {
                     <span className="absolute -top-1 -right-1 h-2 w-2 bg-red-500 rounded-full" aria-hidden="true"></span>
                   </span>
                 </Button>
-                <Button 
-                  className="bg-blue-600 hover:bg-blue-700 touch-target" 
+                <Button
+                  className="bg-blue-600 hover:bg-blue-700 touch-target"
                   size="sm"
                   aria-label="Quick add new item"
                   onClick={() => setShowPropertyWizard(true)}
@@ -402,7 +402,7 @@ function DashboardContent() {
             {/* Enhanced Stats Grid with better responsive design */}
             <section role="region" aria-label="Property statistics overview">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3 sm:gap-4">
-                <button 
+                <button
                   onClick={() => router.push('/dashboard/property')}
                   className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
                   aria-label="View property details - Current value $485,000"
@@ -425,7 +425,7 @@ function DashboardContent() {
                   </Card>
                 </button>
 
-                <button 
+                <button
                   onClick={() => router.push('/dashboard/personal-property')}
                   className="w-full text-left touch-target focus:ring-2 focus:ring-accent-border focus:ring-offset-2 focus:outline-none rounded-lg"
                   aria-label="View personal property inventory - 247 items tracked"
@@ -473,7 +473,7 @@ function DashboardContent() {
                 </Card>
 
                 {/* Pending Tasks Card */}
-                <button 
+                <button
                   onClick={() => {
                     const upcomingTasksSection = document.getElementById('upcoming-tasks')
                     if (upcomingTasksSection) {
@@ -518,9 +518,9 @@ function DashboardContent() {
                         <CloudRain className="h-5 w-5 text-cyan-400 drop-shadow-[0_2px_8px_rgba(6,182,212,0.4)]" aria-hidden="true" />
                         Environmental Monitoring
                       </CardTitle>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         className="text-gray-400 hover:text-white backdrop-blur-sm hover:bg-white/10"
                         onClick={() => toast.info('Environmental monitoring settings coming soon!')}
                         aria-label="Open environmental monitoring settings"
@@ -555,8 +555,8 @@ function DashboardContent() {
                                 150 miles SW
                               </span>
                             </div>
-                            <Button 
-                              size="sm" 
+                            <Button
+                              size="sm"
                               className="bg-orange-600 hover:bg-orange-700"
                               onClick={() => router.push('/dashboard/disaster')}
                               aria-label="View hurricane preparation checklist"
@@ -613,9 +613,9 @@ function DashboardContent() {
                   <CardHeader>
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-white">Property Status</CardTitle>
-                      <Button 
-                        variant="ghost" 
-                        size="sm" 
+                      <Button
+                        variant="ghost"
+                        size="sm"
                         onClick={() => router.push('/dashboard/property')}
                         className="text-cyan-400 hover:text-cyan-300"
                         aria-label="View all property status details"
@@ -743,8 +743,8 @@ function DashboardContent() {
                     <p className="text-sm text-gray-300 mb-3">
                       Based on the approaching hurricane, I recommend documenting your property's current condition and reviewing your insurance coverage limits.
                     </p>
-                    <Button 
-                      size="sm" 
+                    <Button
+                      size="sm"
                       className="w-full bg-blue-600 hover:bg-blue-700 touch-target"
                       aria-label="View AI recommendations for hurricane preparation"
                     >
@@ -757,11 +757,11 @@ function DashboardContent() {
             </div>
           </div>
         </div>
-        
+
         {/* Learning Assistant Widget */}
         <LearningWidget />
       </DashboardLayout>
-    
+
     {/* Welcome Tour */}
     {showWelcomeTour && (
       <WelcomeTour
@@ -777,7 +777,7 @@ function DashboardContent() {
         startDelay={1000}
       />
     )}
-    
+
     {/* Property Setup Wizard */}
     {showPropertyWizard && (
       <PropertySetupWizard
@@ -794,13 +794,13 @@ function DashboardContent() {
         }}
       />
     )}
-    
+
     {/* AI Tools Introduction */}
     {showAIToolsIntro && (
       <AIToolsIntroduction
         onComplete={() => {
           setShowAIToolsIntro(false)
-          onboarding.markStepComplete('ai-tools', { 
+          onboarding.markStepComplete('ai-tools', {
             selectedTools: JSON.parse(localStorage.getItem('selected_ai_tools') || '[]')
           })
           toast.success('Great! You can now explore AI-powered features to enhance your property management.')
@@ -811,14 +811,14 @@ function DashboardContent() {
         }}
       />
     )}
-    
+
     {/* Onboarding Modal Overlay */}
     {showOnboarding && (
       <div className="fixed inset-0 z-50 overflow-y-auto">
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="relative min-h-screen flex items-center justify-center p-4">
           <div className="relative w-full max-w-4xl">
-            <OnboardingFlow 
+            <OnboardingFlow
               key={onboardingKey}
               onComplete={() => {
                 setShowOnboarding(false)

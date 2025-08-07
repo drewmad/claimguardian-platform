@@ -61,7 +61,7 @@ serve(async (req) => {
 
   try {
     const { source, operation = 'load' } = await req.json()
-    
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -108,7 +108,7 @@ serve(async (req) => {
       for (const feature of features) {
         try {
           const { attributes, geometry } = feature
-          
+
           const { error } = await supabase
             .from('critical_facilities')
             .upsert({
@@ -141,7 +141,7 @@ serve(async (req) => {
       for (const feature of features) {
         try {
           const { attributes, geometry } = feature
-          
+
           const { error } = await supabase
             .from('active_events')
             .upsert({
@@ -178,11 +178,11 @@ serve(async (req) => {
       const batchSize = 100
       for (let i = 0; i < features.length; i += batchSize) {
         const batch = features.slice(i, i + batchSize)
-        
+
         try {
           const records = batch.map((feature: any) => {
             const { attributes, geometry } = feature
-            
+
             // Map FEMA zones to our hazard types
             const zoneMapping: Record<string, string> = {
               'AE': 'FEMA_FLOOD_AE',
@@ -190,18 +190,18 @@ serve(async (req) => {
               'X': 'FEMA_FLOOD_X',
               'A': 'FEMA_FLOOD_AE'
             }
-            
+
             const hazardTypeCode = zoneMapping[attributes.FLD_ZONE] || `FEMA_FLOOD_${attributes.FLD_ZONE}`
-            
+
             // Convert geometry rings to WKT polygon
             let wkt = null
             if (geometry && geometry.rings) {
-              const rings = geometry.rings.map((ring: number[][]) => 
+              const rings = geometry.rings.map((ring: number[][]) =>
                 `(${ring.map(coord => `${coord[0]} ${coord[1]}`).join(',')})`
               ).join(',')
               wkt = `SRID=4326;POLYGON(${rings})`
             }
-            
+
             return {
               hazard_type_code: hazardTypeCode,
               zone_name: attributes.FLD_ZONE,
@@ -219,12 +219,12 @@ serve(async (req) => {
               updated_at: new Date().toISOString()
             }
           }).filter(r => r.geom) // Only include records with valid geometry
-          
+
           if (records.length > 0) {
             const { error } = await supabase
               .from('hazard_zones')
               .insert(records)
-            
+
             if (error) throw error
             processed += records.length
           }
@@ -264,7 +264,7 @@ serve(async (req) => {
     console.error('Error in load-geospatial-data:', error)
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

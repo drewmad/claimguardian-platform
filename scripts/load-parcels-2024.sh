@@ -60,18 +60,18 @@ TOTAL_ERRORS=0
 
 while [ $OFFSET -lt $TOTAL_COUNT ]; do
     echo -e "${YELLOW}Processing batch ${BATCH_NUM}/${BATCHES} (offset: ${OFFSET})...${NC}"
-    
+
     # Load batch
     RESPONSE=$(curl -s -X POST "${FUNCTION_URL}" \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
         -H "Content-Type: application/json" \
         -d "{\"county\": \"${COUNTY}\", \"offset\": ${OFFSET}, \"limit\": ${BATCH_SIZE}, \"mode\": \"load\"}")
-    
+
     # Check if request was successful
     if ! echo "$RESPONSE" | jq -e '.success' > /dev/null 2>&1; then
         echo -e "${RED}Batch ${BATCH_NUM} failed:${NC}"
         echo "$RESPONSE" | jq '.'
-        
+
         # Ask if should continue
         read -p "Continue with next batch? (y/n) " -n 1 -r
         echo
@@ -83,22 +83,22 @@ while [ $OFFSET -lt $TOTAL_COUNT ]; do
         # Extract results
         PROCESSED=$(echo "$RESPONSE" | jq -r '.processed')
         ERRORS=$(echo "$RESPONSE" | jq -r '.errors')
-        
+
         TOTAL_PROCESSED=$((TOTAL_PROCESSED + PROCESSED))
         TOTAL_ERRORS=$((TOTAL_ERRORS + ERRORS))
-        
+
         echo -e "${GREEN}Batch ${BATCH_NUM} complete: ${PROCESSED} processed, ${ERRORS} errors${NC}"
-        
+
         # Show progress
         PROGRESS=$((TOTAL_PROCESSED * 100 / TOTAL_COUNT))
         echo "Progress: ${TOTAL_PROCESSED}/${TOTAL_COUNT} (${PROGRESS}%)"
         echo ""
     fi
-    
+
     # Update offset and batch number
     OFFSET=$((OFFSET + BATCH_SIZE))
     BATCH_NUM=$((BATCH_NUM + 1))
-    
+
     # Small delay between batches to avoid overwhelming the API
     if [ $OFFSET -lt $TOTAL_COUNT ]; then
         sleep 1

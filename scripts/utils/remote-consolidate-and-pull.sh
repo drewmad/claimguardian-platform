@@ -76,10 +76,10 @@ if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
     log_info "Archiving local migrations..."
     BACKUP_DIR="supabase/migrations.archive.$(date +%Y%m%d_%H%M%S)"
     mkdir -p ${BACKUP_DIR}
-    
+
     # Move all SQL files
     mv supabase/migrations/*.sql ${BACKUP_DIR}/
-    
+
     # Create comprehensive README
     cat > supabase/migrations/README.md << EOF
 # Remote Schema Consolidated
@@ -121,7 +121,7 @@ The following migrations were already applied on remote and are now part of sche
 - Test locally with: supabase db reset
 - Apply to remote with: supabase db push
 EOF
-    
+
     log_success "Local migrations archived to ${BACKUP_DIR}"
 fi
 

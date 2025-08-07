@@ -25,7 +25,7 @@ export default function ZeroTouchDocumentsPage() {
       autoConfirmed: document.status === 'auto_confirmed' ? prev.autoConfirmed + 1 : prev.autoConfirmed,
       averageConfidence: ((prev.averageConfidence * prev.totalProcessed) + document.confidence) / (prev.totalProcessed + 1)
     }))
-    
+
     // Switch to review tab if document needs review
     if (document.status === 'pending_review') {
       setActiveTab('review')
@@ -156,7 +156,7 @@ export default function ZeroTouchDocumentsPage() {
         <div className="max-w-7xl mx-auto">
           {activeTab === 'upload' ? (
             <div className="space-y-8">
-              <EnhancedDocumentUpload 
+              <EnhancedDocumentUpload
                 onDocumentProcessed={handleDocumentProcessed}
               />
             </div>
@@ -185,7 +185,7 @@ export default function ZeroTouchDocumentsPage() {
                   <h4 className="text-white font-medium mb-2">OpenAI GPT-4 Vision</h4>
                   <p className="text-gray-400 text-sm">General document analysis and OCR</p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="p-3 bg-green-500/10 rounded-lg w-fit mx-auto mb-3">
                     <Brain className="w-6 h-6 text-green-500" />
@@ -193,7 +193,7 @@ export default function ZeroTouchDocumentsPage() {
                   <h4 className="text-white font-medium mb-2">Google Gemini Pro</h4>
                   <p className="text-gray-400 text-sm">Complex multi-page documents</p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="p-3 bg-purple-500/10 rounded-lg w-fit mx-auto mb-3">
                     <Brain className="w-6 h-6 text-purple-500" />
@@ -201,7 +201,7 @@ export default function ZeroTouchDocumentsPage() {
                   <h4 className="text-white font-medium mb-2">xAI Grok</h4>
                   <p className="text-gray-400 text-sm">Advanced damage assessment & anomaly detection</p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="p-3 bg-orange-500/10 rounded-lg w-fit mx-auto mb-3">
                     <Sparkles className="w-6 h-6 text-orange-500" />
@@ -210,7 +210,7 @@ export default function ZeroTouchDocumentsPage() {
                   <p className="text-gray-400 text-sm">Multi-provider result synthesis</p>
                 </div>
               </div>
-              
+
               <div className="mt-6 p-4 bg-gray-900 rounded-lg">
                 <h4 className="text-white font-medium mb-2">How it Works:</h4>
                 <ol className="text-gray-400 text-sm space-y-1">

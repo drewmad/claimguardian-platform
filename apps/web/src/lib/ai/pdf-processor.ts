@@ -35,25 +35,25 @@ export interface PageContent {
 export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF> {
   // Get PDF.js library (client-side only)
   const pdfjs = await getPdfLib()
-  
+
   try {
     const data = file instanceof File ? await file.arrayBuffer() : file
     const pdf = await pdfjs.getDocument({ data }).promise
-    
+
     let fullText = ''
     const pages: PageContent[] = []
-    
+
     // Extract text from each page
     for (let i = 1; i <= pdf.numPages; i++) {
       const pageText = `--- PAGE ${i} ---\n`
       fullText += pageText
-      
+
       const page = await pdf.getPage(i)
       const textContent = await page.getTextContent()
       const pageLines: string[] = []
       let currentLine = ''
       let lastY: number | null = null
-      
+
       // Process text items to reconstruct lines
       textContent.items.forEach((item) => {
         if (item && typeof item === 'object' && 'str' in item && item.str) {
@@ -71,27 +71,27 @@ export async function processPDF(file: File | ArrayBuffer): Promise<ProcessedPDF
           }
         }
       })
-      
+
       // Add the last line
       if (currentLine.trim()) {
         pageLines.push(currentLine.trim())
       }
-      
+
       const pageContent = pageLines.join('\n')
       fullText += pageContent + '\n\n'
-      
+
       pages.push({
         pageNumber: i,
         text: pageContent,
         lines: pageLines
       })
     }
-    
+
     // Extract metadata
     const metadata = await pdf.getMetadata()
-    
+
     const info = metadata.info as { Title?: string; Author?: string; Subject?: string; Keywords?: string; CreationDate?: string; ModDate?: string }
-    
+
     return {
       text: fullText,
       pageCount: pdf.numPages,
@@ -118,22 +118,22 @@ export function searchInPDF(pdfText: string, query: string, contextLength = 50):
   const results: Array<{ page: number; text: string; matchIndex: number }> = []
   const regex = new RegExp(`.{0,${contextLength}}${query}.{0,${contextLength}}`, 'gi')
   const matches = [...pdfText.matchAll(regex)]
-  
+
   matches.forEach(match => {
     if (match.index === undefined) return
-    
+
     // Find which page this match is on
     const textBeforeMatch = pdfText.substring(0, match.index)
     const pageMatches = textBeforeMatch.match(/--- PAGE (\d+) ---/g)
     const page = pageMatches ? parseInt(pageMatches.pop()?.match(/\d+/)?.[0] || '1', 10) : 1
-    
+
     results.push({
       page,
       text: match[0].trim(),
       matchIndex: match.index
     })
   })
-  
+
   return results
 }
 
@@ -148,7 +148,7 @@ export function extractPolicyData(pdfText: string): {
   windDeductible?: string
 } {
   const data: Record<string, string | number> = {}
-  
+
   // Common patterns for policy data extraction
   const patterns = {
     carrier: /(?:company|carrier|insurer):\s*([^\n]+)/i,
@@ -160,7 +160,7 @@ export function extractPolicyData(pdfText: string): {
     standardDeductible: /(?:all\s*other\s*perils|standard)\s*deductible:\s*\$?([\d,]+)/i,
     windDeductible: /(?:hurricane|wind(?:storm)?)\s*deductible:\s*(\d+%|\$[\d,]+)/i
   }
-  
+
   // Extract data using patterns
   Object.entries(patterns).forEach(([key, pattern]) => {
     const match = pdfText.match(pattern)
@@ -173,6 +173,6 @@ export function extractPolicyData(pdfText: string): {
       }
     }
   })
-  
+
   return data
 }

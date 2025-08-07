@@ -12,10 +12,10 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Droplets, 
-  Flame, 
-  Wind, 
+import {
+  Droplets,
+  Flame,
+  Wind,
   Waves,
   AlertTriangle
 } from 'lucide-react'
@@ -111,8 +111,8 @@ export function HazardZonesList({ hazardZones }: HazardZonesListProps) {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={`capitalize ${getCategoryColor(zone.category)}`}
                   >
                     {zone.category}

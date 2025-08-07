@@ -86,7 +86,7 @@ export function AdminDashboard() {
   const [searchQuery, setSearchQuery] = useState('')
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [expandedCategories, setExpandedCategories] = useState<string[]>(['Dashboard', 'AI & ML'])
-  
+
   // Handle tab query parameter
   useEffect(() => {
     const tabParam = searchParams.get('tab')
@@ -96,7 +96,7 @@ export function AdminDashboard() {
   }, [searchParams])
 
   const toggleCategory = (category: string) => {
-    setExpandedCategories(prev => 
+    setExpandedCategories(prev =>
       prev.includes(category)
         ? prev.filter(c => c !== category)
         : [...prev, category]
@@ -144,8 +144,8 @@ export function AdminDashboard() {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Button
-              
-              
+
+
               onClick={() => router.push('/dashboard')}
               className="text-gray-400 hover:text-white"
             >

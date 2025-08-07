@@ -16,7 +16,7 @@ interface EmailRequest {
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -26,7 +26,7 @@ Deno.serve(async (req: Request) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -39,7 +39,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const RESEND_FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'noreply@claimguardianai.com'
-    
+
     const emailRequest = await req.json() as EmailRequest
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -90,7 +90,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const result = await response.json()
-    
+
     return new Response(
       JSON.stringify({ success: true, messageId: result.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

@@ -139,7 +139,7 @@ END;
 $$ language 'plpgsql';
 
 -- Apply to tables
-CREATE TRIGGER update_properties_updated_at 
+CREATE TRIGGER update_properties_updated_at
   BEFORE UPDATE ON public.properties
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 ```
@@ -154,7 +154,7 @@ CREATE TABLE public.properties (
 );
 
 -- Index JSON fields for performance
-CREATE INDEX idx_properties_details_type ON public.properties 
+CREATE INDEX idx_properties_details_type ON public.properties
   USING GIN ((details->>'type'));
 ```
 
@@ -222,7 +222,7 @@ try {
   const { data, error } = await supabase
     .from('properties')
     .insert(propertyData)
-  
+
   if (error) {
     console.error('Database error:', error)
     if (error.code === '23505') {
@@ -230,7 +230,7 @@ try {
     }
     throw error
   }
-  
+
   return data
 } catch (error) {
   // Handle network errors, permission errors, etc.
@@ -259,14 +259,14 @@ import { createBrowserSupabaseClient } from '@claimguardian/db'
 
 describe('Database operations', () => {
   const supabase = createBrowserSupabaseClient()
-  
+
   test('should create property', async () => {
     const { data, error } = await supabase
       .from('properties')
       .insert({ name: 'Test Property' })
       .select()
       .single()
-    
+
     expect(error).toBeNull()
     expect(data).toHaveProperty('id')
     expect(data.name).toBe('Test Property')

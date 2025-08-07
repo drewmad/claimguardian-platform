@@ -107,7 +107,7 @@ async function demonstrateLLMReadiness() {
   // 6. Integration status
   console.log(`\n${colors.bright}Integration Status:${colors.reset}`)
   const llmDir = path.join(__dirname, '..', '..', 'apps', 'web', 'src', 'lib', 'claude', 'llm-integration')
-  
+
   try {
     const files = await fs.readdir(llmDir)
     console.log(`  Files ready: ${colors.green}${files.length}/7${colors.reset}`)
@@ -150,13 +150,13 @@ async function demonstrateLearningCapture() {
   console.log(`  Task: "${colors.cyan}${learning.task}${colors.reset}"`)
   console.log(`  Confidence: ${colors.green}${(learning.confidence * 100).toFixed(0)}%${colors.reset}`)
   console.log(`  Impact: ${colors.yellow}${(learning.impact * 100).toFixed(0)}%${colors.reset}`)
-  
+
   console.log(`\n  ${colors.bright}What went wrong:${colors.reset}`)
   learning.mistakes.forEach(m => console.log(`    ${colors.red}✗${colors.reset} ${m}`))
-  
+
   console.log(`\n  ${colors.bright}How it was fixed:${colors.reset}`)
   learning.corrections.forEach(c => console.log(`    ${colors.green}✓${colors.reset} ${c}`))
-  
+
   console.log(`\n  ${colors.bright}Lessons learned:${colors.reset}`)
   learning.learnings.forEach(l => console.log(`    ${colors.cyan}💡${colors.reset} ${l}`))
 
@@ -171,7 +171,7 @@ async function demonstrateLearningCapture() {
 async function main() {
   await demonstrateLLMReadiness()
   await demonstrateLearningCapture()
-  
+
   console.log(`\n${colors.dim}For more information, see: docs/CLAUDE_LEARNING_SYSTEM_COMPLETE.md${colors.reset}\n`)
 }
 

@@ -171,7 +171,7 @@ export class IntelligentDocumentSearch {
   private async performSemanticSearch(searchQuery: SearchQuery): Promise<DocumentSearchResult[]> {
     // Generate embedding for search query using AI service
     const embedding = await this.generateEmbedding(searchQuery.query)
-    
+
     const { data, error } = await this.supabase.rpc('semantic_document_search', {
       query_embedding: embedding,
       similarity_threshold: 0.7,
@@ -222,7 +222,7 @@ export class IntelligentDocumentSearch {
 
     // Merge results with weighted scoring
     const mergedResults = this.mergeSearchResults(semanticResults, keywordResults)
-    
+
     return mergedResults
   }
 
@@ -262,7 +262,7 @@ export class IntelligentDocumentSearch {
     // Mock embedding generation - in production, use OpenAI or similar
     // This would call the AI service to generate embeddings
     logger.info('Generating embedding for search query', { textLength: text.length })
-    
+
     // Return mock embedding of 1536 dimensions (OpenAI ada-002 size)
     return new Array(1536).fill(0).map(() => Math.random() * 2 - 1)
   }
@@ -319,7 +319,7 @@ export class IntelligentDocumentSearch {
     if (filters.dateRange) {
       const startDate = new Date(filters.dateRange.start)
       const endDate = new Date(filters.dateRange.end)
-      
+
       filteredResults = filteredResults.filter(result => {
         const docDate = new Date(result.metadata.dateCreated)
         return docDate >= startDate && docDate <= endDate
@@ -436,7 +436,7 @@ export class IntelligentDocumentSearch {
       // Analyze documents for insights
       const policyDocs = data.filter(doc => doc.document_type === 'policy')
       const claimDocs = data.filter(doc => doc.document_type === 'claim')
-      
+
       // Example insights
       if (policyDocs.length === 0) {
         insights.push({

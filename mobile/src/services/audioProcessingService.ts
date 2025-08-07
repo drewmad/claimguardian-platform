@@ -66,12 +66,12 @@ class AudioProcessingService {
 
       // In a real implementation, this would use audio processing libraries
       // such as FFmpeg, SoX, or native audio processing APIs
-      
+
       // For now, we'll implement a mock noise reduction
       const processedUri = await this.mockNoiseReduction(
-        audioUri, 
-        outputUri, 
-        strength, 
+        audioUri,
+        outputUri,
+        strength,
         preserveQuality
       )
 
@@ -146,7 +146,7 @@ class AudioProcessingService {
       }
 
       // Apply volume normalization if enabled
-      if (options.normalizeVolume && 
+      if (options.normalizeVolume &&
           (originalAnalysis.averageVolume < 0.3 || originalAnalysis.averageVolume > 0.8)) {
         processedUri = await this.normalizeVolume(processedUri, options)
         improvements.volumeNormalized = true
@@ -216,7 +216,7 @@ class AudioProcessingService {
 
       // Mock volume normalization
       await this.copyAudio(audioUri, outputUri)
-      
+
       return outputUri
 
     } catch (error) {
@@ -234,7 +234,7 @@ class AudioProcessingService {
 
       // Mock echo removal
       await this.copyAudio(audioUri, outputUri)
-      
+
       return outputUri
 
     } catch (error) {
@@ -252,7 +252,7 @@ class AudioProcessingService {
 
       // Mock gain control
       await this.copyAudio(audioUri, outputUri)
-      
+
       return outputUri
 
     } catch (error) {
@@ -308,7 +308,7 @@ class AudioProcessingService {
   }> {
     try {
       const analysis = await this.analyzeAudio(audioUri)
-      
+
       let score = 100
       const issues: string[] = []
       const recommendations: string[] = []
@@ -369,11 +369,11 @@ class AudioProcessingService {
       const tempInfo = await FileSystem.getInfoAsync(this.tempDirectory)
       if (tempInfo.exists) {
         const files = await FileSystem.readDirectoryAsync(this.tempDirectory)
-        
+
         for (const file of files) {
           const filePath = this.tempDirectory + file
           const fileInfo = await FileSystem.getInfoAsync(filePath)
-          
+
           // Delete files older than 1 hour
           if (fileInfo.exists && fileInfo.modificationTime) {
             const ageMs = Date.now() - fileInfo.modificationTime * 1000
@@ -446,7 +446,7 @@ class AudioProcessingService {
         // For now, return the chunk unchanged
         return audioChunk
       },
-      
+
       getProcessingStats: () => ({
         latency: 5, // ms
         cpuUsage: 15, // percentage

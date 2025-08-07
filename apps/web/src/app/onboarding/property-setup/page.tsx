@@ -35,10 +35,10 @@ export default function PropertySetupPage() {
   const [residencyType, setResidencyType] = useState<string>('')
   const addressInputRef = useRef<HTMLInputElement>(null)
   const [autocomplete, setAutocomplete] = useState<google.maps.places.Autocomplete | null>(null)
-  
+
   // Use centralized Google Maps hook
   const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
-  
+
   const [propertyData, setPropertyData] = useState({
     address: '',
     city: '',
@@ -46,7 +46,7 @@ export default function PropertySetupPage() {
     zipCode: '',
     unit: '',
   })
-  
+
   useEffect(() => {
     // Get user's residency type from profile
     async function fetchUserProfile() {
@@ -57,7 +57,7 @@ export default function PropertySetupPage() {
           .select('residency_type')
           .eq('id', user.id)
           .single()
-        
+
         if (profile) {
           setResidencyType(profile.residency_type)
         }
@@ -83,7 +83,7 @@ export default function PropertySetupPage() {
 
     autocompleteInstance.addListener('place_changed', () => {
       const place = autocompleteInstance.getPlace()
-      
+
       if (place.formatted_address && place.address_components) {
         // Parse address components
         let address = ''
@@ -126,7 +126,7 @@ export default function PropertySetupPage() {
       }
     }
   }, [isGoogleLoaded, autocomplete, propertyData.unit])
-  
+
   const handleManualAddressChange = (value: string) => {
     setSearchQuery(value)
     // If user types manually and autocomplete isn't working, allow manual entry
@@ -143,20 +143,20 @@ export default function PropertySetupPage() {
       }
     }
   }
-  
+
   const handleSubmit = async () => {
     if (!propertyData.address || !propertyData.city) {
       setError('Please enter a valid address')
       return
     }
-    
+
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-      
+
       // Create property - store unit in metadata if provided
       const { data: property, error: propertyError } = await supabase
         .from('properties')
@@ -172,14 +172,14 @@ export default function PropertySetupPage() {
         })
         .select()
         .single()
-      
+
       if (propertyError) throw propertyError
-      
+
       // Update user profile with primary property
       await supabase.from('profiles').update({
         primary_property_id: property.id
       }).eq('id', user.id)
-      
+
       // Check if user is in Florida - if so, show disclosures
       if (propertyData.state === 'FL') {
         router.push('/dashboard?showFloridaDisclosures=true')
@@ -193,7 +193,7 @@ export default function PropertySetupPage() {
       setIsLoading(false)
     }
   }
-  
+
   const getResidencyMessage = () => {
     switch (residencyType) {
       case 'renter':
@@ -208,7 +208,7 @@ export default function PropertySetupPage() {
         return "Let's add your property to get started"
     }
   }
-  
+
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
@@ -221,7 +221,7 @@ export default function PropertySetupPage() {
           <h1 className="text-3xl font-bold text-white">Welcome to ClaimGuardian!</h1>
           <p className="text-gray-400 mt-2">{getResidencyMessage()}</p>
         </div>
-        
+
         <Card className="p-8 bg-slate-900 border-slate-800">
           {error && (
             <Alert variant="destructive" className="mb-6">
@@ -229,7 +229,7 @@ export default function PropertySetupPage() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           <div className="space-y-6">
             <div>
               <Label htmlFor="search" className="text-lg flex items-center gap-2 mb-3">
@@ -282,14 +282,14 @@ export default function PropertySetupPage() {
                 </p>
               )}
             </div>
-            
+
             {(propertyData.address || propertyData.city) && (
               <div className="border-t border-slate-700 pt-6 space-y-4">
                 <h3 className="font-medium text-white flex items-center gap-2">
                   <MapPin className="w-4 h-4 text-blue-500" />
                   Confirm Property Details
                 </h3>
-                
+
                 <div className="grid grid-cols-2 gap-4">
                   <div className="col-span-2">
                     <Label htmlFor="address">Street Address</Label>
@@ -300,7 +300,7 @@ export default function PropertySetupPage() {
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="unit">Unit/Apt (Optional)</Label>
                     <Input
@@ -311,7 +311,7 @@ export default function PropertySetupPage() {
                       placeholder="Apt 2B"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="city">City</Label>
                     <Input
@@ -321,7 +321,7 @@ export default function PropertySetupPage() {
                       className="mt-1 bg-slate-800 border-slate-700 text-white"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="state">State</Label>
                     <Input
@@ -331,7 +331,7 @@ export default function PropertySetupPage() {
                       className="mt-1 bg-slate-800 border-slate-700 text-gray-400"
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="zipCode">ZIP Code</Label>
                     <Input
@@ -346,7 +346,7 @@ export default function PropertySetupPage() {
               </div>
             )}
           </div>
-          
+
           <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
             <Button
               variant="ghost"
@@ -355,7 +355,7 @@ export default function PropertySetupPage() {
             >
               Skip for now
             </Button>
-            
+
             <Button
               onClick={handleSubmit}
               disabled={!propertyData.address || !propertyData.city || isLoading}
@@ -375,7 +375,7 @@ export default function PropertySetupPage() {
             </Button>
           </div>
         </Card>
-        
+
         <div className="mt-6 text-center">
           <p className="text-sm text-gray-500">
             You can add more properties and update details anytime from your dashboard

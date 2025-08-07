@@ -33,7 +33,7 @@ interface ContextualNavProps {
   className?: string
 }
 
-export function ContextualNav({ 
+export function ContextualNav({
   currentItem,
   previousItem,
   nextItem,
@@ -56,7 +56,7 @@ export function ContextualNav({
             <span className="hidden md:inline">Previous</span>
           </button>
         )}
-        
+
         <div className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-white">
           {currentItem.icon && <currentItem.icon className="w-4 h-4" />}
           <span>{currentItem.label}</span>
@@ -66,7 +66,7 @@ export function ContextualNav({
             </span>
           )}
         </div>
-        
+
         {nextItem && (
           <button
             onClick={() => router.push(nextItem.href)}
@@ -89,7 +89,7 @@ export function ContextualNav({
               items={relatedItems.properties}
             />
           )}
-          
+
           {relatedItems.policies && relatedItems.policies.length > 0 && (
             <RelatedItemsDropdown
               title="Policies"
@@ -97,7 +97,7 @@ export function ContextualNav({
               items={relatedItems.policies}
             />
           )}
-          
+
           {relatedItems.claims && relatedItems.claims.length > 0 && (
             <RelatedItemsDropdown
               title="Claims"
@@ -105,7 +105,7 @@ export function ContextualNav({
               items={relatedItems.claims}
             />
           )}
-          
+
           {relatedItems.items && relatedItems.items.length > 0 && (
             <RelatedItemsDropdown
               title="Items"
@@ -119,14 +119,14 @@ export function ContextualNav({
   )
 }
 
-function RelatedItemsDropdown({ 
-  title, 
-  icon: Icon, 
-  items 
-}: { 
+function RelatedItemsDropdown({
+  title,
+  icon: Icon,
+  items
+}: {
   title: string
   icon: React.ComponentType<{ className?: string }>
-  items: NavItem[] 
+  items: NavItem[]
 }) {
   const router = useRouter()
   const [isOpen, setIsOpen] = React.useState(false)
@@ -145,11 +145,11 @@ function RelatedItemsDropdown({
           {items.length}
         </span>
       </button>
-      
+
       {isOpen && (
         <>
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
             aria-hidden="true"
           />

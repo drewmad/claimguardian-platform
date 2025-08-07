@@ -15,8 +15,8 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { CreditCard, Download, ExternalLink, Loader2, AlertCircle, Calendar, DollarSign } from 'lucide-react'
-import { 
-  getSubscriptionDetails, 
+import {
+  getSubscriptionDetails,
   createPortalSession,
   getPaymentMethods,
   cancelSubscription,
@@ -97,7 +97,7 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
     setActionLoading('cancel')
     try {
       const result = await cancelSubscription()
-      
+
       if (result.error) {
         toast.error(result.error)
         return
@@ -117,7 +117,7 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
     setActionLoading('resume')
     try {
       const result = await resumeSubscription()
-      
+
       if (result.error) {
         toast.error(result.error)
         return
@@ -160,12 +160,12 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
                 <p className="text-gray-400 mt-1">{plan.description}</p>
               </div>
               {status && (
-                <Badge 
+                <Badge
                   className={`px-3 py-1 ${
-                    status.color === 'green' 
-                      ? 'bg-green-500/20 text-green-400 border-green-500/50' 
-                      : status.color === 'red' 
-                      ? 'bg-red-500/20 text-red-400 border-red-500/50' 
+                    status.color === 'green'
+                      ? 'bg-green-500/20 text-green-400 border-green-500/50'
+                      : status.color === 'red'
+                      ? 'bg-red-500/20 text-red-400 border-red-500/50'
                       : 'bg-gray-500/20 text-gray-400 border-gray-500/50'
                   }`}
                 >
@@ -187,7 +187,7 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-center space-x-3">
                   <div className="p-2 bg-green-500/20 rounded-lg">
                     <Calendar className="h-5 w-5 text-green-400" />
@@ -264,7 +264,7 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
                   Manage in Stripe
                 </Button>
               )}
-              
+
               {subscription && !subscription.cancelAtPeriodEnd && currentPlan !== 'free' && (
                 <Button
                   onClick={handleCancelSubscription}
@@ -325,7 +325,7 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
                     <CreditCard className="h-8 w-8 text-gray-400" />
                   </div>
                   <p className="text-gray-400 mb-4">No payment methods on file</p>
-                  <Button 
+                  <Button
                     onClick={handleManageSubscription}
                     className="bg-blue-600 hover:bg-blue-700 text-white"
                   >
@@ -352,8 +352,8 @@ export function BillingDashboard({ userId }: BillingDashboardProps) {
                       )}
                     </div>
                   ))}
-                  <Button 
-                    onClick={handleManageSubscription} 
+                  <Button
+                    onClick={handleManageSubscription}
                     variant="outline"
                     className="w-full mt-4"
                   >

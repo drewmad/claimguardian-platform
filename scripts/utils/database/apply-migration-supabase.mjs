@@ -45,7 +45,7 @@ const sections = [
     name: 'Create enum types',
     sql: `
       -- Create enum types if they don't exist
-      DO $$ 
+      DO $$
       BEGIN
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'claim_status_enum') THEN
           CREATE TYPE public.claim_status_enum AS ENUM (
@@ -53,7 +53,7 @@ const sections = [
             'denied', 'settled', 'closed', 'reopened'
           );
         END IF;
-        
+
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'damage_type_enum') THEN
           CREATE TYPE public.damage_type_enum AS ENUM (
             'hurricane', 'flood', 'wind', 'hail', 'fire',
@@ -61,7 +61,7 @@ const sections = [
             'lightning', 'fallen_tree', 'other'
           );
         END IF;
-        
+
         IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'policy_type_enum') THEN
           CREATE TYPE public.policy_type_enum AS ENUM (
             'HO3', 'HO5', 'HO6', 'HO8', 'DP1', 'DP3',
@@ -140,11 +140,11 @@ const sections = [
     name: 'Migrate address data',
     sql: `
       UPDATE public.properties
-      SET 
+      SET
         street_address = TRIM(CONCAT(
           COALESCE(address->>'street1', ''),
-          CASE 
-            WHEN address->>'street2' IS NOT NULL AND address->>'street2' != '' 
+          CASE
+            WHEN address->>'street2' IS NOT NULL AND address->>'street2' != ''
             THEN ', ' || (address->>'street2')
             ELSE ''
           END
@@ -165,7 +165,7 @@ async function applyMigration() {
   for (const section of sections) {
     try {
       console.log(`📝 ${section.name}...`);
-      
+
       const { data, error } = await supabase.rpc('exec_sql', {
         sql: section.sql
       });
@@ -173,7 +173,7 @@ async function applyMigration() {
       if (error) {
         // Try direct execution as fallback
         const { error: directError } = await supabase.from('_sql').insert({ query: section.sql });
-        
+
         if (directError) {
           console.log(`  ❌ Failed: ${directError.message}`);
           console.log(`  ℹ️  This section may need to be run manually in the dashboard`);

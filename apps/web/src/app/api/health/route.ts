@@ -41,7 +41,7 @@ interface HealthCheckResult {
 export async function GET(request: NextRequest): Promise<NextResponse> {
   const startTime = Date.now()
   const isMonitoringCheck = request.headers.get('x-monitoring-check') === 'true'
-  
+
   try {
     // Initialize health check result
     const healthCheck: HealthCheckResult = {
@@ -124,10 +124,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Determine overall system status
     const failedChecks = Object.values(healthCheck.checks).filter(check => check.status === 'fail')
     const warnChecks = Object.values(healthCheck.checks).filter(check => check.status === 'warn')
-    
+
     if (failedChecks.length > 0) {
       // Critical systems failing
-      const criticalFailures = ['database', 'supabase'].some(critical => 
+      const criticalFailures = ['database', 'supabase'].some(critical =>
         healthCheck.checks[critical]?.status === 'fail'
       )
       healthCheck.status = criticalFailures ? 'critical' : 'degraded'
@@ -188,7 +188,7 @@ async function checkDatabaseHealth(): Promise<{
   error?: string
 }> {
   const startTime = Date.now()
-  
+
   try {
     const { healthy, details } = await connectionPool.healthCheck()
     const responseTime = Date.now() - startTime
@@ -214,7 +214,7 @@ async function checkCacheHealth(): Promise<{
   error?: string
 }> {
   const startTime = Date.now()
-  
+
   try {
     const { healthy, details } = await cacheManager.healthCheck()
     const responseTime = Date.now() - startTime
@@ -240,10 +240,10 @@ async function checkSupabaseHealth(): Promise<{
   error?: string
 }> {
   const startTime = Date.now()
-  
+
   try {
     const supabase = await createClient()
-    
+
     // Test basic query
     const { error } = await supabase.from('users').select('id').limit(1)
     const responseTime = Date.now() - startTime
@@ -279,11 +279,11 @@ async function checkExternalServices(): Promise<{
   error?: string
 }> {
   const startTime = Date.now()
-  
+
   try {
     const checks = await Promise.allSettled([
       // Test OpenAI API if key exists
-      process.env.OPENAI_API_KEY ? 
+      process.env.OPENAI_API_KEY ?
         fetch('https://api.openai.com/v1/models', {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` },
@@ -320,7 +320,7 @@ async function checkExternalServices(): Promise<{
     const responseTime = Date.now() - startTime
 
     return {
-      status: failedServices.length === 0 ? 'pass' : 
+      status: failedServices.length === 0 ? 'pass' :
               failedServices.length < results.length ? 'warn' : 'fail',
       responseTime,
       details: {
@@ -353,7 +353,7 @@ async function getSystemMetrics(): Promise<{
 }> {
   try {
     const metrics = await productionMonitor.getLatestMetrics()
-    
+
     return {
       responseTime: metrics?.responseTime || 0,
       errorRate: metrics?.errorRate || 0,
@@ -377,11 +377,11 @@ export async function HEAD(): Promise<NextResponse> {
     // Simple check - just verify we can respond
     const supabase = await createClient()
     const { error } = await supabase.from('users').select('id').limit(1)
-    
+
     if (error && !error.message.includes('permission denied')) {
       return new NextResponse(null, { status: 503 })
     }
-    
+
     return new NextResponse(null, { status: 200 })
   } catch {
     return new NextResponse(null, { status: 503 })

@@ -14,7 +14,7 @@ import { EmergencyAlert, MessagePriority, emergencyCommunicationManager } from '
 // Disaster Response Phases
 export enum ResponsePhase {
   PREVENTION = 'prevention',
-  PREPAREDNESS = 'preparedness',  
+  PREPAREDNESS = 'preparedness',
   RESPONSE = 'response',
   RECOVERY = 'recovery',
   MITIGATION = 'mitigation'
@@ -24,7 +24,7 @@ export enum ResponsePhase {
 export enum WorkflowStatus {
   INITIATED = 'initiated',
   ACTIVE = 'active',
-  ESCALATED = 'escalated', 
+  ESCALATED = 'escalated',
   CONTAINED = 'contained',
   CONTROLLED = 'controlled',
   DEMOBILIZING = 'demobilizing',
@@ -291,12 +291,12 @@ export const DISASTER_WORKFLOW_TEMPLATES: Record<IncidentType, Partial<DisasterW
       }
     ]
   },
-  
+
   [IncidentType.FLOOD]: {
     workflow_name: 'Flood Response Workflow',
     // Simplified - would have full flood-specific workflow
   },
-  
+
   [IncidentType.WILDFIRE]: {
     workflow_name: 'Wildfire Response Workflow',
     // Simplified - would have full wildfire-specific workflow
@@ -324,7 +324,7 @@ export class DisasterWorkflowManager {
     customization?: Partial<DisasterWorkflow>
   ): Promise<DisasterWorkflow> {
     const template = DISASTER_WORKFLOW_TEMPLATES[incidentType]
-    
+
     const workflow: DisasterWorkflow = {
       id: this.generateWorkflowId(),
       incident_id: incidentId,
@@ -371,7 +371,7 @@ export class DisasterWorkflowManager {
    */
   async activateWorkflow(workflowId: string, triggerId: string): Promise<void> {
     const workflow = await this.getWorkflow(workflowId)
-    
+
     if (workflow.status !== WorkflowStatus.INITIATED) {
       throw new Error(`Workflow cannot be activated in status: ${workflow.status}`)
     }
@@ -401,7 +401,7 @@ export class DisasterWorkflowManager {
     toPhase: ResponsePhase
   ): Promise<void> {
     const workflow = await this.getWorkflow(workflowId)
-    
+
     // Validate phase transition
     const currentPhase = workflow.phases.find(p => p.phase === fromPhase)
     const nextPhase = workflow.phases.find(p => p.phase === toPhase)
@@ -537,7 +537,7 @@ export class DisasterWorkflowManager {
    */
   async generatePerformanceReport(workflowId: string): Promise<WorkflowMetrics> {
     const workflow = await this.getWorkflow(workflowId)
-    
+
     // Calculate response time
     const responseTime = workflow.current_activities.length > 0
       ? new Date(workflow.current_activities[0].actual_start_time!).getTime() - new Date(workflow.created_at).getTime()
@@ -548,7 +548,7 @@ export class DisasterWorkflowManager {
 
     // Calculate objective completion rate
     const totalActivities = workflow.phases.reduce((sum, phase) => sum + phase.activities.length, 0)
-    const completedActivities = workflow.phases.reduce((sum, phase) => 
+    const completedActivities = workflow.phases.reduce((sum, phase) =>
       sum + phase.activities.filter(a => a.status === 'completed').length, 0
     )
     const objectiveCompletionRate = totalActivities > 0 ? (completedActivities / totalActivities) * 100 : 0

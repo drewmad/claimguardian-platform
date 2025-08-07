@@ -247,7 +247,7 @@ const { isLimited, secondsRemaining, checkLimit } = useRateLimit({
 
 const handleResend = async () => {
   if (!checkLimit()) return
-  
+
   const { error } = await authService.resendConfirmationEmail(email)
   if (!error) {
     // Email sent successfully

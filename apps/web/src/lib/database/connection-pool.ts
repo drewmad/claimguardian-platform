@@ -62,7 +62,7 @@ export class DatabaseConnectionPool {
     failedCreations: 0,
     timedOutAcquires: 0
   }
-  
+
   private reapInterval: NodeJS.Timeout | null = null
   private isShuttingDown = false
 
@@ -79,7 +79,7 @@ export class DatabaseConnectionPool {
 
     // Create minimum number of connections
     const initialConnections = Math.min(this.config.minConnections, 3)
-    
+
     for (let i = 0; i < initialConnections; i++) {
       try {
         await this.createConnection()
@@ -93,7 +93,7 @@ export class DatabaseConnectionPool {
 
   private async createConnection(): Promise<Connection> {
     const startTime = Date.now()
-    
+
     try {
       const client = createClient(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -160,7 +160,7 @@ export class DatabaseConnectionPool {
           this.pendingAcquires.splice(index, 1)
           this.stats.pendingAcquires--
         }
-        
+
         this.stats.timedOutAcquires++
         reject(new Error(`Connection acquire timeout after ${this.config.acquireTimeoutMillis}ms`))
       }, this.config.acquireTimeoutMillis)
@@ -188,7 +188,7 @@ export class DatabaseConnectionPool {
     while (this.pendingAcquires.length > 0 && !this.isShuttingDown) {
       // Find available connection
       let availableConnection = this.connections.find(conn => !conn.isActive)
-      
+
       if (!availableConnection && this.connections.length < this.config.maxConnections) {
         // Create new connection if under limit
         try {
@@ -209,11 +209,11 @@ export class DatabaseConnectionPool {
       if (!pendingAcquire) break
 
       this.stats.pendingAcquires--
-      
+
       availableConnection.isActive = true
       availableConnection.acquiredAt = Date.now()
       availableConnection.lastUsed = Date.now()
-      
+
       this.stats.activeConnections++
       this.stats.idleConnections--
       this.stats.acquiredConnections++
@@ -262,7 +262,7 @@ export class DatabaseConnectionPool {
     const connectionsToReap: Connection[] = []
 
     for (const connection of this.connections) {
-      if (!connection.isActive && 
+      if (!connection.isActive &&
           now - connection.lastUsed > this.config.idleTimeoutMillis &&
           this.connections.length > this.config.minConnections) {
         connectionsToReap.push(connection)
@@ -287,7 +287,7 @@ export class DatabaseConnectionPool {
     if (index === -1) return
 
     this.connections.splice(index, 1)
-    
+
     this.stats.totalConnections--
     if (connection.isActive) {
       this.stats.activeConnections--
@@ -309,15 +309,15 @@ export class DatabaseConnectionPool {
   async healthCheck(): Promise<{ healthy: boolean; details: Record<string, unknown> }> {
     try {
       const connection = await this.acquire()
-      
+
       const startTime = Date.now()
       const { error } = await connection.client.from('health_checks').select('1').limit(1)
       const queryTime = Date.now() - startTime
-      
+
       this.release(connection)
 
       const healthy = !error || error.message.includes('relation "health_checks" does not exist')
-      
+
       return {
         healthy,
         details: {
@@ -339,7 +339,7 @@ export class DatabaseConnectionPool {
 
   async shutdown(): Promise<void> {
     logger.info('Shutting down database connection pool')
-    
+
     this.isShuttingDown = true
 
     // Clear reap interval
@@ -430,7 +430,7 @@ export class PooledDatabaseOperations {
           const startTime = Date.now()
           const result = await operation(connection.client)
           const duration = Date.now() - startTime
-          
+
           logger.debug('Database query executed', {
             context,
             duration,
@@ -458,7 +458,7 @@ export class PooledDatabaseOperations {
               'unavailable',
               'overloaded'
             ]
-            return retryableErrors.some(keyword => 
+            return retryableErrors.some(keyword =>
               error.message.toLowerCase().includes(keyword)
             )
           }
@@ -506,7 +506,7 @@ export class PooledDatabaseOperations {
           .insert(data)
           .select()
           .single()
-        
+
         if (error) throw error
         return result as T
       },
@@ -522,11 +522,11 @@ export class PooledDatabaseOperations {
     return this.executeQuery(
       async (client) => {
         let query = client.from(table).update(updates)
-        
+
         for (const [key, value] of Object.entries(conditions)) {
           query = query.eq(key, value)
         }
-        
+
         const { data, error } = await query.select().single()
         if (error) throw error
         return data as T
@@ -543,7 +543,7 @@ export class PooledDatabaseOperations {
       },
       'health-check'
     )
-    
+
     return result.success && result.data
   }
 }

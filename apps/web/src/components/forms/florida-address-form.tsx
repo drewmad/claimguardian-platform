@@ -45,10 +45,10 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
   const [autocomplete, setAutocomplete] = useState<unknown>(null)
   const [counties, setCounties] = useState<CountyOption[]>([])
   const [validationMessage, setValidationMessage] = useState('')
-  
+
   // Use centralized Google Maps hook
   const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
-  
+
   // Infer county from city name
   const inferCountyFromCity = useCallback(async (cityName: string): Promise<string | null> => {
     const cityCountyMap: Record<string, string> = {
@@ -94,10 +94,10 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
       'North Port': 'Sarasota County',
       'Ocala': 'Marion County'
     }
-    
+
     return cityCountyMap[cityName] || null
   }, [])
-  
+
   // Load Florida counties on mount
   useEffect(() => {
     const loadCounties = async () => {
@@ -110,7 +110,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
         logger.error('Error loading counties:', error)
       }
     }
-    
+
     loadCounties()
   }, [])
 
@@ -131,7 +131,7 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
 
     autocompleteInstance.addListener('place_changed', () => {
       const place = autocompleteInstance.getPlace()
-      
+
       if (!place.address_components) return
 
       const components: AddressComponents = {
@@ -230,19 +230,19 @@ export function FloridaAddressForm({ value, onChange, disabled, className }: Flo
       ...value,
       [field]: fieldValue
     }
-    
+
     // Special handling for ZIP code validation
     if (field === 'zip') {
       handleZipChange(fieldValue)
     }
-    
+
     onChange(newValue)
   }
 
   return (
     <div className={`space-y-4 ${className}`}>
       <Label className="text-gray-300 text-lg font-semibold">Florida Address</Label>
-      
+
       <div>
         <Label className="text-gray-300">Street Address</Label>
         <Input

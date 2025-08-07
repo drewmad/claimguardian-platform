@@ -50,15 +50,15 @@ export function CameraProvider({ children }: CameraProviderProps) {
 
         if (status !== 'granted') {
           dispatch(setError('Camera permission denied'))
-          
+
           // Show permission explanation
           Alert.alert(
             'Camera Permission Required',
             'ClaimGuardian needs camera access to capture damage photos for insurance assessments.',
             [
               { text: 'Cancel' },
-              { 
-                text: 'Settings', 
+              {
+                text: 'Settings',
                 onPress: () => {
                   Linking.openSettings()
                 }
@@ -72,7 +72,7 @@ export function CameraProvider({ children }: CameraProviderProps) {
         try {
           const supportedRatios = await Camera.getSupportedRatiosAsync()
           const supportedResolutions = [] // Camera.getSupportedResolutionsAsync() might not be available
-          
+
           dispatch(setSupportedRatios(supportedRatios || []))
           dispatch(setSupportedResolutions(supportedResolutions))
         } catch (capabilityError) {
@@ -111,15 +111,15 @@ export function CameraProvider({ children }: CameraProviderProps) {
     const monitorCameraPerformance = () => {
       // Log camera statistics for monitoring
       const { successfulCaptures, failedCaptures, totalPhotos } = cameraState.captureStats
-      
+
       if (totalPhotos > 0) {
         const successRate = (successfulCaptures / totalPhotos) * 100
         console.log(`Camera success rate: ${successRate.toFixed(1)}%`)
-        
+
         // Alert if success rate is low
         if (totalPhotos >= 10 && successRate < 80) {
           console.warn('Low camera success rate detected')
-          
+
           Alert.alert(
             'Camera Performance Issue',
             'Some photos may not be capturing properly. Try restarting the app or check your device storage.',
@@ -140,10 +140,10 @@ export function CameraProvider({ children }: CameraProviderProps) {
     const checkStorageSpace = async () => {
       // In a real implementation, we'd check available storage
       // For now, just simulate checking
-      
+
       // Could use expo-file-system to check available space
       // const storageInfo = await FileSystem.getFreeDiskStorageAsync()
-      
+
       // Warn if storage is low (< 100MB for example)
       // if (storageInfo < 100 * 1024 * 1024) {
       //   Alert.alert(
@@ -178,7 +178,7 @@ export function CameraProvider({ children }: CameraProviderProps) {
           // Permission error - can't auto-recover
           return
         }
-        
+
         if (cameraState.error?.includes('not available')) {
           // Device doesn't have camera - can't recover
           return
@@ -198,11 +198,11 @@ export function CameraProvider({ children }: CameraProviderProps) {
   useEffect(() => {
     const provideOptimizationTips = () => {
       const { averageCaptureTime, failedCaptures, totalPhotos } = cameraState.captureStats
-      
+
       if (averageCaptureTime > 3000) { // More than 3 seconds average
         console.log('Camera capture time is slow - consider lowering quality setting')
       }
-      
+
       if (totalPhotos > 5 && (failedCaptures / totalPhotos) > 0.1) { // More than 10% failure rate
         console.log('High camera failure rate - check device storage and restart app if needed')
       }
@@ -219,7 +219,7 @@ export function CameraProvider({ children }: CameraProviderProps) {
     const optimizeForEmergency = () => {
       // In emergency situations, prioritize reliability over quality
       // This could be triggered by weather alerts or user settings
-      
+
       // For now, just log that we could optimize for emergency
       console.log('Camera ready for emergency mode optimization if needed')
     }

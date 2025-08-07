@@ -26,14 +26,14 @@ export interface OnboardingData {
   propertyPlaceId?: string
   professionalRole?: string
   landlordUnits?: string
-  
+
   // Property Details
   propertyStories?: number
   propertyBedrooms?: number
   propertyBathrooms?: number
   roomsPerFloor?: { [floor: number]: number }
   propertyStructures?: string[]
-  
+
   // Step 2: Insurance Status
   hasPropertyInsurance?: boolean | null
   hasFloodInsurance?: boolean | null
@@ -41,10 +41,10 @@ export interface OnboardingData {
   insuranceProvider?: string
   otherInsuranceType?: string
   otherInsuranceDescription?: string
-  
+
   // Legacy field for compatibility
   hasInsurance?: boolean | null
-  
+
   // Completion tracking
   profileComplete: boolean
   insuranceComplete: boolean
@@ -58,13 +58,13 @@ export interface OnboardingData {
 export async function saveOnboardingProgress(userId: string, data: Partial<OnboardingData>) {
   try {
     const supabase = await await createClient()
-    
+
     // Update user preferences with onboarding data
     const updateData: Record<string, unknown> = {
       user_id: userId,
       updated_at: new Date().toISOString()
     }
-    
+
     // Map onboarding data to preference fields
     if (data.userType) updateData.user_type = data.userType
     if (data.propertyAddress) updateData.property_address = data.propertyAddress
@@ -74,14 +74,14 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
     if (data.propertyPlaceId) updateData.property_place_id = data.propertyPlaceId
     if (data.professionalRole) updateData.professional_role = data.professionalRole
     if (data.landlordUnits) updateData.landlord_units = data.landlordUnits
-    
+
     // Property details
     if (data.propertyStories) updateData.property_stories = data.propertyStories
     if (data.propertyBedrooms) updateData.property_bedrooms = data.propertyBedrooms
     if (data.propertyBathrooms) updateData.property_bathrooms = data.propertyBathrooms
     if (data.roomsPerFloor) updateData.rooms_per_floor = JSON.stringify(data.roomsPerFloor)
     if (data.propertyStructures) updateData.property_structures = JSON.stringify(data.propertyStructures)
-    
+
     // Insurance fields - map new fields and maintain legacy compatibility
     if (data.hasPropertyInsurance !== undefined) updateData.has_property_insurance = data.hasPropertyInsurance
     if (data.hasFloodInsurance !== undefined) updateData.has_flood_insurance = data.hasFloodInsurance
@@ -90,25 +90,25 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
     if (data.insuranceProvider) updateData.insurance_provider = data.insuranceProvider
     if (data.otherInsuranceType) updateData.other_insurance_type = data.otherInsuranceType
     if (data.otherInsuranceDescription) updateData.other_insurance_description = data.otherInsuranceDescription
-    
+
     // Completion tracking
     if (data.profileComplete !== undefined) updateData.profile_completed = data.profileComplete
     if (data.insuranceComplete !== undefined) updateData.insurance_completed = data.insuranceComplete
     if (data.onboardingComplete !== undefined) updateData.onboarding_completed = data.onboardingComplete
     if (data.completedAt) updateData.onboarding_completed_at = data.completedAt
-    
+
     const { error } = await supabase
       .from('user_preferences')
       .upsert(updateData)
-    
+
     if (error) {
       logger.error('Failed to save onboarding progress', { userId, error })
       return { success: false, error: error.message }
     }
-    
+
     logger.info('Onboarding progress saved', { userId, step: data })
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error saving onboarding progress', { userId }, error as Error)
     return { success: false, error: 'Failed to save progress' }
@@ -121,7 +121,7 @@ export async function saveOnboardingProgress(userId: string, data: Partial<Onboa
 export async function completeOnboarding(userId: string, finalData: OnboardingData) {
   try {
     const supabase = await await createClient()
-    
+
     const completionData = {
       user_id: userId,
       user_type: finalData.userType,
@@ -132,14 +132,14 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       property_place_id: finalData.propertyPlaceId,
       professional_role: finalData.professionalRole,
       landlord_units: finalData.landlordUnits,
-      
+
       // Property details
       property_stories: finalData.propertyStories,
       property_bedrooms: finalData.propertyBedrooms,
       property_bathrooms: finalData.propertyBathrooms,
       rooms_per_floor: finalData.roomsPerFloor ? JSON.stringify(finalData.roomsPerFloor) : null,
       property_structures: finalData.propertyStructures ? JSON.stringify(finalData.propertyStructures) : null,
-      
+
       // Insurance fields
       has_property_insurance: finalData.hasPropertyInsurance,
       has_flood_insurance: finalData.hasFloodInsurance,
@@ -148,7 +148,7 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       insurance_provider: finalData.insuranceProvider,
       other_insurance_type: finalData.otherInsuranceType,
       other_insurance_description: finalData.otherInsuranceDescription,
-      
+
       // Completion tracking
       profile_completed: true,
       insurance_completed: true,
@@ -156,26 +156,26 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       onboarding_completed_at: new Date().toISOString(),
       updated_at: new Date().toISOString()
     }
-    
+
     const { error } = await supabase
       .from('user_preferences')
       .upsert(completionData)
-    
+
     if (error) {
       logger.error('Failed to complete onboarding', { userId, error })
       return { success: false, error: error.message }
     }
-    
+
     // Create property record for homeowners and landlords
-    if ((finalData.userType === 'homeowner' || finalData.userType === 'landlord') && 
+    if ((finalData.userType === 'homeowner' || finalData.userType === 'landlord') &&
         finalData.propertyAddress && finalData.addressVerified) {
-      
+
       const propertyData = {
         user_id: userId,
         name: finalData.userType === 'homeowner' ? 'My Home' : 'Rental Property',
-        address: { 
+        address: {
           street: finalData.propertyAddress,
-          place_id: finalData.propertyPlaceId 
+          place_id: finalData.propertyPlaceId
         },
         latitude: finalData.propertyLatitude,
         longitude: finalData.propertyLongitude,
@@ -201,20 +201,20 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }
-      
+
       const { data: newProperty, error: propertyError } = await supabase
         .from('properties')
         .insert(propertyData)
         .select()
         .single()
-      
+
       if (propertyError) {
         logger.error('Failed to create property during onboarding', { userId, propertyError })
         // Don't fail the entire onboarding if property creation fails
         // User can add property manually later
       } else {
         logger.info('Property created during onboarding', { userId, address: finalData.propertyAddress })
-        
+
         // Trigger property enrichment if property was created successfully
         if (newProperty && finalData.propertyLatitude && finalData.propertyLongitude) {
           try {
@@ -231,38 +231,38 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
                 }
               }
             )
-            
+
             if (enrichmentError) {
-              logger.error('Property enrichment failed', { 
-                propertyId: newProperty.id, 
+              logger.error('Property enrichment failed', {
+                propertyId: newProperty.id,
                 error: enrichmentError
               })
             } else if (enrichmentResult) {
-              logger.info('Property enriched successfully', { 
+              logger.info('Property enriched successfully', {
                 propertyId: newProperty.id,
                 version: enrichmentResult.version,
-                cost: enrichmentResult.cost 
+                cost: enrichmentResult.cost
               })
             }
           } catch (enrichmentError) {
             // Don't fail onboarding if enrichment fails
-            logger.error('Error enriching property', { 
-              propertyId: newProperty.id, 
-              error: enrichmentError 
+            logger.error('Error enriching property', {
+              propertyId: newProperty.id,
+              error: enrichmentError
             })
           }
         }
       }
     }
-    
+
     // Track onboarding completion analytics
-    logger.info('Onboarding completed', { 
-      userId, 
+    logger.info('Onboarding completed', {
+      userId,
       userType: finalData.userType,
       hasInsurance: finalData.hasInsurance,
       hasProperty: !!finalData.propertyAddress
     })
-    
+
     // Send welcome email
     try {
       await sendWelcomeEmail(userId)
@@ -271,9 +271,9 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
       // Don't fail onboarding if email fails
       logger.error('Failed to send welcome email', { userId }, emailError as Error)
     }
-    
+
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error completing onboarding', { userId }, error as Error)
     return { success: false, error: 'Failed to complete onboarding' }
@@ -284,9 +284,9 @@ export async function completeOnboarding(userId: string, finalData: OnboardingDa
  * Track onboarding step completion for analytics
  */
 export async function trackOnboardingStep(
-  userId: string, 
-  step: number, 
-  stepName: string, 
+  userId: string,
+  step: number,
+  stepName: string,
   timeSpent?: number
 ) {
   try {
@@ -298,7 +298,7 @@ export async function trackOnboardingStep(
       timeSpent,
       timestamp: new Date().toISOString()
     })
-    
+
     return { success: true }
   } catch (error) {
     logger.error('Error tracking onboarding step', { userId, step }, error as Error)

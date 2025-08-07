@@ -53,7 +53,7 @@
     rgba(0, 56, 168, 0.08) 70%,
     rgba(220, 20, 60, 0.03) 100%);
   border: 2px solid;
-  border-image: linear-gradient(45deg, 
+  border-image: linear-gradient(45deg,
     rgba(57, 255, 20, 0.5),
     rgba(6, 182, 212, 0.3),
     rgba(0, 56, 168, 0.4)) 1;
@@ -81,14 +81,14 @@
 
 /* Glow effect for CTAs */
 .liquid-glass-glow {
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(57, 255, 20, 0.3),
     0 8px 32px rgba(0, 0, 0, 0.1);
   transition: box-shadow 0.3s ease;
 }
 
 .liquid-glass-glow:hover {
-  box-shadow: 
+  box-shadow:
     0 0 30px rgba(57, 255, 20, 0.5),
     0 12px 48px rgba(0, 0, 0, 0.2);
 }
@@ -98,8 +98,8 @@
 /* Hero background with animated gradient */
 .hero-liquid-glass {
   background: radial-gradient(
-    circle at 50% 50%, 
-    rgba(0, 56, 168, 0.15) 0%, 
+    circle at 50% 50%,
+    rgba(0, 56, 168, 0.15) 0%,
     rgba(43, 45, 66, 0.8) 100%
   );
   backdrop-filter: blur(40px) saturate(1.5);
@@ -237,11 +237,11 @@
     animation: none;
     transition: none;
   }
-  
+
   .liquid-glass-hover::before {
     display: none;
   }
-  
+
   .hero-liquid-glass::before {
     animation: none;
     opacity: 0.1;
@@ -257,12 +257,12 @@
     border: 2px solid currentColor;
     backdrop-filter: none;
   }
-  
+
   .hero-liquid-glass {
     background: var(--brand-gunmetal);
     backdrop-filter: none;
   }
-  
+
   .hero-liquid-glass::before {
     display: none;
   }
@@ -281,14 +281,14 @@
 /* ClaimGuardian neon accent integration */
 .liquid-glass-neon {
   border-color: rgba(57, 255, 20, 0.3);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(57, 255, 20, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .liquid-glass-neon:hover {
   border-color: rgba(57, 255, 20, 0.5);
-  box-shadow: 
+  box-shadow:
     0 0 30px rgba(57, 255, 20, 0.2),
     inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
@@ -322,7 +322,7 @@
     rgba(255, 255, 255, 0.06) 50%,
     rgba(255, 255, 255, 0.10) 100%);
   border: 1px solid rgba(57, 255, 20, 0.3);
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(57, 255, 20, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.1);
   position: relative;
@@ -355,11 +355,11 @@
     rgba(0, 56, 168, 0.08) 70%,
     rgba(220, 20, 60, 0.03) 100%);
   border: 2px solid;
-  border-image: linear-gradient(45deg, 
+  border-image: linear-gradient(45deg,
     rgba(57, 255, 20, 0.5),
     rgba(6, 182, 212, 0.3),
     rgba(0, 56, 168, 0.4)) 1;
-  box-shadow: 
+  box-shadow:
     0 0 20px rgba(57, 255, 20, 0.3),
     0 8px 32px rgba(0, 0, 0, 0.1);
   border-radius: 2rem;

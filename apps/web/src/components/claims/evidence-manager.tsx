@@ -66,14 +66,14 @@ interface Evidence {
   }
 }
 
-type EvidenceCategory = 
-  | 'damage_photos' 
-  | 'repair_estimates' 
-  | 'invoices' 
-  | 'receipts' 
-  | 'correspondence' 
-  | 'policy_documents' 
-  | 'weather_reports' 
+type EvidenceCategory =
+  | 'damage_photos'
+  | 'repair_estimates'
+  | 'invoices'
+  | 'receipts'
+  | 'correspondence'
+  | 'policy_documents'
+  | 'weather_reports'
   | 'expert_reports'
   | 'other'
 
@@ -164,7 +164,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
       for (let i = 0; i < files.length; i++) {
         const file = files[i]
         const fileName = `${claimId}/${Date.now()}-${file.name}`
-        
+
         // Simulate upload progress
         setUploadProgress((i + 0.5) / files.length * 100)
 
@@ -204,7 +204,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
 
       setEvidence(prev => [...prev, ...uploadedEvidence])
       toast.success(`Uploaded ${uploadedEvidence.length} files successfully`)
-      
+
       if (onUpdate) {
         onUpdate([...evidence, ...uploadedEvidence])
       }
@@ -227,14 +227,14 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
   }
 
   const handleCategoryUpdate = async (evidenceId: string, category: EvidenceCategory) => {
-    setEvidence(prev => prev.map(e => 
+    setEvidence(prev => prev.map(e =>
       e.id === evidenceId ? { ...e, category } : e
     ))
     toast.success('Category updated')
   }
 
   const handleDescriptionUpdate = async (evidenceId: string, description: string) => {
-    setEvidence(prev => prev.map(e => 
+    setEvidence(prev => prev.map(e =>
       e.id === evidenceId ? { ...e, description } : e
     ))
   }
@@ -246,11 +246,11 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
 
   const filteredEvidence = evidence.filter(e => {
     const matchesCategory = selectedCategory === 'all' || e.category === selectedCategory
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       e.fileName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       e.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
-    
+
     return matchesCategory && matchesSearch
   })
 
@@ -259,13 +259,13 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
       {filteredEvidence.map(item => {
         const config = CATEGORY_CONFIG[item.category]
         const Icon = config.icon
-        
+
         return (
           <Card key={item.id} className="bg-gray-800 border-gray-700 overflow-hidden">
             <div className="relative aspect-video bg-gray-900">
               {item.fileType.startsWith('image/') ? (
-                <Image 
-                  src={item.fileUrl} 
+                <Image
+                  src={item.fileUrl}
                   alt={item.fileName}
                   fill
                   className="object-cover"
@@ -275,7 +275,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                   <Icon className="w-16 h-16 text-gray-600" />
                 </div>
               )}
-              
+
               <div className="absolute top-2 right-2 flex gap-2">
                 <Button
                   size="sm"
@@ -364,7 +364,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
       {filteredEvidence.map(item => {
         const config = CATEGORY_CONFIG[item.category]
         const Icon = config.icon
-        
+
         return (
           <Card key={item.id} className="bg-gray-800 border-gray-700">
             <CardContent className="p-4">
@@ -372,7 +372,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                 <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${config.color}`}>
                   <Icon className="w-6 h-6 text-white" />
                 </div>
-                
+
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
                     <h4 className="font-medium text-white">{item.fileName}</h4>
@@ -451,12 +451,12 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                 <h3 className="font-medium text-white">{date}</h3>
                 <div className="flex-1 h-px bg-gray-700" />
               </div>
-              
+
               <div className="ml-9 space-y-4">
                 {items.map(item => {
                   const config = CATEGORY_CONFIG[item.category]
                   const Icon = config.icon
-                  
+
                   return (
                     <div key={item.id} className="flex gap-4">
                       <div className="relative">
@@ -465,7 +465,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                         </div>
                         <div className="absolute top-10 left-5 w-px h-full bg-gray-700" />
                       </div>
-                      
+
                       <Card className="flex-1 bg-gray-800 border-gray-700">
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between mb-2">
@@ -479,11 +479,11 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                               {config.label}
                             </Badge>
                           </div>
-                          
+
                           {item.description && (
                             <p className="text-sm text-gray-400 mb-2">{item.description}</p>
                           )}
-                          
+
                           {item.aiAnalysis && (
                             <div className="bg-gray-700/50 rounded-lg p-3 mt-3">
                               <div className="flex items-center gap-2 mb-2">
@@ -515,7 +515,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
             {evidence.length} files • {(evidence.reduce((sum, e) => sum + e.fileSize, 0) / 1024 / 1024).toFixed(2)} MB total
           </p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Button
             variant="outline"
@@ -528,7 +528,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
             <Plus className="w-4 h-4 mr-2" />
             Add Evidence
           </Button>
-          
+
           <input
             id="evidence-upload"
             type="file"
@@ -563,7 +563,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
               className="pl-10"
             />
           </div>
-          
+
           <Select value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as EvidenceCategory | 'all')}>
             <SelectTrigger className="w-[200px]">
               <SelectValue placeholder="All Categories" />
@@ -647,7 +647,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                 <X className="w-4 h-4" />
               </Button>
             </div>
-            
+
             <div className="p-4 overflow-y-auto max-h-[calc(90vh-200px)]">
               {selectedFile.fileType.startsWith('image/') ? (
                 <Image
@@ -676,7 +676,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                   </div>
                 </div>
               )}
-              
+
               <div className="mt-6 space-y-4">
                 <div>
                   <Label htmlFor="file-category">Category</Label>
@@ -697,7 +697,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                     </SelectContent>
                   </Select>
                 </div>
-                
+
                 <div>
                   <Label htmlFor="file-description">Description</Label>
                   <Textarea
@@ -711,7 +711,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                     rows={3}
                   />
                 </div>
-                
+
                 {selectedFile.aiAnalysis && (
                   <div className="bg-gray-800 rounded-lg p-4">
                     <h4 className="font-medium text-white mb-3 flex items-center gap-2">
@@ -719,7 +719,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
                       AI Analysis
                     </h4>
                     <p className="text-sm text-gray-300 mb-3">{selectedFile.aiAnalysis.summary}</p>
-                    
+
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-400">Detected Damage:</span>

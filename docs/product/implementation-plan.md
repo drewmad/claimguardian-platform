@@ -30,33 +30,33 @@ graph TB
         B[Admin Dashboard]
         C[Team Management]
     end
-    
+
     subgraph "API Layer"
         D[Subscription API]
         E[Team Management API]
         F[Analytics API]
         G[Payment Webhooks]
     end
-    
+
     subgraph "Business Logic"
         H[Billing Engine]
         I[RBAC System]
         J[Usage Tracker]
         K[Analytics Engine]
     end
-    
+
     subgraph "Data Layer"
         L[(Supabase DB)]
         M[(Redis Cache)]
         N[(Analytics Store)]
     end
-    
+
     subgraph "External Services"
         O[Stripe]
         P[Email Service]
         Q[AI Services]
     end
-    
+
     A --> D
     B --> E
     C --> F
@@ -325,7 +325,7 @@ ALTER TABLE claims ADD COLUMN team_id UUID REFERENCES teams(id);
 ALTER TABLE ai_usage_logs ADD COLUMN team_id UUID REFERENCES teams(id);
 
 -- Enhanced user profiles
-ALTER TABLE profiles 
+ALTER TABLE profiles
     ADD COLUMN role TEXT DEFAULT 'user',
     ADD COLUMN permissions JSONB DEFAULT '{}',
     ADD COLUMN onboarding_completed BOOLEAN DEFAULT FALSE,

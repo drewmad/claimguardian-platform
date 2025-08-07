@@ -7,7 +7,7 @@ This system enables Claude to log errors, learn from mistakes, and improve perfo
 The Claude Learning System consists of four main components:
 
 1. **Error Logging** (`claude-error-logger.ts`) - Captures and categorizes Claude errors
-2. **Database Schema** (`supabase/schema.sql`) - Stores errors and learnings persistently  
+2. **Database Schema** (`supabase/schema.sql`) - Stores errors and learnings persistently
 3. **Learning Context** (`claude-learning-context.ts`) - Provides pre-task analysis and recommendations
 4. **Dashboard** (`claude-learning-dashboard.tsx`) - Visualizes learning progress and patterns
 
@@ -260,7 +260,7 @@ const weeklyPatterns = await claudeErrorLogger.getErrorPatterns('week')
 const monthlyPatterns = await claudeErrorLogger.getErrorPatterns('month')
 
 // Compare trends
-const improving = weeklyPatterns.filter(p => 
+const improving = weeklyPatterns.filter(p =>
   monthlyPatterns.find(m => m.pattern === p.pattern)?.resolved < p.resolved
 )
 ```

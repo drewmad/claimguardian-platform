@@ -59,7 +59,7 @@ class RealTimeStatusManager {
         if (process.env.NODE_ENV === 'development') {
           logger.debug('Real-time status connected')
         }
-        
+
         // Subscribe to AI service updates
         this.send({
           type: 'subscribe',
@@ -70,7 +70,7 @@ class RealTimeStatusManager {
       this.ws.onmessage = (event) => {
         try {
           const data = JSON.parse(event.data)
-          
+
           if (data.type === 'status_update') {
             const update: StatusUpdate = {
               ...data.payload,
@@ -110,7 +110,7 @@ class RealTimeStatusManager {
       if (process.env.NODE_ENV === 'development') {
         logger.debug(`Attempting to reconnect... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`)
       }
-      
+
       setTimeout(() => {
         this.connect()
       }, this.reconnectDelay * this.reconnectAttempts)
@@ -128,7 +128,7 @@ class RealTimeStatusManager {
 
   public subscribeToStatusUpdates(callback: (update: StatusUpdate) => void) {
     this.statusUpdateCallbacks.push(callback)
-    
+
     return () => {
       this.statusUpdateCallbacks = this.statusUpdateCallbacks.filter(cb => cb !== callback)
     }
@@ -136,7 +136,7 @@ class RealTimeStatusManager {
 
   public subscribeToSystemStatus(callback: (status: SystemStatus) => void) {
     this.systemStatusCallbacks.push(callback)
-    
+
     return () => {
       this.systemStatusCallbacks = this.systemStatusCallbacks.filter(cb => cb !== callback)
     }
@@ -148,7 +148,7 @@ class RealTimeStatusManager {
       id: `status-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date()
     }
-    
+
     this.send({
       type: 'status_update',
       payload: fullUpdate
@@ -181,13 +181,13 @@ export function useRealTimeStatus() {
 
   useEffect(() => {
     statusManagerRef.current = getRealTimeStatusManager()
-    
+
     const unsubscribeUpdates = statusManagerRef.current.subscribeToStatusUpdates((update) => {
       setStatusUpdates(prev => {
         const newUpdates = [update, ...prev].slice(0, 50) // Keep last 50 updates
         return newUpdates
       })
-      
+
       // Show toast for important updates
       if (update.type === 'error') {
         toast.error(update.message)
@@ -195,11 +195,11 @@ export function useRealTimeStatus() {
         toast.success(update.message)
       }
     })
-    
+
     const unsubscribeStatus = statusManagerRef.current.subscribeToSystemStatus((status) => {
       setSystemStatus(status)
     })
-    
+
     return () => {
       unsubscribeUpdates()
       unsubscribeStatus()
@@ -237,9 +237,9 @@ export function useFallbackStatus() {
       id: `status-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       timestamp: new Date()
     }
-    
+
     setStatusUpdates(prev => [fullUpdate, ...prev].slice(0, 50))
-    
+
     // Show toast for important updates
     if (update.type === 'error') {
       toast.error(update.message)

@@ -15,32 +15,32 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Checkbox } from '@/components/ui/checkbox'
-import { 
-  Table, 
-  TableBody, 
-  TableCell, 
-  TableHead, 
-  TableHeader, 
-  TableRow 
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow
 } from '@/components/ui/table'
-import { 
-  Dialog, 
-  DialogContent, 
-  DialogDescription, 
-  DialogHeader, 
-  DialogTitle, 
-  DialogTrigger 
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
 } from '@/components/ui/dialog'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
-import { 
-  Key, 
-  Plus, 
-  Copy, 
-  Trash2, 
-  Activity, 
-  TrendingUp, 
-  Clock, 
+import {
+  Key,
+  Plus,
+  Copy,
+  Trash2,
+  Activity,
+  TrendingUp,
+  Clock,
   AlertTriangle,
   Eye,
   EyeOff
@@ -89,7 +89,7 @@ export default function APIKeysPage() {
   const [apiKeys, setAPIKeys] = useState<APIKey[]>([])
   const [stats, setStats] = useState<APIUsageStats | null>(null)
   const [loading, setLoading] = useState(true)
-  
+
   // Create key modal state
   const [createModalOpen, setCreateModalOpen] = useState(false)
   const [newKeyName, setNewKeyName] = useState('')
@@ -192,7 +192,7 @@ export default function APIKeysPage() {
   }
 
   const togglePermission = (permissionId: string) => {
-    setSelectedPermissions(prev => 
+    setSelectedPermissions(prev =>
       prev.includes(permissionId)
         ? prev.filter(id => id !== permissionId)
         : [...prev, permissionId]
@@ -229,7 +229,7 @@ export default function APIKeysPage() {
                 Create a new API key for external integrations. You can set specific permissions for different endpoints.
               </DialogDescription>
             </DialogHeader>
-            
+
             {newKeyResult ? (
               <div className="space-y-4">
                 <Alert>
@@ -238,7 +238,7 @@ export default function APIKeysPage() {
                     Your API key has been created successfully. Copy it now - you won't be able to see it again.
                   </AlertDescription>
                 </Alert>
-                
+
                 <div className="space-y-2">
                   <Label>API Key</Label>
                   <div className="flex items-center space-x-2">
@@ -264,7 +264,7 @@ export default function APIKeysPage() {
                     </Button>
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end space-x-2">
                   <Button
                     variant="outline"
@@ -288,7 +288,7 @@ export default function APIKeysPage() {
                     placeholder="My API Key"
                   />
                 </div>
-                
+
                 <div>
                   <Label>Permissions</Label>
                   <p className="text-sm text-gray-600 mb-3">
@@ -317,7 +317,7 @@ export default function APIKeysPage() {
                     ))}
                   </div>
                 </div>
-                
+
                 <div className="flex justify-end space-x-2">
                   <Button variant="outline" onClick={() => setCreateModalOpen(false)}>
                     Cancel
@@ -354,7 +354,7 @@ export default function APIKeysPage() {
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-400">Success Rate</p>
                   <p className="text-2xl font-bold text-white">
-                    {stats.total_requests > 0 
+                    {stats.total_requests > 0
                       ? Math.round((stats.successful_requests / stats.total_requests) * 100)
                       : 0}%
                   </p>

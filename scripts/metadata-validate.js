@@ -25,7 +25,7 @@ const validValues = {
 
 async function validateMetadata() {
   console.log('🔍 Starting metadata validation...\n');
-  
+
   const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ignorePatterns,
   });
@@ -38,9 +38,9 @@ async function validateMetadata() {
     if (!fileExtensions.includes(path.extname(file))) {
       continue;
     }
-    
+
     const content = await readFile(file, 'utf-8');
-    
+
     // Skip files without metadata (they should be caught by audit)
     if (!content.includes('@fileMetadata')) {
       continue;

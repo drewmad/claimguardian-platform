@@ -26,15 +26,15 @@ export function CookieConsentSimple() {
     // Accept ALL cookies with single click
     localStorage.setItem('cookie-consent', 'accepted')
     localStorage.setItem('cookie-consent-date', new Date().toISOString())
-    
+
     logger.track('cookie_consent_accepted_simple')
-    
+
     // Initialize all analytics/tracking
     if (typeof window !== 'undefined') {
       // Google Analytics, Sentry, etc.
       logger.info('All tracking initialized')
     }
-    
+
     setIsVisible(false)
   }
 
@@ -42,9 +42,9 @@ export function CookieConsentSimple() {
     // Reject ALL optional cookies (only necessary cookies remain)
     localStorage.setItem('cookie-consent', 'necessary-only')
     localStorage.setItem('cookie-consent-date', new Date().toISOString())
-    
+
     logger.track('cookie_consent_necessary_only')
-    
+
     setIsVisible(false)
   }
 
@@ -58,8 +58,8 @@ export function CookieConsentSimple() {
           <div className="flex-1 space-y-3">
             <p className="text-sm text-slate-300">
               We use cookies for analytics, personalization, and ads.{' '}
-              <a 
-                href="/legal/privacy-policy" 
+              <a
+                href="/legal/privacy-policy"
                 className="text-blue-400 hover:text-blue-300 underline"
               >
                 Learn more

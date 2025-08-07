@@ -41,7 +41,7 @@ try {
   // Final check with --frozen-lockfile --dry-run to ensure strict match
   console.log('Performing final lockfile validation...');
   execSync('pnpm install --frozen-lockfile', { stdio: 'inherit' });
-  
+
   console.log('✅ Lockfile is up to date');
   logValidation(true, 'Lockfile valid');
   process.exit(0);

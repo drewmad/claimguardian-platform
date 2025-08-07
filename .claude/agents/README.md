@@ -440,7 +440,7 @@ Creates visual representations and documentation of database schemas.
 ```markdown
 ---
 name: schema-visualizer
-description: Use for generating database diagrams, schema documentation, and relationship visualizations  
+description: Use for generating database diagrams, schema documentation, and relationship visualizations
 tools: Bash, Edit, Read, Create, mcp__supabase__list_tables
 ---
 
@@ -453,7 +453,7 @@ erDiagram
     User ||--o{ Order : places
     Order ||--|{ OrderItem : contains
     Product ||--o{ OrderItem : "ordered in"
-    
+
     User {
         uuid id PK
         string email UK
@@ -482,7 +482,7 @@ Table users {
   email varchar [unique, not null]
   name varchar
   created_at timestamp [default: `now()`]
-  
+
   Indexes {
     email [unique]
   }

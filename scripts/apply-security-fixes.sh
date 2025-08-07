@@ -61,18 +61,18 @@ if supabase db push "$SQL_FILE" --project-ref "$PROJECT_ID"; then
     echo -e "${GREEN}✓ Security fixes applied successfully via CLI${NC}"
 else
     echo -e "${YELLOW}CLI method failed, trying alternative approach...${NC}"
-    
+
     # Method 2: Use direct migration API
     echo -e "${BLUE}Method 2: Using migration API...${NC}"
-    
+
     # Read SQL file
     SQL_CONTENT=$(cat "$SQL_FILE")
-    
+
     # Apply via migration
     if command -v curl >/dev/null 2>&1; then
         SUPABASE_URL="${NEXT_PUBLIC_SUPABASE_URL:-}"
         SERVICE_KEY="${SUPABASE_SERVICE_ROLE_KEY:-}"
-        
+
         if [ -n "$SUPABASE_URL" ] && [ -n "$SERVICE_KEY" ]; then
             # Try to apply via REST API
             curl -X POST \
@@ -84,7 +84,7 @@ else
                 2>/dev/null || echo -e "${YELLOW}API method also failed${NC}"
         fi
     fi
-    
+
     # Method 3: Manual instructions
     echo ""
     echo -e "${YELLOW}Automated application failed. Please apply manually:${NC}"
@@ -101,10 +101,10 @@ cat > /tmp/verify-security.sql << 'EOF'
 -- Security Verification
 
 -- Check views for SECURITY DEFINER
-SELECT 
+SELECT
     schemaname,
     viewname,
-    CASE 
+    CASE
         WHEN definition LIKE '%SECURITY DEFINER%' THEN 'SECURITY DEFINER (VULNERABLE)'
         ELSE 'security_invoker (SAFE)'
     END as security_mode
@@ -114,26 +114,26 @@ WHERE schemaname = 'public'
 
 -- Check tables with RLS but no policies
 WITH rls_tables AS (
-    SELECT 
+    SELECT
         c.relname as table_name
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE n.nspname = 'public' 
+    WHERE n.nspname = 'public'
         AND c.relkind = 'r'
         AND c.relrowsecurity = true
 ),
 policy_counts AS (
-    SELECT 
+    SELECT
         tablename,
         COUNT(*) as policy_count
     FROM pg_policies
     WHERE schemaname = 'public'
     GROUP BY tablename
 )
-SELECT 
+SELECT
     rt.table_name,
     COALESCE(pc.policy_count, 0) as policies,
-    CASE 
+    CASE
         WHEN COALESCE(pc.policy_count, 0) = 0 THEN 'NO POLICIES (VULNERABLE)'
         ELSE 'Has policies (SAFE)'
     END as status

@@ -182,7 +182,7 @@ export interface EmergencyResource {
 
 export class CrisisResponseCoordinator {
   private supabase = createClient()
-  
+
   // Crisis severity thresholds
   private readonly CRISIS_THRESHOLDS = {
     ACTIVATION_RADIUS: 50, // miles from user property
@@ -204,7 +204,7 @@ export class CrisisResponseCoordinator {
 
       // Check for active crisis events in the area
       const activeCrises = await this.getActiveCrisesNearProperties(userProperties)
-      
+
       // Process each crisis for user impact
       const relevantCrises: CrisisEvent[] = []
       for (const crisis of activeCrises) {
@@ -302,7 +302,7 @@ export class CrisisResponseCoordinator {
     propertyId?: string
   ): Promise<CrisisAction[]> {
     const actions: CrisisAction[] = []
-    
+
     // Base actions for all crisis types
     const baseActions = this.getBaseActions(crisisEvent.severity)
     actions.push(...baseActions)
@@ -630,8 +630,8 @@ export class CrisisResponseCoordinator {
       if (!response) return false
 
       // Update action
-      const updatedActions = response.action_plan.map(action => 
-        action.id === actionId 
+      const updatedActions = response.action_plan.map(action =>
+        action.id === actionId
           ? { ...action, completion_status: status, completion_notes: notes }
           : action
       )

@@ -30,7 +30,7 @@ interface PolicyChatResponse {
   }>
 }
 
-const SYSTEM_PROMPT = `You are an expert insurance policy advisor specializing in Florida property insurance. 
+const SYSTEM_PROMPT = `You are an expert insurance policy advisor specializing in Florida property insurance.
 You help homeowners understand their insurance policies, coverage limits, deductibles, and claim procedures.
 
 Key guidelines:
@@ -76,7 +76,7 @@ Deno.serve(async (req) => {
     // If we have a policy document, add it to context
     if (policyDocument) {
       let policyContent = ""
-      
+
       if (policyDocument.fileUrl) {
         // Fetch and process the document
         const response = await fetch(policyDocument.fileUrl)
@@ -88,7 +88,7 @@ Deno.serve(async (req) => {
         if (policyDocument.type === 'application/pdf' || policyDocument.fileUrl.endsWith('.pdf')) {
           const arrayBuffer = await response.arrayBuffer()
           const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
-          
+
           // Use Gemini to extract text from PDF
           const extractionResult = await model.generateContent({
             contents: [{
@@ -121,7 +121,7 @@ Deno.serve(async (req) => {
             text: `Here is the insurance policy document to reference:\n\n${policyContent}\n\nPlease use this document to answer questions about the policy.`
           }]
         })
-        
+
         chatHistory.push({
           role: "model",
           parts: [{ text: "I've received and analyzed the insurance policy document. I'm ready to answer any questions you have about your coverage, deductibles, claim procedures, or any other aspects of your policy." }]
@@ -203,7 +203,7 @@ Deno.serve(async (req) => {
   timestamp: new Date().toISOString(),
   message: 'Policy chat error:', error
 }));
-    
+
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : 'An error occurred processing your request',

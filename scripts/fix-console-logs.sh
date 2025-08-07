@@ -30,24 +30,24 @@ import { logger } from "@/lib/logger/production-logger"
 replace_console_statements() {
     local file="$1"
     echo "Processing: $file"
-    
+
     # Add logger import
     add_logger_import "$file"
-    
+
     # Replace different console methods
     sed -i '' -E '
         # Replace console.log with logger.info
         s/console\.log\(([^)]+)\)/logger.info(\1)/g
-        
-        # Replace console.warn with logger.warn  
+
+        # Replace console.warn with logger.warn
         s/console\.warn\(([^)]+)\)/logger.warn(\1)/g
-        
+
         # Replace console.error with logger.error
         s/console\.error\(([^)]+)\)/logger.error(\1)/g
-        
+
         # Replace console.debug with logger.debug
         s/console\.debug\(([^)]+)\)/logger.debug(\1)/g
-        
+
         # Replace console.info with logger.info
         s/console\.info\(([^)]+)\)/logger.info(\1)/g
     ' "$file"
@@ -60,7 +60,7 @@ find apps/web/src -name "*.ts" -o -name "*.tsx" | while read -r file; do
     if [[ "$file" == *".test."* ]] || [[ "$file" == *".spec."* ]] || [[ "$file" == *"__tests__"* ]] || [[ "$file" == *"__mocks__"* ]]; then
         continue
     fi
-    
+
     # Check if file contains console statements
     if grep -q "console\." "$file"; then
         replace_console_statements "$file"
@@ -72,16 +72,16 @@ echo "🌐 Processing Edge Functions..."
 find supabase/functions -name "*.ts" | while read -r file; do
     if grep -q "console\." "$file"; then
         echo "Processing Edge Function: $file"
-        
+
         # For Edge Functions, replace console.log with structured logging
         sed -i '' -E '
             # Replace console.log with structured logging
             s/console\.log\(([^)]+)\)/console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "info", message: \1 }))/g
-            
+
             # Replace console.warn with structured logging
             s/console\.warn\(([^)]+)\)/console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "warn", message: \1 }))/g
-            
-            # Replace console.error with structured logging  
+
+            # Replace console.error with structured logging
             s/console\.error\(([^)]+)\)/console.log(JSON.stringify({ timestamp: new Date().toISOString(), level: "error", message: \1 }))/g
         ' "$file"
     fi

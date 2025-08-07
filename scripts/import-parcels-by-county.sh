@@ -160,9 +160,9 @@ echo ""
 import_county() {
     local county_code=$1
     local county_name=$2
-    
+
     echo -e "${BLUE}Processing $county_name County (Code: $county_code)...${NC}"
-    
+
     # Export to CSV with WHERE clause for this county
     echo "  Converting to CSV..."
     ogr2ogr -f CSV \
@@ -172,21 +172,21 @@ import_county() {
         -where "CO_NO = $county_code" \
         -lco GEOMETRY=AS_WKT \
         -progress
-    
+
     # Check if CSV was created and has data
     if [[ -f "$WORK_DIR/csv_by_county/county_${county_code}_${county_name}.csv" ]]; then
         local row_count=$(wc -l < "$WORK_DIR/csv_by_county/county_${county_code}_${county_name}.csv")
         if [[ $row_count -gt 1 ]]; then
             echo "  CSV created with $((row_count-1)) parcels"
-            
+
             # Import to database using COPY
             echo "  Importing to database..."
             PGPASSWORD="$SUPABASE_DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" << EOF
 \\copy florida_parcels (CO_NO, PARCEL_ID, FILE_NO, ASMNT_YR, BAS_STRT, PHY_ADDR1, PHY_ADDR2, PHY_CITY, PHY_ZIPCD, SITE_ADDR, SITE_CITY, SITE_ZIP, OWN_NAME, OWN_ADDR1, OWN_ADDR2, OWN_CITY, OWN_STATE, OWN_ZIPCD, OWN_STATE_DOM, VI_CD, EXMPT_CD, WDPRES_CD, DPV_CD, SUBDIVISION, BLOCK, LOT, SHAPE_WKT) FROM '$WORK_DIR/csv_by_county/county_${county_code}_${county_name}.csv' WITH CSV HEADER;
 EOF
-            
+
             echo -e "  ${GREEN}✓ $county_name County imported successfully${NC}"
-            
+
             # Clean up CSV to save space
             rm "$WORK_DIR/csv_by_county/county_${county_code}_${county_name}.csv"
         else
@@ -195,7 +195,7 @@ EOF
     else
         echo -e "  ${RED}✗ Failed to create CSV for $county_name County${NC}"
     fi
-    
+
     echo ""
 }
 
@@ -218,7 +218,7 @@ case $choice in
             fi
         done
         ;;
-    
+
     2)
         echo -e "${BLUE}Importing priority counties...${NC}"
         # Priority counties by population
@@ -229,7 +229,7 @@ case $choice in
             fi
         done
         ;;
-    
+
     3)
         read -p "Enter county code (11-77): " county_code
         county_name=$(get_county_name $county_code)
@@ -239,7 +239,7 @@ case $choice in
             echo -e "${RED}Invalid county code${NC}"
         fi
         ;;
-    
+
     4)
         read -p "Enter county code to resume from (11-77): " start_code
         for county_code in {11..77}; do

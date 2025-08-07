@@ -16,7 +16,7 @@ jobs:
           sudo apt-get install -y gdal-bin python3-pip
           pip install aiohttp orjson python-dotenv
       - name: Fetch FDOT
-        env: 
+        env:
           FDOT_BASE: ${{ secrets.FDOT_BASE }}
           OUTDIR: fdot_download
         run: python fetch_parcels.py

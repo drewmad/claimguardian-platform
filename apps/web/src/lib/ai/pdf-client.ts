@@ -15,11 +15,11 @@ export async function getPdfLib() {
   if (typeof window === 'undefined') {
     throw new Error('PDF.js can only be used in the browser')
   }
-  
+
   const pdfjs = await import('pdfjs-dist')
-  
+
   // Configure worker to use local file
   pdfjs.GlobalWorkerOptions.workerSrc = `/pdf.worker.min.js`
-  
+
   return pdfjs
 }

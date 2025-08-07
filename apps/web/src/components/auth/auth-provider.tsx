@@ -76,7 +76,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [error, setError] = useState<AuthError | null>(null)
   const [sessionWarning, setSessionWarning] = useState(false)
   const supabase = createBrowserSupabaseClient()
-  
+
   // Use secure debug logging only in development
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
@@ -99,9 +99,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       try {
         logger.info('Initializing authentication')
         logger.info('Authentication provider initializing')
-        
+
         const { data: { user: validatedUser }, error: userError } = await supabase.auth.getUser()
-        
+
         if (userError) {
           logger.error('Failed to get initial user', {}, userError)
           // Handle refresh token errors
@@ -113,7 +113,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
           return
         }
-        
+
         if (!validatedUser) {
           logger.warn('No validated user found, session cleared')
           if (mounted) {
@@ -132,26 +132,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             loading: false,
             error: null
           }
-          
+
           setUser(updates.user)
           setLoading(updates.loading)
           setError(updates.error)
-          
+
           if (session?.user) {
             // Check if session is still valid before starting monitoring
             const now = Date.now() / 1000
             const timeUntilExpiry = session.expires_at! - now
-            
+
             logger.setUser({
               id: session.user.id,
               email: session.user.email
             })
-            logger.info('User session restored', { 
-              userId: session.user.id, 
-              timeUntilExpiry: Math.round(timeUntilExpiry / 60) 
+            logger.info('User session restored', {
+              userId: session.user.id,
+              timeUntilExpiry: Math.round(timeUntilExpiry / 60)
             })
             logger.info('Session started', { userId: session.user.id, event: 'session_start' })
-            
+
             // Only start session monitoring if session has sufficient time left and not already monitoring
             if (timeUntilExpiry > 300) { // 5 minutes minimum to avoid rapid refresh cycles
               sessionManager.startMonitoring()
@@ -209,19 +209,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { data: { subscription } } = supabase.auth.onAuthStateChange(
         async (event, session) => {
           logger.info('Auth state changed', { event, userId: session?.user?.id })
-          
+
           if (!mounted) return
-          
+
           // Handle token errors in auth state changes
           if (event === 'TOKEN_REFRESHED' && session === null) {
             logger.error('Token refresh failed - session is null')
             await handleAuthError({ message: 'refresh_token_not_found' }, supabase)
             return
           }
-          
+
           // Update user state
           setUser(session?.user ?? null)
-          
+
           // Update logger context
           if (session?.user) {
             logger.setUser({
@@ -236,22 +236,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           switch (event) {
             case 'SIGNED_IN':
               logger.track('user_signed_in', { userId: session?.user?.id })
-              
+
               // Check session validity before starting monitoring - avoid duplicate monitoring
               if (session) {
                 const now = Date.now() / 1000
                 const timeUntilExpiry = session.expires_at! - now
-                
+
                 // Stop any existing monitoring first to prevent duplicates
                 sessionManager.stopMonitoring()
-                
+
                 if (timeUntilExpiry > 300) { // 5 minutes minimum
                   sessionManager.startMonitoring()
                 } else {
                   logger.warn('New session expires very soon, skipping monitoring', { timeUntilExpiry })
                 }
               }
-              
+
               setLoading(false)
               break
             case 'SIGNED_OUT':
@@ -274,7 +274,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           }
         }
       )
-      
+
       authSubscription = subscription
     }
 
@@ -298,9 +298,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data: userData, error } = await authService.signIn({ email, password })
-      
+
       if (error) {
         setError(error)
         return false
@@ -310,7 +310,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.track('signin_success', { userId: userData.id })
         return true
       }
-      
+
       return false
     } catch (err) {
       logger.error('Unexpected signin error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
@@ -330,9 +330,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data: userData, error } = await authService.signUp(data)
-      
+
       if (error) {
         setError(error)
         return false
@@ -342,7 +342,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         logger.track('signup_success', { userId: userData.id })
         return true
       }
-      
+
       return false
     } catch (err) {
       logger.error('Unexpected signup error', { userId: user?.id }, err instanceof Error ? err : new Error(String(err)))
@@ -362,9 +362,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { error } = await authService.signOut()
-      
+
       if (error) {
         setError(error)
         setLoading(false)
@@ -391,9 +391,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { error } = await authService.resetPassword(email)
-      
+
       if (error) {
         setError(error)
         return
@@ -417,9 +417,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     try {
       setLoading(true)
       setError(null)
-      
+
       const { data, error } = await authService.updatePassword(newPassword)
-      
+
       if (error) {
         setError(error)
         return

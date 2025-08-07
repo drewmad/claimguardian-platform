@@ -90,7 +90,7 @@ export function DamageAnalyzerEnhanced({
       if (error) throw error
 
       setAnalysis(data.coverageAnalysis)
-      
+
       if (onAnalysisComplete) {
         onAnalysisComplete(data)
       }
@@ -120,8 +120,8 @@ export function DamageAnalyzerEnhanced({
             <p className="text-gray-400 mb-6">
               To analyze how your damage is covered, we need your insurance policy on file.
             </p>
-            <PolicyUpload 
-              propertyId={propertyId} 
+            <PolicyUpload
+              propertyId={propertyId}
               onUploadComplete={() => {
                 setShowPolicyUpload(false)
                 refetchPolicies()
@@ -198,7 +198,7 @@ export function DamageAnalyzerEnhanced({
             <p className="text-sm text-gray-400">Estimated Repair Cost</p>
             <p className="text-2xl font-bold text-white">${estimatedValue.toLocaleString()}</p>
           </div>
-          
+
           <Button
             onClick={analyzeDamageWithPolicy}
             disabled={analyzing || !activePolicy}
@@ -221,8 +221,8 @@ export function DamageAnalyzerEnhanced({
           <CardContent className="space-y-6">
             {/* Coverage Status */}
             <div className={`p-4 rounded-lg border ${
-              analysis.isCovered 
-                ? 'bg-green-500/10 border-green-500/30' 
+              analysis.isCovered
+                ? 'bg-green-500/10 border-green-500/30'
                 : 'bg-red-500/10 border-red-500/30'
             }`}>
               <div className="flex items-center gap-2 mb-2">

@@ -180,7 +180,7 @@ POST /functions/v1/florida-parcels-monitor
 - **Miami-Dade** (950k parcels): 250-400 parcels/minute
 
 ### Optimization Tips
-1. **Batch Size**: 
+1. **Batch Size**:
    - Small counties: 500-1000
    - Large counties: 1000-2000
    - Error-prone: 100-500

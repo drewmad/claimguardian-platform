@@ -12,11 +12,11 @@
  */
 
 import { describe, it, expect, beforeEach, jest } from '@jest/globals'
-import { 
-  createClaim, 
-  updateClaim, 
-  deleteClaim, 
-  getClaim, 
+import {
+  createClaim,
+  updateClaim,
+  deleteClaim,
+  getClaim,
   getUserClaims,
   uploadClaimDocument,
   generateClaimReport
@@ -48,7 +48,7 @@ describe('Claims Server Actions', () => {
   beforeEach(() => {
     jest.clearAllMocks()
     mockSupabase = createSupabaseMock()
-    
+
     // Set up default auth mock for successful authentication
     mockSupabase.auth.getUser.mockResolvedValue({
       data: { user: mockUser },
@@ -76,9 +76,9 @@ describe('Claims Server Actions', () => {
         created_at: '2024-03-15T10:00:00Z'
       }
 
-      mockSupabase._mockQuery.single.mockResolvedValue({ 
-        data: mockClaimResponse, 
-        error: null 
+      mockSupabase._mockQuery.single.mockResolvedValue({
+        data: mockClaimResponse,
+        error: null
       })
 
       const result = await createClaim(validClaimData)
@@ -246,8 +246,8 @@ describe('Claims Server Actions', () => {
 
       const mockStorageFrom = jest.fn().mockReturnValue({
         upload: mockUpload,
-        getPublicUrl: jest.fn().mockReturnValue({ 
-          data: { publicUrl: 'https://example.com/file.pdf' } 
+        getPublicUrl: jest.fn().mockReturnValue({
+          data: { publicUrl: 'https://example.com/file.pdf' }
         })
       })
 
@@ -326,7 +326,7 @@ describe('Claims Server Actions', () => {
       const mockEqResult = jest.fn() as jest.MockedFunction<any>
       mockEqResult.mockResolvedValue({ error: null })
       const mockEq = jest.fn().mockReturnValue({ eq: mockEqResult })
-      
+
       const mockDelete = jest.fn().mockReturnValue({ eq: mockEq })
       ;(mockSupabase._mockQuery.delete as jest.Mock) = mockDelete
 

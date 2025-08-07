@@ -236,8 +236,8 @@ export default function ClaimAssistantPage() {
   }, [])
 
   const toggleTask = (stepId: string, taskId: string) => {
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
+    setSteps(prevSteps =>
+      prevSteps.map(step =>
         step.id === stepId
           ? {
               ...step,
@@ -264,12 +264,12 @@ export default function ClaimAssistantPage() {
   const moveToNextStep = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1)
-      
+
       // Update step statuses
-      setSteps(prevSteps => 
+      setSteps(prevSteps =>
         prevSteps.map((step, index) => ({
           ...step,
-          status: 
+          status:
             index < currentStep + 1 ? 'completed' :
             index === currentStep + 1 ? 'current' : 'upcoming'
         }))
@@ -292,12 +292,12 @@ export default function ClaimAssistantPage() {
   const generateClaimSummary = async () => {
     setIsGenerating(true)
     const startTime = Date.now()
-    
+
     try {
-      const completedTasks = steps.flatMap(step => 
+      const completedTasks = steps.flatMap(step =>
         step.tasks.filter(task => task.completed).map(task => `${step.title}: ${task.title}`)
       )
-      
+
       const prompt = `Generate a concise claim summary based on these completed tasks:
 ${completedTasks.join('\n')}
 
@@ -324,7 +324,7 @@ Format the summary for submission to an insurance company.`
           'claude-3-sonnet': 0.003,
           'grok-beta': 0.002
         }
-        
+
         const tokens = Math.ceil(responseLength / 4) // Rough token estimate
         const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
         return parseFloat(cost.toFixed(6))
@@ -354,7 +354,7 @@ Format the summary for submission to an insurance company.`
       } catch (primaryError) {
         // Try fallback model
         const fallbackProvider = getProviderFromModel(fallbackModel)
-        
+
         try {
           const response = await aiClient.chat([
             { role: 'system', content: 'You are a helpful insurance claim assistant.' },
@@ -459,7 +459,7 @@ Format the summary for submission to an insurance company.`
                         const isActive = index === currentStep
                         const isCompleted = step.status === 'completed'
                         const isExpanded = expandedCompletedSteps.has(index)
-                        
+
                         return (
                           <div key={step.id}>
                             <button

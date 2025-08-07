@@ -116,7 +116,7 @@ export const mockApiResponse = (data: any, status = 200) => {
   }
   response.clone = jest.fn(() => ({ ...response }))
   const typedResponse = response as Response
-  
+
   ;(global.fetch as jest.MockedFunction<typeof fetch>).mockResolvedValueOnce(typedResponse)
   return typedResponse
 }
@@ -141,13 +141,13 @@ export const mockApiError = (error: string, status = 500) => {
   }
   response.clone = jest.fn(() => ({ ...response }))
   const typedResponse = response as Response
-  
+
   ;(global.fetch as jest.MockedFunction<typeof fetch>).mockRejectedValueOnce(new Error(error))
   return typedResponse
 }
 
 // Wait for async operations
-export const waitForLoadingToFinish = () => 
+export const waitForLoadingToFinish = () =>
   new Promise(resolve => setTimeout(resolve, 0))
 
 // Mock timer helpers
@@ -168,7 +168,7 @@ export const mockLocalStorage = (): Storage & {
   key: jest.MockedFunction<(index: number) => string | null>;
 } => {
   const store: Record<string, string> = {}
-  
+
   const localStorage = {
     getItem: jest.fn((key: string) => store[key] || null),
     setItem: jest.fn((key: string, value: string) => {
@@ -185,7 +185,7 @@ export const mockLocalStorage = (): Storage & {
       return Object.keys(store).length
     },
   }
-  
+
   return localStorage as Storage & typeof localStorage
 }
 
@@ -206,9 +206,9 @@ export const mockConsole = (): {
     error: jest.fn(),
     debug: jest.fn(),
   }
-  
+
   Object.assign(console, consoleMock)
-  
+
   return {
     ...consoleMock,
     restore: () => Object.assign(console, originalConsole),
@@ -221,7 +221,7 @@ export const throwError = (message: string) => {
 }
 
 // Helper to simulate network delays
-export const delay = (ms: number) => 
+export const delay = (ms: number) =>
   new Promise(resolve => setTimeout(resolve, ms))
 
 // Helper to simulate user interactions

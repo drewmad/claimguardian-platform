@@ -85,21 +85,21 @@ export function MobileFieldApp() {
     syncQueue: [],
     currentDoc: undefined
   })
-  
+
   const [docs, setDocs] = useState<FieldDocumentation[]>([])
   const [activeDoc, setActiveDoc] = useState<FieldDocumentation | null>(null)
   const [isRecording, setIsRecording] = useState(false)
   const [userLimits, setUserLimits] = useState<UserLimits | null>(null)
   const [showNewDocForm, setShowNewDocForm] = useState(false)
   const [newDocType, setNewDocType] = useState<'damage' | 'inspection' | 'inventory' | 'maintenance'>('damage')
-  
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
 
   useEffect(() => {
     initializeApp()
     setupEventListeners()
-    
+
     return () => {
       cleanupEventListeners()
     }
@@ -117,13 +117,13 @@ export function MobileFieldApp() {
       const cameraPermission = await checkPermission('camera')
       const micPermission = await checkPermission('microphone')
       const gpsPermission = await checkPermission('geolocation')
-      
+
       // Get battery info
       const batteryInfo = await getBatteryInfo()
-      
+
       // Load stored documentation
       const storedDocs = loadStoredDocs()
-      
+
       setAppState(prev => ({
         ...prev,
         cameraPermission,
@@ -132,7 +132,7 @@ export function MobileFieldApp() {
         battery: batteryInfo,
         syncQueue: storedDocs.filter(doc => doc.status === 'syncing')
       }))
-      
+
       setDocs(storedDocs)
     } catch (error) {
       console.error('Failed to initialize mobile app:', error)
@@ -215,7 +215,7 @@ export function MobileFieldApp() {
   const handleOnlineStatus = () => {
     const isOnline = navigator.onLine
     setAppState(prev => ({ ...prev, isOnline }))
-    
+
     if (isOnline && appState.syncQueue.length > 0) {
       syncPendingDocuments()
     }
@@ -225,19 +225,19 @@ export function MobileFieldApp() {
     for (const doc of appState.syncQueue) {
       try {
         await syncDocumentToServer(doc)
-        
+
         setAppState(prev => ({
           ...prev,
           syncQueue: prev.syncQueue.filter(d => d.id !== doc.id)
         }))
-        
-        setDocs(prev => prev.map(d => 
+
+        setDocs(prev => prev.map(d =>
           d.id === doc.id ? { ...d, status: 'synced' } : d
         ))
       } catch (error) {
         console.error('Failed to sync document:', doc.id, error)
-        
-        setDocs(prev => prev.map(d => 
+
+        setDocs(prev => prev.map(d =>
           d.id === doc.id ? { ...d, status: 'failed' } : d
         ))
       }
@@ -248,7 +248,7 @@ export function MobileFieldApp() {
     // Sync document to Supabase in production
     try {
       const supabase = createClient()
-      
+
       // Create field documentation record
       const { data, error } = await supabase
         .from('field_documentation')
@@ -268,25 +268,25 @@ export function MobileFieldApp() {
         })
         .select()
         .single()
-      
+
       if (error) throw error
-      
+
       // Upload media files if any
       if (doc.media.length > 0) {
         for (const media of doc.media) {
           const file = await fetch(media.url).then(r => r.blob())
           const fileName = `${data.id}/${Date.now()}-${media.type}.jpg`
-          
+
           const { error: uploadError } = await supabase.storage
             .from('field-documentation')
             .upload(fileName, file)
-          
+
           if (uploadError) {
             console.warn('Failed to upload media:', uploadError)
           }
         }
       }
-      
+
       return data
     } catch (error) {
       console.error('Failed to sync to server:', error)
@@ -372,10 +372,10 @@ export function MobileFieldApp() {
     if (!activeDoc) return
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ 
-        video: { facingMode: 'environment' } 
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
       })
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.play()
@@ -391,12 +391,12 @@ export function MobileFieldApp() {
 
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    
+
     canvas.width = videoRef.current.videoWidth
     canvas.height = videoRef.current.videoHeight
-    
+
     ctx?.drawImage(videoRef.current, 0, 0)
-    
+
     canvas.toBlob((blob) => {
       if (blob) {
         const url = URL.createObjectURL(blob)
@@ -405,7 +405,7 @@ export function MobileFieldApp() {
           url,
           size: blob.size
         }
-        
+
         setActiveDoc(prev => prev ? {
           ...prev,
           media: [...prev.media, newMedia]
@@ -428,16 +428,16 @@ export function MobileFieldApp() {
 
     const updatedDocs = [...docs, finalDoc]
     setDocs(updatedDocs)
-    
+
     // Save to localStorage
     localStorage.setItem('claimguardian-field-docs', JSON.stringify(updatedDocs))
-    
+
     if (appState.isOnline) {
       setAppState(prev => ({
         ...prev,
         syncQueue: [...prev.syncQueue, finalDoc]
       }))
-      
+
       syncDocumentToServer(finalDoc)
     }
 
@@ -523,7 +523,7 @@ export function MobileFieldApp() {
               {appState.syncQueue.length} pending sync
             </div>
           </div>
-          
+
           {/* Quick Limits Overview */}
           <div className="grid grid-cols-2 gap-2 text-xs">
             <div className="flex justify-between">
@@ -586,11 +586,11 @@ export function MobileFieldApp() {
                     playsInline
                     muted
                   />
-                  
+
                   <div className="flex gap-2">
-                    <Button 
-                      onClick={capturePhoto} 
-                      size="sm" 
+                    <Button
+                      onClick={capturePhoto}
+                      size="sm"
                       className="flex-1"
                       disabled={!appState.cameraPermission}
                     >
@@ -604,7 +604,7 @@ export function MobileFieldApp() {
                       </Button>
                     )}
                   </div>
-                  
+
                   {!appState.cameraPermission && (
                     <div className="mt-2 p-2 bg-yellow-900/50 rounded text-xs text-yellow-400">
                       Camera permission required for photo documentation
@@ -651,7 +651,7 @@ export function MobileFieldApp() {
       {showNewDocForm && (
         <div className="p-4 space-y-4">
           <h2 className="text-xl font-bold">New Field Documentation</h2>
-          
+
           <div className="grid grid-cols-2 gap-3">
             {[
               { type: 'damage', icon: Shield, label: 'Damage Assessment', permission: 'access_damage_analyzer' },
@@ -660,13 +660,13 @@ export function MobileFieldApp() {
               { type: 'maintenance', icon: Home, label: 'Maintenance Log', permission: 'create_properties' }
             ].map(({ type, icon: Icon, label, permission }) => {
               const canAccess = userLimits ? (userLimits.tier !== 'free' || type === 'damage') : false
-              
+
               return (
-                <Card 
+                <Card
                   key={type}
                   className={`cursor-pointer transition-colors ${
-                    canAccess 
-                      ? 'bg-gray-800 border-gray-700 hover:border-blue-500' 
+                    canAccess
+                      ? 'bg-gray-800 border-gray-700 hover:border-blue-500'
                       : 'bg-gray-900 border-gray-800 opacity-50'
                   }`}
                   onClick={() => canAccess && startDocumentation(type as 'damage' | 'inspection' | 'inventory' | 'maintenance')}
@@ -689,9 +689,9 @@ export function MobileFieldApp() {
               )
             })}
           </div>
-          
-          <Button 
-            variant="outline" 
+
+          <Button
+            variant="outline"
             onClick={() => setShowNewDocForm(false)}
             className="w-full"
           >
@@ -741,9 +741,9 @@ export function MobileFieldApp() {
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <p className="text-sm text-gray-400 mb-2">{doc.description}</p>
-                    
+
                     <div className="flex items-center justify-between text-xs text-gray-500">
                       <div className="flex items-center gap-1">
                         <Clock className="h-3 w-3" />

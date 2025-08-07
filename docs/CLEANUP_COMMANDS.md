@@ -61,7 +61,7 @@ pnpm build
 #### `pnpm fix:all`
 Smart fix everything possible:
 - Smart lint fixes
-- Generate database types  
+- Generate database types
 - Build packages
 
 ### 🏭 CI/CD Simulation

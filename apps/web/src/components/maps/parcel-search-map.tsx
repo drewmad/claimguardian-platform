@@ -24,40 +24,40 @@ interface FloridaParcel {
   parcelId: string
   folio: string
   coordinates: [number, number]
-  
+
   // Owner Information
   ownerName: string
   ownerAddress: string
-  
+
   // Property Information
   propertyAddress: string
   propertyUse: string
   propertyType: string
-  
+
   // Assessment Information
   justValue: number
   assessedValue: number
   taxableValue: number
-  
+
   // Physical Characteristics
   lotSize: number // acres
   squareFootage: number
   yearBuilt: number
   bedrooms?: number
   bathrooms?: number
-  
+
   // Location Information
   county: string
   municipality?: string
   subdvName?: string
-  
+
   // Legal Description
   legalDescription: string
-  
+
   // Sales Information
   lastSalePrice?: number
   lastSaleDate?: string
-  
+
   // Additional Fields
   exemptions: string[]
   schoolDistrict?: string
@@ -97,7 +97,7 @@ export function ParcelSearchMap({
   const [showFilters, setShowFilters] = useState(false)
   const [mapStyle, setMapStyle] = useState<'streets' | 'satellite' | 'dark'>('streets')
   const [selectedCounty, setSelectedCounty] = useState<string>('')
-  
+
   const [filters, setFilters] = useState<Partial<SearchFilters>>({
     county: '',
     municipality: '',
@@ -263,16 +263,16 @@ export function ParcelSearchMap({
 
   const handleSearch = useCallback(async () => {
     if (!searchQuery.trim()) return
-    
+
     setIsSearching(true)
-    
+
     // Mock search - in real app would query Supabase florida_parcels table
-    const results = mockParcels.filter(parcel => 
+    const results = mockParcels.filter(parcel =>
       parcel.parcelId.includes(searchQuery) ||
       parcel.ownerName.toLowerCase().includes(searchQuery.toLowerCase()) ||
       parcel.propertyAddress.toLowerCase().includes(searchQuery.toLowerCase())
     )
-    
+
     setSearchResults(results)
     setIsSearching(false)
   }, [searchQuery, mockParcels])
@@ -289,7 +289,7 @@ export function ParcelSearchMap({
     const dataStr = JSON.stringify(filteredParcels, null, 2)
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
     const exportFileDefaultName = `florida_parcels_${new Date().toISOString().split('T')[0]}.json`
-    
+
     const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)
     linkElement.setAttribute('download', exportFileDefaultName)

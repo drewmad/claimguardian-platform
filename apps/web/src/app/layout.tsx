@@ -95,8 +95,8 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${inter.className} antialiased bg-gray-900 text-white`}>
         {/* Skip to main content link for accessibility */}
-        <a 
-          href="#main-content" 
+        <a
+          href="#main-content"
           className="skip-link sr-only-focusable focus:ring-2 focus:ring-accent-border focus:ring-offset-2"
           aria-label="Skip to main content"
         >
@@ -115,15 +115,15 @@ export default function RootLayout({
                         {children}
                       </div>
                     </PWAProvider>
-                    
+
                     {/* Enhanced toast system with accessibility */}
                     <div aria-live="polite" aria-atomic="true">
-                      <CustomToaster 
+                      <CustomToaster
                         position="top-right"
                         theme="system"
                       />
                     </div>
-                    
+
                     {/* Cookie consent with proper ARIA attributes */}
                     <div role="complementary" aria-label="Cookie consent">
                       <CookieConsentSimple />
@@ -139,10 +139,10 @@ export default function RootLayout({
         </CriticalErrorBoundary>
 
         {/* Hidden screen reader announcement area */}
-        <div 
-          id="screen-reader-announcements" 
-          aria-live="assertive" 
-          aria-atomic="true" 
+        <div
+          id="screen-reader-announcements"
+          aria-live="assertive"
+          aria-atomic="true"
           className="sr-only"
         />
       </body>

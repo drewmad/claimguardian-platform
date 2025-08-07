@@ -20,7 +20,7 @@ const headers = {
 
 async function callEdgeFunction(functionName, payload) {
   const url = `${SUPABASE_URL}/functions/v1/${functionName}`
-  
+
   try {
     const response = await fetch(url, {
       method: 'POST',
@@ -41,15 +41,15 @@ async function callEdgeFunction(functionName, payload) {
 
 async function loadDataSource(source) {
   console.log(`\n📡 Loading ${source}...`)
-  
+
   try {
     const result = await callEdgeFunction('load-geospatial-data', { source })
-    
+
     console.log(`✅ ${source} loaded:`)
     console.log(`   - Processed: ${result.processed} records`)
     console.log(`   - Errors: ${result.errors}`)
     console.log(`   - Total: ${result.total}`)
-    
+
     return result
   } catch (error) {
     console.error(`❌ Failed to load ${source}:`, error.message)
@@ -59,53 +59,53 @@ async function loadDataSource(source) {
 
 async function loadFloridaParcels(county = null, maxRecords = 5000) {
   console.log(`\n🏘️  Loading Florida parcels${county ? ` for ${county} County` : ''}...`)
-  
+
   let offset = 0
   const limit = 1000
   let totalProcessed = 0
-  
+
   while (totalProcessed < maxRecords) {
     try {
       console.log(`   Fetching records ${offset + 1} to ${offset + limit}...`)
-      
+
       const result = await callEdgeFunction('load-florida-parcels', {
         county,
         offset,
         limit
       })
-      
+
       totalProcessed += result.processed
       console.log(`   ✓ Batch complete: ${result.processed} processed, ${result.errors} errors`)
-      
+
       if (!result.hasMore || totalProcessed >= maxRecords) {
         break
       }
-      
+
       offset = result.nextOffset
-      
+
       // Small delay between batches
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
     } catch (error) {
       console.error(`❌ Error loading parcels at offset ${offset}:`, error.message)
       break
     }
   }
-  
+
   console.log(`\n✅ Florida parcels loaded: ${totalProcessed} total records`)
   return totalProcessed
 }
 
 async function listAvailableSources() {
   console.log('\n📋 Available data sources:')
-  
+
   try {
     const result = await callEdgeFunction('load-geospatial-data', { operation: 'list' })
-    
+
     result.sources.forEach(source => {
       console.log(`   - ${source.id}: ${source.name}`)
     })
-    
+
     return result.sources
   } catch (error) {
     console.error('❌ Failed to list sources:', error.message)
@@ -116,10 +116,10 @@ async function listAvailableSources() {
 async function main() {
   const args = process.argv.slice(2)
   const command = args[0]
-  
+
   console.log('🌍 ClaimGuardian Geospatial Data Loader')
   console.log('=====================================')
-  
+
   if (!command || command === 'help') {
     console.log('\nUsage:')
     console.log('  node load-geospatial-via-edge-functions.js <command> [options]')
@@ -134,12 +134,12 @@ async function main() {
     console.log('  node load-geospatial-via-edge-functions.js load-parcels Miami-Dade')
     return
   }
-  
+
   switch (command) {
     case 'list':
       await listAvailableSources()
       break
-      
+
     case 'load-all':
       const sources = ['fire_stations', 'active_wildfires', 'fema_flood_zones']
       for (const source of sources) {
@@ -148,7 +148,7 @@ async function main() {
         await new Promise(resolve => setTimeout(resolve, 2000))
       }
       break
-      
+
     case 'load':
       const source = args[1]
       if (!source) {
@@ -158,18 +158,18 @@ async function main() {
       }
       await loadDataSource(source)
       break
-      
+
     case 'load-parcels':
       const county = args[1]
       const maxRecords = parseInt(args[2]) || 5000
       await loadFloridaParcels(county, maxRecords)
       break
-      
+
     default:
       console.error(`Unknown command: ${command}`)
       console.log('Run "node load-geospatial-via-edge-functions.js help" for usage')
   }
-  
+
   console.log('\n✨ Done!')
 }
 

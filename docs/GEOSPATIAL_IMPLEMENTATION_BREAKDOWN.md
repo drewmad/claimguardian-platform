@@ -10,7 +10,7 @@ The geospatial features implementation involves integrating Florida property par
   - Enable spatial data support in PostgreSQL
   - Add geometry column types
   - Enable spatial functions
-  
+
 - [ ] **1.2 Create Geospatial Schema**
   - Create `geospatial` schema namespace
   - Set up proper permissions
@@ -42,7 +42,7 @@ The geospatial features implementation involves integrating Florida property par
   - Convert GDB to GeoJSON
   - Process shapefiles
   - Clean and validate data
-  - Scripts: 
+  - Scripts:
     - `process-gdb-to-geojson.sh`
     - `process-shapefile-to-geojson.sh`
     - `clean_parcels_csv.py`

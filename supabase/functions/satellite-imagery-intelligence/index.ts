@@ -95,14 +95,14 @@ async function getSatelliteImagery(lat: number, lng: number, options: any): Prom
     // 2. Planet Labs API
     // 3. Google Earth Engine
     // 4. Airbus OneAtlas API
-    
+
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
       message: `[Satellite Mock] Fetching imagery for: ${lat}, ${lng}`
     }));
     return generateMockSatelliteData(lat, lng, options)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -116,7 +116,7 @@ async function getSatelliteImagery(lat: number, lng: number, options: any): Prom
 function generateMockSatelliteData(lat: number, lng: number, options: any): any {
   const isFloridaLocation = lat > 24 && lat < 31 && lng > -88 && lng < -79
   const resolution = options.resolution || 'medium'
-  
+
   // Generate current imagery
   const currentImagery = {
     imageUrl: `https://mock-satellite-api.com/image?lat=${lat}&lng=${lng}&res=${resolution}&date=2024-08-04`,
@@ -126,7 +126,7 @@ function generateMockSatelliteData(lat: number, lng: number, options: any): any 
     cloudCover: Math.random() * 20, // 0-20% cloud cover
     qualityScore: 85 + Math.random() * 15 // 85-100 quality score
   }
-  
+
   // Generate historical imagery if requested
   const historicalImagery = []
   if (options.includeHistorical) {
@@ -134,7 +134,7 @@ function generateMockSatelliteData(lat: number, lng: number, options: any): any 
       const daysAgo = i * 30 // Monthly intervals
       const date = new Date()
       date.setDate(date.getDate() - daysAgo)
-      
+
       historicalImagery.push({
         imageUrl: `https://mock-satellite-api.com/image?lat=${lat}&lng=${lng}&res=${resolution}&date=${date.toISOString().split('T')[0]}`,
         captureDate: date.toISOString(),
@@ -145,7 +145,7 @@ function generateMockSatelliteData(lat: number, lng: number, options: any): any 
       })
     }
   }
-  
+
   return {
     currentImagery,
     historicalImagery,
@@ -168,20 +168,20 @@ function analyzeDamageFromImagery(imagery: any, damageTypes: string[]): any {
   // Simulate AI-powered damage analysis
   const hasHurricaneDamage = damageTypes?.includes('hurricane')
   const hasFloodDamage = damageTypes?.includes('flood')
-  
+
   let damageLevel: 'none' | 'minor' | 'moderate' | 'severe' | 'total' = 'none'
   let damagePercentage = 0
-  
+
   if (hasHurricaneDamage) {
     damageLevel = Math.random() > 0.7 ? 'severe' : Math.random() > 0.4 ? 'moderate' : 'minor'
-    damagePercentage = damageLevel === 'severe' ? 60 + Math.random() * 30 : 
-                       damageLevel === 'moderate' ? 25 + Math.random() * 35 : 
+    damagePercentage = damageLevel === 'severe' ? 60 + Math.random() * 30 :
+                       damageLevel === 'moderate' ? 25 + Math.random() * 35 :
                        5 + Math.random() * 20
   } else if (hasFloodDamage) {
     damageLevel = Math.random() > 0.6 ? 'moderate' : 'minor'
     damagePercentage = damageLevel === 'moderate' ? 30 + Math.random() * 25 : 10 + Math.random() * 20
   }
-  
+
   const affectedAreas = []
   if (damageLevel !== 'none') {
     if (hasHurricaneDamage) {
@@ -194,7 +194,7 @@ function analyzeDamageFromImagery(imagery: any, damageTypes: string[]): any {
         ],
         description: 'Missing shingles and structural damage visible from satellite imagery'
       })
-      
+
       if (damageLevel === 'severe') {
         affectedAreas.push({
           type: 'structure',
@@ -206,7 +206,7 @@ function analyzeDamageFromImagery(imagery: any, damageTypes: string[]): any {
         })
       }
     }
-    
+
     if (hasFloodDamage) {
       affectedAreas.push({
         type: 'landscape',
@@ -218,7 +218,7 @@ function analyzeDamageFromImagery(imagery: any, damageTypes: string[]): any {
       })
     }
   }
-  
+
   return {
     overallDamageLevel: damageLevel,
     damagePercentage: Math.round(damagePercentage),
@@ -229,19 +229,19 @@ function analyzeDamageFromImagery(imagery: any, damageTypes: string[]): any {
 
 function generateRepairPriority(affectedAreas: any[], damageLevel: string): any[] {
   const priorities = []
-  
+
   affectedAreas.forEach(area => {
     if (area.type === 'roof') {
       priorities.push({
         area: 'Roof repair/replacement',
         urgency: damageLevel === 'severe' ? 'immediate' : damageLevel === 'moderate' ? 'urgent' : 'scheduled',
-        estimatedCost: damageLevel === 'severe' ? 25000 + Math.random() * 20000 : 
-                       damageLevel === 'moderate' ? 8000 + Math.random() * 12000 : 
+        estimatedCost: damageLevel === 'severe' ? 25000 + Math.random() * 20000 :
+                       damageLevel === 'moderate' ? 8000 + Math.random() * 12000 :
                        2000 + Math.random() * 6000,
         description: 'Address structural integrity and weather protection'
       })
     }
-    
+
     if (area.type === 'structure') {
       priorities.push({
         area: 'Structural repairs',
@@ -250,7 +250,7 @@ function generateRepairPriority(affectedAreas: any[], damageLevel: string): any[
         description: 'Critical structural repairs required for safety'
       })
     }
-    
+
     if (area.type === 'landscape') {
       priorities.push({
         area: 'Landscape restoration',
@@ -260,7 +260,7 @@ function generateRepairPriority(affectedAreas: any[], damageLevel: string): any[
       })
     }
   })
-  
+
   return priorities.sort((a, b) => {
     const urgencyOrder = { immediate: 4, urgent: 3, scheduled: 2, deferred: 1 }
     return urgencyOrder[b.urgency as keyof typeof urgencyOrder] - urgencyOrder[a.urgency as keyof typeof urgencyOrder]
@@ -275,19 +275,19 @@ function performChangeDetection(currentImagery: any, historicalImagery: any[]): 
       timelineAnalysis: 'No historical imagery available for comparison'
     }
   }
-  
+
   // Simulate AI change detection algorithm
   const changesDetected = Math.random() > 0.4 // 60% chance of detecting changes
   const changeAreas = []
-  
+
   if (changesDetected) {
     // Generate 1-3 change areas
     const numChanges = Math.floor(Math.random() * 3) + 1
-    
+
     for (let i = 0; i < numChanges; i++) {
       const changeTypes = ['damage', 'construction', 'vegetation', 'infrastructure']
       const changeType = changeTypes[Math.floor(Math.random() * changeTypes.length)]
-      
+
       changeAreas.push({
         type: changeType,
         severity: Math.random() > 0.6 ? 'major' : Math.random() > 0.3 ? 'moderate' : 'minor',
@@ -303,11 +303,11 @@ function performChangeDetection(currentImagery: any, historicalImagery: any[]): 
       })
     }
   }
-  
+
   return {
     changesDetected,
     changeAreas,
-    timelineAnalysis: changesDetected 
+    timelineAnalysis: changesDetected
       ? `Detected ${changeAreas.length} significant change(s) between ${historicalImagery[0].captureDate.split('T')[0]} and ${currentImagery.captureDate.split('T')[0]}`
       : 'No significant changes detected in the analyzed time period'
   }
@@ -315,9 +315,9 @@ function performChangeDetection(currentImagery: any, historicalImagery: any[]): 
 
 function analyzePropertyCondition(imagery: any, damageAssessment: any): any {
   const overallCondition = damageAssessment.overallDamageLevel
-  
+
   return {
-    structureCondition: overallCondition === 'none' ? 'Excellent' : 
+    structureCondition: overallCondition === 'none' ? 'Excellent' :
                        overallCondition === 'minor' ? 'Good' :
                        overallCondition === 'moderate' ? 'Fair' : 'Poor',
     roofCondition: overallCondition === 'none' ? 'Intact' :
@@ -337,10 +337,10 @@ function analyzePropertyCondition(imagery: any, damageAssessment: any): any {
 function generateInsuranceIntelligence(damageAssessment: any, imagery: any): any {
   const damageLevel = damageAssessment.overallDamageLevel
   const totalRepairCost = damageAssessment.repairPriority?.reduce((sum: number, item: any) => sum + item.estimatedCost, 0) || 0
-  
+
   return {
-    documentationQuality: imagery.qualityScore > 90 ? 'excellent' : 
-                         imagery.qualityScore > 75 ? 'good' : 
+    documentationQuality: imagery.qualityScore > 90 ? 'excellent' :
+                         imagery.qualityScore > 75 ? 'good' :
                          imagery.qualityScore > 60 ? 'adequate' : 'insufficient',
     claimSupportLevel: damageLevel === 'severe' || damageLevel === 'total' ? 'strong' :
                       damageLevel === 'moderate' ? 'moderate' : 'weak',
@@ -392,7 +392,7 @@ Deno.serve(async (req: Request) => {
 
     // Get satellite imagery data
     const imageryData = await getSatelliteImagery(location.lat, location.lng, options)
-    
+
     let intelligence: SatelliteIntelligence = {}
 
     switch (analysisType) {
@@ -472,7 +472,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Satellite Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',
@@ -494,7 +494,7 @@ function calculateSatelliteCost(resolution: string = 'medium', analysisType: str
     'medium': 2.50,
     'low': 1.00
   }
-  
+
   const analysisCosts = {
     'damage-assessment': 2.00,
     'before-after-comparison': 3.50,
@@ -502,7 +502,7 @@ function calculateSatelliteCost(resolution: string = 'medium', analysisType: str
     'storm-impact': 4.00,
     'complete-satellite-intel': 5.00
   }
-  
-  return (baseCosts[resolution as keyof typeof baseCosts] || baseCosts.medium) + 
+
+  return (baseCosts[resolution as keyof typeof baseCosts] || baseCosts.medium) +
          (analysisCosts[analysisType as keyof typeof analysisCosts] || 2.00)
 }

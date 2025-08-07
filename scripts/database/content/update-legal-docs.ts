@@ -27,7 +27,7 @@ ClaimGuardian respects your privacy and is committed to protecting your personal
 
 ### Personal Information
 - Name, email address, and phone number
-- Property address and details  
+- Property address and details
 - Insurance policy information
 - Claim documentation and photos
 
@@ -135,49 +135,49 @@ Remember: AI assists but human judgment remains essential.`
 
 async function updateLegalContent() {
   console.log('📝 Updating legal document content...\n')
-  
+
   if (!supabaseUrl || !serviceRoleKey) {
     console.error('❌ Missing environment variables. Please set NEXT_PUBLIC_SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY')
     return
   }
-  
+
   try {
     const supabase = createClient(supabaseUrl, serviceRoleKey)
-    
+
     // Update each document type
     for (const [type, content] of Object.entries(documentContent)) {
       console.log(`Updating ${type}...`)
-      
+
       const { error } = await supabase
         .from('legal_documents')
-        .update({ 
+        .update({
           content,
           updated_at: new Date().toISOString()
         })
         .eq('type', type)
         .eq('is_active', true)
-      
+
       if (error) {
         console.error(`  ❌ Failed to update ${type}:`, error.message)
       } else {
         console.log(`  ✅ Successfully updated ${type}`)
       }
     }
-    
+
     // Verify updates
     console.log('\n🔍 Verifying updates...')
     const { data, error } = await supabase
       .from('legal_documents')
       .select('type, title, content')
       .eq('is_active', true)
-    
+
     if (data) {
       data.forEach(doc => {
         const hasContent = doc.content && doc.content.length > 100
         console.log(`  ${doc.type}: ${hasContent ? '✅ Has content' : '❌ Missing content'} (${doc.content?.length || 0} chars)`)
       })
     }
-    
+
   } catch (error) {
     console.error('Error:', error)
   }

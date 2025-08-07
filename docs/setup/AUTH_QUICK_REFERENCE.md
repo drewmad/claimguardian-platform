@@ -8,10 +8,10 @@ import { useAuth } from '@/components/auth/auth-provider'
 
 function MyComponent() {
   const { user, loading, error, signIn, signUp, signOut } = useAuth()
-  
+
   if (loading) return <div>Loading...</div>
   if (!user) return <div>Please log in</div>
-  
+
   return <div>Welcome, {user.email}!</div>
 }
 ```
@@ -22,7 +22,7 @@ import { useModalStore } from '@/stores/modal-store'
 
 function Header() {
   const { openModal } = useModalStore()
-  
+
   return (
     <div>
       <button onClick={() => openModal('login')}>Login</button>
@@ -104,12 +104,12 @@ function EmailResendButton() {
     cooldownMs: 60000, // 60 seconds
     key: 'email-resend'
   })
-  
+
   const handleResend = async () => {
     if (!checkLimit()) return
     // Perform resend action
   }
-  
+
   return (
     <button disabled={isLimited}>
       {isLimited ? `Wait ${secondsRemaining}s` : 'Resend Email'}
@@ -126,13 +126,13 @@ import { useAuth } from '@/components/auth/auth-provider'
 
 function App() {
   const { sessionWarning, clearSessionWarning } = useAuth()
-  
+
   return (
     <div>
       {sessionWarning && (
-        <SessionWarningModal 
-          isOpen={sessionWarning} 
-          onClose={clearSessionWarning} 
+        <SessionWarningModal
+          isOpen={sessionWarning}
+          onClose={clearSessionWarning}
         />
       )}
     </div>
@@ -179,16 +179,16 @@ import { useEffect } from 'react'
 export default function ProtectedPage() {
   const { user, loading } = useAuth()
   const router = useRouter()
-  
+
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login')
     }
   }, [user, loading, router])
-  
+
   if (loading) return <div>Loading...</div>
   if (!user) return null
-  
+
   return <div>Protected content</div>
 }
 ```

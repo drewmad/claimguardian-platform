@@ -41,20 +41,20 @@ echo -e "${BLUE}Creating security update script...${NC}"
 apply_security_patch() {
   local func_path="$1"
   local func_file="supabase/functions/$func_path/index.ts"
-  
+
   if [ ! -f "$func_file" ]; then
     echo -e "${YELLOW}  ⚠️  Function not found: $func_path${NC}"
     return 1
   fi
-  
+
   echo -e "${BLUE}Securing $func_path...${NC}"
-  
+
   # Backup original
   cp "$func_file" "$BACKUP_DIR/$(basename $func_path).ts.backup"
-  
+
   # Create temporary file for modifications
   local temp_file=$(mktemp)
-  
+
   # Apply security patches
   awk '
   BEGIN {
@@ -62,12 +62,12 @@ apply_security_patch() {
     added_origins = 0
     added_headers = 0
   }
-  
+
   # Add ALLOWED_ORIGINS after imports if not present
   /^import/ && !added_origins {
     imports_done = 1
   }
-  
+
   # After last import, add ALLOWED_ORIGINS
   !/^import/ && imports_done && !added_origins {
     print "// Security: Allowed origins for CORS"
@@ -79,12 +79,12 @@ apply_security_patch() {
     print ""
     added_origins = 1
   }
-  
+
   # Fix CORS headers
   /Access-Control-Allow-Origin.*\*/ {
     gsub(/'\''Access-Control-Allow-Origin'\'': '\''*'\''/, "'\''Access-Control-Allow-Origin'\'': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\''")
   }
-  
+
   # Add security headers to response headers
   /Content-Type.*application\/json/ && !added_headers {
     print $0 ","
@@ -95,30 +95,30 @@ apply_security_patch() {
     added_headers = 1
     next
   }
-  
+
   # Add origin extraction if not present
   /Deno\.serve\(async \(req/ {
     in_serve = 1
   }
-  
+
   in_serve && /const corsHeaders/ && !/const origin = req\.headers\.get/ {
     print "  const origin = req.headers.get('\''origin'\'')"
     print ""
   }
-  
+
   # Fix wildcard in corsHeaders object
   /corsHeaders.*=.*{/ {
     in_cors_headers = 1
   }
-  
+
   in_cors_headers && /Access-Control-Allow-Origin.*\*/ {
     gsub(/'\''*'\''/, "origin && ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\''")
   }
-  
+
   in_cors_headers && /}/ {
     in_cors_headers = 0
   }
-  
+
   # Print all lines (modified or not)
   {
     if (!added_headers || $0 !~ /Content-Type.*application\/json/) {
@@ -126,10 +126,10 @@ apply_security_patch() {
     }
   }
   ' "$func_file" > "$temp_file"
-  
+
   # Move temp file back
   mv "$temp_file" "$func_file"
-  
+
   echo -e "${GREEN}  ✓ $func_path secured${NC}"
   return 0
 }

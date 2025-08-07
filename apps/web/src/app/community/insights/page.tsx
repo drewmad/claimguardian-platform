@@ -17,7 +17,7 @@ export default function CommunityInsightsPage() {
             Discover trends and patterns in your community while maintaining complete privacy
           </p>
         </div>
-        
+
         <CommunityInsightsDashboard />
       </div>
     </DashboardLayout>

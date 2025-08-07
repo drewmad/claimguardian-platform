@@ -34,7 +34,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
       const resourceObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           const resourceEntry = entry as PerformanceResourceTiming
-          
+
           recordMetric('resource-load', resourceEntry.duration, {
             name: resourceEntry.name,
             initiatorType: resourceEntry.initiatorType,
@@ -68,7 +68,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
       const longTaskObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           const threshold = config.longTaskThreshold || 50
-          
+
           if (entry.duration > threshold) {
             recordMetric('long-task', entry.duration, {
               startTime: entry.startTime,
@@ -91,14 +91,14 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
   if (config.enableLayoutShift !== false && 'LayoutShift' in window) {
     try {
       let cumulativeLayoutShift = 0
-      
+
       const layoutShiftObserver = new PerformanceObserver((list) => {
         for (const entry of list.getEntries()) {
           if (isLayoutShift(entry)) {
             // Only count shifts without user input
             if (!entry.hadRecentInput) {
               cumulativeLayoutShift += entry.value
-              
+
               recordMetric('layout-shift', entry.value, {
                 cumulative: cumulativeLayoutShift,
                 sources: (entry as LayoutShift).sources?.length || 0
@@ -164,7 +164,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
   if ('memory' in performance) {
     setInterval(() => {
       const memory = (performance as any).memory
-      
+
       recordMetric('memory-usage', memory?.usedJSHeapSize || 0, {
         totalJSHeapSize: memory?.totalJSHeapSize || 0,
         jsHeapSizeLimit: memory?.jsHeapSizeLimit || 0
@@ -182,7 +182,7 @@ export function createPerformanceObserver(config: PerformanceObserverConfig = {}
     disconnect: () => {
       observers.forEach(observer => observer.disconnect())
     },
-    
+
     takeRecords: () => {
       return observers.flatMap(observer => observer.takeRecords())
     }

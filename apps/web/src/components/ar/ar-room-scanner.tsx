@@ -57,17 +57,17 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
   const startARSession = async () => {
     try {
       setIsScanning(true)
-      
+
       // Start scanning session with backend
       const { data, error } = await supabase.functions.invoke('ar_room_scanner', {
         body: { action: 'start_session', roomType }
       })
-      
+
       if (error) throw error
-      
+
       setSessionId(data.sessionId)
       setInstructions(data.instructions)
-      
+
       if (hasWebXR && navigator.xr) {
         // Start WebXR AR session
         await startWebXRSession()
@@ -85,42 +85,42 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
   const startWebXRSession = async () => {
     try {
       if (!navigator.xr) throw new Error('WebXR not supported')
-      
+
       const session = await navigator.xr.requestSession('immersive-ar', {
         requiredFeatures: ['local'],
         optionalFeatures: ['hit-test', 'anchors']
       })
-      
+
       setXrSession(session)
-      
+
       // Set up WebXR renderer
       const canvas = canvasRef.current!
       const renderer = new THREE.WebGLRenderer({ canvas, alpha: true })
       renderer.setSize(window.innerWidth, window.innerHeight)
       renderer.xr.enabled = true
       renderer.xr.setSession(session)
-      
+
       const scene = new THREE.Scene()
       const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000)
-      
+
       // Add visual indicators for scanning
       const geometry = new THREE.SphereGeometry(0.01, 16, 16)
       const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 })
-      
+
       session.addEventListener('end', () => {
         setXrSession(null)
         setIsScanning(false)
       })
-      
+
       // AR frame processing
       const onXRFrame = (timestamp: number, frame: XRFrame) => {
         const referenceSpace = renderer.xr.getReferenceSpace()
         const pose = frame.getViewerPose(referenceSpace!)
-        
+
         if (pose) {
           const position = pose.transform.position
           const orientation = pose.transform.orientation
-          
+
           // Record scan point
           const scanPoint: ARScanPoint = {
             x: position.x,
@@ -129,30 +129,30 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             timestamp,
             confidence: 0.9 // WebXR typically has high confidence
           }
-          
+
           setScanPoints(prev => [...prev, scanPoint])
-          
+
           // Visual feedback - add point marker
           const pointMesh = new THREE.Mesh(geometry, material)
           pointMesh.position.set(position.x, position.y, position.z)
           scene.add(pointMesh)
-          
+
           // Update progress based on coverage
           const newProgress = Math.min(95, scanPoints.length * 2)
           setProgress(newProgress)
-          
+
           if (scanPoints.length > 50) {
             // Sufficient data collected
             session.end()
             processScanData()
           }
         }
-        
+
         renderer.render(scene, camera)
       }
-      
+
       session.requestAnimationFrame(onXRFrame)
-      
+
     } catch (error) {
       console.error('WebXR session failed:', error)
       // Fallback to camera scanning
@@ -163,23 +163,23 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
   const startCameraScanning = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
+        video: {
           facingMode: 'environment',
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         }
       })
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream
         videoRef.current.play()
       }
-      
+
       // Simulate AR scanning with device orientation and motion
       if ('DeviceOrientationEvent' in window) {
         const handleOrientation = (event: DeviceOrientationEvent) => {
           if (!isScanning) return
-          
+
           const scanPoint: ARScanPoint = {
             x: (event.beta || 0) / 90, // Normalize to -1 to 1
             y: (event.gamma || 0) / 90,
@@ -187,21 +187,21 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             timestamp: Date.now(),
             confidence: 0.7 // Lower confidence for simulated data
           }
-          
+
           setScanPoints(prev => [...prev, scanPoint])
-          
+
           const newProgress = Math.min(95, scanPoints.length * 1.5)
           setProgress(newProgress)
-          
+
           if (scanPoints.length > 75) {
             // Stop scanning and process
             stream.getTracks().forEach(track => track.stop())
             processScanData()
           }
         }
-        
+
         window.addEventListener('deviceorientation', handleOrientation)
-        
+
         // Auto-stop after 30 seconds
         setTimeout(() => {
           window.removeEventListener('deviceorientation', handleOrientation)
@@ -219,7 +219,7 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             processScanData()
             return
           }
-          
+
           const scanPoint: ARScanPoint = {
             x: (Math.random() - 0.5) * 4, // Room width simulation
             y: Math.random() * 3 - 1.5, // Room height
@@ -227,12 +227,12 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             timestamp: Date.now(),
             confidence: 0.6 + Math.random() * 0.3
           }
-          
+
           setScanPoints(prev => [...prev, scanPoint])
           setProgress(prev => Math.min(95, prev + 2))
         }, 200)
       }
-      
+
     } catch (error) {
       console.error('Camera access failed:', error)
       toast.error('Camera access denied')
@@ -243,11 +243,11 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
   const processScanData = async () => {
     try {
       setProgress(100)
-      
+
       if (!sessionId || scanPoints.length < 4) {
         throw new Error('Insufficient scan data')
       }
-      
+
       const scanData = {
         points: scanPoints,
         roomType,
@@ -261,7 +261,7 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
           }
         }
       }
-      
+
       const { data, error } = await supabase.functions.invoke('ar_room_scanner', {
         body: {
           action: 'process_scan',
@@ -270,12 +270,12 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
           roomType
         }
       })
-      
+
       if (error) throw error
-      
+
       toast.success('Room scan completed successfully!')
       onComplete(data.measurements)
-      
+
     } catch (error) {
       console.error('Scan processing failed:', error)
       toast.error('Failed to process scan data')
@@ -288,12 +288,12 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
     if (xrSession) {
       xrSession.end()
     }
-    
+
     if (videoRef.current && videoRef.current.srcObject) {
       const stream = videoRef.current.srcObject as MediaStream
       stream.getTracks().forEach(track => track.stop())
     }
-    
+
     setIsScanning(false)
     onClose()
   }
@@ -301,21 +301,21 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
   return (
     <div className="fixed inset-0 z-50 bg-black">
       {/* AR Canvas */}
-      <canvas 
+      <canvas
         ref={canvasRef}
         className="absolute inset-0 w-full h-full"
         style={{ display: hasWebXR && xrSession ? 'block' : 'none' }}
       />
-      
+
       {/* Camera Video */}
-      <video 
+      <video
         ref={videoRef}
         className="absolute inset-0 w-full h-full object-cover"
         style={{ display: !hasWebXR || !xrSession ? 'block' : 'none' }}
         muted
         playsInline
       />
-      
+
       {/* Scanning UI Overlay */}
       <div className="absolute inset-0 flex flex-col">
         {/* Header */}
@@ -324,21 +324,21 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             <h2 className="text-lg font-semibold">AR Room Scanner</h2>
             <p className="text-sm text-gray-300">Scanning {roomType}</p>
           </div>
-          <button 
+          <button
             onClick={stopScanning}
             className="text-white hover:text-red-400"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
-        
+
         {/* Center Instructions */}
         <div className="flex-1 flex items-center justify-center p-4">
           <div className="text-center text-white">
             <div className="w-24 h-24 border-4 border-green-500 border-dashed rounded-full flex items-center justify-center mb-4 mx-auto">
               <Target className="w-8 h-8 text-green-500" />
             </div>
-            
+
             {!isScanning ? (
               <div>
                 <h3 className="text-xl font-semibold mb-2">Ready to Scan</h3>
@@ -361,7 +361,7 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
                 </p>
                 <div className="w-32 h-32 relative mx-auto mb-4">
                   <div className="absolute inset-0 rounded-full border-4 border-gray-600"></div>
-                  <div 
+                  <div
                     className="absolute inset-0 rounded-full border-4 border-green-500 border-t-transparent animate-spin"
                     style={{
                       transform: `rotate(${progress * 3.6}deg)`
@@ -378,7 +378,7 @@ export function ARRoomScanner({ roomType, onComplete, onClose }: ARRoomScannerPr
             )}
           </div>
         </div>
-        
+
         {/* Instructions */}
         {instructions.length > 0 && (
           <div className="bg-black/70 p-4">

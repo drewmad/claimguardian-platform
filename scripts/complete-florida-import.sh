@@ -24,7 +24,7 @@ print_banner() {
 # Function to check prerequisites
 check_prerequisites() {
     echo -e "${BLUE}Checking prerequisites...${NC}"
-    
+
     # Check for required scripts
     local REQUIRED_SCRIPTS=(
         "fix-failed-counties.sh"
@@ -32,16 +32,16 @@ check_prerequisites() {
         "import-large-county-batched.sh"
         "monitor-import-ultimate.sh"
     )
-    
+
     for script in "${REQUIRED_SCRIPTS[@]}"; do
         if [ ! -f "/Users/madengineering/ClaimGuardian/scripts/$script" ]; then
             echo -e "${RED}❌ Missing required script: $script${NC}"
             exit 1
         fi
     done
-    
+
     echo -e "${GREEN}✅ All required scripts found${NC}"
-    
+
     # Check database password
     if [ -z "${DB_PASSWORD:-}" ]; then
         echo -e "${YELLOW}Database password not set in environment${NC}"
@@ -152,13 +152,13 @@ if [ ! -z "${DB_PASSWORD:-}" ]; then
         -d postgres \
         -t -A \
         -c "SELECT COUNT(*) as total, COUNT(DISTINCT co_no) as counties FROM florida_parcels;" 2>/dev/null)
-    
+
     if [ $? -eq 0 ]; then
         IFS='|' read -r TOTAL COUNTIES <<< "$FINAL_STATS"
         echo -e "${GREEN}Final Statistics:${NC}"
         echo -e "  Total Parcels: ${GREEN}$(printf "%'d" $TOTAL)${NC}"
         echo -e "  Counties Imported: ${GREEN}$COUNTIES / 67${NC}"
-        
+
         if [ "$COUNTIES" -eq 67 ]; then
             echo -e "${GREEN}🎉 COMPLETE! All 67 Florida counties have been imported!${NC}"
         else

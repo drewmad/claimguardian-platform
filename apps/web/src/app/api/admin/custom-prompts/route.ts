@@ -8,10 +8,10 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { 
-  AICustomPrompt, 
+import type {
+  AICustomPrompt,
   CreateCustomPromptRequest,
-  AIOperationsResponse 
+  AIOperationsResponse
 } from '@/types/ai-operations'
 
 // GET /api/admin/custom-prompts - Get all custom prompts with performance data
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     if (includePerformance && prompts?.length > 0) {
       // Get performance data for each prompt
       const promptIds = prompts.map(prompt => prompt.id)
-      
+
       const { data: performance, error: perfError } = await supabase
         .from('ai_prompt_performance')
         .select('*')
@@ -97,11 +97,11 @@ export async function GET(request: NextRequest) {
           metrics.total_uses++
           metrics.avg_time += perf.response_time
           metrics.total_cost += perf.cost || 0
-          
+
           if (perf.success) {
             metrics.success_rate++
           }
-          
+
           if (perf.user_rating) {
             metrics.user_rating += perf.user_rating
           }

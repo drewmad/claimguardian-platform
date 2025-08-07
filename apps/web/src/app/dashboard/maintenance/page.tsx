@@ -60,7 +60,7 @@ interface Contractor {
 
 function MaintenanceDashboardContent() {
   const router = useRouter()
-  
+
   // Mock data
   const [tasks] = useState<MaintenanceTask[]>([
     {
@@ -179,9 +179,9 @@ function MaintenanceDashboardContent() {
 
   const totalTasks = tasks.length
   const overdueTasks = tasks.filter(t => t.status === 'overdue').length
-  const completedThisMonth = tasks.filter(t => 
-    t.status === 'completed' && 
-    t.completedDate && 
+  const completedThisMonth = tasks.filter(t =>
+    t.status === 'completed' &&
+    t.completedDate &&
     new Date(t.completedDate).getMonth() === new Date().getMonth()
   ).length
   const estimatedCostThisMonth = tasks
@@ -221,7 +221,7 @@ function MaintenanceDashboardContent() {
                 <p className="text-sm text-gray-400">Active Tasks</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -232,7 +232,7 @@ function MaintenanceDashboardContent() {
                 <p className="text-sm text-gray-400">Need Attention</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -243,7 +243,7 @@ function MaintenanceDashboardContent() {
                 <p className="text-sm text-gray-400">Completed</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -297,7 +297,7 @@ function MaintenanceDashboardContent() {
                     {upcomingTasks.map((task) => {
                       const StatusIcon = getStatusIcon(task.status)
                       const daysUntil = Math.ceil((new Date(task.dueDate).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-                      
+
                       return (
                         <div key={task.id} className="p-4 bg-gray-700 rounded-lg">
                           <div className="flex items-start justify-between mb-3">
@@ -326,14 +326,14 @@ function MaintenanceDashboardContent() {
                                 <p className="text-lg font-semibold text-white mb-1">${task.estimatedCost}</p>
                               )}
                               <p className="text-xs text-gray-400">
-                                {task.status === 'overdue' 
+                                {task.status === 'overdue'
                                   ? `${Math.abs(daysUntil)} days overdue`
                                   : `Due in ${daysUntil} days`
                                 }
                               </p>
                             </div>
                           </div>
-                          
+
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4 text-sm">
                               {task.assignedTo && (
@@ -362,7 +362,7 @@ function MaintenanceDashboardContent() {
                       )
                     })}
                   </div>
-                  
+
                   <button className="w-full mt-4 p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-center text-gray-300">
                     View All Tasks
                   </button>
@@ -393,7 +393,7 @@ function MaintenanceDashboardContent() {
                         </div>
                       </div>
                     ))}
-                    <button 
+                    <button
                       onClick={() => router.push('/dashboard/contractors')}
                       className="w-full p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-center text-gray-300 flex items-center justify-center gap-2"
                     >
@@ -418,7 +418,7 @@ function MaintenanceDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Bell className="w-5 h-5 text-purple-400" />
@@ -426,7 +426,7 @@ function MaintenanceDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <BarChart className="w-5 h-5 text-green-400" />
@@ -434,7 +434,7 @@ function MaintenanceDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <FileText className="w-5 h-5 text-cyan-400" />

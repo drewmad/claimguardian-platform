@@ -2,7 +2,7 @@
  * @fileMetadata
  * @purpose "AI Response Caching Manager with intelligent cache strategies for cost optimization"
  * @dependencies ["crypto"]
- * @owner ai-team  
+ * @owner ai-team
  * @status stable
  */
 
@@ -108,7 +108,7 @@ class AICacheManager {
         featureId,
         model
       )
-      
+
       if (similarResponse) {
         this.metrics.hits++
         this.metrics.costSaved += similarResponse.cost
@@ -133,12 +133,12 @@ class AICacheManager {
     additionalParams?: Record<string, any>
   ): Promise<void> {
     const cacheKey = this.generateCacheKey(messages, featureId, model, additionalParams)
-    
+
     // Calculate intelligent TTL based on content type and cost
     const ttl = this.calculateIntelligentTTL(featureId, cost, response.length)
-    
+
     // Compress response if enabled
-    const compressedResponse = this.config.enableCompression 
+    const compressedResponse = this.config.enableCompression
       ? await this.compressResponse(response)
       : response
 
@@ -155,7 +155,7 @@ class AICacheManager {
 
     // Ensure cache size limit
     await this.ensureCacheLimit()
-    
+
     this.cache.set(cacheKey, cachedItem)
     this.metrics.cacheSize = this.cache.size
     this.updateAverageResponseTime(responseTime)
@@ -199,7 +199,7 @@ class AICacheManager {
     model: string
   ): Promise<CachedResponse | null> {
     const currentPrompt = messages.map(m => m.content).join(' ')
-    
+
     for (const [key, cachedItem] of this.cache.entries()) {
       if (cachedItem.featureId !== featureId || !this.isCacheValid(cachedItem)) {
         continue
@@ -226,10 +226,10 @@ class AICacheManager {
   private calculateTextSimilarity(text1: string, text2: string): number {
     const words1 = new Set(text1.toLowerCase().split(/\s+/))
     const words2 = new Set(text2.toLowerCase().split(/\s+/))
-    
+
     const intersection = new Set([...words1].filter(x => words2.has(x)))
     const union = new Set([...words1, ...words2])
-    
+
     return intersection.size / union.size
   }
 
@@ -257,7 +257,7 @@ class AICacheManager {
       // Remove LRU items (least recently used)
       const entries = Array.from(this.cache.entries())
       entries.sort((a, b) => a[1].lastAccessed - b[1].lastAccessed)
-      
+
       const itemsToRemove = Math.floor(this.config.maxCacheSize * 0.1) // Remove 10%
       for (let i = 0; i < itemsToRemove; i++) {
         this.cache.delete(entries[i][0])
@@ -286,8 +286,8 @@ class AICacheManager {
    * Get cache metrics for monitoring
    */
   getCacheMetrics(): CacheMetrics & { hitRate: number } {
-    const hitRate = this.metrics.totalRequests > 0 
-      ? (this.metrics.hits / this.metrics.totalRequests) * 100 
+    const hitRate = this.metrics.totalRequests > 0
+      ? (this.metrics.hits / this.metrics.totalRequests) * 100
       : 0
 
     return {

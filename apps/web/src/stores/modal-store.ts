@@ -11,15 +11,15 @@
  */
 import { create } from 'zustand'
 
-type ModalType = 
-  | 'login' 
-  | 'signup' 
-  | 'forgotPassword' 
-  | 'content' 
-  | 'securityQuestions' 
-  | 'sessionWarning' 
-  | 'success' 
-  | 'confirmation' 
+type ModalType =
+  | 'login'
+  | 'signup'
+  | 'forgotPassword'
+  | 'content'
+  | 'securityQuestions'
+  | 'sessionWarning'
+  | 'success'
+  | 'confirmation'
   | 'settings'
   | 'responsive-login'
   | 'responsive-signup'

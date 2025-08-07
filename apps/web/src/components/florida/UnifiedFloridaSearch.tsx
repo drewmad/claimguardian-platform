@@ -12,13 +12,13 @@
 
 import { Button } from '@claimguardian/ui'
 import { Input } from '@claimguardian/ui'
-import { 
-  Search, 
-  ExternalLink, 
-  Loader2, 
-  FileText, 
-  AlertTriangle, 
-  MapPin, 
+import {
+  Search,
+  ExternalLink,
+  Loader2,
+  FileText,
+  AlertTriangle,
+  MapPin,
   Home,
   Building,
   Filter
@@ -107,10 +107,10 @@ export default function UnifiedFloridaSearch() {
 
     try {
       const startTime = Date.now()
-      
+
       // Perform parallel searches
       const searches = []
-      
+
       if (searchType === 'all' || searchType === 'regulation') {
         searches.push(
           supabase.functions.invoke('floir-rag-search', {
@@ -125,7 +125,7 @@ export default function UnifiedFloridaSearch() {
       } else {
         searches.push(Promise.resolve({ data: { results: [] } }))
       }
-      
+
       if (searchType === 'all' || searchType === 'property') {
         searches.push(searchProperties(query.trim()))
       } else {
@@ -133,7 +133,7 @@ export default function UnifiedFloridaSearch() {
       }
 
       const [floirResponse, propertyResponse] = await Promise.all(searches)
-      
+
       if ('error' in floirResponse && floirResponse.error) throw new Error(`FLOIR search failed: ${floirResponse.error.message}`)
       if ('error' in propertyResponse && propertyResponse.error) throw new Error(`Property search failed: ${propertyResponse.error}`)
 
@@ -329,8 +329,8 @@ export default function UnifiedFloridaSearch() {
                 </div>
               </div>
             </div>
-            <Button 
-              onClick={handleSearch} 
+            <Button
+              onClick={handleSearch}
               disabled={loading || !query.trim()}
               className="self-start"
             >
@@ -402,7 +402,7 @@ export default function UnifiedFloridaSearch() {
 
             <TabsContent value="all" className="space-y-4">
               {results.results.map((result) => (
-                <Card 
+                <Card
                   key={`${result.type}-${result.id}`}
                   className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
                 >
@@ -452,7 +452,7 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as PropertyMetadata).property_value 
+                            {(result.metadata as PropertyMetadata).property_value
                               ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
                               : 'N/A'
                             }
@@ -475,7 +475,7 @@ export default function UnifiedFloridaSearch() {
               {results.results
                 .filter(r => r.type === 'floir')
                 .map((result) => (
-                  <Card 
+                  <Card
                     key={result.id}
                     className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                   >
@@ -516,7 +516,7 @@ export default function UnifiedFloridaSearch() {
               {results.results
                 .filter(r => r.type === 'property')
                 .map((result) => (
-                  <Card 
+                  <Card
                     key={result.id}
                     className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700"
                   >
@@ -556,7 +556,7 @@ export default function UnifiedFloridaSearch() {
                         <div>
                           <span className="text-gray-500">Value:</span>
                           <p className="font-medium">
-                            {(result.metadata as PropertyMetadata).property_value 
+                            {(result.metadata as PropertyMetadata).property_value
                               ? `$${(result.metadata as PropertyMetadata).property_value!.toLocaleString()}`
                               : 'N/A'
                             }

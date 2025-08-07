@@ -29,7 +29,7 @@ export function GetStarted() {
             Join thousands of property owners who've taken control of their insurance claims.
             Start your free trial today and see why ClaimGuardian users recover 3x more on average.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/auth/signup"
@@ -49,7 +49,7 @@ export function GetStarted() {
               Schedule a Demo
             </button>
           </div>
-          
+
           <p className="mt-6 text-sm text-slate-400">
             No credit card required • 14-day free trial • Cancel anytime
           </p>

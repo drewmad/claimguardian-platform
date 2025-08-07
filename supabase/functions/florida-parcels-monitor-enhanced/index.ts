@@ -7,9 +7,9 @@ const corsHeaders = {
 };
 
 // Extended county information with more details
-const COUNTY_INFO: Record<number, { 
-  name: string; 
-  population: number; 
+const COUNTY_INFO: Record<number, {
+  name: string;
+  population: number;
   parcels_estimate: number;
   area_sqmi: number;
   region: string;
@@ -101,35 +101,35 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { 
-      view = 'dashboard', 
-      county_code, 
+    const {
+      view = 'dashboard',
+      county_code,
       limit = 50,
-      region 
+      region
     } = await req.json() as MonitorRequest;
 
     switch (view) {
       case 'dashboard':
         return await getEnhancedDashboard(supabase);
-      
+
       case 'timeline':
         return await getEnhancedTimeline(supabase, limit);
-      
+
       case 'errors':
         return await getDetailedErrors(supabase, county_code, limit);
-      
+
       case 'performance':
         return await getDetailedPerformance(supabase);
-        
+
       case 'detailed':
         return await getDetailedCountyInfo(supabase, county_code);
-        
+
       case 'regions':
         return await getRegionalAnalysis(supabase, region);
-        
+
       case 'predictions':
         return await getPredictions(supabase);
-      
+
       default:
         throw new Error(`Invalid view: ${view}`);
     }
@@ -138,9 +138,9 @@ serve(async (req) => {
     console.error('Monitor error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 400
       }
     );
   }
@@ -171,7 +171,7 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
 
   // Calculate enhanced statistics
   const countyStats = new Map<number, any>();
-  
+
   // Initialize all counties with extended info
   for (const [code, info] of Object.entries(COUNTY_INFO)) {
     const countyCode = parseInt(code);
@@ -201,12 +201,12 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
     if (stats) {
       stats.actual_parcels = log.processed_parcels || 0;
       stats.status = log.status;
-      stats.progress = log.total_parcels > 0 
+      stats.progress = log.total_parcels > 0
         ? Math.round((log.processed_parcels / log.total_parcels) * 100)
         : 0;
       stats.last_updated = log.updated_at;
       stats.errors = log.error_count || 0;
-      
+
       // Calculate processing metrics
       if (log.started_at && log.completed_at) {
         const start = new Date(log.started_at).getTime();
@@ -215,9 +215,9 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
         stats.processing_time = Math.round(minutes);
         stats.parcels_per_minute = minutes > 0 ? Math.round(log.processed_parcels / minutes) : 0;
       }
-      
+
       // Calculate density metrics
-      stats.parcels_per_capita = stats.population > 0 
+      stats.parcels_per_capita = stats.population > 0
         ? (stats.actual_parcels / stats.population).toFixed(3)
         : 0;
       stats.density = stats.area_sqmi > 0
@@ -229,10 +229,10 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
   // Convert to array and group by region
   const countiesArray = Array.from(countyStats.values());
   const regionStats = groupByRegion(countiesArray);
-  
+
   // Calculate predictions
   const predictions = calculatePredictions(countiesArray);
-  
+
   // Enhanced summary statistics
   const summary = {
     total_parcels_processed: totalParcels || 0,
@@ -254,7 +254,7 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
     average_density: Math.round(
       countiesArray
         .filter(c => c.actual_parcels > 0)
-        .reduce((sum, c) => sum + c.density, 0) / 
+        .reduce((sum, c) => sum + c.density, 0) /
       countiesArray.filter(c => c.actual_parcels > 0).length || 1
     ),
     estimated_completion_time: predictions.estimated_completion_time,
@@ -264,7 +264,7 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
   // Performance metrics with enhanced calculations
   const completedCounties = countiesArray.filter(c => c.processing_time);
   const performance = calculateEnhancedPerformance(completedCounties);
-  
+
   // Recent activity timeline
   const activityTimeline = recentActivity?.map((activity: any) => ({
     timestamp: activity.updated_at,
@@ -281,17 +281,17 @@ async function getEnhancedDashboard(supabase: any): Promise<Response> {
       summary,
       performance,
       counties: countiesArray.sort((a, b) => {
-        const statusOrder = { 
-          'processing': 0, 
-          'error': 1, 
+        const statusOrder = {
+          'processing': 0,
+          'error': 1,
           'completed_with_errors': 2,
-          'completed': 3, 
-          'pending': 4 
+          'completed': 3,
+          'pending': 4
         };
-        
+
         const aOrder = statusOrder[a.status as keyof typeof statusOrder] ?? 5;
         const bOrder = statusOrder[b.status as keyof typeof statusOrder] ?? 5;
-        
+
         if (aOrder !== bOrder) return aOrder - bOrder;
         return b.progress - a.progress;
       }),
@@ -324,10 +324,10 @@ async function getEnhancedTimeline(supabase: any, limit: number): Promise<Respon
   // Transform to enhanced timeline events
   const timeline = logs?.map((log: any) => {
     const countyInfo = COUNTY_INFO[log.county_code];
-    const processingRate = log.processing_time > 0 
+    const processingRate = log.processing_time > 0
       ? Math.round(log.processed_parcels / log.processing_time)
       : 0;
-    
+
     return {
       timestamp: log.updated_at,
       county_code: log.county_code,
@@ -335,7 +335,7 @@ async function getEnhancedTimeline(supabase: any, limit: number): Promise<Respon
       region: countyInfo?.region || 'Unknown',
       event_type: getEventType(log),
       status: log.status,
-      progress: log.total_parcels > 0 
+      progress: log.total_parcels > 0
         ? Math.round((log.processed_parcels / log.total_parcels) * 100)
         : 0,
       parcels_processed: log.processed_parcels,
@@ -349,7 +349,7 @@ async function getEnhancedTimeline(supabase: any, limit: number): Promise<Respon
 
   // Calculate timeline statistics
   const timelineStats = {
-    events_in_last_hour: timeline.filter((e: any) => 
+    events_in_last_hour: timeline.filter((e: any) =>
       new Date(e.timestamp).getTime() > Date.now() - 3600000
     ).length,
     average_processing_rate: Math.round(
@@ -378,11 +378,11 @@ async function getDetailedErrors(supabase: any, countyCode?: number, limit: numb
     .or('status.eq.error,status.eq.completed_with_errors')
     .order('updated_at', { ascending: false })
     .limit(limit);
-  
+
   if (countyCode) {
     query = query.eq('county_code', countyCode);
   }
-  
+
   const { data: errorLogs } = await query;
 
   // Get detailed system logs
@@ -404,7 +404,7 @@ async function getDetailedErrors(supabase: any, countyCode?: number, limit: numb
   // Transform and analyze error data
   const errors = errorLogs?.map((log: any) => {
     const countyInfo = COUNTY_INFO[log.county_code];
-    
+
     return {
       timestamp: log.updated_at,
       county_code: log.county_code,
@@ -480,7 +480,7 @@ async function getDetailedPerformance(supabase: any): Promise<Response> {
     const durationMinutes = (endTime - startTime) / 1000 / 60;
     const parcelsPerMinute = durationMinutes > 0 ? Math.round(log.processed_parcels / durationMinutes) : 0;
     const parcelsPerBatch = log.batch_size > 0 ? Math.round(log.processed_parcels / log.batch_size) : 0;
-    
+
     return {
       county_code: log.county_code,
       county_name: countyInfo?.name || 'Unknown',
@@ -526,9 +526,9 @@ async function getDetailedCountyInfo(supabase: any, countyCode?: number): Promis
   if (!countyCode) {
     return new Response(
       JSON.stringify({ error: 'County code required' }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 400
       }
     );
   }
@@ -567,7 +567,7 @@ async function getDetailedCountyInfo(supabase: any, countyCode?: number): Promis
   ]);
 
   const countyInfo = COUNTY_INFO[countyCode];
-  
+
   // Calculate detailed metrics
   const detailedInfo = {
     basic_info: {
@@ -601,7 +601,7 @@ async function getDetailedCountyInfo(supabase: any, countyCode?: number): Promis
     },
     data_quality: {
       completeness_score: calculateCompletenessScore(parcelCount || 0, countyInfo?.parcels_estimate || 0),
-      error_rate: processingLog?.error_count > 0 
+      error_rate: processingLog?.error_count > 0
         ? ((processingLog.error_count / (parcelCount || 1)) * 100).toFixed(2) + '%'
         : '0%',
       data_validation_status: 'pending'
@@ -630,7 +630,7 @@ async function getRegionalAnalysis(supabase: any, region?: string): Promise<Resp
   const countiesArray = Object.entries(COUNTY_INFO).map(([code, info]) => {
     const countyCode = parseInt(code);
     const log = logs?.find((l: any) => l.county_code === countyCode);
-    
+
     return {
       county_code: countyCode,
       county_name: info.name,
@@ -645,13 +645,13 @@ async function getRegionalAnalysis(supabase: any, region?: string): Promise<Resp
   });
 
   // Filter by region if specified
-  const filteredCounties = region 
+  const filteredCounties = region
     ? countiesArray.filter(c => c.region === region)
     : countiesArray;
 
   // Group by region for analysis
   const regionGroups = groupByRegion(filteredCounties);
-  
+
   // Calculate regional statistics
   const regionalAnalysis = Object.entries(regionGroups).map(([regionName, counties]) => {
     const completed = counties.filter((c: any) => c.status === 'completed').length;
@@ -660,7 +660,7 @@ async function getRegionalAnalysis(supabase: any, region?: string): Promise<Resp
     const estimatedParcels = counties.reduce((sum: number, c: any) => sum + c.estimated_parcels, 0);
     const totalPopulation = counties.reduce((sum: number, c: any) => sum + c.population, 0);
     const totalArea = counties.reduce((sum: number, c: any) => sum + c.area_sqmi, 0);
-    
+
     return {
       region: regionName,
       counties_total: counties.length,
@@ -701,7 +701,7 @@ async function getPredictions(supabase: any): Promise<Response> {
     .order('updated_at', { ascending: false });
 
   const predictions = calculatePredictions(logs || []);
-  
+
   return new Response(
     JSON.stringify({
       predictions,
@@ -749,17 +749,17 @@ function calculatePredictions(counties: any[]): any {
   const processingCounties = counties.filter(c => c.status === 'processing');
   const completedCounties = counties.filter(c => c.status === 'completed');
   const pendingCounties = counties.filter(c => c.status === 'pending');
-  
+
   // Calculate average processing rate
   const avgRate = completedCounties.length > 0
     ? completedCounties.reduce((sum, c) => sum + (c.parcels_per_minute || 0), 0) / completedCounties.length
     : 500; // Default estimate
-  
+
   // Estimate remaining time
   const remainingParcels = pendingCounties.reduce((sum, c) => sum + (c.estimated_parcels || 0), 0);
   const estimatedMinutes = avgRate > 0 ? remainingParcels / avgRate : 0;
   const estimatedHours = Math.round(estimatedMinutes / 60);
-  
+
   return {
     estimated_completion_time: new Date(Date.now() + estimatedMinutes * 60000).toISOString(),
     estimated_hours_remaining: estimatedHours,
@@ -788,11 +788,11 @@ function calculateEnhancedPerformance(completedCounties: any[]): any {
       performance_trends: []
     };
   }
-  
+
   const totalParcels = completedCounties.reduce((sum, c) => sum + c.actual_parcels, 0);
   const totalMinutes = completedCounties.reduce((sum, c) => sum + c.processing_time, 0);
   const avgParcelsPerMinute = totalMinutes > 0 ? Math.round(totalParcels / totalMinutes) : 0;
-  
+
   return {
     average_processing_time_minutes: Math.round(totalMinutes / completedCounties.length),
     average_parcels_per_minute: avgParcelsPerMinute,
@@ -809,21 +809,21 @@ function getMostActiveRegion(timeline: any[]): string {
     counts[event.region] = (counts[event.region] || 0) + 1;
     return counts;
   }, {});
-  
+
   return Object.entries(regionCounts)
     .sort(([, a], [, b]) => b - a)[0]?.[0] || 'Unknown';
 }
 
 function getCommonErrors(errors: any[]): any[] {
   const errorCounts = new Map<string, number>();
-  
+
   errors.forEach(error => {
     if (error.error_message) {
       const key = error.error_message.substring(0, 100);
       errorCounts.set(key, (errorCounts.get(key) || 0) + 1);
     }
   });
-  
+
   return Array.from(errorCounts.entries())
     .map(([message, count]) => ({ message, count }))
     .sort((a, b) => b.count - a.count)
@@ -838,7 +838,7 @@ function identifyErrorPatterns(errors: any[], systemLogs: any[]): any {
     data_errors: errors.filter(e => e.error_message?.includes('invalid') || e.error_message?.includes('null')).length,
     permission_errors: errors.filter(e => e.error_message?.includes('permission') || e.error_message?.includes('denied')).length
   };
-  
+
   return {
     patterns,
     most_common: Object.entries(patterns).sort(([, a], [, b]) => b - a)[0]?.[0] || 'unknown',
@@ -848,7 +848,7 @@ function identifyErrorPatterns(errors: any[], systemLogs: any[]): any {
 
 function getSuggestedAction(errorMessage: string): string {
   if (!errorMessage) return 'Review logs for more details';
-  
+
   if (errorMessage.includes('timeout')) {
     return 'Increase timeout or reduce batch size';
   }
@@ -861,13 +861,13 @@ function getSuggestedAction(errorMessage: string): string {
   if (errorMessage.includes('null') || errorMessage.includes('invalid')) {
     return 'Validate data format and retry with smaller batch';
   }
-  
+
   return 'Contact support if issue persists';
 }
 
 function getRecoverySuggestions(patterns: any): string[] {
   const suggestions = [];
-  
+
   if (patterns.patterns.timeout_errors > 0) {
     suggestions.push('Consider reducing batch size to prevent timeouts');
   }
@@ -880,7 +880,7 @@ function getRecoverySuggestions(patterns: any): string[] {
   if (patterns.patterns.permission_errors > 0) {
     suggestions.push('Review RLS policies and service role permissions');
   }
-  
+
   return suggestions;
 }
 
@@ -888,7 +888,7 @@ function calculateRecoveryTime(errors: any[]): number {
   // Estimate based on error types and counts
   const baseTime = 5; // minutes per error
   const complexityMultiplier = errors.some(e => e.error_type === 'error') ? 2 : 1;
-  
+
   return errors.length * baseTime * complexityMultiplier;
 }
 
@@ -896,7 +896,7 @@ function analyzeErrors(errorSummary: any[]): any {
   if (!errorSummary || errorSummary.length === 0) {
     return { healthy: true, issues: [] };
   }
-  
+
   return {
     healthy: false,
     total_errors: errorSummary.length,
@@ -913,7 +913,7 @@ function calculateThroughput(parcels: number, minutes: number): number {
   const avgParcelSizeKB = 2.5;
   const totalMB = (parcels * avgParcelSizeKB) / 1024;
   const seconds = minutes * 60;
-  
+
   return seconds > 0 ? (totalMB / seconds).toFixed(2) : 0;
 }
 
@@ -921,13 +921,13 @@ function calculateCost(parcels: number, minutes: number): number {
   // Estimate based on compute time and data processed
   const computeCost = (minutes / 60) * 0.10; // $0.10 per hour
   const dataCost = (parcels / 1000000) * 0.50; // $0.50 per million
-  
+
   return Number((computeCost + dataCost).toFixed(2));
 }
 
 function getPerformanceGrade(parcelsPerMinute: number, errors: number): string {
   const score = calculateEfficiencyScore(parcelsPerMinute, errors);
-  
+
   if (score >= 800) return 'A+';
   if (score >= 700) return 'A';
   if (score >= 600) return 'B+';
@@ -940,7 +940,7 @@ function getPerformanceGrade(parcelsPerMinute: number, errors: number): string {
 
 function analyzeByRegion(performance: any[]): any {
   const regions = groupByRegion(performance);
-  
+
   return Object.entries(regions).map(([region, counties]) => ({
     region,
     counties_processed: counties.length,
@@ -961,7 +961,7 @@ function analyzeByBatchSize(performance: any[]): any {
     groups[size].push(county);
     return groups;
   }, {});
-  
+
   return Object.entries(batchGroups).map(([size, counties]: [string, any]) => ({
     batch_size: parseInt(size),
     counties_count: counties.length,
@@ -981,7 +981,7 @@ function analyzeByTimeOfDay(logs: any[]): any {
     groups[hour].push(log);
     return groups;
   }, {});
-  
+
   return Object.entries(hourlyGroups).map(([hour, logs]: [string, any]) => ({
     hour: parseInt(hour),
     processing_count: logs.length,
@@ -996,11 +996,11 @@ function analyzeByTimeOfDay(logs: any[]): any {
 
 function getOptimizationRecommendations(performance: any[]): string[] {
   const recommendations = [];
-  
+
   // Analyze performance data
   const avgSpeed = performance.reduce((sum, c) => sum + c.parcels_per_minute, 0) / performance.length;
   const avgErrors = performance.reduce((sum, c) => sum + c.errors, 0) / performance.length;
-  
+
   if (avgSpeed < 500) {
     recommendations.push('Consider increasing batch size to improve throughput');
   }
@@ -1010,14 +1010,14 @@ function getOptimizationRecommendations(performance: any[]): string[] {
   if (performance.some(p => p.duration_minutes > 120)) {
     recommendations.push('Some counties taking over 2 hours - consider parallel processing');
   }
-  
+
   // Analyze batch size performance
   const batchSizePerformance = analyzeByBatchSize(performance);
   const optimalBatch = batchSizePerformance.sort((a, b) => b.average_speed - a.average_speed)[0];
   if (optimalBatch && optimalBatch.batch_size !== 1000) {
     recommendations.push(`Optimal batch size appears to be ${optimalBatch.batch_size}`);
   }
-  
+
   return recommendations;
 }
 
@@ -1025,7 +1025,7 @@ function calculateAdvancedPerformanceSummary(performance: any[]): any {
   const speeds = performance.map(p => p.parcels_per_minute);
   const times = performance.map(p => p.duration_minutes);
   const errors = performance.map(p => p.errors);
-  
+
   return {
     total_counties_processed: performance.length,
     total_parcels_processed: performance.reduce((sum, p) => sum + p.parcels_processed, 0),
@@ -1043,18 +1043,18 @@ function calculateAdvancedPerformanceSummary(performance: any[]): any {
 
 function analyzeTrends(stats: any[]): any {
   if (stats.length < 2) return { trend: 'insufficient_data' };
-  
+
   // Simple trend analysis
   const recentStats = stats.slice(0, 10);
   const olderStats = stats.slice(10, 20);
-  
+
   if (olderStats.length === 0) return { trend: 'insufficient_data' };
-  
+
   const recentAvg = recentStats.reduce((sum, s) => sum + (s.parcels_per_minute || 0), 0) / recentStats.length;
   const olderAvg = olderStats.reduce((sum, s) => sum + (s.parcels_per_minute || 0), 0) / olderStats.length;
-  
+
   const change = ((recentAvg - olderAvg) / olderAvg) * 100;
-  
+
   return {
     trend: change > 5 ? 'improving' : change < -5 ? 'declining' : 'stable',
     change_percentage: change.toFixed(1),
@@ -1065,10 +1065,10 @@ function analyzeTrends(stats: any[]): any {
 
 function calculateEstimatedCompletion(log: any): string | null {
   if (!log || log.status !== 'processing' || !log.parcels_per_minute) return null;
-  
+
   const remaining = log.total_parcels - log.processed_parcels;
   const minutesRemaining = remaining / log.parcels_per_minute;
-  
+
   return new Date(Date.now() + minutesRemaining * 60000).toISOString();
 }
 
@@ -1079,28 +1079,28 @@ function calculateCompletenessScore(actual: number, estimated: number): number {
 
 function getCountyRecommendations(log: any, countyInfo: any): string[] {
   const recommendations = [];
-  
+
   if (!log) {
     recommendations.push('Start processing this county to begin data import');
     return recommendations;
   }
-  
+
   if (log.status === 'error') {
     recommendations.push('Review error logs and retry processing');
   }
-  
+
   if (log.error_count > 10) {
     recommendations.push('High error rate - consider data validation before retry');
   }
-  
+
   if (log.parcels_per_minute < 300 && log.parcels_per_minute > 0) {
     recommendations.push('Processing speed below average - consider increasing batch size');
   }
-  
+
   if (log.processed_parcels < countyInfo?.parcels_estimate * 0.9) {
     recommendations.push('Parcel count below estimate - verify data completeness');
   }
-  
+
   return recommendations;
 }
 
@@ -1109,11 +1109,11 @@ function calculateMedian(values: number[]): number {
   if (values.length === 0) return 0;
   const sorted = [...values].sort((a, b) => a - b);
   const middle = Math.floor(sorted.length / 2);
-  
+
   if (sorted.length % 2 === 0) {
     return (sorted[middle - 1] + sorted[middle]) / 2;
   }
-  
+
   return sorted[middle];
 }
 

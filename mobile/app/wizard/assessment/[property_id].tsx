@@ -206,7 +206,7 @@ export default function AssessmentCreationWizard() {
       }
 
       const result = await dispatch(createAssessment(assessmentData)).unwrap()
-      
+
       Alert.alert(
         'Assessment Created',
         'Your assessment has been created successfully.',
@@ -233,11 +233,11 @@ export default function AssessmentCreationWizard() {
   const renderProgressBar = () => (
     <View style={styles.progressContainer}>
       <View style={styles.progressBar}>
-        <View 
+        <View
           style={[
-            styles.progressFill, 
+            styles.progressFill,
             { width: `${(currentStep / 5) * 100}%` }
-          ]} 
+          ]}
         />
       </View>
       <Text style={styles.progressText}>Step {currentStep} of 5</Text>
@@ -245,8 +245,8 @@ export default function AssessmentCreationWizard() {
   )
 
   const renderStepIndicator = () => (
-    <ScrollView 
-      horizontal 
+    <ScrollView
+      horizontal
       showsHorizontalScrollIndicator={false}
       style={styles.stepsContainer}
       contentContainerStyle={styles.stepsContent}
@@ -256,7 +256,7 @@ export default function AssessmentCreationWizard() {
           <View style={[
             styles.stepCircle,
             {
-              backgroundColor: step.completed ? '#10B981' : 
+              backgroundColor: step.completed ? '#10B981' :
                              currentStep === step.id ? '#3B82F6' : '#374151'
             }
           ]}>
@@ -303,7 +303,7 @@ export default function AssessmentCreationWizard() {
 
       <View style={styles.infoSection}>
         <Text style={styles.sectionTitle}>Assessment Details</Text>
-        
+
         <View style={styles.infoRow}>
           <MaterialCommunityIcons name="calendar" size={20} color="#9CA3AF" />
           <View style={styles.infoContent}>
@@ -353,8 +353,8 @@ export default function AssessmentCreationWizard() {
 
       <View style={styles.formSection}>
         <Text style={styles.sectionTitle}>Current Weather</Text>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.selectButton}
           onPress={() => setShowWeatherModal(true)}
         >
@@ -383,7 +383,7 @@ export default function AssessmentCreationWizard() {
         <View style={styles.selectRow}>
           <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
             <Text style={styles.inputLabel}>Wind Speed</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.selectInput}
               onPress={() => {
                 Alert.alert(
@@ -403,7 +403,7 @@ export default function AssessmentCreationWizard() {
 
           <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
             <Text style={styles.inputLabel}>Visibility</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.selectInput}
               onPress={() => {
                 Alert.alert(
@@ -434,8 +434,8 @@ export default function AssessmentCreationWizard() {
 
       <View style={styles.formSection}>
         <Text style={styles.sectionTitle}>Overall Condition Rating</Text>
-        
-        <TouchableOpacity 
+
+        <TouchableOpacity
           style={styles.selectButton}
           onPress={() => setShowConditionModal(true)}
         >
@@ -475,7 +475,7 @@ export default function AssessmentCreationWizard() {
 
       <View style={styles.formSection}>
         <Text style={styles.sectionTitle}>Safety & Access Concerns</Text>
-        
+
         <View style={styles.switchGroup}>
           <View style={styles.switchRow}>
             <View style={styles.switchInfo}>
@@ -528,7 +528,7 @@ export default function AssessmentCreationWizard() {
       </Text>
 
       <View style={styles.formSection}>
-        <TouchableOpacity 
+        <TouchableOpacity
           style={styles.selectButton}
           onPress={() => setShowPriorityModal(true)}
         >
@@ -691,7 +691,7 @@ export default function AssessmentCreationWizard() {
   )
 
   return (
-    <KeyboardAvoidingView 
+    <KeyboardAvoidingView
       style={styles.container}
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >

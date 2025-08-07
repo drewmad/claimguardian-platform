@@ -32,7 +32,7 @@ export default function PropertyEnrichmentPage() {
             </span>
           </h1>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto">
-            Get comprehensive AI-powered property analysis combining market data, risk assessment, 
+            Get comprehensive AI-powered property analysis combining market data, risk assessment,
             investment metrics, and strategic insights from the complete Florida 9.6M parcel dataset.
           </p>
         </div>
@@ -89,7 +89,7 @@ export default function PropertyEnrichmentPage() {
                   <li>• Days on market metrics</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-700/50 rounded-lg p-4">
                 <h4 className="text-white font-medium mb-2">Investment Metrics</h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
@@ -99,7 +99,7 @@ export default function PropertyEnrichmentPage() {
                   <li>• Renovation ROI analysis</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-700/50 rounded-lg p-4">
                 <h4 className="text-white font-medium mb-2">Insurance Analysis</h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
@@ -109,7 +109,7 @@ export default function PropertyEnrichmentPage() {
                   <li>• Carrier suggestions</li>
                 </ul>
               </div>
-              
+
               <div className="bg-gray-700/50 rounded-lg p-4">
                 <h4 className="text-white font-medium mb-2">Compliance Status</h4>
                 <ul className="space-y-1 text-gray-400 text-sm">
@@ -124,7 +124,7 @@ export default function PropertyEnrichmentPage() {
         </Card>
 
         {/* Main Property Enrichment Interface */}
-        <PropertyEnrichmentUI 
+        <PropertyEnrichmentUI
           parcelId={demoParcelId}
           onEnrichmentComplete={(result) => {
             console.log('Enrichment completed:', result)
@@ -166,7 +166,7 @@ export default function PropertyEnrichmentPage() {
                   </li>
                 </ul>
               </div>
-              
+
               <div>
                 <h4 className="text-white font-medium mb-3">AI Analysis Methods</h4>
                 <ul className="space-y-2 text-gray-400 text-sm">
@@ -178,7 +178,7 @@ export default function PropertyEnrichmentPage() {
                 </ul>
               </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-700">
               <Badge variant="secondary">Real-time Analysis</Badge>
               <Badge variant="secondary">67 Counties Covered</Badge>

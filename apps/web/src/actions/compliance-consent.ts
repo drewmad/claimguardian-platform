@@ -50,14 +50,14 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
   try {
     const supabase = await await createClient()
     const headersList = await headers()
-    
+
     // Get IP and user agent for audit trail using resilient detection
     const ipAddress = await getClientIPAddress()
     const userAgent = headersList.get('user-agent') || 'unknown'
-    
+
     // Validate all required consents
     if (!data.gdprConsent || !data.dataProcessingConsent || !data.termsAccepted || !data.privacyAccepted || !data.ageVerified) {
-      logger.warn('Signup attempted without required consents', { 
+      logger.warn('Signup attempted without required consents', {
         email: data.email,
         gdprConsent: data.gdprConsent,
         dataProcessingConsent: data.dataProcessingConsent,
@@ -65,13 +65,13 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
         privacyAccepted: data.privacyAccepted,
         ageVerified: data.ageVerified
       })
-      
+
       return {
         success: false,
         errorMessage: 'All required consents must be accepted'
       }
     }
-    
+
     // Prepare parameters with type safety
     const rpcParams = {
       p_email: data.email,
@@ -88,17 +88,17 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       p_user_agent: userAgent,
       p_fingerprint: data.deviceFingerprint || null
     }
-    
-    logger.info('Calling record_signup_consent with params', { 
+
+    logger.info('Calling record_signup_consent with params', {
       email: data.email,
-      params: rpcParams 
+      params: rpcParams
     })
-    
+
     // Record consent using RPC function (works for anonymous users)
     const { data: result, error } = await supabase.rpc('record_signup_consent', rpcParams)
-    
+
     if (error) {
-      logger.error('Failed to record consent', { 
+      logger.error('Failed to record consent', {
         email: data.email,
         errorCode: error.code,
         errorMessage: error.message,
@@ -111,10 +111,10 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
         errorMessage: `Failed to record consent: ${error.message}`
       }
     }
-    
+
     // Handle both array and direct object responses from RPC function
     const resultData = Array.isArray(result) ? result[0] : result
-    
+
     logger.info('RPC function processed result', {
       email: data.email,
       resultData: resultData,
@@ -123,9 +123,9 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       hasToken: !!resultData?.consent_token,
       errorMessage: resultData?.error_message
     })
-    
+
     if (!resultData?.success || !resultData?.consent_token) {
-      logger.error('Consent recording returned invalid response', { 
+      logger.error('Consent recording returned invalid response', {
         email: data.email,
         resultData,
         detailedResult: JSON.stringify(resultData, null, 2)
@@ -135,7 +135,7 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
         errorMessage: resultData?.error_message || 'Failed to record consent'
       }
     }
-    
+
     logger.info('Consent recorded successfully', {
       email: data.email,
       consentToken: resultData.consent_token,
@@ -146,7 +146,7 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
       privacyAccepted: data.privacyAccepted,
       ageVerified: data.ageVerified
     })
-    
+
     return {
       success: true,
       consentToken: resultData.consent_token
@@ -164,17 +164,17 @@ export async function recordSignupConsent(data: ConsentData): Promise<ConsentRec
  * Validate consent token before allowing signup
  */
 export async function validateConsent(
-  email: string, 
+  email: string,
   consentToken: string
 ): Promise<ConsentValidation> {
   try {
     const supabase = await await createClient()
-    
+
     const { data: result, error } = await supabase.rpc('validate_signup_consent', {
       p_email: email,
       p_consent_token: consentToken
     })
-    
+
     if (error) {
       logger.error('Failed to validate consent', { email, consentToken }, error)
       return {
@@ -183,7 +183,7 @@ export async function validateConsent(
         errorMessage: 'Failed to validate consent'
       }
     }
-    
+
     const validation = result?.[0]
     if (!validation) {
       return {
@@ -192,7 +192,7 @@ export async function validateConsent(
         errorMessage: 'Invalid consent validation response'
       }
     }
-    
+
     return {
       isValid: validation.is_valid,
       hasRequiredConsents: validation.has_required_consents,
@@ -218,17 +218,17 @@ export async function linkConsentToUser(
 ): Promise<boolean> {
   try {
     const supabase = await await createClient()
-    
+
     const { data, error } = await supabase.rpc('link_consent_to_user', {
       p_consent_token: consentToken,
       p_user_id: userId
     })
-    
+
     if (error) {
       logger.error('Failed to link consent to user', { userId, consentToken }, error)
       return false
     }
-    
+
     logger.info('Consent linked to user successfully', { userId, consentToken })
     return data === true
   } catch (error) {

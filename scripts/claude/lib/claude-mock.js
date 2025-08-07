@@ -101,7 +101,7 @@ export const completeLearningSystem = {
 
   applyLearning: async (taskContext) => {
     // Simulate applying a learning
-    const relevantLearning = mockLearnings.find(l => 
+    const relevantLearning = mockLearnings.find(l =>
       l.category === 'performance' || l.tags.includes('optimization')
     )
     return {

@@ -47,7 +47,7 @@ export function WhoWeServe() {
         <p className="text-xl text-gray-300 text-center max-w-4xl mx-auto mb-12">
           From your first home to your investment empire. From daily maintenance to disaster recovery. ClaimGuardian is your property's complete lifecycle command center.
         </p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
           {segments.map((segment, index) => {
             const Icon = segment.icon

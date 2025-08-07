@@ -78,8 +78,8 @@ export default function ComplianceDashboard() {
 
   const getComplianceScore = () => {
     if (!metrics) return 0
-    const consentRate = metrics.totalUsers > 0 
-      ? (metrics.consentedUsers / metrics.totalUsers) * 100 
+    const consentRate = metrics.totalUsers > 0
+      ? (metrics.consentedUsers / metrics.totalUsers) * 100
       : 0
     return Math.round(consentRate)
   }

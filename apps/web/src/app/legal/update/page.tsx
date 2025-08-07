@@ -37,7 +37,7 @@ export default function LegalUpdatePage() {
 
     try {
       setSubmitting(true)
-      
+
       // Record acceptances using server action
       await recordLegalAcceptances({
         userId: user.id,
@@ -94,10 +94,10 @@ export default function LegalUpdatePage() {
             <div className="mx-auto w-16 h-16 bg-blue-500/10 rounded-full flex items-center justify-center mb-4">
               <Shield className="w-8 h-8 text-blue-500" />
             </div>
-            
+
             <h1 className="text-2xl font-bold mb-2">Legal Documents Updated</h1>
             <p className="text-slate-400 text-sm max-w-md mx-auto">
-              We've updated our legal documents. Please review and accept the new versions 
+              We've updated our legal documents. Please review and accept the new versions
               to continue using your account.
             </p>
           </div>
@@ -110,7 +110,7 @@ export default function LegalUpdatePage() {
                   Action Required
                 </h3>
                 <p className="text-sm text-yellow-300/80">
-                  Your continued use of ClaimGuardian requires acceptance of updated legal documents. 
+                  Your continued use of ClaimGuardian requires acceptance of updated legal documents.
                   These changes may include important updates to your rights and our services.
                 </p>
               </div>

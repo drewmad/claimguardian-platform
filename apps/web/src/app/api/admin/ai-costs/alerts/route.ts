@@ -91,7 +91,7 @@ export async function GET(request: NextRequest) {
         id: alert.id,
         type: alert.alert_type === 'limit_reached' ? 'budget_exceeded' : 'budget_warning',
         message: alert.message,
-        severity: alert.alert_level === 'critical' ? 'high' : 
+        severity: alert.alert_level === 'critical' ? 'high' :
                  alert.alert_level === 'warning' ? 'medium' : 'low',
         timestamp: alert.created_at,
         affectedUsers: 1
@@ -103,8 +103,8 @@ export async function GET(request: NextRequest) {
     highUsageUsers?.forEach(log => {
       const key = log.user_id
       if (!userUsageMap[key]) {
-        userUsageMap[key] = { 
-          cost: 0, 
+        userUsageMap[key] = {
+          cost: 0,
           email: log.user_profiles[0]?.email || 'Unknown'
         }
       }

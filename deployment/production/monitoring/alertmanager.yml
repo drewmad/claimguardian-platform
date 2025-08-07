@@ -17,16 +17,16 @@ templates:
 route:
   # Default receiver
   receiver: 'default'
-  
+
   # Group alerts by severity and category
   group_by: ['severity', 'category', 'alertname']
-  
+
   # Group wait time before sending first notification
   group_wait: 30s
-  
+
   # Group interval for subsequent notifications
   group_interval: 5m
-  
+
   # Repeat interval for sending notifications
   repeat_interval: 12h
 
@@ -121,7 +121,7 @@ receivers:
         subject: '🚨 CRITICAL: {{ .GroupLabels.alertname }}'
         body: |
           **CRITICAL ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}
@@ -142,7 +142,7 @@ receivers:
             {{ if .Annotations.runbook_url }}<p><a href="{{ .Annotations.runbook_url }}">📖 Runbook</a></p>{{ end }}
           </div>
           {{ end }}
-    
+
     slack_configs:
       - api_url: '${SLACK_WEBHOOK_URL}'
         channel: '#critical-alerts'
@@ -167,7 +167,7 @@ receivers:
         subject: '🔒 Security Alert: {{ .GroupLabels.alertname }}'
         body: |
           **SECURITY ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}
@@ -175,7 +175,7 @@ receivers:
           **Instance:** {{ .Labels.instance }}
           **Started:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
           {{ end }}
-    
+
     slack_configs:
       - api_url: '${SLACK_WEBHOOK_URL}'
         channel: '#security-alerts'
@@ -194,14 +194,14 @@ receivers:
         subject: '💰 AI Cost Alert: {{ .GroupLabels.alertname }}'
         body: |
           **AI COST ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}
           **Cost Impact:** {{ .Labels.severity }} level
           **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
           {{ end }}
-          
+
           Please review the AI cost dashboard: https://grafana.claimguardianai.com/d/ai-costs
 
     slack_configs:
@@ -222,7 +222,7 @@ receivers:
         subject: '🗄️ Database Alert: {{ .GroupLabels.alertname }}'
         body: |
           **DATABASE ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}
@@ -238,14 +238,14 @@ receivers:
         subject: '📊 Business Alert: {{ .GroupLabels.alertname }}'
         body: |
           **BUSINESS METRICS ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}
           **Impact:** {{ .Labels.severity }} level
           **Time:** {{ .StartsAt.Format "2006-01-02 15:04:05" }}
           {{ end }}
-          
+
           Review business dashboard: https://grafana.claimguardianai.com/d/business
 
     slack_configs:
@@ -265,7 +265,7 @@ receivers:
         subject: '⚙️ Infrastructure Alert: {{ .GroupLabels.alertname }}'
         body: |
           **INFRASTRUCTURE ALERT**
-          
+
           {{ range .Alerts }}
           **Alert:** {{ .Annotations.summary }}
           **Description:** {{ .Annotations.description }}

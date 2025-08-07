@@ -143,7 +143,7 @@ export function InlineEdit(props: InlineEditProps) {
             onValueChange={setEditValue}
             disabled={isSaving}
           >
-            <SelectTrigger 
+            <SelectTrigger
               ref={inputRef as any}
               className={cn(
                 'bg-gray-700 border-gray-600',
@@ -196,7 +196,7 @@ export function InlineEdit(props: InlineEditProps) {
           <p className="text-xs text-red-400">{error}</p>
         )}
       </div>
-      
+
       <div className="flex gap-1">
         <button
           onClick={handleSave}
@@ -243,10 +243,10 @@ export function InlineEditSelect(props: Omit<SelectInlineEditProps, 'type'>) {
 }
 
 // Currency inline edit with formatting
-export function InlineEditCurrency({ 
-  value, 
+export function InlineEditCurrency({
+  value,
   onSave,
-  ...props 
+  ...props
 }: {
   value: number
   onSave: (value: number) => Promise<void> | void

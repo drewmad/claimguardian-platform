@@ -28,32 +28,32 @@ export interface SOXAuditEvent {
   entityId: string
   userId?: string
   sessionId?: string
-  
+
   // SOX-specific fields
   financialImpact: boolean
   controlObjective: string
   riskLevel: 'low' | 'medium' | 'high' | 'critical'
-  
+
   // Event details
   description: string
   beforeState?: Record<string, unknown>
   afterState?: Record<string, unknown>
   eventData: Record<string, unknown>
-  
+
   // Technical context
   ipAddress?: string
   userAgent?: string
   requestId?: string
   transactionId?: string
-  
+
   // Integrity and verification
   eventHash: string
   chainHash: string
   digitalSignature?: string
-  
+
   // Timestamps
   timestamp: Date
-  
+
   // Metadata
   metadata: Record<string, unknown>
 }
@@ -65,28 +65,28 @@ export interface FinancialControl {
   controlType: 'preventive' | 'detective' | 'corrective'
   controlFrequency: 'continuous' | 'daily' | 'weekly' | 'monthly' | 'quarterly'
   riskRating: 'low' | 'medium' | 'high' | 'critical'
-  
+
   // Control details
   description: string
   procedures: string[]
   responsibleParty: string
   reviewerParty: string
-  
+
   // Control testing
   lastTested: Date
   testResult: 'effective' | 'deficient' | 'not_tested'
   deficiencies: string[]
   remediationPlan?: string
-  
+
   // Compliance status
   soxApplicable: boolean
   complianceStatus: 'compliant' | 'non_compliant' | 'needs_review'
-  
+
   // Dates
   effectiveDate: Date
   lastReviewDate: Date
   nextReviewDate: Date
-  
+
   metadata: Record<string, unknown>
 }
 
@@ -94,37 +94,37 @@ export interface FinancialTransaction {
   id: string
   transactionId: string
   transactionType: 'claim_payment' | 'settlement' | 'fee_collection' | 'refund' | 'adjustment'
-  
+
   // Parties
   fromParty: string
   toParty: string
   claimId?: string
   userId: string
-  
+
   // Financial details
   amount: number
   currency: string
   description: string
-  
+
   // Authorization
   authorizedBy: string
   authorizationLevel: 'user' | 'manager' | 'executive' | 'board'
   approvalWorkflow: string[]
-  
+
   // Processing
   status: 'pending' | 'approved' | 'rejected' | 'processed' | 'failed' | 'reversed'
   processedAt?: Date
   failureReason?: string
-  
+
   // Supporting documentation
   supportingDocuments: string[]
   invoiceNumber?: string
   checkNumber?: string
-  
+
   // Risk and compliance
   riskAssessment: 'low' | 'medium' | 'high'
   complianceFlags: string[]
-  
+
   // Audit trail
   auditTrail: {
     action: string
@@ -132,7 +132,7 @@ export interface FinancialTransaction {
     timestamp: Date
     details: Record<string, unknown>
   }[]
-  
+
   metadata: Record<string, unknown>
 }
 
@@ -141,35 +141,35 @@ export interface InternalControl {
   controlNumber: string
   controlName: string
   businessProcess: string
-  
+
   // Control classification
   controlType: 'entity_level' | 'process_level' | 'it_general' | 'it_application'
   controlNature: 'manual' | 'automated' | 'it_dependent_manual'
-  
+
   // COSO framework components
   controlEnvironment: boolean
   riskAssessment: boolean
   controlActivities: boolean
   informationCommunication: boolean
   monitoring: boolean
-  
+
   // Control details
   controlObjective: string
   risksMitigated: string[]
   controlProcedures: string[]
-  
+
   // Key attributes
   keyControl: boolean
   managementReviewControl: boolean
   preventiveControl: boolean
   detectiveControl: boolean
-  
+
   // Testing and effectiveness
   testingFrequency: 'continuous' | 'monthly' | 'quarterly' | 'annually'
   lastTestDate?: Date
   nextTestDate: Date
   testingResults: 'effective' | 'ineffective' | 'not_tested'
-  
+
   // Deficiencies and remediation
   deficiencies: {
     id: string
@@ -180,7 +180,7 @@ export interface InternalControl {
     targetDate: Date
     status: 'open' | 'in_progress' | 'remediated'
   }[]
-  
+
   metadata: Record<string, unknown>
 }
 
@@ -208,7 +208,7 @@ export class SOXAuditTrailManager {
     try {
       const eventId = crypto.randomUUID()
       const timestamp = new Date()
-      
+
       // Generate event hash
       const eventData = {
         ...event,
@@ -216,10 +216,10 @@ export class SOXAuditTrailManager {
         timestamp: timestamp.toISOString()
       }
       const eventHash = this.generateEventHash(eventData)
-      
+
       // Get chain hash from previous event
       const chainHash = await this.generateChainHash(eventHash)
-      
+
       const auditEvent: SOXAuditEvent = {
         ...event,
         id: eventId,
@@ -445,7 +445,7 @@ export class SOXAuditTrailManager {
       }
 
       const previousHash = lastAudit?.chain_hash || '0000000000000000000000000000000000000000000000000000000000000000'
-      
+
       // Generate chain hash using HMAC for additional security
       return createHmac('sha256', this.secretKey)
         .update(previousHash + currentEventHash)
@@ -679,12 +679,12 @@ export class FinancialControlsMonitor {
       const totalControls = controls.length
       const effectiveControls = controls.filter(c => c.testingResults === 'effective').length
       const deficientControls = controls.filter(c => c.testingResults === 'ineffective').length
-      const materialWeaknesses = controls.filter(c => 
+      const materialWeaknesses = controls.filter(c =>
         c.deficiencies.some(d => d.severity === 'material_weakness')
       ).length
 
-      const controlsNeedingAttention = controls.filter(c => 
-        c.testingResults === 'ineffective' || 
+      const controlsNeedingAttention = controls.filter(c =>
+        c.testingResults === 'ineffective' ||
         c.deficiencies.length > 0 ||
         (c.nextTestDate && c.nextTestDate < new Date())
       )
@@ -705,7 +705,7 @@ export class FinancialControlsMonitor {
         entityId: 'all',
         financialImpact: true,
         controlObjective: 'Monitor effectiveness of internal controls over financial reporting',
-        riskLevel: overallAssessment === 'material_weakness' ? 'critical' : 
+        riskLevel: overallAssessment === 'material_weakness' ? 'critical' :
                   overallAssessment === 'needs_improvement' ? 'high' : 'low',
         description: 'Automated control effectiveness monitoring completed',
         eventData: {
@@ -911,7 +911,7 @@ export const SOX_SECTIONS = {
 
 export const COSO_COMPONENTS = {
   CONTROL_ENVIRONMENT: 'control_environment',
-  RISK_ASSESSMENT: 'risk_assessment', 
+  RISK_ASSESSMENT: 'risk_assessment',
   CONTROL_ACTIVITIES: 'control_activities',
   INFORMATION_COMMUNICATION: 'information_communication',
   MONITORING: 'monitoring'

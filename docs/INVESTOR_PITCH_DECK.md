@@ -376,7 +376,7 @@ AI Risk Assessment    →  NIMS Emergency Ops  →  AI Claim Optimization
 
 **Market:** $4.6B+ combined TAM (Consumer: $2.6B, Government: $2B)
 
-**Business Model:** 
+**Business Model:**
 - Consumer: $29-49/month subscription
 - Government: $500K-5M contracts
 - Enterprise: $10K-100K/month

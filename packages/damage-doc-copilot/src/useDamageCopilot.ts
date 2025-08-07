@@ -55,7 +55,7 @@ export function useDamageCopilot() {
     if (complete || loading) return
 
     setLoading(true)
-    
+
     try {
       const result = await damageCopilotService.processFrame(file, {
         sessionProgress: progress,
@@ -69,7 +69,7 @@ export function useDamageCopilot() {
         timestamp: new Date().toISOString(),
         guidance: result.nextStep || 'Image processed'
       }
-      
+
       setCapturedImages(prev => [...prev, newImage])
 
       // Update guidance
@@ -80,7 +80,7 @@ export function useDamageCopilot() {
         setProgress(prev => {
           const newCompleted = [...prev.completedAngles, result.completedAngle].filter((angle): angle is string => angle !== undefined)
           const newCurrent = newCompleted.length
-          
+
           return {
             ...prev,
             current: newCurrent,
@@ -98,7 +98,7 @@ export function useDamageCopilot() {
       if (result.done || progress.current + 1 >= progress.total) {
         setComplete(true)
         setGuidance(
-          result.completionMessage || 
+          result.completionMessage ||
           '✅ Documentation complete! All required angles captured with good quality.'
         )
       }

@@ -53,7 +53,7 @@ fi
 if [ ! -d "$GDB_DIR" ]; then
     echo -e "${YELLOW}Extracting File Geodatabase...${NC}"
     unzip -o "${GDB_ZIP}" -d "${DATA_DIR}"
-    
+
     # Find the .gdb directory
     GDB_DIR=$(find "${DATA_DIR}" -name "*.gdb" -type d | head -1)
     if [ -z "$GDB_DIR" ]; then
@@ -98,7 +98,7 @@ ogr2ogr -f "GeoJSON" \
 if command -v jq &> /dev/null; then
     FEATURE_COUNT=$(jq '.features | length' "${CHARLOTTE_GEOJSON}")
     echo -e "${GREEN}Extracted ${FEATURE_COUNT} Charlotte County parcels${NC}"
-    
+
     # Show sample fields
     echo ""
     echo "Sample fields in the data:"

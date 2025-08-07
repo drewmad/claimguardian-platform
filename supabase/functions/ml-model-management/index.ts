@@ -19,7 +19,7 @@ serve(async (req: Request) => {
     switch (action) {
       case 'deploy': {
         const { modelVersionId, deploymentConfig } = data
-        
+
         // Validate model readiness
         const { data: model } = await supabase
           .from('ml_model_versions')
@@ -55,13 +55,13 @@ serve(async (req: Request) => {
 
       case 'monitor': {
         const { deploymentId } = data
-        
+
         // Get deployment metrics
         const metrics = await getDeploymentMetrics(supabase, deploymentId as string)
-        
+
         // Check for anomalies
         const anomalies = detectAnomalies(metrics)
-        
+
         return new Response(JSON.stringify({
           success: true,
           metrics,
@@ -74,7 +74,7 @@ serve(async (req: Request) => {
 
       case 'drift_check': {
         const { modelVersionId, window } = data
-        
+
         // Run drift detection
         const { data: driftResult, error } = await supabase
           .rpc('check_model_drift', {
@@ -99,7 +99,7 @@ serve(async (req: Request) => {
 
       case 'explain': {
         const { predictionId, propertyId, method } = data
-        
+
         // Generate explanation
         const explanation = await generateExplanation(
           supabase,
@@ -107,7 +107,7 @@ serve(async (req: Request) => {
           propertyId as string,
           method as string || 'shap'
         )
-        
+
         // Store explanation
         const { error } = await supabase
           .from('model_explanations')
@@ -133,7 +133,7 @@ serve(async (req: Request) => {
 
       case 'rollback': {
         const { deploymentId, reason } = data
-        
+
         // Get current deployment
         const { data: deployment } = await supabase
           .from('ml_deployments')
@@ -199,7 +199,7 @@ async function startDeploymentMonitoring(supabase: any, deploymentId: string) {
     timestamp: new Date().toISOString(),
     message: `Starting monitoring for deployment ${deploymentId}`
   }));
-  
+
   // This would typically integrate with monitoring services
   // For now, we'll schedule periodic checks
 }
@@ -229,7 +229,7 @@ async function getDeploymentMetrics(supabase: any, deploymentId: string) {
 
 function detectAnomalies(metrics: any) {
   const anomalies = []
-  
+
   if (metrics.errorRate > 0.05) {
     anomalies.push({
       type: 'high_error_rate',
@@ -237,7 +237,7 @@ function detectAnomalies(metrics: any) {
       value: metrics.errorRate
     })
   }
-  
+
   if (metrics.p95Latency > 500) {
     anomalies.push({
       type: 'high_latency',
@@ -245,7 +245,7 @@ function detectAnomalies(metrics: any) {
       value: metrics.p95Latency
     })
   }
-  
+
   if (metrics.averageConfidence < 0.7) {
     anomalies.push({
       type: 'low_confidence',
@@ -253,18 +253,18 @@ function detectAnomalies(metrics: any) {
       value: metrics.averageConfidence
     })
   }
-  
+
   return anomalies
 }
 
 function calculateHealthScore(metrics: any) {
   let score = 100
-  
+
   // Deduct points for issues
   score -= metrics.errorRate * 1000 // Heavy penalty for errors
   score -= Math.max(0, (metrics.p95Latency - 200) / 10) // Penalty for high latency
   score -= Math.max(0, (0.8 - metrics.averageConfidence) * 50) // Penalty for low confidence
-  
+
   return Math.max(0, Math.min(100, score))
 }
 
@@ -284,7 +284,7 @@ async function sendDriftAlert(supabase: any, modelVersionId: string, driftResult
     timestamp: new Date().toISOString(),
     message: `Recommendation: ${driftResult.recommendation}`
   }));
-  
+
   // In production, this would send notifications via email/Slack/PagerDuty
 }
 
@@ -300,29 +300,29 @@ async function generateExplanation(supabase: any, predictionId: string, property
   // This is a simplified example - real implementation would use SHAP/LIME
   const features = Object.keys(prediction.input_data || {})
   const featureImportance: Record<string, number> = {}
-  
+
   // Mock feature importance
   features.forEach(feature => {
     featureImportance[feature] = Math.random()
   })
-  
+
   // Normalize
   const total = Object.values(featureImportance).reduce((sum, val) => sum + val, 0)
   Object.keys(featureImportance).forEach(key => {
     featureImportance[key] = featureImportance[key] / total
   })
-  
+
   // Generate text explanation
   const topFeatures = Object.entries(featureImportance)
     .sort((a, b) => b[1] - a[1])
     .slice(0, 3)
-  
+
   const textExplanation = `The ${prediction.decision_type} decision was primarily influenced by: ${
-    topFeatures.map(([feature, importance]) => 
+    topFeatures.map(([feature, importance]) =>
       `${feature} (${(importance * 100).toFixed(1)}%)`
     ).join(', ')
   }.`
-  
+
   // Generate counterfactuals
   const counterfactuals = topFeatures.map(([feature, _]) => ({
     feature,
@@ -330,7 +330,7 @@ async function generateExplanation(supabase: any, predictionId: string, property
     suggestedValue: generateCounterfactualValue(prediction.input_data[feature]),
     expectedOutcome: 'different_decision'
   }))
-  
+
   return {
     featureImportance,
     textExplanation,

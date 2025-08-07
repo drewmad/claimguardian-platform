@@ -4,8 +4,8 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach, jest } from '@jest/globals'
-import { 
-  AIContentTestingFramework, 
+import {
+  AIContentTestingFramework,
   AIStressTestFramework,
   mockOpenAIProvider,
   mockGeminiProvider,
@@ -20,9 +20,9 @@ jest.mock('@/lib/supabase', () => ({
       upsert: jest.fn().mockResolvedValue({ data: null, error: null }),
       select: jest.fn().mockReturnValue({
         eq: jest.fn().mockReturnValue({
-          single: jest.fn().mockResolvedValue({ 
-            data: { current_usage: 0.5 }, 
-            error: null 
+          single: jest.fn().mockResolvedValue({
+            data: { current_usage: 0.5 },
+            error: null
           })
         })
       }),
@@ -169,10 +169,10 @@ describe('AI Cost Tracking System', () => {
 
     it('should run a single test scenario', async () => {
       const lightScenario = testScenarios.find(s => s.name.includes('Light Usage'))!
-      
+
       // Run with short timeout for testing
       const testScenario = { ...lightScenario, testDuration: 1000 }
-      
+
       await expect(
         testFramework.runTestScenario(testScenario, 'test-user-jest')
       ).resolves.not.toThrow()
@@ -187,9 +187,9 @@ describe('AI Cost Tracking System', () => {
       // Mock database error
       const { supabase } = require('@/lib/supabase')
       supabase.from.mockReturnValueOnce({
-        upsert: jest.fn().mockResolvedValue({ 
-          data: null, 
-          error: { message: 'Database error' } 
+        upsert: jest.fn().mockResolvedValue({
+          data: null,
+          error: { message: 'Database error' }
         })
       })
 
@@ -245,14 +245,14 @@ describe('AI Cost Tracking System', () => {
     it('should trigger alerts at appropriate thresholds', async () => {
       // Mock high usage scenario
       const { supabase } = require('@/lib/supabase')
-      
+
       // First call returns low usage, second call returns high usage
       supabase.from.mockReturnValueOnce({
         select: jest.fn().mockReturnValue({
           eq: jest.fn().mockReturnValue({
-            single: jest.fn().mockResolvedValue({ 
+            single: jest.fn().mockResolvedValue({
               data: { current_usage: 0.85 }, // 85% of budget
-              error: null 
+              error: null
             })
           })
         })
@@ -264,7 +264,7 @@ describe('AI Cost Tracking System', () => {
       }
 
       await testFramework.runTestScenario(testScenario, 'test-budget-user')
-      
+
       const results = testFramework.getTestResults()
       expect(results[0].budgetAlertsTriggered).toBeGreaterThan(0)
     })
@@ -283,9 +283,9 @@ describe('AI Cost Tracking System', () => {
       const requestsPerUser = 3
 
       await stressTestFramework.runConcurrencyTest(
-        mockOpenAIProvider, 
-        concurrentUsers, 
-        requestsPerUser, 
+        mockOpenAIProvider,
+        concurrentUsers,
+        requestsPerUser,
         3000
       )
 
@@ -300,14 +300,14 @@ describe('AI Cost Tracking System', () => {
       expect(() => {
         mockOpenAIProvider.authenticate('')
       }).not.toThrow()
-      
+
       expect(mockOpenAIProvider.authenticate('')).toBe(false)
     })
 
     it('should handle malformed prompts gracefully', async () => {
       const emptyPrompt = ''
       const response = await mockOpenAIProvider.generateResponse(emptyPrompt, 'gpt-4')
-      
+
       expect(response.tokens.prompt).toBe(0) // Should handle empty prompts
       expect(response.cost).toBe(0)
     })
@@ -324,12 +324,12 @@ describe('AI Cost Tracking System', () => {
       const startTime = Date.now()
       await mockOpenAIProvider.generateResponse('Test prompt', 'gpt-4')
       const endTime = Date.now()
-      
+
       expect(endTime - startTime).toBeLessThan(5000) // Should complete within 5 seconds
     })
 
     it('should handle multiple rapid requests', async () => {
-      const promises = Array.from({ length: 10 }, () => 
+      const promises = Array.from({ length: 10 }, () =>
         mockOpenAIProvider.generateResponse('Quick test', 'gpt-3.5-turbo')
       )
 
@@ -436,7 +436,7 @@ describe('Integration Tests', () => {
 
     const results = testFramework.getTestResults()
     expect(results).toHaveLength(2)
-    
+
     // Verify different providers were tested
     const providerNames = results.map(r => r.scenario)
     expect(providerNames).toContain('OpenAI Test')

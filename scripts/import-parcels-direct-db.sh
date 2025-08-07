@@ -47,7 +47,7 @@ cd "$WORK_DIR"
 if [[ ! -f "Cadastral_Statewide.zip" ]]; then
     echo -e "${BLUE}Step 1: Downloading ZIP from Supabase Storage...${NC}"
     echo "This is a 4.1GB file - it may take a while..."
-    
+
     if curl -L --progress-bar -o "Cadastral_Statewide.zip" "$ZIP_URL"; then
         echo -e "${GREEN}✓ Download complete!${NC}"
     else
@@ -62,7 +62,7 @@ fi
 if [[ ! -d "Cadastral_Statewide.gdb" ]]; then
     echo ""
     echo -e "${BLUE}Step 2: Extracting ZIP file...${NC}"
-    
+
     if unzip -q "Cadastral_Statewide.zip"; then
         echo -e "${GREEN}✓ Extraction complete!${NC}"
     else
@@ -104,19 +104,19 @@ FILE_SIZE_MB=$(du -m "florida_parcels_all.csv" | cut -f1)
 
 if [[ $FILE_SIZE_MB -gt 150 ]]; then
     echo "CSV is ${FILE_SIZE_MB}MB - splitting into smaller chunks..."
-    
+
     # Get header
     head -1 florida_parcels_all.csv > header.csv
-    
+
     # Split file (1 million rows per file)
     tail -n +2 florida_parcels_all.csv | split -l 1000000 - parcels_part_
-    
+
     # Add header to each part
     for file in parcels_part_*; do
         cat header.csv "$file" > "${file}.csv"
         rm "$file"
     done
-    
+
     rm header.csv
     echo -e "${GREEN}✓ Split into $(ls parcels_part_*.csv | wc -l) files${NC}"
 else
@@ -258,7 +258,7 @@ CREATE INDEX IF NOT EXISTS idx_florida_parcels_county_fips ON florida_parcels(co
 ALTER TABLE florida_parcels ENABLE ROW LEVEL SECURITY;
 
 -- Create RLS policy (adjust as needed)
-CREATE POLICY "Public read access" ON florida_parcels 
+CREATE POLICY "Public read access" ON florida_parcels
     FOR SELECT USING (true);
 EOF
 
@@ -287,14 +287,14 @@ def import_csv_file(filename):
     """Import a single CSV file to the database"""
     conn = psycopg2.connect(**DB_CONFIG)
     cur = conn.cursor()
-    
+
     print(f"Importing {filename}...")
     start_time = datetime.now()
-    
+
     with open(filename, 'r', encoding='utf-8') as f:
         # Skip header
         next(f)
-        
+
         # Use COPY for fastest import
         cur.copy_expert(
             sql="""COPY florida_parcels (
@@ -307,20 +307,20 @@ def import_csv_file(filename):
             ) FROM STDIN WITH CSV""",
             file=f
         )
-        
+
     conn.commit()
     cur.close()
     conn.close()
-    
+
     elapsed = (datetime.now() - start_time).total_seconds()
     print(f"✓ Imported {filename} in {elapsed:.2f} seconds")
 
 if __name__ == "__main__":
     # Import all CSV files
     csv_files = sorted([f for f in os.listdir('.') if f.startswith('parcels_part_') and f.endswith('.csv')])
-    
+
     print(f"Found {len(csv_files)} CSV files to import")
-    
+
     for i, csv_file in enumerate(csv_files, 1):
         print(f"\n[{i}/{len(csv_files)}] ", end="")
         try:
@@ -328,7 +328,7 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"✗ Error importing {csv_file}: {e}")
             sys.exit(1)
-    
+
     print("\n✅ All files imported successfully!")
 EOF
 

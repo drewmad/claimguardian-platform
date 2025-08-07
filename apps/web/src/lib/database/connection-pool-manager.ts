@@ -103,7 +103,7 @@ export class ConnectionPoolManager {
       // Create minimum connections
       const initialConnections = Math.min(this.config.minConnections, this.config.maxConnections)
       const connectionPromises = Array.from({ length: initialConnections }, () => this.createConnection())
-      
+
       await Promise.all(connectionPromises)
 
       // Start cleanup and metrics collection
@@ -139,7 +139,7 @@ export class ConnectionPoolManager {
       idleConnection.isActive = true
       idleConnection.lastUsedAt = new Date()
       this.updateMetrics()
-      
+
       logger.debug('Acquired idle connection', { connectionId: idleConnection.id })
       return idleConnection
     }
@@ -150,7 +150,7 @@ export class ConnectionPoolManager {
         const newConnection = await this.createConnection()
         newConnection.isActive = true
         this.updateMetrics()
-        
+
         logger.debug('Acquired new connection', { connectionId: newConnection.id })
         return newConnection
       } catch (error) {
@@ -177,17 +177,17 @@ export class ConnectionPoolManager {
 
     pooledConnection.isActive = false
     pooledConnection.lastUsedAt = new Date()
-    
+
     // Fulfill pending requests
     const pendingRequest = this.pendingRequests.shift()
     if (pendingRequest) {
       if (pendingRequest.timeout) {
         clearTimeout(pendingRequest.timeout)
       }
-      
+
       pooledConnection.isActive = true
       pendingRequest.resolve(pooledConnection)
-      
+
       logger.debug('Fulfilled pending request with released connection', {
         connectionId: connection.id,
         requestId: pendingRequest.id
@@ -220,7 +220,7 @@ export class ConnectionPoolManager {
         const timeoutPromise = new Promise<never>((_, reject) => {
           setTimeout(() => reject(new Error('Connection acquire timeout')), timeout)
         })
-        
+
         connection = await Promise.race([acquirePromise, timeoutPromise])
 
         // Execute query with timeout
@@ -230,7 +230,7 @@ export class ConnectionPoolManager {
         })
 
         const result = await Promise.race([queryPromise, queryTimeoutPromise])
-        
+
         connection.totalQueries++
         return result
 
@@ -299,7 +299,7 @@ export class ConnectionPoolManager {
    */
   async shutdown(timeoutMs = 30000): Promise<void> {
     logger.info('Shutting down connection pool', { timeout: timeoutMs })
-    
+
     this.isShuttingDown = true
 
     // Stop intervals
@@ -326,10 +326,10 @@ export class ConnectionPoolManager {
     }
 
     // Force close all connections
-    const closePromises = Array.from(this.connections.values()).map(conn => 
+    const closePromises = Array.from(this.connections.values()).map(conn =>
       this.destroyConnection(conn.id, true)
     )
-    
+
     await Promise.allSettled(closePromises)
 
     logger.info('Connection pool shutdown complete', {
@@ -341,11 +341,11 @@ export class ConnectionPoolManager {
   // Private methods
   private async createConnection(): Promise<PooledConnection> {
     const connectionId = `conn_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
       const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-      
+
       const client = createClient<Database>(supabaseUrl, supabaseKey, {
         auth: {
           persistSession: false
@@ -407,7 +407,7 @@ export class ConnectionPoolManager {
   private async waitForConnection(startTime: number): Promise<PooledConnection> {
     return new Promise((resolve, reject) => {
       const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-      
+
       const timeout = setTimeout(() => {
         const requestIndex = this.pendingRequests.findIndex(req => req.id === requestId)
         if (requestIndex >= 0) {
@@ -456,9 +456,9 @@ export class ConnectionPoolManager {
 
     for (const [id, connection] of this.connections) {
       const idleTime = now - connection.lastUsedAt.getTime()
-      
-      if (!connection.isActive && 
-          idleTime > this.config.idleTimeoutMillis && 
+
+      if (!connection.isActive &&
+          idleTime > this.config.idleTimeoutMillis &&
           this.connections.size > this.config.minConnections) {
         connectionsToDestroy.push(id)
       }
@@ -467,7 +467,7 @@ export class ConnectionPoolManager {
     connectionsToDestroy.forEach(id => this.destroyConnection(id))
 
     if (connectionsToDestroy.length > 0) {
-      logger.debug('Cleaned up idle connections', { 
+      logger.debug('Cleaned up idle connections', {
         destroyed: connectionsToDestroy.length,
         remaining: this.connections.size
       })
@@ -476,15 +476,15 @@ export class ConnectionPoolManager {
 
   private async ensureMinConnections(): Promise<void> {
     const needed = Math.max(0, this.config.minConnections - this.connections.size)
-    
+
     if (needed > 0) {
-      const createPromises = Array.from({ length: needed }, () => 
+      const createPromises = Array.from({ length: needed }, () =>
         this.createConnection().catch(error => {
           logger.warn('Failed to create connection during min connections maintenance', error)
           return null
         })
       )
-      
+
       await Promise.allSettled(createPromises)
     }
   }
@@ -503,15 +503,15 @@ export class ConnectionPoolManager {
     const now = Date.now()
     const totalLifetime = Array.from(this.connections.values())
       .reduce((sum, conn) => sum + (now - conn.createdAt.getTime()), 0)
-    
-    this.metrics.averageConnectionLifetime = this.connections.size > 0 
-      ? totalLifetime / this.connections.size 
+
+    this.metrics.averageConnectionLifetime = this.connections.size > 0
+      ? totalLifetime / this.connections.size
       : 0
   }
 
   private updateAverageAcquireTime(acquireTime: number): void {
     // Simple moving average
-    this.metrics.averageAcquireTime = 
+    this.metrics.averageAcquireTime =
       (this.metrics.averageAcquireTime * 0.9) + (acquireTime * 0.1)
   }
 
@@ -527,8 +527,8 @@ export class ConnectionPoolManager {
       'timeout',
       'connect ECONNREFUSED'
     ]
-    
-    return connectionErrors.some(errMsg => 
+
+    return connectionErrors.some(errMsg =>
       error.message.toLowerCase().includes(errMsg)
     )
   }

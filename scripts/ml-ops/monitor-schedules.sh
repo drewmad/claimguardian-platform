@@ -29,15 +29,15 @@ check_env() {
 test_edge_function() {
     local function_name=$1
     local endpoint="${SUPABASE_URL}/functions/v1/${function_name}"
-    
+
     echo -e "${BLUE}Testing ${function_name}...${NC}"
-    
+
     response=$(curl -s -o /dev/null -w "%{http_code}" \
         -X POST "${endpoint}" \
         -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
         -H "Content-Type: application/json" \
         -d '{"test": true}')
-    
+
     if [ "$response" = "200" ]; then
         echo -e "${GREEN}✅ ${function_name} is healthy${NC}"
         return 0
@@ -50,7 +50,7 @@ test_edge_function() {
 # Function to check cron job status
 check_cron_status() {
     echo -e "${BLUE}Checking cron job configurations...${NC}"
-    
+
     # List all ML-related cron jobs
     cat <<EOF
 Configured ML Operations Schedules:
@@ -71,14 +71,14 @@ EOF
 # Function to check recent job executions
 check_recent_executions() {
     echo -e "${BLUE}Checking recent ML job executions...${NC}"
-    
+
     # Query recent ML processing queue activity
     recent_jobs=$(curl -s -X POST \
         "${SUPABASE_URL}/rest/v1/rpc/get_recent_ml_jobs" \
         -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
         -H "Content-Type: application/json" \
         -d '{"limit": 10}' 2>/dev/null || echo "[]")
-    
+
     if [ "$recent_jobs" != "[]" ]; then
         echo -e "${GREEN}Recent ML job activity detected${NC}"
     else
@@ -89,7 +89,7 @@ check_recent_executions() {
 # Function to verify database tables
 verify_ml_tables() {
     echo -e "${BLUE}Verifying ML operations database tables...${NC}"
-    
+
     tables=(
         "ml_model_versions"
         "ml_model_deployments"
@@ -98,13 +98,13 @@ verify_ml_tables() {
         "ai_stream_processors"
         "ai_processing_queue"
     )
-    
+
     for table in "${tables[@]}"; do
         result=$(curl -s -X GET \
             "${SUPABASE_URL}/rest/v1/${table}?limit=1" \
             -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
             -H "apikey: ${SUPABASE_SERVICE_ROLE_KEY}")
-        
+
         if [[ $result == *"\"code\""* ]]; then
             echo -e "${RED}❌ Table ${table} not accessible${NC}"
         else
@@ -116,7 +116,7 @@ verify_ml_tables() {
 # Function to deploy cron configuration
 deploy_cron_config() {
     echo -e "${BLUE}Deploying cron configuration...${NC}"
-    
+
     if [ -f "../../supabase/functions/cron.yaml" ]; then
         echo -e "${GREEN}✅ Cron configuration file found${NC}"
         echo "To deploy: supabase functions deploy --legacy-bundle"
@@ -128,7 +128,7 @@ deploy_cron_config() {
 # Main execution
 main() {
     check_env
-    
+
     echo "1. Edge Function Health Checks"
     echo "------------------------------"
     test_edge_function "environmental-data-sync"
@@ -137,27 +137,27 @@ main() {
     test_edge_function "federated-learning"
     test_edge_function "florida-parcel-monitor"
     echo ""
-    
+
     echo "2. Cron Schedule Status"
     echo "----------------------"
     check_cron_status
     echo ""
-    
+
     echo "3. Database Verification"
     echo "-----------------------"
     verify_ml_tables
     echo ""
-    
+
     echo "4. Recent Executions"
     echo "-------------------"
     check_recent_executions
     echo ""
-    
+
     echo "5. Deployment Status"
     echo "-------------------"
     deploy_cron_config
     echo ""
-    
+
     echo -e "${GREEN}✅ ML Operations schedule monitoring complete!${NC}"
     echo ""
     echo "Next steps:"

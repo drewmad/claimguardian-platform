@@ -44,19 +44,19 @@ echo ""
 # Optional: Run specific test suites
 if [ "$1" == "--detailed" ]; then
     echo "📊 Running Detailed Test Reports..."
-    
+
     # ML Model Management Tests
     echo "Testing ML Model Management..."
     deno test --allow-all --filter="ML Model Management" ./ml-pipeline-integration.test.ts
-    
+
     # Federated Learning Tests
     echo "Testing Federated Learning..."
     deno test --allow-all --filter="Federated Learning" ./ml-pipeline-integration.test.ts
-    
+
     # Spatial AI Tests
     echo "Testing Spatial AI..."
     deno test --allow-all --filter="Spatial AI" ./ml-pipeline-integration.test.ts
-    
+
     # Database Schema Tests
     echo "Testing Database Schema..."
     deno test --allow-all --filter="Database" ./ml-pipeline-integration.test.ts

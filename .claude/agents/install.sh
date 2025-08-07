@@ -36,7 +36,7 @@ if [ ! -f ~/.claude/mcp.json ]; then
     "supabase": {
       "command": "npx",
       "args": [
-        "-y", 
+        "-y",
         "@supabase/mcp-server-supabase@latest",
         "--access-token",
         "${SUPABASE_ACCESS_TOKEN}"
@@ -83,7 +83,7 @@ cat > ~/.claude/.env.example << 'EOF'
 # GitHub Integration
 GITHUB_TOKEN=ghp_your_github_personal_access_token
 
-# Supabase Integration  
+# Supabase Integration
 SUPABASE_ACCESS_TOKEN=your_supabase_access_token
 SUPABASE_PROJECT_ID=your_project_id
 

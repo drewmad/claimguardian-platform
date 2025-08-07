@@ -18,7 +18,7 @@ function MyComponent() {
       <button onClick={() => openSettings()}>
         Open Settings
       </button>
-      
+
       <SettingsModal isOpen={isOpen} onClose={closeSettings} />
     </>
   )
@@ -54,18 +54,18 @@ function MyComponent() {
     <div>
       {/* Basic settings button */}
       <QuickSettingsButton />
-      
+
       {/* Settings button with label */}
       <QuickSettingsButton showLabel />
-      
+
       {/* Settings button opening to security tab */}
       <QuickSettingsButton defaultTab="security" />
-      
+
       {/* Custom styled settings button */}
-      <QuickSettingsButton 
-        variant="outline" 
-        size="lg" 
-        className="border-blue-500" 
+      <QuickSettingsButton
+        variant="outline"
+        size="lg"
+        className="border-blue-500"
       />
     </div>
   )
@@ -150,11 +150,11 @@ function UserProfile() {
       <button onClick={() => openSettings('security')}>
         Change Password
       </button>
-      
+
       <button onClick={() => openSettings('notifications')}>
         Notification Settings
       </button>
-      
+
       <button onClick={() => openSettings('privacy')}>
         Privacy Settings
       </button>
@@ -168,7 +168,7 @@ function UserProfile() {
 ### Custom Styling
 
 ```tsx
-<QuickSettingsButton 
+<QuickSettingsButton
   variant="outline"
   size="lg"
   className="border-purple-500 text-purple-400 hover:bg-purple-500/10"

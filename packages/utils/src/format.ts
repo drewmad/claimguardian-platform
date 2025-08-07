@@ -31,7 +31,7 @@ export const formatCurrency = (amount: number): string => {
 
 export const formatDate = (date: Date | string | number): string => {
   let d: Date
-  
+
   if (typeof date === 'string') {
     d = new Date(date)
   } else if (typeof date === 'number') {
@@ -39,12 +39,12 @@ export const formatDate = (date: Date | string | number): string => {
   } else {
     d = date
   }
-  
+
   // Check if date is invalid
   if (isNaN(d.getTime())) {
     return 'Invalid Date'
   }
-  
+
   return new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: 'long',

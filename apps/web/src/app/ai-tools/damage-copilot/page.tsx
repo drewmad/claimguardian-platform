@@ -22,11 +22,11 @@ export default function DamageCopilotPage() {
             Our AI coach ensures you capture all required angles with optimal quality.
           </p>
         </div>
-        
+
         <div className="bg-gray-800 border-gray-700 rounded-lg p-6">
           <p className="text-gray-400">Feature temporarily disabled for deployment.</p>
         </div>
-        
+
         <div className="mt-8 bg-gray-900 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Documentation Best Practices</h2>
           <div className="grid md:grid-cols-2 gap-6">

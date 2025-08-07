@@ -21,10 +21,10 @@ import { useModalStore } from '@/stores/modal-store'
 // Professional logo with enhanced styling
 const HeaderLogoIcon = () => (
   <div className="relative">
-    <OptimizedImage 
-      src="/ClaimGuardian.png" 
-      alt="ClaimGuardian Logo" 
-      width={32} 
+    <OptimizedImage
+      src="/ClaimGuardian.png"
+      alt="ClaimGuardian Logo"
+      width={32}
       height={32}
       priority={true}
       className="object-contain"
@@ -40,11 +40,11 @@ export function Header() {
 
   return (
     <>
-    <header 
-      className="sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center transition-all duration-300 border-b safe-area-top" 
-      style={{ 
+    <header
+      className="sticky top-0 z-50 px-4 md:px-6 py-3 flex justify-between items-center transition-all duration-300 border-b safe-area-top"
+      style={{
         backgroundColor: 'rgba(43, 45, 66, 0.95)', // Gunmetal with transparency
-        backdropFilter: 'blur(12px)', 
+        backdropFilter: 'blur(12px)',
         borderBottomColor: 'rgba(57, 255, 20, 0.1)', // Subtle neon green border
         WebkitBackdropFilter: 'blur(12px)' // Safari support
       }}
@@ -56,39 +56,39 @@ export function Header() {
           ClaimGuardian
         </h1>
       </Link>
-      
+
       {/* Desktop Navigation */}
       <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-        <a 
-          href="#how-it-works" 
+        <a
+          href="#how-it-works"
           className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
         >
           How It Works
         </a>
-        <a 
-          href="#features" 
+        <a
+          href="#features"
           className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
         >
           Features
         </a>
-        <a 
-          href="#pricing" 
+        <a
+          href="#pricing"
           className="text-gray-300 hover:text-white transition-colors duration-200 relative after:absolute after:bottom-[-4px] after:left-0 after:w-0 after:h-[2px] after:bg-green-400 after:transition-all hover:after:w-full"
         >
           Pricing
         </a>
-        
+
         <div className="flex items-center gap-4 ml-4">
-          <button 
+          <button
             onClick={() => openModal('login')}
             className="text-gray-300 hover:text-white transition-colors duration-200"
           >
             Sign In
           </button>
-          <Link 
-            href="/auth/signup" 
+          <Link
+            href="/auth/signup"
             className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
-            style={{ 
+            style={{
               backgroundColor: COLORS.brand.neonGreen,
               color: 'white'
             }}
@@ -99,13 +99,13 @@ export function Header() {
           </Link>
         </div>
       </nav>
-      
+
       {/* Mobile Navigation */}
       <div className="md:hidden flex items-center gap-3">
-        <Link 
-          href="/auth/signup" 
-          className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target" 
-          style={{ 
+        <Link
+          href="/auth/signup"
+          className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target"
+          style={{
             backgroundColor: COLORS.brand.neonGreen,
             color: 'white'
           }}
@@ -121,10 +121,10 @@ export function Header() {
         </button>
       </div>
     </header>
-    
+
     {/* Mobile Menu Overlay */}
     {isMobileMenuOpen && (
-      <div 
+      <div
         className="fixed inset-0 z-40 md:hidden"
         style={{
           backgroundColor: 'rgba(0, 0, 0, 0.8)',
@@ -133,7 +133,7 @@ export function Header() {
         }}
         onClick={() => setIsMobileMenuOpen(false)}
       >
-        <nav 
+        <nav
           className="absolute top-16 left-0 right-0 mx-4 p-6 rounded-lg"
           style={{
             backgroundColor: 'rgba(43, 45, 66, 0.95)',
@@ -144,30 +144,30 @@ export function Header() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex flex-col space-y-4">
-            <a 
-              href="#how-it-works" 
+            <a
+              href="#how-it-works"
               className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               How It Works
             </a>
-            <a 
-              href="#features" 
+            <a
+              href="#features"
               className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Features
             </a>
-            <a 
-              href="#pricing" 
+            <a
+              href="#pricing"
               className="text-white text-lg font-medium py-3 px-4 rounded-lg hover:bg-white/10 transition-colors a11y-touch-target"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Pricing
             </a>
-            
+
             <div className="border-t border-gray-600 pt-4 space-y-3">
-              <button 
+              <button
                 onClick={() => {
                   openModal('login')
                   setIsMobileMenuOpen(false)
@@ -176,10 +176,10 @@ export function Header() {
               >
                 Sign In
               </button>
-              <Link 
-                href="/auth/signup" 
+              <Link
+                href="/auth/signup"
                 className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"
-                style={{ 
+                style={{
                   backgroundColor: COLORS.brand.neonGreen,
                   color: 'white'
                 }}

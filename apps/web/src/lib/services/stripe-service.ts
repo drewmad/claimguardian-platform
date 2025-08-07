@@ -69,7 +69,7 @@ export const stripeClient = {
   async redirectToCheckout(sessionId: string) {
     const stripe = await getStripe()
     if (!stripe) throw new Error('Stripe not initialized')
-    
+
     const { error } = await stripe.redirectToCheckout({ sessionId })
     if (error) {
       throw new Error(error.message)
@@ -154,19 +154,19 @@ export const calculateUpgradePrice = (
 ): number => {
   const current = PRICING_PLANS[currentPlan]
   const target = PRICING_PLANS[newPlan]
-  
+
   if (!current || !target) return 0
-  
-  const currentPrice = billingInterval === 'monthly' 
-    ? current.price.monthly 
+
+  const currentPrice = billingInterval === 'monthly'
+    ? current.price.monthly
     : current.price.annually / 12
-    
+
   const newPrice = billingInterval === 'monthly'
     ? target.price.monthly
     : target.price.annually / 12
-    
+
   const priceDifference = newPrice - currentPrice
   const proRatedAmount = (priceDifference * daysRemaining) / 30
-  
+
   return Math.max(0, Math.round(proRatedAmount * 100)) // Convert to cents
 }

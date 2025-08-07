@@ -13,7 +13,7 @@
 // Force dynamic rendering to prevent SSG issues with Supabase client
 export const dynamic = 'force-dynamic'
 
-import { 
+import {
   Package,
   DollarSign,
   Home,
@@ -109,7 +109,7 @@ export default function InventoryScannerPage() {
   const scanImages = async (files: File[]) => {
     try {
       const allItems: InventoryItem[] = []
-      
+
       for (let i = 0; i < files.length; i++) {
         toast.loading(`Scanning image ${i + 1} of ${files.length}...`)
 
@@ -163,7 +163,7 @@ Analyze this image and identify all items visible. For each item, provide detail
       // Calculate statistics
       const totalValue = allItems.reduce((sum, item) => sum + (item.estimated_value * item.quantity), 0)
       const highValueCount = allItems.filter(item => item.high_value).length
-      
+
       const categories = allItems.reduce((acc, item) => {
         acc[item.category] = (acc[item.category] || 0) + 1
         return acc
@@ -219,7 +219,7 @@ Analyze this image and identify all items visible. For each item, provide detail
     setIsSaving(true)
     try {
       // Merge edited items
-      const finalItems = scanResult.items.map(item => 
+      const finalItems = scanResult.items.map(item =>
         editingItems[item.id] || item
       )
 
@@ -277,13 +277,13 @@ Analyze this image and identify all items visible. For each item, provide detail
 
   const handleBarcodeScanned = async (code: string, format: string) => {
     toast.info(`Looking up product: ${code}`)
-    
+
     try {
       // Try to fetch product info from a barcode API
       const productInfo = await fetchProductInfo(code)
-      
+
       if (productInfo && selectedItemForBarcode) {
-        updateItem(selectedItemForBarcode, { 
+        updateItem(selectedItemForBarcode, {
           name: productInfo.name || `Product ${code}`,
           brand: productInfo.brand || '',
           model: productInfo.model || '',
@@ -294,7 +294,7 @@ Analyze this image and identify all items visible. For each item, provide detail
         toast.success(`Product found: ${productInfo.name || code}`)
       } else if (selectedItemForBarcode) {
         // Fallback: just add the barcode
-        updateItem(selectedItemForBarcode, { 
+        updateItem(selectedItemForBarcode, {
           serial_number: code,
           notes: `Barcode (${format}): ${code}`
         })
@@ -304,14 +304,14 @@ Analyze this image and identify all items visible. For each item, provide detail
       logger.error('Error looking up product:', error)
       // Fallback: just add the barcode
       if (selectedItemForBarcode) {
-        updateItem(selectedItemForBarcode, { 
+        updateItem(selectedItemForBarcode, {
           serial_number: code,
           notes: `Barcode (${format}): ${code}`
         })
         toast.success('Barcode saved to item')
       }
     }
-    
+
     setShowBarcodeScanner(false)
     setSelectedItemForBarcode(null)
   }
@@ -322,7 +322,7 @@ Analyze this image and identify all items visible. For each item, provide detail
       // Example using Open Food Facts API (free and open)
       const response = await fetch(`https://world.openfoodfacts.org/api/v0/product/${barcode}.json`)
       if (!response.ok) throw new Error('Product not found')
-      
+
       const data = await response.json()
       if (data.status === 1 && data.product) {
         return {
@@ -333,10 +333,10 @@ Analyze this image and identify all items visible. For each item, provide detail
           price: null // OpenFoodFacts doesn't provide price
         }
       }
-      
+
       // You could also try a UPC database API
       // Example: https://upcdatabase.org/api or https://barcodespider.com/
-      
+
       return null
     } catch {
       return null
@@ -398,7 +398,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                 </Badge>
               </div>
               <p className="text-sm sm:text-base text-gray-400 max-w-3xl">
-                Automatically catalog your belongings for insurance documentation. Our AI identifies 
+                Automatically catalog your belongings for insurance documentation. Our AI identifies
                 items, estimates values, and helps ensure you have adequate coverage.
               </p>
             </div>
@@ -438,7 +438,7 @@ Analyze this image and identify all items visible. For each item, provide detail
             <div className="space-y-6">
               {/* Summary Stats */}
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
-                <Card 
+                <Card
                   onClick={() => {
                     setFilterCategory('')
                     setFilterRoom('')
@@ -458,7 +458,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                     </div>
                   </CardContent>
                 </Card>
-                <Card 
+                <Card
                   onClick={() => {
                     const breakdown = scanResult.items.map(item => ({
                       name: item.name,
@@ -481,7 +481,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                     </div>
                   </CardContent>
                 </Card>
-                <Card 
+                <Card
                   onClick={() => {
                     setFilterCategory('')
                     setFilterRoom('')
@@ -504,7 +504,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                     </div>
                   </CardContent>
                 </Card>
-                <Card 
+                <Card
                   onClick={() => {
                     const roomBreakdown = Object.entries(scanResult.rooms)
                     console.log('Room breakdown:', roomBreakdown)
@@ -571,7 +571,7 @@ Analyze this image and identify all items visible. For each item, provide detail
                         ))}
                       </select>
                     </div>
-                    
+
                     {/* Sort Row */}
                     <div className="flex items-center gap-2">
                       <ArrowUpDown className="h-4 w-4 text-gray-400" />
@@ -585,21 +585,21 @@ Analyze this image and identify all items visible. For each item, provide detail
                         <option value="room">Sort by Room</option>
                       </select>
                     </div>
-                    
+
                     {/* Actions Row */}
                     <div className="flex gap-2 w-full sm:w-auto sm:ml-auto">
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
+                      <Button
+                        variant="outline"
+                        size="sm"
                         onClick={exportToCSV}
                         className="flex-1 sm:flex-none bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 text-xs sm:text-sm active:scale-95"
                       >
                         <FileSpreadsheet className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-2" />
                         <span className="hidden sm:inline">Export </span>CSV
                       </Button>
-                      <Button 
-                        size="sm" 
-                        onClick={saveInventory} 
+                      <Button
+                        size="sm"
+                        onClick={saveInventory}
                         disabled={isSaving}
                         className="flex-1 sm:flex-none bg-blue-600 hover:bg-blue-700 text-white text-xs sm:text-sm active:scale-95"
                       >
@@ -713,8 +713,8 @@ Analyze this image and identify all items visible. For each item, provide detail
 
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
-                <Button 
-                  onClick={() => setScanResult(null)} 
+                <Button
+                  onClick={() => setScanResult(null)}
                   variant="outline"
                   className="w-full sm:w-auto bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600 active:scale-95"
                 >

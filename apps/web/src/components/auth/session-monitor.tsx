@@ -22,10 +22,10 @@ interface SessionMonitorProps {
   warningTime?: number // in minutes before timeout, default 5
 }
 
-export function SessionMonitor({ 
-  children, 
+export function SessionMonitor({
+  children,
   inactivityTimeout = 480, // 8 hours
-  warningTime = 5 
+  warningTime = 5
 }: SessionMonitorProps) {
   const router = useRouter()
   const supabase = createClient()
@@ -36,7 +36,7 @@ export function SessionMonitor({
   // Reset activity timer
   const resetTimer = useCallback(() => {
     lastActivityRef.current = new Date()
-    
+
     // Clear existing timers
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
@@ -77,11 +77,11 @@ export function SessionMonitor({
   // Monitor user activity
   useEffect(() => {
     const events = ['mousedown', 'keydown', 'scroll', 'touchstart', 'click']
-    
+
     const handleActivity = () => {
       const now = new Date()
       const timeSinceLastActivity = now.getTime() - lastActivityRef.current.getTime()
-      
+
       // Only reset timer if more than 1 minute has passed since last activity
       // This prevents excessive timer resets
       if (timeSinceLastActivity > 60000) {
@@ -128,7 +128,7 @@ export function SessionMonitor({
       })
       window.removeEventListener('focus', handleFocus)
       subscription.unsubscribe()
-      
+
       if (timeoutRef.current) clearTimeout(timeoutRef.current)
       if (warningRef.current) clearTimeout(warningRef.current)
     }

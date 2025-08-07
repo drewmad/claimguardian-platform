@@ -14,14 +14,14 @@ graph TB
         FEMA[FEMA Flood Maps]
         MARKET[Market Data APIs]
     end
-    
+
     subgraph "Data Pipeline Layer"
         INGEST[Data Ingestion<br/>Edge Functions]
         PIPELINE[Pipeline Automation<br/>florida-data-pipeline]
         QUALITY[Quality Monitoring]
         SCHEDULER[Automated Scheduling]
     end
-    
+
     subgraph "Data Platform"
         DB[(Supabase Database<br/>PostGIS + Vector)]
         PARCELS[florida_parcels<br/>9.6M records]
@@ -29,41 +29,41 @@ graph TB
         MARKET_ANALYSIS[Market Analysis]
         GEO[Geospatial Features]
     end
-    
+
     subgraph "AI & Analytics"
         ENRICHMENT[Property Enrichment<br/>florida-property-enrichment]
         AI[OpenAI GPT-4]
         VECTOR[Vector Embeddings]
         ANALYSIS[Automated Analysis]
     end
-    
+
     subgraph "User Interface"
         DASHBOARD[Analytics Dashboard]
         PROPERTY[Property Search]
         MAPS[Interactive Maps]
         REPORTS[Custom Reports]
     end
-    
+
     DOR --> INGEST
     COUNTIES --> INGEST
     FEMA --> INGEST
     MARKET --> INGEST
-    
+
     INGEST --> PIPELINE
     PIPELINE --> DB
     QUALITY --> PIPELINE
     SCHEDULER --> PIPELINE
-    
+
     DB --> PARCELS
     DB --> RISK
     DB --> MARKET_ANALYSIS
     DB --> GEO
-    
+
     PARCELS --> ENRICHMENT
     ENRICHMENT --> AI
     AI --> VECTOR
     VECTOR --> ANALYSIS
-    
+
     ANALYSIS --> DASHBOARD
     DB --> DASHBOARD
     DASHBOARD --> PROPERTY
@@ -76,7 +76,7 @@ graph TB
 ### 1. Database Schema (`florida-parcels-schema.sql`)
 - **florida_parcels**: Core 9.6M parcel records with geospatial data
 - **property_risk_assessments**: AI-powered risk analysis
-- **property_market_analysis**: Market trends and valuations  
+- **property_market_analysis**: Market trends and valuations
 - **neighborhood_analytics**: Demographic and market data
 - **flood_risk_zones**: FEMA flood zone integration
 - **hurricane_evacuation_zones**: Emergency planning data
@@ -138,8 +138,8 @@ graph TB
 
 3. **Verify Tables Created**:
    ```sql
-   SELECT table_name FROM information_schema.tables 
-   WHERE table_schema = 'public' 
+   SELECT table_name FROM information_schema.tables
+   WHERE table_schema = 'public'
    AND table_name LIKE '%parcels%' OR table_name LIKE '%property%';
    ```
 
@@ -181,7 +181,7 @@ graph TB
 1. **Add Dashboard Route** (`apps/web/src/app/admin/florida-data/page.tsx`):
    ```tsx
    import { FloridaAnalyticsDashboard } from '@/components/data-platform/florida-analytics-dashboard'
-   
+
    export default function FloridaDataPage() {
      return <FloridaAnalyticsDashboard />
    }
@@ -338,11 +338,11 @@ POST /functions/v1/florida-data-pipeline
 This comprehensive Florida Data Platform implementation provides ClaimGuardian with world-class property intelligence capabilities. The system handles 9.6M property records with AI-powered insights, geospatial analysis, and automated data pipelines - delivering sub-second property lookups, comprehensive risk assessments, and market intelligence.
 
 **Key Achievements:**
- Complete 67-county Florida coverage  
- Sub-second property lookup performance  
- AI-powered property enrichment  
- Automated data quality monitoring  
- Comprehensive analytics dashboard  
- Production-ready scalability  
+ Complete 67-county Florida coverage
+ Sub-second property lookup performance
+ AI-powered property enrichment
+ Automated data quality monitoring
+ Comprehensive analytics dashboard
+ Production-ready scalability
 
 The platform transforms ClaimGuardian from a claims tool into Florida's most advanced property intelligence system.

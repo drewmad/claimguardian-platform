@@ -7,7 +7,7 @@ ClaimGuardian uses an advanced database CI/CD pipeline that automatically valida
 ## Architecture
 
 ### Single Schema Approach
-- **Source of Truth**: `supabase/schema.sql` 
+- **Source of Truth**: `supabase/schema.sql`
 - **No Migrations**: We use a single schema file to avoid Supabase CLI conflicts
 - **Version Control**: All changes tracked in Git with full history
 
@@ -45,7 +45,7 @@ git push origin feat/new-schema
 When you create a PR, the CI automatically:
 
 1. **Detects Changes**: Identifies what changed in schema.sql
-2. **Safety Analysis**: 
+2. **Safety Analysis**:
    - ✅ Safe changes (ADD): Auto-approved
    - ❌ Breaking changes (DROP): Requires manual approval
 3. **Best Practices Check**:

@@ -17,7 +17,7 @@ export default function RealtimeClaimsPage() {
             Monitor claims processing in real-time with AI-powered queue management and automated workflows
           </p>
         </div>
-        
+
         <RealtimeClaimsDashboard className="space-y-6" />
       </div>
     </DashboardLayout>

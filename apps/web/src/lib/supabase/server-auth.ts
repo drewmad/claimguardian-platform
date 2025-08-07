@@ -29,9 +29,9 @@ export async function createAuthClient() {
           },
           set(name: string, value: string, options: Record<string, any>) {
             try {
-              cookieStore.set({ 
-                name, 
-                value, 
+              cookieStore.set({
+                name,
+                value,
                 ...options,
                 // Ensure cookies are secure in production
                 secure: process.env.NODE_ENV === 'production',
@@ -46,9 +46,9 @@ export async function createAuthClient() {
           },
           remove(name: string, options: Record<string, any>) {
             try {
-              cookieStore.set({ 
-                name, 
-                value: '', 
+              cookieStore.set({
+                name,
+                value: '',
                 ...options,
                 maxAge: 0
               })
@@ -59,7 +59,7 @@ export async function createAuthClient() {
         },
       }
     )
-    
+
     authLogger.info('Server auth client initialized')
     return client
   } catch (error) {
@@ -75,27 +75,27 @@ export async function createAuthClient() {
 export async function getServerSession() {
   try {
     const supabase = await createAuthClient()
-    
+
     // Validate session by checking user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
+
     if (userError || !user) {
       authLogger.warn('Session validation failed', { error: userError?.message })
-      
+
       // If user doesn't exist, clear the invalid session
       if (userError?.message?.includes('User from sub claim in JWT does not exist')) {
         authLogger.info('Clearing invalid session - user no longer exists')
         await supabase.auth.signOut()
       }
-      
+
       return null
     }
-    
+
     // If user is found, get the session from the user object
     const { data: { session } } = await supabase.auth.getSession()
 
     authLogger.debug('Valid session found', { userId: user.id })
-    
+
     return {
       ...session,
       user
@@ -114,12 +114,12 @@ export async function serverSignOut() {
   try {
     const supabase = await createAuthClient()
     const { error } = await supabase.auth.signOut()
-    
+
     if (error) {
       authLogger.error('Server sign out error', {}, error)
       throw error
     }
-    
+
     authLogger.info('User signed out from server')
   } catch (error) {
     authLogger.error('Failed to sign out from server', {}, error as Error)
@@ -134,12 +134,12 @@ export async function refreshServerSession() {
   try {
     const supabase = await createAuthClient()
     const { data: { session }, error } = await supabase.auth.refreshSession()
-    
+
     if (error || !session) {
       authLogger.error('Failed to refresh server session', {}, error || undefined)
       return null
     }
-    
+
     authLogger.info('Server session refreshed', { userId: session.user.id })
     return session
   } catch (error) {

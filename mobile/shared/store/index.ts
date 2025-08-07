@@ -27,7 +27,7 @@ const persistConfig = {
   storage: AsyncStorage,
   whitelist: [
     'user',
-    'properties', 
+    'properties',
     'assessments',
     'damageItems',
     'photos',
@@ -36,7 +36,7 @@ const persistConfig = {
   ], // Only persist these slices
   blacklist: [
     'network',
-    'camera', 
+    'camera',
     'location'
   ] // Don't persist real-time state
 }
@@ -123,7 +123,7 @@ export const selectPropertyWithAssessments = (propertyId: string) => (state: Roo
 export const selectOfflineCapabilities = (state: RootState) => ({
   totalRecords: [
     ...state.properties.items,
-    ...state.assessments.items, 
+    ...state.assessments.items,
     ...state.damageItems.items,
     ...state.photos.items,
     ...state.voiceNotes.items,

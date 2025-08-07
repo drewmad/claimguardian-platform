@@ -49,7 +49,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
 
       const mediaStream = await navigator.mediaDevices.getUserMedia(constraints)
       setStream(mediaStream)
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = mediaStream
       }
@@ -145,7 +145,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
               className="w-full h-full object-cover"
             />
           )}
-          
+
           {/* Capture overlay */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute inset-4 border-2 border-white/30 rounded-lg" />
@@ -164,7 +164,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
             <RotateCcw className="h-4 w-4 mr-2" />
             Flip Camera
           </Button>
-          
+
           <Button
             onClick={captureImage}
             disabled={!stream || error !== null || isCapturing}
@@ -174,7 +174,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
             <Camera className="h-5 w-5 mr-2" />
             {isCapturing ? 'Capturing...' : 'Capture'}
           </Button>
-          
+
           <Button
             variant="outline"
             size="sm"

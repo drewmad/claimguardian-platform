@@ -462,6 +462,6 @@ docker-compose up -d
 
 ---
 
-**Version**: 1.0.0  
-**Last Updated**: $(date)  
+**Version**: 1.0.0
+**Last Updated**: $(date)
 **Maintainer**: ClaimGuardian Infrastructure Team

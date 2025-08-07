@@ -25,10 +25,10 @@ interface CookiePreferencesModalProps {
   onSave: (preferences: CookiePreferences) => void
 }
 
-export function CookiePreferencesModal({ 
-  isOpen, 
-  onClose, 
-  onSave 
+export function CookiePreferencesModal({
+  isOpen,
+  onClose,
+  onSave
 }: CookiePreferencesModalProps) {
   const [preferences, setPreferences] = useState<CookiePreferences>({
     necessary: true, // Always true, can't be disabled
@@ -60,7 +60,7 @@ export function CookiePreferencesModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={onClose} />
-      
+
       <div className="relative bg-slate-900 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden">
         {/* Header */}
         <div className="sticky top-0 bg-slate-900 border-b border-slate-800 p-6 flex items-center justify-between">
@@ -76,7 +76,7 @@ export function CookiePreferencesModal({
         {/* Content */}
         <div className="p-6 space-y-6 overflow-y-auto">
           <p className="text-slate-300">
-            We use cookies to enhance your browsing experience, personalize content, 
+            We use cookies to enhance your browsing experience, personalize content,
             and analyze our traffic. Please choose which types of cookies you allow.
           </p>
 
@@ -97,7 +97,7 @@ export function CookiePreferencesModal({
                     <span className="text-xs text-slate-400 bg-slate-700 px-2 py-0.5 rounded">Always Active</span>
                   </div>
                   <p className="text-sm text-slate-400 mt-1">
-                    These cookies are essential for the website to function properly. 
+                    These cookies are essential for the website to function properly.
                     They enable basic functions like page navigation and access to secure areas.
                   </p>
                 </div>
@@ -116,7 +116,7 @@ export function CookiePreferencesModal({
                 <div className="flex-1">
                   <span className="font-medium text-white">Analytics Cookies</span>
                   <p className="text-sm text-slate-400 mt-1">
-                    These cookies help us understand how visitors interact with our website 
+                    These cookies help us understand how visitors interact with our website
                     by collecting and reporting information anonymously.
                   </p>
                 </div>
@@ -135,7 +135,7 @@ export function CookiePreferencesModal({
                 <div className="flex-1">
                   <span className="font-medium text-white">Marketing Cookies</span>
                   <p className="text-sm text-slate-400 mt-1">
-                    These cookies are used to track visitors across websites to display 
+                    These cookies are used to track visitors across websites to display
                     ads that are relevant and engaging for individual users.
                   </p>
                 </div>
@@ -154,7 +154,7 @@ export function CookiePreferencesModal({
                 <div className="flex-1">
                   <span className="font-medium text-white">Functional Cookies</span>
                   <p className="text-sm text-slate-400 mt-1">
-                    These cookies enable enhanced functionality and personalization, 
+                    These cookies enable enhanced functionality and personalization,
                     such as remembering your preferences and choices.
                   </p>
                 </div>

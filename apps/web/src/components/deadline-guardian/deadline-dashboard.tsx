@@ -16,14 +16,14 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  AlertTriangle, 
-  Calendar, 
-  Clock, 
-  CheckCircle2, 
-  XCircle, 
-  Bell, 
-  FileText, 
+import {
+  AlertTriangle,
+  Calendar,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Bell,
+  FileText,
   Eye,
   Plus,
   Filter,
@@ -131,7 +131,7 @@ export function DeadlineGuardianDashboard() {
     return differenceInDays(new Date(dueDate), new Date())
   }
 
-  const filteredDeadlines = deadlines.filter(deadline => 
+  const filteredDeadlines = deadlines.filter(deadline =>
     filterPriority === 'all' || deadline.priority === filterPriority
   )
 
@@ -157,7 +157,7 @@ export function DeadlineGuardianDashboard() {
             <p className="text-gray-400">Proactive deadline detection and management</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Badge className="bg-blue-600/20 text-blue-400 border-blue-600/30">
             <Zap className="h-3 w-3 mr-1" />
@@ -255,7 +255,7 @@ export function DeadlineGuardianDashboard() {
                           <div>
                             <h4 className="font-medium text-white">{deadline.title}</h4>
                             <p className="text-sm text-red-300">
-                              {deadline.status === 'overdue' 
+                              {deadline.status === 'overdue'
                                 ? `${Math.abs(getDaysUntilDue(deadline.due_date))} days overdue`
                                 : 'Due today'
                               }
@@ -322,7 +322,7 @@ export function DeadlineGuardianDashboard() {
                       </Badge>
                     </div>
                   ))}
-                
+
                 {deadlines.filter(d => {
                   const daysUntil = getDaysUntilDue(d.due_date)
                   return d.status === 'upcoming' && daysUntil >= 0 && daysUntil <= 7
@@ -352,8 +352,8 @@ export function DeadlineGuardianDashboard() {
                   size="sm"
                   variant={filterPriority === priority ? "default" : "outline"}
                   onClick={() => setFilterPriority(priority)}
-                  className={filterPriority === priority 
-                    ? "bg-blue-600 hover:bg-blue-700" 
+                  className={filterPriority === priority
+                    ? "bg-blue-600 hover:bg-blue-700"
                     : "border-gray-600 hover:bg-gray-700"
                   }
                 >
@@ -375,7 +375,7 @@ export function DeadlineGuardianDashboard() {
               <div className="space-y-3">
                 {filteredDeadlines.map(deadline => {
                   const daysUntil = getDaysUntilDue(deadline.due_date)
-                  
+
                   return (
                     <div key={deadline.id} className="flex items-center justify-between p-4 bg-gray-700/30 rounded-lg border border-gray-700/50 hover:bg-gray-700/50 transition-colors">
                       <div className="flex items-start gap-3">
@@ -392,9 +392,9 @@ export function DeadlineGuardianDashboard() {
                             <span>Due: {format(new Date(deadline.due_date), 'MMM d, yyyy')}</span>
                             <span>•</span>
                             <span className={daysUntil < 0 ? 'text-red-400' : daysUntil <= 3 ? 'text-orange-400' : 'text-gray-400'}>
-                              {daysUntil < 0 
+                              {daysUntil < 0
                                 ? `${Math.abs(daysUntil)} days overdue`
-                                : daysUntil === 0 
+                                : daysUntil === 0
                                   ? 'Due today'
                                   : `${daysUntil} days remaining`
                               }
@@ -406,7 +406,7 @@ export function DeadlineGuardianDashboard() {
                           </div>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
@@ -469,8 +469,8 @@ export function DeadlineGuardianDashboard() {
                         </div>
                         <div className="flex items-center gap-2">
                           <div className="w-24">
-                            <Progress 
-                              value={stats.total > 0 ? (count / stats.total) * 100 : 0} 
+                            <Progress
+                              value={stats.total > 0 ? (count / stats.total) * 100 : 0}
                               className="h-2 bg-gray-700"
                             />
                           </div>

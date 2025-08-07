@@ -34,7 +34,7 @@ export const POST = withBudgetCheck(
         async () => {
           const result = await withErrorHandling(async () => {
             const body = await request.json()
-            
+
             // Sanitize input data
             const sanitizedData = inputSanitizer.sanitizeFormData(body)
             const { image, prompt, model = 'openai', sessionId } = sanitizedData
@@ -83,7 +83,7 @@ export const POST = withBudgetCheck(
               }
             })
 
-            return { 
+            return {
               response: response.content,
               usage: response.usage,
               model: response.model
@@ -92,11 +92,11 @@ export const POST = withBudgetCheck(
 
           if (!result.success) {
             logger.error('AI Image Analysis failed', {}, result.error instanceof Error ? result.error : new Error(String(result.error)))
-            
+
             // Determine appropriate status code based on error
-            const status = result.error.message.includes('required') || 
+            const status = result.error.message.includes('required') ||
                           result.error.message.includes('Invalid') ? 400 : 500
-            
+
             return NextResponse.json(
               { error: result.error.message },
               { status }

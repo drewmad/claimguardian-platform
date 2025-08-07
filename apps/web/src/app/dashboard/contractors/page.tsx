@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Users, Plus, Star, Phone,
   CheckCircle, DollarSign, FileText, MessageSquare,
   Filter, Search, ChevronRight, Shield, Award, TrendingUp,
@@ -64,7 +64,7 @@ function ContractorsDashboardContent() {
   const router = useRouter() // eslint-disable-line @typescript-eslint/no-unused-vars
   const [selectedCategory, setSelectedCategory] = useState<ContractorCategory>('all')
   const [searchQuery, setSearchQuery] = useState('')
-  
+
   // Mock data
   const [contractors] = useState<Contractor[]>([
     {
@@ -193,7 +193,7 @@ function ContractorsDashboardContent() {
 
   const filteredContractors = contractors.filter(contractor => {
     const matchesCategory = selectedCategory === 'all' || contractor.category === selectedCategory
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       contractor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       contractor.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()))
     return matchesCategory && matchesSearch
@@ -232,7 +232,7 @@ function ContractorsDashboardContent() {
                 <p className="text-sm text-gray-400">Contractors</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -243,7 +243,7 @@ function ContractorsDashboardContent() {
                 <p className="text-sm text-gray-400">Verified</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -254,7 +254,7 @@ function ContractorsDashboardContent() {
                 <p className="text-sm text-gray-400">Total Spent</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -420,13 +420,13 @@ function ContractorsDashboardContent() {
                           {job.rating && (
                             <div className="flex items-center gap-1">
                               {[...Array(5)].map((_, i) => (
-                                <Star 
-                                  key={i} 
+                                <Star
+                                  key={i}
                                   className={`w-3 h-3 ${
-                                    i < (job.rating || 0) 
-                                      ? 'text-yellow-400 fill-current' 
+                                    i < (job.rating || 0)
+                                      ? 'text-yellow-400 fill-current'
                                       : 'text-gray-600'
-                                  }`} 
+                                  }`}
                                 />
                               ))}
                             </div>
@@ -452,7 +452,7 @@ function ContractorsDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Shield className="w-5 h-5 text-green-400" />
@@ -460,7 +460,7 @@ function ContractorsDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <ExternalLink className="w-5 h-5 text-blue-400" />

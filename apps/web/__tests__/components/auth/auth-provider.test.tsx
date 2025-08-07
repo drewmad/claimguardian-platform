@@ -11,9 +11,9 @@
 import { act, waitFor } from '@testing-library/react'
 import React from 'react'
 
-import { 
-  render, 
-  createMockUser, 
+import {
+  render,
+  createMockUser,
   createMockSession,
   createMockSupabaseResponse,
   mockConsole
@@ -93,7 +93,7 @@ describe('AuthProvider', () => {
 
   beforeEach(() => {
     console = mockConsole()
-    
+
     // Reset Supabase mock
     mockSupabase = {
       auth: {
@@ -145,7 +145,7 @@ describe('AuthProvider', () => {
     it('should restore user session on mount', async () => {
       const mockUser = createMockUser()
       const mockSession = createMockSession({ user: mockUser })
-      
+
       mockSupabase.auth.getSession.mockResolvedValue(
         createMockSupabaseResponse({ session: mockSession })
       )
@@ -185,7 +185,7 @@ describe('AuthProvider', () => {
     it('should handle SIGNED_IN event', async () => {
       const mockUser = createMockUser()
       const mockSession = createMockSession({ user: mockUser })
-      
+
       let authStateCallback: (event: string, session: any) => void
       mockSupabase.auth.onAuthStateChange.mockImplementation((callback) => {
         authStateCallback = callback
@@ -246,7 +246,7 @@ describe('AuthProvider', () => {
   describe('Authentication Methods', () => {
     it('should handle sign out', async () => {
       const { authService } = await import('@/lib/auth/auth-service')
-      
+
       ;(authService.signOut as jest.Mock).mockResolvedValue({
         error: null
       })

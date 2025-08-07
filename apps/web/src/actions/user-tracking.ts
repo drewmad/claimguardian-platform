@@ -59,16 +59,16 @@ export async function trackUserEvent(data: TrackingData) {
   try {
     const supabase = createServiceRoleClient()
     const headersList = await headers()
-    
+
     // Get IP and user agent from headers
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
+    const ipAddress = headersList.get('x-forwarded-for') ||
+                     headersList.get('x-real-ip') ||
                      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
-    
+
     // Parse user agent for device info
     const deviceInfo = parseUserAgent(userAgent)
-    
+
     // Insert tracking record
     const { error } = await supabase
       .from('user_tracking')
@@ -101,15 +101,15 @@ export async function trackUserEvent(data: TrackingData) {
         page_url: headersList.get('referer'),
         referrer_url: data.eventData?.referrer
       })
-    
+
     if (error) {
       logger.error('Failed to track user event', { userId: data.userId, eventType: data.eventType }, error)
       throw error
     }
-    
+
     logger.info('User event tracked', { userId: data.userId, eventType: data.eventType })
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error tracking user event', { userId: data.userId }, error instanceof Error ? error : new Error(String(error)))
     throw new Error('Failed to track user event')
@@ -123,12 +123,12 @@ export async function captureSignupData(data: SignupTrackingData) {
   try {
     const supabase = createServiceRoleClient()
     const headersList = await headers()
-    
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
+
+    const ipAddress = headersList.get('x-forwarded-for') ||
+                     headersList.get('x-real-ip') ||
                      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
-    
+
     // Prepare tracking data object
     const trackingData = {
       ip_address: ipAddress,
@@ -147,7 +147,7 @@ export async function captureSignupData(data: SignupTrackingData) {
       latitude: data.location?.latitude,
       longitude: data.location?.longitude
     }
-    
+
     // Try to call the database function, but don't fail if it doesn't exist
     try {
       const { error: captureError } = await supabase
@@ -155,13 +155,13 @@ export async function captureSignupData(data: SignupTrackingData) {
           p_user_id: data.userId,
           p_tracking_data: trackingData
         })
-      
+
       if (captureError) {
         logger.error('[USER TRACKING] RPC function error', { error: captureError.message, code: captureError.code })
         // If RPC doesn't exist, fall back to direct insert
         if (captureError.message?.includes('function') || captureError.code === 'PGRST202') {
           logger.info('[USER TRACKING] Falling back to direct user_profiles update')
-          
+
           // Update user profile directly
           const { error: profileError } = await supabase
             .from('user_profiles')
@@ -184,7 +184,7 @@ export async function captureSignupData(data: SignupTrackingData) {
               signup_longitude: trackingData.longitude,
               signup_timestamp: new Date().toISOString()
             })
-          
+
           if (profileError) {
             logger.error('[USER TRACKING] Profile update error', { error: profileError.message, code: profileError.code })
             // Don't throw - this is not critical for signup
@@ -198,7 +198,7 @@ export async function captureSignupData(data: SignupTrackingData) {
       logger.error('[USER TRACKING] Unexpected RPC error', {}, rpcError instanceof Error ? rpcError : new Error(String(rpcError)))
       // Don't throw - continue with signup
     }
-    
+
     // Create user preferences record with consent data using security definer function
     try {
       const { error: prefsError } = await supabase.rpc('create_user_preferences', {
@@ -214,7 +214,7 @@ export async function captureSignupData(data: SignupTrackingData) {
           timezone: data.location?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone
         }
       })
-      
+
       if (prefsError) {
         logger.error('[USER TRACKING] Preferences error', { error: prefsError.message, code: prefsError.code })
         // Try direct insert as fallback
@@ -241,7 +241,7 @@ export async function captureSignupData(data: SignupTrackingData) {
       logger.error('[USER TRACKING] Unexpected preferences error', {}, prefsError instanceof Error ? prefsError : new Error(String(prefsError)))
       // Don't throw - continue with signup
     }
-    
+
     // Log consent changes in audit log
     try {
       const consentTypes = [
@@ -250,7 +250,7 @@ export async function captureSignupData(data: SignupTrackingData) {
         { type: 'data_processing_consent', value: data.preferences.dataProcessingConsent },
         { type: 'ai_processing_consent', value: data.preferences.aiProcessingConsent }
       ]
-      
+
       for (const consent of consentTypes) {
         if (consent.value) {
           const { error: auditError } = await supabase
@@ -264,7 +264,7 @@ export async function captureSignupData(data: SignupTrackingData) {
               user_agent: userAgent,
               method: 'signup_form'
             })
-          
+
           if (auditError) {
             logger.error('[USER TRACKING] Consent audit error', { error: auditError.message, code: auditError.code })
             // Don't throw - audit logging is not critical
@@ -275,10 +275,10 @@ export async function captureSignupData(data: SignupTrackingData) {
       logger.error('[USER TRACKING] Unexpected audit error', {}, auditError instanceof Error ? auditError : new Error(String(auditError)))
       // Don't throw - continue with signup
     }
-    
+
     logger.info('Signup data captured successfully', { userId: data.userId })
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error capturing signup data', { userId: data.userId }, error instanceof Error ? error : new Error(String(error)))
     throw new Error('Failed to capture signup data')
@@ -296,11 +296,11 @@ export async function updateUserPreference(
   try {
     const supabase = createServiceRoleClient()
     const headersList = await headers()
-    
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
+
+    const ipAddress = headersList.get('x-forwarded-for') ||
+                     headersList.get('x-real-ip') ||
                      'unknown'
-    
+
     // Call the database function to update preference and log consent
     const { error } = await supabase
       .rpc('update_user_preference', {
@@ -309,15 +309,15 @@ export async function updateUserPreference(
         p_preference_value: value,
         p_ip_address: ipAddress
       })
-    
+
     if (error) {
       logger.error('Failed to update user preference', { userId, preferenceName }, error)
       throw error
     }
-    
+
     logger.info('User preference updated', { userId, preferenceName, value })
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error updating user preference', { userId, preferenceName }, error instanceof Error ? error : new Error(String(error)))
     throw new Error('Failed to update user preference')
@@ -335,15 +335,15 @@ export async function createUserSession(
   try {
     const supabase = createServiceRoleClient()
     const headersList = await headers()
-    
-    const ipAddress = headersList.get('x-forwarded-for') || 
-                     headersList.get('x-real-ip') || 
+
+    const ipAddress = headersList.get('x-forwarded-for') ||
+                     headersList.get('x-real-ip') ||
                      'unknown'
     const userAgent = headersList.get('user-agent') || 'unknown'
-    
+
     const expiresAt = new Date()
     expiresAt.setSeconds(expiresAt.getSeconds() + expiresIn)
-    
+
     const { error } = await supabase
       .from('user_sessions')
       .insert({
@@ -353,15 +353,15 @@ export async function createUserSession(
         ip_address: ipAddress,
         user_agent: userAgent
       })
-    
+
     if (error) {
       logger.error('Failed to create user session', { userId }, error)
       throw error
     }
-    
+
     logger.info('User session created', { userId })
     return { success: true }
-    
+
   } catch (error) {
     logger.error('Error creating user session', { userId }, error instanceof Error ? error : new Error(String(error)))
     throw new Error('Failed to create user session')
@@ -373,13 +373,13 @@ export async function createUserSession(
  */
 function parseUserAgent(userAgent: string) {
   const ua = userAgent.toLowerCase()
-  
+
   // Detect device type
   let deviceType = 'desktop'
   if (/mobile|android|iphone|ipad|tablet/i.test(ua)) {
     deviceType = /tablet|ipad/i.test(ua) ? 'tablet' : 'mobile'
   }
-  
+
   // Detect browser
   let browser = 'Unknown'
   let browserVersion = ''
@@ -396,7 +396,7 @@ function parseUserAgent(userAgent: string) {
     browser = 'Edge'
     browserVersion = ua.match(/edge\/(\d+\.\d+)/)?.[1] || ''
   }
-  
+
   // Detect OS
   let os = 'Unknown'
   let osVersion = ''
@@ -416,7 +416,7 @@ function parseUserAgent(userAgent: string) {
   } else if (ua.includes('linux')) {
     os = 'Linux'
   }
-  
+
   return {
     deviceType,
     browser,

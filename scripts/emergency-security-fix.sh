@@ -66,7 +66,7 @@ cat > /tmp/critical-security-fixes.sql << 'EOF'
 DROP VIEW IF EXISTS public.recent_security_events CASCADE;
 
 CREATE OR REPLACE VIEW public.recent_security_events AS
-SELECT 
+SELECT
   se.id,
   se.event_type,
   se.created_at,
@@ -95,7 +95,7 @@ BEGIN
       FOR SELECT USING (auth.uid() = user_id);
   END IF;
 
-  -- user_consents policies  
+  -- user_consents policies
   IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE tablename = 'user_consents' AND policyname = 'Users can view own consents') THEN
     CREATE POLICY "Users can view own consents" ON public.user_consents
       FOR SELECT USING (auth.uid() = user_id);
@@ -121,7 +121,7 @@ BEGIN
     AND c.relrowsecurity = false
     AND t.tablename NOT IN ('spatial_ref_sys', 'schema_migrations')
     AND t.tablename IN ('user_tracking', 'user_consents', 'ai_processing_queue');
-    
+
   IF unprotected_count > 0 THEN
     RAISE WARNING 'Still have % unprotected critical tables!', unprotected_count;
   ELSE
@@ -156,13 +156,13 @@ CRITICAL_FUNCTIONS=(
 for func in "${CRITICAL_FUNCTIONS[@]}"; do
     if [ -f "supabase/functions/$func/index.ts" ]; then
         echo "Patching $func..."
-        
+
         # Backup
         cp "supabase/functions/$func/index.ts" "supabase/functions/$func/index.ts.backup"
-        
+
         # Quick fix for wildcard CORS
         sed -i.security "s/'Access-Control-Allow-Origin': '\*'/'Access-Control-Allow-Origin': 'https:\/\/claimguardianai.com'/g" "supabase/functions/$func/index.ts"
-        
+
         echo -e "${GREEN}  ✓ $func patched${NC}"
     fi
 done
@@ -186,7 +186,7 @@ echo -e "${BLUE}Step 4: Creating security monitoring...${NC}"
 cat > check-security-status.sql << 'EOF'
 -- Run this query to check security status
 WITH security_checks AS (
-  SELECT 
+  SELECT
     'Tables without RLS' as check_name,
     COUNT(*) as issue_count
   FROM pg_tables t
@@ -195,20 +195,20 @@ WITH security_checks AS (
   WHERE t.schemaname = 'public'
     AND c.relrowsecurity = false
     AND t.tablename NOT IN ('spatial_ref_sys', 'schema_migrations')
-  
+
   UNION ALL
-  
-  SELECT 
+
+  SELECT
     'SECURITY DEFINER views' as check_name,
     COUNT(*) as issue_count
   FROM pg_views
   WHERE schemaname = 'public'
     AND definition LIKE '%SECURITY DEFINER%'
 )
-SELECT 
+SELECT
   check_name,
   issue_count,
-  CASE 
+  CASE
     WHEN issue_count = 0 THEN '✅ PASS'
     ELSE '❌ FAIL'
   END as status

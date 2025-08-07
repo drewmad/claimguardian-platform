@@ -65,7 +65,7 @@ export class AIClientService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: response.statusText }))
-        
+
         // Provide user-friendly error messages
         if (response.status === 429) {
           throw new Error('Too many requests. Please wait a moment and try again.')
@@ -76,16 +76,16 @@ export class AIClientService {
         } else if (response.status === 400) {
           throw new Error('Invalid request. Please check your input and try again.')
         }
-        
+
         throw new Error(errorData.error || 'AI processing failed. Please try again.')
       }
 
       const data = await response.json()
-      
+
       if (!data.response) {
         throw new Error('Invalid response from AI service. Please try again.')
       }
-      
+
       return data.response
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -107,7 +107,7 @@ export class AIClientService {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({ error: response.statusText }))
-        
+
         // Provide user-friendly error messages for image analysis
         if (response.status === 429) {
           throw new Error('Too many image analysis requests. Please wait a moment and try again.')
@@ -118,16 +118,16 @@ export class AIClientService {
         } else if (response.status >= 500) {
           throw new Error('Image analysis service is temporarily down. Please try again in a few minutes.')
         }
-        
+
         throw new Error(errorData.error || 'Image analysis failed. Please try again with a different image.')
       }
 
       const data = await response.json()
-      
+
       if (!data.response) {
         throw new Error('No analysis results received. Please try again.')
       }
-      
+
       return data.response
     } catch (error) {
       if (error instanceof TypeError && error.message.includes('fetch')) {
@@ -139,12 +139,12 @@ export class AIClientService {
 
   async chatWithPolicy(request: PolicyChatRequest): Promise<PolicyChatResponse> {
     // Get Supabase URL and anon key from window for client-side
-    const supabaseUrl = typeof window !== 'undefined' 
-      ? window.location.origin.includes('localhost') 
-        ? process.env.NEXT_PUBLIC_SUPABASE_URL 
+    const supabaseUrl = typeof window !== 'undefined'
+      ? window.location.origin.includes('localhost')
+        ? process.env.NEXT_PUBLIC_SUPABASE_URL
         : process.env.NEXT_PUBLIC_SUPABASE_URL
       : process.env.NEXT_PUBLIC_SUPABASE_URL
-    
+
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     if (!supabaseUrl || !supabaseAnonKey) {

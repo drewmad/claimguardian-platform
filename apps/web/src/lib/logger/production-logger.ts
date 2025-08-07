@@ -32,35 +32,35 @@ class ProductionLogger {
 
   private formatLogEntry(entry: LogEntry): string {
     const { timestamp, level, message, component, context, error } = entry
-    
+
     let logMessage = `[${timestamp}] [${level.toUpperCase()}]`
-    
+
     if (component) {
       logMessage += ` [${component}]`
     }
-    
+
     logMessage += ` ${message}`
-    
+
     if (context && Object.keys(context).length > 0) {
       logMessage += ` ${JSON.stringify(this.sanitizeContext(context))}`
     }
-    
+
     if (error) {
       logMessage += ` Error: ${error.message}`
       if (error.stack && this.isDevelopment) {
         logMessage += `\nStack: ${error.stack}`
       }
     }
-    
+
     return logMessage
   }
 
   private sanitizeContext(context: Record<string, any>): Record<string, any> {
     const sanitized = { ...context }
-    
+
     // Remove sensitive fields
     const sensitiveFields = ['password', 'token', 'key', 'secret', 'auth', 'session']
-    
+
     for (const [key, value] of Object.entries(sanitized)) {
       if (sensitiveFields.some(field => key.toLowerCase().includes(field))) {
         sanitized[key] = '***REDACTED***'
@@ -68,7 +68,7 @@ class ProductionLogger {
         sanitized[key] = value.substring(0, 997) + '...'
       }
     }
-    
+
     return sanitized
   }
 
@@ -104,7 +104,7 @@ class ProductionLogger {
 
       // In production, send to external logging service
       this.sendToLoggingService(structuredLog)
-      
+
       // Also write to console for server-side logs
       console.log(JSON.stringify(structuredLog))
     }
@@ -116,7 +116,7 @@ class ProductionLogger {
     // - LogRocket for session replay
     // - DataDog for monitoring
     // - Custom logging endpoint
-    
+
     if (entry.level === 'error') {
       // Send errors to Sentry in production
       try {
@@ -172,7 +172,7 @@ class ProductionLogger {
   error(message: string, error?: unknown, component?: string): void {
     // Handle backwards compatibility - error can be Error object or any value
     const actualError = error instanceof Error ? error : (error ? new Error(String(error)) : undefined)
-    
+
     this.writeLog({
       level: 'error',
       message,

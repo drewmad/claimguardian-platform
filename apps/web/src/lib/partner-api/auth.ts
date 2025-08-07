@@ -13,10 +13,10 @@ import { NextRequest } from 'next/server'
 import { createHash, timingSafeEqual } from 'crypto'
 import { createClient } from '@/lib/supabase/server'
 import { logger } from '@/lib/logger/production-logger'
-import type { 
-  PartnerApiKey, 
+import type {
+  PartnerApiKey,
   PartnerOrganization,
-  PartnerApiErrorCode 
+  PartnerApiErrorCode
 } from '@claimguardian/db/types/partner-api.types'
 
 export interface PartnerAuthResult {
@@ -131,7 +131,7 @@ class PartnerApiAuth {
     // Support both "Bearer" and "ApiKey" prefixes
     const bearerMatch = authHeader.match(/^Bearer\s+(.+)$/i)
     const apiKeyMatch = authHeader.match(/^ApiKey\s+(.+)$/i)
-    
+
     return bearerMatch?.[1] || apiKeyMatch?.[1] || null
   }
 
@@ -141,7 +141,7 @@ class PartnerApiAuth {
   private validateApiKeyFormat(apiKey: string): ApiKeyValidation {
     // API key format: pk_{env}_{32_char_random}
     const keyPattern = /^pk_(live|test)_[a-zA-Z0-9]{32}$/
-    
+
     if (!keyPattern.test(apiKey)) {
       return {
         isValid: false,
@@ -293,7 +293,7 @@ class PartnerApiAuth {
    */
   private async updateLastUsed(keyId: string): Promise<void> {
     const supabase = await createClient()
-    
+
     await supabase
       .from('partner_api_keys')
       .update({
@@ -320,7 +320,7 @@ class PartnerApiAuth {
   private getCachedKey(apiKey: string): { key: PartnerApiKey; partner: PartnerOrganization } | null {
     const hashedKey = this.hashApiKey(apiKey)
     const cached = this.keyCache.get(hashedKey)
-    
+
     if (!cached) {
       return null
     }
@@ -424,12 +424,12 @@ class PartnerApiAuth {
   private generateSecureKey(length: number): string {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
     let result = ''
-    
+
     for (let i = 0; i < length; i++) {
       const randomIndex = Math.floor(Math.random() * chars.length)
       result += chars[randomIndex]
     }
-    
+
     return result
   }
 

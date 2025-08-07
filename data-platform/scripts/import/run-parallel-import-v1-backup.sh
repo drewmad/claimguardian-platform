@@ -84,7 +84,7 @@ draw_progress_bar() {
     local percent=$((current * 100 / total))
     local filled=$((current * width / total))
     local empty=$((width - filled))
-    
+
     printf "["
     printf "%*s" $filled | tr ' ' '█'
     printf "%*s" $empty | tr ' ' '░'
@@ -96,7 +96,7 @@ estimate_completion() {
     local imported=$1
     local total=$2
     local elapsed=$3
-    
+
     if [ $imported -gt 0 ] && [ $elapsed -gt 0 ]; then
         local rate=$((imported * 60 / elapsed))  # files per minute
         local remaining=$((total - imported))
@@ -112,22 +112,22 @@ get_process_details() {
     local logfile=$1
     local current_file=""
     local progress=""
-    
+
     if [ -f "$logfile" ]; then
         # Get the last file being processed
         current_file=$(tail -n 10 "$logfile" | grep -o '\[[0-9]*/[0-9]*\] [^(]*' | tail -1 | cut -d']' -f2 | xargs)
         # Get the last progress line
         progress=$(tail -n 5 "$logfile" | grep -o 'Progress: [0-9]*/[0-9]* ([0-9]*%)' | tail -1)
     fi
-    
+
     if [ -z "$current_file" ]; then
         current_file="Starting..."
     fi
-    
+
     if [ -z "$progress" ]; then
         progress="Initializing..."
     fi
-    
+
     echo "${current_file} | ${progress}"
 }
 
@@ -138,34 +138,34 @@ echo "════════════════════════�
 while kill -0 $PID1 2>/dev/null || kill -0 $PID2 2>/dev/null || kill -0 $PID3 2>/dev/null; do
     IMPORTED=$(ls CleanedSplit_imported/*.csv 2>/dev/null | wc -l | tr -d ' ')
     REMAINING=$(ls CleanedSplit/*.csv 2>/dev/null | wc -l | tr -d ' ')
-    
+
     # Calculate elapsed time
     ELAPSED=$SECONDS
     MINS=$((ELAPSED / 60))
     SECS=$((ELAPSED % 60))
-    
+
     # Calculate import rate
     RATE=""
     if [ $ELAPSED -gt $LAST_TIME ] && [ $IMPORTED -gt $LAST_IMPORTED ]; then
         FILES_PER_SEC=$(echo "scale=2; ($IMPORTED - $LAST_IMPORTED) / ($ELAPSED - $LAST_TIME)" | bc 2>/dev/null || echo "0")
         RATE=$(printf "%.1f files/sec" $FILES_PER_SEC)
     fi
-    
+
     # Status for each process
     P1_STATUS="✅ Complete"
-    P2_STATUS="✅ Complete"  
+    P2_STATUS="✅ Complete"
     P3_STATUS="✅ Complete"
-    
+
     kill -0 $PID1 2>/dev/null && P1_STATUS="🔄 Running"
     kill -0 $PID2 2>/dev/null && P2_STATUS="🔄 Running"
     kill -0 $PID3 2>/dev/null && P3_STATUS="🔄 Running"
-    
+
     # Clear screen and redraw
     printf "\033[H\033[J"
     echo "🚀 PARALLEL IMPORT PROGRESS MONITOR"
     echo "══════════════════════════════════════════════════════════════════════════"
     echo ""
-    
+
     # Overall progress
     echo "📊 OVERALL PROGRESS"
     printf "   "
@@ -173,14 +173,14 @@ while kill -0 $PID1 2>/dev/null || kill -0 $PID2 2>/dev/null || kill -0 $PID3 2>
     echo ""
     printf "   Files: %d/%d imported | %d remaining\n" $IMPORTED $FILE_COUNT $REMAINING
     echo ""
-    
+
     # Time and rate info
     echo "⏱️  TIMING"
     printf "   Elapsed: %02d:%02d | Rate: %s | " $MINS $SECS "$RATE"
     estimate_completion $IMPORTED $FILE_COUNT $ELAPSED
     echo ""
     echo ""
-    
+
     # Process details
     echo "🔧 PROCESS STATUS"
     printf "   Process 1: %s\n" "$P1_STATUS"
@@ -188,19 +188,19 @@ while kill -0 $PID1 2>/dev/null || kill -0 $PID2 2>/dev/null || kill -0 $PID3 2>
         printf "      └─ %s\n" "$(get_process_details import_logs/process1.log)"
     fi
     echo ""
-    
+
     printf "   Process 2: %s\n" "$P2_STATUS"
     if kill -0 $PID2 2>/dev/null; then
         printf "      └─ %s\n" "$(get_process_details import_logs/process2.log)"
     fi
     echo ""
-    
+
     printf "   Process 3: %s\n" "$P3_STATUS"
     if kill -0 $PID3 2>/dev/null; then
         printf "      └─ %s\n" "$(get_process_details import_logs/process3.log)"
     fi
     echo ""
-    
+
     # Recent activity
     echo "📋 RECENT ACTIVITY"
     if [ -f "import_logs/process1.log" ] || [ -f "import_logs/process2.log" ] || [ -f "import_logs/process3.log" ]; then
@@ -209,14 +209,14 @@ while kill -0 $PID1 2>/dev/null || kill -0 $PID2 2>/dev/null || kill -0 $PID3 2>
         echo "   Starting up processes..."
     fi
     echo ""
-    
+
     echo "💡 TIP: Use 'tail -f import_logs/process*.log' in another terminal for detailed logs"
     echo "══════════════════════════════════════════════════════════════════════════"
-    
+
     # Update tracking variables
     LAST_IMPORTED=$IMPORTED
     LAST_TIME=$ELAPSED
-    
+
     sleep 3
 done
 
@@ -240,7 +240,7 @@ for logfile in import_logs/process*.log; do
         RECORDS=$(grep -o '[0-9]* records' "$logfile" | tail -1 | grep -o '[0-9]*' | head -1)
         SUCCESSES=$(grep -c "✅ Success" "$logfile" 2>/dev/null || echo 0)
         ERRORS=$(grep -c "❌ Failed" "$logfile" 2>/dev/null || echo 0)
-        
+
         TOTAL_RECORDS=$((TOTAL_RECORDS + ${RECORDS:-0}))
         SUCCESS_COUNT=$((SUCCESS_COUNT + SUCCESSES))
         ERROR_COUNT=$((ERROR_COUNT + ERRORS))

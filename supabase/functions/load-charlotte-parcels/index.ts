@@ -6,8 +6,8 @@ const CHARLOTTE_LAYER_ID = 8
 const CHARLOTTE_FIPS = '12015' // Florida (12) + Charlotte (015)
 
 const corsHeaders = {
-  'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production' 
-    ? 'https://claimguardianai.com' 
+  'Access-Control-Allow-Origin': process.env.NODE_ENV === 'production'
+    ? 'https://claimguardianai.com'
     : 'http://localhost:3000',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
   'Access-Control-Allow-Methods': 'POST, OPTIONS',
@@ -31,7 +31,7 @@ Deno.serve(async (req) => {
 
     // Parse request body
     const { offset = 0, limit = 100 } = await req.json()
-    
+
     console.log(`Loading Charlotte County parcels - Offset: ${offset}, Limit: ${limit}`)
 
     // Initialize Supabase with service role for database writes
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
 
     // Construct FDOT API URL with correct parameters
     const fdotUrl = new URL(`https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer/${CHARLOTTE_LAYER_ID}/query`)
-    
+
     // Use supported parameters
     fdotUrl.searchParams.set('where', '1=1')
     fdotUrl.searchParams.set('outFields', '*')
@@ -73,9 +73,9 @@ Deno.serve(async (req) => {
     console.log(`Received ${data.features?.length || 0} features`)
 
     if (!data.features || data.features.length === 0) {
-      return new Response(JSON.stringify({ 
-        success: true, 
-        processed: 0, 
+      return new Response(JSON.stringify({
+        success: true,
+        processed: 0,
         errors: 0,
         hasMore: false
       }), {
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
     for (const feature of data.features) {
       try {
         const { attributes, geometry } = feature
-        
+
         // Convert Esri geometry to PostGIS WKT
         let wkt = null
         if (geometry && geometry.rings) {
@@ -218,7 +218,7 @@ Deno.serve(async (req) => {
         }
       })
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
       processed,
       errors,
@@ -231,12 +231,12 @@ Deno.serve(async (req) => {
 
   } catch (err) {
     console.error('Fatal error:', err)
-    
+
     // Log error
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
-    
+
     await supabase
       .from('system_logs')
       .insert({
@@ -248,9 +248,9 @@ Deno.serve(async (req) => {
         }
       })
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       error: err.message,
-      success: false 
+      success: false
     }), {
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       status: 500

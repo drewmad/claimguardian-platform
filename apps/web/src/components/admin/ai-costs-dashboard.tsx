@@ -117,7 +117,7 @@ export function AICostsDashboard() {
   const loadDashboardData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch all dashboard data in parallel
       const [
         dailyData,
@@ -139,14 +139,14 @@ export function AICostsDashboard() {
       if (hourlyData.error) throw hourlyData.error
       if (userData.error) throw userData.error
       if (performanceData.error) throw performanceData.error
-      
+
       setDailySummary(dailyData.data || [])
       setHourlyUsage(hourlyData.data || [])
       setTopUsers(userData.data || [])
       setModelPerformance(performanceData.data || [])
       setCostProjection(projectionData.data)
       setAlerts(alertData.data || [])
-      
+
       setError(null)
     } catch (err) {
       console.error('Error loading dashboard data:', err)
@@ -297,7 +297,7 @@ export function AICostsDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {modelPerformance.length > 0 
+              {modelPerformance.length > 0
                 ? Math.round(modelPerformance.reduce((sum, m) => sum + m.avg_response_time, 0) / modelPerformance.length)
                 : 0}ms
             </div>
@@ -319,14 +319,14 @@ export function AICostsDashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={dailyChartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#9CA3AF"
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   labelStyle={{ color: '#9CA3AF' }}
                 />
@@ -367,7 +367,7 @@ export function AICostsDashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   formatter={(value: number) => `$${value.toFixed(2)}`}
                 />
@@ -387,7 +387,7 @@ export function AICostsDashboard() {
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                 <XAxis dataKey="hour" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   labelStyle={{ color: '#9CA3AF' }}
                 />

@@ -37,7 +37,7 @@ if supabase db push "$SQL_FILE" --project-ref "$PROJECT_ID" 2>/dev/null; then
     echo -e "${GREEN}✓ Schema applied successfully via CLI${NC}"
 else
     echo -e "${YELLOW}CLI method failed, trying alternative approach...${NC}"
-    
+
     # Alternative: Use psql directly
     if [ -n "${DATABASE_URL:-}" ]; then
         echo -e "${BLUE}Applying via psql...${NC}"

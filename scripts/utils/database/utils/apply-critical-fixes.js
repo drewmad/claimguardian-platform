@@ -38,7 +38,7 @@ async function executeSQLFile(filePath, description) {
     const sql = fs.readFileSync(path.join(__dirname, filePath), 'utf8');
     console.log(`\n📝 Executing: ${description}`);
     console.log(`File: ${filePath}`);
-    
+
     // Execute via direct PostgreSQL connection
     const response = await fetch(`${supabaseUrl}/rest/v1/rpc/query`, {
       method: 'POST',
@@ -87,18 +87,18 @@ async function main() {
     console.log('   - supabase/migrations/20250717010_fix_claims_overview_security.sql');
     console.log('3. Execute each one separately');
     console.log('====================================\n');
-    
+
     // Output the SQL for easy copying
     console.log('\n--- SCRAPER LOGS TABLE SQL ---');
     const scraperLogsSql = fs.readFileSync(path.join(__dirname, '../supabase/migrations/20250717009_fix_scraper_logs_table.sql'), 'utf8');
     console.log(scraperLogsSql);
-    
+
     console.log('\n--- CLAIMS OVERVIEW SECURITY FIX SQL ---');
     const claimsSecuritySql = fs.readFileSync(path.join(__dirname, '../supabase/migrations/20250717010_fix_claims_overview_security.sql'), 'utf8');
     console.log(claimsSecuritySql);
   } else if (checkResponse.ok) {
     console.log('✅ Table scraper_logs already exists');
-    
+
     // Test inserting a log entry
     console.log('\n🧪 Testing scraper_logs table...');
     const testResponse = await fetch(`${supabaseUrl}/rest/v1/scraper_logs`, {

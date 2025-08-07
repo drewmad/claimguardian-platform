@@ -93,32 +93,32 @@ export default function EvidenceOrganizerPage() {
     const matchesSearch = item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          item.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase())) ||
                          (item.aiAnalysis?.toLowerCase().includes(searchQuery.toLowerCase()) ?? false)
-    
+
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
-    
+
     return matchesSearch && matchesCategory
   })
 
   const runAIAnalysis = async () => {
     setIsAnalyzing(true)
-    
+
     try {
       // Use real AI-powered analysis for evidence categorization
       const { enhancedDocumentExtractor } = await import('@/lib/services/enhanced-document-extraction')
-      
+
       // Simulate processing of evidence items (in production, these would be actual files)
       const analysisPromises = evidenceItems.map(async (item) => {
         try {
           // Create mock file based on item type for demonstration
           const mockContent = item.aiAnalysis || `This is a ${item.type} file named ${item.name} in the ${item.category} category.`
-          
+
           // Use real AI to improve categorization and analysis
           const response = await enhancedDocumentExtractor.categorizeAndScoreEvidence(
             mockContent,
             item.type,
             item.name
           )
-          
+
           return {
             ...item,
             category: response.category as any, // Type assertion for demo
@@ -135,19 +135,19 @@ export default function EvidenceOrganizerPage() {
           }
         }
       })
-      
+
       const updatedItems = await Promise.all(analysisPromises)
       setEvidenceItems(updatedItems)
-      
-      const successCount = updatedItems.filter(item => 
+
+      const successCount = updatedItems.filter(item =>
         item.tags.includes('ai-analyzed')
       ).length
-      
+
       toast.success(`AI analysis complete! ${successCount}/${evidenceItems.length} items processed with advanced categorization.`)
     } catch (error) {
       console.error('AI analysis failed:', error)
       toast.error('AI analysis failed - using basic categorization')
-      
+
       // Fallback to basic categorization
       await new Promise(resolve => setTimeout(resolve, 1000))
       const basicUpdatedItems = evidenceItems.map(item => ({
@@ -210,10 +210,10 @@ export default function EvidenceOrganizerPage() {
             <div className="mb-8 relative">
               {/* Premium Background Orb */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-teal-400/25 via-cyan-500/20 to-blue-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className="text-teal-400 hover:text-teal-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-teal-400/20 shadow-[0_8px_32px_rgba(20,184,166,0.15)] hover:shadow-[0_8px_32px_rgba(20,184,166,0.25)] transition-all duration-300"
                 >
                   ← Back to AI Tools
@@ -320,8 +320,8 @@ export default function EvidenceOrganizerPage() {
                           size="sm"
                           variant={selectedCategory === category ? 'default' : 'outline'}
                           onClick={() => setSelectedCategory(category)}
-                          className={selectedCategory === category 
-                            ? 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] backdrop-blur-md border-0' 
+                          className={selectedCategory === category
+                            ? 'bg-gradient-to-r from-teal-600 to-cyan-600 hover:from-teal-700 hover:to-cyan-700 text-white shadow-[0_8px_32px_rgba(20,184,166,0.3)] backdrop-blur-md border-0'
                             : 'bg-gray-700/50 hover:bg-gray-600/50 text-gray-300 border-gray-600/50 backdrop-blur-md'
                           }
                         >
@@ -363,7 +363,7 @@ export default function EvidenceOrganizerPage() {
                 <Upload className="h-4 w-4 mr-2" />
                 Upload Evidence
               </Button>
-              
+
               <Button
                 onClick={runAIAnalysis}
                 disabled={isAnalyzing}
@@ -384,13 +384,13 @@ export default function EvidenceOrganizerPage() {
             </div>
 
             {/* Evidence Items */}
-            <div className={viewMode === 'grid' 
-              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6' 
+            <div className={viewMode === 'grid'
+              ? 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6'
               : 'space-y-4'
             }>
               {filteredItems.map((item) => (
-                <Card 
-                  key={item.id} 
+                <Card
+                  key={item.id}
                   className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 overflow-hidden transition-all duration-500 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:border-gray-600/70 hover:shadow-[0_20px_60px_rgba(20,184,166,0.2)] hover:bg-gray-800/80 hover:scale-[1.02] hover:-translate-y-1"
                 >
                   <CardHeader className="pb-3">
@@ -409,7 +409,7 @@ export default function EvidenceOrganizerPage() {
                       </Badge>
                     </div>
                   </CardHeader>
-                  
+
                   <CardContent>
                     {/* Tags */}
                     <div className="flex flex-wrap gap-1 mb-3">
@@ -440,7 +440,7 @@ export default function EvidenceOrganizerPage() {
                       }>
                         {item.priority} priority
                       </Badge>
-                      
+
                       <Button size="sm" variant="ghost" className="text-gray-400 hover:text-white">
                         View Details
                       </Button>

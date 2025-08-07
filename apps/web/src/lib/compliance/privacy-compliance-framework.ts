@@ -159,8 +159,8 @@ export class PrivacyComplianceManager {
       }
 
       // Check consent validity
-      const activeConsents = consents?.filter(consent => 
-        consent.consent_status === 'granted' && 
+      const activeConsents = consents?.filter(consent =>
+        consent.consent_status === 'granted' &&
         (!consent.expires_at || new Date(consent.expires_at) > new Date())
       ) || []
 
@@ -226,31 +226,31 @@ export class PrivacyComplianceManager {
         {
           right: 'Right of Access (Article 15)',
           status: privacyRequests?.some(r => r.request_type === 'data_access') ? 'exercised' : 'available',
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_access')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_access')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_access')!.completed_at!) : undefined
         },
         {
           right: 'Right to Rectification (Article 16)',
           status: privacyRequests?.some(r => r.request_type === 'data_rectification') ? 'exercised' : 'available',
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_rectification')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_rectification')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_rectification')!.completed_at!) : undefined
         },
         {
           right: 'Right to Erasure (Article 17)',
           status: privacyRequests?.some(r => r.request_type === 'data_erasure') ? 'exercised' : 'available',
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_erasure')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_erasure')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_erasure')!.completed_at!) : undefined
         },
         {
           right: 'Right to Data Portability (Article 20)',
           status: privacyRequests?.some(r => r.request_type === 'data_portability') ? 'exercised' : 'available',
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_portability')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_portability')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_portability')!.completed_at!) : undefined
         },
         {
           right: 'Right to Object (Article 21)',
           status: privacyRequests?.some(r => r.request_type === 'object_to_processing') ? 'exercised' : 'available',
-          lastExercised: privacyRequests?.find(r => r.request_type === 'object_to_processing')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'object_to_processing')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'object_to_processing')!.completed_at!) : undefined
         }
       ] as const
@@ -337,21 +337,21 @@ export class PrivacyComplianceManager {
           right: 'Right to Know',
           available: true,
           exercised: Boolean(privacyRequests?.some(r => r.request_type === 'data_access')),
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_access')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_access')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_access')!.completed_at!) : undefined
         },
         {
           right: 'Right to Delete',
           available: true,
           exercised: Boolean(privacyRequests?.some(r => r.request_type === 'data_erasure')),
-          lastExercised: privacyRequests?.find(r => r.request_type === 'data_erasure')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'data_erasure')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'data_erasure')!.completed_at!) : undefined
         },
         {
           right: 'Right to Opt-Out of Sale',
           available: true,
           exercised: Boolean(privacyRequests?.some(r => r.request_type === 'opt_out_sale')),
-          lastExercised: privacyRequests?.find(r => r.request_type === 'opt_out_sale')?.completed_at ? 
+          lastExercised: privacyRequests?.find(r => r.request_type === 'opt_out_sale')?.completed_at ?
             new Date(privacyRequests.find(r => r.request_type === 'opt_out_sale')!.completed_at!) : undefined
         },
         {
@@ -428,7 +428,7 @@ export class PrivacyComplianceManager {
       const requestId = crypto.randomUUID()
       const receivedAt = new Date()
       const responseBy = new Date()
-      
+
       // Set response deadline based on regulation
       if (request.complianceFramework === 'gdpr' || request.complianceFramework === 'both') {
         responseBy.setDate(receivedAt.getDate() + 30) // GDPR: 1 month
@@ -614,7 +614,7 @@ export class ConsentManager {
   async recordConsent(consent: Omit<ConsentRecord, 'id'>): Promise<string> {
     try {
       const consentId = crypto.randomUUID()
-      
+
       const { error } = await this.supabase
         .from('compliance.consent_management')
         .insert({
@@ -792,7 +792,7 @@ export class DataDeletionService {
 
       // Check legal retention requirements
       const hasLegalHold = await this.checkActiveLegalHolds(userId)
-      
+
       for (const mapping of dataMap) {
         try {
           if (hasLegalHold && !options.preserveForLegal) {

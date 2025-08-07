@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
     }
 
     const supabase = await createClient()
-    
+
     // Get current user if not provided
     let trackingUserId = userId
     if (!trackingUserId) {
@@ -65,10 +65,10 @@ export async function POST(request: NextRequest) {
       throw error
     }
 
-    logger.info('AI usage tracked', { 
-      featureId, 
-      model, 
-      success, 
+    logger.info('AI usage tracked', {
+      featureId,
+      model,
+      success,
       responseTime,
       cost,
       userId: trackingUserId

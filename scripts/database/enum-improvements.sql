@@ -8,9 +8,9 @@
 
 -- Florida-specific disaster types for claims tracking
 CREATE TYPE disaster_type AS ENUM (
-  'hurricane', 
-  'tropical_storm', 
-  'flood', 
+  'hurricane',
+  'tropical_storm',
+  'flood',
   'sinkhole',
   'tornado',
   'wind_damage',
@@ -36,7 +36,7 @@ CREATE TYPE policy_type AS ENUM (
 
 -- Add critical missing permissions to existing enum
 ALTER TYPE permission_type ADD VALUE 'api_access';
-ALTER TYPE permission_type ADD VALUE 'team_management';  
+ALTER TYPE permission_type ADD VALUE 'team_management';
 ALTER TYPE permission_type ADD VALUE 'emergency_access';
 
 -- Note: Cannot remove enum values in PostgreSQL without dropping/recreating
@@ -67,8 +67,8 @@ ALTER TYPE property_type ADD VALUE 'duplex';
 
 -- TODO for future migration:
 -- CREATE TYPE item_category_new AS ENUM (
---   'electronics', 'furniture', 'appliances', 'jewelry', 'clothing', 
---   'tools', 'sports', 'collectibles', 'documents', 'structure', 
+--   'electronics', 'furniture', 'appliances', 'jewelry', 'clothing',
+--   'tools', 'sports', 'collectibles', 'documents', 'structure',
 --   'system', 'other'
 -- );
 
@@ -77,11 +77,11 @@ ALTER TYPE property_type ADD VALUE 'duplex';
 -- ========================================
 
 -- Check all enum types and their values
-SELECT 
+SELECT
   t.typname as enum_name,
   array_agg(e.enumlabel ORDER BY e.enumsortorder) as values
-FROM pg_type t 
-JOIN pg_enum e ON t.oid = e.enumtypid  
+FROM pg_type t
+JOIN pg_enum e ON t.oid = e.enumtypid
 JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
 WHERE n.nspname = 'public'
 GROUP BY t.typname
@@ -92,6 +92,6 @@ ORDER BY t.typname;
 \dT+ policy_type;
 
 -- Verify new values were added
-SELECT enumlabel FROM pg_enum 
-WHERE enumtypid = 'permission_type'::regtype 
+SELECT enumlabel FROM pg_enum
+WHERE enumtypid = 'permission_type'::regtype
 ORDER BY enumsortorder;

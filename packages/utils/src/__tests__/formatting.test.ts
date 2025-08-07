@@ -95,7 +95,7 @@ describe('Formatting Utilities', () => {
       // Note: Date parsing can vary by timezone, so we check for reasonable dates
       const result1 = formatDate('2023-12-25')
       const result2 = formatDate('2023-01-01')
-      
+
       expect(result1).toMatch(/December (24|25), 2023/)
       expect(result2).toMatch(/December 31, 2022|January 1, 2023/)
     })
@@ -119,7 +119,7 @@ describe('Formatting Utilities', () => {
       // Leap year - might be affected by timezone
       const leapYear = formatDate('2024-02-29')
       expect(leapYear).toMatch(/February (28|29), 2024/)
-      
+
       // Year boundaries - use Date objects to avoid timezone issues
       expect(formatDate(new Date(2023, 0, 1))).toBe('January 1, 2023')
       expect(formatDate(new Date(2023, 11, 31))).toBe('December 31, 2023')

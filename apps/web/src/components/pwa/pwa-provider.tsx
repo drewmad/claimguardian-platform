@@ -52,7 +52,7 @@ export function PWAProvider({ children }: PWAProviderProps) {
   return (
     <>
       {children}
-      
+
       {/* Install Prompt */}
       {showInstallPrompt && !isInstalled && canInstall && (
         <InstallPrompt
@@ -64,7 +64,7 @@ export function PWAProvider({ children }: PWAProviderProps) {
       )}
 
       {/* Offline Indicator */}
-      <OfflineIndicator 
+      <OfflineIndicator
         variant="detailed"
         position="top"
       />

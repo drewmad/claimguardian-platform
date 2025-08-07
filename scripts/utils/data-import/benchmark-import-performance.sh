@@ -84,7 +84,7 @@ check_dependency() {
     local cmd=$1
     local name=$2
     local required=$3
-    
+
     if command -v "$cmd" >/dev/null 2>&1; then
         echo -e "   ✅ ${name}: ${GREEN}Available${NC}"
         return 0
@@ -166,12 +166,12 @@ echo ""
 if [ -d "$PROJECT_ROOT/CleanedSplit" ]; then
     local actual_file_count
     actual_file_count=$(find "$PROJECT_ROOT/CleanedSplit" -name "*.csv" 2>/dev/null | wc -l | tr -d ' ')
-    
+
     if [ "$actual_file_count" -gt 0 ]; then
         echo -e "${WHITE}📁 CURRENT FILE STATUS${NC}"
         echo ""
         echo -e "   Files ready for import: ${GREEN}${actual_file_count}${NC}"
-        
+
         # Estimate total size
         local total_size=0
         for file in "$PROJECT_ROOT/CleanedSplit"/*.csv; do
@@ -180,10 +180,10 @@ if [ -d "$PROJECT_ROOT/CleanedSplit" ]; then
                 total_size=$((total_size + size))
             fi
         done
-        
+
         local total_gb=$(echo "scale=1; $total_size / 1024 / 1024 / 1024" | bc 2>/dev/null || echo "0")
         echo -e "   Total data size: ${GREEN}~${total_gb}GB${NC}"
-        
+
         # Calculate optimized settings
         local optimal_processes
         optimal_processes=$(( (CPU_CORES + 1 > actual_file_count) ? actual_file_count : (CPU_CORES + 1) ))

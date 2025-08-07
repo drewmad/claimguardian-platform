@@ -25,13 +25,13 @@ function log(message, color = 'reset') {
 
 async function checkEnvironmentVariables() {
   log('\n🔐 Checking Environment Variables...', 'bright')
-  
+
   const required = [
     'NEXT_PUBLIC_SUPABASE_URL',
     'NEXT_PUBLIC_SUPABASE_ANON_KEY',
     'SUPABASE_SERVICE_ROLE_KEY'
   ]
-  
+
   const optional = [
     'GEMINI_API_KEY',
     'OPENAI_API_KEY',
@@ -39,9 +39,9 @@ async function checkEnvironmentVariables() {
     'SENTRY_AUTH_TOKEN',
     'NEXT_PUBLIC_SENTRY_DSN'
   ]
-  
+
   let allRequired = true
-  
+
   // Check required vars
   for (const key of required) {
     if (process.env[key]) {
@@ -51,7 +51,7 @@ async function checkEnvironmentVariables() {
       allRequired = false
     }
   }
-  
+
   // Check optional vars
   log('\n   Optional variables:', 'cyan')
   for (const key of optional) {
@@ -61,32 +61,32 @@ async function checkEnvironmentVariables() {
       log(`   ⚠️  ${key} (optional)`, 'yellow')
     }
   }
-  
+
   return allRequired
 }
 
 async function checkSupabaseConnection() {
   log('\n🔌 Checking Supabase Connection...', 'bright')
-  
+
   try {
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL,
       process.env.SUPABASE_SERVICE_ROLE_KEY
     )
-    
+
     // Test connection
     const { data, error } = await supabase
       .from('legal_documents')
       .select('count')
       .limit(1)
-    
+
     if (error) {
       log(`   ❌ Connection failed: ${error.message}`, 'red')
       return false
     }
-    
+
     log('   ✅ Supabase connection successful', 'green')
-    
+
     // Check critical tables
     const tables = [
       'user_profiles',
@@ -94,20 +94,20 @@ async function checkSupabaseConnection() {
       'user_preferences',
       'legal_documents'
     ]
-    
+
     for (const table of tables) {
       const { error: tableError } = await supabase
         .from(table)
         .select('count')
         .limit(1)
-      
+
       if (tableError) {
         log(`   ❌ Table '${table}' check failed`, 'red')
       } else {
         log(`   ✅ Table '${table}' accessible`, 'green')
       }
     }
-    
+
     return true
   } catch (err) {
     log(`   ❌ Supabase check failed: ${err.message}`, 'red')
@@ -117,11 +117,11 @@ async function checkSupabaseConnection() {
 
 async function checkBuildStatus() {
   log('\n🏗️  Checking Build Status...', 'bright')
-  
+
   try {
     // Run build command
     const { execSync } = require('child_process')
-    
+
     log('   Running type check...', 'cyan')
     try {
       execSync('pnpm type-check', { stdio: 'pipe' })
@@ -129,7 +129,7 @@ async function checkBuildStatus() {
     } catch (err) {
       log('   ⚠️  TypeScript has errors (non-blocking)', 'yellow')
     }
-    
+
     log('   Running lint check...', 'cyan')
     try {
       execSync('pnpm lint', { stdio: 'pipe' })
@@ -137,7 +137,7 @@ async function checkBuildStatus() {
     } catch (err) {
       log('   ⚠️  Lint has warnings (non-blocking)', 'yellow')
     }
-    
+
     return true
   } catch (err) {
     log(`   ❌ Build checks failed: ${err.message}`, 'red')
@@ -147,14 +147,14 @@ async function checkBuildStatus() {
 
 async function checkVercelConfig() {
   log('\n📦 Checking Vercel Configuration...', 'bright')
-  
+
   try {
     const vercelConfig = await fs.readFile(
       path.join(__dirname, '..', 'vercel.json'),
       'utf-8'
     )
     const config = JSON.parse(vercelConfig)
-    
+
     if (config.buildCommand && config.installCommand) {
       log('   ✅ vercel.json configured', 'green')
       log(`      Build: ${config.buildCommand}`, 'cyan')
@@ -162,7 +162,7 @@ async function checkVercelConfig() {
     } else {
       log('   ⚠️  vercel.json missing commands', 'yellow')
     }
-    
+
     return true
   } catch (err) {
     log('   ⚠️  No vercel.json found (using defaults)', 'yellow')
@@ -172,21 +172,21 @@ async function checkVercelConfig() {
 
 async function generateDeploymentInfo() {
   log('\n📋 Deployment Information:', 'bright')
-  
+
   const packageJson = JSON.parse(
     await fs.readFile(path.join(__dirname, '..', 'package.json'), 'utf-8')
   )
-  
+
   log(`   Project: ${packageJson.name}`, 'cyan')
   log(`   Version: ${packageJson.version}`, 'cyan')
   log(`   Node: ${process.version}`, 'cyan')
-  
+
   // Git info
   try {
     const { execSync } = require('child_process')
     const branch = execSync('git branch --show-current', { encoding: 'utf-8' }).trim()
     const commit = execSync('git rev-parse --short HEAD', { encoding: 'utf-8' }).trim()
-    
+
     log(`   Branch: ${branch}`, 'cyan')
     log(`   Commit: ${commit}`, 'cyan')
   } catch (err) {
@@ -196,22 +196,22 @@ async function generateDeploymentInfo() {
 
 async function main() {
   log('\n🚀 ClaimGuardian Pre-Deployment Check\n', 'bright')
-  
+
   let ready = true
-  
+
   // Run all checks
   const envCheck = await checkEnvironmentVariables()
   const supabaseCheck = await checkSupabaseConnection()
   const buildCheck = await checkBuildStatus()
   const vercelCheck = await checkVercelConfig()
-  
+
   ready = envCheck && supabaseCheck && buildCheck && vercelCheck
-  
+
   await generateDeploymentInfo()
-  
+
   // Summary
   log('\n' + '='.repeat(60), 'cyan')
-  
+
   if (ready) {
     log('✅ READY FOR DEPLOYMENT!', 'green')
     log('\nNext steps:', 'bright')
@@ -223,7 +223,7 @@ async function main() {
     log('❌ NOT READY FOR DEPLOYMENT', 'red')
     log('\nPlease fix the issues above before deploying.', 'yellow')
   }
-  
+
   log('='.repeat(60) + '\n', 'cyan')
 }
 

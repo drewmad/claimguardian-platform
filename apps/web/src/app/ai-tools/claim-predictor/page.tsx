@@ -18,7 +18,7 @@ export default function ClaimPredictorPage() {
             Our AI analyzes thousands of similar claims to provide data-driven recommendations.
           </p>
         </div>
-        
+
         <ClaimPredictor />
       </div>
     </DashboardLayout>

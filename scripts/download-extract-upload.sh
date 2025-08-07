@@ -30,7 +30,7 @@ cd "$WORK_DIR"
 if [[ ! -f "Cadastral_Statewide.zip" ]]; then
     echo -e "${BLUE}Step 1: Downloading ZIP from Supabase Storage...${NC}"
     echo "This is a 4.1GB file - it may take a while..."
-    
+
     if curl -L --progress-bar -o "Cadastral_Statewide.zip" "$ZIP_URL"; then
         echo -e "${GREEN}✓ Download complete!${NC}"
     else
@@ -45,7 +45,7 @@ fi
 if [[ ! -d "Cadastral_Statewide.gdb" ]]; then
     echo ""
     echo -e "${BLUE}Step 2: Extracting ZIP file...${NC}"
-    
+
     if unzip -q "Cadastral_Statewide.zip"; then
         echo -e "${GREEN}✓ Extraction complete!${NC}"
     else

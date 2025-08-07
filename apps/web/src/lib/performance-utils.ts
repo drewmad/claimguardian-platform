@@ -34,7 +34,7 @@ export async function compressImage(
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
     const img = new Image()
-    
+
     if (!ctx) {
       reject(new Error('Could not get canvas context'))
       return
@@ -43,7 +43,7 @@ export async function compressImage(
     img.onload = () => {
       // Calculate new dimensions
       let { width, height } = img
-      
+
       if (width > maxWidth || height > maxHeight) {
         const ratio = Math.min(maxWidth / width, maxHeight / height)
         width *= ratio
@@ -56,7 +56,7 @@ export async function compressImage(
 
       // Draw and compress
       ctx.drawImage(img, 0, 0, width, height)
-      
+
       canvas.toBlob((blob) => {
         if (!blob) {
           reject(new Error('Failed to compress image'))
@@ -91,14 +91,14 @@ class RequestCache {
 
   get(key: string): unknown | null {
     const cached = this.cache.get(key)
-    
+
     if (!cached) return null
-    
+
     if (Date.now() - cached.timestamp > cached.ttl) {
       this.cache.delete(key)
       return null
     }
-    
+
     return cached.data
   }
 
@@ -120,7 +120,7 @@ export function useRequestCache() {
     ttl?: number
   ): Promise<T> => {
     const cached = requestCache.get(key) as T | undefined
-    
+
     if (cached) {
       if (process.env.NODE_ENV === 'development') {
         logger.debug(`Cache hit for ${key}`)
@@ -133,7 +133,7 @@ export function useRequestCache() {
     }
     const result = await requestFn()
     requestCache.set(key, result, ttl)
-    
+
     return result
   }, [])
 
@@ -175,22 +175,22 @@ export class PerformanceMonitor {
 
   startTimer(key: string): () => void {
     const start = performance.now()
-    
+
     return () => {
       const end = performance.now()
       const duration = end - start
-      
+
       if (!this.metrics[key]) {
         this.metrics[key] = []
       }
-      
+
       this.metrics[key].push(duration)
-      
+
       // Keep only last 100 measurements
       if (this.metrics[key].length > 100) {
         this.metrics[key] = this.metrics[key].slice(-100)
       }
-      
+
       if (process.env.NODE_ENV === 'development') {
         logger.debug(`Performance: ${key}: ${duration.toFixed(2)}ms`)
       }
@@ -199,23 +199,23 @@ export class PerformanceMonitor {
 
   getMetrics(key: string) {
     const times = this.metrics[key] || []
-    
+
     if (times.length === 0) return null
-    
+
     const avg = times.reduce((a, b) => a + b, 0) / times.length
     const min = Math.min(...times)
     const max = Math.max(...times)
-    
+
     return { avg, min, max, count: times.length }
   }
 
   getAllMetrics() {
     const result: { [key: string]: unknown } = {}
-    
+
     for (const key of Object.keys(this.metrics)) {
       result[key] = this.getMetrics(key)
     }
-    
+
     return result
   }
 
@@ -320,7 +320,7 @@ export function useBatchProcessor<T, R>(
       const remainingQueue = queue.slice(batchSize)
 
       const batchResults = await processor(batch)
-      
+
       setResults(prev => [...prev, ...batchResults])
       setQueue(remainingQueue)
 

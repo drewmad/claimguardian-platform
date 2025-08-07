@@ -58,7 +58,7 @@ export function getSupabaseConfig() {
 
   if (!url || !anonKey) {
     const error = new Error('Supabase configuration missing')
-    
+
     // Enhanced error logging for production
     if (process.env.NODE_ENV === 'production') {
       console.error('[ClaimGuardian Config Error]', {
@@ -67,7 +67,7 @@ export function getSupabaseConfig() {
         timestamp: new Date().toISOString()
       })
     }
-    
+
     throw error
   }
 

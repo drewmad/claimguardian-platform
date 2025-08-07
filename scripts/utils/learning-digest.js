@@ -30,7 +30,7 @@ class LearningDigest {
   async parseLearnins() {
     const content = await fs.readFile(this.learningsPath, 'utf-8');
     const lines = content.split('\n');
-    
+
     let currentSection = '';
     let currentCategory = '';
     let currentIssue = null;
@@ -39,7 +39,7 @@ class LearningDigest {
 
     for (let i = 0; i < lines.length; i++) {
       const line = lines[i];
-      
+
       // Track code blocks
       if (line.trim().startsWith('```')) {
         inCodeBlock = !inCodeBlock;
@@ -52,14 +52,14 @@ class LearningDigest {
       if (line.startsWith('#')) {
         const level = line.match(/^#+/)[0].length;
         const header = line.replace(/^#+\s*/, '').trim();
-        
+
         if (level === 2) {
           currentSection = header;
           currentCategory = this.categorizeSection(header);
           issueList = false;
         } else if (level === 3) {
           // If we have a numbered list item, this is likely part of an issue list
-          currentIssue = { 
+          currentIssue = {
             title: header,
             section: currentSection,
             category: currentCategory,
@@ -69,7 +69,7 @@ class LearningDigest {
           };
           issueList = true;
         }
-      } 
+      }
       // Parse numbered list items (issues)
       else if (line.match(/^\d+\.\s+\*\*.*\*\*/)) {
         // Extract issue title from numbered list
@@ -84,7 +84,7 @@ class LearningDigest {
             learning: null,
             tags: []
           };
-          
+
           // Check if issue description is on same line
           const issueMatch = line.match(/\*\*Issue\*\*:\s*(.+)/);
           if (issueMatch) {
@@ -95,7 +95,7 @@ class LearningDigest {
       // Parse issue details (indented lines)
       else if (currentIssue && line.match(/^\s+-\s+/)) {
         const content = line.replace(/^\s+-\s+/, '').trim();
-        
+
         if (content.startsWith('**Issue**:') || content.startsWith('**Issue:**')) {
           currentIssue.issue = content.replace(/\*\*Issue\*\*:\s*/, '').trim();
         } else if (content.startsWith('**Solution**:') || content.startsWith('**Solution:**')) {
@@ -156,13 +156,13 @@ class LearningDigest {
   extractTags(issue) {
     const tags = new Set();
     const content = `${issue.issue} ${issue.solution} ${issue.learning}`.toLowerCase();
-    
+
     // Technology tags
     const techKeywords = [
       'typescript', 'react', 'nextjs', 'supabase', 'edge function',
       'api', 'database', 'import', 'export', 'type', 'interface'
     ];
-    
+
     techKeywords.forEach(keyword => {
       if (content.includes(keyword)) {
         tags.add(keyword.replace(' ', '-'));
@@ -297,12 +297,12 @@ class LearningDigest {
 
   generateErrorPatternGuide() {
     let content = '# Error Pattern Guide\n\n';
-    
+
     for (const [pattern, data] of this.patterns) {
       content += `## ${pattern}\n\n`;
       content += `**Occurrences:** ${data.count}\n`;
       content += `**Prevention:** ${data.preventionTip}\n\n`;
-      
+
       content += '### Examples:\n';
       data.examples.slice(0, 3).forEach(example => {
         content += `- ${example.issue}\n`;
@@ -316,7 +316,7 @@ class LearningDigest {
 
   generateCategoryGuide(category, issues) {
     let content = `# ${category.charAt(0).toUpperCase() + category.slice(1)} Guide\n\n`;
-    
+
     // Group by subcategory
     const grouped = {};
     issues.forEach(issue => {

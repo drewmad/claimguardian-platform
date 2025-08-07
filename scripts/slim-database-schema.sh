@@ -13,7 +13,7 @@ echo "📋 Current schema analysis..."
 # Option 1: Remove AI/ML infrastructure (keeps core functionality)
 echo "1. Remove AI/ML infrastructure tables"
 echo "   - ai_performance_metrics (large time-series data)"
-echo "   - ai_performance_benchmarks"  
+echo "   - ai_performance_benchmarks"
 echo "   - ai_anomalies"
 echo "   - ai_performance_insights"
 echo "   - ai_forecasts"
@@ -43,7 +43,7 @@ echo "   - Remove: state_* expansion tables"
 # Option 5: Remove Edge Functions data
 echo "5. Remove Edge Functions operational data"
 echo "   - edge_function_logs"
-echo "   - function_performance_metrics" 
+echo "   - function_performance_metrics"
 echo "   - webhook_delivery_logs"
 
 echo ""
@@ -74,13 +74,13 @@ read -r response
 if [[ "$response" =~ ^[Yy]$ ]]; then
     echo "Which phase would you like to execute?"
     echo "1) Phase 1: Remove AI/ML Infrastructure"
-    echo "2) Phase 2: Remove Florida Parcels" 
+    echo "2) Phase 2: Remove Florida Parcels"
     echo "3) Phase 3: Simplify Multi-Tenant"
     echo "4) All phases (maximum slim-down)"
     echo "5) Custom selection"
-    
+
     read -r phase_choice
-    
+
     case $phase_choice in
         1)
             echo "🔄 Executing Phase 1: Removing AI/ML Infrastructure..."
@@ -97,7 +97,7 @@ if [[ "$response" =~ ^[Yy]$ ]]; then
         4)
             echo "🔄 Executing All Phases: Maximum slim-down..."
             ./scripts/remove-ai-infrastructure.sql
-            ./scripts/remove-parcel-data.sql  
+            ./scripts/remove-parcel-data.sql
             ./scripts/simplify-multitenant.sql
             ;;
         5)

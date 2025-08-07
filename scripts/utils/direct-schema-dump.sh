@@ -57,7 +57,7 @@ if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
     BACKUP_DIR="supabase/migrations.archive.$(date +%Y%m%d_%H%M%S)"
     mkdir -p ${BACKUP_DIR}
     mv supabase/migrations/*.sql ${BACKUP_DIR}/
-    
+
     cat > supabase/migrations/README.md << EOF
 # Migrations Archived - Direct Schema Dump
 
@@ -76,7 +76,7 @@ we've bypassed the migration system and dumped the schema directly.
 2. Apply with: supabase db push --dry-run (to preview)
 3. Apply with: supabase db push (to apply)
 EOF
-    
+
     log_success "Migrations archived to ${BACKUP_DIR}"
 fi
 

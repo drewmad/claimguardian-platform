@@ -44,8 +44,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   const [ref, isInView] = useInView({ threshold: 0.1 })
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -55,30 +55,30 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 }
 
 const steps = [
-  { 
-    icon: Upload, 
-    title: "15-Min Setup", 
+  {
+    icon: Upload,
+    title: "15-Min Setup",
     description: "Snap photos, upload your policy. AI instantly creates your property's digital twin. Zero paperwork, maximum protection.",
     time: "15 minutes",
     result: "Complete property profile"
   },
-  { 
-    icon: BrainCircuit, 
-    title: "24/7 AI Guardian", 
+  {
+    icon: BrainCircuit,
+    title: "24/7 AI Guardian",
     description: "Your digital twin monitors everything: maintenance schedules, weather threats, coverage gaps. You sleep, we watch.",
     time: "Always on",
     result: "Proactive protection"
   },
-  { 
-    icon: FileText, 
-    title: "Instant Claims Power", 
+  {
+    icon: FileText,
+    title: "Instant Claims Power",
     description: "Damage happens? AI generates professional reports, estimates, and evidence packages in minutes, not weeks.",
     time: "Under 10 minutes",
     result: "Claim-ready documentation"
   },
-  { 
-    icon: DollarSign, 
-    title: "Maximum Recovery", 
+  {
+    icon: DollarSign,
+    title: "Maximum Recovery",
     description: "Get every dollar you deserve. Our AI finds hidden damages and fights for proper settlements. No money left behind.",
     time: "Days, not months",
     result: "Full claim value"

@@ -25,7 +25,7 @@ serve(async (req: Request) => {
   try {
     // Validate request
     const { data_type, query = {}, force_refresh = false } = await req.json() as CrawlRequest
-    
+
     if (!data_type || !Object.values(FliorDataType).includes(data_type)) {
       throw new Error(`Invalid data_type. Must be one of: ${Object.values(FliorDataType).join(', ')}`)
     }
@@ -59,7 +59,7 @@ serve(async (req: Request) => {
     try {
       // Initialize crawler
       const crawler = new FLOIRCrawler()
-      
+
       // Crawl raw data
       console.log(JSON.stringify({
         level: "info",
@@ -67,26 +67,26 @@ serve(async (req: Request) => {
         message: `Crawling ${data_type} data...`
       }));
       const rawData = await crawler.crawl(data_type, query)
-      
+
       console.log(JSON.stringify({
         level: "info",
         timestamp: new Date().toISOString(),
         message: `Crawled ${rawData.length} records, processing...`
       }));
-      
+
       // Process each record
       for (const record of rawData) {
         try {
           totalProcessed++
-          
+
           // Parse and normalize data
           const parsed = await parseFlioirData(data_type, record, openai)
-          
+
           // Generate content hash for deduplication
           const contentHash = await crypto.subtle.digest(
-            "SHA-256", 
+            "SHA-256",
             new TextEncoder().encode(JSON.stringify(parsed.normalized))
-          ).then(buffer => 
+          ).then(buffer =>
             Array.from(new Uint8Array(buffer))
               .map(b => b.toString(16).padStart(2, '0'))
               .join('')
@@ -259,7 +259,7 @@ serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: 'FLOIR extractor error:', error
 }));
-    
+
     return new Response(JSON.stringify({
       success: false,
       error: error instanceof Error ? error.message : String(error)

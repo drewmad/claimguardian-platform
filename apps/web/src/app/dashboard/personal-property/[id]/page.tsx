@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { 
-  ArrowLeft, Camera, Edit2, Trash2, Save, X, 
+import {
+  ArrowLeft, Camera, Edit2, Trash2, Save, X,
   DollarSign, Calendar, Shield, Tag, Package,
   Upload, Image as ImageIcon, Loader2, CheckCircle,
   ArrowUpRight, ArrowDownRight
@@ -102,11 +102,11 @@ function PersonalPropertyDetailContent() {
   const router = useRouter()
   const itemId = params.id as string
   const { navigateToParent, getParentInfo } = useNavigateToParent('personalPropertyItem')
-  
+
   const [item, setItem] = useState<PersonalPropertyItem>(() => {
     return mockItems[itemId] || mockItems['1']
   })
-  
+
   const [isEditing, setIsEditing] = useState(false)
   const [editForm, setEditForm] = useState<PersonalPropertyItem>({ ...item })
   const [showDeleteDialog, setShowDeleteDialog] = useState(false)
@@ -119,7 +119,7 @@ function PersonalPropertyDetailContent() {
     setSavingChanges(true)
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     setItem(editForm)
     setIsEditing(false)
     setSavingChanges(false)
@@ -134,7 +134,7 @@ function PersonalPropertyDetailContent() {
   const handleDelete = async () => {
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     toast.success('Item deleted successfully')
     navigateToParent()
   }
@@ -144,25 +144,25 @@ function PersonalPropertyDetailContent() {
     if (!files || files.length === 0) return
 
     setUploadingPhoto(true)
-    
+
     // Simulate upload
     await new Promise(resolve => setTimeout(resolve, 1500))
-    
+
     // Add mock photo URLs
-    const newPhotos = Array.from(files).map((_, index) => 
+    const newPhotos = Array.from(files).map((_, index) =>
       `/api/placeholder/400/300?photo=${item.photos.length + index + 1}`
     )
-    
+
     setItem(prev => ({
       ...prev,
       photos: [...prev.photos, ...newPhotos]
     }))
-    
+
     setEditForm(prev => ({
       ...prev,
       photos: [...prev.photos, ...newPhotos]
     }))
-    
+
     setUploadingPhoto(false)
     setShowPhotoUpload(false)
     toast.success(`${files.length} photo${files.length > 1 ? 's' : ''} uploaded successfully`)
@@ -205,7 +205,7 @@ function PersonalPropertyDetailContent() {
                 Back to {getParentInfo().parentLabel}
               </Button>
             </div>
-            
+
             <div className="flex gap-3">
               {!isEditing ? (
                 <>
@@ -532,7 +532,7 @@ function PersonalPropertyDetailContent() {
                             <ArrowDownRight className="w-4 h-4" />
                           )}
                           <span>
-                            {valueChange >= 0 ? '+' : ''}{valueChangePercent.toFixed(1)}% 
+                            {valueChange >= 0 ? '+' : ''}{valueChangePercent.toFixed(1)}%
                             (${Math.abs(valueChange).toLocaleString()})
                           </span>
                         </div>

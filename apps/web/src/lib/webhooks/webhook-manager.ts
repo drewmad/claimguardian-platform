@@ -22,9 +22,9 @@ export interface WebhookEvent {
   }
 }
 
-export type WebhookEventType = 
+export type WebhookEventType =
   | 'property.damage.detected'
-  | 'property.damage.analyzed' 
+  | 'property.damage.analyzed'
   | 'claim.status.updated'
   | 'claim.approved'
   | 'claim.denied'
@@ -80,7 +80,7 @@ export class WebhookManager {
   async emit(event: Omit<WebhookEvent, 'id' | 'timestamp'>): Promise<void> {
     try {
       const supabase = await createClient()
-      
+
       // Create event record
       const webhookEvent: WebhookEvent = {
         ...event,
@@ -133,7 +133,7 @@ export class WebhookManager {
    */
   private async queueDelivery(event: WebhookEvent, subscription: WebhookSubscription): Promise<void> {
     this.deliveryQueue.push(event)
-    
+
     if (!this.isProcessing) {
       this.processDeliveryQueue()
     }
@@ -164,7 +164,7 @@ export class WebhookManager {
   private async deliverWebhook(event: WebhookEvent): Promise<void> {
     try {
       const supabase = await createClient()
-      
+
       // Get subscriptions for this event
       const { data: subscriptions } = await supabase
         .from('webhook_subscriptions')
@@ -185,12 +185,12 @@ export class WebhookManager {
    * Attempt webhook delivery with exponential backoff
    */
   private async attemptDelivery(
-    event: WebhookEvent, 
+    event: WebhookEvent,
     subscription: WebhookSubscription,
     attemptNumber: number = 1
   ): Promise<void> {
     const supabase = await createClient()
-    
+
     try {
       // Create webhook payload
       const payload = {
@@ -238,14 +238,14 @@ export class WebhookManager {
           .from('webhook_subscriptions')
           .update({ last_success_at: new Date() })
           .eq('id', subscription.id)
-        
+
         logger.info(`Webhook delivered successfully to ${subscription.webhook_url}`)
       } else {
         throw new Error(`HTTP ${response.status}: ${response.statusText}`)
       }
     } catch (error) {
       logger.error(`Webhook delivery failed (attempt ${attemptNumber}):`, error)
-      
+
       // Record failed attempt
       await supabase.from('webhook_delivery_attempts').insert({
         id: crypto.randomUUID(),
@@ -259,7 +259,7 @@ export class WebhookManager {
       // Update subscription failure
       await supabase
         .from('webhook_subscriptions')
-        .update({ 
+        .update({
           last_failure_at: new Date(),
           retry_count: subscription.retry_count + 1
         })
@@ -277,7 +277,7 @@ export class WebhookManager {
           .from('webhook_subscriptions')
           .update({ is_active: false })
           .eq('id', subscription.id)
-        
+
         logger.error(`Webhook subscription ${subscription.id} disabled after 5 failed attempts`)
       }
     }
@@ -295,7 +295,7 @@ export class WebhookManager {
       false,
       ['sign']
     )
-    
+
     const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(payload))
     return `sha256=${Array.from(new Uint8Array(signature))
       .map(b => b.toString(16).padStart(2, '0'))
@@ -330,7 +330,7 @@ export class WebhookManager {
   ): Promise<{ data: WebhookSubscription | null; error: string | null }> {
     try {
       const supabase = await createClient()
-      
+
       const subscription = {
         id: crypto.randomUUID(),
         user_id: userId,
@@ -363,7 +363,7 @@ export class WebhookManager {
   async testWebhook(subscriptionId: string): Promise<{ success: boolean; error?: string }> {
     try {
       const supabase = await createClient()
-      
+
       const { data: subscription } = await supabase
         .from('webhook_subscriptions')
         .select('*')
@@ -391,9 +391,9 @@ export class WebhookManager {
       await this.attemptDelivery(testEvent, subscription)
       return { success: true }
     } catch (error) {
-      return { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Unknown error' 
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error'
       }
     }
   }

@@ -23,9 +23,9 @@ export interface LoadingStateProps {
   className?: string
 }
 
-export function AILoadingState({ 
-  message = 'Processing...', 
-  progress = 0, 
+export function AILoadingState({
+  message = 'Processing...',
+  progress = 0,
   showProgress = false,
   className = ''
 }: LoadingStateProps) {
@@ -37,7 +37,7 @@ export function AILoadingState({
             <Loader2 className="h-8 w-8 animate-spin text-blue-400" />
             <div className="absolute inset-0 rounded-full border-2 border-blue-400/20 animate-pulse" />
           </div>
-          
+
           <div className="text-center space-y-2">
             <p className="text-white font-medium">{message}</p>
             {showProgress && (
@@ -53,14 +53,14 @@ export function AILoadingState({
   )
 }
 
-export function ImageAnalysisLoading({ 
-  currentImage = 1, 
-  totalImages = 1, 
-  className = '' 
-}: { 
+export function ImageAnalysisLoading({
+  currentImage = 1,
+  totalImages = 1,
+  className = ''
+}: {
   currentImage?: number
   totalImages?: number
-  className?: string 
+  className?: string
 }) {
   const progress = (currentImage / totalImages) * 100
 
@@ -80,7 +80,7 @@ export function ImageAnalysisLoading({
               </p>
             </div>
           </div>
-          
+
           <div className="space-y-2">
             <Progress value={progress} className="h-2" />
             <div className="flex justify-between text-xs text-gray-400">
@@ -114,12 +114,12 @@ export function ChatLoadingState({ className = '' }: { className?: string }) {
   )
 }
 
-export function DocumentProcessingLoading({ 
-  fileName = 'document', 
-  className = '' 
-}: { 
+export function DocumentProcessingLoading({
+  fileName = 'document',
+  className = ''
+}: {
   fileName?: string
-  className?: string 
+  className?: string
 }) {
   return (
     <Card className={`bg-gray-800 border-gray-700 ${className}`}>

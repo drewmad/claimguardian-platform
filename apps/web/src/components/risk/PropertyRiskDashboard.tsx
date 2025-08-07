@@ -20,9 +20,9 @@ import { RiskScoreCard } from './RiskScoreCard'
 import { HazardZonesList } from './HazardZonesList'
 import { ActiveEventsMap } from './ActiveEventsMap'
 import { getParcelRiskAssessment, getPropertyHazardZones, getActiveEventsNearProperty, RiskAssessment as GeospatialRiskAssessment, HazardZone, ActiveEvent } from '@/actions/geospatial'
-import { 
-  Building2, 
-  MapPin, 
+import {
+  Building2,
+  MapPin,
   Calendar,
   Download,
   RefreshCw,
@@ -59,11 +59,11 @@ interface PropertyRiskDashboardProps {
   address?: string
 }
 
-export function PropertyRiskDashboard({ 
-  propertyId, 
+export function PropertyRiskDashboard({
+  propertyId,
   propertyName,
   parcelId,
-  address 
+  address
 }: PropertyRiskDashboardProps) {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
@@ -296,7 +296,7 @@ export function PropertyRiskDashboard({
           </TabsContent>
 
           <TabsContent value="events">
-            <ActiveEventsMap 
+            <ActiveEventsMap
               activeEvents={activeEvents}
               propertyLocation={address}
             />

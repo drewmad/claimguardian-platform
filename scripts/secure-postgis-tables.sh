@@ -45,95 +45,95 @@ BEGIN
         RAISE NOTICE 'PostGIS is not installed. Skipping PostGIS table security.';
     ELSE
         RAISE NOTICE 'PostGIS found. Securing PostGIS tables...';
-        
+
         -- Enable RLS on spatial_ref_sys if it exists
         IF EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = 'public' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = 'public'
             AND tablename = 'spatial_ref_sys'
         ) THEN
             -- Enable RLS
             ALTER TABLE spatial_ref_sys ENABLE ROW LEVEL SECURITY;
-            
+
             -- Drop existing policies if any
             DROP POLICY IF EXISTS "Public read access" ON spatial_ref_sys;
             DROP POLICY IF EXISTS "Service role write access" ON spatial_ref_sys;
-            
+
             -- Create read policy for all authenticated users
             CREATE POLICY "Public read access" ON spatial_ref_sys
                 FOR SELECT TO authenticated
                 USING (true);
-            
+
             -- Create write policies for service role only
             CREATE POLICY "Service role write access" ON spatial_ref_sys
                 FOR ALL TO service_role
                 USING (true)
                 WITH CHECK (true);
-            
+
             RAISE NOTICE '✅ Secured spatial_ref_sys table';
         ELSE
             RAISE NOTICE 'spatial_ref_sys table not found';
         END IF;
-        
+
         -- Check geography_columns
         IF EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = 'public' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = 'public'
             AND tablename = 'geography_columns'
         ) THEN
             ALTER TABLE geography_columns ENABLE ROW LEVEL SECURITY;
-            
+
             DROP POLICY IF EXISTS "Public read access" ON geography_columns;
             DROP POLICY IF EXISTS "Service role write access" ON geography_columns;
-            
+
             CREATE POLICY "Public read access" ON geography_columns
                 FOR SELECT TO authenticated
                 USING (true);
-            
+
             CREATE POLICY "Service role write access" ON geography_columns
                 FOR ALL TO service_role
                 USING (true)
                 WITH CHECK (true);
-            
+
             RAISE NOTICE '✅ Secured geography_columns table';
         END IF;
-        
+
         -- Check geometry_columns
         IF EXISTS (
-            SELECT 1 FROM pg_tables 
-            WHERE schemaname = 'public' 
+            SELECT 1 FROM pg_tables
+            WHERE schemaname = 'public'
             AND tablename = 'geometry_columns'
         ) THEN
             ALTER TABLE geometry_columns ENABLE ROW LEVEL SECURITY;
-            
+
             DROP POLICY IF EXISTS "Public read access" ON geometry_columns;
             DROP POLICY IF EXISTS "Service role write access" ON geometry_columns;
-            
+
             CREATE POLICY "Public read access" ON geometry_columns
                 FOR SELECT TO authenticated
                 USING (true);
-            
+
             CREATE POLICY "Service role write access" ON geometry_columns
                 FOR ALL TO service_role
                 USING (true)
                 WITH CHECK (true);
-            
+
             RAISE NOTICE '✅ Secured geometry_columns table';
         END IF;
     END IF;
 END $$;
 
 -- Verify PostGIS table security
-SELECT 
+SELECT
     t.tablename,
-    CASE 
+    CASE
         WHEN c.relrowsecurity THEN '✅ RLS Enabled'
         ELSE '❌ RLS Disabled'
     END as rls_status,
     COUNT(DISTINCT pol.policyname) as policy_count,
     pg_size_pretty(pg_total_relation_size('public.'||t.tablename)) as table_size
 FROM pg_tables t
-JOIN pg_class c ON c.relname = t.tablename 
+JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
 LEFT JOIN pg_policies pol ON pol.tablename = t.tablename AND pol.schemaname = 'public'
 WHERE t.schemaname = 'public'
@@ -146,19 +146,19 @@ COMMIT;
 -- Show all PostGIS-related tables
 \echo ''
 \echo 'All PostGIS-related tables:'
-SELECT 
+SELECT
     schemaname,
     tablename,
-    CASE 
+    CASE
         WHEN c.relrowsecurity THEN 'RLS Enabled'
         ELSE 'RLS Disabled'
     END as rls_status
 FROM pg_tables t
-JOIN pg_class c ON c.relname = t.tablename 
+JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = t.schemaname
 WHERE (
-    t.tablename LIKE '%spatial%' 
-    OR t.tablename LIKE '%geom%' 
+    t.tablename LIKE '%spatial%'
+    OR t.tablename LIKE '%geom%'
     OR t.tablename LIKE '%geog%'
     OR t.tablename IN ('topology', 'layer', 'raster_columns')
 )

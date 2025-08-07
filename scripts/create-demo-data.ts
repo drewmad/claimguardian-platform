@@ -313,12 +313,12 @@ async function createDemoData() {
   try {
     // 1. Create Hurricane Scenario
     console.log('📌 Creating Hurricane Response Scenario...')
-    
+
     // Insert incident
     const { error: incidentError } = await supabase
       .from('ics_incidents')
       .upsert(DEMO_SCENARIOS.hurricane.incident, { onConflict: 'id' })
-    
+
     if (incidentError) {
       console.error('Error creating incident:', incidentError)
     } else {
@@ -330,7 +330,7 @@ async function createDemoData() {
       const { error } = await supabase
         .from('nims_resources')
         .upsert(resource, { onConflict: 'id' })
-      
+
       if (!error) {
         console.log(`✅ Resource created: ${resource.name}`)
       }
@@ -341,7 +341,7 @@ async function createDemoData() {
       const { error } = await supabase
         .from('emergency_alerts')
         .upsert(alert, { onConflict: 'id' })
-      
+
       if (!error) {
         console.log(`✅ Alert created: ${alert.title}`)
       }
@@ -349,12 +349,12 @@ async function createDemoData() {
 
     // 2. Create Insurance Claims Scenario
     console.log('\n📌 Creating Insurance Claims Scenario...')
-    
+
     for (const property of DEMO_SCENARIOS.insurance_surge.properties) {
       const { error } = await supabase
         .from('properties')
         .upsert(property, { onConflict: 'id' })
-      
+
       if (!error) {
         console.log(`✅ Property created: ${property.name}`)
       }
@@ -364,7 +364,7 @@ async function createDemoData() {
       const { error } = await supabase
         .from('claims')
         .upsert(claim, { onConflict: 'id' })
-      
+
       if (!error) {
         console.log(`✅ Claim created: ${claim.claim_number}`)
       }
@@ -372,11 +372,11 @@ async function createDemoData() {
 
     // 3. Create Enterprise Workflow
     console.log('\n📌 Creating Enterprise Business Continuity Scenario...')
-    
+
     const { error: workflowError } = await supabase
       .from('disaster_workflows')
       .upsert(DEMO_SCENARIOS.enterprise.workflow, { onConflict: 'id' })
-    
+
     if (!workflowError) {
       console.log('✅ Enterprise workflow created')
     }

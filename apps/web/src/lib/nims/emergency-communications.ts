@@ -313,7 +313,7 @@ export class EmergencyCommunicationManager {
    */
   async distributeAlert(alertId: string): Promise<void> {
     const alert = await this.getAlert(alertId)
-    
+
     if (alert.status !== 'draft' && alert.status !== 'pending') {
       throw new Error(`Alert cannot be distributed in status: ${alert.status}`)
     }
@@ -325,7 +325,7 @@ export class EmergencyCommunicationManager {
     for (const channel of alert.distribution_channels) {
       try {
         await this.distributeViaChannel(alert, channel)
-        
+
         // Record successful delivery
         alert.delivery_receipts.push({
           channel,
@@ -450,7 +450,7 @@ export class EmergencyCommunicationManager {
 
       parseString(capXML, (err: any, result: any) => {
         if (err) throw err
-        
+
         const alert = result.alert
         capMessage = {
           identifier: alert.identifier[0],
@@ -622,7 +622,7 @@ export class EmergencyCommunicationManager {
   private async updateAlertStatus(alertId: string, status: EmergencyAlert['status']): Promise<void> {
     await this.supabase
       .from('emergency_alerts')
-      .update({ 
+      .update({
         status,
         updated_at: new Date().toISOString()
       })

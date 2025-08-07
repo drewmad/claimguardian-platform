@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
 import { Switch } from '@/components/ui/switch'
-import { 
+import {
   Select,
   SelectContent,
   SelectItem,
@@ -96,7 +96,7 @@ export function PermissionsManagement() {
     reason: '',
     expiresAt: ''
   })
-  
+
   const { toast } = useToast()
 
   // Permission groups with detailed information
@@ -343,13 +343,13 @@ export function PermissionsManagement() {
   }
 
   const togglePermissionForTier = (tier: UserTier, permission: PermissionType) => {
-    setTiers(prevTiers => 
+    setTiers(prevTiers =>
       prevTiers.map(t => {
         if (t.tier === tier) {
           const hasPermission = t.permissions.includes(permission)
           return {
             ...t,
-            permissions: hasPermission 
+            permissions: hasPermission
               ? t.permissions.filter(p => p !== permission)
               : [...t.permissions, permission]
           }
@@ -368,7 +368,7 @@ export function PermissionsManagement() {
       }))
 
       const result = await updateTierPermissions(tierPermissionsData)
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
@@ -379,7 +379,7 @@ export function PermissionsManagement() {
       })
       setUnsavedChanges(false)
       setEditingTier(null)
-      
+
       // Reload tiers to reflect changes
       await loadTiers()
     } catch (error) {
@@ -394,7 +394,7 @@ export function PermissionsManagement() {
   const handleDeleteOverride = async (overrideId: string) => {
     try {
       const result = await deletePermissionOverride(overrideId)
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
@@ -403,7 +403,7 @@ export function PermissionsManagement() {
         title: 'Success',
         description: 'Permission override deleted successfully'
       })
-      
+
       // Reload permission overrides
       await loadPermissionOverrides()
     } catch (error) {
@@ -434,7 +434,7 @@ export function PermissionsManagement() {
         newOverride.reason,
         newOverride.expiresAt || undefined
       )
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
@@ -443,7 +443,7 @@ export function PermissionsManagement() {
         title: 'Success',
         description: 'Permission override created successfully'
       })
-      
+
       setShowOverrideDialog(false)
       setNewOverride({
         userEmail: '',
@@ -452,7 +452,7 @@ export function PermissionsManagement() {
         reason: '',
         expiresAt: ''
       })
-      
+
       // Reload permission overrides
       await loadPermissionOverrides()
     } catch (error) {
@@ -466,14 +466,14 @@ export function PermissionsManagement() {
 
   const selectedTierData = tiers.find(t => t.tier === selectedTier)
   const allPermissions = permissionGroups.flatMap(group => group.permissions)
-  
+
   const filteredPermissions = allPermissions.filter(permission => {
-    const matchesSearch = 
+    const matchesSearch =
       permission.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       permission.description.toLowerCase().includes(searchQuery.toLowerCase())
-    
+
     const matchesRisk = filterRisk === 'all' || permission.risk_level === filterRisk
-    
+
     return matchesSearch && matchesRisk
   })
 
@@ -542,8 +542,8 @@ export function PermissionsManagement() {
                   <div
                     key={tier.tier}
                     className={`p-4 rounded-lg border-2 cursor-pointer transition-all ${
-                      selectedTier === tier.tier 
-                        ? 'border-blue-500 bg-blue-500/10' 
+                      selectedTier === tier.tier
+                        ? 'border-blue-500 bg-blue-500/10'
                         : 'border-gray-700 hover:border-gray-600'
                     }`}
                     onClick={() => setSelectedTier(tier.tier)}
@@ -612,18 +612,18 @@ export function PermissionsManagement() {
                     <div key={groupIndex}>
                       <h3 className="text-lg font-medium text-white mb-3">{group.category}</h3>
                       <p className="text-sm text-gray-400 mb-4">{group.description}</p>
-                      
+
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                         {group.permissions.map((permission) => {
                           const hasPermission = selectedTierData.permissions.includes(permission.type)
                           const canEdit = editingTier === selectedTierData.tier
-                          
+
                           return (
                             <div
                               key={permission.type}
                               className={`p-3 rounded-lg border transition-all ${
-                                hasPermission 
-                                  ? 'border-green-600 bg-green-600/10' 
+                                hasPermission
+                                  ? 'border-green-600 bg-green-600/10'
                                   : 'border-gray-700 bg-gray-800/50'
                               }`}
                             >
@@ -695,7 +695,7 @@ export function PermissionsManagement() {
                   </SelectContent>
                 </Select>
               </div>
-              
+
               <Table>
                 <TableHeader>
                   <TableRow className="border-gray-700">
@@ -811,9 +811,9 @@ export function PermissionsManagement() {
                           {override.expires_at ? new Date(override.expires_at).toLocaleDateString() : 'Never'}
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="text-red-400 hover:text-red-300"
                             onClick={() => handleDeleteOverride(override.id)}
                           >

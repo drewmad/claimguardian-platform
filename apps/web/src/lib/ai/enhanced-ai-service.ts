@@ -77,7 +77,7 @@ export class EnhancedAIService extends AIClientService {
 
   private async checkSemanticCache(prompt: string): Promise<unknown | null> {
     const signature = this.generateSemanticSignature(prompt)
-    
+
     // Check exact match first
     const exactMatch = this.semanticCache.get(prompt)
     if (exactMatch && Date.now() - exactMatch.timestamp < exactMatch.ttl) {
@@ -122,7 +122,7 @@ export class EnhancedAIService extends AIClientService {
     urgency: 'low' | 'medium' | 'high'
     accuracy: 'standard' | 'high'
   }): ModelConfig {
-    let candidates = this.modelConfigs.filter(model => 
+    let candidates = this.modelConfigs.filter(model =>
       model.capabilities.includes(task.type)
     )
 
@@ -146,14 +146,14 @@ export class EnhancedAIService extends AIClientService {
   // Context Persistence - Long-term conversation memory
   async persistContext(userId: string, context: unknown): Promise<void> {
     const supabase = createClient()
-    
+
     try {
       await supabase.from('user_ai_context').upsert({
         user_id: userId,
         context: context,
         updated_at: new Date().toISOString()
       })
-      
+
       this.contextMemory.set(userId, context)
     } catch (error) {
       logger.error('Failed to persist context:', toError(error))
@@ -167,7 +167,7 @@ export class EnhancedAIService extends AIClientService {
     }
 
     const supabase = createClient()
-    
+
     try {
       const { data } = await supabase
         .from('user_ai_context')
@@ -189,7 +189,7 @@ export class EnhancedAIService extends AIClientService {
   // Predictive Analytics - Anticipate user needs
   async predictNextActions(userId: string, currentAction: string): Promise<PredictiveContext> {
     await this.loadContext(userId)
-    
+
     // Simple pattern matching - in production, use ML models
     const patterns: Record<string, PredictiveContext> = {
       'damage-photo': {
@@ -224,7 +224,7 @@ export class EnhancedAIService extends AIClientService {
     accuracy?: 'standard' | 'high'
   }): Promise<unknown> {
     const cacheKey = `analyze-${params.type}-${JSON.stringify(params.data)}`
-    
+
     // Check cache first
     const cached = await this.checkSemanticCache(cacheKey)
     if (cached) return cached
@@ -244,14 +244,14 @@ export class EnhancedAIService extends AIClientService {
 
     // Cache result
     this.cacheResult(cacheKey, result)
-    
+
     return result
   }
 
   // Pre-warm cache with predicted needs
   async preloadPredictiveData(userId: string, action: string): Promise<void> {
     const prediction = await this.predictNextActions(userId, action)
-    
+
     if (prediction.preloadedData) {
       // Preload common queries in background
       setTimeout(async () => {

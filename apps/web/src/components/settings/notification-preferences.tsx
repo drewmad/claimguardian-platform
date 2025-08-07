@@ -69,7 +69,7 @@ const defaultPreferences: NotificationPreferences = {
 
 const timezones = [
   'America/New_York',
-  'America/Chicago', 
+  'America/Chicago',
   'America/Denver',
   'America/Los_Angeles',
   'America/Anchorage',
@@ -85,10 +85,10 @@ const categoryDescriptions = {
   settlementOffers: 'Settlement offer alerts and recommendations'
 }
 
-export function NotificationPreferences({ 
-  userId, 
-  initialPreferences, 
-  onSave 
+export function NotificationPreferences({
+  userId,
+  initialPreferences,
+  onSave
 }: NotificationPreferencesProps) {
   const [preferences, setPreferences] = useState<NotificationPreferences>({
     ...defaultPreferences,
@@ -119,7 +119,7 @@ export function NotificationPreferences({
 
   const handleSave = async () => {
     if (!onSave || !hasChanges) return
-    
+
     setIsSaving(true)
     try {
       await onSave(preferences)
@@ -156,7 +156,7 @@ export function NotificationPreferences({
 
   const enabledChannels = [
     preferences.emailEnabled && 'email',
-    preferences.smsEnabled && 'sms', 
+    preferences.smsEnabled && 'sms',
     preferences.pushEnabled && 'push',
     preferences.inAppEnabled && 'in-app'
   ].filter(Boolean)

@@ -37,7 +37,7 @@ export async function enrichPropertyData({
 }): Promise<PropertyEnrichmentResult> {
   try {
     const supabase = await await createClient()
-    
+
     // Get the current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -72,13 +72,13 @@ export async function enrichPropertyData({
     )
 
     if (functionError) {
-      logger.error('Property enrichment request failed', { 
-        propertyId, 
+      logger.error('Property enrichment request failed', {
+        propertyId,
         error: functionError
       })
-      return { 
-        success: false, 
-        error: `Enrichment failed: ${functionError.message}` 
+      return {
+        success: false,
+        error: `Enrichment failed: ${functionError.message}`
       }
     }
 
@@ -116,9 +116,9 @@ export async function enrichPropertyData({
 
   } catch (error) {
     logger.error('Error enriching property data', { propertyId }, error as Error)
-    return { 
-      success: false, 
-      error: 'Failed to enrich property data' 
+    return {
+      success: false,
+      error: 'Failed to enrich property data'
     }
   }
 }
@@ -129,7 +129,7 @@ export async function enrichPropertyData({
 export async function getPropertyEnrichmentStatus(propertyId: string) {
   try {
     const supabase = await await createClient()
-    
+
     const { data, error } = await supabase
       .from('property_enrichments')
       .select('version, enriched_at, expires_at, api_costs')
@@ -143,8 +143,8 @@ export async function getPropertyEnrichmentStatus(propertyId: string) {
     }
 
     if (!data) {
-      return { 
-        success: true, 
+      return {
+        success: true,
         enriched: false,
         message: 'Property has not been enriched yet'
       }

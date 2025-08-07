@@ -75,15 +75,15 @@ class ClaudeThresholdTuner {
     logger.info('Analyzing current confidence threshold performance')
 
     const currentThreshold = parseFloat(process.env.CLAUDE_CONFIDENCE_THRESHOLD || '0.8')
-    
+
     // Get recent production data
     const productionStatus = await claudeProductionMonitor.getProductionStatus()
-    
+
     // Analyze threshold performance across different values
     const thresholdAnalyses = await this.evaluateThresholdRange(0.6, 0.95, 0.05)
-    
+
     // Find current threshold analysis
-    const currentAnalysis = thresholdAnalyses.find(a => 
+    const currentAnalysis = thresholdAnalyses.find(a =>
       Math.abs(a.threshold - currentThreshold) < 0.025
     ) || thresholdAnalyses[0]
 
@@ -140,13 +140,13 @@ class ClaudeThresholdTuner {
   private generateMockProductionMetrics(count: number) {
     // Generate realistic mock data for threshold analysis
     const metrics = []
-    
+
     for (let i = 0; i < count; i++) {
       const isSuccess = Math.random() > 0.2 // 80% success rate
-      const confidenceLevel = isSuccess 
+      const confidenceLevel = isSuccess
         ? 0.6 + Math.random() * 0.4 // Higher confidence for successes
         : 0.3 + Math.random() * 0.5 // Lower confidence for failures
-      
+
       metrics.push({
         confidenceLevel,
         actualSuccess: isSuccess,
@@ -154,7 +154,7 @@ class ClaudeThresholdTuner {
         optimizationsApplied: Math.floor(Math.random() * 4)
       })
     }
-    
+
     return metrics
   }
 
@@ -206,7 +206,7 @@ class ClaudeThresholdTuner {
   ): ThresholdRecommendation {
     // Find optimal threshold based on F1 score
     const optimalAnalysis = analyses[0] // Already sorted by F1 score
-    const currentAnalysis = analyses.find(a => 
+    const currentAnalysis = analyses.find(a =>
       Math.abs(a.threshold - currentThreshold) < 0.025
     ) || analyses[analyses.length - 1]
 
@@ -276,7 +276,7 @@ class ClaudeThresholdTuner {
     }
 
     const now = new Date()
-    
+
     // Check if enough time has passed since last tuning
     if (this.lastTuningTimestamp) {
       const hoursSinceLastTuning = (now.getTime() - this.lastTuningTimestamp.getTime()) / (1000 * 60 * 60)
@@ -320,7 +320,7 @@ class ClaudeThresholdTuner {
 
     // Perform the tuning
     await this.applyThresholdChange(recommendedThreshold, 'Automatic tuning based on production performance')
-    
+
     this.lastTuningTimestamp = now
     this.thresholdHistory.push({
       timestamp: now,
@@ -350,7 +350,7 @@ class ClaudeThresholdTuner {
   private async applyThresholdChange(newThreshold: number, reason: string): Promise<void> {
     // In a real production environment, this would update the environment variable
     // or configuration system. For now, we'll log the change.
-    
+
     logger.info('Applying threshold change', {
       newThreshold,
       reason,
@@ -359,7 +359,7 @@ class ClaudeThresholdTuner {
 
     // Would update environment variable:
     // process.env.CLAUDE_CONFIDENCE_THRESHOLD = newThreshold.toString()
-    
+
     // In production, would also:
     // 1. Update deployment configuration
     // 2. Restart relevant services
@@ -406,7 +406,7 @@ class ClaudeThresholdTuner {
       new Date(changeTimestamp.getTime() - validationPeriodHours * 60 * 60 * 1000),
       changeTimestamp
     )
-    
+
     const afterMetrics = await this.getPerformanceMetricsForPeriod(
       changeTimestamp,
       now
@@ -467,7 +467,7 @@ class ClaudeThresholdTuner {
     config: TuningConfig
   } {
     const currentThreshold = parseFloat(process.env.CLAUDE_CONFIDENCE_THRESHOLD || '0.8')
-    
+
     let nextScheduledTuning: Date | null = null
     if (this.config.enabled && this.lastTuningTimestamp) {
       nextScheduledTuning = new Date(

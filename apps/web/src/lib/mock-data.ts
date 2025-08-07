@@ -13,15 +13,15 @@ import { Wind, ShieldAlert, CheckCircle, Clock } from 'lucide-react';
 import { COLORS } from './constants';
 
 export const INITIAL_ASSETS = [
-    { 
-        id: 1, 
-        name: 'Primary Residence', 
-        type: 'Property', 
-        value: 450000, 
-        coverage: 95, 
-        image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=400&auto=format&fit=crop', 
-        docs: [{name: 'Deed.pdf'}], 
-        maintenance: [{name: 'Roof Inspection', due: '2025-07-08'}], 
+    {
+        id: 1,
+        name: 'Primary Residence',
+        type: 'Property',
+        value: 450000,
+        coverage: 95,
+        image: 'https://images.unsplash.com/photo-1568605114967-8130f3a36994?q=80&w=400&auto=format&fit=crop',
+        docs: [{name: 'Deed.pdf'}],
+        maintenance: [{name: 'Roof Inspection', due: '2025-07-08'}],
         policies: [{id: '04760651', provider: 'Citizens Property Insurance', type: 'Homeowners'}],
         details: {
             yearBuilt: 1979,

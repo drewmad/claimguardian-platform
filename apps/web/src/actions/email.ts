@@ -49,7 +49,7 @@ const getPropertyEnrichmentEmail = (propertyAddress: string) => ({
 export async function sendWelcomeEmail(userId: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get user details
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -99,7 +99,7 @@ export async function sendWelcomeEmail(userId: string) {
 export async function sendPasswordResetEmail(email: string, resetToken: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get user details
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -151,7 +151,7 @@ export async function sendPasswordResetEmail(email: string, resetToken: string) 
 export async function sendVerificationEmail(userId: string, email: string, token: string) {
   try {
     const supabase = await await createClient()
-    
+
     // Get user name
     const { data: profile } = await supabase
       .from('profiles')
@@ -209,7 +209,7 @@ export async function sendClaimUpdateEmail({
 }) {
   try {
     const supabase = await await createClient()
-    
+
     // Get user details
     const { data: profile, error } = await supabase
       .from('profiles')
@@ -277,7 +277,7 @@ export async function sendPropertyEnrichmentEmail({
 }) {
   try {
     const supabase = await await createClient()
-    
+
     // Get user details
     const { data: profile, error } = await supabase
       .from('profiles')

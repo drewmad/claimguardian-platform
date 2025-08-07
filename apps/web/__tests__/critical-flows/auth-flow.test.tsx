@@ -1,6 +1,6 @@
 import React from 'react'
 /**
- * @fileMetadata  
+ * @fileMetadata
  * @purpose "Critical authentication flow tests"
  * @dependencies ["@claimguardian/db","@tanstack/react-query","@testing-library/react","@testing-library/user-event","react"]
  * @owner security-team
@@ -106,18 +106,18 @@ describe('Authentication Flow - Critical Tests', () => {
       }
 
       const { getByTestId, queryByTestId } = renderWithProviders(<LoginForm />)
-      
+
       // Test invalid email
       await userEvent.type(getByTestId('email-input'), 'invalid-email')
       fireEvent.submit(getByTestId('email-input').closest('form')!)
-      
+
       expect(getByTestId('error-message')).toHaveTextContent('Please enter a valid email address')
-      
-      // Test valid email  
+
+      // Test valid email
       await userEvent.clear(getByTestId('email-input'))
       await userEvent.type(getByTestId('email-input'), 'user@example.com')
       fireEvent.submit(getByTestId('email-input').closest('form')!)
-      
+
       expect(queryByTestId('error-message')).not.toBeInTheDocument()
     })
 
@@ -135,7 +135,7 @@ describe('Authentication Flow - Critical Tests', () => {
             email: 'test@example.com',
             password: 'wrongpassword'
           })
-          
+
           if (error) {
             setError(error.message)
           }
@@ -152,9 +152,9 @@ describe('Authentication Flow - Critical Tests', () => {
       }
 
       const { getByTestId } = renderWithProviders(<LoginForm />)
-      
+
       fireEvent.click(getByTestId('login-button'))
-      
+
       await waitFor(() => {
         expect(getByTestId('auth-error')).toHaveTextContent('Invalid login credentials')
       })
@@ -175,20 +175,20 @@ describe('Authentication Flow - Critical Tests', () => {
 
         const handleLogin = async () => {
           if (isSubmitting) return
-          
+
           setIsSubmitting(true)
           await mockSupabase.auth.signInWithPassword({
             email: 'test@example.com',
             password: 'password'
           })
-          
+
           // Simulate debounce
           setTimeout(() => setIsSubmitting(false), 1000)
         }
 
         return (
-          <button 
-            onClick={handleLogin} 
+          <button
+            onClick={handleLogin}
             disabled={isSubmitting}
             data-testid="login-button"
           >
@@ -198,13 +198,13 @@ describe('Authentication Flow - Critical Tests', () => {
       }
 
       const { getByTestId } = renderWithProviders(<LoginForm />)
-      
+
       // Rapid clicks should only result in one API call
       const button = getByTestId('login-button')
       fireEvent.click(button)
       fireEvent.click(button)
       fireEvent.click(button)
-      
+
       await waitFor(() => {
         expect(attemptCount).toBe(1)
       })
@@ -216,10 +216,10 @@ describe('Authentication Flow - Critical Tests', () => {
       const validatePassword = (password: string) => {
         const minLength = password.length >= 8
         const hasUpper = /[A-Z]/.test(password)
-        const hasLower = /[a-z]/.test(password)  
+        const hasLower = /[a-z]/.test(password)
         const hasNumber = /\d/.test(password)
         const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password)
-        
+
         return {
           isValid: minLength && hasUpper && hasLower && hasNumber && hasSpecial,
           requirements: {
@@ -280,7 +280,7 @@ describe('Authentication Flow - Critical Tests', () => {
       expect(sanitizeInput('  John Doe  ')).toBe('John Doe')
       expect(sanitizeInput('<script>alert("xss")</script>John')).toBe('John')
       expect(sanitizeInput('Name<dangerous>content</dangerous>')).toBe('Namecontent')
-      
+
       // Test length limiting
       const longString = 'a'.repeat(150)
       expect(sanitizeInput(longString)).toHaveLength(100)
@@ -314,7 +314,7 @@ describe('Authentication Flow - Critical Tests', () => {
       }
 
       const { getByTestId } = renderWithProviders(<SessionChecker />)
-      
+
       await waitFor(() => {
         expect(getByTestId('auth-status')).toHaveTextContent('Not Authenticated')
       })
@@ -326,7 +326,7 @@ describe('Critical Security Tests', () => {
   it('should not expose sensitive data in error messages', async () => {
     mockSupabase.auth.signInWithPassword.mockResolvedValue({
       data: { user: null, session: null },
-      error: { 
+      error: {
         message: 'Database connection failed: host=db.internal.company.com user=admin password=secret123'
       }
     })
@@ -340,7 +340,7 @@ describe('Critical Security Tests', () => {
     }
 
     const result = sanitizeError('Database connection failed: host=db.internal.company.com user=admin password=secret123')
-    
+
     expect(result).toBe('Database connection failed: host=*** user=*** password=***')
     expect(result).not.toContain('secret123')
     expect(result).not.toContain('db.internal.company.com')
@@ -379,15 +379,15 @@ describe('Critical Security Tests', () => {
     }
 
     const rateLimiter = new RateLimiter()
-    
+
     // First 3 attempts should be allowed
     expect(rateLimiter.isAllowed('user@example.com')).toBe(true)
     expect(rateLimiter.isAllowed('user@example.com')).toBe(true)
     expect(rateLimiter.isAllowed('user@example.com')).toBe(true)
-    
+
     // 4th attempt should be blocked
     expect(rateLimiter.isAllowed('user@example.com')).toBe(false)
-    
+
     // Different user should still be allowed
     expect(rateLimiter.isAllowed('other@example.com')).toBe(true)
   })

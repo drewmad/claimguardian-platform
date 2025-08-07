@@ -29,7 +29,7 @@ interface LegalAcceptanceData {
 export async function trackLegalAcceptance(data: LegalAcceptanceData) {
   try {
     const supabase = await await createClient()
-    
+
     // Use security definer function to track consent
     const { error: consentError } = await supabase.rpc('track_user_consent', {
       p_user_id: data.userId,
@@ -61,11 +61,11 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
         p_data_processing_consent?: boolean
         p_marketing_consent?: boolean
       }
-      
+
       const updateParams: UpdateConsentParams = {
         p_user_id: data.userId
       }
-      
+
       // Map document type to consent field
       switch (data.documentType) {
         case 'gdpr':
@@ -78,9 +78,9 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
           updateParams.p_marketing_consent = data.accepted
           break
       }
-      
+
       const { error: prefError } = await supabase.rpc('update_user_consent_preferences', updateParams)
-      
+
       if (prefError) {
         logger.warn('Failed to update user preferences', { error: prefError.message, code: prefError.code })
       }
@@ -97,7 +97,7 @@ export async function trackLegalAcceptance(data: LegalAcceptanceData) {
     return { success: true }
   } catch (error) {
     logger.error('Failed to track legal acceptance', { userId: data.userId }, error as Error)
-    
+
     // Return success to avoid breaking signup flow
     return { success: true, warning: 'Tracking failed but signup continued' }
   }
@@ -122,7 +122,7 @@ export async function trackSignupConsents(data: {
 }) {
   try {
     const supabase = await await createClient()
-    
+
     // Use security definer function to update all consent preferences at once
     const { error } = await supabase.rpc('update_user_consent_preferences', {
       p_user_id: data.userId,
@@ -130,14 +130,14 @@ export async function trackSignupConsents(data: {
       p_data_processing_consent: data.consents.dataProcessing,
       p_marketing_consent: data.consents.marketing
     })
-    
+
     if (error) {
       logger.warn('Failed to update consent preferences', { error: error.message, code: error.code })
     }
-    
+
     // Track individual consents for audit trail
     const promises = []
-    
+
     // Track GDPR consent
     promises.push(trackLegalAcceptance({
       userId: data.userId,
@@ -146,7 +146,7 @@ export async function trackSignupConsents(data: {
       ...data.metadata,
       consentMethod: 'checkbox'
     }))
-    
+
     // Track data processing consent
     promises.push(trackLegalAcceptance({
       userId: data.userId,
@@ -155,7 +155,7 @@ export async function trackSignupConsents(data: {
       ...data.metadata,
       consentMethod: 'checkbox'
     }))
-    
+
     // Track marketing consent
     promises.push(trackLegalAcceptance({
       userId: data.userId,
@@ -164,7 +164,7 @@ export async function trackSignupConsents(data: {
       ...data.metadata,
       consentMethod: 'checkbox'
     }))
-    
+
     // Execute all tracking in parallel, but don't fail if any fail
     await Promise.allSettled(promises)
     return { success: true }

@@ -24,7 +24,7 @@ import { logger } from "@/lib/logger/production-logger"
 import { toError } from '@claimguardian/utils'
 
 import { getThreatAssessmentEngine } from '@/lib/ai/threat-assessment-engine'
-import { 
+import {
   ThreatLevel,
   EventType,
   ActionStatus
@@ -74,9 +74,9 @@ interface SituationRoomActions {
   refreshIntelligenceFeeds: () => Promise<void>
   refreshPropertyStatus: () => Promise<void>
   refreshCommunityIntel: () => Promise<void>
-  
+
   // AI threat assessment actions
-  runAIThreatAssessment: (propertyId: string, options?: { 
+  runAIThreatAssessment: (propertyId: string, options?: {
     focusAreas?: string[]
     urgencyThreshold?: ThreatLevel
     preferredProvider?: 'openai' | 'grok' | 'claude' | 'gemini' | 'auto'
@@ -84,7 +84,7 @@ interface SituationRoomActions {
     budget?: 'low' | 'medium' | 'high'
     speedPriority?: boolean
   }) => Promise<void>
-  getAIAssessmentStatus: () => { 
+  getAIAssessmentStatus: () => {
     available: boolean
     providers: Array<{
       name: string
@@ -103,42 +103,42 @@ interface SituationRoomActions {
       abilityOptimization: boolean
     }
   }
-  
+
   // Threat management
   addThreat: (threat: ThreatAssessment) => void
   updateThreat: (threatId: string, updates: Partial<ThreatAssessment>) => void
   dismissThreat: (threatId: string) => void
   acknowledgeThreat: (threatId: string) => void
-  
+
   // Intelligence feeds
   addIntelligenceFeed: (feed: IntelligenceFeed) => void
   markFeedAsRead: (feedId: string) => void
   markAllFeedsAsRead: () => void
   filterFeeds: (filter: { type?: string; urgency?: ThreatLevel; source?: string }) => void
-  
+
   // AI recommendations
   addRecommendation: (recommendation: AIRecommendation) => void
   executeRecommendation: (recommendationId: string) => Promise<void>
   dismissRecommendation: (recommendationId: string) => void
-  
+
   // Action management
   addAction: (action: ActionItem) => void
   updateActionStatus: (actionId: string, status: ActionStatus) => void
   completeAction: (actionId: string) => void
   scheduleAction: (actionId: string, scheduledDate: Date) => void
-  
+
   // Real-time events
   addRealtimeEvent: (event: RealtimeEvent) => void
   processRealtimeEvent: (event: RealtimeEvent) => void
   markEventAsProcessed: (eventId: string) => void
   clearProcessedEvents: () => void
-  
+
   // Emergency protocols
   activateEmergencyMode: () => void
   deactivateEmergencyMode: () => void
   updateEmergencyContacts: (contacts: EmergencyContact[]) => void
   setEvacuationPlan: (plan: EvacuationPlan) => void
-  
+
   // System controls
   setConnectionStatus: (status: 'connected' | 'reconnecting' | 'disconnected') => void
   setError: (error: string | null) => void
@@ -153,40 +153,40 @@ const initialState: SituationRoomState = {
   threats: [],
   overallThreatLevel: ThreatLevel.LOW,
   activeThreatCount: 0,
-  
+
   // Intelligence feeds
   intelligenceFeeds: [],
   unreadFeedCount: 0,
-  
+
   // Property status
   propertyStatus: null,
   systemsOnline: 0,
   totalSystems: 0,
-  
+
   // Community intelligence
   communityIntel: null,
   neighborhoodThreatLevel: ThreatLevel.LOW,
-  
+
   // AI recommendations
   aiRecommendations: [],
   pendingActions: [],
   completedActions: [],
-  
+
   // Real-time events
   realtimeEvents: [],
   eventSubscriptions: [],
-  
+
   // Emergency protocols
   emergencyMode: false,
   emergencyContacts: [],
   evacuationPlan: null,
-  
+
   // System status
   isLoading: false,
   lastUpdate: null,
   connectionStatus: 'disconnected',
   error: null,
-  
+
   // AI assessment status
   aiAssessmentRunning: false,
   lastAIAssessment: null
@@ -196,15 +196,15 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
   subscribeWithSelector(
     immer((set, get) => ({
       ...initialState,
-      
+
       // ===== DATA LOADING ACTIONS =====
-      
+
       async loadSituationData(propertyId: string) {
         set(state => {
           state.isLoading = true
           state.error = null
         })
-        
+
         try {
           // Simulate API calls - replace with actual API integration
           const [
@@ -216,22 +216,22 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             fetchPropertyStatus(propertyId),
             fetchCommunityIntelligence(propertyId)
           ])
-          
+
           set(state => {
             state.intelligenceFeeds = intelligenceResponse.feeds
             state.unreadFeedCount = intelligenceResponse.feeds.length
-            
+
             state.propertyStatus = propertyResponse.status
             state.systemsOnline = propertyResponse.systemsOnline
             state.totalSystems = propertyResponse.totalSystems
-            
+
             state.communityIntel = communityResponse.intelligence
             state.neighborhoodThreatLevel = communityResponse.threatLevel
-            
+
             state.lastUpdate = new Date()
             state.isLoading = false
           })
-          
+
           // Run AI threat assessment after initial data load
           get().runAIThreatAssessment(propertyId)
         } catch (error) {
@@ -241,7 +241,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           })
         }
       },
-      
+
       async refreshThreatAssessment() {
         try {
           const propertyId = getCurrentPropertyId()
@@ -250,7 +250,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           logger.error('Failed to refresh threat assessment:', toError(error))
         }
       },
-      
+
       async refreshIntelligenceFeeds() {
         try {
           const response = await fetchIntelligenceFeeds(getCurrentPropertyId())
@@ -262,7 +262,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           logger.error('Failed to refresh intelligence feeds:', toError(error))
         }
       },
-      
+
       async refreshPropertyStatus() {
         try {
           const response = await fetchPropertyStatus(getCurrentPropertyId())
@@ -275,7 +275,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           logger.error('Failed to refresh property status:', toError(error))
         }
       },
-      
+
       async refreshCommunityIntel() {
         try {
           const response = await fetchCommunityIntelligence(getCurrentPropertyId())
@@ -287,22 +287,22 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           logger.error('Failed to refresh community intelligence:', toError(error))
         }
       },
-      
+
       // ===== AI THREAT ASSESSMENT ACTIONS =====
-      
+
       async runAIThreatAssessment(propertyId: string, options = {}) {
         set(state => {
           state.aiAssessmentRunning = true
           state.error = null
         })
-        
+
         try {
           const threatEngine = getThreatAssessmentEngine()
-          
+
           // Generate context for AI assessment
           const weatherContext = await threatEngine.generateWeatherContext({ lat: 25.7617, lng: -80.1918 }) // Miami coords
           const propertyContext = await threatEngine.generatePropertyContext(propertyId)
-          
+
           const assessmentRequest = {
             propertyId,
             context: {
@@ -328,41 +328,41 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
             budget: options.budget,
             speedPriority: options.speedPriority
           }
-          
+
           const aiResponse = await threatEngine.assessThreats(assessmentRequest)
-          
+
           set(state => {
             // Update threats with AI assessment results
             state.threats = aiResponse.threats
             state.overallThreatLevel = aiResponse.overallLevel
             state.activeThreatCount = aiResponse.threats.filter(t => t.isActive).length
-            
+
             // Add AI recommendations
             aiResponse.recommendations.forEach(rec => {
               if (!state.aiRecommendations.find(r => r.title === rec.title)) {
                 state.aiRecommendations.unshift(rec)
               }
             })
-            
+
             // Add AI intelligence feeds
             aiResponse.intelligenceFeeds.forEach(feed => {
               if (!state.intelligenceFeeds.find(f => f.id === feed.id)) {
                 state.intelligenceFeeds.unshift(feed)
               }
             })
-            
+
             state.lastAIAssessment = new Date()
             state.aiAssessmentRunning = false
             state.lastUpdate = new Date()
           })
-          
+
           console.log('AI threat assessment completed:', {
             threats: aiResponse.threats.length,
             recommendations: aiResponse.recommendations.length,
             confidence: aiResponse.confidence,
             processingTime: aiResponse.processingTime
           })
-          
+
         } catch (error) {
           set(state => {
             state.error = error instanceof Error ? error.message : 'AI threat assessment failed'
@@ -371,24 +371,24 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           logger.error('AI threat assessment failed:', toError(error))
         }
       },
-      
+
       getAIAssessmentStatus() {
         const threatEngine = getThreatAssessmentEngine()
         return threatEngine.getStatus()
       },
-      
+
       // ===== THREAT MANAGEMENT ACTIONS =====
-      
+
       addThreat(threat: ThreatAssessment) {
         set(state => {
           state.threats.unshift(threat)
           state.activeThreatCount = state.threats.filter((t: ThreatAssessment) => t.isActive).length
-          
+
           // Update overall threat level based on highest active threat
           const activeThreatLevels = state.threats
             .filter((t: ThreatAssessment) => t.isActive)
             .map((t: ThreatAssessment) => getThreatLevelValue(t.severity))
-          
+
           if (activeThreatLevels.length > 0) {
             const maxLevel = Math.max(...activeThreatLevels)
             state.overallThreatLevel = getThreatLevelFromValue(maxLevel)
@@ -397,7 +397,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       updateThreat(threatId: string, updates: Partial<ThreatAssessment>) {
         set(state => {
           const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
@@ -407,7 +407,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       dismissThreat(threatId: string) {
         set(state => {
           const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
@@ -417,7 +417,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       acknowledgeThreat(threatId: string) {
         set(state => {
           const index = state.threats.findIndex((t: ThreatAssessment) => t.id === threatId)
@@ -432,23 +432,23 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       // ===== INTELLIGENCE FEED ACTIONS =====
-      
+
       addIntelligenceFeed(feed: IntelligenceFeed) {
         set(state => {
           state.intelligenceFeeds.unshift(feed)
           if (!feed.actionRequired) {
             state.unreadFeedCount += 1
           }
-          
+
           // Keep only last 50 feeds
           if (state.intelligenceFeeds.length > 50) {
             state.intelligenceFeeds = state.intelligenceFeeds.slice(0, 50)
           }
         })
       },
-      
+
       markFeedAsRead(feedId: string) {
         set(state => {
           const index = state.intelligenceFeeds.findIndex(f => f.id === feedId)
@@ -460,7 +460,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       markAllFeedsAsRead() {
         set(state => {
           state.intelligenceFeeds.forEach(feed => {
@@ -473,19 +473,19 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           state.unreadFeedCount = 0
         })
       },
-      
+
       filterFeeds(filter: { type?: string; urgency?: ThreatLevel; source?: string }) {
         // Implementation for feed filtering
         // This would typically filter the displayed feeds without modifying state
         logger.info('Filter feeds:', filter)
       },
-      
+
       // ===== AI RECOMMENDATION ACTIONS =====
-      
+
       addRecommendation(recommendation: AIRecommendation) {
         set(state => {
           state.aiRecommendations.unshift(recommendation)
-          
+
           // Add associated actions to pending actions
           recommendation.actions.forEach(action => {
             if (!state.pendingActions.find(a => a.id === action.id)) {
@@ -494,18 +494,18 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           })
         })
       },
-      
+
       async executeRecommendation(recommendationId: string) {
         const recommendation = get().aiRecommendations.find(r => r.id === recommendationId)
         if (!recommendation) return
-        
+
         try {
           // Execute recommendation actions
           for (const action of recommendation.actions) {
             await executeAction(action)
             get().updateActionStatus(action.id, ActionStatus.COMPLETED)
           }
-          
+
           // Mark recommendation as executed
           set(state => {
             const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
@@ -523,7 +523,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           })
         }
       },
-      
+
       dismissRecommendation(recommendationId: string) {
         set(state => {
           const index = state.aiRecommendations.findIndex(r => r.id === recommendationId)
@@ -535,9 +535,9 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       // ===== ACTION MANAGEMENT ACTIONS =====
-      
+
       addAction(action: ActionItem) {
         set(state => {
           if (action.status === ActionStatus.COMPLETED) {
@@ -547,21 +547,21 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       updateActionStatus(actionId: string, status: ActionStatus) {
         set(state => {
           // Check pending actions
           const pendingIndex = state.pendingActions.findIndex(a => a.id === actionId)
           if (pendingIndex !== -1) {
             state.pendingActions[pendingIndex].status = status
-            
+
             if (status === ActionStatus.COMPLETED) {
               const completedAction = state.pendingActions.splice(pendingIndex, 1)[0]
               completedAction.completedAt = new Date()
               state.completedActions.push(completedAction)
             }
           }
-          
+
           // Check completed actions
           const completedIndex = state.completedActions.findIndex(a => a.id === actionId)
           if (completedIndex !== -1) {
@@ -569,11 +569,11 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       completeAction(actionId: string) {
         get().updateActionStatus(actionId, ActionStatus.COMPLETED)
       },
-      
+
       scheduleAction(actionId: string, scheduledDate: Date) {
         set(state => {
           const pendingIndex = state.pendingActions.findIndex(a => a.id === actionId)
@@ -582,25 +582,25 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       // ===== REAL-TIME EVENT ACTIONS =====
-      
+
       addRealtimeEvent(event: RealtimeEvent) {
         set(state => {
           state.realtimeEvents.unshift(event)
-          
+
           // Keep only last 100 events
           if (state.realtimeEvents.length > 100) {
             state.realtimeEvents = state.realtimeEvents.slice(0, 100)
           }
-          
+
           // Auto-process certain event types
           if (event.autoProcessed) {
             get().processRealtimeEvent(event)
           }
         })
       },
-      
+
       markEventAsProcessed(eventId: string) {
         set(state => {
           const index = state.realtimeEvents.findIndex(e => e.id === eventId)
@@ -612,7 +612,7 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           }
         })
       },
-      
+
       clearProcessedEvents() {
         set(state => {
           // Filter events based on processed property
@@ -622,62 +622,62 @@ const createSituationRoomStore = () => create<SituationRoomStore>()(
           })
         })
       },
-      
+
       // ===== EMERGENCY PROTOCOL ACTIONS =====
-      
+
       activateEmergencyMode() {
         set(state => {
           state.emergencyMode = true
         })
-        
+
         // Trigger emergency protocols
         triggerEmergencyProtocols()
       },
-      
+
       deactivateEmergencyMode() {
         set(state => {
           state.emergencyMode = false
         })
       },
-      
+
       updateEmergencyContacts(contacts: EmergencyContact[]) {
         set(state => {
           state.emergencyContacts = contacts
         })
       },
-      
+
       setEvacuationPlan(plan: EvacuationPlan) {
         set(state => {
           state.evacuationPlan = plan
         })
       },
-      
+
       // ===== SYSTEM CONTROL ACTIONS =====
-      
+
       setConnectionStatus(status: 'connected' | 'reconnecting' | 'disconnected') {
         set(state => {
           state.connectionStatus = status
         })
       },
-      
+
       setError(error: string | null) {
         set(state => {
           state.error = error
         })
       },
-      
+
       clearError() {
         set(state => {
           state.error = null
         })
       },
-      
+
       reset() {
         set(() => ({ ...initialState }))
       },
-      
+
       // ===== INTERNAL HELPER METHODS =====
-      
+
       processRealtimeEvent(event: RealtimeEvent) {
         // Auto-process certain event types
         switch (event.type) {
@@ -748,7 +748,7 @@ function getCurrentPropertyId(): string {
 async function executeAction(action: ActionItem): Promise<void> {
   // This would execute the specific action
   logger.info(`Executing action: ${action.title}`)
-  
+
   // Simulate action execution
   await new Promise(resolve => setTimeout(resolve, 1000))
 }
@@ -764,7 +764,7 @@ function triggerEmergencyProtocols(): void {
 async function fetchThreatAssessment(propertyId: string): Promise<any> {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000))
-  
+
   return {
     threats: [
       {
@@ -804,7 +804,7 @@ async function fetchThreatAssessment(propertyId: string): Promise<any> {
 
 async function fetchIntelligenceFeeds(propertyId: string): Promise<any> {
   await new Promise(resolve => setTimeout(resolve, 800))
-  
+
   return {
     feeds: [
       {
@@ -827,7 +827,7 @@ async function fetchIntelligenceFeeds(propertyId: string): Promise<any> {
 
 async function fetchPropertyStatus(propertyId: string): Promise<any> {
   await new Promise(resolve => setTimeout(resolve, 600))
-  
+
   return {
     status: {
       propertyId,
@@ -859,7 +859,7 @@ async function fetchPropertyStatus(propertyId: string): Promise<any> {
 
 async function fetchCommunityIntelligence(propertyId: string): Promise<any> {
   await new Promise(resolve => setTimeout(resolve, 700))
-  
+
   return {
     intelligence: {
       neighborhoodId: 'neighborhood-1',
@@ -876,7 +876,7 @@ async function fetchCommunityIntelligence(propertyId: string): Promise<any> {
 
 async function fetchAIRecommendations(propertyId: string): Promise<any> {
   await new Promise(resolve => setTimeout(resolve, 900))
-  
+
   return {
     recommendations: [
       {

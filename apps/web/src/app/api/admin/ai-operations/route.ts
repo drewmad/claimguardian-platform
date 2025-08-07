@@ -2,17 +2,17 @@
  * @fileMetadata
  * @purpose "AI Operations API endpoints for admin panel"
  * @dependencies ["@/lib","next"]
- * @owner ai-team  
+ * @owner ai-team
  * @status stable
  */
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { 
-  AIModelConfig, 
+import type {
+  AIModelConfig,
   UpdateModelConfigRequest,
   FeaturePerformanceMetrics,
-  AIOperationsResponse 
+  AIOperationsResponse
 } from '@/types/ai-operations'
 
 // GET /api/admin/ai-operations - Get all AI configurations and metrics
@@ -85,7 +85,7 @@ export async function GET(request: NextRequest) {
       } else {
         // Aggregate metrics by feature
         const featureMetrics: Record<string, FeaturePerformanceMetrics> = {}
-        
+
         usageData?.forEach((usage) => {
           if (!featureMetrics[usage.feature_id]) {
             featureMetrics[usage.feature_id] = {
@@ -105,7 +105,7 @@ export async function GET(request: NextRequest) {
           metrics.total_requests++
           metrics.avg_response_time += usage.response_time
           metrics.total_cost += usage.cost || 0
-          
+
           if (usage.success) {
             metrics.success_rate++
           }

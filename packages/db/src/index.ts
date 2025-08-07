@@ -43,14 +43,14 @@ export type TablesUpdate = Database['public']['Tables'][keyof Database['public']
 export type Enums = Database['public']['Enums']
 
 // Import types from the new schema structure
-import type { 
-  CoreProperty, 
-  CoreStructure, 
-  CoreSpace, 
-  CoreScan, 
+import type {
+  CoreProperty,
+  CoreStructure,
+  CoreSpace,
+  CoreScan,
   CoreDigitalModel,
   ReferenceParcel,
-  Database as TypesDatabase 
+  Database as TypesDatabase
 } from './types'
 
 // Import asset structure type

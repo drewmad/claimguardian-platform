@@ -129,7 +129,7 @@ class AITimeSeriesAnalyzer {
 
     // Fetch time-series data
     const timeSeriesData = await this.fetchTimeSeriesData({ ...options, resolution })
-    
+
     // Calculate metrics for each dimension
     const responseTimeMetrics = this.calculateMetrics(
       timeSeriesData.responseTime.map(d => d.value)
@@ -151,7 +151,7 @@ class AITimeSeriesAnalyzer {
     const trends = await this.analyzeTrends(timeSeriesData, resolution)
 
     // Detect anomalies
-    const anomalies = options.includeAnomalyDetection 
+    const anomalies = options.includeAnomalyDetection
       ? await this.detectAnomalies(timeSeriesData)
       : []
 
@@ -220,9 +220,9 @@ class AITimeSeriesAnalyzer {
     try {
       // Build dynamic query based on resolution
       const timeUnit = this.getTimeUnit(options.resolution)
-      
+
       const query = `
-        SELECT 
+        SELECT
           date_trunc('${timeUnit}', created_at) as time_bucket,
           AVG(response_time_ms) as avg_response_time,
           COUNT(*) as request_count,
@@ -257,27 +257,27 @@ class AITimeSeriesAnalyzer {
 
       for (const row of data || []) {
         const timestamp = new Date(row.time_bucket)
-        
+
         responseTime.push({
           timestamp,
           value: parseFloat(row.avg_response_time) || 0
         })
-        
+
         throughput.push({
           timestamp,
           value: parseInt(row.request_count) || 0
         })
-        
+
         errorRate.push({
           timestamp,
           value: parseFloat(row.error_rate) || 0
         })
-        
+
         cost.push({
           timestamp,
           value: parseFloat(row.avg_cost) || 0
         })
-        
+
         accuracy.push({
           timestamp,
           value: parseFloat(row.avg_accuracy) || 0
@@ -310,7 +310,7 @@ class AITimeSeriesAnalyzer {
 
     // Detect trend using linear regression
     const trend = this.detectTrend(values)
-    
+
     // Detect seasonality
     const seasonality = this.detectSeasonality(values)
 
@@ -340,14 +340,14 @@ class AITimeSeriesAnalyzer {
     for (const [metricName, timeSeries] of Object.entries(data)) {
       const values = (timeSeries as TimeSeriesDataPoint[]).map(d => d.value)
       const timestamps = (timeSeries as TimeSeriesDataPoint[]).map(d => d.timestamp)
-      
+
       if (values.length < 3) continue
 
       // Calculate trend direction and rate
       const { slope, rSquared } = this.calculateLinearRegression(values)
-      const direction = slope > 0.01 ? 'improving' : 
+      const direction = slope > 0.01 ? 'improving' :
                       slope < -0.01 ? 'degrading' : 'stable'
-      
+
       // Generate forecast
       const forecast = this.generateLinearForecast(values, timestamps, 24) // 24 future points
 
@@ -373,7 +373,7 @@ class AITimeSeriesAnalyzer {
     for (const [metricName, timeSeries] of Object.entries(data)) {
       const points = timeSeries as TimeSeriesDataPoint[]
       const values = points.map(d => d.value)
-      
+
       if (values.length < 10) continue
 
       // Calculate statistical bounds
@@ -388,10 +388,10 @@ class AITimeSeriesAnalyzer {
         const zScore = Math.abs(point.value - mean) / stdDev
 
         if (zScore > 3) { // 3-sigma outlier
-          const severity = zScore > 5 ? 'critical' : 
-                          zScore > 4 ? 'high' : 
+          const severity = zScore > 5 ? 'critical' :
+                          zScore > 4 ? 'high' :
                           zScore > 3.5 ? 'medium' : 'low'
-          
+
           const type = point.value > mean ? 'spike' : 'drop'
 
           anomalies.push({
@@ -408,11 +408,11 @@ class AITimeSeriesAnalyzer {
       // Detect pattern breaks using moving average
       const windowSize = Math.min(10, Math.floor(values.length / 4))
       const movingAverage = this.calculateMovingAverage(values, windowSize)
-      
+
       for (let i = windowSize; i < points.length; i++) {
         const deviation = Math.abs(points[i].value - movingAverage[i - windowSize])
         const threshold = stdDev * 2
-        
+
         if (deviation > threshold) {
           anomalies.push({
             timestamp: points[i].timestamp,
@@ -459,7 +459,7 @@ class AITimeSeriesAnalyzer {
     // Generate forecasts using exponential smoothing
     const alpha = 0.3 // Smoothing parameter
     const trend = this.calculateExponentialTrend(values, alpha)
-    
+
     // Next hour (12 points at 5-minute intervals)
     forecasts.nextHour = this.generateForecastPoints(
       lastTimestamp, 12, 5 * 60 * 1000, trend, values[values.length - 1]
@@ -602,7 +602,7 @@ class AITimeSeriesAnalyzer {
     }
 
     // Calculate overall improvement score
-    const significantImprovements = significantChanges.filter(c => 
+    const significantImprovements = significantChanges.filter(c =>
       c.isSignificant && (
         (c.metric === 'throughput' && c.percentChange > 0) ||
         (c.metric === 'accuracy' && c.percentChange > 0) ||
@@ -631,19 +631,19 @@ class AITimeSeriesAnalyzer {
     const index = (percentile / 100) * (sortedArray.length - 1)
     const lower = Math.floor(index)
     const upper = Math.ceil(index)
-    
+
     if (lower === upper) {
       return sortedArray[lower]
     }
-    
+
     return sortedArray[lower] * (upper - index) + sortedArray[upper] * (index - lower)
   }
 
   private detectTrend(values: number[]): 'increasing' | 'decreasing' | 'stable' {
     if (values.length < 3) return 'stable'
-    
+
     const { slope } = this.calculateLinearRegression(values)
-    
+
     if (slope > 0.05) return 'increasing'
     if (slope < -0.05) return 'decreasing'
     return 'stable'
@@ -679,7 +679,7 @@ class AITimeSeriesAnalyzer {
     const xSquaredSum = (n * (n - 1) * (2 * n - 1)) / 6
 
     const slope = (n * xySum - xSum * ySum) / (n * xSquaredSum - xSum * xSum)
-    
+
     // Calculate R-squared
     const yMean = ySum / n
     const totalSumSquares = values.reduce((sum, v) => sum + Math.pow(v - yMean, 2), 0)
@@ -687,7 +687,7 @@ class AITimeSeriesAnalyzer {
       const predicted = slope * i + (ySum - slope * xSum) / n
       return sum + Math.pow(v - predicted, 2)
     }, 0)
-    
+
     const rSquared = 1 - (residualSumSquares / totalSumSquares)
 
     return { slope, rSquared }
@@ -696,70 +696,70 @@ class AITimeSeriesAnalyzer {
   private calculateAutocorrelation(values: number[], maxLag: number): number[] {
     const mean = values.reduce((sum, v) => sum + v, 0) / values.length
     const variance = values.reduce((sum, v) => sum + Math.pow(v - mean, 2), 0) / values.length
-    
+
     const autocorrelations: number[] = []
-    
+
     for (let lag = 0; lag <= maxLag; lag++) {
       let covariance = 0
       const n = values.length - lag
-      
+
       for (let i = 0; i < n; i++) {
         covariance += (values[i] - mean) * (values[i + lag] - mean)
       }
-      
+
       covariance /= n
       autocorrelations.push(covariance / variance)
     }
-    
+
     return autocorrelations
   }
 
   private calculateMovingAverage(values: number[], windowSize: number): number[] {
     const movingAverage: number[] = []
-    
+
     for (let i = windowSize - 1; i < values.length; i++) {
       const window = values.slice(i - windowSize + 1, i + 1)
       const average = window.reduce((sum, v) => sum + v, 0) / windowSize
       movingAverage.push(average)
     }
-    
+
     return movingAverage
   }
 
   private calculateExponentialTrend(values: number[], alpha: number): number {
     if (values.length < 2) return 0
-    
+
     let trend = values[1] - values[0]
-    
+
     for (let i = 2; i < values.length; i++) {
       const newTrend = values[i] - values[i - 1]
       trend = alpha * newTrend + (1 - alpha) * trend
     }
-    
+
     return trend
   }
 
   private generateLinearForecast(
-    values: number[], 
-    timestamps: Date[], 
+    values: number[],
+    timestamps: Date[],
     steps: number
   ): TimeSeriesDataPoint[] {
     const { slope } = this.calculateLinearRegression(values)
     const lastValue = values[values.length - 1]
     const lastTimestamp = timestamps[timestamps.length - 1]
-    const timeInterval = timestamps.length > 1 
+    const timeInterval = timestamps.length > 1
       ? timestamps[1].getTime() - timestamps[0].getTime()
       : 15 * 60 * 1000 // Default 15 minutes
 
     const forecast: TimeSeriesDataPoint[] = []
-    
+
     for (let i = 1; i <= steps; i++) {
       forecast.push({
         timestamp: new Date(lastTimestamp.getTime() + i * timeInterval),
         value: Math.max(0, lastValue + slope * i) // Prevent negative values
       })
     }
-    
+
     return forecast
   }
 
@@ -771,14 +771,14 @@ class AITimeSeriesAnalyzer {
     baseValue: number
   ): TimeSeriesDataPoint[] {
     const points: TimeSeriesDataPoint[] = []
-    
+
     for (let i = 1; i <= count; i++) {
       points.push({
         timestamp: new Date(startTime.getTime() + i * interval),
         value: Math.max(0, baseValue + trend * i + Math.random() * trend * 0.1) // Add small noise
       })
     }
-    
+
     return points
   }
 
@@ -786,25 +786,25 @@ class AITimeSeriesAnalyzer {
     // Simplified t-test implementation
     const mean1 = sample1.reduce((sum, v) => sum + v, 0) / sample1.length
     const mean2 = sample2.reduce((sum, v) => sum + v, 0) / sample2.length
-    
+
     const var1 = sample1.reduce((sum, v) => sum + Math.pow(v - mean1, 2), 0) / (sample1.length - 1)
     const var2 = sample2.reduce((sum, v) => sum + Math.pow(v - mean2, 2), 0) / (sample2.length - 1)
-    
-    const pooledVar = ((sample1.length - 1) * var1 + (sample2.length - 1) * var2) / 
+
+    const pooledVar = ((sample1.length - 1) * var1 + (sample2.length - 1) * var2) /
                      (sample1.length + sample2.length - 2)
-    
+
     const standardError = Math.sqrt(pooledVar * (1/sample1.length + 1/sample2.length))
     const tStatistic = (mean1 - mean2) / standardError
-    
+
     // Return approximate p-value (simplified)
     return Math.exp(-0.5 * Math.abs(tStatistic))
   }
 
   private generateComparisonRecommendations(changes: ComparisonAnalysis['significantChanges']): string[] {
     const recommendations: string[] = []
-    
+
     const significantChanges = changes.filter(c => c.isSignificant)
-    
+
     if (significantChanges.length === 0) {
       recommendations.push('No statistically significant changes detected.')
       return recommendations
@@ -814,15 +814,15 @@ class AITimeSeriesAnalyzer {
       if (change.metric === 'responseTime' && change.percentChange > 10) {
         recommendations.push('Response time has significantly increased. Investigate performance degradation.')
       }
-      
+
       if (change.metric === 'errorRate' && change.percentChange > 20) {
         recommendations.push('Error rate has significantly increased. Review recent changes and error logs.')
       }
-      
+
       if (change.metric === 'cost' && change.percentChange > 15) {
         recommendations.push('Costs have significantly increased. Review usage patterns and optimize expensive operations.')
       }
-      
+
       if (change.metric === 'accuracy' && change.percentChange < -5) {
         recommendations.push('Model accuracy has decreased. Consider retraining or prompt optimization.')
       }
@@ -835,7 +835,7 @@ class AITimeSeriesAnalyzer {
     const unitMap: Record<string, string> = {
       '1m': 'minute',
       '5m': 'minute',
-      '15m': 'minute', 
+      '15m': 'minute',
       '1h': 'hour',
       '1d': 'day'
     }
@@ -856,27 +856,27 @@ class AITimeSeriesAnalyzer {
 
     for (let i = 0; i < points; i++) {
       const timestamp = new Date(now.getTime() - (points - i) * 15 * 60 * 1000)
-      
+
       data.responseTime.push({
         timestamp,
         value: 1500 + Math.sin(i / 10) * 300 + Math.random() * 200
       })
-      
+
       data.throughput.push({
         timestamp,
         value: 50 + Math.sin(i / 8) * 10 + Math.random() * 5
       })
-      
+
       data.errorRate.push({
         timestamp,
         value: Math.max(0, 2 + Math.sin(i / 15) * 1 + Math.random() * 1)
       })
-      
+
       data.cost.push({
         timestamp,
         value: 0.05 + Math.sin(i / 12) * 0.01 + Math.random() * 0.005
       })
-      
+
       data.accuracy.push({
         timestamp,
         value: 0.85 + Math.sin(i / 20) * 0.05 + Math.random() * 0.02
@@ -905,7 +905,7 @@ class AITimeSeriesAnalyzer {
       result,
       timestamp: Date.now()
     })
-    
+
     // Limit cache size
     if (this.analysisCache.size > 100) {
       const firstKey = this.analysisCache.keys().next().value

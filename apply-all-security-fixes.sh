@@ -43,7 +43,7 @@ BEGIN;
 DROP VIEW IF EXISTS public.recent_security_events CASCADE;
 
 CREATE OR REPLACE VIEW public.recent_security_events AS
-SELECT 
+SELECT
   se.id,
   se.event_type,
   se.created_at,
@@ -58,10 +58,10 @@ COMMENT ON VIEW public.recent_security_events IS 'SECURED: Only shows current us
 DO $$
 DECLARE
   critical_tables TEXT[] := ARRAY[
-    'user_tracking', 'user_consents', 'consent_audit_log', 
+    'user_tracking', 'user_consents', 'consent_audit_log',
     'signup_consents', 'user_activity_log', 'ai_processing_queue',
     'ml_model_versions', 'ml_model_deployments', 'federated_learning_rounds',
-    'ai_training_datasets', 'policies_history', 'claims_history', 
+    'ai_training_datasets', 'policies_history', 'claims_history',
     'properties_history'
   ];
   tbl TEXT;
@@ -96,17 +96,17 @@ CREATE POLICY IF NOT EXISTS "users_create_ai_requests" ON public.ai_processing_q
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- 4. Fix SECURITY DEFINER views
-CREATE OR REPLACE VIEW public.claims_summary 
+CREATE OR REPLACE VIEW public.claims_summary
 WITH (security_invoker = true) AS
-SELECT 
+SELECT
   c.id, c.claim_number, c.status, c.created_at,
   c.updated_at, c.property_id, c.user_id
 FROM claims c
 WHERE c.user_id = auth.uid();
 
-CREATE OR REPLACE VIEW public.active_policies 
+CREATE OR REPLACE VIEW public.active_policies
 WITH (security_invoker = true) AS
-SELECT 
+SELECT
   p.id, p.policy_number, p.carrier_name,
   p.effective_date, p.expiration_date, p.user_id
 FROM policies p
@@ -126,7 +126,7 @@ AS $$
 BEGIN
   -- Check for tables without RLS
   RETURN QUERY
-  SELECT 
+  SELECT
     'Tables without RLS'::TEXT,
     CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'FAIL' END,
     'Count: ' || COUNT(*)::TEXT
@@ -136,10 +136,10 @@ BEGIN
   WHERE t.schemaname = 'public'
     AND c.relrowsecurity = false
     AND t.tablename NOT IN ('spatial_ref_sys', 'schema_migrations');
-    
+
   -- Check for SECURITY DEFINER views
   RETURN QUERY
-  SELECT 
+  SELECT
     'SECURITY DEFINER views'::TEXT,
     CASE WHEN COUNT(*) = 0 THEN 'PASS' ELSE 'WARNING' END,
     'Count: ' || COUNT(*)::TEXT
@@ -189,13 +189,13 @@ for func_path in "${CRITICAL_FUNCTIONS[@]}"; do
     func_file="supabase/functions/$func_path/index.ts"
     if [ -f "$func_file" ]; then
         echo "Securing $func_path..."
-        
+
         # Backup
         cp "$func_file" "$func_file.backup-security"
-        
+
         # Fix CORS headers
         sed -i.tmp "s/'Access-Control-Allow-Origin': '\*'/'Access-Control-Allow-Origin': origin \&\& ALLOWED_ORIGINS.includes(origin) ? origin : ''/g" "$func_file"
-        
+
         # Add allowed origins if not present
         if ! grep -q "ALLOWED_ORIGINS" "$func_file"; then
             # Add after imports
@@ -207,16 +207,16 @@ const ALLOWED_ORIGINS = [\\
   Deno.env.get('ENVIRONMENT') === 'development' ? 'http://localhost:3000' : null\\
 ].filter(Boolean)" "$func_file"
         fi
-        
+
         # Add security headers
         sed -i.tmp "s/'Content-Type': 'application\/json'/'Content-Type': 'application\/json',\\
     'X-Content-Type-Options': 'nosniff',\\
     'X-Frame-Options': 'DENY',\\
     'X-XSS-Protection': '1; mode=block'/g" "$func_file"
-        
+
         # Clean up temp files
         rm -f "$func_file.tmp"
-        
+
         echo -e "${GREEN}  ✓ $func_path secured${NC}"
     fi
 done
@@ -236,11 +236,11 @@ cat > verify-security.sql << 'EOF'
 \echo ''
 
 \echo 'Critical Tables RLS Status:'
-SELECT 
+SELECT
   tablename,
   CASE WHEN rowsecurity THEN '✅ ENABLED' ELSE '❌ DISABLED' END as rls_status
-FROM pg_tables 
-WHERE schemaname = 'public' 
+FROM pg_tables
+WHERE schemaname = 'public'
   AND tablename IN (
     'user_tracking', 'user_consents', 'ai_processing_queue',
     'ml_model_versions', 'claims', 'properties', 'policies'
@@ -249,9 +249,9 @@ ORDER BY rls_status, tablename;
 
 \echo ''
 \echo 'Exposed Views Check:'
-SELECT 
+SELECT
   viewname,
-  CASE 
+  CASE
     WHEN definition LIKE '%auth.users%' THEN '❌ EXPOSES AUTH.USERS'
     WHEN definition LIKE '%SECURITY DEFINER%' THEN '⚠️  SECURITY DEFINER'
     ELSE '✅ OK'

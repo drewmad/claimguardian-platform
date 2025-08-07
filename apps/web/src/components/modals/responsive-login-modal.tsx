@@ -12,8 +12,8 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Mail, Lock, Eye, EyeOff, LogIn, Fingerprint, 
+import {
+  Mail, Lock, Eye, EyeOff, LogIn, Fingerprint,
   AlertTriangle, Loader2, Smartphone, ArrowRight
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -43,7 +43,7 @@ export function ResponsiveLoginModal() {
   const [showPassword, setShowPassword] = useState(false)
   const [rememberMe, setRememberMe] = useState(false)
   const emailRef = useRef<HTMLInputElement>(null)
-  
+
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: ''
@@ -92,11 +92,11 @@ export function ResponsiveLoginModal() {
         if (!value) return 'Email is required'
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email'
         return undefined
-      
+
       case 'password':
         if (!value) return 'Password is required'
         return undefined
-      
+
       default:
         return undefined
     }
@@ -104,7 +104,7 @@ export function ResponsiveLoginModal() {
 
   const handleFieldChange = (name: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }))
@@ -119,21 +119,21 @@ export function ResponsiveLoginModal() {
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {}
-    
+
     Object.keys(formData).forEach(key => {
       const error = validateField(key, formData[key as keyof FormData])
       if (error) newErrors[key as keyof ValidationErrors] = error
     })
-    
+
     setErrors(newErrors)
     setTouchedFields(new Set(Object.keys(formData)))
-    
+
     return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors below')
       return
@@ -144,14 +144,14 @@ export function ResponsiveLoginModal() {
 
     try {
       await signIn(formData.email, formData.password)
-      
+
       // Remember email if requested
       if (rememberMe) {
         localStorage.setItem('claimguardian_email', formData.email)
       } else {
         localStorage.removeItem('claimguardian_email')
       }
-      
+
       logger.track('login_success', { email: formData.email })
       toast.success('Welcome back!')
       closeModal()

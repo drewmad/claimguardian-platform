@@ -11,9 +11,9 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
 import type { AIResponse } from '../types';
-import { 
+import {
   AIRequest as NewAIRequest,
-  ImageAnalysisRequest as NewImageAnalysisRequest 
+  ImageAnalysisRequest as NewImageAnalysisRequest
 } from '../types/index';
 
 import { AIProvider } from './base';
@@ -29,12 +29,12 @@ export class GeminiProviderAdapter extends AIProvider {
 
   constructor(apiKey?: string) {
     super(apiKey || process.env.GEMINI_API_KEY || '', 'gemini');
-    
+
     // Initialize new provider
     this.newProvider = new NewGeminiProvider({
       apiKey: this.apiKey
     });
-    
+
     if (this.apiKey) {
       this.client = new GoogleGenerativeAI(this.apiKey);
     }
@@ -59,7 +59,7 @@ export class GeminiProviderAdapter extends AIProvider {
       };
 
       const response = await this.newProvider.analyzeImage(request);
-      
+
       // Extract JSON from response if present
       let data: unknown;
       try {

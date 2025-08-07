@@ -53,10 +53,10 @@ process_county() {
     local COUNTY_CODE="$1"
     local COUNTY_NAME="$2"
     local LOG_FILE="$LOG_DIR/county_${COUNTY_CODE}_${COUNTY_NAME}.log"
-    
+
     {
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Starting $COUNTY_NAME County ($COUNTY_CODE)"
-        
+
         # Check if already imported
         local EXISTING_COUNT=$(PGPASSWORD="$DB_PASSWORD" psql \
             -h "$DB_HOST" \
@@ -65,16 +65,16 @@ process_county() {
             -d postgres \
             -t -A \
             -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = $COUNTY_CODE;" 2>/dev/null || echo "0")
-        
+
         if [ "$EXISTING_COUNT" -gt 0 ]; then
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ Already imported: $EXISTING_COUNT parcels"
             return 0
         fi
-        
+
         # Convert county name to lowercase for file naming
         local COUNTY_NAME_LOWER=$(echo "$COUNTY_NAME" | tr '[:upper:]' '[:lower:]')
         local CSV_FILE="$WORK_DIR/${COUNTY_NAME_LOWER}_parcels.csv"
-        
+
         # Extract from GDB
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Extracting from GDB..."
         ogr2ogr -f CSV "$CSV_FILE" \
@@ -82,19 +82,19 @@ process_county() {
             -sql "SELECT * FROM CADASTRAL_DOR WHERE CO_NO = $COUNTY_CODE" \
             -lco GEOMETRY=AS_WKT \
             -progress
-        
+
         if [ ! -f "$CSV_FILE" ]; then
             echo "[$(date '+%Y-%m-%d %H:%M:%S')] ❌ Failed to extract data"
             return 1
         fi
-        
+
         # Count extracted records
         local EXTRACTED_COUNT=$(($(wc -l < "$CSV_FILE") - 1))
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Extracted $EXTRACTED_COUNT rows"
-        
+
         # Clean data
         local CLEAN_CSV="$WORK_DIR/${COUNTY_NAME_LOWER}_clean.csv"
-        
+
         # Process CSV: handle empty values and ensure proper formatting
         awk -F',' '
         BEGIN { OFS="," }
@@ -104,7 +104,7 @@ process_county() {
             for (i = 1; i <= NF; i++) {
                 # Remove quotes and trim whitespace
                 gsub(/^[ \t"]+|[ \t"]+$/, "", $i)
-                
+
                 # Handle empty numeric fields
                 if ($i == "" || $i == " " || $i == "  " || $i == "NULL") {
                     # Check if this is a numeric column based on position
@@ -115,21 +115,21 @@ process_county() {
             }
             print
         }' "$CSV_FILE" > "$CLEAN_CSV"
-        
+
         # Remove duplicates based on parcel_id
         local UNIQUE_CSV="$WORK_DIR/${COUNTY_NAME_LOWER}_unique.csv"
         head -1 "$CLEAN_CSV" > "$UNIQUE_CSV"
         tail -n +2 "$CLEAN_CSV" | sort -t',' -k2,2 -u >> "$UNIQUE_CSV"
-        
+
         local UNIQUE_COUNT=$(($(wc -l < "$UNIQUE_CSV") - 1))
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Unique parcels: $UNIQUE_COUNT"
-        
+
         # Import to database
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] Importing to database..."
-        
+
         # Prepare final CSV without header
         tail -n +2 "$UNIQUE_CSV" > "$WORK_DIR/${COUNTY_NAME_LOWER}_final.csv"
-        
+
         # Use COPY command
         PGPASSWORD="$DB_PASSWORD" psql \
             -h "$DB_HOST" \
@@ -137,9 +137,9 @@ process_county() {
             -U "$DB_USER" \
             -d postgres \
             -c "\COPY florida_parcels(wkt, parcel_id, co_no, parcel_no, sub_parcel, bas_st_cd, asd_val, jv, tv, sd, scd, jvh, tvh, jvl, consrv_lnd, sec, twp, rng, dor_uc, pa_uc, soh_dt, mp, nbrhd_cd, nbrhd_factor, nbrhd_typ_cd, tax_auth_cd, twp_id, own_addr_1, own_addr_2, own_addr_3, own_city, own_state, own_country, own_zipcd, own_state_dom, vi_cd, yr_blt, no_buldng, no_res_unts, struct_val, m_par_sal1, vi_cd1, qal_cd1, sale_prc1, sale_yr1, sale_mo1, or_book1, or_page1, clerk_no1, s_chng_cd1, m_par_sal2, vi_cd2, qal_cd2, sale_prc2, sale_yr2, sale_mo2, or_book2, or_page2, clerk_no2, s_chng_cd2, m_par_sal3, vi_cd3, qal_cd3, sale_prc3, sale_yr3, sale_mo3, or_book3, or_page3, clerk_no3, s_chng_cd3, lnd_val, bldg_val, tot_val, soh_val, new_consrv_val, assess_val, nconst_val, del_val, par_splt, distr_cd, distr_yr, lnd_unts_cd, no_lnd_unts, lnd_sqfoot, dt_last_inspt, certified_val, flucv_val, exmpt_01, exmpt_02, exmpt_03, exmpt_04, exmpt_05, exmpt_06, exmpt_07, exmpt_08, exmpt_09, exmpt_10, exmpt_11, exmpt_12, exmpt_13, exmpt_14, exmpt_15, exmpt_16, exmpt_17, exmpt_18, exmpt_19, exmpt_20, exmpt_21, exmpt_22, exmpt_23, exmpt_24, exmpt_25, exmpt_26, exmpt_27, exmpt_28, exmpt_29, exmpt_30, exmpt_31, exmpt_32, exmpt_33, exmpt_34, exmpt_35, exmpt_36, exmpt_37, exmpt_38, exmpt_39, exmpt_40, exmpt_tot, seq_no, rs_id, mp_id, state_par_id, situs_addr_1, situs_addr_2, situs_city, situs_state, situs_zip, phy_addr1, phy_addr2, phy_city, phy_zipcd, alt_key, ass_dif_trns, own_name, objectid, shape_length, shape_area) FROM '$WORK_DIR/${COUNTY_NAME_LOWER}_final.csv' WITH (FORMAT csv);"
-        
+
         local IMPORT_EXIT=$?
-        
+
         # Verify import
         local IMPORTED_COUNT=$(PGPASSWORD="$DB_PASSWORD" psql \
             -h "$DB_HOST" \
@@ -148,12 +148,12 @@ process_county() {
             -d postgres \
             -t -A \
             -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = $COUNTY_CODE;" 2>/dev/null || echo "0")
-        
+
         echo "[$(date '+%Y-%m-%d %H:%M:%S')] ✅ Complete! Imported $IMPORTED_COUNT parcels"
-        
+
         # Cleanup
         rm -f "$CSV_FILE" "$CLEAN_CSV" "$UNIQUE_CSV" "$WORK_DIR/${COUNTY_NAME_LOWER}_final.csv"
-        
+
     } > "$LOG_FILE" 2>&1
 }
 

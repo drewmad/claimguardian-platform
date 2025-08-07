@@ -37,7 +37,7 @@ export interface FieldDocumentationData {
 export async function createFieldDocumentation(data: FieldDocumentationData) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -80,7 +80,7 @@ export async function createFieldDocumentation(data: FieldDocumentationData) {
 export async function getFieldDocumentation(userId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user || user.id !== userId) {
@@ -106,12 +106,12 @@ export async function getFieldDocumentation(userId: string) {
 }
 
 export async function updateFieldDocumentationStatus(
-  docId: string, 
+  docId: string,
   status: 'draft' | 'syncing' | 'synced' | 'failed'
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {

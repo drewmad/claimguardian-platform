@@ -29,7 +29,7 @@ describe('ClaimAssistant', () => {
     })
   })
 
-  // Note: Complex integration tests with actual AI providers have been 
+  // Note: Complex integration tests with actual AI providers have been
   // simplified to prevent timeouts in test environment.
   // Full integration tests should be run in dedicated test environment
   // with proper API credentials and longer timeouts.

@@ -58,7 +58,7 @@ export class AIErrorLogger {
 
   async logError(error: Error | string, context: ErrorContext, severity: ErrorLogEntry['severity'] = 'medium') {
     const errorObj = typeof error === 'string' ? new Error(error) : error
-    
+
     // Always log to console for development
     console.error(`[${context.feature}] ${context.action}:`, {
       error: errorObj.message,
@@ -110,7 +110,7 @@ export class AIErrorLogger {
     responseData?: unknown
   ) {
     const error = new Error(`API Error [${status}]: ${message}`)
-    
+
     await this.logError(error, {
       ...context,
       metadata: {
@@ -166,7 +166,7 @@ export class AIErrorLogger {
 
   private showUserNotification(_error: Error, severity: ErrorLogEntry['severity'], context: ErrorContext) {
     const feature = context.feature.replace(/([A-Z])/g, ' $1').trim()
-    
+
     switch (severity) {
       case 'critical':
         toast.error(`${feature} is currently unavailable. Please try again later.`, {
@@ -174,21 +174,21 @@ export class AIErrorLogger {
           duration: 8000
         })
         break
-      
+
       case 'high':
         toast.error(`${feature} encountered an error`, {
           description: 'Please try again or contact support if the issue persists.',
           duration: 6000
         })
         break
-      
+
       case 'medium':
         toast.error(`${feature} failed to complete`, {
           description: 'Please check your inputs and try again.',
           duration: 4000
         })
         break
-      
+
       case 'low':
         toast.warning(`${feature} had a minor issue`, {
           description: 'This may not affect functionality.',
@@ -220,7 +220,7 @@ export class AIErrorLogger {
     additionalMetrics?: Record<string, unknown>
   ) {
     const duration = Date.now() - startTime
-    
+
     if (!this.isEnabled || !this.supabase) return
 
     try {
@@ -255,10 +255,10 @@ export const aiErrorHelpers = {
   damageAnalyzer: {
     log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('DamageAnalyzer', action, userId, model), 'medium'),
-    
+
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
       errorLogger.logAPIError(endpoint, status, message, errorLogger.getAIContext('DamageAnalyzer', 'API Call', userId, model)),
-    
+
     logModelError: (model: string, prompt: string, error: Error, userId?: string) =>
       errorLogger.logAIModelError(model, prompt, error, errorLogger.getAIContext('DamageAnalyzer', 'Model Analysis', userId, model))
   },
@@ -266,10 +266,10 @@ export const aiErrorHelpers = {
   policyChat: {
     log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('PolicyChat', action, userId, model), 'medium'),
-    
+
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
       errorLogger.logAPIError(endpoint, status, message, errorLogger.getAIContext('PolicyChat', 'API Call', userId, model)),
-    
+
     logModelError: (model: string, prompt: string, error: Error, userId?: string) =>
       errorLogger.logAIModelError(model, prompt, error, errorLogger.getAIContext('PolicyChat', 'Chat Response', userId, model))
   },
@@ -277,10 +277,10 @@ export const aiErrorHelpers = {
   inventoryScanner: {
     log: (error: Error | string, action: string, userId?: string, model?: string) =>
       errorLogger.logError(error, errorLogger.getAIContext('InventoryScanner', action, userId, model), 'medium'),
-    
+
     logAPIError: (endpoint: string, status: number, message: string, userId?: string, model?: string) =>
       errorLogger.logAPIError(endpoint, status, message, errorLogger.getAIContext('InventoryScanner', 'API Call', userId, model)),
-    
+
     logModelError: (model: string, prompt: string, error: Error, userId?: string) =>
       errorLogger.logAIModelError(model, prompt, error, errorLogger.getAIContext('InventoryScanner', 'Image Analysis', userId, model))
   }

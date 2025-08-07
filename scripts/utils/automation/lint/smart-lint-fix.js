@@ -29,9 +29,9 @@ const log = (message, color = 'reset') => {
 
 const exec = (command, silent = false) => {
   try {
-    return execSync(command, { 
+    return execSync(command, {
       encoding: 'utf8',
-      stdio: silent ? 'pipe' : 'inherit' 
+      stdio: silent ? 'pipe' : 'inherit'
     });
   } catch (error) {
     if (!silent) {
@@ -73,45 +73,45 @@ const fixStrategies = [
 // Main function
 async function smartLintFix() {
   log('\n🔍 Smart Lint Fix Starting...', 'blue');
-  
+
   // Get initial error count
   const initialOutput = exec('pnpm lint 2>&1', true) || '';
   // Handle both regular and turbo output formats
   const errorMatches = initialOutput.match(/(\d+)\s+errors?/gi) || [];
   const warningMatches = initialOutput.match(/(\d+)\s+warnings?/gi) || [];
-  
+
   const initialErrors = errorMatches
     .map(match => parseInt(match.match(/\d+/)[0]))
     .reduce((sum, num) => sum + num, 0);
   const initialWarnings = warningMatches
     .map(match => parseInt(match.match(/\d+/)[0]))
     .reduce((sum, num) => sum + num, 0);
-  
+
   log(`\n📊 Initial State: ${initialErrors} errors, ${initialWarnings} warnings`, 'yellow');
-  
+
   if (initialErrors === 0 && initialWarnings === 0) {
     log('✅ No lint issues found!', 'green');
     return true;
   }
-  
+
   // Apply fix strategies
   let fixesApplied = 0;
-  
+
   for (const strategy of fixStrategies) {
     log(`\n🔧 Applying: ${strategy.name}`, 'blue');
     log(`   ${strategy.description}`, 'blue');
-    
+
     const before = exec('pnpm lint 2>&1', true) || '';
     exec(strategy.command, true);
     const after = exec('pnpm lint 2>&1', true) || '';
-    
+
     const beforeCount = (before.match(/(\d+)\s+errors?/gi) || [])
       .map(match => parseInt(match.match(/\d+/)[0]))
       .reduce((sum, num) => sum + num, 0);
     const afterCount = (after.match(/(\d+)\s+errors?/gi) || [])
       .map(match => parseInt(match.match(/\d+/)[0]))
       .reduce((sum, num) => sum + num, 0);
-    
+
     const fixed = beforeCount - afterCount;
     if (fixed > 0) {
       log(`   ✅ Fixed ${fixed} issues`, 'green');
@@ -120,10 +120,10 @@ async function smartLintFix() {
       log(`   ⏭️  No issues fixed by this strategy`, 'yellow');
     }
   }
-  
+
   // Stage any fixed files
   exec('git add -u', true);
-  
+
   // Final check
   const finalOutput = exec('pnpm lint 2>&1', true) || '';
   const finalErrors = (finalOutput.match(/(\d+)\s+errors?/gi) || [])
@@ -132,16 +132,16 @@ async function smartLintFix() {
   const finalWarnings = (finalOutput.match(/(\d+)\s+warnings?/gi) || [])
     .map(match => parseInt(match.match(/\d+/)[0]))
     .reduce((sum, num) => sum + num, 0);
-  
+
   log('\n📊 Final Results:', 'blue');
-  log(`   Errors: ${initialErrors} → ${finalErrors} (fixed ${initialErrors - finalErrors})`, 
+  log(`   Errors: ${initialErrors} → ${finalErrors} (fixed ${initialErrors - finalErrors})`,
     finalErrors === 0 ? 'green' : 'yellow');
   log(`   Warnings: ${initialWarnings} → ${finalWarnings} (fixed ${initialWarnings - finalWarnings})`,
     finalWarnings === 0 ? 'green' : 'yellow');
-  
+
   if (finalErrors > 0) {
     log('\n❌ Manual intervention required for remaining errors:', 'red');
-    
+
     // Show top error types
     const errorTypes = {};
     const lines = finalOutput.split('\n');
@@ -152,7 +152,7 @@ async function smartLintFix() {
         errorTypes[rule] = (errorTypes[rule] || 0) + 1;
       }
     });
-    
+
     log('\n📋 Error Summary:', 'yellow');
     Object.entries(errorTypes)
       .sort(([, a], [, b]) => b - a)
@@ -160,10 +160,10 @@ async function smartLintFix() {
       .forEach(([rule, count]) => {
         log(`   ${rule}: ${count} occurrences`, 'yellow');
       });
-    
+
     return false;
   }
-  
+
   log('\n✅ All lint issues resolved!', 'green');
   return true;
 }

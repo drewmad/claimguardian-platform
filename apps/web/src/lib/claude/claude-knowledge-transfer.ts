@@ -182,7 +182,7 @@ class ClaudeKnowledgeTransfer {
 
     // Gather learnings
     const learnings = await this.gatherLearnings(options)
-    
+
     // Gather patterns
     const patterns = await this.gatherPatterns(options)
 
@@ -239,7 +239,7 @@ class ClaudeKnowledgeTransfer {
   private async gatherLearnings(options: ExportOptions): Promise<ExportedLearning[]> {
     // Mock learnings data since getAllLearnings doesn't exist
     const allLearnings: ExportedLearning[] = []
-    
+
     let filtered = allLearnings
 
     // Apply filters
@@ -248,8 +248,8 @@ class ClaudeKnowledgeTransfer {
     }
 
     if (options.filterByCategory?.length) {
-      filtered = filtered.filter(l => 
-        options.filterByCategory!.some((cat: string) => 
+      filtered = filtered.filter(l =>
+        options.filterByCategory!.some((cat: string) =>
           l.patterns.some(p => p.toLowerCase().includes(cat.toLowerCase()))
         )
       )
@@ -258,7 +258,7 @@ class ClaudeKnowledgeTransfer {
     if (options.filterByDateRange) {
       filtered = filtered.filter(l => {
         const date = new Date(l.createdAt)
-        return date >= options.filterByDateRange!.from && 
+        return date >= options.filterByDateRange!.from &&
                date <= options.filterByDateRange!.to
       })
     }
@@ -288,7 +288,7 @@ class ClaudeKnowledgeTransfer {
 
   private async gatherPatterns(options: ExportOptions): Promise<ExportedPattern[]> {
     const allPatterns = claudeSharedPatterns.getAllPatterns()
-    
+
     let filtered = allPatterns
 
     // Apply filters
@@ -297,7 +297,7 @@ class ClaudeKnowledgeTransfer {
     }
 
     if (options.filterByCategory?.length) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         options.filterByCategory!.includes(p.category)
       )
     }
@@ -332,16 +332,16 @@ class ClaudeKnowledgeTransfer {
   }
 
   private calculateStatistics(
-    learnings: ExportedLearning[], 
+    learnings: ExportedLearning[],
     patterns: ExportedPattern[],
     dateRange?: { from: Date; to: Date }
   ): ExportStatistics {
     const categories = new Map<string, number>()
-    
+
     learnings.forEach(l => {
       categories.set(l.category, (categories.get(l.category) || 0) + 1)
     })
-    
+
     patterns.forEach(p => {
       categories.set(p.category, (categories.get(p.category) || 0) + 1)
     })
@@ -399,8 +399,8 @@ class ClaudeKnowledgeTransfer {
 
     try {
       // Parse if string
-      const data: KnowledgeExport = typeof exportData === 'string' 
-        ? JSON.parse(exportData) 
+      const data: KnowledgeExport = typeof exportData === 'string'
+        ? JSON.parse(exportData)
         : exportData
 
       // Validate signature if required
@@ -425,7 +425,7 @@ class ClaudeKnowledgeTransfer {
 
       // Import learnings
       const learningResult = await this.importLearnings(
-        processedData.learnings, 
+        processedData.learnings,
         options
       )
       result.imported.learnings = learningResult.imported
@@ -599,10 +599,10 @@ class ClaudeKnowledgeTransfer {
     // Simple word-based similarity
     const words1 = new Set(str1.toLowerCase().split(' '))
     const words2 = new Set(str2.toLowerCase().split(' '))
-    
+
     const intersection = new Set([...words1].filter(w => words2.has(w)))
     const union = new Set([...words1, ...words2])
-    
+
     return intersection.size / union.size
   }
 
@@ -689,7 +689,7 @@ class ClaudeKnowledgeTransfer {
       patterns: data.patterns.length,
       statistics: data.statistics
     })
-    
+
     return createHash('sha256').update(content).digest('hex')
   }
 

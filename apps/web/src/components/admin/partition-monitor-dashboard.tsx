@@ -165,8 +165,8 @@ export function PartitionMonitorDashboard() {
             size="sm"
             onClick={() => setSelectedTable(table)}
             style={{
-              backgroundColor: selectedTable === table 
-                ? TABLE_COLORS[table as keyof typeof TABLE_COLORS] 
+              backgroundColor: selectedTable === table
+                ? TABLE_COLORS[table as keyof typeof TABLE_COLORS]
                 : undefined
             }}
           >
@@ -202,9 +202,9 @@ export function PartitionMonitorDashboard() {
             <p className="text-xs text-gray-500 mt-1">
               {metrics.activePartitions} active
             </p>
-            <Progress 
-              value={(metrics.activePartitions / metrics.totalPartitions) * 100} 
-              className="h-2 mt-2" 
+            <Progress
+              value={(metrics.activePartitions / metrics.totalPartitions) * 100}
+              className="h-2 mt-2"
             />
           </CardContent>
         </Card>
@@ -334,7 +334,7 @@ export function PartitionMonitorDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ name, value, percent }) => 
+                      label={({ name, value, percent }) =>
                         `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`
                       }
                       outerRadius={100}

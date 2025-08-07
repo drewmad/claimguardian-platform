@@ -12,12 +12,12 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { logger } from "@/lib/logger/production-logger"
 
-import { 
-  getPolicies, 
-  getPolicy, 
-  createPolicy, 
+import {
+  getPolicies,
+  getPolicy,
+  createPolicy,
   updatePolicy,
-  getActivePolicies 
+  getActivePolicies
 } from '@/actions/policies'
 import type { CreatePolicyInput } from '@/types/database-enhancements'
 
@@ -63,7 +63,7 @@ export function useActivePolicies() {
 // Create policy mutation
 export function useCreatePolicy() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
     mutationFn: (input: CreatePolicyInput) => createPolicy(input),
     onSuccess: (result) => {
@@ -86,9 +86,9 @@ export function useCreatePolicy() {
 // Update policy mutation
 export function useUpdatePolicy() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: ({ id, updates }: { id: string; updates: Partial<CreatePolicyInput> }) => 
+    mutationFn: ({ id, updates }: { id: string; updates: Partial<CreatePolicyInput> }) =>
       updatePolicy(id, updates),
     onSuccess: (result, variables) => {
       if (result.data) {

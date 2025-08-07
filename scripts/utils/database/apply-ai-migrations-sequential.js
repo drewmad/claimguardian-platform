@@ -30,7 +30,7 @@ const migrationFiles = [
 async function executeSQL(sql, filename) {
   try {
     console.log(`\n📄 Applying ${filename}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -41,7 +41,7 @@ async function executeSQL(sql, filename) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${filename} applied successfully`);
       return { success: true };
@@ -65,7 +65,7 @@ async function applyMigrations() {
 
   for (const file of migrationFiles) {
     const migrationPath = path.join(__dirname, '../supabase/migrations_ai', file);
-    
+
     if (!fs.existsSync(migrationPath)) {
       console.error(`❌ File not found: ${file}`);
       results.push({ file, success: false, error: 'File not found' });
@@ -86,13 +86,13 @@ async function applyMigrations() {
   // Summary
   console.log('\n📊 Migration Summary:');
   console.log('='.repeat(50));
-  
+
   const successful = results.filter(r => r.success).length;
   const failed = results.filter(r => !r.success).length;
-  
+
   console.log(`✅ Successful: ${successful}/${migrationFiles.length}`);
   console.log(`❌ Failed: ${failed}/${migrationFiles.length}`);
-  
+
   if (failed > 0) {
     console.log('\n❌ Failed migrations:');
     results.filter(r => !r.success).forEach(r => {

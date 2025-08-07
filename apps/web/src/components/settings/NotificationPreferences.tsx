@@ -8,12 +8,12 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { createClient } from '@/lib/supabase/client';
 import { toast } from 'sonner';
-import { 
-  Bell, 
-  Mail, 
-  MessageSquare, 
-  Shield, 
-  DollarSign, 
+import {
+  Bell,
+  Mail,
+  MessageSquare,
+  Shield,
+  DollarSign,
   AlertTriangle,
   Users,
   Calendar,
@@ -174,7 +174,7 @@ export function NotificationPreferences() {
                 const Icon = type.icon;
                 const pref = preferences[type.key as keyof NotificationPreference];
                 const allEnabled = pref.email && pref.sms && pref.push && pref.inApp;
-                
+
                 return (
                   <div key={type.key} className="border rounded-lg p-4">
                     <div className="flex items-start space-x-4">
@@ -190,7 +190,7 @@ export function NotificationPreferences() {
                             onCheckedChange={(checked) => toggleAllChannels(type.key as keyof NotificationPreference, checked)}
                           />
                         </div>
-                        
+
                         <div className="grid grid-cols-4 gap-4 pt-2">
                           <Label className="flex items-center space-x-2">
                             <Switch
@@ -200,7 +200,7 @@ export function NotificationPreferences() {
                             <Mail className="h-4 w-4" />
                             <span className="text-xs">Email</span>
                           </Label>
-                          
+
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.sms}
@@ -209,7 +209,7 @@ export function NotificationPreferences() {
                             <MessageSquare className="h-4 w-4" />
                             <span className="text-xs">SMS</span>
                           </Label>
-                          
+
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.push}
@@ -218,7 +218,7 @@ export function NotificationPreferences() {
                             <Bell className="h-4 w-4" />
                             <span className="text-xs">Push</span>
                           </Label>
-                          
+
                           <Label className="flex items-center space-x-2">
                             <Switch
                               checked={pref.inApp}
@@ -240,7 +240,7 @@ export function NotificationPreferences() {
                 {notificationTypes.map((type) => {
                   const pref = preferences[type.key as keyof NotificationPreference];
                   const Icon = type.icon;
-                  
+
                   return (
                     <div key={type.key} className="flex items-center justify-between py-3 border-b last:border-0">
                       <div className="flex items-center space-x-3">
@@ -282,7 +282,7 @@ export function NotificationPreferences() {
               <Label htmlFor="quiet-hours">Enable Quiet Hours</Label>
               <Switch id="quiet-hours" />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="quiet-start">Start Time</Label>

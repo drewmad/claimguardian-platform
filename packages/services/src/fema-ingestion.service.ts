@@ -149,7 +149,7 @@ export class FEMAIngestionService {
       // Batch insert
       for (let i = 0; i < declarationData.length; i += this.BATCH_SIZE) {
         const batch = declarationData.slice(i, i + this.BATCH_SIZE);
-        
+
         const { error } = await this.supabase
           .from('fema.disaster_declarations')
           .upsert(batch, {
@@ -262,7 +262,7 @@ export class FEMAIngestionService {
       // Batch insert
       for (let i = 0; i < alertData.length; i += this.BATCH_SIZE) {
         const batch = alertData.slice(i, i + this.BATCH_SIZE);
-        
+
         const { error } = await this.supabase
           .from('fema.ipaws_alerts')
           .upsert(batch, {
@@ -341,7 +341,7 @@ export class FEMAIngestionService {
         total_obligated: project.totalObligated,
         total_cost: project.totalProjectCost,
         project_amount: project.projectAmount,
-        location: project.latitude && project.longitude ? 
+        location: project.latitude && project.longitude ?
           `POINT(${project.longitude} ${project.latitude})` : null,
         status: project.status,
         completion_percentage: project.completionPercentage,
@@ -352,7 +352,7 @@ export class FEMAIngestionService {
       // Batch insert
       for (let i = 0; i < projectData.length; i += this.BATCH_SIZE) {
         const batch = projectData.slice(i, i + this.BATCH_SIZE);
-        
+
         const { error } = await this.supabase
           .from('fema.public_assistance_projects')
           .upsert(batch, {
@@ -422,7 +422,7 @@ export class FEMAIngestionService {
         benefit_cost_ratio: project.benefitCostRatio,
         properties_protected: project.propertiesProtected,
         project_description: project.projectDescription,
-        location: project.latitude && project.longitude ? 
+        location: project.latitude && project.longitude ?
           `POINT(${project.longitude} ${project.latitude})` : null,
         hash: project.hash,
         last_refresh: project.lastRefresh || new Date().toISOString()
@@ -431,7 +431,7 @@ export class FEMAIngestionService {
       // Batch insert
       for (let i = 0; i < projectData.length; i += this.BATCH_SIZE) {
         const batch = projectData.slice(i, i + this.BATCH_SIZE);
-        
+
         const { error } = await this.supabase
           .from('fema.hazard_mitigation_projects')
           .upsert(batch, {
@@ -523,11 +523,11 @@ export class FEMAIngestionService {
 
   private extractCountyFips(stateCode?: string, countyCode?: string): string | null {
     if (!stateCode || !countyCode) return null;
-    
+
     // Ensure state code is 2 digits and county code is 3 digits
     const state = String(stateCode).padStart(2, '0');
     const county = String(countyCode).padStart(3, '0');
-    
+
     return `${state}${county}`;
   }
 

@@ -70,7 +70,7 @@ serve(async (req) => {
       property_id: propertyId,
       version: newVersion,
       is_current: true,
-      
+
       // Location data
       plus_code: geocodeData.plus_code?.global_code,
       neighborhood: geocodeData.neighborhood,
@@ -80,33 +80,33 @@ serve(async (req) => {
       country_code: 'US',
       formatted_address: geocodeData.formatted_address || address,
       address_components: geocodeData.address_components,
-      
+
       // Elevation
       elevation_meters: elevationData.elevation,
       elevation_resolution: elevationData.resolution,
       flood_zone: floodRisk.zone,
       flood_risk_score: floodRisk.score,
-      
+
       // Visual documentation
       street_view_data: streetViewData,
       aerial_view_data: aerialData,
       imagery_captured_at: new Date().toISOString(),
-      
+
       // Emergency services
       fire_protection: nearbyData.fireProtection,
       medical_services: nearbyData.medicalServices,
       police_services: nearbyData.policeServices,
-      
+
       // Risk assessment
       distance_to_coast_meters: nearbyData.coastDistance,
       hurricane_evacuation_zone: nearbyData.hurricaneZone,
       storm_surge_zone: nearbyData.stormSurgeZone,
       wind_zone: getWindZone(geocodeData.county),
-      
+
       // Insurance factors
       insurance_risk_factors: insuranceFactors,
       insurance_territory_code: getFloridaTerritoryCode(geocodeData.county, geocodeData.zip),
-      
+
       // Metadata
       source_apis: {
         geocoding: 'v1',
@@ -193,11 +193,11 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         version: newVersion,
         cost: 0.064,
-        data: enrichmentData 
+        data: enrichmentData
       }),
       { headers: { 'Content-Type': 'application/json' } }
     )
@@ -222,12 +222,12 @@ async function fetchReverseGeocode(lat: number, lng: number) {
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_MAPS_KEY}`
   )
   const data = await response.json()
-  
+
   if (!data.results?.[0]) throw new Error('Geocoding failed')
-  
+
   const result = data.results[0]
   const components = result.address_components
-  
+
   return {
     formatted_address: result.formatted_address,
     plus_code: data.plus_code,
@@ -245,7 +245,7 @@ async function fetchElevation(lat: number, lng: number) {
     `https://maps.googleapis.com/maps/api/elevation/json?locations=${lat},${lng}&key=${GOOGLE_MAPS_KEY}`
   )
   const data = await response.json()
-  
+
   return {
     elevation: data.results[0].elevation,
     resolution: data.results[0].resolution
@@ -256,20 +256,20 @@ async function fetchStreetViewImages(lat: number, lng: number) {
   const baseUrl = 'https://maps.googleapis.com/maps/api/streetview'
   const size = '640x640'
   const fov = 90
-  
+
   // Check metadata first
   const metadataResponse = await fetch(
     `${baseUrl}/metadata?location=${lat},${lng}&key=${GOOGLE_MAPS_KEY}`
   )
   const metadata = await metadataResponse.json()
-  
+
   if (metadata.status !== 'OK') {
     return { available: false }
   }
-  
+
   const images = {}
   const headings = { north: 0, east: 90, south: 180, west: 270 }
-  
+
   for (const [direction, heading] of Object.entries(headings)) {
     images[direction] = {
       url: `${baseUrl}?size=${size}&location=${lat},${lng}&heading=${heading}&fov=${fov}&key=${GOOGLE_MAPS_KEY}`,
@@ -277,14 +277,14 @@ async function fetchStreetViewImages(lat: number, lng: number) {
       date: metadata.date
     }
   }
-  
+
   return images
 }
 
 async function fetchAerialImagery(lat: number, lng: number) {
   const baseUrl = 'https://maps.googleapis.com/maps/api/staticmap'
   const size = '640x640'
-  
+
   return {
     zoom_15: `${baseUrl}?center=${lat},${lng}&zoom=15&size=${size}&maptype=satellite&key=${GOOGLE_MAPS_KEY}`,
     zoom_18: `${baseUrl}?center=${lat},${lng}&zoom=18&size=${size}&maptype=satellite&key=${GOOGLE_MAPS_KEY}`,
@@ -295,7 +295,7 @@ async function fetchAerialImagery(lat: number, lng: number) {
 async function fetchNearbyEmergencyServices(lat: number, lng: number) {
   const types = ['fire_station', 'hospital', 'police']
   const radius = 5000 // 5km
-  
+
   const results = await Promise.all(types.map(async (type) => {
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=${lat},${lng}&radius=${radius}&type=${type}&key=${GOOGLE_MAPS_KEY}`
@@ -303,10 +303,10 @@ async function fetchNearbyEmergencyServices(lat: number, lng: number) {
     const data = await response.json()
     return { type, results: data.results }
   }))
-  
+
   // Calculate distances to coast (simplified - would use actual coastline data)
   const coastDistance = calculateDistanceToCoast(lat, lng)
-  
+
   return {
     fireStation: processNearbyResult(results.find(r => r.type === 'fire_station')),
     hospital: processNearbyResult(results.find(r => r.type === 'hospital')),
@@ -348,10 +348,10 @@ function calculateDistanceToCoast(lat: number, lng: number) {
   // This is a rough estimate for Florida
   const floridaEastCoast = -80.0
   const floridaWestCoast = -82.5
-  
+
   const eastDistance = Math.abs(lng - floridaEastCoast) * 111000 // meters per degree
   const westDistance = Math.abs(lng - floridaWestCoast) * 111000
-  
+
   return Math.min(eastDistance, westDistance)
 }
 
@@ -384,7 +384,7 @@ function getFloridaTerritoryCode(county: string, zip: string) {
 
 function processNearbyResult(result: any) {
   if (!result?.results?.[0]) return null
-  
+
   const place = result.results[0]
   return {
     name: place.name,
@@ -401,7 +401,7 @@ function calculateDistance(location: any) {
 
 function calculateProtectionClass(fireStationResult: any) {
   if (!fireStationResult?.results?.[0]) return 10 // Worst
-  
+
   // Simplified - actual calculation is complex
   const distance = calculateDistance(fireStationResult.results[0].geometry.location)
   if (distance < 1000) return 3
@@ -415,7 +415,7 @@ function calculateInsuranceRiskFactors(data: any) {
   const floodScore = 10 - (data.elevation?.elevation || 0) / 5
   const windScore = data.coastDistance < 5000 ? 8 : 4
   const overallScore = Math.round((fireScore + floodScore + windScore) / 3)
-  
+
   return {
     fire_score: fireScore,
     flood_score: floodScore,
@@ -428,9 +428,9 @@ function calculateInsuranceRiskFactors(data: any) {
 async function storePropertyImages(supabase: any, propertyId: string, images: any) {
   // Store references to Google URLs
   // In production, would download and store in Supabase Storage
-  
+
   const imageRecords = []
-  
+
   // Street view images
   if (images.streetView.north) {
     for (const [direction, data] of Object.entries(images.streetView)) {
@@ -444,7 +444,7 @@ async function storePropertyImages(supabase: any, propertyId: string, images: an
       }
     }
   }
-  
+
   // Aerial images
   for (const [zoom, url] of Object.entries(images.aerial)) {
     imageRecords.push({
@@ -454,7 +454,7 @@ async function storePropertyImages(supabase: any, propertyId: string, images: an
       metadata: { zoom_level: zoom.replace('zoom_', '') }
     })
   }
-  
+
   if (imageRecords.length > 0) {
     await supabase.from('property_images').insert(imageRecords)
   }

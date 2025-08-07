@@ -353,7 +353,7 @@ export class DeadlineGuardianService {
     try {
       const { error } = await this.supabase
         .from('deadlines')
-        .update({ 
+        .update({
           status,
           updated_at: new Date().toISOString()
         })
@@ -389,9 +389,9 @@ export class DeadlineGuardianService {
    * Generate appropriate alert message
    */
   private generateAlertMessage(deadline: Deadline, daysUntilDue: number): string {
-    const dueText = daysUntilDue < 0 
+    const dueText = daysUntilDue < 0
       ? `${Math.abs(daysUntilDue)} days overdue`
-      : daysUntilDue === 0 
+      : daysUntilDue === 0
         ? 'due today'
         : `due in ${daysUntilDue} days`
 
@@ -419,11 +419,11 @@ export class DeadlineGuardianService {
       // Handle various date formats
       const cleaned = dateString.replace(/[^\d\/\-\w\s,]/g, '')
       const parsed = new Date(cleaned)
-      
+
       if (isNaN(parsed.getTime())) {
         return null
       }
-      
+
       return parsed
     } catch {
       return null
@@ -443,7 +443,7 @@ export class DeadlineGuardianService {
   }> {
     try {
       const deadlines = await this.getUserDeadlines(userId)
-      
+
       const stats = {
         total: deadlines.length,
         upcoming: 0,

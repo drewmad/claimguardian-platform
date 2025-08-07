@@ -60,7 +60,7 @@ export function withCostTracking(
 
       // Execute the original handler
       const response = await handler(request, requestData)
-      
+
       // Parse response data if successful
       if (response.ok) {
         success = true
@@ -86,7 +86,7 @@ export function withCostTracking(
 
     } catch (error) {
       errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      
+
       // Track failed usage
       await trackAIUsage({
         context,
@@ -144,7 +144,7 @@ async function trackAIUsage(params: {
       inputImagesCount: inputMetrics.imagesCount,
       inputAudioSeconds: inputMetrics.audioSeconds,
 
-      // Output metrics  
+      // Output metrics
       outputTokens: outputMetrics.tokens,
       outputTextLength: outputMetrics.textLength,
       processingTimeMs: processingTime,
@@ -166,11 +166,11 @@ async function trackAIUsage(params: {
     }
 
     // Get request metadata
-    const userIp = request.ip || 
+    const userIp = request.ip ||
       request.headers.get('x-forwarded-for')?.split(',')[0] ||
       request.headers.get('x-real-ip') ||
       'unknown'
-    
+
     const userAgent = request.headers.get('user-agent') || 'unknown'
 
     // Track the usage
@@ -312,11 +312,11 @@ function determineRequestType(requestData: AIRequestData): AIToolUsage['requestT
     }
     return 'image'
   }
-  
+
   if (requestData.audio) {
     return 'audio'
   }
-  
+
   return 'text'
 }
 
@@ -403,7 +403,7 @@ export function withBudgetCheck(handler: Function) {
     try {
       // Check if user can make requests
       const canMakeRequest = await costTrackingService.canUserMakeRequest('general')
-      
+
       if (!canMakeRequest.allowed) {
         return NextResponse.json(
           {

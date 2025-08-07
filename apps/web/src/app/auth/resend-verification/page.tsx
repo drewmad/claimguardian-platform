@@ -131,7 +131,7 @@ export default function ResendVerificationPage() {
                     Protects your account from unauthorized access and ensures you're the rightful owner.
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto">
                     <span className="text-2xl">📧</span>
@@ -141,7 +141,7 @@ export default function ResendVerificationPage() {
                     Receive critical notifications about your properties, claims, and account activity.
                   </p>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto">
                     <span className="text-2xl">✨</span>

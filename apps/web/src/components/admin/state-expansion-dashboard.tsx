@@ -75,7 +75,7 @@ export function StateExpansionDashboard() {
   const loadExpansionData = async () => {
     try {
       setLoading(true)
-      
+
       // Load active states
       const activeStates = await stateExpansionManager.getActiveStates()
       setStateConfigs(activeStates)
@@ -87,7 +87,7 @@ export function StateExpansionDashboard() {
       // Load readiness scores for priority states
       const priorityStates = ['TX', 'CA', 'NY', 'GA', 'NC']
       const scores: Record<string, number> = {}
-      
+
       for (const stateCode of priorityStates) {
         const readiness = await stateExpansionManager.getExpansionReadiness(stateCode)
         scores[stateCode] = readiness.score
@@ -115,7 +115,7 @@ export function StateExpansionDashboard() {
   const getDeploymentStatusInfo = (status: string) => {
     const Icon = DEPLOYMENT_STATUS_ICONS[status as keyof typeof DEPLOYMENT_STATUS_ICONS] || Clock
     const color = DEPLOYMENT_STATUS_COLORS[status as keyof typeof DEPLOYMENT_STATUS_COLORS] || '#64748B'
-    
+
     return { Icon, color }
   }
 
@@ -129,7 +129,7 @@ export function StateExpansionDashboard() {
     const marketScore = Math.min(state.marketSize / 1e9 / 100, 1) * 40
     const populationScore = Math.min(state.population / 40e6, 1) * 30
     const readinessScore = (readinessScores[state.code] || 0) * 0.3
-    
+
     return marketScore + populationScore + readinessScore
   }
 
@@ -261,7 +261,7 @@ export function StateExpansionDashboard() {
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-white">
-              {Object.values(readinessScores).length > 0 
+              {Object.values(readinessScores).length > 0
                 ? (Object.values(readinessScores).reduce((sum, score) => sum + score, 0) / Object.values(readinessScores).length).toFixed(0)
                 : '0'
               }%
@@ -297,7 +297,7 @@ export function StateExpansionDashboard() {
                       cx="50%"
                       cy="50%"
                       labelLine={false}
-                      label={({ region, marketSize }) => 
+                      label={({ region, marketSize }) =>
                         `${region}: ${formatMarketSize(marketSize)}`
                       }
                       outerRadius={100}
@@ -325,14 +325,14 @@ export function StateExpansionDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <ScatterChart data={expansionOpportunityData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="marketSize" 
+                    <XAxis
+                      dataKey="marketSize"
                       stroke="#9CA3AF"
                       fontSize={12}
                       label={{ value: 'Market Size ($B)', position: 'insideBottom', offset: -5 }}
                     />
-                    <YAxis 
-                      dataKey="population" 
+                    <YAxis
+                      dataKey="population"
                       stroke="#9CA3AF"
                       fontSize={12}
                       label={{ value: 'Population (M)', angle: -90, position: 'insideLeft' }}
@@ -369,7 +369,7 @@ export function StateExpansionDashboard() {
                 {US_STATES_DATA.map(state => {
                   const { Icon, color } = getDeploymentStatusInfo(state.status)
                   const readiness = readinessScores[state.code] || 0
-                  
+
                   return (
                     <div
                       key={state.code}
@@ -383,7 +383,7 @@ export function StateExpansionDashboard() {
                         </div>
                         <Icon className="h-4 w-4" style={{ color }} />
                       </div>
-                      
+
                       <div className="space-y-2">
                         <div className="flex justify-between text-sm">
                           <span className="text-gray-400">Population:</span>
@@ -401,10 +401,10 @@ export function StateExpansionDashboard() {
                           <Progress value={readiness} className="h-2" />
                         </div>
                       </div>
-                      
+
                       <div className="mt-3 flex gap-2">
-                        <Badge 
-                          variant="outline" 
+                        <Badge
+                          variant="outline"
                           className="text-xs capitalize"
                           style={{ borderColor: color, color }}
                         >
@@ -461,7 +461,7 @@ export function StateExpansionDashboard() {
                             Initialize
                           </Button>
                         )}
-                        <Badge 
+                        <Badge
                           variant="outline"
                           style={{ borderColor: color, color }}
                           className="capitalize"
@@ -630,12 +630,12 @@ export function StateExpansionDashboard() {
                         <div className="space-y-2">
                           {plan.timeline.milestones.map((milestone, index) => {
                             const StatusIcon = milestone.status === 'completed' ? CheckCircle :
-                                             milestone.status === 'in_progress' ? Clock : 
+                                             milestone.status === 'in_progress' ? Clock :
                                              milestone.status === 'blocked' ? XCircle : Clock
                             const statusColor = milestone.status === 'completed' ? 'text-green-500' :
                                               milestone.status === 'in_progress' ? 'text-blue-500' :
                                               milestone.status === 'blocked' ? 'text-red-500' : 'text-gray-500'
-                            
+
                             return (
                               <div key={index} className="flex items-center gap-3 text-sm">
                                 <StatusIcon className={`h-3 w-3 ${statusColor}`} />
@@ -675,8 +675,8 @@ export function StateExpansionDashboard() {
                             <div className="flex justify-between font-medium">
                               <span className="text-gray-300">Total:</span>
                               <span className="text-white">
-                                ${(plan.resources.dataAcquisitionCost + 
-                                   plan.resources.complianceCost + 
+                                ${(plan.resources.dataAcquisitionCost +
+                                   plan.resources.complianceCost +
                                    plan.resources.operationalCost).toLocaleString()}
                               </span>
                             </div>
@@ -693,7 +693,7 @@ export function StateExpansionDashboard() {
                                               risk.impact === 'medium' ? 'text-yellow-500' : 'text-green-500'
                             const probColor = risk.probability === 'high' ? 'text-red-500' :
                                             risk.probability === 'medium' ? 'text-yellow-500' : 'text-green-500'
-                            
+
                             return (
                               <div key={index} className="p-3 border border-gray-700 rounded text-sm">
                                 <div className="text-white font-medium mb-1">{risk.risk}</div>
@@ -731,12 +731,12 @@ export function StateExpansionDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <BarChart data={regionData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="region" 
+                    <XAxis
+                      dataKey="region"
                       stroke="#9CA3AF"
                       fontSize={12}
                     />
-                    <YAxis 
+                    <YAxis
                       stroke="#9CA3AF"
                       fontSize={12}
                     />
@@ -762,8 +762,8 @@ export function StateExpansionDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={expansionOpportunityData.slice(0, 6)}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="name" 
+                    <XAxis
+                      dataKey="name"
                       stroke="#9CA3AF"
                       fontSize={12}
                       angle={-45}
@@ -813,7 +813,7 @@ export function StateExpansionDashboard() {
                 </div>
                 <div className="text-center">
                   <div className="text-3xl font-bold text-green-400">
-                    {((US_STATES_DATA.filter(s => s.status === 'production').reduce((sum, s) => sum + s.marketSize, 0) / 
+                    {((US_STATES_DATA.filter(s => s.status === 'production').reduce((sum, s) => sum + s.marketSize, 0) /
                        US_STATES_DATA.reduce((sum, s) => sum + s.marketSize, 0)) * 100).toFixed(1)}%
                   </div>
                   <div className="text-gray-400 text-sm">Market Penetration</div>

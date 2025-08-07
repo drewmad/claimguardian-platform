@@ -162,9 +162,9 @@ function transformParcelData(raw: RawParcelData): ParcelData {
 export async function searchParcels(params: ParcelSearchParams) {
   try {
     const supabase = await createClient()
-    
+
     logger.info('[PARCEL SEARCH] Starting search with params:', params)
-    
+
     let query = supabase
       .from('florida_parcels')
       .select(`
@@ -183,36 +183,36 @@ export async function searchParcels(params: ParcelSearchParams) {
         tot_lvg_area
       `)
       .limit(params.limit || 10)
-    
+
     // Apply filters based on search parameters
     if (params.address) {
       query = query.ilike('phy_addr1', `%${params.address}%`)
     }
-    
+
     if (params.county) {
       query = query.eq('county_fips', params.county)
     }
-    
+
     if (params.owner) {
       query = query.ilike('own_name', `%${params.owner}%`)
     }
-    
+
     if (params.parcelId) {
       query = query.eq('parcel_id', params.parcelId)
     }
-    
+
     const { data, error } = await query
-    
+
     if (error) {
       logger.error('[PARCEL SEARCH] Database error:', error)
       throw error
     }
-    
+
     logger.info(`[PARCEL SEARCH] Found ${data?.length || 0} parcels`)
-    
+
     // Transform raw data to frontend format
     const transformedData = data ? (data as RawParcelData[]).map(transformParcelData) : []
-    
+
     return { data: transformedData, error: null }
   } catch (error) {
     logger.error('[PARCEL SEARCH] Error:', toError(error))
@@ -226,18 +226,18 @@ export async function searchParcels(params: ParcelSearchParams) {
 export async function getParcelDetails(parcelId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('florida_parcels')
       .select('*')
       .eq('parcel_id', parcelId)
       .single()
-    
+
     if (error) throw error
-    
+
     // Transform raw data to frontend format
     const transformedData = data ? transformParcelData(data as RawParcelData) : null
-    
+
     return { data: transformedData, error: null }
   } catch (error) {
     logger.error('[PARCEL DETAILS] Error:', toError(error))
@@ -251,12 +251,12 @@ export async function getParcelDetails(parcelId: string) {
 export async function getCountyStats(countyFips: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .rpc('get_county_statistics', { county_fips: countyFips })
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     logger.error('[COUNTY STATS] Error:', toError(error))
@@ -273,13 +273,13 @@ export async function assessPropertyRisk(parcelId: string) {
     if (parcelResult.error || !parcelResult.data) {
       throw new Error('Parcel not found')
     }
-    
+
     const parcel = parcelResult.data
-    
+
     // AI risk analysis based on parcel data
     // Need to get county FIPS from county name mapping
     const countyFips = Object.keys(COUNTY_NAMES).find(fips => COUNTY_NAMES[fips] === parcel.county) || '12000'
-    
+
     const riskFactors: RiskFactors = {
       floodRisk: calculateFloodRisk(countyFips),
       hurricaneRisk: calculateHurricaneRisk(countyFips),
@@ -287,9 +287,9 @@ export async function assessPropertyRisk(parcelId: string) {
       valueRisk: calculateValueRisk(parcel.totalValue || 0),
       locationRisk: calculateLocationRisk(parcel.address.split(',')[1]?.trim() || '')
     }
-    
+
     const overallRisk = Object.values(riskFactors).reduce((sum, risk) => sum + risk, 0) / 5
-    
+
     return {
       data: {
         parcelId,
@@ -322,7 +322,7 @@ function calculateAgeRisk(yearBuilt: number): number {
   if (!yearBuilt) return 0.5
   const currentYear = new Date().getFullYear()
   const age = currentYear - yearBuilt
-  
+
   if (age > 50) return 0.8
   if (age > 30) return 0.6
   if (age > 20) return 0.4
@@ -331,7 +331,7 @@ function calculateAgeRisk(yearBuilt: number): number {
 
 function calculateValueRisk(totalValue: number): number {
   if (!totalValue) return 0.5
-  
+
   // Higher value properties have higher risk exposure
   if (totalValue > 1000000) return 0.8
   if (totalValue > 500000) return 0.6
@@ -355,26 +355,26 @@ interface RiskFactors {
 
 function generateRiskRecommendations(riskFactors: RiskFactors): string[] {
   const recommendations = []
-  
+
   if (riskFactors.floodRisk > 0.6) {
     recommendations.push('Consider flood insurance coverage')
     recommendations.push('Evaluate flood mitigation measures')
   }
-  
+
   if (riskFactors.hurricaneRisk > 0.7) {
     recommendations.push('Ensure hurricane shutters or impact windows')
     recommendations.push('Review windstorm coverage limits')
   }
-  
+
   if (riskFactors.ageRisk > 0.6) {
     recommendations.push('Schedule comprehensive property inspection')
     recommendations.push('Consider electrical and plumbing upgrades')
   }
-  
+
   if (riskFactors.valueRisk > 0.6) {
     recommendations.push('Review coverage limits for adequate protection')
     recommendations.push('Consider umbrella insurance policy')
   }
-  
+
   return recommendations
 }

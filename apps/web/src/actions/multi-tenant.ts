@@ -54,7 +54,7 @@ export async function createOrganization({
 }: CreateOrganizationParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -107,9 +107,9 @@ export async function createOrganization({
     return { data: { organizationId: orgId }, error: null }
   } catch (error) {
     console.error('Failed to create organization:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -123,7 +123,7 @@ export async function updateOrganization({
 }: UpdateOrganizationParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -181,9 +181,9 @@ export async function updateOrganization({
     return { data, error: null }
   } catch (error) {
     console.error('Failed to update organization:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -197,9 +197,9 @@ export async function getOrganization(organizationId: string) {
     return { data: organization, error: null }
   } catch (error) {
     console.error('Failed to get organization:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -210,7 +210,7 @@ export async function getOrganization(organizationId: string) {
 export async function getCurrentUserOrganization() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -222,9 +222,9 @@ export async function getCurrentUserOrganization() {
     return { data: organization, error: null }
   } catch (error) {
     console.error('Failed to get user organization:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -235,7 +235,7 @@ export async function getCurrentUserOrganization() {
 export async function getOrganizationUsers(organizationId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -252,9 +252,9 @@ export async function getOrganizationUsers(organizationId: string) {
     return { data: users, error: null }
   } catch (error) {
     console.error('Failed to get organization users:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -269,7 +269,7 @@ export async function inviteUserToOrganization({
 }: InviteUserParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -295,19 +295,19 @@ export async function inviteUserToOrganization({
 
     // If invitation token was generated, you would send email here
     // For now, we'll just return the token
-    return { 
-      data: { 
-        userId: result.userId, 
+    return {
+      data: {
+        userId: result.userId,
         invitationToken: result.invitationToken,
         message: result.invitationToken ? 'Invitation sent to new user' : 'User added to organization'
-      }, 
-      error: null 
+      },
+      error: null
     }
   } catch (error) {
     console.error('Failed to invite user:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -322,7 +322,7 @@ export async function updateUserRole({
 }: UpdateUserRoleParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -349,9 +349,9 @@ export async function updateUserRole({
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to update user role:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -365,7 +365,7 @@ export async function removeUserFromOrganization(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -396,9 +396,9 @@ export async function removeUserFromOrganization(
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to remove user:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -409,7 +409,7 @@ export async function removeUserFromOrganization(
 export async function getOrganizationCustomizations(organizationId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -420,9 +420,9 @@ export async function getOrganizationCustomizations(organizationId: string) {
     return { data: customizations, error: null }
   } catch (error) {
     console.error('Failed to get organization customizations:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -436,7 +436,7 @@ export async function updateOrganizationCustomizations(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -462,9 +462,9 @@ export async function updateOrganizationCustomizations(
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to update customizations:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -475,7 +475,7 @@ export async function updateOrganizationCustomizations(
 export async function getOrganizationUsage(organizationId: string, month?: Date) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -492,9 +492,9 @@ export async function getOrganizationUsage(organizationId: string, month?: Date)
     return { data: usage, error: null }
   } catch (error) {
     console.error('Failed to get organization usage:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -505,7 +505,7 @@ export async function getOrganizationUsage(organizationId: string, month?: Date)
 export async function checkOrganizationLimits(organizationId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -519,20 +519,20 @@ export async function checkOrganizationLimits(organizationId: string) {
       tenantManager.checkOrganizationLimit(organizationId, 'ai_requests')
     ])
 
-    return { 
+    return {
       data: {
         users: usersOk,
         properties: propertiesOk,
         claims: claimsOk,
         aiRequests: aiRequestsOk
-      }, 
-      error: null 
+      },
+      error: null
     }
   } catch (error) {
     console.error('Failed to check organization limits:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -547,7 +547,7 @@ export async function getOrganizationAuditLog(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -572,9 +572,9 @@ export async function getOrganizationAuditLog(
     return { data, error: null }
   } catch (error) {
     console.error('Failed to get audit log:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -589,7 +589,7 @@ export async function executeTenantQuery(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) {
@@ -611,9 +611,9 @@ export async function executeTenantQuery(
     return result
   } catch (error) {
     console.error('Failed to execute tenant query:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }

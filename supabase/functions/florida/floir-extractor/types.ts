@@ -1,6 +1,6 @@
 export enum FliorDataType {
   CATASTROPHE = 'catastrophe',
-  INDUSTRY_REPORTS = 'industry_reports', 
+  INDUSTRY_REPORTS = 'industry_reports',
   PROFESSIONAL_LIABILITY = 'professional_liability',
   DATA_CALL = 'data_call',
   LICENSEE_SEARCH = 'licensee_search',

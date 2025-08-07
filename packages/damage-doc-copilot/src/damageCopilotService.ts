@@ -34,17 +34,17 @@ export const damageCopilotService = {
     // Mock implementation for build compatibility
     // TODO: Move to server actions for full functionality
     await new Promise(resolve => setTimeout(resolve, 500))
-    
+
     return this.generateFallbackGuidance(options)
   },
 
   generateFallbackGuidance(options: ProcessFrameOptions): ProcessFrameResult {
     const { current, total, completedAngles } = options.sessionProgress
-    
+
     // Determine next required angle
     const allAngles = ['overview', 'close_up', 'context', 'surrounding_area', 'supporting_evidence']
     const nextAngle = allAngles.find(angle => !completedAngles.includes(angle))
-    
+
     if (!nextAngle || current >= total) {
       return {
         nextStep: '✅ Documentation appears complete! Review your images and submit when ready.',

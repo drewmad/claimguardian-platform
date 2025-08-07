@@ -3,7 +3,7 @@ import React from 'react'
  * @fileMetadata
  * @purpose "Critical property onboarding flow tests"
  * @dependencies ["@testing-library/react","@testing-library/user-event","react"]
- * @owner product-team  
+ * @owner product-team
  * @complexity high
  * @tags ["testing", "onboarding", "critical-flow", "property"]
  * @status stable
@@ -36,15 +36,15 @@ describe('Property Onboarding - Critical Tests', () => {
     it('should validate Florida addresses', () => {
       const validateFloridaAddress = (address: string) => {
         const normalized = address.toLowerCase().trim()
-        
+
         // Basic Florida validation rules
-        const hasFloridaIndicator = normalized.includes('fl') || 
+        const hasFloridaIndicator = normalized.includes('fl') ||
                                     normalized.includes('florida') ||
                                     /\b3[0-4]\d{3}\b/.test(normalized) // FL zip codes 30000-34999
-        
+
         const hasStreetNumber = /^\d+/.test(normalized)
         const hasStreetName = normalized.split(' ').length >= 3
-        
+
         return {
           isValid: hasFloridaIndicator && hasStreetNumber && hasStreetName,
           issues: [
@@ -99,7 +99,7 @@ describe('Property Onboarding - Critical Tests', () => {
 
       expect(sanitizeAddress('  123   Main   St,   Miami,   FL  ')).toBe('123 Main St, Miami, FL')
       expect(sanitizeAddress('123 <script>alert("xss")</script> Main St')).toBe('123 scriptalert("xss")/script Main St')
-      
+
       const longAddress = 'a'.repeat(250)
       expect(sanitizeAddress(longAddress)).toHaveLength(200)
     })
@@ -123,7 +123,7 @@ describe('Property Onboarding - Critical Tests', () => {
       // Valid types
       expect(validatePropertyType('single-family')).toBe(true)
       expect(validatePropertyType('condo')).toBe(true)
-      
+
       // Invalid types
       expect(validatePropertyType('mansion')).toBe(false)
       expect(validatePropertyType('castle')).toBe(false)
@@ -143,7 +143,7 @@ describe('Property Onboarding - Critical Tests', () => {
         }
 
         const multiplier = coverageMultipliers[propertyType as keyof typeof coverageMultipliers] || 1.0
-        
+
         return {
           dwellingCoverage: Math.round(homeValue * multiplier),
           personalProperty: Math.round(homeValue * multiplier * 0.5),
@@ -204,7 +204,7 @@ describe('Property Onboarding - Critical Tests', () => {
         if (isInlandFlorida) {
           return {
             riskLevel: 'moderate',
-            category: 'Inland Florida - Moderate Hurricane Risk', 
+            category: 'Inland Florida - Moderate Hurricane Risk',
             recommendedCoverage: {
               windstorm: true,
               floodInsurance: 'recommended',
@@ -355,7 +355,7 @@ describe('Property Onboarding - Critical Tests', () => {
         bedrooms: -1, // Negative
         bathrooms: 0 // Too low
       }
-      
+
       const validation = validatePropertyData(invalidProperty)
       expect(validation.isValid).toBe(false)
       expect(validation.errors).toContain('Address is required')
@@ -382,11 +382,11 @@ describe('Property Onboarding - Critical Tests', () => {
         // Hurricane risk assessment
         const isCoastal = Math.abs(property.location.lng) < 82
         const hurricaneRisk = isCoastal ? 'high' : 'moderate'
-        
+
         // Age-based risk
         const propertyAge = new Date().getFullYear() - property.buildYear
         const ageRiskMultiplier = propertyAge > 30 ? 1.1 : propertyAge > 15 ? 1.05 : 1.0
-        
+
         // Property type multiplier
         const typeMultipliers = {
           'single-family': 1.0,
@@ -396,19 +396,19 @@ describe('Property Onboarding - Critical Tests', () => {
           'duplex': 1.1,
           'multi-family': 1.15
         }
-        
+
         const typeMultiplier = typeMultipliers[property.propertyType as keyof typeof typeMultipliers] || 1.0
-        
+
         // Calculate base coverage
         const baseCoverage = property.homeValue * typeMultiplier * ageRiskMultiplier
-        
+
         return {
           dwellingCoverage: Math.round(baseCoverage),
           personalProperty: Math.round(baseCoverage * 0.5),
           liability: Math.max(300000, Math.round(property.homeValue * 0.5)),
           medicalPayments: 5000,
-          hurricaneDeductible: hurricaneRisk === 'high' ? 
-            Math.round(property.homeValue * 0.05) : 
+          hurricaneDeductible: hurricaneRisk === 'high' ?
+            Math.round(property.homeValue * 0.05) :
             Math.round(property.homeValue * 0.02),
           floodInsurance: isCoastal ? 'required' : 'recommended',
           windstormCoverage: true,

@@ -16,7 +16,7 @@ serve(async (req: Request) => {
       .limit(10) // Limit for demo
 
     const uniqueCounties = [...new Set(counties?.map(c => c.county_fips) || [])]
-    
+
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
@@ -50,7 +50,7 @@ serve(async (req: Request) => {
             noaaData: { wind_speed: 120 }
           }
         ]
-        
+
         // Update environmental hazards with AI analysis
         for (const hazard of hazardData) {
           // Mock AI analysis
@@ -63,7 +63,7 @@ serve(async (req: Request) => {
             },
             confidence: 0.85
           }
-          
+
           await supabase
             .from('environmental_hazards_ai')
             .upsert({
@@ -79,7 +79,7 @@ serve(async (req: Request) => {
               model_confidence: aiAnalysis.confidence
             })
         }
-        
+
         syncResults.hazardsUpdated += hazardData.length
 
         // Mock sensor data
@@ -92,7 +92,7 @@ serve(async (req: Request) => {
             timestamp: new Date().toISOString()
           }
         ]
-        
+
         for (const sensor of sensorData) {
           // Mock AI insights
           const aiInsights = {
@@ -100,7 +100,7 @@ serve(async (req: Request) => {
             anomalies: { detected: false },
             predictions: { next_hour_temp: 79 }
           }
-          
+
           await supabase
             .from('environmental_sensors_ai')
             .upsert({
@@ -114,7 +114,7 @@ serve(async (req: Request) => {
               predictive_modeling: aiInsights.predictions
             })
         }
-        
+
         syncResults.sensorsUpdated += sensorData.length
 
       } catch (error) {

@@ -88,7 +88,7 @@ export class ClaraAICompanionService {
    * ADMIN ONLY: Start a new Clara session for a user
    */
   async startAdminSession(
-    userId: string, 
+    userId: string,
     adminId: string,
     initialMessage: string,
     sessionType: ClaraSession['session_type'] = 'support'
@@ -102,7 +102,7 @@ export class ClaraAICompanionService {
 
       // Analyze initial emotional state
       const analysis = await this.analyzeEmotionalState(initialMessage)
-      
+
       // Create session
       const session: Omit<ClaraSession, 'id' | 'created_at' | 'updated_at'> = {
         user_id: userId,
@@ -193,7 +193,7 @@ export class ClaraAICompanionService {
       const newCrisisLevel = this.calculateCrisisLevel(analysis)
       if (newCrisisLevel > session.crisis_level) {
         await this.updateSessionCrisisLevel(sessionId, newCrisisLevel)
-        
+
         if (newCrisisLevel >= 3) {
           await this.triggerCrisisIntervention(sessionId, analysis)
         }
@@ -249,9 +249,9 @@ export class ClaraAICompanionService {
    */
   private async analyzeEmotionalState(message: string): Promise<EmotionalAnalysis> {
     const text = message.toLowerCase()
-    
+
     // Crisis detection
-    const crisisIndicators = this.CRISIS_KEYWORDS.filter(keyword => 
+    const crisisIndicators = this.CRISIS_KEYWORDS.filter(keyword =>
       text.includes(keyword)
     )
 
@@ -314,12 +314,12 @@ export class ClaraAICompanionService {
         .order('timestamp', { ascending: true })
         .limit(10)
 
-      const conversationHistory = messages?.map(m => 
+      const conversationHistory = messages?.map(m =>
         `${m.role}: ${m.content}`
       ).join('\n') || ''
 
       const systemPrompt = this.buildClaraSystemPrompt(analysis, session)
-      
+
       // Use OpenAI for response generation
       const openaiApiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY
       if (!openaiApiKey) {
@@ -492,7 +492,7 @@ I'm here to listen and support you through this. What would feel most helpful fo
    */
   private calculateCrisisLevel(analysis: EmotionalAnalysis): ClaraSession['crisis_level'] {
     let level: ClaraSession['crisis_level'] = 0
-    
+
     if (analysis.crisis_indicators.length > 0) {
       level = 5 // Critical
     } else if (analysis.intensity > 90) {
@@ -549,7 +549,7 @@ I'm here to listen and support you through this. What would feel most helpful fo
     try {
       await this.supabase
         .from('clara_sessions')
-        .update({ 
+        .update({
           crisis_level: crisisLevel,
           updated_at: new Date().toISOString()
         })
@@ -639,7 +639,7 @@ I'm here to listen and support you through this. What would feel most helpful fo
 
       const { error } = await this.supabase
         .from('clara_sessions')
-        .update({ 
+        .update({
           ended_at: new Date().toISOString(),
           session_summary: summary || 'Session ended by admin',
           updated_at: new Date().toISOString()

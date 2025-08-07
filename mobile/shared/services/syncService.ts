@@ -71,7 +71,7 @@ class SyncService {
 
     try {
       await this.db.runAsync(
-        `INSERT OR REPLACE INTO sync_queue 
+        `INSERT OR REPLACE INTO sync_queue
          (entity_type, entity_id, operation, data, retry_count, last_error, created_at)
          VALUES (?, ?, ?, ?, ?, ?, ?)`,
         [
@@ -99,16 +99,16 @@ class SyncService {
 
     try {
       const result = await this.db.getAllAsync(
-        `SELECT 
+        `SELECT
            rowid as id,
-           entity_type, 
-           entity_id, 
-           operation, 
-           data, 
-           retry_count, 
-           last_error, 
-           created_at 
-         FROM sync_queue 
+           entity_type,
+           entity_id,
+           operation,
+           data,
+           retry_count,
+           last_error,
+           created_at
+         FROM sync_queue
          ORDER BY created_at ASC`
       ) as SyncQueueItem[]
 
@@ -141,9 +141,9 @@ class SyncService {
 
     try {
       await this.db.runAsync(
-        `UPDATE sync_queue 
-         SET retry_count = retry_count + 1, 
-             last_error = ? 
+        `UPDATE sync_queue
+         SET retry_count = retry_count + 1,
+             last_error = ?
          WHERE rowid = ?`,
         [error, itemId]
       )
@@ -178,11 +178,11 @@ class SyncService {
 
     this.syncInProgress = true
     this.syncProgressCallback = onProgress
-    
+
     try {
       const pendingItems = await this.getPendingSyncItems()
       const errors: string[] = []
-      
+
       const progress: SyncProgress = {
         total: pendingItems.length,
         completed: 0,
@@ -196,7 +196,7 @@ class SyncService {
 
       // Process items by type to maintain referential integrity
       const itemsByType = this.groupItemsByType(pendingItems)
-      
+
       // Process in order: properties -> assessments -> damage_items -> photos -> voice_notes
       const processingOrder: SyncQueueItem['entity_type'][] = [
         'property', 'assessment', 'damage_item', 'photo', 'voice_note'
@@ -204,11 +204,11 @@ class SyncService {
 
       for (const entityType of processingOrder) {
         const items = itemsByType[entityType] || []
-        
+
         for (const item of items) {
           try {
             const success = await this.processSyncItem(item)
-            
+
             if (success) {
               await this.removeSyncItem(item.id)
               progress.completed++
@@ -219,10 +219,10 @@ class SyncService {
             }
 
             this.reportProgress(progress)
-            
+
             // Small delay to prevent overwhelming the server
             await new Promise(resolve => setTimeout(resolve, 100))
-            
+
           } catch (error) {
             const errorMessage = error instanceof Error ? error.message : 'Unknown error'
             await this.updateSyncItemError(item.id, errorMessage)
@@ -246,7 +246,7 @@ class SyncService {
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Unknown sync error'
       console.error('Sync failed:', errorMessage)
-      
+
       if (this.syncProgressCallback) {
         this.syncProgressCallback({
           total: 0,
@@ -284,19 +284,19 @@ class SyncService {
       switch (item.entity_type) {
         case 'property':
           return await this.syncProperty(item.operation, data as Property)
-        
+
         case 'assessment':
           return await this.syncAssessment(item.operation, data as DamageAssessment)
-        
+
         case 'damage_item':
           return await this.syncDamageItem(item.operation, data as DamageItem)
-        
+
         case 'photo':
           return await this.syncPhoto(item.operation, data as Photo)
-        
+
         case 'voice_note':
           return await this.syncVoiceNote(item.operation, data as VoiceNote)
-        
+
         default:
           console.warn(`Unknown entity type: ${item.entity_type}`)
           return false
@@ -378,7 +378,7 @@ class SyncService {
         return true
       } else if (operation === 'delete') {
         const client = supabaseService.getClient()
-        
+
         // Delete from storage if remote URL exists
         if (photo.remote_url) {
           const fileName = photo.remote_url.split('/').pop()
@@ -413,7 +413,7 @@ class SyncService {
         return true
       } else if (operation === 'delete') {
         const client = supabaseService.getClient()
-        
+
         // Delete from storage if remote URL exists
         if (voiceNote.remote_url) {
           const fileName = voiceNote.remote_url.split('/').pop()
@@ -500,10 +500,10 @@ class SyncService {
     try {
       // Remove items that have failed more than 5 times and are older than 7 days
       const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString()
-      
+
       await this.db.runAsync(
-        `DELETE FROM sync_queue 
-         WHERE retry_count > 5 
+        `DELETE FROM sync_queue
+         WHERE retry_count > 5
          AND created_at < ?`,
         [sevenDaysAgo]
       )
@@ -536,9 +536,9 @@ class SyncService {
     try {
       // Reset retry count for items that failed less than 3 times
       await this.db.runAsync(
-        `UPDATE sync_queue 
-         SET retry_count = 0, 
-             last_error = NULL 
+        `UPDATE sync_queue
+         SET retry_count = 0,
+             last_error = NULL
          WHERE retry_count < 3`
       )
 

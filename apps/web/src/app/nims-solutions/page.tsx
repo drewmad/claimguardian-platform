@@ -10,11 +10,11 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  Shield, 
-  Users, 
-  Radio, 
-  FileText, 
+import {
+  Shield,
+  Users,
+  Radio,
+  FileText,
   Activity,
   CheckCircle,
   AlertTriangle,
@@ -101,7 +101,7 @@ export default function NIMSSolutionsPage() {
               Enterprise Emergency Management
             </h1>
             <p className="mt-6 text-lg leading-8 text-gray-300 max-w-3xl mx-auto">
-              The first commercial platform achieving full FEMA NIMS compliance. 
+              The first commercial platform achieving full FEMA NIMS compliance.
               Coordinate multi-agency disaster response with AI-powered efficiency.
             </p>
             <div className="mt-10 flex items-center justify-center gap-x-6">
@@ -318,7 +318,7 @@ export default function NIMSSolutionsPage() {
             Ready for the Next Emergency?
           </h2>
           <p className="text-lg text-gray-200 mb-8 max-w-2xl mx-auto">
-            Join federal, state, and local agencies already using ClaimGuardian 
+            Join federal, state, and local agencies already using ClaimGuardian
             for NIMS-compliant emergency management.
           </p>
           <div className="flex items-center justify-center gap-4">

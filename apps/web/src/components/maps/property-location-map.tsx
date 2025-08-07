@@ -72,7 +72,7 @@ export function PropertyLocationMap({
 
     // Simple geocoding fallback for common Florida cities
     const addressLower = property.address.toLowerCase()
-    
+
     if (addressLower.includes('port charlotte')) {
       return [-82.0907, 26.9762]
     } else if (addressLower.includes('miami')) {
@@ -88,7 +88,7 @@ export function PropertyLocationMap({
     } else if (addressLower.includes('naples')) {
       return [-81.7948, 26.1420]
     }
-    
+
     // Default to center of Florida
     return [-82.4572, 27.9506]
   }, [property.coordinates, property.address])
@@ -121,7 +121,7 @@ export function PropertyLocationMap({
       // Generate coordinates within ~0.01 degree radius (roughly 1 mile)
       const offsetLat = (Math.random() - 0.5) * 0.02
       const offsetLng = (Math.random() - 0.5) * 0.02
-      
+
       nearby.push({
         id: `nearby-${i}`,
         name: `Nearby Property ${i + 1}`,
@@ -176,7 +176,7 @@ export function PropertyLocationMap({
               </Badge>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <input
@@ -235,7 +235,7 @@ export function PropertyLocationMap({
                   <div className="text-xs text-gray-400 mb-1">Current Address:</div>
                   <div className="text-sm text-white">{property.address}</div>
                 </div>
-                
+
                 {isConfirmingLocation && tempCoordinates && (
                   <div>
                     <div className="text-xs text-gray-400 mb-1">New Location:</div>
@@ -244,9 +244,9 @@ export function PropertyLocationMap({
                     </div>
                   </div>
                 )}
-                
+
                 <div className="text-xs text-gray-400">
-                  {isConfirmingLocation 
+                  {isConfirmingLocation
                     ? "Click 'Confirm' to save the new location, or 'Cancel' to keep the current one."
                     : "Click anywhere on the map to set the exact property location."
                   }
@@ -307,24 +307,24 @@ export function PropertyLocationMap({
                   <span className="text-gray-400">Property Type:</span>
                   <span className="text-white">{property.type}</span>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-gray-400">Estimated Value:</span>
                   <span className="text-white">${(property.value / 1000).toFixed(0)}K</span>
                 </div>
-                
+
                 {property.insuranceStatus && (
                   <div className="flex justify-between">
                     <span className="text-gray-400">Insurance:</span>
-                    <Badge 
-                      variant={property.insuranceStatus === 'active' ? 'outline' : 'destructive'} 
+                    <Badge
+                      variant={property.insuranceStatus === 'active' ? 'outline' : 'destructive'}
                       className="text-xs"
                     >
                       {property.insuranceStatus}
                     </Badge>
                   </div>
                 )}
-                
+
                 <div className="flex justify-between">
                   <span className="text-gray-400">Location:</span>
                   <span className={`text-xs ${property.coordinates ? 'text-green-400' : 'text-orange-400'}`}>
@@ -358,8 +358,8 @@ export function PropertyLocationMap({
         onPropertyClick={() => {}} // Handle clicks in parent
         height={height}
         mapStyle={
-          mapStyle === 'streets' 
-            ? 'mapbox://styles/mapbox/streets-v12' 
+          mapStyle === 'streets'
+            ? 'mapbox://styles/mapbox/streets-v12'
             : 'mapbox://styles/mapbox/satellite-streets-v12'
         }
       />

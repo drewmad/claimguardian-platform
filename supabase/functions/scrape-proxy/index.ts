@@ -19,31 +19,31 @@ Deno.serve(async (req) => {
   try {
     const body: ScrapeRequest = await req.json();
     const sources = body.sources || ['fl_charlotte_county', 'fl_lee_county', 'fl_sarasota_county'];
-    
+
     // Get last run states
     const { data: lastRuns } = await supabase
       .from('scraper_runs')
       .select('source, last_object_id')
       .in('source', sources);
-    
+
     const lastRunMap = new Map(lastRuns?.map(run => [run.source, run.last_object_id]) || []);
-    
+
     // Queue scraping requests
     const requests = sources.map(source => ({
       source,
       last_object_id: body.forceRefresh ? 0 : (lastRunMap.get(source) || 0),
       status: 'pending'
     }));
-    
+
     const { data: queuedItems, error: queueError } = await supabase
       .from('scraper_queue')
       .insert(requests)
       .select();
-    
+
     if (queueError) {
       throw new Error(`Failed to queue scraping requests: ${queueError.message}`);
     }
-    
+
     // Call external scraper API
     const scraperResponse = await fetch(EXTERNAL_SCRAPER_API, {
       method: 'POST',
@@ -58,13 +58,13 @@ Deno.serve(async (req) => {
         sources: requests
       })
     });
-    
+
     if (!scraperResponse.ok) {
       throw new Error(`External scraper API error: ${scraperResponse.status}`);
     }
-    
+
     const result = await scraperResponse.json();
-    
+
     return new Response(JSON.stringify({
       message: 'Scraping requests queued successfully',
       queued: queuedItems.length,
@@ -73,7 +73,7 @@ Deno.serve(async (req) => {
       headers: { 'Content-Type': 'application/json' },
       status: 200
     });
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "error",

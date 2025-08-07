@@ -12,8 +12,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  WifiOff, RefreshCw, Home, FileText, Camera, 
+import {
+  WifiOff, RefreshCw, Home, FileText, Camera,
   Heart, Bookmark, Clock, CheckCircle, AlertTriangle,
   Smartphone, Monitor, Tablet, ArrowRight, Info
 } from 'lucide-react'
@@ -130,13 +130,13 @@ export default function OfflinePage() {
 
   const handleRefresh = async () => {
     setIsRefreshing(true)
-    
+
     // Check if we're back online
     if (navigator.onLine && !isOnline) {
       // Trigger a reconnection check
       window.location.reload()
     }
-    
+
     setTimeout(() => {
       setIsRefreshing(false)
     }, 2000)
@@ -147,7 +147,7 @@ export default function OfflinePage() {
     const diff = now.getTime() - date.getTime()
     const minutes = Math.floor(diff / 60000)
     const hours = Math.floor(minutes / 60)
-    
+
     if (hours > 0) {
       return `${hours}h ago`
     } else if (minutes > 0) {
@@ -179,15 +179,15 @@ export default function OfflinePage() {
           <div className="p-4 bg-orange-100 dark:bg-orange-900/30 rounded-full w-fit mx-auto mb-4">
             <WifiOff className="w-8 h-8 text-orange-600 dark:text-orange-400" />
           </div>
-          
+
           <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
             You're Offline
           </h1>
-          
+
           <p className="text-gray-600 dark:text-gray-400 mb-4">
             Don't worry! You can still access your cached content and create new records.
           </p>
-          
+
           <TouchButton
             onClick={handleRefresh}
             loading={isRefreshing}
@@ -282,7 +282,7 @@ export default function OfflinePage() {
                           <div className="p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
                             <Icon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
                           </div>
-                          
+
                           <div className="flex-1">
                             <h3 className="font-medium text-gray-900 dark:text-white">
                               {item.title}
@@ -300,7 +300,7 @@ export default function OfflinePage() {
                               {item.size && <span>{item.size}</span>}
                             </div>
                           </div>
-                          
+
                           <ArrowRight className="w-4 h-4 text-gray-400" />
                         </TouchCardContent>
                       </TouchCard>
@@ -373,7 +373,7 @@ export default function OfflinePage() {
                     <p>Enable airplane mode briefly, then turn it off to reset your connection</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Monitor className="w-4 h-4 mt-0.5" />
                   <div>
@@ -381,7 +381,7 @@ export default function OfflinePage() {
                     <p>Check your WiFi connection or try refreshing the page</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start gap-3">
                   <Tablet className="w-4 h-4 mt-0.5" />
                   <div>

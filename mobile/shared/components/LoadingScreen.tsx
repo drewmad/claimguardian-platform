@@ -22,10 +22,10 @@ interface LoadingScreenProps {
   progress?: number
 }
 
-export function LoadingScreen({ 
-  message = 'Loading ClaimGuardian...', 
-  showProgress = false, 
-  progress = 0 
+export function LoadingScreen({
+  message = 'Loading ClaimGuardian...',
+  showProgress = false,
+  progress = 0
 }: LoadingScreenProps) {
   const [fadeAnim] = useState(new Animated.Value(0))
   const [scaleAnim] = useState(new Animated.Value(0.8))

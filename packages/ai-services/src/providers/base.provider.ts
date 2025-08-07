@@ -8,11 +8,11 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import { 
-  AIRequest, 
-  AIResponse, 
-  AIProviderConfig, 
-  ChatRequest, 
+import {
+  AIRequest,
+  AIResponse,
+  AIProviderConfig,
+  ChatRequest,
   ChatResponse,
   ImageAnalysisRequest,
   ImageAnalysisResponse,
@@ -22,19 +22,19 @@ import {
 export abstract class BaseAIProvider {
   protected config: AIProviderConfig;
   protected modelMapping: Record<string, string> = {};
-  
+
   constructor(config: AIProviderConfig) {
     this.config = config;
     this.validateConfig();
   }
-  
+
   // Core methods that must be implemented
   abstract generateText(request: AIRequest): Promise<AIResponse>;
   abstract chat(request: ChatRequest): Promise<ChatResponse>;
   abstract estimateCost(tokens: number, model: string): number;
   abstract validateResponse(response: unknown): boolean;
   abstract getAvailableModels(): string[];
-  
+
   // Optional methods with default implementations
   async analyzeImage(_request: ImageAnalysisRequest): Promise<ImageAnalysisResponse> {
     throw new AIServiceError(
@@ -43,7 +43,7 @@ export abstract class BaseAIProvider {
       this.constructor.name
     );
   }
-  
+
   async generateEmbedding(_text: string): Promise<number[]> {
     throw new AIServiceError(
       `Embeddings not supported by ${this.constructor.name}`,
@@ -51,25 +51,25 @@ export abstract class BaseAIProvider {
       this.constructor.name
     );
   }
-  
+
   // Helper methods available to all providers
   protected async withRetry<T>(
     operation: () => Promise<T>,
     maxRetries: number = this.config.maxRetries || 3
   ): Promise<T> {
     let lastError: Error;
-    
+
     for (let i = 0; i < maxRetries; i++) {
       try {
         return await operation();
       } catch (error) {
         lastError = error as Error;
-        
+
         // Don't retry if it's not retryable
         if (error instanceof AIServiceError && !error.retryable) {
           throw error;
         }
-        
+
         // Wait before retrying with exponential backoff
         if (i < maxRetries - 1) {
           const delay = Math.min(Math.pow(2, i) * 1000, 10000); // Max 10 seconds
@@ -77,14 +77,14 @@ export abstract class BaseAIProvider {
         }
       }
     }
-    
+
     throw lastError!;
   }
-  
+
   protected delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
-  
+
   protected validateConfig(): void {
     if (!this.config.apiKey) {
       throw new AIServiceError(
@@ -94,10 +94,10 @@ export abstract class BaseAIProvider {
       );
     }
   }
-  
+
   protected trackMetrics(start: number, request: AIRequest | ChatRequest, response: Partial<AIResponse> & { model?: string }): void {
     const latency = Date.now() - start;
-    
+
     // In production, this would emit to a metrics collector
     if (process.env.NODE_ENV === 'development') {
       console.log(`[${this.constructor.name}] Request completed`, {
@@ -108,15 +108,15 @@ export abstract class BaseAIProvider {
       });
     }
   }
-  
+
   protected buildPrompt(request: AIRequest): string {
     let prompt = '';
-    
+
     // Add system prompt if provided
     if (request.systemPrompt) {
       prompt += request.systemPrompt + '\n\n';
     }
-    
+
     // Add examples if provided
     if (request.examples && request.examples.length > 0) {
       prompt += 'Examples:\n';
@@ -126,32 +126,32 @@ export abstract class BaseAIProvider {
         prompt += `Output: ${example.output}\n\n`;
       });
     }
-    
+
     // Add the main prompt
     prompt += request.prompt;
-    
+
     return prompt;
   }
-  
+
   protected extractRequestId(): string {
     return `${this.constructor.name.toLowerCase()}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
-  
+
   // Cost estimation helpers
   protected calculateTokenCost(
-    promptTokens: number, 
-    completionTokens: number, 
+    promptTokens: number,
+    completionTokens: number,
     model: string
   ): number {
     const costPerToken = this.estimateCost(1, model);
-    
+
     // Most models charge different rates for input vs output
     const inputCost = promptTokens * costPerToken;
     const outputCost = completionTokens * costPerToken * 3; // Output typically 3x more expensive
-    
+
     return Number((inputCost + outputCost).toFixed(6));
   }
-  
+
   // Feature-specific model selection
   protected selectModel(request: AIRequest | ChatRequest): string {
     const feature = request.feature;
@@ -162,11 +162,11 @@ export abstract class BaseAIProvider {
       'sentinel': 'fast',      // Simple notifications
       'generic': 'balanced'    // Default to balanced
     };
-    
+
     const preference = modelPreferences[feature] || 'balanced';
     return this.modelMapping[preference] || this.config.defaultModel || 'default';
   }
-  
+
   // Response validation helpers
   protected isValidJSON(text: string): boolean {
     try {
@@ -176,7 +176,7 @@ export abstract class BaseAIProvider {
       return false;
     }
   }
-  
+
   protected sanitizeResponse(text: string): string {
     // Remove unknown potential harmful content
     // In production, this would be more sophisticated
@@ -185,7 +185,7 @@ export abstract class BaseAIProvider {
       .replace(/<iframe[^>]*>.*?<\/iframe>/gi, '') // Remove iframes
       .trim();
   }
-  
+
   // Error handling
   protected handleError(error: unknown, request: AIRequest | ChatRequest): never {
     const err = error as Error;
@@ -194,7 +194,7 @@ export abstract class BaseAIProvider {
       feature: request.feature,
       userId: request.userId
     });
-    
+
     // Transform provider-specific errors to our error types
     if (err.message?.includes('rate limit')) {
       throw new AIServiceError(
@@ -204,7 +204,7 @@ export abstract class BaseAIProvider {
         true
       );
     }
-    
+
     if (err.message?.includes('timeout')) {
       throw new AIServiceError(
         'Request timed out',
@@ -213,7 +213,7 @@ export abstract class BaseAIProvider {
         true
       );
     }
-    
+
     if (err.message?.includes('invalid api key')) {
       throw new AIServiceError(
         'Invalid API key',
@@ -222,7 +222,7 @@ export abstract class BaseAIProvider {
         false
       );
     }
-    
+
     // Generic error
     throw new AIServiceError(
       err.message || 'Unknown error',
@@ -231,7 +231,7 @@ export abstract class BaseAIProvider {
       true
     );
   }
-  
+
   // Usage tracking
   protected createUsageMetrics(
     promptTokens: number,

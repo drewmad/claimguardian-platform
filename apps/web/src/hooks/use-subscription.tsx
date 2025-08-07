@@ -71,7 +71,7 @@ export function useSubscription() {
 
       if (profile) {
         const plan = profile.subscription_plan || 'free'
-        
+
         // Get usage data
         const [properties, claims, aiUsage] = await Promise.all([
           supabase.from('properties').select('id', { count: 'exact' }).eq('user_id', user.id),
@@ -106,19 +106,19 @@ export function useSubscription() {
   }
 
   const checkFeatureAccess = (
-    resource: keyof SubscriptionState['limits'], 
+    resource: keyof SubscriptionState['limits'],
     increment: number = 1
   ): { allowed: boolean; message?: string } => {
     const check = checkLimit(state.plan, resource, state.usage[resource] + increment)
-    
+
     if (!check.allowed) {
-      const message = check.limit === -1 
+      const message = check.limit === -1
         ? `You've reached the limit for ${resource} on your current plan`
         : `You've reached the limit of ${check.limit} ${resource} on your ${state.plan} plan`
-      
+
       return { allowed: false, message }
     }
-    
+
     return { allowed: true }
   }
 
@@ -126,12 +126,12 @@ export function useSubscription() {
     const planHierarchy = ['free', 'homeowner', 'landlord', 'enterprise']
     const currentIndex = planHierarchy.indexOf(state.plan)
     const requiredIndex = planHierarchy.indexOf(requiredPlan)
-    
+
     if (currentIndex < requiredIndex) {
       toast.error(`This feature requires the ${requiredPlan} plan or higher`)
       return false
     }
-    
+
     return true
   }
 

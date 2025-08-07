@@ -41,7 +41,7 @@ interface ExtractedPolicyData {
   }>
 }
 
-const EXTRACTION_PROMPT = `You are an expert insurance policy analyst specializing in Florida homeowners insurance. 
+const EXTRACTION_PROMPT = `You are an expert insurance policy analyst specializing in Florida homeowners insurance.
 Analyze this insurance policy document and extract the following information in JSON format:
 
 {
@@ -100,7 +100,7 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
-        { 
+        {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -110,11 +110,11 @@ Deno.serve(async (req) => {
     // Verify the user
     const token = authHeader.replace('Bearer ', '')
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
-    
+
     if (authError || !user) {
       return new Response(
         JSON.stringify({ error: 'Invalid token' }),
-        { 
+        {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -134,7 +134,7 @@ Deno.serve(async (req) => {
     if (docError || !document) {
       return new Response(
         JSON.stringify({ error: 'Document not found or access denied' }),
-        { 
+        {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -144,7 +144,7 @@ Deno.serve(async (req) => {
     // Update status to processing
     await supabaseClient
       .from('policy_documents_extended')
-      .update({ 
+      .update({
         extraction_status: 'processing',
         updated_at: new Date().toISOString()
       })
@@ -194,12 +194,12 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         documentId,
-        extractedData 
+        extractedData
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       }
@@ -211,7 +211,7 @@ Deno.serve(async (req) => {
   timestamp: new Date().toISOString(),
   message: 'Error in extract-policy-data:', error
 }));
-    
+
     // Update document with error status
     if (req.method === 'POST') {
       try {
@@ -220,10 +220,10 @@ Deno.serve(async (req) => {
           Deno.env.get('SUPABASE_URL') ?? '',
           Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
         )
-        
+
         await supabaseClient
           .from('policy_documents_extended')
-          .update({ 
+          .update({
             extraction_status: 'failed',
             extraction_error: error instanceof Error ? error.message : String(error),
             updated_at: new Date().toISOString()
@@ -239,11 +239,11 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error instanceof Error ? error.message : String(error),
         details: error.toString()
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

@@ -16,55 +16,55 @@ const supabase = createClient(
 
 async function checkExistingStructure() {
     console.log('🔍 Checking existing database structure...');
-    
+
     try {
         // Check what tables exist
         const { data: tables, error: tablesError } = await supabase
             .rpc('get_table_info');
-        
+
         if (tablesError) {
             // Fallback: try to query known tables
             console.log('📋 Checking for existing tables...');
-            
+
             // Try florida_parcels table
             const { data: floridaParcels, error: fpError } = await supabase
                 .from('florida_parcels')
                 .select('*')
                 .limit(1);
-            
+
             if (!fpError) {
                 console.log('✅ Found florida_parcels table');
                 return 'florida_parcels';
             }
-            
+
             // Try stg_florida_parcels
             const { data: stagingParcels, error: spError } = await supabase
                 .from('stg_florida_parcels')
                 .select('*')
                 .limit(1);
-            
+
             if (!spError) {
                 console.log('✅ Found stg_florida_parcels table');
                 return 'stg_florida_parcels';
             }
-            
+
             // Try properties table from our new schema
             const { data: properties, error: pError } = await supabase
                 .from('properties')
                 .select('*')
                 .limit(1);
-            
+
             if (!pError) {
                 console.log('✅ Found properties table');
                 return 'properties';
             }
-            
+
             console.log('❌ No suitable properties table found');
             return null;
         }
-        
+
         return tables;
-        
+
     } catch (error) {
         console.error('Error checking structure:', error);
         return null;
@@ -73,33 +73,33 @@ async function checkExistingStructure() {
 
 async function importCharlotteData(targetTable) {
     console.log(`🏖️  Importing Charlotte County data to ${targetTable}...`);
-    
+
     const csvPath = 'data/charlotte_county/charlotte_parcels.csv';
-    
+
     if (!fs.existsSync(csvPath)) {
         throw new Error(`Charlotte County data not found at: ${csvPath}`);
     }
-    
+
     // Read CSV file
     const csvContent = fs.readFileSync(csvPath, 'utf8');
     const lines = csvContent.trim().split('\n');
     const headers = lines[0].split(',');
-    
+
     console.log(`📊 Found ${lines.length - 1} records to import`);
     console.log(`📋 CSV Headers: ${headers.slice(0, 5).join(', ')}...`);
-    
+
     // Process records in batches
     const batchSize = 50; // Smaller batches for initial testing
     let successCount = 0;
     let errorCount = 0;
-    
+
     for (let i = 1; i < Math.min(101, lines.length); i += batchSize) { // Limit to first 100 for testing
         const batch = [];
-        
+
         for (let j = i; j < Math.min(i + batchSize, Math.min(101, lines.length)); j++) {
             const values = lines[j].split(',');
             const record = {};
-            
+
             headers.forEach((header, index) => {
                 let value = values[index] || null;
                 if (value) {
@@ -108,10 +108,10 @@ async function importCharlotteData(targetTable) {
                 }
                 record[header] = value;
             });
-            
+
             // Transform based on target table
             let transformedRecord;
-            
+
             if (targetTable === 'properties') {
                 // New schema format
                 transformedRecord = {
@@ -158,19 +158,19 @@ async function importCharlotteData(targetTable) {
                     county_fips: '15'
                 };
             }
-            
+
             // Only add records with valid data
             if (transformedRecord.parcel_id || transformedRecord.PARCEL_ID) {
                 batch.push(transformedRecord);
             }
         }
-        
+
         if (batch.length > 0) {
             try {
                 const { error } = await supabase
                     .from(targetTable)
                     .insert(batch);
-                
+
                 if (error) {
                     console.error(`❌ Batch ${Math.floor(i/batchSize) + 1} error:`, error.message);
                     errorCount += batch.length;
@@ -184,17 +184,17 @@ async function importCharlotteData(targetTable) {
             }
         }
     }
-    
+
     console.log(`\n📊 Import Summary:`);
     console.log(`   Successfully imported: ${successCount} records`);
     console.log(`   Errors: ${errorCount} records`);
-    
+
     return { successCount, errorCount };
 }
 
 async function verifyImport(targetTable) {
     console.log(`🔍 Verifying import in ${targetTable}...`);
-    
+
     try {
         // Check Charlotte County records
         const { data: properties, error } = await supabase
@@ -202,12 +202,12 @@ async function verifyImport(targetTable) {
             .select('*')
             .or('county_fips.eq.12015,CO_NO.eq.15')
             .limit(5);
-        
+
         if (error) throw error;
-        
+
         console.log(`📊 Verification Results:`);
         console.log(`   Charlotte County records found: ${properties.length} (showing first 5)`);
-        
+
         if (properties.length > 0) {
             const sample = properties[0];
             console.log(`   Sample record:`);
@@ -216,17 +216,17 @@ async function verifyImport(targetTable) {
             console.log(`     Coordinates: ${sample.coordinates?.lat || sample.LATITUDE}, ${sample.coordinates?.lng || sample.LONGITUDE}`);
             console.log(`     Property Value: $${(sample.property_value || sample.TV_NSD)?.toLocaleString() || 'N/A'}`);
         }
-        
+
         // Check total count
         const { count } = await supabase
             .from(targetTable)
             .select('*', { count: 'exact', head: true })
             .or('county_fips.eq.12015,CO_NO.eq.15');
-        
+
         console.log(`   Total Charlotte County records: ${count}`);
-        
+
         return count;
-        
+
     } catch (error) {
         console.error('❌ Verification failed:', error);
         return 0;
@@ -236,27 +236,27 @@ async function verifyImport(targetTable) {
 async function main() {
     console.log('🏖️  PHASE 1: Charlotte County Foundation (Existing Schema)');
     console.log('=======================================================');
-    
+
     try {
         // Step 1: Check existing structure
         const targetTable = await checkExistingStructure();
-        
+
         if (!targetTable) {
             throw new Error('No suitable table found for import');
         }
-        
+
         console.log(`🎯 Using table: ${targetTable}`);
-        
+
         // Step 2: Import data
         const results = await importCharlotteData(targetTable);
-        
+
         if (results.successCount === 0) {
             throw new Error('No records were successfully imported');
         }
-        
+
         // Step 3: Verify import
         const totalCount = await verifyImport(targetTable);
-        
+
         console.log('');
         console.log('🎉 Phase 1 Complete!');
         console.log('');
@@ -273,7 +273,7 @@ async function main() {
         console.log('🔗 Useful URLs:');
         console.log('   Dashboard: https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji');
         console.log('   Table Editor: https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/editor');
-        
+
     } catch (error) {
         console.error('❌ Phase 1 failed:', error.message);
         process.exit(1);

@@ -14,7 +14,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -25,7 +25,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true, data: result };
@@ -49,21 +49,21 @@ async function mergeTables() {
   console.log('  • Rename all columns to UPPERCASE in florida_parcels');
   console.log('  • Update all functions to use UPPERCASE columns');
   console.log('  • Allow direct CSV import to florida_parcels table');
-  
+
   // Check for existing data
   const checkResult = await executeSQL(
     'SELECT COUNT(*) as row_count FROM florida_parcels',
     'Checking existing data'
   );
-  
+
   if (checkResult.success && checkResult.data && checkResult.data.rows && checkResult.data.rows.length > 0) {
     console.log(`\n⚠️  Warning: Table contains ${checkResult.data.rows[0].row_count} rows`);
     console.log('   These will be preserved during the rename operation.');
   }
-  
+
   // Read and apply migration
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/026_merge_to_single_parcels_table.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -74,16 +74,16 @@ async function mergeTables() {
 
   if (result.success) {
     console.log('\n🎉 Table merge completed successfully!');
-    
+
     // Test the merged table
     console.log('\n🧪 Testing the merged table...');
-    
+
     const tests = [
       {
         name: 'Check UPPERCASE columns exist',
-        query: `SELECT column_name 
-                FROM information_schema.columns 
-                WHERE table_name = 'florida_parcels' 
+        query: `SELECT column_name
+                FROM information_schema.columns
+                WHERE table_name = 'florida_parcels'
                 AND column_name IN ('CO_NO', 'PARCEL_ID', 'JV', 'OWN_NAME')
                 ORDER BY column_name`
       },
@@ -100,8 +100,8 @@ async function mergeTables() {
       },
       {
         name: 'Verify county_fips derivation',
-        query: `SELECT "PARCEL_ID", "CO_NO", county_fips 
-                FROM florida_parcels 
+        query: `SELECT "PARCEL_ID", "CO_NO", county_fips
+                FROM florida_parcels
                 WHERE "PARCEL_ID" = 'MERGE-TEST-001'`
       },
       {
@@ -113,7 +113,7 @@ async function mergeTables() {
     for (const test of tests) {
       await executeSQL(test.query, test.name);
     }
-    
+
     console.log('\n✅ All tests passed!');
     console.log('\n📝 Import Instructions:');
     console.log('1. Go to Supabase Dashboard → Table Editor');
@@ -125,7 +125,7 @@ async function mergeTables() {
     console.log('  • Direct CSV import support');
     console.log('  • Automatic county_fips calculation from CO_NO');
     console.log('  • All existing functions updated');
-    
+
   } else {
     console.log('\n⚠️  Merge failed. Please check the error above.');
   }

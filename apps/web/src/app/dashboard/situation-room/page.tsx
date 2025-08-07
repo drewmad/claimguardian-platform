@@ -22,12 +22,12 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { useRealtimeSubscription } from '@/hooks/use-situation-room-realtime'
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
-import { 
+import {
   ThreatLevel
 } from '@/types/situation-room'
-import type { 
-  ThreatAssessment, 
-  IntelligenceFeed, 
+import type {
+  ThreatAssessment,
+  IntelligenceFeed,
   ActionItem,
   AIRecommendation,
   PropertyStatus,
@@ -39,7 +39,7 @@ export default function SituationRoomPage() {
   const [propertyId] = useState('current-property-id') // This would come from auth context
   const [selectedView, setSelectedView] = useState<'overview' | 'threats' | 'intelligence' | 'community' | 'emergency' | 'map'>('overview')
   const [showEmergencyMode, setShowEmergencyMode] = useState(false)
-  
+
   const {
     threats,
     overallThreatLevel,
@@ -62,35 +62,35 @@ export default function SituationRoomPage() {
     deactivateEmergencyMode,
     clearError
   } = useSituationRoom()
-  
+
   const { isConnected, isReconnecting, forceReconnect } = useRealtimeSubscription(propertyId, {
     onError: (error) => {
       toast.error(`Connection error: ${error.message}`)
     }
   })
-  
+
   // Load initial data
   useEffect(() => {
     loadSituationData(propertyId)
   }, [propertyId, loadSituationData])
-  
+
   // Monitor emergency mode changes
   useEffect(() => {
     setShowEmergencyMode(emergencyMode)
   }, [emergencyMode])
-  
+
   const activeThreat = useMemo(() => {
     return threats.find(t => t.isActive && t.severity === overallThreatLevel)
   }, [threats, overallThreatLevel])
-  
+
   const urgentActions = useMemo(() => {
     return pendingActions.filter(a => a.priority === 'urgent' || a.priority === 'immediate')
   }, [pendingActions])
-  
+
   const recentFeeds = useMemo(() => {
     return intelligenceFeeds.slice(0, 5)
   }, [intelligenceFeeds])
-  
+
   const handleEmergencyToggle = () => {
     if (emergencyMode) {
       deactivateEmergencyMode()
@@ -98,7 +98,7 @@ export default function SituationRoomPage() {
       activateEmergencyMode()
     }
   }
-  
+
   if (isLoading) {
     return (
       <DashboardLayout>
@@ -112,7 +112,7 @@ export default function SituationRoomPage() {
       </DashboardLayout>
     )
   }
-  
+
   return (
     <DashboardLayout>
       <div className={`situation-room-container p-6 space-y-6 transition-all duration-500 ${
@@ -124,7 +124,7 @@ export default function SituationRoomPage() {
           {emergencyMode && (
             <div className="absolute inset-0 bg-red-600/20 animate-pulse pointer-events-none" />
           )}
-          
+
           <div className="relative z-10 flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-700 relative">
@@ -145,7 +145,7 @@ export default function SituationRoomPage() {
                 <p className="text-gray-300">Real-time property intelligence command center</p>
               </div>
             </div>
-            
+
             <div className="flex items-center gap-3">
               {/* Connection Status */}
               <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-black/20">
@@ -163,9 +163,9 @@ export default function SituationRoomPage() {
                   <>
                     <WifiOff className="w-4 h-4 text-red-400" />
                     <span className="text-sm text-red-400">Disconnected</span>
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
+                    <Button
+                      size="sm"
+                      variant="outline"
                       onClick={forceReconnect}
                       className="ml-2"
                     >
@@ -174,13 +174,13 @@ export default function SituationRoomPage() {
                   </>
                 )}
               </div>
-              
+
               {/* Overall Threat Level */}
               <ThreatLevelIndicator level={overallThreatLevel} count={activeThreatCount} />
-              
+
               {/* Emergency Mode Toggle */}
-              <Button 
-                variant={emergencyMode ? "destructive" : "outline"} 
+              <Button
+                variant={emergencyMode ? "destructive" : "outline"}
                 onClick={handleEmergencyToggle}
                 className="liquid-glass-subtle"
               >
@@ -205,12 +205,12 @@ export default function SituationRoomPage() {
             </div>
           </div>
         )}
-        
+
         {/* Active Threat Banner */}
         {activeThreat && (
           <ActiveThreatBanner threat={activeThreat} />
         )}
-        
+
         {/* Navigation Tabs */}
         <div className="flex items-center gap-2 overflow-x-auto pb-2">
           {[
@@ -225,8 +225,8 @@ export default function SituationRoomPage() {
               key={tab.id}
               onClick={() => setSelectedView(tab.id as 'overview' | 'threats' | 'intelligence' | 'community' | 'emergency' | 'map')}
               className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                selectedView === tab.id 
-                  ? 'liquid-glass-premium text-white' 
+                selectedView === tab.id
+                  ? 'liquid-glass-premium text-white'
                   : 'liquid-glass-subtle text-gray-300 hover:text-white'
               }`}
             >
@@ -243,7 +243,7 @@ export default function SituationRoomPage() {
 
         {/* Main Content Based on Selected View */}
         {selectedView === 'overview' && (
-          <OverviewDashboard 
+          <OverviewDashboard
             threats={threats}
             intelligenceFeeds={recentFeeds}
             propertyStatus={propertyStatus}
@@ -253,21 +253,21 @@ export default function SituationRoomPage() {
             totalSystems={totalSystems}
           />
         )}
-        
+
         {selectedView === 'threats' && (
           <ThreatMonitoringView threats={threats} />
         )}
-        
+
         {selectedView === 'intelligence' && (
           <IntelligenceFeedView feeds={intelligenceFeeds} />
         )}
-        
+
         {selectedView === 'community' && (
           <CommunityIntelligenceView data={communityIntel} />
         )}
-        
+
         {selectedView === 'map' && (
-          <SituationRoomMapView 
+          <SituationRoomMapView
             threats={threats}
             communityIntel={communityIntel || {
               neighborhoodId: 'unknown',
@@ -304,9 +304,9 @@ export default function SituationRoomPage() {
             emergencyMode={emergencyMode}
           />
         )}
-        
+
         {selectedView === 'emergency' && (
-          <EmergencyProtocolsView 
+          <EmergencyProtocolsView
             emergencyMode={emergencyMode}
             urgentActions={urgentActions}
             activeThreat={activeThreat}
@@ -336,7 +336,7 @@ function ThreatLevelIndicator({ level, count }: ThreatLevelIndicatorProps) {
       default: return 'text-gray-400 bg-gray-400/20'
     }
   }
-  
+
   return (
     <div className={`flex items-center gap-2 px-3 py-2 rounded-lg ${getIndicatorColor(level)}`}>
       <div className={`w-2 h-2 rounded-full ${getIndicatorColor(level).split(' ')[0]} bg-current`} />
@@ -363,7 +363,7 @@ function ActiveThreatBanner({ threat }: ActiveThreatBannerProps) {
       default: return 'border-yellow-500/30 bg-yellow-900/20'
     }
   }
-  
+
   const getSeverityIcon = (severity: ThreatLevel) => {
     switch (severity) {
       case 'high': return AlertTriangle
@@ -372,9 +372,9 @@ function ActiveThreatBanner({ threat }: ActiveThreatBannerProps) {
       default: return Wind
     }
   }
-  
+
   const Icon = getSeverityIcon(threat.severity)
-  
+
   return (
     <div className={`bg-gray-800/50 backdrop-blur-sm rounded-lg p-6 border ${getSeverityColor(threat.severity)}`}>
       <div className="flex items-start justify-between">
@@ -440,14 +440,14 @@ interface OverviewDashboardProps {
   totalSystems: number
 }
 
-function OverviewDashboard({ 
-  threats, 
-  intelligenceFeeds, 
-  propertyStatus, 
+function OverviewDashboard({
+  threats,
+  intelligenceFeeds,
+  propertyStatus,
   aiRecommendations,
   urgentActions,
   systemsOnline,
-  totalSystems 
+  totalSystems
 }: OverviewDashboardProps) {
   return (
     <div className="space-y-6">
@@ -469,7 +469,7 @@ function OverviewDashboard({
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-gray-800/50 backdrop-blur-sm border-blue-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -486,7 +486,7 @@ function OverviewDashboard({
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-gray-800/50 backdrop-blur-sm border-yellow-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -503,7 +503,7 @@ function OverviewDashboard({
             </p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-gray-800/50 backdrop-blur-sm border-cyan-500/20">
           <CardContent className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -515,23 +515,23 @@ function OverviewDashboard({
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Main Dashboard Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Active Threats Panel */}
         <div className="lg:col-span-2">
           <ThreatMonitorPanel threats={threats.slice(0, 3)} />
         </div>
-        
+
         {/* Intelligence Feeds */}
         <div>
           <IntelligenceFeedPanel feeds={intelligenceFeeds} />
         </div>
       </div>
-      
+
       {/* AI Assessment Panel */}
       <AIAssessmentPanel propertyId="current-property-id" />
-      
+
       {/* AI Recommendations & Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <AIRecommendationsPanel recommendations={aiRecommendations} />
@@ -563,7 +563,7 @@ function ThreatMonitoringView({ threats }: ThreatMonitoringViewProps) {
           </Button>
         </div>
       </div>
-      
+
       {/* Threat Levels Overview */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {Object.values(ThreatLevel).map(level => {
@@ -584,7 +584,7 @@ function ThreatMonitoringView({ threats }: ThreatMonitoringViewProps) {
           )
         })}
       </div>
-      
+
       {/* Active Threats List */}
       <div className="space-y-4">
         {threats.filter(t => t.isActive).map(threat => (
@@ -650,7 +650,7 @@ function IntelligenceFeedView({ feeds }: IntelligenceFeedViewProps) {
           </Button>
         </div>
       </div>
-      
+
       <div className="space-y-4">
         {feeds.map(feed => (
           <Card key={feed.id} className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
@@ -673,10 +673,10 @@ function IntelligenceFeedView({ feeds }: IntelligenceFeedViewProps) {
                   {feed.urgency}
                 </Badge>
               </div>
-              
+
               <h3 className="text-lg font-semibold text-white mb-2">{feed.title}</h3>
               <p className="text-gray-300 mb-4">{feed.summary}</p>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex gap-2">
                   {feed.tags.map(tag => (
@@ -714,7 +714,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
       </div>
     )
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -723,7 +723,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           Risk Level: {data.riskLevel}
         </Badge>
       </div>
-      
+
       {/* Community Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Card className="bg-gray-800/50 backdrop-blur-sm border-blue-500/20">
@@ -733,7 +733,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
             <p className="text-sm text-gray-400">Active Incidents</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-gray-800/50 backdrop-blur-sm border-green-500/20">
           <CardContent className="p-6 text-center">
             <Users className="w-8 h-8 text-green-400 mx-auto mb-3" />
@@ -741,7 +741,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
             <p className="text-sm text-gray-400">Available Contractors</p>
           </CardContent>
         </Card>
-        
+
         <Card className="bg-gray-800/50 backdrop-blur-sm border-purple-500/20">
           <CardContent className="p-6 text-center">
             <MessageSquare className="w-8 h-8 text-purple-400 mx-auto mb-3" />
@@ -750,7 +750,7 @@ function CommunityIntelligenceView({ data }: CommunityIntelligenceViewProps) {
           </CardContent>
         </Card>
       </div>
-      
+
       {/* Recent Incidents */}
       {data.activeIncidents.length > 0 && (
         <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
@@ -795,7 +795,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
           {emergencyMode ? 'EMERGENCY ACTIVE' : 'STANDBY'}
         </Badge>
       </div>
-      
+
       {emergencyMode && activeThreat && (
         <Card className="bg-gray-800/50 backdrop-blur-sm border-red-500/50 bg-red-900/20">
           <CardContent className="p-6">
@@ -821,7 +821,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
           </CardContent>
         </Card>
       )}
-      
+
       {/* Emergency Actions */}
       <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
         <CardHeader>
@@ -854,7 +854,7 @@ function EmergencyProtocolsView({ emergencyMode, urgentActions, activeThreat }: 
           )}
         </CardContent>
       </Card>
-      
+
       {/* Emergency Contacts */}
       <Card className="bg-gray-800/50 backdrop-blur-sm border-gray-600/30">
         <CardHeader>
@@ -998,7 +998,7 @@ function AIRecommendationsPanel({ recommendations }: AIRecommendationsPanelProps
               <div key={rec.id} className="p-4 bg-black/20 rounded-lg">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="text-white font-medium">{rec.title}</h4>
-                  <Badge 
+                  <Badge
                     variant={rec.priority === 'urgent' || rec.priority === 'immediate' ? 'destructive' : 'secondary'}
                     className="capitalize"
                   >
@@ -1043,7 +1043,7 @@ function QuickActionsPanel({ urgentActions }: QuickActionsPanelProps) {
               <div key={action.id} className="p-4 bg-black/20 rounded-lg">
                 <div className="flex items-start justify-between mb-2">
                   <h4 className="text-white font-medium">{action.title}</h4>
-                  <Badge 
+                  <Badge
                     variant={action.priority === 'urgent' || action.priority === 'immediate' ? 'destructive' : 'secondary'}
                     className="capitalize"
                   >

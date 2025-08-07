@@ -36,12 +36,12 @@ const WEATHER_API_KEY = Deno.env.get('OPENWEATHER_API_KEY') || Deno.env.get('NEX
 
 async function getCurrentWeather(lat: number, lng: number): Promise<any> {
   const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lng}&appid=${WEATHER_API_KEY}&units=imperial`
-  
+
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error(`Weather API error: ${response.statusText}`)
   }
-  
+
   return await response.json()
 }
 
@@ -50,11 +50,11 @@ async function getHistoricalWeather(lat: number, lng: number, startDate: string,
   const start = new Date(startDate)
   const end = new Date(endDate)
   const oneDay = 24 * 60 * 60 * 1000
-  
+
   // OpenWeatherMap historical data (requires subscription, using mock for now)
   for (let date = new Date(start); date <= end; date.setTime(date.getTime() + oneDay)) {
     const timestamp = Math.floor(date.getTime() / 1000)
-    
+
     try {
       // For now, we'll simulate historical data
       // In production, you'd use: https://api.openweathermap.org/data/2.5/onecall/timemachine
@@ -70,7 +70,7 @@ async function getHistoricalWeather(lat: number, lng: number, startDate: string,
         }],
         precipitation: Math.random() > 0.7 ? Math.random() * 2 : 0
       }
-      
+
       results.push(mockHistoricalData)
     } catch (error) {
       console.log(JSON.stringify({
@@ -81,20 +81,20 @@ async function getHistoricalWeather(lat: number, lng: number, startDate: string,
 }));
     }
   }
-  
+
   return results
 }
 
 function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
   const claimDateTime = new Date(claimDate)
   const claimTimestamp = claimDateTime.getTime() / 1000
-  
+
   // Find weather data closest to claim date
   const relevantWeather = weatherData.filter(data => {
     const timeDiff = Math.abs(data.dt - claimTimestamp)
     return timeDiff <= 7 * 24 * 60 * 60 // Within 7 days
   })
-  
+
   if (relevantWeather.length === 0) {
     return {
       probability: 0,
@@ -103,11 +103,11 @@ function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
       recommendation: 'Unable to correlate claim with weather events due to lack of data'
     }
   }
-  
+
   const weatherEvents = []
   const riskFactors = []
   let probability = 0
-  
+
   relevantWeather.forEach(weather => {
     // Check for severe weather conditions
     if (weather.weather?.[0]?.main === 'Rain' && weather.precipitation > 1) {
@@ -119,7 +119,7 @@ function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
       probability += 30
       riskFactors.push('Heavy rainfall detected')
     }
-    
+
     if (weather.wind_speed > 39) { // 39+ mph = tropical storm force
       weatherEvents.push({
         type: 'High Winds',
@@ -129,7 +129,7 @@ function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
       probability += 40
       riskFactors.push('High wind speeds recorded')
     }
-    
+
     if (weather.pressure < 1000) {
       weatherEvents.push({
         type: 'Low Pressure System',
@@ -140,9 +140,9 @@ function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
       riskFactors.push('Low atmospheric pressure (storm system)')
     }
   })
-  
+
   probability = Math.min(probability, 95) // Cap at 95%
-  
+
   let recommendation = ''
   if (probability > 70) {
     recommendation = 'High correlation with severe weather events. Claim likely valid and weather-related.'
@@ -151,7 +151,7 @@ function analyzeClaimCorrelation(weatherData: any[], claimDate: string): any {
   } else {
     recommendation = 'Low weather correlation. Claim may not be weather-related.'
   }
-  
+
   return {
     probability,
     weatherEvents,
@@ -165,10 +165,10 @@ function assessRisk(currentWeather: any, historicalData: any[], location: { lat:
   const windRisk = calculateWindRisk(historicalData, location)
   const hailRisk = calculateHailRisk(historicalData, location)
   const hurricaneRisk = calculateHurricaneRisk(location)
-  
+
   const seasonalFactors = []
   const month = new Date().getMonth()
-  
+
   // Florida seasonal risk factors
   if (month >= 5 && month <= 10) { // June - November
     seasonalFactors.push('Hurricane Season Active')
@@ -179,7 +179,7 @@ function assessRisk(currentWeather: any, historicalData: any[], location: { lat:
   if (month >= 11 || month <= 2) { // Dec - March
     seasonalFactors.push('Dry Season - Lower Precipitation Risk')
   }
-  
+
   return {
     floodRisk,
     windRisk,
@@ -193,43 +193,43 @@ function calculateFloodRisk(historicalData: any[], location: { lat: number, lng:
   // Basic flood risk calculation based on historical precipitation
   const avgPrecipitation = historicalData.reduce((sum, data) => sum + (data.precipitation || 0), 0) / historicalData.length
   const elevation = location.lat < 26 ? 5 : 10 // Rough Florida elevation estimate
-  
+
   let risk = avgPrecipitation * 10
   if (elevation < 10) risk += 20 // Low elevation increases flood risk
   if (location.lat < 26 && location.lng > -81) risk += 15 // South Florida coastal
-  
+
   return Math.min(Math.max(risk, 0), 100)
 }
 
 function calculateWindRisk(historicalData: any[], location: { lat: number, lng: number }): number {
   const avgWindSpeed = historicalData.reduce((sum, data) => sum + (data.wind_speed || 0), 0) / historicalData.length
   const maxWindSpeed = Math.max(...historicalData.map(data => data.wind_speed || 0))
-  
+
   let risk = (avgWindSpeed * 2) + (maxWindSpeed * 0.5)
   if (location.lat > 24 && location.lat < 31) risk += 20 // Florida hurricane zone
-  
+
   return Math.min(Math.max(risk, 0), 100)
 }
 
 function calculateHailRisk(historicalData: any[], location: { lat: number, lng: number }): number {
   // Florida has relatively low hail risk compared to other states
   let risk = 15 // Base Florida hail risk
-  
+
   // Central Florida has slightly higher hail risk
   if (location.lat > 27 && location.lat < 29) risk += 10
-  
+
   return Math.min(Math.max(risk, 0), 100)
 }
 
 function calculateHurricaneRisk(location: { lat: number, lng: number }): number {
   // Florida hurricane risk based on location
   let risk = 40 // Base Florida hurricane risk
-  
+
   // Coastal areas have higher risk
   if (location.lng > -82 || location.lng < -80) risk += 30 // East/West coast
   if (location.lat < 26) risk += 20 // South Florida
   if (location.lat > 30) risk -= 10 // North Florida slightly lower risk
-  
+
   return Math.min(Math.max(risk, 0), 100)
 }
 
@@ -275,9 +275,9 @@ Deno.serve(async (req: Request) => {
           throw new Error('Date range is required for historical analysis')
         }
         intelligence.historical = await getHistoricalWeather(
-          location.lat, 
-          location.lng, 
-          dateRange.start, 
+          location.lat,
+          location.lng,
+          dateRange.start,
           dateRange.end
         )
         break
@@ -286,19 +286,19 @@ Deno.serve(async (req: Request) => {
         if (!claimDate) {
           throw new Error('Claim date is required for claim correlation analysis')
         }
-        
+
         // Get historical data around claim date (±7 days)
         const claimDateTime = new Date(claimDate)
         const startDate = new Date(claimDateTime.getTime() - 7 * 24 * 60 * 60 * 1000)
         const endDate = new Date(claimDateTime.getTime() + 7 * 24 * 60 * 60 * 1000)
-        
+
         const historicalData = await getHistoricalWeather(
           location.lat,
           location.lng,
           startDate.toISOString(),
           endDate.toISOString()
         )
-        
+
         intelligence.historical = historicalData
         intelligence.claimCorrelation = analyzeClaimCorrelation(historicalData, claimDate)
         break
@@ -306,7 +306,7 @@ Deno.serve(async (req: Request) => {
       case 'risk-assessment':
         // Get current weather and recent historical data
         intelligence.current = await getCurrentWeather(location.lat, location.lng)
-        
+
         const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
         const recentHistorical = await getHistoricalWeather(
           location.lat,
@@ -314,7 +314,7 @@ Deno.serve(async (req: Request) => {
           thirtyDaysAgo.toISOString(),
           new Date().toISOString()
         )
-        
+
         intelligence.historical = recentHistorical
         intelligence.riskAssessment = assessRisk(intelligence.current, recentHistorical, location)
         break
@@ -343,7 +343,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Weather Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

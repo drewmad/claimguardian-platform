@@ -19,7 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 
 async function verifyTables() {
   console.log('🔍 Verifying User Tracking Tables\n')
-  
+
   const tables = {
     'user_tracking': [
       'id', 'user_id', 'event_type', 'device_fingerprint', 'utm_source'
@@ -43,9 +43,9 @@ async function verifyTables() {
       'id', 'user_id', 'email', 'signup_completed_at', 'signup_device_fingerprint'
     ]
   }
-  
+
   let allGood = true
-  
+
   for (const [tableName, expectedColumns] of Object.entries(tables)) {
     try {
       // Try to query the table
@@ -53,27 +53,27 @@ async function verifyTables() {
         .from(tableName)
         .select('*')
         .limit(0)
-      
+
       if (error) {
         console.log(`❌ ${tableName}: ${error.message}`)
         allGood = false
       } else {
         // Table exists, check columns
         const { data: columns, error: columnsError } = await supabase
-          .rpc('get_table_columns', { 
+          .rpc('get_table_columns', {
             table_name: tableName,
             schema_name: 'public'
           })
           .single()
-        
+
         if (columnsError) {
           // Try alternative approach
           console.log(`✅ ${tableName}: Table exists`)
         } else {
-          const missingColumns = expectedColumns.filter(col => 
+          const missingColumns = expectedColumns.filter(col =>
             !columns.some(c => c.column_name === col)
           )
-          
+
           if (missingColumns.length > 0) {
             console.log(`⚠️  ${tableName}: Missing columns: ${missingColumns.join(', ')}`)
           } else {
@@ -86,9 +86,9 @@ async function verifyTables() {
       allGood = false
     }
   }
-  
+
   console.log('\n' + '='.repeat(50))
-  
+
   if (allGood) {
     console.log('✅ All tracking tables are properly set up!')
     console.log('\n🎉 The comprehensive user tracking system is ready!')
@@ -101,10 +101,10 @@ async function verifyTables() {
     console.log('1. Go to: https://app.supabase.com/project/tmlrvecuwgppbaynesji/sql/new')
     console.log('2. Run: supabase/migrations/20250131000001_user_tracking_system.sql')
   }
-  
+
   // Test functions
   console.log('\n📋 Testing Database Functions...\n')
-  
+
   try {
     // Test capture_signup_data function
     const { error: funcError } = await supabase.rpc('capture_signup_data', {
@@ -114,7 +114,7 @@ async function verifyTables() {
         device_fingerprint: 'test'
       }
     })
-    
+
     if (funcError) {
       console.log(`❌ capture_signup_data function: ${funcError.message}`)
     } else {
@@ -123,7 +123,7 @@ async function verifyTables() {
   } catch (err) {
     console.log(`❌ capture_signup_data function: Not found`)
   }
-  
+
   try {
     // Test update_user_preference function
     const { error: funcError } = await supabase.rpc('update_user_preference', {
@@ -132,7 +132,7 @@ async function verifyTables() {
       p_preference_value: true,
       p_ip_address: 'test'
     })
-    
+
     if (funcError) {
       console.log(`❌ update_user_preference function: ${funcError.message}`)
     } else {
@@ -158,7 +158,7 @@ async function createHelperFunction() {
     END;
     $$ LANGUAGE plpgsql SECURITY DEFINER;
   `
-  
+
   try {
     await supabase.rpc('exec_sql', { sql: helperSQL }).single()
   } catch (err) {

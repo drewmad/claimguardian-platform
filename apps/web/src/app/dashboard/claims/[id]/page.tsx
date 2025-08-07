@@ -216,7 +216,7 @@ export default function ClaimDetailPage() {
       id: `timeline-${index}`,
       claimId: claimId,
       date: item.date,
-      type: item.type === 'status' ? 'status_change' : 
+      type: item.type === 'status' ? 'status_change' :
             item.type === 'document' ? 'document_upload' :
             item.type === 'communication' ? 'communication' :
             item.type === 'payment' ? 'payment' : 'other',
@@ -254,7 +254,7 @@ export default function ClaimDetailPage() {
               <ArrowLeft className="mr-2 h-4 w-4" />
               Back to {getParentInfo().parentLabel}
             </Button>
-            
+
             <div className="flex items-start justify-between">
               <div>
                 <h1 className="text-3xl font-bold text-white mb-2">
@@ -267,17 +267,17 @@ export default function ClaimDetailPage() {
                   </Badge>
                 </div>
               </div>
-              
+
               <div className="flex gap-3">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="border-gray-700"
                   onClick={() => toast.info('Export feature coming soon! You\'ll be able to download claim details as PDF.')}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Export
                 </Button>
-                <Button 
+                <Button
                   className="bg-blue-600 hover:bg-blue-700"
                   onClick={() => {
                     if (claim.adjuster?.email) {
@@ -439,7 +439,7 @@ export default function ClaimDetailPage() {
                           <p className="font-medium text-white">{claim.adjuster.name}</p>
                         </div>
                         <div>
-                          <a 
+                          <a
                             href={`tel:${claim.adjuster.phone}`}
                             className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
                           >
@@ -448,7 +448,7 @@ export default function ClaimDetailPage() {
                           </a>
                         </div>
                         <div>
-                          <a 
+                          <a
                             href={`mailto:${claim.adjuster.email}`}
                             className="flex items-center gap-2 text-blue-400 hover:text-blue-300"
                           >
@@ -468,7 +468,7 @@ export default function ClaimDetailPage() {
             </TabsContent>
 
             <TabsContent value="timeline" className="space-y-4">
-              <ClaimTimeline 
+              <ClaimTimeline
                 claimId={claimId}
                 events={timelineEvents}
                 allowAddEvent={true}
@@ -488,7 +488,7 @@ export default function ClaimDetailPage() {
                   <div className="text-center py-12">
                     <MessageSquare className="w-12 h-12 text-gray-600 mx-auto mb-4" />
                     <p className="text-gray-400">No messages yet</p>
-                    <Button 
+                    <Button
                       className="mt-4"
                       onClick={() => toast.info('Messaging feature coming soon! You\'ll be able to chat directly with your adjuster.')}
                     >

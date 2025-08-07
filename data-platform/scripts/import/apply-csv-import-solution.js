@@ -16,7 +16,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -27,7 +27,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true, data: result };
@@ -54,14 +54,14 @@ async function applyImportSolution() {
 
   // Read and apply the SQL
   const sqlPath = path.join(__dirname, 'prepare-csv-import.sql');
-  
+
   if (!fs.existsSync(sqlPath)) {
     console.error('❌ SQL file not found');
     return;
   }
 
   const sql = fs.readFileSync(sqlPath, 'utf8');
-  
+
   // Split into individual statements
   const statements = sql
     .split(/;\s*$/m)
@@ -73,12 +73,12 @@ async function applyImportSolution() {
 
   for (let i = 0; i < statements.length; i++) {
     const statement = statements[i];
-    
+
     // Skip comments
     if (statement.trim().startsWith('--') || statement.trim().length === 0) {
       continue;
     }
-    
+
     // Extract description from comment or first line
     let description = `Statement ${i + 1}`;
     if (statement.includes('CREATE TABLE florida_parcels_import_temp')) {
@@ -90,10 +90,10 @@ async function applyImportSolution() {
     } else if (statement.includes('VIEW florida_parcels_import_summary')) {
       description = 'Creating import summary view';
     }
-    
+
     const result = await executeSQL(statement, description);
     results.push({ description, ...result });
-    
+
     if (result.success) {
       successCount++;
     }
@@ -103,7 +103,7 @@ async function applyImportSolution() {
   console.log('\n' + '=' .repeat(50));
   console.log('📊 Import Solution Summary:');
   console.log(`✅ Successful: ${successCount}/${results.filter(r => r.description !== 'Statement').length}`);
-  
+
   if (successCount > 0) {
     console.log('\n🎉 CSV Import Solution Applied Successfully!');
     console.log('\n📝 Next Steps:');
@@ -114,13 +114,13 @@ async function applyImportSolution() {
     console.log('5. After import, run: SELECT * FROM import_parcels_from_temp(1000);');
     console.log('6. Check results: SELECT * FROM florida_parcels_import_summary;');
     console.log('7. Clean up: DROP TABLE florida_parcels_import_temp;');
-    
+
     console.log('\n💡 Quick Import SQL:');
     console.log('```sql');
     console.log('-- After CSV upload to temp table:');
     console.log('SELECT * FROM import_parcels_from_temp(1000);');
     console.log('```');
-    
+
   } else {
     console.log('\n⚠️  Some steps failed. Please check the errors above.');
   }

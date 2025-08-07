@@ -193,7 +193,7 @@ async function performOCR(fileUrl: string, documentType: string, extractStructur
   const mimeType = response.headers.get('content-type') || 'image/jpeg'
 
   // Build the prompt
-  let prompt = language === 'es' 
+  let prompt = language === 'es'
     ? 'Por favor, extrae todo el texto de esta imagen. '
     : 'Please extract all text from this image. ';
 
@@ -229,7 +229,7 @@ async function performOCR(fileUrl: string, documentType: string, extractStructur
       // Parse structured data from response
       const textMatch = responseText.match(/--- EXTRACTED TEXT ---\n([\s\S]*?)\n\n--- STRUCTURED DATA ---/)
       const jsonMatch = responseText.match(/--- STRUCTURED DATA ---\n([\s\S]*?)$/m)
-      
+
       const extractedText = textMatch ? textMatch[1].trim() : responseText
       let structuredData = null
 
@@ -305,9 +305,9 @@ Deno.serve(async (req: Request) => {
     }
 
     const body: OCRRequest = await req.json()
-    const { 
-      fileUrl, 
-      fileName, 
+    const {
+      fileUrl,
+      fileName,
       documentType = 'general',
       extractStructuredData = false,
       language = 'en'
@@ -351,7 +351,7 @@ Deno.serve(async (req: Request) => {
 
     if (userLimit !== -1 && (ocrCount || 0) >= userLimit) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Monthly OCR limit reached. Please upgrade your plan for more OCR scans.',
           limit: userLimit,
           used: ocrCount
@@ -412,7 +412,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: 'Edge function error:', error
 }));
-    
+
     return new Response(
       JSON.stringify({
         success: false,

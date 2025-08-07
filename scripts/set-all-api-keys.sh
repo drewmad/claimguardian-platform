@@ -31,7 +31,7 @@ echo ""
 set_secret() {
     local key_name=$1
     local key_value=$2
-    
+
     echo -e "${BLUE}Setting ${key_name}...${NC}"
     if supabase secrets set "${key_name}=${key_value}"; then
         echo -e "${GREEN}✓ ${key_name} set successfully${NC}"

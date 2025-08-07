@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
     // Rate limiting - max 10 alert emails per minute per user
     const rateLimitKey = `alert_email_${user.id}`
     const rateLimitCount = await checkRateLimit(rateLimitKey, 10, 60)
-    
+
     if (rateLimitCount > 10) {
       return NextResponse.json(
         { error: 'Rate limit exceeded for alert emails' },
@@ -108,17 +108,17 @@ export async function POST(request: NextRequest) {
 }
 
 async function sendEmailAlert(
-  to: string, 
-  subject: string, 
-  html: string, 
+  to: string,
+  subject: string,
+  html: string,
   alert: EmailRequest['alert']
 ): Promise<boolean> {
   try {
     // This is a mock implementation - replace with actual email service
     // Popular options: SendGrid, Mailgun, AWS SES, Resend, etc.
-    
+
     const emailProvider = process.env.EMAIL_PROVIDER || 'mock'
-    
+
     switch (emailProvider.toLowerCase()) {
       case 'sendgrid':
         return await sendViaSendGrid(to, subject, html, alert)
@@ -139,9 +139,9 @@ async function sendEmailAlert(
 
 // Mock email implementation for development
 async function mockEmailSend(
-  to: string, 
-  subject: string, 
-  html: string, 
+  to: string,
+  subject: string,
+  html: string,
   alert: EmailRequest['alert']
 ): Promise<boolean> {
   console.log('📧 Mock Email Alert Delivery:')
@@ -151,19 +151,19 @@ async function mockEmailSend(
   console.log(`   Severity: ${alert.severity}`)
   console.log(`   Time: ${alert.timestamp}`)
   console.log(`   HTML Length: ${html.length} chars`)
-  
+
   // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 100))
-  
+
   // Mock success rate of 95%
   return Math.random() > 0.05
 }
 
 // SendGrid implementation
 async function sendViaSendGrid(
-  to: string, 
-  subject: string, 
-  html: string, 
+  to: string,
+  subject: string,
+  html: string,
   alert: EmailRequest['alert']
 ): Promise<boolean> {
   try {
@@ -199,15 +199,15 @@ async function sendViaSendGrid(
 
 // Mailgun implementation
 async function sendViaMailgun(
-  to: string, 
-  subject: string, 
-  html: string, 
+  to: string,
+  subject: string,
+  html: string,
   alert: EmailRequest['alert']
 ): Promise<boolean> {
   try {
     const apiKey = process.env.MAILGUN_API_KEY
     const domain = process.env.MAILGUN_DOMAIN
-    
+
     if (!apiKey || !domain) {
       throw new Error('Mailgun configuration missing')
     }
@@ -239,9 +239,9 @@ async function sendViaMailgun(
 
 // Resend implementation
 async function sendViaResend(
-  to: string, 
-  subject: string, 
-  html: string, 
+  to: string,
+  subject: string,
+  html: string,
   alert: EmailRequest['alert']
 ): Promise<boolean> {
   try {
@@ -283,9 +283,9 @@ const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 async function checkRateLimit(key: string, limit: number, windowSeconds: number): Promise<number> {
   const now = Date.now()
   const windowMs = windowSeconds * 1000
-  
+
   const existing = rateLimitMap.get(key)
-  
+
   if (!existing || now > existing.resetTime) {
     // New window or expired
     rateLimitMap.set(key, {
@@ -294,10 +294,10 @@ async function checkRateLimit(key: string, limit: number, windowSeconds: number)
     })
     return 1
   }
-  
+
   // Increment counter
   existing.count++
   rateLimitMap.set(key, existing)
-  
+
   return existing.count
 }

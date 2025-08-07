@@ -43,16 +43,16 @@ export function LoadingProvider({
   const [isPageLoading, setIsPageLoading] = useState(false)
   const [isRouteChanging, setIsRouteChanging] = useState(false)
   const [loadingStartTime, setLoadingStartTime] = useState<number>(0)
-  
+
   const router = useRouter()
   const pathname = usePathname()
-  
-  const { 
-    isAnyLoading, 
-    loadingStates, 
-    loadingMessages, 
-    setLoading, 
-    clearLoading 
+
+  const {
+    isAnyLoading,
+    loadingStates,
+    loadingMessages,
+    setLoading,
+    clearLoading
   } = useGlobalLoadingStore()
 
   // Handle route changes
@@ -67,7 +67,7 @@ export function LoadingProvider({
     const handleRouteChangeComplete = () => {
       const elapsed = Date.now() - loadingStartTime
       const remainingTime = Math.max(0, minLoadingDuration - elapsed)
-      
+
       setTimeout(() => {
         setIsRouteChanging(false)
       }, remainingTime)
@@ -76,12 +76,12 @@ export function LoadingProvider({
     // These would be handled by Next.js router events in a real implementation
     // For now, we'll simulate route change detection
     let previousPath = pathname
-    
+
     const checkRouteChange = () => {
       if (pathname !== previousPath) {
         handleRouteChangeStart()
         previousPath = pathname
-        
+
         // Simulate route change completion
         setTimeout(() => {
           handleRouteChangeComplete()
@@ -100,12 +100,12 @@ export function LoadingProvider({
     } else {
       const elapsed = Date.now() - loadingStartTime
       const remainingTime = Math.max(0, minLoadingDuration - elapsed)
-      
+
       setTimeout(() => {
         setIsPageLoading(false)
       }, remainingTime)
     }
-    
+
     if (loading) {
       setIsPageLoading(true)
     }
@@ -121,12 +121,12 @@ export function LoadingProvider({
 
   const getLoadingMessage = (): string => {
     const activeMessages = Object.values(loadingMessages).filter(Boolean)
-    
+
     if (isRouteChanging) return 'Navigating...'
     if (isPageLoading) return 'Loading page...'
     if (activeMessages.length > 0) return activeMessages[0]
     if (isAnyLoading()) return 'Loading...'
-    
+
     return ''
   }
 
@@ -163,7 +163,7 @@ export function LoadingProvider({
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            transition={{ 
+            transition={{
               duration: 0.3,
               ease: "easeInOut"
             }}
@@ -194,7 +194,7 @@ export function useLoading() {
 function LoadingIndicators() {
   const { loadingStates, loadingMessages } = useGlobalLoadingStore()
   const [showIndicators, setShowIndicators] = useState(false)
-  
+
   const activeOperations = Object.keys(loadingStates)
     .filter(key => loadingStates[key] && !key.includes('page'))
     .slice(0, 3) // Limit to 3 indicators
@@ -250,10 +250,10 @@ export function withLoading<P extends object>(
 
     useEffect(() => {
       const key = loadingKey || Component.name || 'component'
-      
+
       // Add loading operation
       addLoadingOperation(key, `Loading ${Component.displayName || Component.name}...`)
-      
+
       // Simulate component loading time
       const timer = setTimeout(() => {
         removeLoadingOperation(key)
@@ -296,19 +296,19 @@ export function useAsyncWithLoading() {
     try {
       addLoadingOperation(key, message)
       const result = await asyncFn()
-      
+
       if (onSuccess) {
         onSuccess(result)
       }
-      
+
       return result
     } catch (error) {
       const errorInstance = error instanceof Error ? error : new Error('Unknown error')
-      
+
       if (onError) {
         onError(errorInstance)
       }
-      
+
       return null
     } finally {
       removeLoadingOperation(key)

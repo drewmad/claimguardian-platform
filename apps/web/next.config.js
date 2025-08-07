@@ -19,7 +19,7 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   distDir: '.next',
-  
+
   // Temporarily disable ESLint errors during builds for deployment
   eslint: {
     ignoreDuringBuilds: true,
@@ -28,13 +28,13 @@ const nextConfig = {
     ignoreBuildErrors: false,
   },
   output: 'standalone',
-  
+
   // Suppress verbose logging during build
   onDemandEntries: {
     maxInactiveAge: 25 * 1000,
     pagesBufferLength: 2,
   },
-  
+
   // Configure logging
   logging: {
     fetches: {
@@ -44,11 +44,11 @@ const nextConfig = {
   experimental: {
     // Optimize more packages for better performance
     optimizePackageImports: [
-      'lucide-react', 
-      '@radix-ui/react-dialog', 
+      'lucide-react',
+      '@radix-ui/react-dialog',
       'framer-motion',
       '@radix-ui/react-tabs',
-      '@radix-ui/react-select', 
+      '@radix-ui/react-select',
       '@radix-ui/react-alert-dialog',
       '@radix-ui/react-dropdown-menu',
       '@claimguardian/ui'
@@ -56,7 +56,7 @@ const nextConfig = {
     // Improve build performance
     forceSwcTransforms: true
   },
-  
+
   // Turbopack configuration (stable in Next.js 15)
   turbopack: {
     rules: {
@@ -84,7 +84,7 @@ const nextConfig = {
       }
     ],
   },
-  
+
   // Improve webpack build performance
   webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     // Improve build performance with better caching
@@ -94,7 +94,7 @@ const nextConfig = {
         config: [__filename],
       },
     }
-    
+
     // Optimize bundle splitting
     if (!dev && !isServer) {
       config.optimization.splitChunks = {
@@ -170,7 +170,7 @@ const nextConfig = {
         },
       }
     }
-    
+
     return config
   },
   async headers() {

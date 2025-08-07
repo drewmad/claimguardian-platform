@@ -17,7 +17,7 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
+import {
   BarChart, Bar, LineChart, Line, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts'
@@ -149,7 +149,7 @@ export function FloridaAnalyticsDashboard() {
 
   const totalParcels = countyStats.reduce((sum, county) => sum + (county.total_parcels || 0), 0)
   const totalHighRisk = countyStats.reduce((sum, county) => sum + (county.high_risk_parcels || 0), 0)
-  const avgPropertyValue = countyStats.length > 0 ? 
+  const avgPropertyValue = countyStats.length > 0 ?
     countyStats.reduce((sum, county) => sum + (county.median_property_value || 0), 0) / countyStats.length : 0
 
   const riskDistribution = [
@@ -249,8 +249,8 @@ export function FloridaAnalyticsDashboard() {
               <Shield className="h-8 w-8 text-red-400" />
             </div>
             <div className="mt-2">
-              <Progress 
-                value={totalParcels > 0 ? (totalHighRisk / totalParcels) * 100 : 0} 
+              <Progress
+                value={totalParcels > 0 ? (totalHighRisk / totalParcels) * 100 : 0}
                 className="h-2"
               />
             </div>
@@ -269,20 +269,20 @@ export function FloridaAnalyticsDashboard() {
               <Activity className="h-8 w-8 text-purple-400" />
             </div>
             <div className="mt-2">
-              <Badge 
+              <Badge
                 variant={
-                  (pipelineStatus?.health.avg_quality_score || 0) > 80 
-                    ? "default" 
-                    : (pipelineStatus?.health.avg_quality_score || 0) > 60 
-                    ? "secondary" 
+                  (pipelineStatus?.health.avg_quality_score || 0) > 80
+                    ? "default"
+                    : (pipelineStatus?.health.avg_quality_score || 0) > 60
+                    ? "secondary"
                     : "destructive"
                 }
                 className="text-xs"
               >
-                {(pipelineStatus?.health.avg_quality_score || 0) > 80 
-                  ? "Excellent" 
-                  : (pipelineStatus?.health.avg_quality_score || 0) > 60 
-                  ? "Good" 
+                {(pipelineStatus?.health.avg_quality_score || 0) > 80
+                  ? "Excellent"
+                  : (pipelineStatus?.health.avg_quality_score || 0) > 60
+                  ? "Good"
                   : "Needs Improvement"}
               </Badge>
             </div>
@@ -318,7 +318,7 @@ export function FloridaAnalyticsDashboard() {
                       cy="50%"
                       outerRadius={100}
                       dataKey="value"
-                      label={({ name, value, percent }) => 
+                      label={({ name, value, percent }) =>
                         `${name}: ${value.toLocaleString()} (${(percent * 100).toFixed(1)}%)`
                       }
                     >
@@ -345,7 +345,7 @@ export function FloridaAnalyticsDashboard() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="county_name" stroke="#9CA3AF" fontSize={12} />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                       formatter={(value) => [`$${Number(value).toLocaleString()}`, 'Median Value']}
                     />
@@ -370,7 +370,7 @@ export function FloridaAnalyticsDashboard() {
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="county_name" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     formatter={(value) => [Number(value).toLocaleString(), 'Properties']}
                   />
@@ -402,8 +402,8 @@ export function FloridaAnalyticsDashboard() {
                   </thead>
                   <tbody>
                     {countyStats.map((county) => (
-                      <tr 
-                        key={county.county_code} 
+                      <tr
+                        key={county.county_code}
                         className="border-b border-gray-800 hover:bg-gray-700/50 cursor-pointer"
                         onClick={() => setSelectedCounty(county.county_code)}
                       >
@@ -418,16 +418,16 @@ export function FloridaAnalyticsDashboard() {
                           {county.high_risk_parcels?.toLocaleString()}
                         </td>
                         <td className="p-2 text-right">
-                          <Badge 
+                          <Badge
                             variant={
-                              county.total_parcels > 0 && (county.high_risk_parcels / county.total_parcels) > 0.3 
-                                ? "destructive" 
-                                : county.total_parcels > 0 && (county.high_risk_parcels / county.total_parcels) > 0.15 
-                                ? "secondary" 
+                              county.total_parcels > 0 && (county.high_risk_parcels / county.total_parcels) > 0.3
+                                ? "destructive"
+                                : county.total_parcels > 0 && (county.high_risk_parcels / county.total_parcels) > 0.15
+                                ? "secondary"
                                 : "default"
                             }
                           >
-                            {county.total_parcels > 0 ? 
+                            {county.total_parcels > 0 ?
                               ((county.high_risk_parcels / county.total_parcels) * 100).toFixed(1) + '%' :
                               '0%'
                             }
@@ -499,7 +499,7 @@ export function FloridaAnalyticsDashboard() {
                       {pipelineStatus?.health.avg_quality_score?.toFixed(1)}%
                     </Badge>
                   </div>
-                  <Progress 
+                  <Progress
                     value={(pipelineStatus?.health.active_sources || 0) / (pipelineStatus?.health.total_sources || 1) * 100}
                     className="h-2"
                   />
@@ -519,7 +519,7 @@ export function FloridaAnalyticsDashboard() {
                   {pipelineStatus?.data_sources?.slice(0, 5).map((source, index) => (
                     <div key={index} className="flex items-center justify-between">
                       <span className="text-gray-300 text-sm">{source.source_name}</span>
-                      <Badge 
+                      <Badge
                         variant={source.status === 'ACTIVE' ? 'default' : 'destructive'}
                         className="text-xs"
                       >

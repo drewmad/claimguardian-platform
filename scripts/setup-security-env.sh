@@ -23,10 +23,10 @@ if ! supabase projects list &>/dev/null; then
     echo ""
     echo "Your project ID is: tmlrvecuwgppbaynesji"
     echo ""
-    
+
     # Link to the project
     supabase link --project-ref tmlrvecuwgppbaynesji
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Successfully linked to Supabase project${NC}"
     else

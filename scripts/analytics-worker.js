@@ -2,7 +2,7 @@
 
 /**
  * Analytics Worker - Background processing for AI metrics
- * 
+ *
  * This worker performs:
  * - Metric aggregation (every 5 minutes)
  * - Anomaly detection (every 15 minutes)
@@ -68,13 +68,13 @@ class AnalyticsWorker {
     }
 
     this.isRunning = false
-    
+
     // Clear all intervals
     for (const [name, interval] of this.intervals) {
       clearInterval(interval)
       console.log(`Stopped ${name} task`)
     }
-    
+
     this.intervals.clear()
     console.log('⏹️  Analytics Worker stopped')
   }
@@ -123,18 +123,18 @@ class AnalyticsWorker {
       const now = new Date()
       const next2AM = new Date()
       next2AM.setHours(2, 0, 0, 0)
-      
+
       if (next2AM <= now) {
         next2AM.setDate(next2AM.getDate() + 1)
       }
-      
+
       const msUntil2AM = next2AM.getTime() - now.getTime()
-      
+
       setTimeout(async () => {
         await this.runCleanup()
         scheduleNextCleanup() // Schedule next day
       }, msUntil2AM)
-      
+
       console.log(`🧹 Scheduled cleanup at ${next2AM.toLocaleString()}`)
     }
 
@@ -147,7 +147,7 @@ class AnalyticsWorker {
   async runAggregation() {
     try {
       console.log('📊 Running metric aggregation...')
-      
+
       // Aggregate for different time windows
       const windows = [
         { interval: '1 minute', lookback: '10 minutes' },
@@ -171,7 +171,7 @@ class AnalyticsWorker {
 
       this.stats.aggregationsRun++
       this.stats.lastRun = new Date().toISOString()
-      
+
     } catch (error) {
       console.error('❌ Aggregation failed:', error.message)
       this.stats.errors.push({
@@ -188,7 +188,7 @@ class AnalyticsWorker {
   async runAnomalyDetection() {
     try {
       console.log('🔍 Running anomaly detection...')
-      
+
       // Detect anomalies with different sensitivity levels
       const configurations = [
         { lookback: 24, sensitivity: 3.0, name: 'standard' },
@@ -213,11 +213,11 @@ class AnalyticsWorker {
       }
 
       this.stats.anomaliesDetected += totalAnomalies
-      
+
       if (totalAnomalies > 0) {
         console.log(`🚨 Total anomalies detected: ${totalAnomalies}`)
       }
-      
+
     } catch (error) {
       console.error('❌ Anomaly detection failed:', error.message)
       this.stats.errors.push({
@@ -234,10 +234,10 @@ class AnalyticsWorker {
   async runInsightGeneration() {
     try {
       console.log('💡 Running insight generation...')
-      
+
       // Generate insights based on recent trends and anomalies
       const insights = await this.generateInsights()
-      
+
       for (const insight of insights) {
         const { error } = await supabase
           .from('ai_performance_insights')
@@ -250,7 +250,7 @@ class AnalyticsWorker {
 
       this.stats.insightsGenerated += insights.length
       console.log(`💡 Generated ${insights.length} insights`)
-      
+
     } catch (error) {
       console.error('❌ Insight generation failed:', error.message)
       this.stats.errors.push({
@@ -266,7 +266,7 @@ class AnalyticsWorker {
    */
   async generateInsights() {
     const insights = []
-    
+
     try {
       // Analyze recent metrics for trends
       const { data: recentMetrics } = await supabase
@@ -291,7 +291,7 @@ class AnalyticsWorker {
 
         const values = metrics.map(m => m.avg_value).slice(0, 10) // Last 10 data points
         const trend = this.calculateTrend(values)
-        
+
         if (Math.abs(trend.slope) > 0.1) {
           insights.push({
             insight_type: 'trend',
@@ -302,7 +302,7 @@ class AnalyticsWorker {
             confidence_score: Math.min(Math.abs(trend.rSquared), 1),
             impact_score: Math.min(Math.abs(trend.slope), 1),
             recommendations: [
-              trend.slope > 0 && metrics[0].metric_name === 'response_time' 
+              trend.slope > 0 && metrics[0].metric_name === 'response_time'
                 ? 'Consider scaling resources or optimizing queries'
                 : trend.slope < 0 && metrics[0].metric_name === 'response_time'
                 ? 'Performance improvements detected - monitor for sustainability'
@@ -330,7 +330,7 @@ class AnalyticsWorker {
         const costs = costMetrics.map(m => m.avg_value)
         const avgCost = costs.reduce((sum, c) => sum + c, 0) / costs.length
         const recentAvg = costs.slice(0, 6).reduce((sum, c) => sum + c, 0) / 6
-        
+
         if (recentAvg > avgCost * 1.5) {
           insights.push({
             insight_type: 'cost_analysis',
@@ -369,14 +369,14 @@ class AnalyticsWorker {
     const xSquaredSum = (n * (n - 1) * (2 * n - 1)) / 6
 
     const slope = (n * xySum - xSum * ySum) / (n * xSquaredSum - xSum * xSum)
-    
+
     const yMean = ySum / n
     const totalSumSquares = values.reduce((sum, v) => sum + Math.pow(v - yMean, 2), 0)
     const residualSumSquares = values.reduce((sum, v, i) => {
       const predicted = slope * i + (ySum - slope * xSum) / n
       return sum + Math.pow(v - predicted, 2)
     }, 0)
-    
+
     const rSquared = totalSumSquares === 0 ? 0 : 1 - (residualSumSquares / totalSumSquares)
 
     return { slope, rSquared }
@@ -388,10 +388,10 @@ class AnalyticsWorker {
   async runCleanup() {
     try {
       console.log('🧹 Running data cleanup...')
-      
+
       // Clean up old raw metrics (keep 7 days)
       const cutoffDate = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-      
+
       const { data, error } = await supabase
         .from('ai_performance_metrics')
         .delete()
@@ -405,7 +405,7 @@ class AnalyticsWorker {
 
       // Clean up old aggregated data (keep 30 days)
       const aggregatedCutoff = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-      
+
       await supabase
         .from('ai_metrics_aggregated')
         .delete()
@@ -421,7 +421,7 @@ class AnalyticsWorker {
         .lt('detected_at', aggregatedCutoff.toISOString())
 
       console.log('✓ Cleaned up resolved anomalies')
-      
+
     } catch (error) {
       console.error('❌ Cleanup failed:', error.message)
       this.stats.errors.push({
@@ -443,7 +443,7 @@ class AnalyticsWorker {
     console.log(`  Insights generated: ${this.stats.insightsGenerated}`)
     console.log(`  Last run: ${this.stats.lastRun || 'Never'}`)
     console.log(`  Errors: ${this.stats.errors.length}`)
-    
+
     if (this.stats.errors.length > 0) {
       console.log('\nRecent errors:')
       this.stats.errors.slice(-3).forEach(error => {
@@ -487,7 +487,7 @@ program
   .description('Start the analytics worker daemon')
   .action(async () => {
     const worker = new AnalyticsWorker()
-    
+
     // Handle graceful shutdown
     process.on('SIGINT', () => {
       console.log('\nReceived SIGINT, shutting down gracefully...')
@@ -502,7 +502,7 @@ program
     })
 
     await worker.start()
-    
+
     // Keep process alive
     process.stdin.resume()
   })

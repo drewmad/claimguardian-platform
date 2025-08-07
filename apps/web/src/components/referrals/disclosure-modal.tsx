@@ -86,9 +86,9 @@ export function ReferralDisclosureModal({
                 Important Disclosure (FTC Required)
               </p>
               <p className="text-sm text-gray-300">
-                ClaimGuardian may receive a referral fee if you choose one of these services. 
-                This does not affect your cost or our recommendations. We are completely independent 
-                and not affiliated with any insurance company. You are free to choose any provider, 
+                ClaimGuardian may receive a referral fee if you choose one of these services.
+                This does not affect your cost or our recommendations. We are completely independent
+                and not affiliated with any insurance company. You are free to choose any provider,
                 including those not listed here.
               </p>
             </div>
@@ -100,13 +100,13 @@ export function ReferralDisclosureModal({
           <h3 className="text-sm font-semibold text-gray-400 uppercase tracking-wider">
             Available Providers (Sorted by Rating)
           </h3>
-          
+
           {providers.map((provider) => (
-            <Card 
+            <Card
               key={provider.id}
               className={`bg-gray-800 border-gray-700 cursor-pointer transition-all ${
-                selectedProvider?.id === provider.id 
-                  ? 'border-blue-500 shadow-lg shadow-blue-500/20' 
+                selectedProvider?.id === provider.id
+                  ? 'border-blue-500 shadow-lg shadow-blue-500/20'
                   : 'hover:border-gray-600'
               }`}
               onClick={() => setSelectedProvider(provider)}
@@ -160,11 +160,11 @@ export function ReferralDisclosureModal({
               className="mt-0.5"
             />
             <span className="text-sm text-gray-300">
-              I understand that ClaimGuardian may receive a referral fee from the provider I choose, 
+              I understand that ClaimGuardian may receive a referral fee from the provider I choose,
               and this does not affect the cost of services to me.
             </span>
           </label>
-          
+
           <label className="flex items-start gap-3 cursor-pointer">
             <Checkbox
               checked={understandCommission}
@@ -172,7 +172,7 @@ export function ReferralDisclosureModal({
               className="mt-0.5"
             />
             <span className="text-sm text-gray-300">
-              I acknowledge that ClaimGuardian is not affiliated with any of these providers and 
+              I acknowledge that ClaimGuardian is not affiliated with any of these providers and
               I am free to choose any provider, including those not listed here.
             </span>
           </label>
@@ -187,8 +187,8 @@ export function ReferralDisclosureModal({
                 Other Options Available
               </p>
               <p className="text-sm text-gray-400">
-                You can always find your own {type} independently. Try searching online, 
-                asking friends for recommendations, or checking with your local bar association 
+                You can always find your own {type} independently. Try searching online,
+                asking friends for recommendations, or checking with your local bar association
                 (for attorneys) or state insurance department (for brokers).
               </p>
             </div>

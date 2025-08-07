@@ -26,7 +26,7 @@ NEXT_PUBLIC_DEBUG_AUTH=true
 3. **Set the following:**
 
    - **Site URL**: `https://claimguardianai.com`
-   
+
    - **Redirect URLs** (add all of these):
      ```
      https://claimguardianai.com

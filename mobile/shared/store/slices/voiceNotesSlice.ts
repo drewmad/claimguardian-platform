@@ -115,7 +115,7 @@ export const startRecording = createAsyncThunk<
       // Implementation would start audio recording
       const recordingId = `voice_note_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
       const uri = `${require('expo-file-system').FileSystem.documentDirectory}voice_notes/${recordingId}.m4a`
-      
+
       return { recordingId, uri }
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to start recording')
@@ -133,7 +133,7 @@ export const stopRecording = createAsyncThunk<
     try {
       const state = getState() as any
       const recordingId = state.voiceNotes.currentRecordingId
-      
+
       if (!recordingId) {
         throw new Error('No active recording')
       }
@@ -169,7 +169,7 @@ export const transcribeVoiceNote = createAsyncThunk<
       // Implementation would use speech-to-text API
       // For now return mock transcription
       await new Promise(resolve => setTimeout(resolve, 3000)) // Simulate processing
-      
+
       return {
         voiceNoteId,
         transcription: 'This is a mock transcription of the voice note.'
@@ -190,7 +190,7 @@ export const uploadVoiceNote = createAsyncThunk<
     try {
       const state = getState() as any
       const voiceNote = state.voiceNotes.items.find((note: VoiceNote) => note.id === voiceNoteId)
-      
+
       if (!voiceNote) {
         throw new Error('Voice note not found')
       }
@@ -241,11 +241,11 @@ const voiceNotesSlice = createSlice({
       state.items = state.items.filter(note => note.id !== action.payload)
       state.uploading = state.uploading.filter(id => id !== action.payload)
       state.transcribing = state.transcribing.filter(id => id !== action.payload)
-      
+
       if (state.currentlyPlaying === action.payload) {
         state.currentlyPlaying = null
       }
-      
+
       state.lastUpdated = new Date().toISOString()
       voiceNotesSlice.caseReducers.updateStats(state)
     },
@@ -405,7 +405,7 @@ const voiceNotesSlice = createSlice({
     updateStats: (state) => {
       const totalSizeBytes = state.items.reduce((sum, note) => sum + note.file_size, 0)
       const totalDurationSeconds = state.items.reduce((sum, note) => sum + note.duration_seconds, 0)
-      
+
       state.stats = {
         totalVoiceNotes: state.items.length,
         totalDurationMinutes: Math.round((totalDurationSeconds / 60) * 100) / 100,
@@ -444,7 +444,7 @@ const voiceNotesSlice = createSlice({
 
     // Clean up orphaned voice notes
     removeOrphanedVoiceNotes: (state) => {
-      state.items = state.items.filter(note => 
+      state.items = state.items.filter(note =>
         note.assessment_id || note.damage_item_id
       )
       voiceNotesSlice.caseReducers.updateStats(state)
@@ -498,7 +498,7 @@ const voiceNotesSlice = createSlice({
         state.items.push(action.payload)
         state.lastUpdated = new Date().toISOString()
         voiceNotesSlice.caseReducers.updateStats(state)
-        
+
         // Auto-transcribe if enabled
         if (state.settings.autoTranscribe) {
           state.transcribing.push(action.payload.id)
@@ -521,7 +521,7 @@ const voiceNotesSlice = createSlice({
       .addCase(transcribeVoiceNote.fulfilled, (state, action) => {
         const { voiceNoteId, transcription } = action.payload
         state.transcribing = state.transcribing.filter(id => id !== voiceNoteId)
-        
+
         const note = state.items.find(note => note.id === voiceNoteId)
         if (note) {
           note.transcription = transcription
@@ -550,7 +550,7 @@ const voiceNotesSlice = createSlice({
       .addCase(uploadVoiceNote.fulfilled, (state, action) => {
         const voiceNoteId = action.payload.id
         state.uploading = state.uploading.filter(id => id !== voiceNoteId)
-        
+
         const index = state.items.findIndex(note => note.id === voiceNoteId)
         if (index !== -1) {
           state.items[index] = action.payload
@@ -560,7 +560,7 @@ const voiceNotesSlice = createSlice({
       .addCase(uploadVoiceNote.rejected, (state, action) => {
         const voiceNoteId = action.meta.arg
         state.uploading = state.uploading.filter(id => id !== voiceNoteId)
-        
+
         const note = state.items.find(note => note.id === voiceNoteId)
         if (note) {
           note.upload_status = 'failed'

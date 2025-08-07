@@ -50,16 +50,16 @@ class MetricsCollector {
   private initializeWebVitals() {
     // Cumulative Layout Shift
     onCLS((metric) => this.recordWebVital(metric))
-    
+
     // First Contentful Paint
     onFCP((metric) => this.recordWebVital(metric))
-    
+
     // Largest Contentful Paint
     onLCP((metric) => this.recordWebVital(metric))
-    
+
     // Time to First Byte
     onTTFB((metric) => this.recordWebVital(metric))
-    
+
     // Interaction to Next Paint (replaces FID)
     onINP((metric) => this.recordWebVital(metric))
   }
@@ -146,7 +146,7 @@ class MetricsCollector {
   }
 
   getMetricsSummary() {
-    const webVitals = this.metrics.filter(m => 
+    const webVitals = this.metrics.filter(m =>
       ['CLS', 'FCP', 'LCP', 'TTFB', 'INP'].includes(m.name)
     )
 

@@ -48,27 +48,27 @@ class RateLimiter {
     const forwarded = request.headers.get('x-forwarded-for')
     const realIp = request.headers.get('x-real-ip')
     const cfConnectingIp = request.headers.get('cf-connecting-ip')
-    
+
     const ip = forwarded?.split(',')[0] || realIp || cfConnectingIp || 'unknown'
-    
+
     // For authenticated requests, we could also use user ID
     // This would require extracting the user from the auth token
-    
+
     return ip.trim()
   }
 
   async isRateLimited(
-    request: Request, 
-    route: string, 
+    request: Request,
+    route: string,
     config: RateLimitConfig
   ): Promise<{ limited: boolean; remaining: number; resetTime: number }> {
     const identifier = this.getClientIdentifier(request)
     const key = this.getKey(identifier, route)
     const now = Date.now()
     const windowMs = config.windowMs
-    
+
     const entry = this.store.get(key)
-    
+
     if (!entry || now > entry.resetTime) {
       // New window or first request
       const resetTime = now + windowMs
@@ -79,7 +79,7 @@ class RateLimiter {
         resetTime
       }
     }
-    
+
     if (entry.count >= config.maxRequests) {
       return {
         limited: true,
@@ -87,11 +87,11 @@ class RateLimiter {
         resetTime: entry.resetTime
       }
     }
-    
+
     // Increment counter
     entry.count += 1
     this.store.set(key, entry)
-    
+
     return {
       limited: false,
       remaining: config.maxRequests - entry.count,
@@ -103,13 +103,13 @@ class RateLimiter {
   static configs = {
     // Very strict for sensitive operations
     strict: { maxRequests: 5, windowMs: 15 * 60 * 1000 }, // 5 requests per 15 minutes
-    
+
     // Moderate for API calls
     moderate: { maxRequests: 50, windowMs: 15 * 60 * 1000 }, // 50 requests per 15 minutes
-    
+
     // Lenient for regular operations
     lenient: { maxRequests: 100, windowMs: 15 * 60 * 1000 }, // 100 requests per 15 minutes
-    
+
     // Very lenient for public endpoints
     public: { maxRequests: 1000, windowMs: 15 * 60 * 1000 }, // 1000 requests per 15 minutes
   }
@@ -153,18 +153,18 @@ export async function withRateLimit(
   handler: () => Promise<Response>
 ): Promise<Response> {
   const result = await rateLimiter.isRateLimited(request, route, config)
-  
+
   if (result.limited) {
     return createRateLimitResponse(result.resetTime)
   }
-  
+
   const response = await handler()
-  
+
   // Add rate limit headers to successful responses
   response.headers.set('X-RateLimit-Limit', config.maxRequests.toString())
   response.headers.set('X-RateLimit-Remaining', result.remaining.toString())
   response.headers.set('X-RateLimit-Reset', result.resetTime.toString())
-  
+
   return response
 }
 

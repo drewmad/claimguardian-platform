@@ -155,7 +155,7 @@ export class ThreatAssessmentEngine {
   private async initialize() {
     await this.initializeProviders()
     this.isInitialized = this.getAvailableProviders().length > 0
-    
+
     if (this.isInitialized) {
       const availableProviders = this.getAvailableProviders()
       logger.info('Threat Assessment Engine initialized with providers:', availableProviders)
@@ -167,13 +167,13 @@ export class ThreatAssessmentEngine {
   private async initializeProviders() {
     // Initialize OpenAI
     await this.initializeOpenAI()
-    
+
     // Initialize Grok (X.AI)
     await this.initializeGrok()
-    
+
     // Initialize Claude (Anthropic)
     await this.initializeClaude()
-    
+
     // Initialize Gemini
     await this.initializeGemini()
   }
@@ -182,7 +182,7 @@ export class ThreatAssessmentEngine {
     try {
       const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
       // WARNING: API key moved to server-side - use /api/ai endpoint instead
-      
+
       if (!apiKey) {
         logger.warn('OpenAI API key not found')
         return
@@ -195,13 +195,13 @@ export class ThreatAssessmentEngine {
 
       // Test the connection
       await client.models.list()
-      
+
       this.providers.openai = {
         ...this.providers.openai,
         available: true,
         client
       }
-      
+
       logger.info('OpenAI provider initialized successfully')
     } catch (error) {
       logger.warn('Failed to initialize OpenAI provider:', error)
@@ -211,7 +211,7 @@ export class ThreatAssessmentEngine {
   private async initializeGrok() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_XAI_API_KEY || process.env.XAI_API_KEY
-      
+
       if (!apiKey) {
         logger.warn('X.AI API key not found')
         return
@@ -226,13 +226,13 @@ export class ThreatAssessmentEngine {
 
       // Test the connection with Grok's models endpoint
       await client.models.list()
-      
+
       this.providers.grok = {
         ...this.providers.grok,
         available: true,
         client
       }
-      
+
       logger.info('Grok (X.AI) provider initialized successfully')
     } catch (error) {
       logger.warn('Failed to initialize Grok provider:', error)
@@ -242,7 +242,7 @@ export class ThreatAssessmentEngine {
   private async initializeClaude() {
     try {
       const apiKey = process.env.NEXT_PUBLIC_ANTHROPIC_API_KEY || process.env.ANTHROPIC_API_KEY
-      
+
       if (!apiKey) {
         logger.warn('Anthropic API key not found')
         return
@@ -255,13 +255,13 @@ export class ThreatAssessmentEngine {
 
       // Test the connection - Anthropic doesn't have a models.list endpoint, so we'll just validate the client
       // We could do a minimal test call, but for now we'll assume it's working if the key is provided
-      
+
       this.providers.claude = {
         ...this.providers.claude,
         available: true,
         client
       }
-      
+
       logger.info('Claude (Anthropic) provider initialized successfully')
     } catch (error) {
       logger.warn('Failed to initialize Claude provider:', error)
@@ -272,14 +272,14 @@ export class ThreatAssessmentEngine {
     try {
       const apiKey = process.env.NEXT_PUBLIC_GEMINI_API_KEY || process.env.GEMINI_API_KEY
       // WARNING: API key moved to server-side - use /api/ai endpoint instead
-      
+
       if (!apiKey) {
         logger.warn('Gemini API key not found')
         return
       }
 
       const genAI = new GoogleGenerativeAI(apiKey)
-      const model = genAI.getGenerativeModel({ 
+      const model = genAI.getGenerativeModel({
         model: 'gemini-1.5-flash',
         generationConfig: {
           temperature: 0.3,
@@ -298,13 +298,13 @@ export class ThreatAssessmentEngine {
           },
         ],
       })
-      
+
       this.providers.gemini = {
         ...this.providers.gemini,
         available: true,
         client: { genAI, model }
       }
-      
+
       logger.info('Gemini provider initialized successfully')
     } catch (error) {
       logger.warn('Failed to initialize Gemini provider:', error)
@@ -328,7 +328,7 @@ export class ThreatAssessmentEngine {
     }
   ): AIProvider | null {
     const availableProviders = this.getAvailableProviders()
-    
+
     if (availableProviders.length === 0) {
       return null
     }
@@ -351,32 +351,32 @@ export class ThreatAssessmentEngine {
     }
   ): AIProvider {
     const scores: Record<AIProvider, number> = {} as Record<AIProvider, number>
-    
+
     for (const provider of availableProviders) {
       const config = this.providers[provider]
       let score = 0
-      
+
       // Cost optimization (30% weight)
       const costScore = this.calculateCostScore(config, options?.budget)
       score += costScore * 0.3
-      
+
       // Speed optimization (25% weight)
       const speedScore = this.calculateSpeedScore(config, options?.speedPriority, options?.urgency)
       score += speedScore * 0.25
-      
+
       // Ability optimization (35% weight)
       const abilityScore = this.calculateAbilityScore(config, options?.focusAreas, options?.urgency)
       score += abilityScore * 0.35
-      
+
       // Base priority (10% weight)
       const priorityScore = (5 - config.priority) * 20 // Higher priority = higher score
       score += priorityScore * 0.1
-      
+
       scores[provider] = score
     }
-    
+
     // Return provider with highest score
-    return availableProviders.reduce((best, current) => 
+    return availableProviders.reduce((best, current) =>
       scores[current] > scores[best] ? current : best
     )
   }
@@ -385,13 +385,13 @@ export class ThreatAssessmentEngine {
     // Lower cost = higher score (inverted)
     const maxCost = 0.02 // $20 per 1M tokens as reference max
     const costScore = ((maxCost - config.costPerToken) / maxCost) * 100
-    
+
     if (budget === 'low') {
       return costScore * 1.5 // Boost cost importance for low budget
     } else if (budget === 'high') {
       return costScore * 0.5 // Reduce cost importance for high budget
     }
-    
+
     return costScore
   }
 
@@ -399,35 +399,35 @@ export class ThreatAssessmentEngine {
     // Lower response time = higher score (inverted)
     const maxTime = 5000 // 5 seconds as reference max
     const speedScore = ((maxTime - config.avgResponseTime) / maxTime) * 100
-    
+
     const isUrgent = urgency === ThreatLevel.CRITICAL || urgency === ThreatLevel.EMERGENCY
-    
+
     if (speedPriority || isUrgent) {
       return speedScore * 1.5 // Boost speed importance
     }
-    
+
     return speedScore
   }
 
   private calculateAbilityScore(config: ProviderConfig, focusAreas?: string[], urgency?: ThreatLevel): number {
     let abilityScore = 60 // Base ability score
-    
+
     if (!focusAreas || focusAreas.length === 0) {
       return abilityScore
     }
-    
+
     // Check for ability matches with focus areas and urgency
     const strengthMatches = this.getStrengthMatches(config.strengths, focusAreas, urgency)
     abilityScore += strengthMatches * 10 // +10 points per strength match
-    
+
     return Math.min(100, abilityScore) // Cap at 100
   }
 
   private getStrengthMatches(strengths: string[], focusAreas?: string[], urgency?: ThreatLevel): number {
     let matches = 0
-    
+
     if (!focusAreas) return matches
-    
+
     // Map focus areas to provider strengths
     const focusToStrengthMap: Record<string, string[]> = {
       'weather': ['real-time-data', 'multimodal-analysis'],
@@ -438,7 +438,7 @@ export class ThreatAssessmentEngine {
       'cost': ['cost-efficiency'],
       'speed': ['speed']
     }
-    
+
     for (const area of focusAreas) {
       const relevantStrengths = focusToStrengthMap[area] || []
       for (const strength of relevantStrengths) {
@@ -447,26 +447,26 @@ export class ThreatAssessmentEngine {
         }
       }
     }
-    
+
     // Boost for urgent situations
     if (urgency === ThreatLevel.CRITICAL || urgency === ThreatLevel.EMERGENCY) {
       if (strengths.includes('safety-analysis') || strengths.includes('real-time-data')) {
         matches += 2 // Extra points for critical situations
       }
     }
-    
+
     return matches
   }
 
   private logOptimizationMetrics(
-    provider: AIProvider, 
-    request: AIThreatAssessmentRequest, 
+    provider: AIProvider,
+    request: AIThreatAssessmentRequest,
     assessment: AIThreatAssessmentResponse,
     startTime: number
   ): void {
     const actualResponseTime = Date.now() - startTime
     const estimatedCost = this.estimateRequestCost(provider, request)
-    
+
     console.log('AI Provider Optimization Metrics:', {
       selectedProvider: provider,
       actualResponseTime,
@@ -522,18 +522,18 @@ export class ThreatAssessmentEngine {
       }
 
       const assessment = this.parseAIResponse(response, request, startTime, provider)
-      
+
       // Log optimization metrics for analysis
       this.logOptimizationMetrics(provider, request, assessment, startTime)
-      
+
       return assessment
     } catch (error) {
       logger.error(`AI threat assessment failed with ${provider}, trying fallback:`, toError(error))
-      
+
       // Try alternate provider if available
       const availableProviders = this.getAvailableProviders()
       const alternateProvider = availableProviders.find(p => p !== provider)
-      
+
       if (alternateProvider) {
         try {
           const prompt = this.buildThreatAssessmentPrompt(request)
@@ -555,14 +555,14 @@ export class ThreatAssessmentEngine {
           logger.error(`Fallback provider ${alternateProvider} also failed:`, fallbackError)
         }
       }
-      
+
       return this.fallbackAssessment(request, startTime)
     }
   }
 
   private async callOpenAI(prompt: string, model: string): Promise<string> {
     const client = this.providers.openai.client as OpenAI
-    
+
     const completion = await client.chat.completions.create({
       model,
       messages: [
@@ -585,7 +585,7 @@ export class ThreatAssessmentEngine {
 
   private async callGrok(prompt: string, model: string): Promise<string> {
     const client = this.providers.grok.client as OpenAI
-    
+
     const completion = await client.chat.completions.create({
       model,
       messages: [
@@ -608,7 +608,7 @@ export class ThreatAssessmentEngine {
 
   private async callClaude(prompt: string, model: string): Promise<string> {
     const client = this.providers.claude.client as Anthropic
-    
+
     const message = await client.messages.create({
       model,
       max_tokens: 4000,
@@ -628,7 +628,7 @@ export class ThreatAssessmentEngine {
 
   private async callGemini(prompt: string, modelName: string): Promise<string> {
     const { model } = this.providers.gemini.client as any
-    
+
     const result = await model.generateContent(prompt)
     const response = await result.response
     return response.text()
@@ -835,18 +835,18 @@ Respond with valid JSON only, no additional text.
   private validateThreatLevel(level: string): ThreatLevel {
     const validLevels = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL', 'EMERGENCY']
     const normalizedLevel = level?.toUpperCase()
-    
+
     if (validLevels.includes(normalizedLevel)) {
       return normalizedLevel as ThreatLevel
     }
-    
+
     return ThreatLevel.LOW
   }
 
   private validateThreatType(type: string): ThreatType {
     const validTypes = Object.values(ThreatType)
     const normalizedType = type?.toUpperCase()
-    
+
     const found = validTypes.find(t => t.toUpperCase() === normalizedType)
     return found || ThreatType.ENVIRONMENTAL
   }
@@ -854,7 +854,7 @@ Respond with valid JSON only, no additional text.
   private validateActionPriority(priority: string): ActionPriority {
     const validPriorities = Object.values(ActionPriority)
     const normalizedPriority = priority?.toUpperCase()
-    
+
     const found = validPriorities.find(p => p.toUpperCase() === normalizedPriority)
     return found || ActionPriority.MEDIUM
   }
@@ -862,7 +862,7 @@ Respond with valid JSON only, no additional text.
   private validateIntelligenceType(type: string): IntelligenceType {
     const validTypes = Object.values(IntelligenceType)
     const normalizedType = type?.toLowerCase()
-    
+
     const found = validTypes.find(t => t === normalizedType)
     return found || IntelligenceType.PROPERTY_ALERT
   }
@@ -870,7 +870,7 @@ Respond with valid JSON only, no additional text.
   private validateImpactLevel(impact: string): ImpactLevel {
     const validImpacts = Object.values(ImpactLevel)
     const normalizedImpact = impact?.toLowerCase()
-    
+
     const found = validImpacts.find(i => i === normalizedImpact)
     return found || ImpactLevel.NEUTRAL
   }
@@ -1001,8 +1001,8 @@ Respond with valid JSON only, no additional text.
     return this.isInitialized && this.getAvailableProviders().length > 0
   }
 
-  getStatus(): { 
-    available: boolean; 
+  getStatus(): {
+    available: boolean;
     providers: Array<{
       name: string;
       available: boolean;
@@ -1022,13 +1022,13 @@ Respond with valid JSON only, no additional text.
   } {
     const availableProviders = this.getAvailableProviders()
     const primaryProvider = availableProviders[0]
-    
+
     return {
       available: this.isAvailable(),
       providers: Object.entries(this.providers).map(([name, config]) => ({
-        name: name === 'openai' ? 'OpenAI' : 
-              name === 'grok' ? 'Grok (X.AI)' : 
-              name === 'claude' ? 'Claude (Anthropic)' : 
+        name: name === 'openai' ? 'OpenAI' :
+              name === 'grok' ? 'Grok (X.AI)' :
+              name === 'claude' ? 'Claude (Anthropic)' :
               'Google Gemini',
         available: config.available,
         models: config.models,
@@ -1038,9 +1038,9 @@ Respond with valid JSON only, no additional text.
         strengths: config.strengths
       })),
       primaryProvider: primaryProvider ? (
-        primaryProvider === 'openai' ? 'OpenAI' : 
-        primaryProvider === 'grok' ? 'Grok (X.AI)' : 
-        primaryProvider === 'claude' ? 'Claude (Anthropic)' : 
+        primaryProvider === 'openai' ? 'OpenAI' :
+        primaryProvider === 'grok' ? 'Grok (X.AI)' :
+        primaryProvider === 'claude' ? 'Claude (Anthropic)' :
         'Google Gemini'
       ) : 'None',
       totalProviders: availableProviders.length,
@@ -1054,17 +1054,17 @@ Respond with valid JSON only, no additional text.
 
   getAvailableModels(): Record<string, string[]> {
     const result: Record<string, string[]> = {}
-    
+
     Object.entries(this.providers).forEach(([provider, config]) => {
       if (config.available) {
-        const name = provider === 'openai' ? 'OpenAI' : 
-                    provider === 'grok' ? 'Grok (X.AI)' : 
-                    provider === 'claude' ? 'Claude (Anthropic)' : 
+        const name = provider === 'openai' ? 'OpenAI' :
+                    provider === 'grok' ? 'Grok (X.AI)' :
+                    provider === 'claude' ? 'Claude (Anthropic)' :
                     'Google Gemini'
         result[name] = config.models
       }
     })
-    
+
     return result
   }
 
@@ -1136,7 +1136,7 @@ export function getThreatAssessmentEngine(): ThreatAssessmentEngine {
 // React hook for easy component integration
 export function useThreatAssessmentEngine() {
   const engine = getThreatAssessmentEngine()
-  
+
   return {
     assessThreats: engine.assessThreats.bind(engine),
     isAvailable: engine.isAvailable.bind(engine),

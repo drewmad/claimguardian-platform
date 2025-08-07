@@ -33,10 +33,10 @@ interface MobileTableRowProps {
   children: ReactNode
 }
 
-export function MobileTableRow({ 
-  onClick, 
-  className, 
-  children 
+export function MobileTableRow({
+  onClick,
+  className,
+  children
 }: MobileTableRowProps) {
   const isClickable = !!onClick
 
@@ -66,11 +66,11 @@ interface MobileTableCellProps {
   prominent?: boolean
 }
 
-export function MobileTableCell({ 
-  label, 
-  value, 
+export function MobileTableCell({
+  label,
+  value,
   action,
-  prominent = false 
+  prominent = false
 }: MobileTableCellProps) {
   return (
     <div className="flex items-center justify-between">

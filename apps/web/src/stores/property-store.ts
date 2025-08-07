@@ -16,7 +16,7 @@ interface PropertyState {
   // Properties
   properties: Asset[]
   selectedPropertyId: string | null
-  
+
   // Property management
   getPropertyById: (id: string) => Asset | undefined
   getPrimaryProperty: () => Asset | undefined
@@ -24,43 +24,43 @@ interface PropertyState {
   addProperty: (property: Omit<Asset, 'id' | 'createdAt' | 'updatedAt'>) => string
   updateProperty: (id: string, updates: Partial<Asset>) => void
   deleteProperty: (id: string) => void
-  
+
   // Inventory management
   addInventoryItem: (propertyId: string, item: Omit<InventoryItem, 'id'>) => void
   updateInventoryItem: (propertyId: string, itemId: string, updates: Partial<InventoryItem>) => void
   deleteInventoryItem: (propertyId: string, itemId: string) => void
   bulkAddInventory: (propertyId: string, items: Omit<InventoryItem, 'id'>[]) => void
-  
+
   // Home systems management
   addHomeSystem: (propertyId: string, system: Omit<HomeSystem, 'id'>) => void
   updateHomeSystem: (propertyId: string, systemId: string, updates: Partial<HomeSystem>) => void
   deleteHomeSystem: (propertyId: string, systemId: string) => void
-  
+
   // Structures management
   addStructure: (propertyId: string, structure: Omit<Structure, 'id'>) => void
   updateStructure: (propertyId: string, structureId: string, updates: Partial<Structure>) => void
   deleteStructure: (propertyId: string, structureId: string) => void
-  
+
   // Renovations management
   addRenovation: (propertyId: string, renovation: Omit<RenovationProject, 'id'>) => void
   updateRenovation: (propertyId: string, renovationId: string, updates: Partial<RenovationProject>) => void
   deleteRenovation: (propertyId: string, renovationId: string) => void
-  
+
   // Maintenance management
   addMaintenanceTask: (propertyId: string, task: Omit<MaintenanceTask, 'id'>) => void
   updateMaintenanceTask: (propertyId: string, taskId: string, updates: Partial<MaintenanceTask>) => void
   deleteMaintenanceTask: (propertyId: string, taskId: string) => void
-  
+
   // Warranty management
   addWarranty: (propertyId: string, warranty: Omit<Warranty, 'id'>) => void
   updateWarranty: (propertyId: string, warrantyId: string, updates: Partial<Warranty>) => void
   deleteWarranty: (propertyId: string, warrantyId: string) => void
-  
+
   // Document management
   addDocument: (propertyId: string, document: Omit<PropertyDocument, 'id'>) => void
   updateDocument: (propertyId: string, documentId: string, updates: Partial<PropertyDocument>) => void
   deleteDocument: (propertyId: string, documentId: string) => void
-  
+
   // Utility functions
   clearProperties: () => void
   syncPropertyData: (propertyId: string) => Promise<void>
@@ -73,13 +73,13 @@ export const usePropertyStore = create<PropertyState>()(
     (set, get) => ({
       properties: [],
       selectedPropertyId: null,
-      
+
       getPropertyById: (id) => get().properties.find(p => p.id === id),
-      
+
       getPrimaryProperty: () => get().properties.find(p => p.isPrimaryResidence) || get().properties[0],
-      
+
       setSelectedProperty: (id) => set({ selectedPropertyId: id }),
-      
+
       addProperty: (propertyData) => {
         const id = generateId()
         const now = new Date().toISOString()
@@ -103,14 +103,14 @@ export const usePropertyStore = create<PropertyState>()(
           saleHistory: [],
           taxHistory: []
         }
-        
+
         set(state => ({
           properties: [...state.properties, newProperty]
         }))
-        
+
         return id
       },
-      
+
       updateProperty: (id, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -118,14 +118,14 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteProperty: (id) => {
         set(state => ({
           properties: state.properties.filter(p => p.id !== id),
           selectedPropertyId: state.selectedPropertyId === id ? null : state.selectedPropertyId
         }))
       },
-      
+
       // Inventory management
       addInventoryItem: (propertyId, item) => {
         const itemWithId = { ...item, id: generateId() }
@@ -137,7 +137,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateInventoryItem: (propertyId, itemId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -153,7 +153,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteInventoryItem: (propertyId, itemId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -167,7 +167,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       bulkAddInventory: (propertyId, items) => {
         const itemsWithIds = items.map(item => ({ ...item, id: generateId() }))
         set(state => ({
@@ -178,7 +178,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Home systems management
       addHomeSystem: (propertyId, system) => {
         const systemWithId = { ...system, id: generateId() }
@@ -190,7 +190,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateHomeSystem: (propertyId, systemId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -206,7 +206,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteHomeSystem: (propertyId, systemId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -220,7 +220,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Structures management
       addStructure: (propertyId, structure) => {
         const structureWithId = { ...structure, id: generateId() }
@@ -232,7 +232,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateStructure: (propertyId, structureId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -248,7 +248,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteStructure: (propertyId, structureId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -262,7 +262,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Renovations management
       addRenovation: (propertyId, renovation) => {
         const renovationWithId = { ...renovation, id: generateId() }
@@ -274,7 +274,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateRenovation: (propertyId, renovationId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -290,7 +290,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteRenovation: (propertyId, renovationId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -304,7 +304,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Maintenance management
       addMaintenanceTask: (propertyId, task) => {
         const taskWithId = { ...task, id: generateId() }
@@ -316,7 +316,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateMaintenanceTask: (propertyId, taskId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -332,7 +332,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteMaintenanceTask: (propertyId, taskId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -346,7 +346,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Warranty management
       addWarranty: (propertyId, warranty) => {
         const warrantyWithId = { ...warranty, id: generateId() }
@@ -358,7 +358,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateWarranty: (propertyId, warrantyId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -374,7 +374,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteWarranty: (propertyId, warrantyId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -388,7 +388,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       // Document management
       addDocument: (propertyId, document) => {
         const documentWithId = { ...document, id: generateId() }
@@ -400,7 +400,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       updateDocument: (propertyId, documentId, updates) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -416,7 +416,7 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       deleteDocument: (propertyId, documentId) => {
         set(state => ({
           properties: state.properties.map(p =>
@@ -430,9 +430,9 @@ export const usePropertyStore = create<PropertyState>()(
           )
         }))
       },
-      
+
       clearProperties: () => set({ properties: [], selectedPropertyId: null }),
-      
+
       syncPropertyData: async (propertyId) => {
         // TODO: Implement actual sync with Supabase
         set(state => ({

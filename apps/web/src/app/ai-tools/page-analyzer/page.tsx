@@ -74,14 +74,14 @@ interface AnalysisResult {
 function PageAnalyzerContent() {
   const subscription = useSubscription()
   const supabase = createClient()
-  
+
   const [step, setStep] = useState<'input' | 'analyzing' | 'result'>('input')
   const [url, setUrl] = useState('')
   const [analysisType, setAnalysisType] = useState<'comprehensive' | 'seo' | 'accessibility' | 'performance'>('comprehensive')
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
   const [analysisProgress, setAnalysisProgress] = useState(0)
-  
+
   // A/B Testing and Quality Feedback state
   const [abTestInfo, setAbTestInfo] = useState<{
     testId: string
@@ -149,7 +149,7 @@ function PageAnalyzerContent() {
       setAbTestInfo(data.abTestInfo)
       setStep('result')
       toast.success('Page analysis completed!')
-      
+
     } catch (error) {
       logger.error('Page analysis failed:', toError(error))
       toast.error('Failed to analyze page. Please try again.')
@@ -177,7 +177,7 @@ function PageAnalyzerContent() {
     a.download = `page-analysis-${new Date().toISOString().split('T')[0]}.json`
     a.click()
     URL.revokeObjectURL(downloadUrl)
-    
+
     toast.success('Analysis results exported!')
   }
 
@@ -199,7 +199,7 @@ function PageAnalyzerContent() {
           user_id: null
         })
       })
-      
+
       setFeedbackSubmitted(true)
       toast.success('Thank you for your feedback!')
     } catch (error) {
@@ -215,7 +215,7 @@ function PageAnalyzerContent() {
           section="AI Tools"
           page="Page Analyzer"
         />
-        
+
         <div className="flex items-center justify-between mt-4">
           <div>
             <h1 className="text-4xl font-bold text-white flex items-center gap-3">

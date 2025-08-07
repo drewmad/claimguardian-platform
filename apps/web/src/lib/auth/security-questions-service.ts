@@ -160,11 +160,11 @@ class SecurityQuestionsService {
       }
 
       const isValid = await this.compareAnswer(answer, data.answer_hash)
-      
-      logger.info('Security answer verification', { 
-        userId, 
-        questionId, 
-        isValid 
+
+      logger.info('Security answer verification', {
+        userId,
+        questionId,
+        isValid
       })
 
       return isValid
@@ -180,17 +180,17 @@ class SecurityQuestionsService {
   async verifyAnswers(userId: string, answers: SecurityAnswerInput[]): Promise<boolean> {
     try {
       const results = await Promise.all(
-        answers.map(answer => 
+        answers.map(answer =>
           this.verifyAnswer(userId, answer.questionId, answer.answer)
         )
       )
 
       const allValid = results.every(result => result === true)
-      
-      logger.info('Multiple security answers verification', { 
-        userId, 
+
+      logger.info('Multiple security answers verification', {
+        userId,
         count: answers.length,
-        allValid 
+        allValid
       })
 
       return allValid

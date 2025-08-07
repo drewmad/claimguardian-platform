@@ -48,12 +48,12 @@ for geojson_file in "$COUNTIES_DIR"/*.geojson; do
     if [[ -f "$geojson_file" ]]; then
         FILENAME=$(basename "$geojson_file")
         FILE_SIZE=$(du -h "$geojson_file" | cut -f1)
-        
+
         echo -ne "${BLUE}[$((UPLOADED + FAILED + 1))/$TOTAL_FILES]${NC} Uploading $FILENAME ($FILE_SIZE)... "
-        
+
         # Storage path: parcels/counties/county_XX_NAME.geojson
         STORAGE_PATH="counties/$FILENAME"
-        
+
         # Upload using curl
         RESPONSE=$(curl -s -w "\n%{http_code}" -X POST \
             "${SUPABASE_URL}/storage/v1/object/${STORAGE_BUCKET}/${STORAGE_PATH}" \
@@ -61,9 +61,9 @@ for geojson_file in "$COUNTIES_DIR"/*.geojson; do
             -H "Content-Type: application/json" \
             -H "x-upsert: true" \
             --data-binary "@${geojson_file}" 2>&1)
-        
+
         HTTP_CODE=$(echo "$RESPONSE" | tail -n 1)
-        
+
         if [[ "$HTTP_CODE" == "200" ]] || [[ "$HTTP_CODE" == "201" ]]; then
             echo -e "${GREEN}✓${NC}"
             ((UPLOADED++))

@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Wrench, Plus, Thermometer, Zap, Droplets, Flame,
   Shield, AlertTriangle, Calendar,
   TrendingUp, FileText, Settings, ChevronRight,
@@ -61,7 +61,7 @@ interface MaintenanceTask {
 
 function HomeSystemsContent() {
   const router = useRouter()
-  
+
   // Mock data
   const [systems] = useState<HomeSystem[]>([
     {
@@ -240,7 +240,7 @@ function HomeSystemsContent() {
                 <p className="text-sm text-gray-400">Systems Tracked</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -251,7 +251,7 @@ function HomeSystemsContent() {
                 <p className="text-sm text-gray-400">Need Attention</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -262,7 +262,7 @@ function HomeSystemsContent() {
                 <p className="text-sm text-gray-400">Avg Efficiency</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -282,7 +282,7 @@ function HomeSystemsContent() {
               {systems.map((system) => {
                 const Icon = getSystemIcon(system.type)
                 const lifePercentage = (system.age / system.expectedLifespan) * 100
-                
+
                 return (
                   <Card key={system.id} className="bg-gray-800 border-gray-700">
                     <CardContent className="p-6">
@@ -319,7 +319,7 @@ function HomeSystemsContent() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-400">Efficiency</span>
                             <span className={`font-medium ${
-                              system.efficiency >= 90 ? 'text-green-400' : 
+                              system.efficiency >= 90 ? 'text-green-400' :
                               system.efficiency >= 70 ? 'text-yellow-400' : 'text-orange-400'
                             }`}>
                               {system.efficiency}%
@@ -331,7 +331,7 @@ function HomeSystemsContent() {
                           <div className="flex justify-between text-sm">
                             <span className="text-gray-400">Warranty</span>
                             <span className="text-gray-300">
-                              {new Date(system.warrantyExpiration) > new Date() 
+                              {new Date(system.warrantyExpiration) > new Date()
                                 ? `Until ${new Date(system.warrantyExpiration).toLocaleDateString()}`
                                 : 'Expired'
                               }
@@ -387,7 +387,7 @@ function HomeSystemsContent() {
                   {upcomingTasks.map((task) => {
                     const system = systems.find(s => s.id === task.systemId)
                     const daysUntil = Math.ceil((new Date(task.nextDue).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))
-                    
+
                     return (
                       <div key={task.id} className="p-4 bg-gray-700 rounded-lg">
                         <div className="flex items-start justify-between mb-2">
@@ -396,7 +396,7 @@ function HomeSystemsContent() {
                             <p className="text-sm text-gray-400">{system?.name}</p>
                           </div>
                           <Badge variant={
-                            task.priority === 'high' ? 'destructive' : 
+                            task.priority === 'high' ? 'destructive' :
                             task.priority === 'medium' ? 'secondary' : 'default'
                           }>
                             {task.priority}
@@ -423,7 +423,7 @@ function HomeSystemsContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <button 
+                  <button
                     onClick={() => router.push('/dashboard/maintenance')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >

@@ -132,7 +132,7 @@ const GOOGLE_MAPS_API_KEY = Deno.env.get('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY') || D
 async function getSolarData(lat: number, lng: number, options: any = {}): Promise<any> {
   try {
     const url = `https://solar.googleapis.com/v1/buildingInsights:findClosest?location.latitude=${lat}&location.longitude=${lng}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(url)
     if (response.ok) {
       const data = await response.json()
@@ -158,11 +158,11 @@ async function getSolarData(lat: number, lng: number, options: any = {}): Promis
 function generateMockSolarData(lat: number, lng: number): any {
   const locationFactor = (lat + lng) % 1 // Semi-random based on coordinates
   const isFloridaLocation = lat > 24 && lat < 31 && lng > -88 && lng < -79
-  
+
   // Florida gets more sunshine hours
   const baseSunshine = isFloridaLocation ? 2800 : 2200
   const sunshineVariation = locationFactor * 600
-  
+
   return {
     name: `buildings/${Math.floor(Math.random() * 1000000)}`,
     center: { latitude: lat, longitude: lng },
@@ -170,10 +170,10 @@ function generateMockSolarData(lat: number, lng: number): any {
       sw: { latitude: lat - 0.0002, longitude: lng - 0.0002 },
       ne: { latitude: lat + 0.0002, longitude: lng + 0.0002 }
     },
-    imageryDate: { 
-      year: 2024, 
-      month: Math.floor(Math.random() * 12) + 1, 
-      day: Math.floor(Math.random() * 28) + 1 
+    imageryDate: {
+      year: 2024,
+      month: Math.floor(Math.random() * 12) + 1,
+      day: Math.floor(Math.random() * 28) + 1
     },
     postalCode: isFloridaLocation ? "33101" : "12345",
     administrativeArea: isFloridaLocation ? "FL" : "CA",
@@ -258,29 +258,29 @@ function calculateFinancialAnalysis(solarData: any, location: { lat: number, lng
   }
 
   const isFloridaLocation = location.lat > 24 && location.lat < 31 && location.lng > -88 && location.lng < -79
-  
+
   // Calculate system specs
   const panelsCount = potential.maxArrayPanelsCount
   const panelWatts = potential.panelCapacityWatts || 250
   const systemSizeKw = (panelsCount * panelWatts) / 1000
   const annualProduction = (potential.maxSunshineHoursPerYear * systemSizeKw * 0.85) // 85% efficiency
-  
+
   // Financial calculations
   const costPerWatt = isFloridaLocation ? 2.80 : 3.20 // Florida tends to be slightly cheaper
   const installationCost = systemSizeKw * 1000 * costPerWatt
   const maintenanceCostAnnual = installationCost * 0.005 // 0.5% per year
   const maintenanceCost20Years = maintenanceCostAnnual * 20
-  
+
   // Electricity savings
   const electricityRate = isFloridaLocation ? 0.12 : 0.16 // per kWh
   const annualSavings = annualProduction * electricityRate
   const totalSavings20Years = annualSavings * 20
-  
+
   // Payback and ROI
   const netCost = installationCost * 0.7 // After 30% federal tax credit
   const paybackYears = netCost / annualSavings
   const roi = ((totalSavings20Years - installationCost) / installationCost) * 100
-  
+
   // Incentives
   const incentives = []
   incentives.push({
@@ -288,7 +288,7 @@ function calculateFinancialAnalysis(solarData: any, location: { lat: number, lng
     amount: installationCost * 0.30,
     description: '30% federal investment tax credit'
   })
-  
+
   if (isFloridaLocation) {
     incentives.push({
       type: 'Florida Sales Tax Exemption',
@@ -301,14 +301,14 @@ function calculateFinancialAnalysis(solarData: any, location: { lat: number, lng
       description: 'Florida solar property tax exemption'
     })
   }
-  
+
   return {
     monthlyBill: { currencyCode: 'USD', units: Math.floor(annualSavings / 12) },
     defaultBill: false,
     averageKwhPerMonth: Math.floor(annualProduction / 12),
-    installationSize: { 
-      panelsCount, 
-      areaMeters2: potential.maxArrayAreaMeters2 
+    installationSize: {
+      panelsCount,
+      areaMeters2: potential.maxArrayAreaMeters2
     },
     costs: {
       installationCost: Math.floor(installationCost),
@@ -352,23 +352,23 @@ function calculateEnvironmentalImpact(solarData: any, financialAnalysis: any): a
 
   const annualProduction = financialAnalysis.averageKwhPerMonth * 12
   const lifetimeProduction = annualProduction * 20
-  
+
   // Carbon offset calculations (using EPA factors)
   const carbonOffsetYearly = annualProduction * 0.92 // lbs CO2 per kWh
   const carbonOffsetLifetime = lifetimeProduction * 0.92
-  
+
   // Environmental equivalents
   const equivalentTreesPlanted = Math.floor(carbonOffsetLifetime / 48) // 48 lbs CO2 per tree per year
   const coalPowerPlantOffset = lifetimeProduction / 1000000 // MWh offset from coal
   const gasCarMilesOffset = Math.floor(carbonOffsetLifetime / 0.89) // lbs CO2 per mile
-  
+
   // Sustainability score (0-100)
   let sustainabilityScore = 50
   if (annualProduction > 8000) sustainabilityScore += 20
   if (annualProduction > 12000) sustainabilityScore += 15
   if (potential.maxArrayAreaMeters2 > 100) sustainabilityScore += 10
   if (carbonOffsetYearly > 10000) sustainabilityScore += 5
-  
+
   return {
     carbonOffsetYearly: Math.floor(carbonOffsetYearly),
     carbonOffsetLifetime: Math.floor(carbonOffsetLifetime),
@@ -382,7 +382,7 @@ function calculateEnvironmentalImpact(solarData: any, financialAnalysis: any): a
 function analyzeRoofSuitability(solarData: any, location: { lat: number, lng: number }): any {
   const potential = solarData.solarPotential
   const roofSegment = potential?.roofSegmentStats?.[0]
-  
+
   if (!roofSegment) {
     return {
       suitability: 'poor' as const,
@@ -482,7 +482,7 @@ function calculatePropertyValueImpact(financialAnalysis: any, location: { lat: n
 
   const isFloridaLocation = location.lat > 24 && location.lat < 31 && location.lng > -88 && location.lng < -79
   const systemValue = financialAnalysis.costs.installationCost
-  
+
   // Property value increase (typically 4% of home value or 80% of system cost, whichever is lower)
   const estimatedValueIncrease = Math.floor(systemValue * 0.75) // 75% of system cost
   const averageHomeValue = isFloridaLocation ? 350000 : 400000 // Rough estimates
@@ -559,7 +559,7 @@ Deno.serve(async (req: Request) => {
 
     // Get solar data from Google Solar API
     const solarData = await getSolarData(location.lat, location.lng, options)
-    
+
     // Always include building insights
     intelligence.buildingInsights = {
       name: solarData.name,
@@ -629,7 +629,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Solar Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

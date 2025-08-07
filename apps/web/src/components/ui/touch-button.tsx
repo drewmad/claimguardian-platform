@@ -180,7 +180,7 @@ export const TouchButton = forwardRef<HTMLButtonElement, TouchButtonProps>(
     // Handle press end
     const handlePressEnd = useCallback(() => {
       setIsPressed(false)
-      
+
       // Clear long press timer
       if (longPressTimer.current) {
         clearTimeout(longPressTimer.current)
@@ -193,7 +193,7 @@ export const TouchButton = forwardRef<HTMLButtonElement, TouchButtonProps>(
       if (disabled || loading) return
 
       const now = Date.now()
-      
+
       // Double click detection
       if (onDoubleClick && now - lastClickTime < doubleClickDelay) {
         triggerHaptic('medium')
@@ -207,7 +207,7 @@ export const TouchButton = forwardRef<HTMLButtonElement, TouchButtonProps>(
       }
 
       setLastClickTime(now)
-      
+
       // Call original onClick handler
       if (onClick && !preventDoubleClick) {
         onClick(e)

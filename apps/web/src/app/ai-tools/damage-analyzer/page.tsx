@@ -166,14 +166,14 @@ const MOCK_ANALYSIS: { [key: string]: AnalysisResult } = {
 function DamageAnalyzerContent() {
   const subscription = useSubscription()
   const { trackAI, trackClick, trackFeatureUsage, trackErrorEvent, trackConversionEvent } = useAnalytics()
-  
+
   const [step, setStep] = useState<'select_policy' | 'upload' | 'capture' | 'analyzing' | 'result'>('select_policy')
   const [policies, setPolicies] = useState<Policy[]>([])
   const [selectedPolicy, setSelectedPolicy] = useState<Policy | null>(null)
   const [uploadedImage, setUploadedImage] = useState<File | null>(null)
   const [analysisResult, setAnalysisResult] = useState<AnalysisResult | null>(null)
   const [isLoading, setIsLoading] = useState(false)
-  
+
   // A/B Testing and Quality Feedback state
   const [abTestInfo, setAbTestInfo] = useState<{
     testId: string
@@ -195,7 +195,7 @@ function DamageAnalyzerContent() {
         // Load real policies from Supabase
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
-        
+
         if (!user) {
           throw new Error('User not authenticated')
         }
@@ -229,29 +229,29 @@ function DamageAnalyzerContent() {
           id: policy.id,
           provider: policy.carrier_name || 'Unknown Provider',
           policy_number: policy.policy_number || 'Unknown',
-          type: policy.policy_type === 'flood' ? 'flood' : 
+          type: policy.policy_type === 'flood' ? 'flood' :
                 policy.policy_type === 'windstorm' ? 'windstorm' : 'homeowners',
           coverage_details: {
             dwelling: policy.coverage_limits?.dwelling || 0,
             personal_property: policy.coverage_limits?.personal_property || 0,
             deductible: policy.deductible_amount || 0,
             clauses: {
-              'water_damage_roof': { 
-                title: 'Water Damage (Roof Leaks)', 
-                description: 'Covers sudden and accidental water damage from roof leaks.', 
-                covered: true 
+              'water_damage_roof': {
+                title: 'Water Damage (Roof Leaks)',
+                description: 'Covers sudden and accidental water damage from roof leaks.',
+                covered: true
               },
-              'wind_damage_siding': { 
-                title: 'Wind Damage (Siding)', 
-                description: 'Covers damage to siding caused by high winds.', 
-                covered: true 
+              'wind_damage_siding': {
+                title: 'Wind Damage (Siding)',
+                description: 'Covers damage to siding caused by high winds.',
+                covered: true
               },
-              'flood_damage': { 
-                title: 'Flood Damage', 
-                description: policy.policy_type === 'flood' 
-                  ? 'Covers damage from rising waters.' 
-                  : 'Flood damage is excluded. Requires separate flood policy.', 
-                covered: policy.policy_type === 'flood' 
+              'flood_damage': {
+                title: 'Flood Damage',
+                description: policy.policy_type === 'flood'
+                  ? 'Covers damage from rising waters.'
+                  : 'Flood damage is excluded. Requires separate flood policy.',
+                covered: policy.policy_type === 'flood'
               }
             }
           }
@@ -296,12 +296,12 @@ function DamageAnalyzerContent() {
       toast.error(access.message || 'AI request limit reached')
       return
     }
-    
+
     setStep('analyzing')
     try {
       // Convert file to base64 for AI analysis
       const base64 = await fileToBase64(file)
-      
+
       logger.info('Starting damage analysis with enhanced AI client')
 
       // Use enhanced AI client with database-driven model selection
@@ -342,23 +342,23 @@ Please analyze the damage carefully, considering the policy context provided.`,
         variant: Math.random() > 0.5 ? 'A' as const : 'B' as const,
         modelUsed: Math.random() > 0.5 ? 'gpt-4-vision' : 'gemini-1.5-pro'
       }
-      
+
       setAbTestInfo(mockAbTestInfo)
       setAnalysisResult(analysisResult)
       setStep('result')
-      
+
       // Reset feedback state for new analysis
       setQualityFeedback({ helpful: null, accuracy: null, comment: '' })
       setFeedbackSubmitted(false)
-      
+
       // Refresh subscription usage after successful analysis
       await subscription.refresh()
-      
+
       logger.info('Damage analysis completed successfully with enhanced AI client', { abTest: mockAbTestInfo })
 
     } catch (error) {
       const errorObj = toError(error)
-      
+
       logger.error('Analysis failed:', errorObj)
       toast.error(errorObj.message)
       setStep('upload')
@@ -412,7 +412,7 @@ Please analyze the damage carefully, considering the policy context provided.`,
       }
 
       logger.info('Quality feedback submitted', feedbackData)
-      
+
       // Mock API call - in production, would call actual endpoint
       // await fetch('/api/admin/quality-feedback', {
       //   method: 'POST',
@@ -439,8 +439,8 @@ Please analyze the damage carefully, considering the policy context provided.`,
         return <AnalyzingStep image={uploadedImage} />
       case 'result':
         return (
-          <ResultStep 
-            result={analysisResult!} 
+          <ResultStep
+            result={analysisResult!}
             onReset={reset}
             abTestInfo={abTestInfo}
             qualityFeedback={qualityFeedback}
@@ -547,15 +547,15 @@ function AnalyzingStep({ image }: { image: File | null }) {
   )
 }
 
-function ResultStep({ 
-  result, 
+function ResultStep({
+  result,
   onReset,
   abTestInfo,
   qualityFeedback,
   feedbackSubmitted,
   onQualityFeedback,
   onSubmitFeedback
-}: { 
+}: {
   result: AnalysisResult
   onReset: () => void
   abTestInfo: { testId: string; variant: 'A' | 'B'; modelUsed: string } | null
@@ -736,7 +736,7 @@ function ResultStep({
                         disabled={feedbackSubmitted}
                         className="p-1 h-8 w-8"
                       >
-                        <Star 
+                        <Star
                           className={`w-4 h-4 ${
                             qualityFeedback.accuracy && rating <= qualityFeedback.accuracy
                               ? 'text-yellow-400 fill-yellow-400'
@@ -803,11 +803,11 @@ function ResultStep({
 
 export default function DamageAnalyzerPage() {
   useAuthDebug('DamageAnalyzerPage')
-  
+
   return (
     <ProtectedRoute>
       <DashboardLayout>
-        <PermissionGuard 
+        <PermissionGuard
           permission={AI_TOOLS_PERMISSIONS.DAMAGE_ANALYZER}
           featureName="AI Damage Analyzer"
         >

@@ -12,7 +12,7 @@
 import { getCacheManager, type CacheLevel, type CacheStrategy } from './cache-manager'
 import { logger } from '@/lib/logger'
 
-export type DataPattern = 
+export type DataPattern =
   | 'frequently-accessed'    // High read frequency, low write frequency
   | 'session-based'         // User session data
   | 'real-time'             // Time-sensitive data with short TTL
@@ -21,7 +21,7 @@ export type DataPattern =
   | 'computational'         // Expensive computation results
   | 'temporary'             // Short-lived temporary data
 
-export type AccessPattern = 
+export type AccessPattern =
   | 'read-heavy'            // Mostly read operations
   | 'write-heavy'           // Mostly write operations
   | 'balanced'              // Equal read/write operations
@@ -71,17 +71,17 @@ export abstract class BaseCacheStrategy {
    */
   protected generateCacheKey(key: CacheKey): string {
     const parts = [key.namespace, key.identifier]
-    
+
     if (key.version) parts.push(`v${key.version}`)
     if (key.userId) parts.push(`u${key.userId}`)
-    
+
     let cacheKey = parts.join(':')
-    
+
     if (key.metadata) {
       const metadataHash = this.hashObject(key.metadata)
       cacheKey += `:${metadataHash}`
     }
-    
+
     return cacheKey
   }
 
@@ -142,7 +142,7 @@ export class FrequentlyAccessedStrategy extends BaseCacheStrategy {
     if (this.shouldSkipCache(options)) return null
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       const result = await this.cacheManager.get<T>(cacheKey, {
         levels: this.getLevels(options)
@@ -161,7 +161,7 @@ export class FrequentlyAccessedStrategy extends BaseCacheStrategy {
 
   async set<T>(key: CacheKey, value: T, options?: CacheOptions): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.set(cacheKey, value, {
         ttl: this.getTTL(options),
@@ -176,7 +176,7 @@ export class FrequentlyAccessedStrategy extends BaseCacheStrategy {
 
   async invalidate(key: CacheKey, options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.delete(cacheKey)
       logger.debug('Invalidated frequently accessed data', { key: cacheKey })
@@ -217,7 +217,7 @@ export class SessionBasedStrategy extends BaseCacheStrategy {
     }
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       const result = await this.cacheManager.get<T>(cacheKey, {
         levels: ['memory', 'browser'] // Keep session data close to user
@@ -237,7 +237,7 @@ export class SessionBasedStrategy extends BaseCacheStrategy {
     }
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.set(cacheKey, value, {
         ttl: this.getTTL(options),
@@ -250,7 +250,7 @@ export class SessionBasedStrategy extends BaseCacheStrategy {
 
   async invalidate(key: CacheKey, options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       if (options?.pattern && key.userId) {
         // Invalidate all session data for user
@@ -297,7 +297,7 @@ export class RealTimeStrategy extends BaseCacheStrategy {
     if (this.shouldSkipCache(options)) return null
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       return await this.cacheManager.get<T>(cacheKey, {
         levels: ['memory']
@@ -310,7 +310,7 @@ export class RealTimeStrategy extends BaseCacheStrategy {
 
   async set<T>(key: CacheKey, value: T, options?: CacheOptions): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.set(cacheKey, value, {
         ttl: this.getTTL(options),
@@ -324,7 +324,7 @@ export class RealTimeStrategy extends BaseCacheStrategy {
 
   async invalidate(key: CacheKey): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.delete(cacheKey, { levels: ['memory'] })
     } catch (error) {
@@ -360,7 +360,7 @@ export class ReferenceDataStrategy extends BaseCacheStrategy {
     if (this.shouldSkipCache(options)) return null
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       const result = await this.cacheManager.get<T>(cacheKey, {
         levels: this.getLevels(options)
@@ -380,7 +380,7 @@ export class ReferenceDataStrategy extends BaseCacheStrategy {
 
   async set<T>(key: CacheKey, value: T, options?: CacheOptions): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.set(cacheKey, value, {
         ttl: this.getTTL(options),
@@ -395,7 +395,7 @@ export class ReferenceDataStrategy extends BaseCacheStrategy {
 
   async invalidate(key: CacheKey, options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       if (options?.pattern) {
         // Invalidate all reference data in namespace
@@ -411,7 +411,7 @@ export class ReferenceDataStrategy extends BaseCacheStrategy {
 
   async warmup(keys: CacheKey[] = []): Promise<void> {
     logger.info('Warming up reference data cache', { keyCount: keys.length })
-    
+
     // Implement aggressive warmup for reference data
     for (const key of keys) {
       try {
@@ -451,10 +451,10 @@ export class ComputationalStrategy extends BaseCacheStrategy {
     if (this.shouldSkipCache(options)) return null
 
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       const result = await this.cacheManager.get<T>(cacheKey)
-      
+
       if (result) {
         logger.debug('Computational cache hit - saved expensive operation', { key: cacheKey })
       }
@@ -468,11 +468,11 @@ export class ComputationalStrategy extends BaseCacheStrategy {
 
   async set<T>(key: CacheKey, value: T, options?: CacheOptions): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       // Use longer TTL for expensive computations
       const ttl = options?.ttl ?? this.config.ttl
-      
+
       await this.cacheManager.set(cacheKey, value, {
         ttl,
         levels: this.getLevels(options)
@@ -486,7 +486,7 @@ export class ComputationalStrategy extends BaseCacheStrategy {
 
   async invalidate(key: CacheKey): Promise<void> {
     const cacheKey = this.generateCacheKey(key)
-    
+
     try {
       await this.cacheManager.delete(cacheKey)
       logger.debug('Invalidated computational cache', { key: cacheKey })
@@ -519,25 +519,25 @@ export class CacheStrategyFactory {
     switch (pattern) {
       case 'frequently-accessed':
         return new FrequentlyAccessedStrategy()
-      
+
       case 'session-based':
         return new SessionBasedStrategy()
-      
+
       case 'real-time':
         return new RealTimeStrategy()
-      
+
       case 'reference-data':
         return new ReferenceDataStrategy()
-      
+
       case 'computational':
         return new ComputationalStrategy()
-      
+
       case 'user-specific':
         return new SessionBasedStrategy() // Similar to session-based
-      
+
       case 'temporary':
         return new RealTimeStrategy() // Similar to real-time but shorter TTL
-      
+
       default:
         return new FrequentlyAccessedStrategy() // Default fallback
     }
@@ -550,19 +550,19 @@ export class CacheStrategyFactory {
     switch (accessPattern) {
       case 'read-heavy':
         return dataSize === 'large' ? 'computational' : 'frequently-accessed'
-      
+
       case 'write-heavy':
         return 'real-time'
-      
+
       case 'balanced':
         return 'session-based'
-      
+
       case 'burst':
         return 'real-time'
-      
+
       case 'streaming':
         return 'temporary'
-      
+
       default:
         return 'frequently-accessed'
     }

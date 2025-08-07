@@ -5,19 +5,19 @@ source scripts/utils/common.sh
 check_project_root
 
 case "$1" in
-  setup) 
+  setup)
     log_info "Setting up development environment..."
-    pnpm install && pnpm prepare 
+    pnpm install && pnpm prepare
     ;;
-  clean) 
+  clean)
     log_info "Cleaning build artifacts..."
-    pnpm clean 
+    pnpm clean
     ;;
-  lint) 
+  lint)
     log_info "Running smart lint fix..."
-    pnpm lint:smart-fix 
+    pnpm lint:smart-fix
     ;;
-  *) 
-    echo "Usage: ./scripts/dev.sh {setup|clean|lint}" 
+  *)
+    echo "Usage: ./scripts/dev.sh {setup|clean|lint}"
     ;;
 esac

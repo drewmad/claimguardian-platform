@@ -15,28 +15,28 @@ export default function FixDatabasePage() {
 -- This matches what the application code expects
 
 -- First, check if the table needs fixing
-DO $$ 
+DO $$
 BEGIN
     -- Check if user_id column exists
     IF NOT EXISTS (
-        SELECT 1 
-        FROM information_schema.columns 
-        WHERE table_schema = 'public' 
-        AND table_name = 'user_profiles' 
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = 'user_profiles'
         AND column_name = 'user_id'
     ) THEN
         -- Rename id to user_id if it exists
         IF EXISTS (
-            SELECT 1 
-            FROM information_schema.columns 
-            WHERE table_schema = 'public' 
-            AND table_name = 'user_profiles' 
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_schema = 'public'
+            AND table_name = 'user_profiles'
             AND column_name = 'id'
         ) THEN
             ALTER TABLE public.user_profiles RENAME COLUMN id TO user_id;
         ELSE
             -- Add user_id column if neither exists
-            ALTER TABLE public.user_profiles 
+            ALTER TABLE public.user_profiles
             ADD COLUMN user_id uuid PRIMARY KEY DEFAULT gen_random_uuid();
         END IF;
     END IF;
@@ -45,39 +45,39 @@ BEGIN
     IF NOT EXISTS (
         SELECT 1
         FROM information_schema.table_constraints tc
-        JOIN information_schema.key_column_usage kcu 
+        JOIN information_schema.key_column_usage kcu
         ON tc.constraint_name = kcu.constraint_name
-        WHERE tc.table_schema = 'public' 
+        WHERE tc.table_schema = 'public'
         AND tc.table_name = 'user_profiles'
         AND tc.constraint_type = 'FOREIGN KEY'
         AND kcu.column_name = 'user_id'
     ) THEN
-        ALTER TABLE public.user_profiles 
-        ADD CONSTRAINT user_profiles_user_id_fkey 
+        ALTER TABLE public.user_profiles
+        ADD CONSTRAINT user_profiles_user_id_fkey
         FOREIGN KEY (user_id) REFERENCES auth.users(id) ON DELETE CASCADE;
     END IF;
 
     -- Add updated_at column if it doesn't exist
     IF NOT EXISTS (
-        SELECT 1 
-        FROM information_schema.columns 
-        WHERE table_schema = 'public' 
-        AND table_name = 'user_profiles' 
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = 'user_profiles'
         AND column_name = 'updated_at'
     ) THEN
-        ALTER TABLE public.user_profiles 
+        ALTER TABLE public.user_profiles
         ADD COLUMN updated_at timestamp with time zone DEFAULT now();
     END IF;
 
     -- Add created_at column if it doesn't exist
     IF NOT EXISTS (
-        SELECT 1 
-        FROM information_schema.columns 
-        WHERE table_schema = 'public' 
-        AND table_name = 'user_profiles' 
+        SELECT 1
+        FROM information_schema.columns
+        WHERE table_schema = 'public'
+        AND table_name = 'user_profiles'
         AND column_name = 'created_at'
     ) THEN
-        ALTER TABLE public.user_profiles 
+        ALTER TABLE public.user_profiles
         ADD COLUMN created_at timestamp with time zone DEFAULT now();
     END IF;
 END $$;
@@ -91,16 +91,16 @@ DROP POLICY IF EXISTS "Users can update own profile" ON public.user_profiles;
 DROP POLICY IF EXISTS "Users can insert own profile" ON public.user_profiles;
 
 -- Create RLS policies
-CREATE POLICY "Users can view own profile" 
-ON public.user_profiles FOR SELECT 
+CREATE POLICY "Users can view own profile"
+ON public.user_profiles FOR SELECT
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can update own profile" 
-ON public.user_profiles FOR UPDATE 
+CREATE POLICY "Users can update own profile"
+ON public.user_profiles FOR UPDATE
 USING (auth.uid() = user_id);
 
-CREATE POLICY "Users can insert own profile" 
-ON public.user_profiles FOR INSERT 
+CREATE POLICY "Users can insert own profile"
+ON public.user_profiles FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 
 -- Create or replace the trigger function to auto-create profile
@@ -128,17 +128,17 @@ GRANT ALL ON public.user_profiles TO service_role;
   const handleApplyFix = async () => {
     setIsApplying(true)
     setStatus('idle')
-    
+
     try {
       // Show instructions since we can't directly execute SQL from the client
       toast.info('Please run this SQL in your Supabase SQL Editor', {
         duration: 10000,
       })
-      
+
       // Copy to clipboard
       await navigator.clipboard.writeText(fixUserProfilesTable)
       toast.success('SQL copied to clipboard!')
-      
+
       setStatus('success')
     } catch (error) {
       console.error('Error:', error)
@@ -153,10 +153,10 @@ GRANT ALL ON public.user_profiles TO service_role;
     <div className="min-h-screen bg-gray-900 p-8">
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-white mb-8">Fix Database Issues</h1>
-        
+
         <Card className="bg-gray-800 border-gray-700 p-6">
           <h2 className="text-xl font-semibold text-white mb-4">Fix user_profiles Table</h2>
-          
+
           <div className="bg-gray-900 p-4 rounded-lg mb-6">
             <p className="text-gray-300 mb-2">This will fix the following issues:</p>
             <ul className="list-disc list-inside text-gray-400 space-y-1">

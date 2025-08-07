@@ -28,21 +28,21 @@ function getPolycount(quality: ModelSettings['quality']): number {
 
 // Local photogrammetry processing using basic computer vision
 async function processImagesLocally(
-  imageUrls: string[], 
+  imageUrls: string[],
   settings: ModelSettings
 ): Promise<{ modelData: Uint8Array; metadata: any }> {
   // Simulate feature extraction and matching
   const features = await extractFeatures(imageUrls)
-  
+
   // Simulate 3D reconstruction
   const pointCloud = await reconstructPointCloud(features, settings)
-  
+
   // Generate mesh from point cloud
   const mesh = await generateMesh(pointCloud, settings)
-  
+
   // Create GLTF data
   const gltfData = await createGLTF(mesh, settings)
-  
+
   return {
     modelData: gltfData,
     metadata: {
@@ -59,12 +59,12 @@ async function extractFeatures(imageUrls: string[]) {
   // Simulate feature extraction from multiple images
   // In a real implementation, this would use OpenCV.js or similar
   const features = []
-  
+
   for (const url of imageUrls) {
     // Simulate downloading and processing image
     const response = await fetch(url)
     const imageData = await response.arrayBuffer()
-    
+
     // Simulate feature detection (SIFT, ORB, etc.)
     const imageFeatures = {
       keypoints: Array.from({ length: Math.floor(Math.random() * 1000) + 500 }, () => ({
@@ -74,17 +74,17 @@ async function extractFeatures(imageUrls: string[]) {
       })),
       imageSize: { width: 1920, height: 1080 }
     }
-    
+
     features.push(imageFeatures)
   }
-  
+
   return features
 }
 
 async function reconstructPointCloud(features: any[], settings: ModelSettings) {
   // Simulate structure-from-motion reconstruction
   const targetPoints = getPolycount(settings.quality)
-  
+
   const points = Array.from({ length: targetPoints }, () => ({
     position: {
       x: (Math.random() - 0.5) * 10,
@@ -98,7 +98,7 @@ async function reconstructPointCloud(features: any[], settings: ModelSettings) {
     } : { r: 0.5, g: 0.5, b: 0.5 },
     confidence: Math.random()
   }))
-  
+
   return { points }
 }
 
@@ -108,21 +108,21 @@ async function generateMesh(pointCloud: any, settings: ModelSettings) {
   const faces = []
   const normals = []
   const uvs = []
-  
+
   // Generate vertices from point cloud
   for (const point of pointCloud.points) {
     vertices.push(point.position.x, point.position.y, point.position.z)
-    
+
     if (settings.includeTextures) {
       uvs.push(Math.random(), Math.random())
     }
   }
-  
+
   // Generate faces (simplified triangulation)
   for (let i = 0; i < vertices.length / 3 - 2; i += 3) {
     if (i + 2 < vertices.length / 3) {
       faces.push(i, i + 1, i + 2)
-      
+
       // Calculate normal for this face
       const normal = calculateNormal(
         { x: vertices[i * 3], y: vertices[i * 3 + 1], z: vertices[i * 3 + 2] },
@@ -132,20 +132,20 @@ async function generateMesh(pointCloud: any, settings: ModelSettings) {
       normals.push(normal.x, normal.y, normal.z)
     }
   }
-  
+
   return { vertices, faces, normals, uvs }
 }
 
 function calculateNormal(v1: any, v2: any, v3: any) {
   const edge1 = { x: v2.x - v1.x, y: v2.y - v1.y, z: v2.z - v1.z }
   const edge2 = { x: v3.x - v1.x, y: v3.y - v1.y, z: v3.z - v1.z }
-  
+
   const normal = {
     x: edge1.y * edge2.z - edge1.z * edge2.y,
     y: edge1.z * edge2.x - edge1.x * edge2.z,
     z: edge1.x * edge2.y - edge1.y * edge2.x
   }
-  
+
   const length = Math.sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z)
   return { x: normal.x / length, y: normal.y / length, z: normal.z / length }
 }
@@ -208,7 +208,7 @@ async function createGLTF(mesh: any, settings: ModelSettings): Promise<Uint8Arra
       byteLength: mesh.vertices.length * 4 + (settings.includeTextures ? mesh.uvs.length * 4 : 0) + mesh.faces.length * 2
     }]
   }
-  
+
   // Convert to binary data
   const gltfString = JSON.stringify(gltf)
   const encoder = new TextEncoder()
@@ -217,17 +217,17 @@ async function createGLTF(mesh: any, settings: ModelSettings): Promise<Uint8Arra
 
 function calculateQualityScore(mesh: any, settings: ModelSettings): number {
   let score = 70 // Base score
-  
+
   // Quality based on vertex count
   const vertexCount = mesh.vertices.length / 3
   if (vertexCount > 40000) score += 20
   else if (vertexCount > 20000) score += 15
   else if (vertexCount > 10000) score += 10
   else score += 5
-  
+
   // Bonus for textures
   if (settings.includeTextures) score += 10
-  
+
   return Math.min(95, score)
 }
 
@@ -240,7 +240,7 @@ serve(async (req: Request) => {
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
   // No external APIs needed - all processing is local
-  
+
   const supabase = createClient(supabaseUrl, supabaseKey)
 
   try {
@@ -357,36 +357,36 @@ serve(async (req: Request) => {
 
 // Background processing function
 async function processImagesInBackground(
-  taskId: string, 
-  imageUrls: string[], 
-  settings: ModelSettings, 
+  taskId: string,
+  imageUrls: string[],
+  settings: ModelSettings,
   supabase: any
 ) {
   try {
     // Update status to analyzing
     await new Promise(resolve => setTimeout(resolve, 1000))
-    await supabase.from('model_tasks').update({ 
-      status: 'ANALYZING', 
-      progress: 15 
+    await supabase.from('model_tasks').update({
+      status: 'ANALYZING',
+      progress: 15
     }).eq('id', taskId)
 
     // Update status to reconstructing
     await new Promise(resolve => setTimeout(resolve, 3000))
-    await supabase.from('model_tasks').update({ 
-      status: 'RECONSTRUCTING', 
-      progress: 45 
+    await supabase.from('model_tasks').update({
+      status: 'RECONSTRUCTING',
+      progress: 45
     }).eq('id', taskId)
 
     // Update status to optimizing
     await new Promise(resolve => setTimeout(resolve, 4000))
-    await supabase.from('model_tasks').update({ 
-      status: 'OPTIMIZING', 
-      progress: 75 
+    await supabase.from('model_tasks').update({
+      status: 'OPTIMIZING',
+      progress: 75
     }).eq('id', taskId)
 
     // Process images locally
     const { modelData, metadata } = await processImagesLocally(imageUrls, settings)
-    
+
     // Upload generated model to storage
     const modelFileName = `${taskId}.gltf`
     const { data: uploadData, error: uploadError } = await supabase.storage
@@ -402,9 +402,9 @@ async function processImagesInBackground(
     const { data: urlData } = supabase.storage
       .from('3d-models')
       .getPublicUrl(uploadData.path)
-    
+
     // Update task as completed
-    await supabase.from('model_tasks').update({ 
+    await supabase.from('model_tasks').update({
       status: 'SUCCEEDED',
       progress: 100,
       model_url: urlData.publicUrl,
@@ -414,9 +414,9 @@ async function processImagesInBackground(
 
   } catch (error) {
     console.error('Background processing failed:', error)
-    
+
     // Update task as failed
-    await supabase.from('model_tasks').update({ 
+    await supabase.from('model_tasks').update({
       status: 'FAILED',
       error: error instanceof Error ? error.message : String(error) || 'Processing failed',
       completed_at: new Date().toISOString()

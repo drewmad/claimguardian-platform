@@ -14,12 +14,12 @@ export default function CompliancePage() {
         <div className="mb-8">
           <h1 className="text-3xl font-bold">Automated Compliance Checker</h1>
           <p className="text-gray-600 mt-2">
-            Ensure your insurance claim meets all Florida statutory requirements. 
-            Our AI-powered system checks your claim against state regulations, identifies issues, 
+            Ensure your insurance claim meets all Florida statutory requirements.
+            Our AI-powered system checks your claim against state regulations, identifies issues,
             and provides automatic fixes where possible.
           </p>
         </div>
-        
+
         <ComplianceChecker />
       </div>
     </DashboardLayout>

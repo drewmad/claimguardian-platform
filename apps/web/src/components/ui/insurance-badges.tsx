@@ -12,14 +12,14 @@ import { Badge as BaseBadge } from './badge'
 import { Shield, AlertTriangle, CheckCircle, XCircle, Clock, TrendingUp, TrendingDown } from 'lucide-react'
 import React from 'react'
 
-export type InsuranceBadgeVariant = 
-  | 'active' 
-  | 'expired' 
+export type InsuranceBadgeVariant =
+  | 'active'
+  | 'expired'
   | 'pending'
   | 'cancelled'
   | 'none'
   | 'insurability-high'
-  | 'insurability-medium' 
+  | 'insurability-medium'
   | 'insurability-low'
   | 'coverage-adequate'
   | 'coverage-partial'
@@ -68,7 +68,7 @@ const badgeConfig = {
     icon: XCircle,
     label: 'No Insurance'
   },
-  
+
   // Insurability Levels
   'insurability-high': {
     className: 'bg-green-600/20 text-green-400 border-green-600/30',
@@ -85,7 +85,7 @@ const badgeConfig = {
     icon: TrendingDown,
     label: 'High Risk'
   },
-  
+
   // Coverage Status
   'coverage-adequate': {
     className: 'bg-green-600/20 text-green-400 border-green-600/30',
@@ -102,7 +102,7 @@ const badgeConfig = {
     icon: AlertTriangle,
     label: 'Insufficient Coverage'
   },
-  
+
   // Premium Status
   'premium-paid': {
     className: 'bg-green-600/20 text-green-400 border-green-600/30',
@@ -119,7 +119,7 @@ const badgeConfig = {
     icon: AlertTriangle,
     label: 'Overdue'
   },
-  
+
   // Claim Status
   'claim-open': {
     className: 'bg-blue-600/20 text-blue-400 border-blue-600/30',
@@ -141,7 +141,7 @@ const badgeConfig = {
     icon: XCircle,
     label: 'Denied'
   },
-  
+
   // Deductible Types
   'deductible-standard': {
     className: 'bg-gray-600/20 text-gray-300 border-gray-600/30',

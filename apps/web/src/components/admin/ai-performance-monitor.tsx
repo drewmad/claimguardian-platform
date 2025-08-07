@@ -217,10 +217,10 @@ export function AIPerformanceMonitor() {
 
   // Prepare chart data
   const chartData = metrics.map(m => ({
-    time: new Date(m.timestamp).toLocaleTimeString('en-US', { 
-      hour12: false, 
-      minute: '2-digit', 
-      second: '2-digit' 
+    time: new Date(m.timestamp).toLocaleTimeString('en-US', {
+      hour12: false,
+      minute: '2-digit',
+      second: '2-digit'
     }),
     responseTime: Math.round(m.responseTime),
     errorRate: parseFloat(m.errorRate.toFixed(1)),
@@ -313,9 +313,9 @@ export function AIPerformanceMonitor() {
             <div className="text-2xl font-bold text-white">
               {currentMetrics ? Math.round(currentMetrics.responseTime) : 0}ms
             </div>
-            <Progress 
-              value={currentMetrics ? Math.min((currentMetrics.responseTime / 3000) * 100, 100) : 0} 
-              className="h-2 mt-2" 
+            <Progress
+              value={currentMetrics ? Math.min((currentMetrics.responseTime / 3000) * 100, 100) : 0}
+              className="h-2 mt-2"
             />
             <p className="text-xs text-gray-500 mt-1">
               Target: &lt;{thresholds.responseTime}ms
@@ -347,9 +347,9 @@ export function AIPerformanceMonitor() {
             <div className="text-2xl font-bold text-white">
               {currentMetrics ? currentMetrics.errorRate.toFixed(1) : '0.0'}%
             </div>
-            <Progress 
-              value={currentMetrics ? Math.min((currentMetrics.errorRate / 10) * 100, 100) : 0} 
-              className="h-2 mt-2" 
+            <Progress
+              value={currentMetrics ? Math.min((currentMetrics.errorRate / 10) * 100, 100) : 0}
+              className="h-2 mt-2"
             />
             <p className="text-xs text-gray-500 mt-1">
               Target: &lt;{thresholds.errorRate}%
@@ -366,9 +366,9 @@ export function AIPerformanceMonitor() {
             <div className="text-2xl font-bold text-white">
               {currentMetrics ? currentMetrics.cacheHitRate.toFixed(1) : '0.0'}%
             </div>
-            <Progress 
-              value={currentMetrics ? currentMetrics.cacheHitRate : 0} 
-              className="h-2 mt-2" 
+            <Progress
+              value={currentMetrics ? currentMetrics.cacheHitRate : 0}
+              className="h-2 mt-2"
             />
             <p className="text-xs text-gray-500 mt-1">
               Target: &gt;{thresholds.cacheHitRate}%
@@ -387,13 +387,13 @@ export function AIPerformanceMonitor() {
             <ResponsiveContainer width="100%" height={250}>
               <LineChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="time" 
+                <XAxis
+                  dataKey="time"
                   stroke="#9CA3AF"
                   tick={{ fontSize: 12 }}
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   labelStyle={{ color: '#9CA3AF' }}
                 />
@@ -417,13 +417,13 @@ export function AIPerformanceMonitor() {
             <ResponsiveContainer width="100%" height={250}>
               <AreaChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="time" 
+                <XAxis
+                  dataKey="time"
                   stroke="#9CA3AF"
                   tick={{ fontSize: 12 }}
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   labelStyle={{ color: '#9CA3AF' }}
                 />
@@ -465,8 +465,8 @@ export function AIPerformanceMonitor() {
                   </div>
                   <div className="flex items-center gap-2">
                     {getTrendIcon(feature.trend)}
-                    <Badge 
-                      variant="outline" 
+                    <Badge
+                      variant="outline"
                       className={getStatusColor(feature.status)}
                     >
                       {feature.status}
@@ -485,7 +485,7 @@ export function AIPerformanceMonitor() {
                   <div>
                     <p className="text-gray-400">Error Rate</p>
                     <p className={`font-semibold ${
-                      feature.errorRate > 3 ? 'text-red-400' : 
+                      feature.errorRate > 3 ? 'text-red-400' :
                       feature.errorRate > 1 ? 'text-yellow-400' : 'text-green-400'
                     }`}>
                       {feature.errorRate}%
@@ -512,9 +512,9 @@ export function AIPerformanceMonitor() {
                   {currentMetrics ? currentMetrics.memoryUsage.toFixed(1) : '0.0'}%
                 </span>
               </div>
-              <Progress 
-                value={currentMetrics ? currentMetrics.memoryUsage : 0} 
-                className="h-3" 
+              <Progress
+                value={currentMetrics ? currentMetrics.memoryUsage : 0}
+                className="h-3"
               />
               <div className="flex justify-between text-sm text-gray-500">
                 <span>0%</span>
@@ -537,9 +537,9 @@ export function AIPerformanceMonitor() {
                   {currentMetrics ? currentMetrics.cpuUsage.toFixed(1) : '0.0'}%
                 </span>
               </div>
-              <Progress 
-                value={currentMetrics ? currentMetrics.cpuUsage : 0} 
-                className="h-3" 
+              <Progress
+                value={currentMetrics ? currentMetrics.cpuUsage : 0}
+                className="h-3"
               />
               <div className="flex justify-between text-sm text-gray-500">
                 <span>0%</span>

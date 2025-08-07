@@ -35,11 +35,11 @@ SCHEMA_FILE="supabase/schema.sql"
 log_info "Checking for existing migrations..."
 if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
     log_info "Found migrations to consolidate"
-    
+
     # Create backup directory
     BACKUP_DIR="supabase/migrations.archive.$(date +%Y%m%d_%H%M%S)"
     mkdir -p ${BACKUP_DIR}
-    
+
     # Create temporary database for consolidation
     log_info "Creating temporary database for consolidation..."
     createdb temp_consolidation 2>/dev/null || {
@@ -47,13 +47,13 @@ if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
         dropdb temp_consolidation
         createdb temp_consolidation
     }
-    
+
     # Apply all migrations in order
     for migration in supabase/migrations/*.sql; do
         log_info "Applying $(basename $migration)..."
         psql temp_consolidation < "$migration"
     done
-    
+
     # Dump consolidated schema
     log_info "Dumping consolidated schema..."
     pg_dump temp_consolidation \
@@ -66,14 +66,14 @@ if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
         --exclude-schema=storage \
         --exclude-schema=vault \
         > ${SCHEMA_FILE}.consolidated
-    
+
     # Clean up temporary database
     dropdb temp_consolidation
-    
+
     # Archive migrations
     log_info "Archiving migrations to ${BACKUP_DIR}..."
     mv supabase/migrations/*.sql ${BACKUP_DIR}/
-    
+
     # Update migrations README
     cat > supabase/migrations/README.md << EOF
 # Migrations Consolidated
@@ -86,7 +86,7 @@ All migrations have been consolidated to avoid Supabase CLI conflicts.
 
 See supabase/schema.sql for the current database schema.
 EOF
-    
+
     log_success "Migrations consolidated successfully"
 else
     log_info "No migrations found to consolidate"
@@ -186,7 +186,7 @@ if diff -q ${SCHEMA_FILE} /tmp/local_schema_verify.sql > /dev/null; then
 else
     log_warn "There are some differences between local and remote schemas."
     log_info "This might be due to system schemas. Running detailed diff..."
-    
+
     # Show only significant differences
     diff -u ${SCHEMA_FILE} /tmp/local_schema_verify.sql | grep -E "^[+-]CREATE|^[+-]ALTER" | head -20 || true
 fi

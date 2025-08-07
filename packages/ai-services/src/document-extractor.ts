@@ -14,10 +14,10 @@ import { GeminiProvider } from './providers/gemini'
 import { OpenAIProvider } from './providers/openai'
 import { AIProvider } from './providers/base'
 import { hasConfidence } from './utils/type-guards'
-import type { 
-  DocumentExtractionRequest, 
-  ExtractedPolicyData, 
-  AIResponse 
+import type {
+  DocumentExtractionRequest,
+  ExtractedPolicyData,
+  AIResponse
 } from './types'
 
 export class DocumentExtractor {
@@ -40,7 +40,7 @@ export class DocumentExtractor {
 
   private buildExtractionPrompt(): string {
     return `
-You are an AI assistant specialized in extracting structured data from insurance policy documents. 
+You are an AI assistant specialized in extracting structured data from insurance policy documents.
 
 Please analyze this insurance policy document and extract the following information in JSON format:
 
@@ -123,11 +123,11 @@ Rules:
             request.fileUrl,
             this.buildExtractionPrompt()
           )
-          
+
           if (!response.success) {
             throw new Error(response.error)
           }
-          
+
           return response
         },
         {

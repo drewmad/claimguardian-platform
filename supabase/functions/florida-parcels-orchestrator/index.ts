@@ -9,7 +9,7 @@ const corsHeaders = {
 // Priority counties by population/importance
 const PRIORITY_COUNTIES = [
   13, // Miami-Dade
-  6,  // Broward  
+  6,  // Broward
   50, // Palm Beach
   29, // Hillsborough
   48, // Orange
@@ -48,9 +48,9 @@ serve(async (req) => {
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
-    const { 
-      action, 
-      mode = 'priority', 
+    const {
+      action,
+      mode = 'priority',
       counties = [],
       batch_size = 1000,
       parallel_counties = 2
@@ -59,16 +59,16 @@ serve(async (req) => {
     switch (action) {
       case 'start':
         return await startProcessing(supabase, mode, counties, batch_size, parallel_counties);
-      
+
       case 'stop':
         return await stopProcessing(supabase);
-      
+
       case 'status':
         return await getOrchestratorStatus(supabase);
-      
+
       case 'reset':
         return await resetProcessing(supabase, counties);
-      
+
       default:
         throw new Error(`Invalid action: ${action}`);
     }
@@ -77,9 +77,9 @@ serve(async (req) => {
     console.error('Orchestrator error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 400 
+        status: 400
       }
     );
   }
@@ -93,62 +93,62 @@ async function startProcessing(
   parallelCounties: number
 ): Promise<Response> {
   console.log(`Starting orchestrator in ${mode} mode`);
-  
+
   // Check if already running
   const { data: runningJobs } = await supabase
     .from('florida_parcels_orchestrator')
     .select('*')
     .eq('status', 'running');
-  
+
   if (runningJobs && runningJobs.length > 0) {
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Orchestrator is already running',
-        job_id: runningJobs[0].id 
+        job_id: runningJobs[0].id
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 409 
+        status: 409
       }
     );
   }
-  
+
   // Determine counties to process
   let countiesToProcess: number[] = [];
-  
+
   switch (mode) {
     case 'priority':
       countiesToProcess = PRIORITY_COUNTIES;
       break;
-    
+
     case 'all':
       countiesToProcess = Array.from({ length: 67 }, (_, i) => i + 1);
       break;
-    
+
     case 'specific':
       countiesToProcess = specificCounties;
       break;
   }
-  
+
   // Filter out already completed counties
   const { data: completedCounties } = await supabase
     .from('florida_parcels_processing_log')
     .select('county_code')
     .in('status', ['completed', 'completed_with_errors']);
-  
+
   const completedCodes = new Set(completedCounties?.map((c: any) => c.county_code) || []);
   countiesToProcess = countiesToProcess.filter(code => !completedCodes.has(code));
-  
+
   if (countiesToProcess.length === 0) {
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         message: 'All counties have been processed',
         completed_counties: completedCodes.size
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
-  
+
   // Create orchestrator job
   const { data: job, error: jobError } = await supabase
     .from('florida_parcels_orchestrator')
@@ -164,18 +164,18 @@ async function startProcessing(
     })
     .select()
     .single();
-  
+
   if (jobError) throw jobError;
-  
+
   // Start processing counties in parallel batches
   processCountiesInBatches(
-    supabase, 
-    job.id, 
-    countiesToProcess, 
-    batchSize, 
+    supabase,
+    job.id,
+    countiesToProcess,
+    batchSize,
     parallelCounties
   );
-  
+
   return new Response(
     JSON.stringify({
       job_id: job.id,
@@ -198,7 +198,7 @@ async function processCountiesInBatches(
   parallelCounties: number
 ): Promise<void> {
   console.log(`Processing ${counties.length} counties in batches of ${parallelCounties}`);
-  
+
   for (let i = 0; i < counties.length; i += parallelCounties) {
     // Check if job was stopped
     const { data: job } = await supabase
@@ -206,21 +206,21 @@ async function processCountiesInBatches(
       .select('status')
       .eq('id', jobId)
       .single();
-    
+
     if (job?.status !== 'running') {
       console.log('Job was stopped');
       break;
     }
-    
+
     // Process batch of counties in parallel
     const batch = counties.slice(i, i + parallelCounties);
-    const promises = batch.map(countyCode => 
+    const promises = batch.map(countyCode =>
       processCounty(supabase, countyCode, batchSize)
     );
-    
+
     try {
       await Promise.all(promises);
-      
+
       // Update progress
       const processedCount = Math.min(i + parallelCounties, counties.length);
       await supabase
@@ -230,10 +230,10 @@ async function processCountiesInBatches(
           last_updated: new Date().toISOString()
         })
         .eq('id', jobId);
-      
+
     } catch (error) {
       console.error(`Batch processing error:`, error);
-      
+
       // Update job with error
       await supabase
         .from('florida_parcels_orchestrator')
@@ -243,11 +243,11 @@ async function processCountiesInBatches(
           failed_at: new Date().toISOString()
         })
         .eq('id', jobId);
-      
+
       throw error;
     }
   }
-  
+
   // Mark job as completed
   await supabase
     .from('florida_parcels_orchestrator')
@@ -264,7 +264,7 @@ async function processCounty(
   batchSize: number
 ): Promise<void> {
   const functionUrl = `${Deno.env.get('SUPABASE_URL')}/functions/v1/florida-parcels-processor`;
-  
+
   const response = await fetch(functionUrl, {
     method: 'POST',
     headers: {
@@ -277,12 +277,12 @@ async function processCounty(
       batch_size: batchSize
     })
   });
-  
+
   if (!response.ok) {
     const error = await response.text();
     throw new Error(`Failed to process county ${countyCode}: ${error}`);
   }
-  
+
   const result = await response.json();
   console.log(`County ${countyCode} result:`, result);
 }
@@ -293,14 +293,14 @@ async function stopProcessing(supabase: any): Promise<Response> {
     .from('florida_parcels_orchestrator')
     .select('*')
     .eq('status', 'running');
-  
+
   if (!runningJobs || runningJobs.length === 0) {
     return new Response(
       JSON.stringify({ message: 'No running jobs to stop' }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
-  
+
   // Stop all running jobs
   const { error } = await supabase
     .from('florida_parcels_orchestrator')
@@ -309,9 +309,9 @@ async function stopProcessing(supabase: any): Promise<Response> {
       stopped_at: new Date().toISOString()
     })
     .eq('status', 'running');
-  
+
   if (error) throw error;
-  
+
   return new Response(
     JSON.stringify({
       message: `Stopped ${runningJobs.length} running job(s)`,
@@ -328,9 +328,9 @@ async function getOrchestratorStatus(supabase: any): Promise<Response> {
     .select('*')
     .order('created_at', { ascending: false })
     .limit(10);
-  
+
   if (jobsError) throw jobsError;
-  
+
   // Get processing status
   const processorResponse = await fetch(
     `${Deno.env.get('SUPABASE_URL')}/functions/v1/florida-parcels-processor`,
@@ -343,9 +343,9 @@ async function getOrchestratorStatus(supabase: any): Promise<Response> {
       body: JSON.stringify({ action: 'status' })
     }
   );
-  
+
   const processingStatus = await processorResponse.json();
-  
+
   return new Response(
     JSON.stringify({
       current_job: jobs?.find((j: any) => j.status === 'running') || null,
@@ -365,31 +365,31 @@ async function resetProcessing(
   if (counties.length > 0) {
     conditions.county_code = counties;
   }
-  
+
   // Delete from processing log
   const { error: logError } = await supabase
     .from('florida_parcels_processing_log')
     .delete()
     .match(conditions);
-  
+
   if (logError) throw logError;
-  
+
   // Delete parcels data
   const deleteConditions: any = {};
   if (counties.length > 0) {
     deleteConditions.CO_NO = counties;
   }
-  
+
   const { error: parcelsError } = await supabase
     .from('florida_parcels')
     .delete()
     .match(deleteConditions);
-  
+
   if (parcelsError) throw parcelsError;
-  
+
   return new Response(
     JSON.stringify({
-      message: counties.length > 0 
+      message: counties.length > 0
         ? `Reset data for counties: ${counties.join(', ')}`
         : 'Reset all processing data',
       counties_reset: counties.length || 'all'

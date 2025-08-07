@@ -39,7 +39,7 @@ class FileUploadService {
    * Upload a file to Supabase Storage
    */
   async uploadFile(
-    file: File, 
+    file: File,
     folder: string = 'general',
     validation: FileValidation = DEFAULT_VALIDATION
   ): Promise<FileUploadResult> {
@@ -63,11 +63,11 @@ class FileUploadService {
       const fileName = `${timestamp}_${sanitizedName}`
       const filePath = `${user.id}/${folder}/${fileName}`
 
-      logger.info('Uploading file to storage', { 
-        fileName, 
-        filePath, 
+      logger.info('Uploading file to storage', {
+        fileName,
+        filePath,
         fileSize: file.size,
-        fileType: file.type 
+        fileType: file.type
       })
 
       // Upload file
@@ -97,8 +97,8 @@ class FileUploadService {
       }
     } catch (error) {
       logger.error('Unexpected error during file upload', { error })
-      return { 
-        success: false, 
+      return {
+        success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
       }
     }
@@ -113,7 +113,7 @@ class FileUploadService {
     validation: FileValidation = DEFAULT_VALIDATION
   ): Promise<FileUploadResult[]> {
     const results: FileUploadResult[] = []
-    
+
     for (const file of files) {
       const result = await this.uploadFile(file, folder, validation)
       results.push(result)
@@ -171,7 +171,7 @@ class FileUploadService {
   async listUserFiles(userId: string, folder: string = ''): Promise<StorageFile[]> {
     try {
       const prefix = folder ? `${userId}/${folder}` : userId
-      
+
       const { data, error } = await this.supabase.storage
         .from(this.bucketName)
         .list(prefix)
@@ -195,25 +195,25 @@ class FileUploadService {
     // Check file size
     if (file.size > validation.maxSize) {
       const maxSizeMB = Math.round(validation.maxSize / (1024 * 1024))
-      return { 
-        success: false, 
-        error: `File size exceeds ${maxSizeMB}MB limit` 
+      return {
+        success: false,
+        error: `File size exceeds ${maxSizeMB}MB limit`
       }
     }
 
     // Check file type
     if (!validation.allowedTypes.includes(file.type)) {
-      return { 
-        success: false, 
-        error: `File type ${file.type} not allowed. Allowed types: ${validation.allowedTypes.join(', ')}` 
+      return {
+        success: false,
+        error: `File type ${file.type} not allowed. Allowed types: ${validation.allowedTypes.join(', ')}`
       }
     }
 
     // Check filename length
     if (file.name.length > 255) {
-      return { 
-        success: false, 
-        error: 'Filename too long (max 255 characters)' 
+      return {
+        success: false,
+        error: 'Filename too long (max 255 characters)'
       }
     }
 

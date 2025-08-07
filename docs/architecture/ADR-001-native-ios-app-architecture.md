@@ -32,27 +32,27 @@ graph TB
         C[Widgets]
         D[Siri Shortcuts]
     end
-    
+
     subgraph "Business Logic Layer"
         E[ViewModels]
         F[Use Cases]
         G[Services]
         H[Repositories]
     end
-    
+
     subgraph "Data Layer"
         I[Core Data]
         J[CloudKit]
         K[Keychain]
         L[UserDefaults]
     end
-    
+
     subgraph "External Services"
         M[Supabase API]
         N[OpenAI/Gemini]
         O[Apple Services]
     end
-    
+
     A --> E
     B --> F
     E --> G
@@ -95,19 +95,19 @@ graph TB
         B[Navigation]
         C[State Management]
     end
-    
+
     subgraph "Native iOS Modules"
         D[ARKit Module]
         E[Camera Module]
         F[Core Data Module]
         G[CloudKit Module]
     end
-    
+
     subgraph "Bridge Layer"
         H[Native Bridges]
         I[Event Emitters]
     end
-    
+
     A --> H
     H --> D
     H --> E
@@ -138,18 +138,18 @@ graph TB
         B[BLoC/Provider]
         C[Services]
     end
-    
+
     subgraph "Platform Channels"
         D[Method Channels]
         E[Event Channels]
     end
-    
+
     subgraph "Native iOS"
         F[ARKit Integration]
         G[Core Data]
         H[CloudKit]
     end
-    
+
     A --> D
     D --> F
     D --> G
@@ -260,7 +260,7 @@ protocol SupabaseServiceProtocol {
 
 class SupabaseService: SupabaseServiceProtocol {
     private let client: SupabaseClient
-    
+
     init() {
         self.client = SupabaseClient(
             supabaseURL: Config.supabaseURL,
@@ -278,19 +278,19 @@ class CameraController: NSObject, ObservableObject {
     private let session = AVCaptureSession()
     private var photoOutput = AVCapturePhotoOutput()
     private var videoOutput = AVCaptureMovieFileOutput()
-    
+
     @Published var isRecording = false
     @Published var captureMode: CaptureMode = .photo
-    
+
     func configureSession() {
         session.sessionPreset = .hd4K3840x2160
         // Configure for professional photography
     }
-    
+
     func capturePhoto(with settings: PhotoSettings) async throws -> Photo {
         // Professional photo capture with metadata
     }
-    
+
     func startVideoRecording() {
         // 4K video recording for detailed documentation
     }
@@ -302,16 +302,16 @@ class CameraController: NSObject, ObservableObject {
 class ARMeasurementController: NSObject, ARSessionDelegate {
     private var arSession = ARSession()
     private var measurements: [ARMeasurement] = []
-    
+
     func startMeasurement(from startPoint: SCNVector3) {
         // Begin AR measurement
     }
-    
+
     func endMeasurement(at endPoint: SCNVector3) -> ARMeasurement {
         let distance = startPoint.distance(to: endPoint)
         return ARMeasurement(distance: distance, accuracy: .high)
     }
-    
+
     func measureArea(points: [SCNVector3]) -> AreaMeasurement {
         // Calculate area from AR points
     }
@@ -325,24 +325,24 @@ class ARMeasurementController: NSObject, ARSessionDelegate {
 class AIAnalysisService {
     private let openAIClient: OpenAIClient
     private let visionService: VisionService
-    
+
     func analyzeDamage(_ image: UIImage) async throws -> DamageAnalysis {
         // Local Vision framework analysis first
         let localAnalysis = try await visionService.detectObjects(in: image)
-        
+
         // Enhanced analysis with cloud AI
         let enhancedAnalysis = try await openAIClient.analyzeImage(
-            image, 
+            image,
             context: localAnalysis
         )
-        
+
         return DamageAnalysis(
             localResults: localAnalysis,
             enhancedResults: enhancedAnalysis,
             confidence: enhancedAnalysis.confidence
         )
     }
-    
+
     func generateReport(_ claim: Claim) async throws -> PDFDocument {
         // Generate professional PDF report
     }
@@ -355,7 +355,7 @@ class SyncService: ObservableObject {
     @Published var syncStatus: SyncStatus = .idle
     private let coreDataStack: CoreDataStack
     private let supabaseService: SupabaseService
-    
+
     func performSync() async {
         await withTaskGroup(of: Void.self) { group in
             group.addTask { await self.syncClaims() }
@@ -363,7 +363,7 @@ class SyncService: ObservableObject {
             group.addTask { await self.syncProperties() }
         }
     }
-    
+
     private func handleConflict(_ local: Claim, _ remote: Claim) -> Claim {
         // Conflict resolution strategy
         return local.updatedAt > remote.updatedAt ? local : remote
@@ -381,7 +381,7 @@ class SiriShortcutService {
         let shortcut = INShortcut(intent: newAssessment)
         INVoiceShortcutCenter.shared.setShortcutSuggestions([shortcut])
     }
-    
+
     @available(iOS 14.0, *)
     func handleSiriIntent(_ intent: NewAssessmentIntent) {
         // Handle voice-activated assessment creation
@@ -393,7 +393,7 @@ class SiriShortcutService {
 ```swift
 struct ClaimGuardianWidget: Widget {
     let kind: String = "ClaimGuardianWidget"
-    
+
     var body: some WidgetConfiguration {
         IntentConfiguration(
             kind: kind,
@@ -413,12 +413,12 @@ struct ClaimGuardianWidget: Widget {
 ```swift
 class DrawingCanvasView: UIView {
     private var pkCanvasView = PKCanvasView()
-    
+
     func setupApplePencilSupport() {
         pkCanvasView.drawingPolicy = .pencilOnly
         pkCanvasView.tool = PKInkingTool(.pen, color: .red, width: 5)
     }
-    
+
     func overlayDamageMarkup(on image: UIImage) -> UIImage {
         // Combine photo with Apple Pencil annotations
     }

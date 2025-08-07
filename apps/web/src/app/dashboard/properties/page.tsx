@@ -10,11 +10,11 @@
 
 import { Card } from '@claimguardian/ui'
 import { Button } from '@claimguardian/ui'
-import { 
-  Plus, 
-  Home, 
-  MapPin, 
-  CheckCircle2, 
+import {
+  Plus,
+  Home,
+  MapPin,
+  CheckCircle2,
   AlertCircle,
   Eye,
   MoreVertical,
@@ -36,10 +36,10 @@ import { PropertyLimitModal } from '@/components/property/property-limit-modal'
 import { Badge } from '@/components/ui/badge'
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
-import { 
-  PropertyCardSkeleton, 
-  DashboardStatsSkeleton, 
-  SkeletonCard 
+import {
+  PropertyCardSkeleton,
+  DashboardStatsSkeleton,
+  SkeletonCard
 } from '@/components/ui/skeleton'
 import { ComponentLoader } from '@/components/loading/page-loader'
 import { useLoadingState, useAsyncOperation } from '@/hooks/use-loading-state'
@@ -116,12 +116,12 @@ export default function PropertiesPage() {
   const [pricing, setPricing] = useState<PropertyPricing | null>(null)
   const [showLimitModal, setShowLimitModal] = useState(false)
   const [activeTab, setActiveTab] = useState<'single' | 'multiple'>('single')
-  
+
   // Enhanced loading states
   const propertiesLoader = useLoadingState({ key: 'properties', minDuration: 500 })
   const limitsLoader = useLoadingState({ key: 'limits', minDuration: 300 })
   const { execute: executeAsync } = useAsyncOperation()
-  
+
   const { user } = useAuth()
   const supabase = createClient()
 
@@ -283,7 +283,7 @@ export default function PropertiesPage() {
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
           <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
         </div>
-        
+
         {/* Tab skeleton */}
         <div className="flex gap-2 mb-6">
           <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded w-32"></div>
@@ -354,7 +354,7 @@ export default function PropertiesPage() {
                 <div>
                   <h3 className="font-semibold text-gray-900">Property Limit Reached</h3>
                   <p className="text-sm text-gray-600">
-                    Your {limitInfo.tier} plan includes {limitInfo.limit} properties. 
+                    Your {limitInfo.tier} plan includes {limitInfo.limit} properties.
                     {pricing.pricePerProperty > 0 && (
                       <span> Additional properties are ${pricing.pricePerProperty}/month each.</span>
                     )}
@@ -362,8 +362,8 @@ export default function PropertiesPage() {
                 </div>
               </div>
               <div className="flex gap-2">
-                <Button 
-                  variant="secondary" 
+                <Button
+                  variant="secondary"
                   size="sm"
                   onClick={() => setShowLimitModal(true)}
                 >
@@ -483,7 +483,7 @@ export default function PropertiesPage() {
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {properties.map(property => {
                 // Generate a display name for the property
-                const propertyName = (property.metadata as { name?: string })?.name || 
+                const propertyName = (property.metadata as { name?: string })?.name ||
                   `${property.property_type.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase())} ${properties.indexOf(property) + 1}`
 
                 return (

@@ -47,7 +47,7 @@ CREATE TABLE IF NOT EXISTS public.legal_documents (
   is_active        BOOLEAN DEFAULT true,
   created_at       TIMESTAMPTZ DEFAULT now(),
   updated_at       TIMESTAMPTZ DEFAULT now(),
-  
+
   UNIQUE(slug, version),
   UNIQUE(sha256_hash)
 );
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS public.user_legal_acceptance (
   ip_address        INET,
   user_agent        TEXT,
   signature_data    JSONB,
-  
+
   UNIQUE(user_id, legal_document_id)
 );
 ```
@@ -75,16 +75,16 @@ CREATE TABLE IF NOT EXISTS public.user_legal_acceptance (
 class LegalService {
   // Get all active legal documents
   async getActiveLegalDocuments(): Promise<LegalDocument[]>
-  
+
   // Get documents that need user acceptance
   async getDocumentsNeedingAcceptance(userId: string): Promise<LegalDocument[]>
-  
+
   // Record user acceptance of documents
   async recordAcceptances(userId: string, acceptances: AcceptanceRequest[]): Promise<void>
-  
+
   // Verify document integrity
   async verifyDocumentIntegrity(documentId: string): Promise<boolean>
-  
+
   // Get client metadata for audit trail
   getClientMetadata(request: NextRequest): ClientMetadata
 }
@@ -112,7 +112,7 @@ export function LegalGuard({ children, redirectTo, fallback }: LegalGuardProps) 
 
 #### GET `/api/legal/documents`
 - **Purpose**: Fetch active legal documents or documents needing acceptance
-- **Parameters**: 
+- **Parameters**:
   - `userId` (optional): Filter to documents needing user acceptance
   - `mode`: 'all' for all documents, 'needed' for user-specific needs
 - **Response**: Array of legal documents with metadata
@@ -217,7 +217,7 @@ const { hasConsent, checking } = useLegalGuard({
 - ✅ Audit trail for regulatory requirements
 - ✅ Document version control
 
-### CCPA Compliance  
+### CCPA Compliance
 - ✅ Clear disclosure of data practices
 - ✅ Consent tracking for data collection
 - ✅ Audit trail for compliance verification
@@ -303,7 +303,7 @@ console.log('Remaining documents:', remainingDocs.length)
 ### Compliance Reporting
 ```sql
 -- Consent completion rate
-SELECT 
+SELECT
   COUNT(DISTINCT ua.user_id) as users_consented,
   COUNT(DISTINCT u.id) as total_users,
   (COUNT(DISTINCT ua.user_id)::float / COUNT(DISTINCT u.id) * 100) as consent_rate
@@ -311,7 +311,7 @@ FROM auth.users u
 LEFT JOIN user_legal_acceptance ua ON u.id = ua.user_id;
 
 -- Document version adoption
-SELECT 
+SELECT
   ld.slug,
   ld.version,
   COUNT(ua.id) as acceptances,
@@ -371,8 +371,8 @@ ORDER BY ld.slug, ld.effective_date DESC;
 ### Debug Queries
 ```sql
 -- Check document processing status
-SELECT slug, version, sha256_hash, storage_url, is_active 
-FROM legal_documents 
+SELECT slug, version, sha256_hash, storage_url, is_active
+FROM legal_documents
 ORDER BY slug, effective_date DESC;
 
 -- Check user consent status

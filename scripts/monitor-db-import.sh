@@ -42,19 +42,19 @@ while true; do
     echo -e "${CYAN}║            Florida Parcels Import Monitor                      ║${NC}"
     echo -e "${CYAN}╚════════════════════════════════════════════════════════════════╝${NC}"
     echo ""
-    
+
     # Get total count
     TOTAL_COUNT=$(run_query "SELECT COUNT(*) FROM florida_parcels;" | xargs)
-    
+
     # Get county breakdown
     echo -e "${BLUE}Import Progress:${NC}"
     echo -e "Total Parcels: ${GREEN}$(printf "%'d" $TOTAL_COUNT)${NC}"
     echo ""
-    
+
     # Get per-county stats
     echo -e "${BLUE}Counties Imported:${NC}"
     PGPASSWORD="$SUPABASE_DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" << EOF
-SELECT 
+SELECT
     CO_NO as "County Code",
     COUNT(*) as "Parcels",
     CASE CO_NO
@@ -132,10 +132,10 @@ GROUP BY CO_NO
 ORDER BY COUNT(*) DESC
 LIMIT 20;
 EOF
-    
+
     echo ""
     echo -e "${YELLOW}Press Ctrl+C to exit${NC}"
     echo -e "Refreshing in 10 seconds..."
-    
+
     sleep 10
 done

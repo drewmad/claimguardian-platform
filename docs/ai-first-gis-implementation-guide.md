@@ -68,7 +68,7 @@ serve(async (req: Request) => {
     switch (action) {
       case 'analyze_property': {
         const { propertyId, imageUrls, gisData } = data
-        
+
         // Comprehensive property analysis
         const [imageAnalysis, environmental3D, riskAssessment] = await Promise.all([
           spatialAI.analyzePropertyImagery(imageUrls as string[], data),
@@ -96,7 +96,7 @@ serve(async (req: Request) => {
       case 'environmental_data': {
         const { address } = data
         const envData = await environmentalData.getComprehensiveEnvironmentalData(address as string)
-        
+
         return new Response(JSON.stringify({
           success: true,
           data: envData
@@ -107,7 +107,7 @@ serve(async (req: Request) => {
 
       case 'generate_embeddings': {
         const embeddings = await spatialAI.generatePropertyEmbeddings(data)
-        
+
         return new Response(JSON.stringify({
           success: true,
           data: { embeddings }
@@ -123,7 +123,7 @@ serve(async (req: Request) => {
           threshold as number,
           maxResults as number
         )
-        
+
         return new Response(JSON.stringify({
           success: true,
           data: { similar }
@@ -190,11 +190,11 @@ serve(async (req: Request) => {
 
     // Process each image with AI analysis
     const imageAnalysisResults = []
-    
+
     for (const imageUrl of imageUrls) {
       // Extract EXIF data and spatial information
       const imageAnalysis = await analyzeImage(imageUrl, droneMetadata)
-      
+
       // Store in ai_enhanced_imagery table
       const { error } = await supabase
         .from('ai_enhanced_imagery')
@@ -227,7 +227,7 @@ serve(async (req: Request) => {
     let model3D = null
     if (processingOptions.generate3DModel && imageUrls.length >= 10) {
       model3D = await generate3DModel(imageUrls, droneMetadata)
-      
+
       // Store 3D model data
       await supabase
         .from('ai_3d_reconstructions')
@@ -345,7 +345,7 @@ serve(async (req: Request) => {
       .not('county_fips', 'is', null)
 
     const uniqueCounties = [...new Set(counties?.map(c => c.county_fips))]
-    
+
     console.log(`Starting environmental data sync for ${uniqueCounties.length} counties`)
 
     const syncResults = {
@@ -360,11 +360,11 @@ serve(async (req: Request) => {
       try {
         // Fetch latest hazard data
         const hazardData = await fetchCountyHazardData(countyFips)
-        
+
         // Update environmental hazards with AI analysis
         for (const hazard of hazardData) {
           const aiAnalysis = await analyzeHazardWithAI(hazard)
-          
+
           await supabase
             .from('environmental_hazards_ai')
             .upsert({
@@ -380,15 +380,15 @@ serve(async (req: Request) => {
               model_confidence: aiAnalysis.confidence
             })
         }
-        
+
         syncResults.hazardsUpdated += hazardData.length
 
         // Update sensor data
         const sensorData = await fetchCountySensorData(countyFips)
-        
+
         for (const sensor of sensorData) {
           const aiInsights = await analyzeSensorDataWithAI(sensor)
-          
+
           await supabase
             .from('environmental_sensors_ai')
             .upsert({
@@ -402,7 +402,7 @@ serve(async (req: Request) => {
               predictive_modeling: aiInsights.predictions
             })
         }
-        
+
         syncResults.sensorsUpdated += sensorData.length
 
       } catch (error) {
@@ -442,7 +442,7 @@ async function fetchCountyHazardData(countyFips: string) {
     fetchUSGSData(countyFips),
     fetchFloridaEmergencyData(countyFips)
   ]
-  
+
   const results = await Promise.allSettled(sources)
   return results
     .filter(r => r.status === 'fulfilled')
@@ -498,7 +498,7 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
   const [capturedImages, setCapturedImages] = useState<CapturedImage[]>([])
   const [deviceOrientation, setDeviceOrientation] = useState({ alpha: 0, beta: 0, gamma: 0 })
   const [gpsLocation, setGPSLocation] = useState<GeolocationPosition | null>(null)
-  
+
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -507,13 +507,13 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
     try {
       // Request camera permission
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
+        video: {
           facingMode: 'environment',
           width: { ideal: 1920 },
           height: { ideal: 1080 }
         }
       })
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream
       }
@@ -581,7 +581,7 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
       const preview = URL.createObjectURL(blob)
 
       const capturedImage: CapturedImage = { file, metadata, preview }
-      
+
       setCapturedImages(prev => [...prev, capturedImage])
       onImageCaptured(file, metadata)
     }, 'image/jpeg', 0.8)
@@ -597,12 +597,12 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
     try {
       // Upload images and trigger AI processing
       const formData = new FormData()
-      
+
       capturedImages.forEach((img, index) => {
         formData.append(`image_${index}`, img.file)
         formData.append(`metadata_${index}`, JSON.stringify(img.metadata))
       })
-      
+
       formData.append('propertyId', propertyId)
       formData.append('processingOptions', JSON.stringify({
         generate3DModel: true,
@@ -620,10 +620,10 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
 
       const result = await response.json()
       onBatchComplete(capturedImages)
-      
+
       // Reset for next batch
       setCapturedImages([])
-      
+
     } catch (error) {
       console.error('Batch processing failed:', error)
     }
@@ -640,7 +640,7 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
           className="w-full aspect-video"
         />
         <canvas ref={canvasRef} className="hidden" />
-        
+
         {/* Overlay Information */}
         <div className="absolute top-4 left-4 bg-black/70 text-white p-2 rounded text-sm">
           <div className="flex items-center gap-2">
@@ -675,8 +675,8 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
               <Camera className="w-4 h-4 mr-2" />
               Capture ({capturedImages.length})
             </Button>
-            <Button 
-              onClick={processBatch} 
+            <Button
+              onClick={processBatch}
               disabled={capturedImages.length < 5}
               variant="outline"
             >
@@ -692,8 +692,8 @@ export function ARCaptureInterface({ propertyId, onImageCaptured, onBatchComplet
         <div className="grid grid-cols-3 gap-2">
           {capturedImages.map((img, index) => (
             <div key={index} className="relative">
-              <img 
-                src={img.preview} 
+              <img
+                src={img.preview}
                 alt={`Capture ${index + 1}`}
                 className="w-full aspect-square object-cover rounded"
               />
@@ -739,7 +739,7 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
     const loadModel = async () => {
       try {
         setIsLoading(true)
-        
+
         // Initialize Three.js scene (simplified for example)
         if (containerRef.current) {
           // This would typically use Three.js or similar 3D library
@@ -756,7 +756,7 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
           `
           containerRef.current.appendChild(viewer)
         }
-        
+
         setIsLoading(false)
       } catch (err) {
         setError('Failed to load 3D model')
@@ -794,7 +794,7 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
       {/* 3D Viewer Container */}
       <div className="relative">
         <div ref={containerRef} className="w-full" />
-        
+
         {/* Controls Overlay */}
         <div className="absolute bottom-4 left-4 flex gap-2">
           <Button size="sm" variant="outline">
@@ -835,15 +835,15 @@ export function Model3DViewer({ modelUrl, propertyId, analysisData }: Model3DVie
                   key={index}
                   onClick={() => setSelectedDamageArea(index)}
                   className={`w-full text-left p-2 rounded text-sm ${
-                    selectedDamageArea === index 
-                      ? 'bg-red-100 border-red-300' 
+                    selectedDamageArea === index
+                      ? 'bg-red-100 border-red-300'
                       : 'bg-gray-50 hover:bg-gray-100'
                   }`}
                 >
                   <div className="flex justify-between">
                     <span>Area {index + 1}</span>
                     <span className={`px-1 rounded text-xs ${
-                      area.severity > 0.7 ? 'bg-red-200' : 
+                      area.severity > 0.7 ? 'bg-red-200' :
                       area.severity > 0.4 ? 'bg-yellow-200' : 'bg-green-200'
                     }`}>
                       {(area.severity * 100).toFixed(0)}%
@@ -893,7 +893,7 @@ curl -X POST "${SUPABASE_URL}/functions/v1/environmental-data-sync" \
   -d '{"source": "fema", "scope": "florida"}' \
   --max-time 300
 
-# Sync NOAA weather data  
+# Sync NOAA weather data
 curl -X POST "${SUPABASE_URL}/functions/v1/environmental-data-sync" \
   -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
   -H "Content-Type: application/json" \
@@ -971,7 +971,7 @@ serve(async (req: Request) => {
         // Mark as completed
         await supabase
           .from('processing_queue')
-          .update({ 
+          .update({
             status: 'completed',
             result: result,
             completed_at: new Date().toISOString()
@@ -984,7 +984,7 @@ serve(async (req: Request) => {
         // Mark as failed
         await supabase
           .from('processing_queue')
-          .update({ 
+          .update({
             status: 'failed',
             error: error.message,
             failed_at: new Date().toISOString()
@@ -1061,7 +1061,7 @@ echo "Integration tests completed"
 
 -- Create monitoring views for AI performance
 CREATE VIEW ai_performance_metrics AS
-SELECT 
+SELECT
   DATE_TRUNC('hour', created_at) as hour,
   COUNT(*) as total_requests,
   AVG(ai_confidence_score) as avg_confidence,

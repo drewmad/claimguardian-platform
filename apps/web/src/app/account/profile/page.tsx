@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { 
-  User, Shield, Mail, Save, Trash2, 
+import {
+  User, Shield, Mail, Save, Trash2,
   AlertCircle, CheckCircle, Lock, Activity, Key
 } from 'lucide-react'
 import Link from 'next/link'
@@ -67,7 +67,7 @@ export default function ProfilePage() {
         try {
           setLoading(true)
           const data = await profileService.getProfile(user.id)
-          
+
           if (data) {
             setProfile(data)
             setFirstName(data.firstName || '')
@@ -347,7 +347,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <form onSubmit={handlePasswordChange} className="space-y-6">
                   <h3 className="text-lg font-semibold mb-4">Change Password</h3>
-                  
+
                   <div>
                     <label className="block text-sm font-medium mb-2">Current Password</label>
                     <input
@@ -395,7 +395,7 @@ export default function ProfilePage() {
 
                 <div className="border-t border-slate-700 pt-6">
                   <h3 className="text-lg font-semibold mb-4">Security Options</h3>
-                  
+
                   <div className="space-y-4">
                     <button
                       onClick={() => openModal('securityQuestions')}
@@ -440,7 +440,7 @@ export default function ProfilePage() {
             {activeTab === 'email' && (
               <form onSubmit={handleEmailChange} className="space-y-6">
                 <h3 className="text-lg font-semibold mb-4">Change Email Address</h3>
-                
+
                 <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
                   <p className="text-sm text-yellow-400">
                     Changing your email will require verification. You'll receive a confirmation link at your new email address.
@@ -494,7 +494,7 @@ export default function ProfilePage() {
               <div className="space-y-6">
                 <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-6">
                   <h3 className="text-lg font-semibold text-red-500 mb-4">Delete Account</h3>
-                  
+
                   <p className="text-sm text-slate-300 mb-4">
                     Once you delete your account, there is no going back. Please be certain.
                   </p>

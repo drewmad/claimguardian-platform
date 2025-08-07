@@ -6,8 +6,8 @@
  * @status stable
  */
 
-import { 
-  AuthError, 
+import {
+  AuthError,
   ValidationError,
   DatabaseError,
   ExternalServiceError,
@@ -19,7 +19,7 @@ import type { SupabaseClient } from '@supabase/supabase-js'
 import { logger } from './logger'
 import { createClient } from './supabase/server'
 
-type ActionResult<T> = 
+type ActionResult<T> =
   | { data: T; error: null }
   | { data: null; error: string }
 
@@ -43,23 +43,23 @@ export function withAuth<TParams, TResult>(
     try {
       // Create Supabase client
       const supabase = await createClient()
-      
+
       // Check authentication
       const { data: { user }, error: authError } = await supabase.auth.getUser()
-      
+
       if (authError || !user) {
         throw new AuthError('Authentication required')
       }
-      
+
       // Create context
       const context: ActionContext = {
         supabase,
         userId: user.id
       }
-      
+
       // Execute action
       const result = await action(params, context)
-      
+
       return { data: result, error: null }
     } catch (error) {
       // Log error with context
@@ -68,16 +68,16 @@ export function withAuth<TParams, TResult>(
         params,
         error: serializeError(error)
       })
-      
+
       // Return user-friendly error message
       if (isBaseError(error)) {
         return { data: null, error: error.message }
       }
-      
+
       // Handle Supabase errors
       if (error && typeof error === 'object' && 'code' in error) {
         const supabaseError = error as { code: string; message: string }
-        
+
         switch (supabaseError.code) {
           case '23505': // Unique violation
             return { data: null, error: 'This item already exists' }
@@ -89,7 +89,7 @@ export function withAuth<TParams, TResult>(
             return { data: null, error: 'Database operation failed' }
         }
       }
-      
+
       // Generic error
       return { data: null, error: 'An unexpected error occurred' }
     }
@@ -113,12 +113,12 @@ export function withoutAuth<TParams, TResult>(
         params,
         error: serializeError(error)
       })
-      
+
       // Return user-friendly error message
       if (isBaseError(error)) {
         return { data: null, error: error.message }
       }
-      
+
       return { data: null, error: 'An unexpected error occurred' }
     }
   }

@@ -54,7 +54,7 @@ describe('Supabase Client Factory', () => {
   describe('createBrowserSupabaseClient', () => {
     it('should create a browser client successfully', () => {
       const client = createBrowserSupabaseClient()
-      
+
       expect(client).toBeDefined()
       expect(client.auth).toBeDefined()
       expect(client.from).toBeDefined()
@@ -69,7 +69,7 @@ describe('Supabase Client Factory', () => {
     it('should handle missing environment variables gracefully', () => {
       delete process.env.NEXT_PUBLIC_SUPABASE_URL
       delete process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-      
+
       // Should still work due to fallback values in factory
       expect(() => createBrowserSupabaseClient()).not.toThrow()
     })
@@ -82,7 +82,7 @@ describe('Supabase Client Factory', () => {
         set: () => {}
       }
       const client = createServerSupabaseClient(mockCookieStore)
-      
+
       expect(client).toBeDefined()
       expect(client.auth).toBeDefined()
       expect(client.from).toBeDefined()
@@ -104,7 +104,7 @@ describe('Supabase Client Factory', () => {
         set: () => {}
       }
       const client = createServerSupabaseClient(mockCookieStore)
-      
+
       // Should return a client with the expected interface
       expect(client).toHaveProperty('auth')
       expect(client).toHaveProperty('from')
@@ -114,7 +114,7 @@ describe('Supabase Client Factory', () => {
   describe('Client Interface Validation', () => {
     it('should provide consistent auth interface for browser client', () => {
       const client = createBrowserSupabaseClient()
-      
+
       expect(client.auth).toHaveProperty('getUser')
       expect(client.auth).toHaveProperty('signIn')
       expect(client.auth).toHaveProperty('signOut')
@@ -126,7 +126,7 @@ describe('Supabase Client Factory', () => {
         set: () => {}
       }
       const client = createServerSupabaseClient(mockCookieStore)
-      
+
       expect(client.auth).toHaveProperty('getUser')
       expect(client.auth).toHaveProperty('signIn')
       expect(client.auth).toHaveProperty('signOut')
@@ -135,7 +135,7 @@ describe('Supabase Client Factory', () => {
     it('should provide database query interface', () => {
       const client = createBrowserSupabaseClient()
       const query = client.from('test_table')
-      
+
       expect(query).toHaveProperty('select')
       expect(query).toHaveProperty('insert')
       expect(query).toHaveProperty('update')
@@ -147,13 +147,13 @@ describe('Supabase Client Factory', () => {
     it('should work with test environment variables', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://custom-test.supabase.co'
       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'custom-test-key'
-      
+
       expect(() => createBrowserSupabaseClient()).not.toThrow()
     })
 
     it('should handle production-like URLs', () => {
       process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://prod-project.supabase.co'
-      
+
       expect(() => createBrowserSupabaseClient()).not.toThrow()
     })
   })
@@ -162,7 +162,7 @@ describe('Supabase Client Factory', () => {
     it('should return different instances on multiple calls', () => {
       const client1 = createBrowserSupabaseClient()
       const client2 = createBrowserSupabaseClient()
-      
+
       // Each call should return a new instance
       expect(client1).toBeDefined()
       expect(client2).toBeDefined()
@@ -178,9 +178,9 @@ describe('Supabase Client Factory', () => {
         createServerSupabaseClient(mockCookieStore),
         createServerSupabaseClient(mockCookieStore)
       ]
-      
+
       const clients = await Promise.all(promises)
-      
+
       clients.forEach(client => {
         expect(client).toBeDefined()
         expect(client.auth).toBeDefined()

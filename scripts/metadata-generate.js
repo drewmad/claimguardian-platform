@@ -51,4 +51,4 @@ async function generateMetadata() {
 generateMetadata().catch(err => {
   console.error(err);
   process.exit(1);
-}); 
+});

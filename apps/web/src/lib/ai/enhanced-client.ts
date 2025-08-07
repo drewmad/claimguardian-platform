@@ -59,7 +59,7 @@ export class EnhancedAIClient extends AIClient {
     try {
       // Get model configuration from database
       selectedModel = await this.selectModelForFeature(request.featureId, request.userId)
-      
+
       if (!selectedModel) {
         throw new Error(`No model configuration found for feature: ${request.featureId}`)
       }
@@ -98,12 +98,12 @@ export class EnhancedAIClient extends AIClient {
           try {
           response = await this.chat(enhancedMessages, selectedModel.provider)
           success = true
-          
+
           // Cache the response in both Redis and memory
           const estimatedCost = this.estimateCost(selectedModel.selectedModel, Date.now() - startTime)
           const responseTime = Date.now() - startTime
           const tokensUsed = Math.ceil(response.length / 4) // Rough estimate
-          
+
           // Cache in Redis (persistent)
           await redisAICacheService.set(
             enhancedMessages,
@@ -117,7 +117,7 @@ export class EnhancedAIClient extends AIClient {
             },
             request.userId
           )
-          
+
           // Cache in memory (fast access)
           await aiCacheManager.cacheResponse(
             enhancedMessages,
@@ -129,18 +129,18 @@ export class EnhancedAIClient extends AIClient {
           )
         } catch (primaryError) {
           console.warn(`Primary model ${selectedModel.selectedModel} failed, trying fallback:`, primaryError)
-          
+
           // Try fallback model if primary fails
           if (selectedModel.fallbackModel) {
             const fallbackProvider = this.getProviderFromModel(selectedModel.fallbackModel)
             response = await this.chat(enhancedMessages, fallbackProvider)
             success = true
-            
+
             // Cache fallback response in both systems
             const estimatedCost = this.estimateCost(selectedModel.fallbackModel, Date.now() - startTime)
             const responseTime = Date.now() - startTime
             const tokensUsed = Math.ceil(response.length / 4)
-            
+
             // Cache in Redis
             await redisAICacheService.set(
               enhancedMessages,
@@ -154,7 +154,7 @@ export class EnhancedAIClient extends AIClient {
               },
               request.userId
             )
-            
+
             // Cache in memory
             await aiCacheManager.cacheResponse(
               enhancedMessages,
@@ -164,7 +164,7 @@ export class EnhancedAIClient extends AIClient {
               estimatedCost,
               responseTime
             )
-            
+
             // Update model selection for next request
             selectedModel.selectedModel = selectedModel.fallbackModel
             selectedModel.provider = fallbackProvider
@@ -210,14 +210,14 @@ export class EnhancedAIClient extends AIClient {
     try {
       // Get model configuration from database
       selectedModel = await this.selectModelForFeature(request.featureId)
-      
+
       if (!selectedModel) {
         throw new Error(`No model configuration found for feature: ${request.featureId}`)
       }
 
       // Only use vision-capable models
       const visionCapableProvider = this.getVisionCapableProvider(selectedModel.provider)
-      
+
       // Apply custom prompts if configured
       const enhancedPrompt = await this.applyCustomPromptToText(request.prompt, request.featureId)
 
@@ -247,7 +247,7 @@ export class EnhancedAIClient extends AIClient {
             model: visionCapableProvider
           })
           success = true
-          
+
           // Cache the response
           const estimatedCost = this.estimateCost(selectedModel.selectedModel, Date.now() - startTime)
           await aiCacheManager.cacheResponse(
@@ -261,7 +261,7 @@ export class EnhancedAIClient extends AIClient {
           )
         } catch (primaryError) {
           console.warn(`Primary vision model failed, trying fallback:`, primaryError)
-          
+
           // Try fallback model
           if (selectedModel.fallbackModel) {
             const fallbackProvider = this.getVisionCapableProvider(
@@ -273,7 +273,7 @@ export class EnhancedAIClient extends AIClient {
               model: fallbackProvider
             })
             success = true
-            
+
             // Cache fallback response
             const estimatedCost = this.estimateCost(selectedModel.fallbackModel, Date.now() - startTime)
             await aiCacheManager.cacheResponse(
@@ -357,7 +357,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return messages
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: CustomPrompt) => 
+      const activePrompt = result.data.prompts.find((p: CustomPrompt) =>
         p.feature_id === featureId && p.is_active
       )
 
@@ -366,7 +366,7 @@ export class EnhancedAIClient extends AIClient {
       // Replace or enhance system message
       const enhancedMessages = [...messages]
       const systemMessageIndex = enhancedMessages.findIndex(m => m.role === 'system')
-      
+
       if (systemMessageIndex >= 0) {
         enhancedMessages[systemMessageIndex] = {
           role: 'system',
@@ -398,7 +398,7 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data?.prompts) return prompt
 
       // Find active custom prompt for this feature
-      const activePrompt = result.data.prompts.find((p: CustomPrompt) => 
+      const activePrompt = result.data.prompts.find((p: CustomPrompt) =>
         p.feature_id === featureId && p.is_active
       )
 
@@ -428,11 +428,11 @@ export class EnhancedAIClient extends AIClient {
       if (!result.success || !result.data || result.data.length === 0) return null
 
       const activeTest = result.data[0] // Get first active test
-      
+
       // Determine which model to use based on traffic split
       const random = Math.random() * 100
       const useModelA = random < activeTest.traffic_split
-      
+
       return {
         testId: activeTest.id,
         selectedModel: useModelA ? activeTest.model_a : activeTest.model_b,
@@ -452,7 +452,7 @@ export class EnhancedAIClient extends AIClient {
     if (modelId.includes('gemini')) return 'gemini'
     if (modelId.includes('claude')) return 'claude'
     if (modelId.includes('grok')) return 'grok'
-    
+
     // Default to openai for unknown models
     return 'openai'
   }
@@ -464,7 +464,7 @@ export class EnhancedAIClient extends AIClient {
     if (provider === 'openai' || provider === 'gemini') {
       return provider
     }
-    
+
     // Claude and Grok don't support vision yet, fallback to OpenAI
     return 'openai'
   }
@@ -496,7 +496,7 @@ export class EnhancedAIClient extends AIClient {
     try {
       const cost = this.estimateCost(data.model, data.responseTime)
       const provider = this.getProviderFromModel(data.model)
-      
+
       // Track to analytics stream for real-time processing
       analyticsStream.trackAIRequest({
         featureId: data.featureId,
@@ -567,7 +567,7 @@ export class EnhancedAIClient extends AIClient {
         console.error('Failed to track time-series metrics:', error)
         // Don't throw - continue with normal operation
       })
-      
+
       // Track to model config service for persistence
       await aiModelConfigService.trackModelUsage({
         featureId: data.featureId,

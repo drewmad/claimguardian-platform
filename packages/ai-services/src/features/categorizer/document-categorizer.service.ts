@@ -47,7 +47,7 @@ interface CategoryAnalysis {
 export class DocumentCategorizerService {
   private orchestrator: AIOrchestrator;
   private supabase: SupabaseClient;
-  
+
   // Insurance document categories
   private readonly DOCUMENT_CATEGORIES: DocumentCategory[] = [
     {
@@ -131,7 +131,7 @@ export class DocumentCategorizerService {
       requiredForClaim: false
     }
   ];
-  
+
   constructor(orchestrator: AIOrchestrator, supabaseUrl?: string, supabaseKey?: string) {
     this.orchestrator = orchestrator;
     this.supabase = createClient(
@@ -139,7 +139,7 @@ export class DocumentCategorizerService {
       supabaseKey || process.env.SUPABASE_SERVICE_ROLE_KEY!
     );
   }
-  
+
   async categorizeDocument(
     file: {
       name: string;
@@ -151,10 +151,10 @@ export class DocumentCategorizerService {
   ): Promise<CategorizedDocument> {
     // 1. Analyze document content
     const analysis = await this.analyzeDocument(file, userId);
-    
+
     // 2. Determine best category
     const category = this.selectCategory(analysis);
-    
+
     // 3. Extract relevant information
     const extractedData = await this.extractDocumentData(
       file,
@@ -162,7 +162,7 @@ export class DocumentCategorizerService {
       analysis,
       userId
     );
-    
+
     // 4. Generate suggested file name
     const suggestedName = await this.generateFileName(
       category,
@@ -170,10 +170,10 @@ export class DocumentCategorizerService {
       file.name,
       userId
     );
-    
+
     // 5. Generate tags
     const tags = this.generateTags(analysis, extractedData);
-    
+
     const categorizedDoc: CategorizedDocument = {
       id: crypto.randomUUID(),
       fileName: file.name,
@@ -188,20 +188,20 @@ export class DocumentCategorizerService {
       uploadedAt: new Date(),
       processedAt: new Date()
     };
-    
+
     // 6. Save to database
     await this.saveCategorization(categorizedDoc, userId);
-    
+
     // 7. Track metrics
     // Record metric if monitoring is available
     // this.orchestrator['monitoring']?.recordMetric(
     //   'document.categorized',
     //   Date.now() - startTime
     // );
-    
+
     return categorizedDoc;
   }
-  
+
   async categorizeMultiple(
     files: Array<{
       name: string;
@@ -215,13 +215,13 @@ export class DocumentCategorizerService {
     const categorizations = await Promise.all(
       files.map(file => this.categorizeDocument(file, userId))
     );
-    
+
     // Check for missing required documents
     await this.checkRequiredDocuments(categorizations, userId);
-    
+
     return categorizations;
   }
-  
+
   async getMissingRequiredDocuments(
     claimId: string,
     _userId: string
@@ -231,23 +231,23 @@ export class DocumentCategorizerService {
       .from('claim_documents')
       .select('category_id')
       .eq('claim_id', claimId);
-    
+
     const existingCategoryIds = new Set(
       existingDocs?.map(doc => doc.category_id) || []
     );
-    
+
     // Find missing required categories
     return this.DOCUMENT_CATEGORIES.filter(
       cat => cat.requiredForClaim && !existingCategoryIds.has(cat.id)
     );
   }
-  
+
   private async analyzeDocument(
     file: { name: string; url: string; type: string },
     userId: string
   ): Promise<CategoryAnalysis> {
     let request: AIRequest | ImageAnalysisRequest;
-    
+
     if (file.type.startsWith('image/')) {
       // Image analysis
       request = {
@@ -257,12 +257,12 @@ export class DocumentCategorizerService {
           2. Key information visible (dates, amounts, names, addresses)
           3. Any damage visible if it's a damage photo
           4. Quality and completeness of the document
-          
+
           Return as JSON with: documentType, keyInfo, quality, isComplete`,
         userId,
         feature: 'document-categorizer'
       } as ImageAnalysisRequest;
-      
+
       const response = await this.orchestrator.analyzeImage(request);
       return this.parseImageAnalysis(response.text, file.name);
     } else {
@@ -270,14 +270,14 @@ export class DocumentCategorizerService {
       request = {
         prompt: `Analyze this document and identify:
           Filename: ${file.name}
-          
+
           Based on the filename and common insurance document patterns, determine:
           1. The most likely document category
           2. Key information that might be in this document
           3. Importance for an insurance claim
-          
+
           Categories: ${this.DOCUMENT_CATEGORIES.map(c => c.name).join(', ')}
-          
+
           Return as JSON with: category, confidence (0-1), keyInfo, importance`,
         systemPrompt: `You are an expert at categorizing insurance claim documents.
           Be accurate and consider Florida-specific insurance requirements.`,
@@ -286,16 +286,16 @@ export class DocumentCategorizerService {
         temperature: 0.2,
         responseFormat: 'json'
       } as AIRequest;
-      
+
       const response = await this.orchestrator.process(request);
       return this.parseTextAnalysis(response.text);
     }
   }
-  
+
   private parseImageAnalysis(analysisText: string, fileName: string): CategoryAnalysis {
     try {
       const parsed = JSON.parse(analysisText);
-      
+
       // Map AI response to our categories
       const categoryMap: Record<string, string> = {
         'damage photo': 'damage-photos',
@@ -308,11 +308,11 @@ export class DocumentCategorizerService {
         'weather report': 'weather-reports',
         'property document': 'property-docs'
       };
-      
+
       const detectedType = parsed.documentType?.toLowerCase() || '';
       const categoryId = categoryMap[detectedType] || 'other';
       const category = this.DOCUMENT_CATEGORIES.find(c => c.id === categoryId)!;
-      
+
       return {
         category,
         confidence: parsed.confidence || 0.7,
@@ -324,15 +324,15 @@ export class DocumentCategorizerService {
       return this.analyzeByFilename(fileName);
     }
   }
-  
+
   private parseTextAnalysis(analysisText: string): CategoryAnalysis {
     try {
       const parsed = JSON.parse(analysisText);
-      
+
       const category = this.DOCUMENT_CATEGORIES.find(
         c => c.name.toLowerCase() === parsed.category?.toLowerCase()
       ) || this.DOCUMENT_CATEGORIES.find(c => c.id === 'other')!;
-      
+
       return {
         category,
         confidence: parsed.confidence || 0.5,
@@ -348,16 +348,16 @@ export class DocumentCategorizerService {
       };
     }
   }
-  
+
   private analyzeByFilename(fileName: string): CategoryAnalysis {
     const lowerName = fileName.toLowerCase();
-    
+
     // Check each category's keywords
     for (const category of this.DOCUMENT_CATEGORIES) {
       const matchScore = category.keywords.reduce((score, keyword) => {
         return lowerName.includes(keyword) ? score + 1 : score;
       }, 0);
-      
+
       if (matchScore > 0) {
         return {
           category,
@@ -367,7 +367,7 @@ export class DocumentCategorizerService {
         };
       }
     }
-    
+
     // Check file patterns
     if (lowerName.match(/\.(jpg|jpeg|png|gif)$/)) {
       return {
@@ -377,7 +377,7 @@ export class DocumentCategorizerService {
         extractedInfo: {}
       };
     }
-    
+
     return {
       category: this.DOCUMENT_CATEGORIES.find(c => c.id === 'other')!,
       confidence: 0.3,
@@ -385,17 +385,17 @@ export class DocumentCategorizerService {
       extractedInfo: {}
     };
   }
-  
+
   private selectCategory(analysis: CategoryAnalysis): DocumentCategory {
     // If confidence is high enough, use the analyzed category
     if (analysis.confidence >= 0.7) {
       return analysis.category;
     }
-    
+
     // Otherwise, present options to user or use 'other'
     return analysis.category;
   }
-  
+
   private async extractDocumentData(
     file: { url: string },
     category: DocumentCategory,
@@ -410,10 +410,10 @@ export class DocumentCategorizerService {
     } else if (category.id === 'damage-photos') {
       return await this.extractDamagePhotoData(file, analysis, userId);
     }
-    
+
     return analysis.extractedInfo || {};
   }
-  
+
   private async extractPolicyData(
     _file: { url: string },
     analysis: CategoryAnalysis,
@@ -422,7 +422,7 @@ export class DocumentCategorizerService {
     const request: AIRequest = {
       prompt: `Extract key information from this insurance policy document:
         ${JSON.stringify(analysis.extractedInfo)}
-        
+
         Extract and structure:
         - Policy number
         - Policy holder name
@@ -430,14 +430,14 @@ export class DocumentCategorizerService {
         - Coverage amounts (dwelling, personal property, etc.)
         - Deductibles
         - Policy period (start and end dates)
-        
+
         Return as structured JSON.`,
       userId,
       feature: 'document-categorizer',
       temperature: 0.1,
       responseFormat: 'json'
     };
-    
+
     const response = await this.orchestrator.process(request);
     try {
       return JSON.parse(response.text);
@@ -445,7 +445,7 @@ export class DocumentCategorizerService {
       return analysis.extractedInfo;
     }
   }
-  
+
   private async extractEstimateData(
     _file: { url: string },
     analysis: CategoryAnalysis,
@@ -457,7 +457,7 @@ export class DocumentCategorizerService {
       extractionNote: 'Manual review recommended for accuracy'
     };
   }
-  
+
   private async extractDamagePhotoData(
     _file: { url: string },
     analysis: CategoryAnalysis,
@@ -469,7 +469,7 @@ export class DocumentCategorizerService {
       photoQuality: analysis.extractedInfo.quality || 'good'
     };
   }
-  
+
   private async generateFileName(
     category: DocumentCategory,
     extractedData: Record<string, unknown>,
@@ -478,7 +478,7 @@ export class DocumentCategorizerService {
   ): Promise<string> {
     const date = new Date().toISOString().split('T')[0];
     const timestamp = Date.now().toString().slice(-4);
-    
+
     // Generate descriptive filename
     if (category.id === 'damage-photos') {
       const location = extractedData.location || 'property';
@@ -490,20 +490,20 @@ export class DocumentCategorizerService {
       const contractor = extractedData.contractor || 'contractor';
       return `estimate_${contractor}_${date}.pdf`;
     }
-    
+
     // Default pattern
     return `${category.id}_${date}_${timestamp}${this.getFileExtension(originalName)}`;
   }
-  
+
   private generateTags(
     analysis: CategoryAnalysis,
     extractedData: Record<string, unknown>
   ): string[] {
     const tags: string[] = [];
-    
+
     // Add category as tag
     tags.push(analysis.category.name.toLowerCase());
-    
+
     // Add confidence level
     if (analysis.confidence >= 0.8) {
       tags.push('high-confidence');
@@ -512,7 +512,7 @@ export class DocumentCategorizerService {
     } else {
       tags.push('needs-review');
     }
-    
+
     // Add data-specific tags
     if (extractedData.damageType) {
       tags.push(String(extractedData.damageType).toLowerCase());
@@ -523,10 +523,10 @@ export class DocumentCategorizerService {
     if (analysis.category.requiredForClaim) {
       tags.push('required');
     }
-    
+
     return [...new Set(tags)]; // Remove duplicates
   }
-  
+
   private async saveCategorization(
     doc: CategorizedDocument,
     userId: string
@@ -549,12 +549,12 @@ export class DocumentCategorizerService {
         uploaded_at: doc.uploadedAt.toISOString(),
         processed_at: doc.processedAt.toISOString()
       });
-    
+
     if (error) {
       console.error('Error saving categorization:', error);
     }
   }
-  
+
   private async checkRequiredDocuments(
     categorizations: CategorizedDocument[],
     userId: string
@@ -562,11 +562,11 @@ export class DocumentCategorizerService {
     const uploadedCategories = new Set(
       categorizations.map(doc => doc.category.id)
     );
-    
+
     const missingRequired = this.DOCUMENT_CATEGORIES
       .filter(cat => cat.requiredForClaim && !uploadedCategories.has(cat.id))
       .map(cat => cat.name);
-    
+
     if (missingRequired.length > 0) {
       // Create a notification about missing documents
       await this.supabase
@@ -580,7 +580,7 @@ export class DocumentCategorizerService {
         });
     }
   }
-  
+
   private getFileExtension(fileName: string): string {
     const match = fileName.match(/\.[^.]+$/);
     return match ? match[0] : '';

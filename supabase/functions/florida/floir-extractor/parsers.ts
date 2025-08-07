@@ -1,19 +1,19 @@
 import { FliorDataType, ParsedRecord } from "./types.ts"
 
 export async function parseFlioirData(
-  dataType: FliorDataType, 
-  rawData: any, 
+  dataType: FliorDataType,
+  rawData: any,
   openai: any
 ): Promise<ParsedRecord> {
   // Generate primary key based on data type
   const primaryKey = generatePrimaryKey(dataType, rawData)
-  
+
   // Normalize the data using GPT-4o-mini
   const normalized = await normalizeWithGPT(dataType, rawData, openai)
-  
+
   // Extract content for embedding
   const contentForEmbedding = extractContentForEmbedding(dataType, normalized)
-  
+
   return {
     primary_key: primaryKey,
     normalized,
@@ -27,46 +27,46 @@ function generatePrimaryKey(dataType: FliorDataType, rawData: any): string {
   switch (dataType) {
     case FliorDataType.CATASTROPHE:
       return `${dataType}_${rawData.Event?.replace(/\s+/g, '_').toLowerCase()}`
-    
+
     case FliorDataType.INDUSTRY_REPORTS:
       return `${dataType}_${rawData.Year}`
-    
+
     case FliorDataType.PROFESSIONAL_LIABILITY:
       return `${dataType}_${rawData.CaseNo}`
-    
+
     case FliorDataType.DATA_CALL:
       return `${dataType}_${rawData.Year}_${rawData.DataType?.replace(/\s+/g, '_').toLowerCase()}`
-    
+
     case FliorDataType.LICENSEE_SEARCH:
       return `${dataType}_${rawData.LicenseeId}`
-    
+
     case FliorDataType.RATE_FILINGS:
       return `${dataType}_${rawData.FileLogNumber || rawData.FilingId}`
-    
+
     case FliorDataType.RECEIVERSHIP:
       return `${dataType}_${rawData.CompanyName?.replace(/\s+/g, '_').toLowerCase()}`
-    
+
     case FliorDataType.FINANCIAL_REPORTS:
       return `${dataType}_${rawData.NAICCode}`
-    
+
     case FliorDataType.NEWS_BULLETINS:
       return `${dataType}_${rawData.Published}_${rawData.Title?.slice(0, 50).replace(/\s+/g, '_').toLowerCase()}`
-    
+
     case FliorDataType.SURPLUS_LINES:
       return `${dataType}_${rawData.CompanyName?.replace(/\s+/g, '_').toLowerCase()}`
-    
+
     default:
       return `${dataType}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
   }
 }
 
 async function normalizeWithGPT(
-  dataType: FliorDataType, 
-  rawData: any, 
+  dataType: FliorDataType,
+  rawData: any,
   openai: any
 ): Promise<Record<string, any>> {
   const prompt = createNormalizationPrompt(dataType, rawData)
-  
+
   try {
     const response = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -91,21 +91,21 @@ async function normalizeWithGPT(
 
     // Parse the JSON response
     const normalized = JSON.parse(content)
-    
+
     // Add metadata
     normalized._data_type = dataType
     normalized._normalized_at = new Date().toISOString()
     normalized._source_url = rawData._source_url
-    
+
     return normalized
-    
+
   } catch (error) {
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
       message: `Failed to normalize ${dataType} data:`, error
     }));
-    
+
     // Fallback to basic normalization
     return basicNormalization(dataType, rawData)
   }
@@ -122,7 +122,7 @@ Requirements:
 `
 
   const typeSpecificRequirements = getNormalizationRequirements(dataType)
-  
+
   return basePrompt + typeSpecificRequirements + `
 
 Return clean JSON with standardized field names and properly typed values.`
@@ -169,7 +169,7 @@ function getNormalizationRequirements(dataType: FliorDataType): string {
 
     case FliorDataType.NEWS_BULLETINS:
       return `
-- Parse Published to ISO date format  
+- Parse Published to ISO date format
 - Extract news category from title/content
 - Add urgency based on keywords (urgent/normal/informational)
 - Standardize title formatting`
@@ -185,14 +185,14 @@ function getNormalizationRequirements(dataType: FliorDataType): string {
 
 function basicNormalization(dataType: FliorDataType, rawData: any): Record<string, any> {
   const normalized: Record<string, any> = { ...rawData }
-  
+
   // Remove internal fields
   Object.keys(normalized).forEach(key => {
     if (key.startsWith('_')) {
       delete normalized[key]
     }
   })
-  
+
   // Basic type conversions
   Object.keys(normalized).forEach(key => {
     const value = normalized[key]
@@ -211,21 +211,21 @@ function basicNormalization(dataType: FliorDataType, rawData: any): Record<strin
       }
     }
   })
-  
+
   normalized._data_type = dataType
   normalized._normalized_at = new Date().toISOString()
   normalized._fallback_normalization = true
-  
+
   return normalized
 }
 
 function extractContentForEmbedding(dataType: FliorDataType, normalized: any): string {
   // Create a searchable text representation for embedding
   const contentParts: string[] = []
-  
+
   // Add data type context
   contentParts.push(`Florida Insurance Regulation ${dataType.replace('_', ' ')} data:`)
-  
+
   // Extract key text fields based on data type
   switch (dataType) {
     case FliorDataType.CATASTROPHE:
@@ -233,28 +233,28 @@ function extractContentForEmbedding(dataType: FliorDataType, normalized: any): s
       contentParts.push(`Claims: ${normalized.Claims || ''}`)
       contentParts.push(`Losses: ${normalized.Losses || ''}`)
       break
-      
+
     case FliorDataType.INDUSTRY_REPORTS:
       contentParts.push(`Year: ${normalized.Year || ''}`)
       contentParts.push(`Report: ${normalized.Title || ''}`)
       break
-      
+
     case FliorDataType.PROFESSIONAL_LIABILITY:
       contentParts.push(`Case: ${normalized.CaseNo || ''}`)
       contentParts.push(`Paid: ${normalized.Paid || ''}`)
       break
-      
+
     case FliorDataType.RATE_FILINGS:
       contentParts.push(`Company: ${normalized.CompanyName || normalized.Company || ''}`)
       contentParts.push(`Filing ID: ${normalized.FilingId || normalized.FileLogNumber || ''}`)
       contentParts.push(`Status: ${normalized.FilingStatus || normalized.Status || ''}`)
       break
-      
+
     case FliorDataType.NEWS_BULLETINS:
-      contentParts.push(`Title: ${normalized.Title || ''}`)  
+      contentParts.push(`Title: ${normalized.Title || ''}`)
       contentParts.push(`Summary: ${normalized.Summary || ''}`)
       break
-      
+
     default:
       // Generic extraction for other types
       Object.entries(normalized).forEach(([key, value]) => {
@@ -263,6 +263,6 @@ function extractContentForEmbedding(dataType: FliorDataType, normalized: any): s
         }
       })
   }
-  
+
   return contentParts.join(' ').trim()
 }

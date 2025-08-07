@@ -57,26 +57,26 @@ CREATE TABLE ai_analyses (
     entity_id UUID NOT NULL,
     model_id UUID REFERENCES ai_models(id),
     analysis_type TEXT NOT NULL, -- 'damage_assessment', 'document_extraction', 'risk_prediction'
-    
+
     -- Input/Output
     input_data JSONB NOT NULL,
     output_data JSONB NOT NULL,
     confidence_score FLOAT,
-    
+
     -- Embeddings
     input_embedding vector(1536), -- For semantic search
     output_embedding vector(1536),
-    
+
     -- Metadata
     processing_time_ms INTEGER,
     tokens_used INTEGER,
     cost_cents INTEGER,
     error_message TEXT,
-    
+
     -- Audit
     user_id UUID REFERENCES auth.users(id),
     created_at TIMESTAMPTZ DEFAULT NOW(),
-    
+
     -- Indexes for performance
     INDEX idx_ai_analyses_entity (entity_type, entity_id),
     INDEX idx_ai_analyses_embedding USING ivfflat (input_embedding vector_cosine_ops)
@@ -87,7 +87,7 @@ CREATE TABLE ai_analyses (
 
 ```sql
 -- Add AI fields to properties
-ALTER TABLE properties ADD COLUMN IF NOT EXISTS 
+ALTER TABLE properties ADD COLUMN IF NOT EXISTS
     ai_risk_score FLOAT,
     ai_risk_factors JSONB DEFAULT '{}',
     ai_maintenance_predictions JSONB DEFAULT '[]',
@@ -99,19 +99,19 @@ CREATE TABLE property_ai_insights (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     property_id UUID REFERENCES properties(id) ON DELETE CASCADE,
     insight_type TEXT NOT NULL, -- 'risk', 'value', 'maintenance', 'market'
-    
+
     -- Predictions
     predictions JSONB NOT NULL,
     confidence_scores JSONB DEFAULT '{}',
-    
+
     -- Explanations
     explanation TEXT,
     factors JSONB DEFAULT '[]',
-    
+
     -- Temporal
     valid_from TIMESTAMPTZ DEFAULT NOW(),
     valid_until TIMESTAMPTZ,
-    
+
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```
@@ -132,15 +132,15 @@ CREATE TABLE damage_ai_detections (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     damage_id UUID REFERENCES property_damage(id),
     image_url TEXT NOT NULL,
-    
+
     -- Detection results
     detected_objects JSONB DEFAULT '[]', -- [{type, bbox, confidence}]
     damage_classifications JSONB DEFAULT '[]',
     severity_analysis JSONB,
-    
+
     -- Embeddings for similarity search
     image_embedding vector(1536),
-    
+
     model_id UUID REFERENCES ai_models(id),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -153,20 +153,20 @@ CREATE TABLE damage_ai_detections (
 CREATE TABLE document_ai_extractions (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     document_id UUID REFERENCES policy_documents(id),
-    
+
     -- Extraction results
     extracted_entities JSONB DEFAULT '{}',
     key_terms JSONB DEFAULT '[]',
     summary TEXT,
-    
+
     -- Embeddings for search
     content_embedding vector(1536),
     summary_embedding vector(1536),
-    
+
     -- Quality metrics
     extraction_confidence FLOAT,
     validation_status TEXT,
-    
+
     model_id UUID REFERENCES ai_models(id),
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -181,15 +181,15 @@ CREATE TABLE ai_conversations (
     user_id UUID REFERENCES auth.users(id),
     context_type TEXT, -- 'claim_assistance', 'policy_review', 'damage_assessment'
     context_id UUID, -- Reference to claim, policy, etc.
-    
+
     -- Conversation state
     messages JSONB DEFAULT '[]',
     context_embeddings vector(1536)[],
-    
+
     -- Metadata
     total_tokens INTEGER DEFAULT 0,
     total_cost_cents INTEGER DEFAULT 0,
-    
+
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -199,16 +199,16 @@ CREATE TABLE ai_prompts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     prompt_key TEXT UNIQUE NOT NULL,
     prompt_template TEXT NOT NULL,
-    
+
     -- Configuration
     model_preferences JSONB DEFAULT '[]',
     parameters JSONB DEFAULT '{}',
-    
+
     -- Performance
     avg_tokens INTEGER,
     avg_response_time_ms INTEGER,
     success_rate FLOAT,
-    
+
     is_active BOOLEAN DEFAULT true,
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -222,13 +222,13 @@ CREATE TABLE ai_feedback (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     analysis_id UUID REFERENCES ai_analyses(id),
     user_id UUID REFERENCES auth.users(id),
-    
+
     -- Feedback
     rating INTEGER CHECK (rating BETWEEN 1 AND 5),
     was_helpful BOOLEAN,
     corrections JSONB,
     comments TEXT,
-    
+
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -236,15 +236,15 @@ CREATE TABLE ai_feedback (
 CREATE TABLE ai_training_data (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     data_type TEXT NOT NULL, -- 'damage_photo', 'document', 'claim_text'
-    
+
     -- Input/Output pairs
     input_data JSONB NOT NULL,
     expected_output JSONB NOT NULL,
-    
+
     -- Metadata
     is_validated BOOLEAN DEFAULT false,
     validated_by UUID REFERENCES auth.users(id),
-    
+
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
 ```

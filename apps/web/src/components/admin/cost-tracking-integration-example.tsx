@@ -18,7 +18,7 @@ import { AICostSettings } from '@/components/admin/ai-cost-settings'
 import { LiveCostDashboard } from '@/components/admin/live-cost-dashboard'
 import { useLiveCostMonitor } from '@/hooks/use-live-cost-monitor'
 
-import { 
+import {
   BarChart3,
   Settings,
   Activity,
@@ -30,7 +30,7 @@ import {
 
 export function CostTrackingIntegrationExample() {
   const [selectedTab, setSelectedTab] = useState('overview')
-  
+
   // Use the live cost monitor hook
   const {
     metrics,
@@ -62,7 +62,7 @@ export function CostTrackingIntegrationExample() {
             Comprehensive real-time AI cost monitoring, analytics, and management
           </p>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <Badge variant={connectionStatus.isConnected ? 'default' : 'destructive'}>
             {connectionStatus.isConnected ? 'Live Connected' : 'Disconnected'}
@@ -264,7 +264,7 @@ export function CostTrackingIntegrationExample() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => sendTestAlert('info')}
                   className="flex items-center gap-2"
@@ -272,7 +272,7 @@ export function CostTrackingIntegrationExample() {
                   <AlertTriangle className="h-4 w-4" />
                   Test Info Alert
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => sendTestAlert('warning')}
                   className="flex items-center gap-2 text-yellow-400 border-yellow-400"
@@ -280,7 +280,7 @@ export function CostTrackingIntegrationExample() {
                   <AlertTriangle className="h-4 w-4" />
                   Test Warning Alert
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => sendTestAlert('critical')}
                   className="flex items-center gap-2 text-red-400 border-red-400"
@@ -289,7 +289,7 @@ export function CostTrackingIntegrationExample() {
                   Test Critical Alert
                 </Button>
               </div>
-              
+
               <div className="mt-4 flex gap-4">
                 <Button variant="outline" onClick={clearAllAlerts}>
                   Clear All Alerts
@@ -316,7 +316,7 @@ export function CostTrackingIntegrationExample() {
         <TabsContent value="widget" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <CostMonitoringWidget onViewDetails={() => setSelectedTab('analytics')} />
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardHeader>
                 <CardTitle className="text-white">Widget Integration</CardTitle>
@@ -335,8 +335,8 @@ export function CostTrackingIntegrationExample() {
 function AdminDashboard() {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <CostMonitoringWidget 
-        onViewDetails={() => router.push('/admin/cost-analytics')} 
+      <CostMonitoringWidget
+        onViewDetails={() => router.push('/admin/cost-analytics')}
       />
       {/* Other dashboard widgets */}
     </div>

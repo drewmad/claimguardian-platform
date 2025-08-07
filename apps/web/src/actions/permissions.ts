@@ -9,26 +9,26 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import type { 
-  Permission, 
-  SubscriptionTier, 
-  TierPermission, 
+import type {
+  Permission,
+  SubscriptionTier,
+  TierPermission,
   UserSubscription,
-  UserPermission 
+  UserPermission
 } from '@/types/permissions'
 
 // Get all permissions
 export async function getAllPermissions() {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('permissions')
       .select('*')
       .order('category, name')
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error fetching permissions:', error)
@@ -40,14 +40,14 @@ export async function getAllPermissions() {
 export async function getAllTiers() {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('subscription_tiers')
       .select('*')
       .order('sort_order')
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error fetching tiers:', error)
@@ -59,7 +59,7 @@ export async function getAllTiers() {
 export async function getTierPermissions(tierId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('tier_permissions')
       .select(`
@@ -67,9 +67,9 @@ export async function getTierPermissions(tierId: string) {
         permission:permissions(*)
       `)
       .eq('tier_id', tierId)
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error fetching tier permissions:', error)
@@ -80,7 +80,7 @@ export async function getTierPermissions(tierId: string) {
 // Update tier permissions
 export async function updateTierPermissions(
   tierId: string,
-  permissions: { 
+  permissions: {
     permission_id: string
     limit_value?: number | null
     metadata?: Record<string, any>
@@ -88,15 +88,15 @@ export async function updateTierPermissions(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // First, delete existing permissions for this tier
     const { error: deleteError } = await supabase
       .from('tier_permissions')
       .delete()
       .eq('tier_id', tierId)
-    
+
     if (deleteError) throw deleteError
-    
+
     // Then insert new permissions
     if (permissions.length > 0) {
       const { data, error: insertError } = await supabase
@@ -110,12 +110,12 @@ export async function updateTierPermissions(
           }))
         )
         .select()
-      
+
       if (insertError) throw insertError
-      
+
       return { data, error: null }
     }
-    
+
     return { data: [], error: null }
   } catch (error) {
     console.error('Error updating tier permissions:', error)
@@ -130,16 +130,16 @@ export async function updateTier(
 ) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('subscription_tiers')
       .update(updates)
       .eq('id', tierId)
       .select()
       .single()
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error updating tier:', error)
@@ -154,15 +154,15 @@ export async function getCurrentUserPermissions(): Promise<{
 }> {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) throw new Error('Not authenticated')
-    
+
     const { data, error } = await supabase
       .rpc('get_user_permissions', { p_user_id: user.id })
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error fetching user permissions:', error)
@@ -174,18 +174,18 @@ export async function getCurrentUserPermissions(): Promise<{
 export async function checkUserPermission(permissionName: string): Promise<boolean> {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) return false
-    
+
     const { data, error } = await supabase
-      .rpc('user_has_permission', { 
+      .rpc('user_has_permission', {
         p_user_id: user.id,
-        p_permission_name: permissionName 
+        p_permission_name: permissionName
       })
-    
+
     if (error) throw error
-    
+
     return data || false
   } catch (error) {
     console.error('Error checking permission:', error)
@@ -197,10 +197,10 @@ export async function checkUserPermission(permissionName: string): Promise<boole
 export async function getCurrentUserSubscription() {
   try {
     const supabase = await createClient()
-    
+
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) throw new Error('Not authenticated')
-    
+
     const { data, error } = await supabase
       .from('user_subscriptions')
       .select(`
@@ -209,9 +209,9 @@ export async function getCurrentUserSubscription() {
       `)
       .eq('user_id', user.id)
       .single()
-    
+
     if (error && error.code !== 'PGRST116') throw error // PGRST116 = no rows returned
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error fetching user subscription:', error)
@@ -227,7 +227,7 @@ export async function updateUserSubscription(
 ) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('user_subscriptions')
       .upsert({
@@ -241,9 +241,9 @@ export async function updateUserSubscription(
       })
       .select()
       .single()
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error updating user subscription:', error)
@@ -255,15 +255,15 @@ export async function updateUserSubscription(
 export async function createPermission(permission: Omit<Permission, 'id' | 'created_at' | 'updated_at'>) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('permissions')
       .insert(permission)
       .select()
       .single()
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error creating permission:', error)
@@ -278,16 +278,16 @@ export async function updatePermission(
 ) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase
       .from('permissions')
       .update(updates)
       .eq('id', permissionId)
       .select()
       .single()
-    
+
     if (error) throw error
-    
+
     return { data, error: null }
   } catch (error) {
     console.error('Error updating permission:', error)
@@ -299,14 +299,14 @@ export async function updatePermission(
 export async function deletePermission(permissionId: string) {
   try {
     const supabase = await createClient()
-    
+
     const { error } = await supabase
       .from('permissions')
       .delete()
       .eq('id', permissionId)
-    
+
     if (error) throw error
-    
+
     return { success: true, error: null }
   } catch (error) {
     console.error('Error deleting permission:', error)

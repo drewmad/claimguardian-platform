@@ -142,7 +142,7 @@ export function calculateDepreciation(
   const schedule = customSchedule || DEPRECIATION_SCHEDULES[category] || DEPRECIATION_SCHEDULES.electronics
   const purchaseDateObj = new Date(purchaseDate)
   const now = new Date()
-  const ageMonths = (now.getFullYear() - purchaseDateObj.getFullYear()) * 12 + 
+  const ageMonths = (now.getFullYear() - purchaseDateObj.getFullYear()) * 12 +
                     (now.getMonth() - purchaseDateObj.getMonth())
   const ageYears = ageMonths / 12
 
@@ -213,7 +213,7 @@ export function getDepreciationAlerts(
   const alerts: DepreciationAlert[] = []
   const schedule = customSchedule || DEPRECIATION_SCHEDULES[item.category] || DEPRECIATION_SCHEDULES.electronics
   const depreciation = calculateDepreciation(item.purchasePrice, item.purchaseDate, item.category, customSchedule)
-  
+
   // Check maintenance alerts
   if (schedule.alertThresholds.maintenanceYears) {
     for (const year of schedule.alertThresholds.maintenanceYears) {

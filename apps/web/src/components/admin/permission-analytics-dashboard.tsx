@@ -78,7 +78,7 @@ export function PermissionAnalyticsDashboard() {
   const [loading, setLoading] = useState(true)
   const [timeRange, setTimeRange] = useState<'24h' | '7d' | '30d' | '90d'>('7d')
   const [selectedTier, setSelectedTier] = useState<UserTier | 'all'>('all')
-  
+
   // Mock data - in production, this would come from analytics API
   const [permissionStats, setPermissionStats] = useState<PermissionUsageStats[]>([
     {
@@ -267,7 +267,7 @@ export function PermissionAnalyticsDashboard() {
   const getSeverityColor = (severity: 'low' | 'medium' | 'high') => {
     switch (severity) {
       case 'low': return 'border-green-500 text-green-500'
-      case 'medium': return 'border-yellow-500 text-yellow-500'  
+      case 'medium': return 'border-yellow-500 text-yellow-500'
       case 'high': return 'border-red-500 text-red-500'
     }
   }
@@ -306,7 +306,7 @@ export function PermissionAnalyticsDashboard() {
               <SelectItem value="90d">Last 90 days</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Select value={selectedTier} onValueChange={(value: UserTier | 'all') => setSelectedTier(value)}>
             <SelectTrigger className="w-[140px] bg-gray-900 border-gray-700">
               <SelectValue />
@@ -443,7 +443,7 @@ export function PermissionAnalyticsDashboard() {
                     </TableCell>
                     <TableCell>
                       <div className={`flex items-center gap-1 text-sm ${
-                        stat.trend === 'up' ? 'text-green-500' : 
+                        stat.trend === 'up' ? 'text-green-500' :
                         stat.trend === 'down' ? 'text-red-500' : 'text-gray-400'
                       }`}>
                         {stat.trend === 'up' ? (
@@ -547,7 +547,7 @@ export function PermissionAnalyticsDashboard() {
                   </TableCell>
                   <TableCell>
                     <div className="text-sm text-white">
-                      {violation.violationType.replace('_', ' ').split(' ').map(word => 
+                      {violation.violationType.replace('_', ' ').split(' ').map(word =>
                         word.charAt(0).toUpperCase() + word.slice(1)
                       ).join(' ')}
                     </div>

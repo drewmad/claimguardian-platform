@@ -25,7 +25,7 @@ RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
   -H "Prefer: return=representation" \
   -d '{
     "source": "test-script",
-    "level": "INFO", 
+    "level": "INFO",
     "message": "Test log from bash script",
     "metadata": {"test": true}
   }' \

@@ -104,9 +104,9 @@ function PropertyOverviewContent() {
       try {
         const result = await getProperties()
         if (result.error) throw result.error
-        
+
         const propertiesData = result.data?.data || []
-        
+
         if (propertiesData.length > 0) {
           const prop = propertiesData[0] as unknown as PropertyRecord
           const metadata = prop.metadata as Record<string, unknown> || {}
@@ -145,14 +145,14 @@ function PropertyOverviewContent() {
         setLoading(false)
       }
     }
-    
+
     loadProperty()
   }, [])
 
   const handlePropertyClick = (propertyId: string | number) => {
     router.push(`/dashboard/property/${propertyId}`)
   }
-  
+
   const handleWizardComplete = () => {
     setShowWizard(false)
     // Reload data
@@ -161,9 +161,9 @@ function PropertyOverviewContent() {
       try {
         const result = await getProperties()
         if (result.error) throw result.error
-        
+
         const propertiesData = result.data?.data || []
-        
+
         if (propertiesData.length > 0) {
           const prop = propertiesData[0] as unknown as PropertyRecord
           const metadata = prop.metadata as Record<string, unknown> || {}
@@ -230,8 +230,8 @@ function PropertyOverviewContent() {
           </div>
 
           {property ? (
-            <Card 
-              key={property.id} 
+            <Card
+              key={property.id}
               className="bg-gray-800 border-gray-700 cursor-pointer hover:border-blue-500 transition-colors"
               onClick={() => handlePropertyClick(property.id)}
             >
@@ -327,7 +327,7 @@ function PropertyOverviewContent() {
                         </span>
                       </div>
                     )}
-                    
+
                     {property.hasMortgage && (
                       <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                         <div className="flex items-center gap-2">
@@ -360,7 +360,7 @@ function PropertyOverviewContent() {
                           </span>
                         </div>
                       )}
-                      
+
                       {property.hasFlood && (
                         <div className="flex items-center gap-2 p-2 bg-gray-700 rounded">
                           {property.hasFlood === 'yes' ? (
@@ -371,7 +371,7 @@ function PropertyOverviewContent() {
                           <span className="text-xs text-gray-300">Flood</span>
                         </div>
                       )}
-                      
+
                       {property.hasOther && (
                         <div className="flex items-center gap-2 p-2 bg-gray-700 rounded">
                           {property.hasOther === 'yes' ? (
@@ -415,7 +415,7 @@ function PropertyOverviewContent() {
                   </div>
                   <div className="flex items-center gap-2">
                     <div className="w-24 h-2 bg-gray-700 rounded-full overflow-hidden">
-                      <div 
+                      <div
                         className="h-full bg-gradient-to-r from-green-500 to-cyan-500 rounded-full"
                         style={{ width: `${property.insurabilityScore}%` }}
                       />
@@ -435,8 +435,8 @@ function PropertyOverviewContent() {
         </div>
       </div>
 
-      <PropertyWizard 
-        open={showWizard} 
+      <PropertyWizard
+        open={showWizard}
         onClose={() => setShowWizard(false)}
         onComplete={handleWizardComplete}
       />

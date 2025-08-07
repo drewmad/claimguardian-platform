@@ -39,7 +39,7 @@ echo -e "${GREEN}📄 Processing $total_files CSV files...${NC}"
 for csv_file in "${csv_files[@]}"; do
     filename=$(basename "$csv_file")
     echo "   Processing: $filename"
-    
+
     # Extract Charlotte County records (CO_NO = 15)
     if [ "$header_written" = false ]; then
         # First file: include header
@@ -49,7 +49,7 @@ for csv_file in "${csv_files[@]}"; do
         # Subsequent files: skip header, append data
         awk -F',' 'BEGIN{count=0} NR>1 && $2=="15" {print; count++} END {print count > "/tmp/awk_count.txt"}' "$csv_file" >> "$OUTPUT_FILE"
     fi
-    
+
     # Get count
     if [ -f "/tmp/awk_count.txt" ]; then
         count=$(cat /tmp/awk_count.txt)
@@ -71,12 +71,12 @@ if [ -f "$OUTPUT_FILE" ]; then
     file_size=$(ls -lh "$OUTPUT_FILE" | awk '{print $5}')
     echo "   Output file: $OUTPUT_FILE"
     echo "   File size: $file_size"
-    
+
     # Show sample of extracted data
     echo ""
     echo -e "${YELLOW}📋 Sample of extracted data:${NC}"
     head -3 "$OUTPUT_FILE"
-    
+
     if [ "$charlotte_records_found" -gt 0 ]; then
         echo ""
         echo -e "${GREEN}✅ Charlotte County extraction completed!${NC}"
@@ -87,7 +87,7 @@ if [ -f "$OUTPUT_FILE" ]; then
         echo ""
         echo -e "${YELLOW}⚠️  No Charlotte County records found!${NC}"
         echo "💡 Let's check what county codes are actually in the data..."
-        
+
         # Sample county codes from first file
         echo "   County codes in sample file:"
         head -100 "${csv_files[0]}" | tail -n +2 | cut -d',' -f2 | sort | uniq -c | sort -nr | head -10

@@ -26,7 +26,7 @@ NR>1 {
     for (i = 1; i <= NF; i++) {
         # Remove leading/trailing spaces
         gsub(/^[ \t]+|[ \t]+$/, "", $i)
-        
+
         # Handle numeric fields (columns that should be integers)
         # JV fields (11-20), value fields (21-22), sqfoot/area (33-35), sale fields (36-38, 43-45)
         if ((i >= 11 && i <= 22) || (i >= 33 && i <= 38) || (i >= 43 && i <= 45)) {
@@ -34,7 +34,7 @@ NR>1 {
                 $i = "0"
             }
         }
-        
+
         # Handle text fields that might have commas or quotes
         if ((i >= 23 && i <= 32) || i == 50) {  # owner/address fields and legal description
             # Escape quotes

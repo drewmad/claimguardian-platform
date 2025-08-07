@@ -126,10 +126,10 @@ export function getPolicyCoverageInfo(policy: PolicyDocument) {
     dwelling: formatCoverage(policy.dwelling_coverage),
     deductible: formatDeductible(policy.standard_deductible),
     hurricane: formatDeductible(policy.hurricane_deductible),
-    hasFloodCoverage: policy.special_coverages?.some(c => 
+    hasFloodCoverage: policy.special_coverages?.some(c =>
       c.type?.toLowerCase().includes('flood')
     ) || false,
-    hasSinkholeCovetage: policy.special_coverages?.some(c => 
+    hasSinkholeCovetage: policy.special_coverages?.some(c =>
       c.type?.toLowerCase().includes('sinkhole')
     ) || false,
     isActive: policy.expiration_date ? new Date(policy.expiration_date) > new Date() : false

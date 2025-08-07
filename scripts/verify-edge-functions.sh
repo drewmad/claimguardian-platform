@@ -22,14 +22,14 @@ echo ""
 for func in $FUNCTIONS; do
     TOTAL=$((TOTAL + 1))
     echo -n "  $func... "
-    
+
     if deno check --no-lock "$func/index.ts" >/dev/null 2>&1; then
         echo "✅"
         PASSING=$((PASSING + 1))
     else
         echo "❌"
         FAILING=$((FAILING + 1))
-        
+
         # Show first few lines of error
         echo "    Error: $(deno check --no-lock "$func/index.ts" 2>&1 | head -1 | sed 's/.*ERROR]: //')"
     fi

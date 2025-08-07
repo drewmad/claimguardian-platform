@@ -27,11 +27,11 @@ export async function POST(request: NextRequest) {
     }
 
     const token = authHeader.substring(7)
-    
+
     // Verify the user with the token
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser(token)
-    
+
     if (authError || !user) {
       logger.warn('Unauthorized legal acceptance attempt', { authError })
       return NextResponse.json(
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Get client metadata for audit trail
     const clientMetadata = legalServiceServer.getClientMetadata(request)
-    
+
     // Prepare acceptance requests with metadata
     const acceptanceRequests = await Promise.all(
       acceptances.map(async (acceptance) => ({
@@ -70,7 +70,7 @@ export async function POST(request: NextRequest) {
         signature_data: {
           timestamp: new Date().toISOString(),
           request_id: crypto.randomUUID(),
-          user_agent_hash: clientMetadata.user_agent ? 
+          user_agent_hash: clientMetadata.user_agent ?
             await hashString(clientMetadata.user_agent) : null
         }
       }))
@@ -95,7 +95,7 @@ export async function POST(request: NextRequest) {
       acceptanceMethod: 'api'
     })
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       accepted_count: acceptances.length,
       timestamp: new Date().toISOString()
@@ -103,7 +103,7 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     logger.error('Failed to record legal acceptances', {}, error instanceof Error ? error : new Error(String(error)))
-    
+
     return NextResponse.json(
       { error: 'Internal server error' },
       { status: 500 }

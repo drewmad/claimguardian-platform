@@ -21,7 +21,7 @@ import { createClient } from '@/lib/supabase/server'
 export async function GET() {
   try {
     const supabase = await createClient()
-    
+
     // Test data
     const testEmail = `test-${Date.now()}@example.com`
     const testConsents = {
@@ -36,9 +36,9 @@ export async function GET() {
       user_agent: 'Test Agent',
       device_fingerprint: 'test-fingerprint-123'
     }
-    
+
     logger.info('Testing consent flow with:', testEmail)
-    
+
     // Step 1: Record signup consent
     const { data: recordResult, error: recordError } = await supabase.rpc('record_signup_consent', {
       p_email: testConsents.email,
@@ -55,7 +55,7 @@ export async function GET() {
       p_user_agent: testConsents.user_agent,
       p_fingerprint: testConsents.device_fingerprint
     })
-    
+
     if (recordError) {
       return NextResponse.json({
         success: false,
@@ -64,9 +64,9 @@ export async function GET() {
         details: recordError
       }, { status: 500 })
     }
-    
+
     const consentResult = recordResult?.[0]
-    
+
     if (!consentResult?.success || !consentResult?.consent_token) {
       return NextResponse.json({
         success: false,
@@ -75,15 +75,15 @@ export async function GET() {
         result: consentResult
       }, { status: 400 })
     }
-    
+
     logger.info('Consent recorded successfully:', consentResult.consent_token)
-    
+
     // Step 2: Validate the consent token
     const { data: validateResult, error: validateError } = await supabase.rpc('validate_signup_consent', {
       p_email: testEmail,
       p_consent_token: consentResult.consent_token
     })
-    
+
     if (validateError) {
       return NextResponse.json({
         success: false,
@@ -93,9 +93,9 @@ export async function GET() {
         consent_token: consentResult.consent_token
       }, { status: 500 })
     }
-    
+
     const validationResult = validateResult?.[0]
-    
+
     if (!validationResult?.is_valid || !validationResult?.has_required_consents) {
       return NextResponse.json({
         success: false,
@@ -105,23 +105,23 @@ export async function GET() {
         consent_token: consentResult.consent_token
       }, { status: 400 })
     }
-    
+
     logger.info('Consent validated successfully')
-    
+
     // Step 3: Test link_consent_to_user (with a fake user ID)
     const fakeUserId = '00000000-0000-0000-0000-000000000000'
     const { data: linkResult, error: linkError } = await supabase.rpc('link_consent_to_user', {
       p_consent_token: consentResult.consent_token,
       p_user_id: fakeUserId
     })
-    
+
     // This will likely fail due to foreign key constraints, but that's expected
     logger.info('Link consent test result:', { linkResult, linkError })
-    
+
     // Step 4: Check if all functions exist
     const { data: functions, error: functionsError } = await supabase.rpc('query', {
       query: `
-        SELECT 
+        SELECT
           p.proname as function_name,
           pg_catalog.pg_get_function_result(p.oid) as return_type
         FROM pg_catalog.pg_proc p
@@ -136,7 +136,7 @@ export async function GET() {
         ORDER BY p.proname;
       `
     }).select()
-    
+
     return NextResponse.json({
       success: true,
       message: 'Consent flow test completed successfully!',
@@ -160,7 +160,7 @@ export async function GET() {
       functions_check: functionsError ? 'Could not verify functions' : functions,
       test_email: testEmail
     })
-    
+
   } catch (error) {
     logger.error('Test consent flow error:', error)
     return NextResponse.json({

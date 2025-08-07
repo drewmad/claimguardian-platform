@@ -78,12 +78,12 @@ export class FLOIRCrawler {
         timestamp: new Date().toISOString(),
         message: `Starting crawl for ${dataType} on ${domain}`
       }));
-      
+
       // Apply rate limiting
       await this.rateLimit(domain)
 
       const page = await context.newPage()
-      
+
       // Add random delay to avoid detection
       await this.randomDelay(
         config.site.antiBot.delays.min,
@@ -127,37 +127,37 @@ export class FLOIRCrawler {
       timestamp: new Date().toISOString(),
       message: `Navigating to: ${url}`
     }));
-    
+
     await page.goto(url, { waitUntil: 'networkidle' })
-    
+
     // Extract table data
     const data = await page.evaluate((fieldMapping: any) => {
       const rows = document.querySelectorAll('table tr')
       const results: any[] = []
-      
+
       rows.forEach((row, index) => {
         if (index === 0) return // Skip header
-        
+
         const result: any = {}
         const cells = row.querySelectorAll('td')
-        
+
         if (cells.length >= 3) {
           result.Event = cells[0]?.textContent?.trim() || ''
           result.Claims = cells[1]?.textContent?.trim() || ''
           result.Losses = cells[2]?.textContent?.trim() || ''
-          
+
           // Look for PDF links
           const pdfLink = row.querySelector('a[href$=".pdf"]')
           if (pdfLink) {
             result.PdfLink = pdfLink.getAttribute('href')
           }
-          
+
           result._source_url = window.location.href
           result._extracted_at = new Date().toISOString()
           results.push(result)
         }
       })
-      
+
       return results
     }, config.fieldMapping)
 
@@ -172,16 +172,16 @@ export class FLOIRCrawler {
   private async crawlIndustryReports(page: any, config: any, query: any): Promise<any[]> {
     const url = `${config.site.baseUrl}${config.endpoints.main}`
     await page.goto(url, { waitUntil: 'networkidle' })
-    
+
     const data = await page.evaluate(() => {
       const results: any[] = []
       const pdfLinks = document.querySelectorAll('a[href$=".pdf"]')
-      
+
       pdfLinks.forEach(link => {
         const href = link.getAttribute('href')
         const text = link.textContent?.trim() || ''
         const yearMatch = text.match(/(\d{4})/)
-        
+
         if (href && yearMatch) {
           results.push({
             Year: yearMatch[1],
@@ -192,7 +192,7 @@ export class FLOIRCrawler {
           })
         }
       })
-      
+
       return results
     })
 
@@ -208,21 +208,21 @@ export class FLOIRCrawler {
     // This requires form submission and pagination
     const url = `${config.site.baseUrl}${config.endpoints.main}`
     await page.goto(url, { waitUntil: 'networkidle' })
-    
+
     // Submit search form (if needed)
     const hasSearchForm = await page.$('form')
     if (hasSearchForm) {
       await page.click('input[type="submit"]')
       await page.waitForSelector('table', { timeout: 10000 })
     }
-    
+
     const data = await page.evaluate(() => {
       const results: any[] = []
       const rows = document.querySelectorAll('table tr')
-      
+
       rows.forEach((row, index) => {
         if (index === 0) return // Skip header
-        
+
         const cells = row.querySelectorAll('td')
         if (cells.length >= 7) {
           results.push({
@@ -234,7 +234,7 @@ export class FLOIRCrawler {
           })
         }
       })
-      
+
       return results
     })
 
@@ -249,7 +249,7 @@ export class FLOIRCrawler {
   private async crawlRateFilings(page: any, config: any, query: any): Promise<any[]> {
     // This is a JSON API endpoint
     const url = `${config.site.baseUrl}${config.endpoints.main}`
-    
+
     const requestBody = {
       PageSize: query.PageSize || 100,
       PageNumber: query.PageNumber || 1,
@@ -276,7 +276,7 @@ export class FLOIRCrawler {
       timestamp: new Date().toISOString(),
       message: `Extracted ${data.length} rate filing records`
     }));
-    
+
     // Add metadata to each record
     return data.map((record: any) => ({
       ...record,
@@ -288,14 +288,14 @@ export class FLOIRCrawler {
   private async crawlReceivership(page: any, config: any, query: any): Promise<any[]> {
     const url = `${config.site.baseUrl}${config.endpoints.main}`
     await page.goto(url, { waitUntil: 'networkidle' })
-    
+
     const data = await page.evaluate(() => {
       const results: any[] = []
       const rows = document.querySelectorAll('table tr')
-      
+
       rows.forEach((row, index) => {
         if (index === 0) return // Skip header
-        
+
         const cells = row.querySelectorAll('td')
         if (cells.length >= 3) {
           results.push({
@@ -307,7 +307,7 @@ export class FLOIRCrawler {
           })
         }
       })
-      
+
       return results
     })
 
@@ -322,7 +322,7 @@ export class FLOIRCrawler {
   private async crawlNewsBulletins(page: any, config: any, query: any): Promise<any[]> {
     // This is an Atom feed
     const url = `${config.site.baseUrl}${config.endpoints.main}`
-    
+
     const response = await page.evaluate(async (feedUrl: string) => {
       const resp = await fetch(feedUrl)
       const text = await resp.text()
@@ -333,7 +333,7 @@ export class FLOIRCrawler {
     const parser = new DOMParser()
     const doc = parser.parseFromString(response, 'application/xml')
     const entries = doc.querySelectorAll('entry')
-    
+
     const data: any[] = []
     entries.forEach(entry => {
       data.push({

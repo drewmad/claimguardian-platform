@@ -105,29 +105,29 @@ export function FloridaResidencyVerification({
   const [touched, setTouched] = useState(false)
   const [zipError, setZipError] = useState<string | null>(null)
   const [county, setCounty] = useState<string | null>(null)
-  
+
   // Validate ZIP code
   const validateZipCode = (zip: string): boolean => {
     if (!zip) return false
-    
+
     // Remove any non-digits
     const cleanZip = zip.replace(/\D/g, '')
-    
+
     // Check if it matches Florida patterns
     return FLORIDA_ZIP_PATTERNS.some(pattern => pattern.test(cleanZip))
   }
-  
+
   // Get county from ZIP
   const getCountyFromZip = (zip: string): string | null => {
     const prefix = zip.substring(0, 3)
     return ZIP_TO_COUNTY[prefix] || null
   }
-  
+
   // Handle ZIP code changes
   useEffect(() => {
     if (zipCode && zipCode.length === 5) {
       const isValid = validateZipCode(zipCode)
-      
+
       if (isValid) {
         setZipError(null)
         const countyName = getCountyFromZip(zipCode)
@@ -141,11 +141,11 @@ export function FloridaResidencyVerification({
       setCounty(null)
     }
   }, [zipCode])
-  
+
   const handleResidentChange = (checked: boolean) => {
     setTouched(true)
     onResidentChange(checked)
-    
+
     // Clear ZIP if not resident
     if (!checked) {
       onZipCodeChange('')
@@ -153,16 +153,16 @@ export function FloridaResidencyVerification({
       setZipError(null)
     }
   }
-  
+
   const handleZipChange = (value: string) => {
     // Only allow digits
     const cleanValue = value.replace(/\D/g, '').slice(0, 5)
     onZipCodeChange(cleanValue)
   }
-  
+
   const showResidentError = touched && required && !isResident
   const showZipError = isResident && touched && (!zipCode || !!zipError)
-  
+
   return (
     <div className="space-y-4">
       {/* Florida Resident Checkbox */}
@@ -176,8 +176,8 @@ export function FloridaResidencyVerification({
           aria-describedby={error || showResidentError ? "resident-error" : undefined}
         />
         <div className="flex-1">
-          <Label 
-            htmlFor="florida-resident" 
+          <Label
+            htmlFor="florida-resident"
             className="text-sm font-medium cursor-pointer flex items-center gap-2"
           >
             <MapPin className="h-4 w-4 text-slate-400" />
@@ -189,7 +189,7 @@ export function FloridaResidencyVerification({
           </p>
         </div>
       </div>
-      
+
       {/* ZIP Code Input */}
       {isResident && (
         <div className="pl-7 space-y-2">
@@ -213,7 +213,7 @@ export function FloridaResidencyVerification({
               aria-describedby={showZipError ? "zip-error" : county ? "zip-county" : undefined}
             />
           </div>
-          
+
           {/* County Display */}
           {county && (
             <div id="zip-county" className="flex items-center gap-2 text-sm text-green-600">
@@ -221,7 +221,7 @@ export function FloridaResidencyVerification({
               <span>{county}</span>
             </div>
           )}
-          
+
           {/* ZIP Error */}
           {zipError && touched && (
             <p id="zip-error" className="text-sm text-red-500">
@@ -230,7 +230,7 @@ export function FloridaResidencyVerification({
           )}
         </div>
       )}
-      
+
       {/* General Error */}
       {(error || showResidentError) && (
         <Alert variant="destructive" className="py-2" id="resident-error">
@@ -240,7 +240,7 @@ export function FloridaResidencyVerification({
           </AlertDescription>
         </Alert>
       )}
-      
+
       {/* Success Message */}
       {isResident && zipCode && validateZipCode(zipCode) && county && (
         <Alert className="py-2 bg-green-50 border-green-200">
@@ -250,14 +250,14 @@ export function FloridaResidencyVerification({
           </AlertDescription>
         </Alert>
       )}
-      
+
       {/* Non-Florida Notice */}
       {!isResident && touched && (
         <Alert className="py-2">
           <AlertCircle className="h-4 w-4" />
           <AlertDescription className="text-sm">
-            ClaimGuardian is currently available only to Florida residents. 
-            We plan to expand to other states in the future. Join our waitlist 
+            ClaimGuardian is currently available only to Florida residents.
+            We plan to expand to other states in the future. Join our waitlist
             to be notified when we launch in your area.
           </AlertDescription>
         </Alert>

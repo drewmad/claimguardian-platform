@@ -162,7 +162,7 @@ class ClaudeFeedbackLoops {
    */
   async collectUserFeedback(feedback: Omit<UserFeedback, 'timestamp' | 'resolved'>): Promise<string> {
     const feedbackId = `feedback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     const userFeedback: UserFeedback = {
       ...feedback,
       timestamp: new Date(),
@@ -281,7 +281,7 @@ class ClaudeFeedbackLoops {
   ): Promise<void> {
     // Trigger actions based on performance gaps
     const performanceGap = (metric.targetValue - metric.currentValue) / metric.targetValue
-    
+
     if (performanceGap > 0.2 && metric.priority === 'critical') { // 20% gap on critical metrics
       await this.triggerFeedbackAction({
         type: 'optimization_update',
@@ -320,7 +320,7 @@ class ClaudeFeedbackLoops {
    */
   async triggerFeedbackAction(actionData: Omit<FeedbackAction, 'id' | 'status' | 'timestamp'>): Promise<string> {
     const actionId = `action_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
-    
+
     const action: FeedbackAction = {
       id: actionId,
       ...actionData,
@@ -358,7 +358,7 @@ class ClaudeFeedbackLoops {
 
       // Trigger threshold analysis and potential auto-tuning
       const tuningResult = await claudeThresholdTuner.autoTuneThreshold()
-      
+
       if (tuningResult.tuningPerformed) {
         action.status = 'completed'
         action.actualImpact = `Threshold adjusted from ${tuningResult.previousThreshold} to ${tuningResult.newThreshold}`
@@ -414,7 +414,7 @@ class ClaudeFeedbackLoops {
 
   private async processUnresolvedFeedback(): Promise<void> {
     const unresolvedFeedback = this.userFeedback.filter(f => !f.resolved)
-    
+
     for (const feedback of unresolvedFeedback) {
       // Process high-priority feedback
       if (feedback.feedbackType === 'bug_report' || (feedback.rating && feedback.rating <= 2)) {
@@ -425,7 +425,7 @@ class ClaudeFeedbackLoops {
           priority: 'high',
           expectedImpact: 'Address user concern and improve satisfaction'
         })
-        
+
         feedback.resolved = true
         feedback.resolutionActions = ['Alert generated for manual review']
       }
@@ -475,7 +475,7 @@ class ClaudeFeedbackLoops {
    */
   private async startImprovementCycle(): Promise<string> {
     const cycleId = `cycle_${Date.now()}`
-    
+
     const cycle: ContinuousImprovementCycle = {
       cycleId,
       startDate: new Date(),
@@ -525,15 +525,15 @@ class ClaudeFeedbackLoops {
     const ratingsOnly = this.userFeedback
       .map(f => f.rating)
       .filter(r => r !== undefined) as number[]
-    const avgRating = ratingsOnly.length > 0 
-      ? ratingsOnly.reduce((a, b) => a + b, 0) / ratingsOnly.length 
+    const avgRating = ratingsOnly.length > 0
+      ? ratingsOnly.reduce((a, b) => a + b, 0) / ratingsOnly.length
       : 0
 
     const unresolved = this.userFeedback.filter(f => !f.resolved).length
 
     // Determine system health
     const criticalMetrics = metrics.filter(m => m.priority === 'critical')
-    const underperformingCritical = criticalMetrics.filter(m => 
+    const underperformingCritical = criticalMetrics.filter(m =>
       (m.currentValue / m.targetValue) < 0.8
     ).length
 

@@ -11,9 +11,9 @@ These RPC functions are essential for consent management and compliance:
 #### validate_signup_consent
 - **Purpose**: Validates that all required consents are provided during signup
 - **When Called**: During signup form submission, before user creation
-- **Parameters**: 
+- **Parameters**:
   - `terms_accepted: boolean`
-  - `privacy_accepted: boolean` 
+  - `privacy_accepted: boolean`
   - `ai_disclaimer_accepted: boolean`
   - `age_verified: boolean`
   - `florida_resident: boolean`
@@ -90,19 +90,19 @@ interface RequiredSignupData {
   firstName: string       // Legal first name
   lastName: string        // Legal last name
   phone: string          // For account recovery & 2FA
-  
+
   // Legal Consents (Every Signup)
   termsAccepted: boolean           // Terms of Service
   privacyAccepted: boolean         // Privacy Policy
   aiDisclaimerAccepted: boolean    // AI tools disclaimer
   dataProcessingConsent: boolean   // GDPR requirement
   ageVerified: boolean             // 18+ confirmation
-  
+
   // Florida-Specific
   floridaResident: boolean         // Residency confirmation
   propertyInFlorida: boolean       // Property location
   zipCode: string                  // Validated FL ZIP
-  
+
   // Security/Tracking
   signupIp: string                 // For fraud detection
   signupTimestamp: timestamp       // Audit trail
@@ -122,17 +122,17 @@ interface ProfileCompletionData {
     ownershipType: 'owned' | 'rented' | 'managed'
     isPrimary: boolean
   }>
-  
+
   // Insurance Information
   insuranceCarrier?: string
   policyNumber?: string
   policyExpirationDate?: date
-  
+
   // Communication Preferences
   emailNotifications: boolean
   smsNotifications: boolean
   marketingEmails: boolean
-  
+
   // Emergency Contact (Optional but recommended)
   emergencyContact?: {
     name: string
@@ -148,11 +148,11 @@ interface ProfileCompletionData {
 
 #### 1. Public Adjuster Notice (FL Statute 626.854)
 **When**: Before providing any claim assistance
-**Required Text**: 
+**Required Text**:
 ```
-IMPORTANT NOTICE: ClaimGuardian is not a licensed public adjuster. 
-Under Florida law, only licensed public adjusters can negotiate with 
-insurance companies on your behalf for a fee. Our AI tools provide 
+IMPORTANT NOTICE: ClaimGuardian is not a licensed public adjuster.
+Under Florida law, only licensed public adjusters can negotiate with
+insurance companies on your behalf for a fee. Our AI tools provide
 information and document organization only.
 ```
 **Display**: Modal on first claim creation
@@ -162,8 +162,8 @@ information and document organization only.
 **When**: Before claim assistance
 **Required Text**:
 ```
-You have the right to hire an attorney at your own expense. 
-ClaimGuardian does not provide legal advice or representation. 
+You have the right to hire an attorney at your own expense.
+ClaimGuardian does not provide legal advice or representation.
 For legal matters, please consult with a licensed Florida attorney.
 ```
 **Display**: Same modal as above
@@ -173,8 +173,8 @@ For legal matters, please consult with a licensed Florida attorney.
 **When**: During claim process
 **Required Text**:
 ```
-Florida law requires you to cooperate with your insurance company's 
-investigation. Using ClaimGuardian does not change your obligations 
+Florida law requires you to cooperate with your insurance company's
+investigation. Using ClaimGuardian does not change your obligations
 under your insurance policy.
 ```
 **Display**: Claim creation flow
@@ -184,8 +184,8 @@ under your insurance policy.
 **When**: During signup
 **Required Text**:
 ```
-Your claim data will be retained for 7 years per Florida insurance 
-regulations. You may request deletion of non-claim data per our 
+Your claim data will be retained for 7 years per Florida insurance
+regulations. You may request deletion of non-claim data per our
 Privacy Policy.
 ```
 **Display**: Privacy policy section
@@ -300,7 +300,7 @@ interface RiskAssessment {
     behavioralRisk: number       // Speed, patterns
     deviceRisk: number           // New device, spoofing
   }
-  
+
   actions: {
     requirePhoneVerification: boolean
     requireEmailVerification: boolean

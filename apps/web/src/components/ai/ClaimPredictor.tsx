@@ -102,7 +102,7 @@ export function ClaimPredictor() {
     previousClaims: 0,
     timeFromIncident: 1
   });
-  
+
   const [prediction, setPrediction] = useState<ClaimPrediction | null>(null);
   const [analyzing, setAnalyzing] = useState(false);
   const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
@@ -110,14 +110,14 @@ export function ClaimPredictor() {
 
   const analyzeClaim = async () => {
     setAnalyzing(true);
-    
+
     try {
       // Simulate AI analysis with intelligent prediction logic
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       // Calculate base approval likelihood
       let approvalScore = 50;
-      
+
       // Positive factors
       if (formData.hasPhotos) approvalScore += 15;
       if (formData.hasReceipts) approvalScore += 10;
@@ -125,23 +125,23 @@ export function ClaimPredictor() {
       if (formData.hasPoliceReport) approvalScore += 8;
       if (formData.description.length > 100) approvalScore += 5;
       if (formData.timeFromIncident <= 7) approvalScore += 10;
-      
+
       // Negative factors
       if (formData.previousClaims > 2) approvalScore -= 15;
       if (formData.timeFromIncident > 30) approvalScore -= 20;
       if (formData.severity === 'total_loss') approvalScore -= 10;
       if (!formData.hasPhotos) approvalScore -= 20;
-      
+
       // Cap between 5 and 95
       approvalScore = Math.max(5, Math.min(95, approvalScore));
-      
+
       // Calculate settlement time
       let settlementDays = 30;
       if (formData.hasPhotos && formData.hasContractorEstimate) settlementDays -= 10;
       if (formData.severity === 'minor') settlementDays -= 5;
       if (formData.severity === 'total_loss') settlementDays += 15;
       if (formData.previousClaims > 2) settlementDays += 10;
-      
+
       // Estimate payout based on severity and property type
       const payoutRanges = {
         minor: { min: 1000, max: 5000, mostLikely: 2500 },
@@ -149,12 +149,12 @@ export function ClaimPredictor() {
         severe: { min: 25000, max: 100000, mostLikely: 50000 },
         total_loss: { min: 100000, max: 500000, mostLikely: 250000 }
       };
-      
+
       const payout = payoutRanges[formData.severity as keyof typeof payoutRanges] || payoutRanges.moderate;
-      
+
       // Identify risk factors
       const riskFactors: RiskFactor[] = [];
-      
+
       if (!formData.hasPhotos) {
         riskFactors.push({
           factor: 'Missing Photo Documentation',
@@ -163,7 +163,7 @@ export function ClaimPredictor() {
           mitigation: 'Upload comprehensive photos of all damage immediately'
         });
       }
-      
+
       if (formData.timeFromIncident > 14) {
         riskFactors.push({
           factor: 'Delayed Reporting',
@@ -172,7 +172,7 @@ export function ClaimPredictor() {
           mitigation: 'Provide explanation for delay and any interim mitigation efforts'
         });
       }
-      
+
       if (formData.previousClaims > 2) {
         riskFactors.push({
           factor: 'Multiple Previous Claims',
@@ -181,7 +181,7 @@ export function ClaimPredictor() {
           mitigation: 'Emphasize preventive measures taken since last claim'
         });
       }
-      
+
       if (!formData.hasContractorEstimate) {
         riskFactors.push({
           factor: 'No Professional Estimate',
@@ -190,10 +190,10 @@ export function ClaimPredictor() {
           mitigation: 'Obtain at least 2 licensed contractor estimates'
         });
       }
-      
+
       // Generate improvements
       const improvements: Improvement[] = [];
-      
+
       if (!formData.hasPhotos) {
         improvements.push({
           priority: 'high',
@@ -203,7 +203,7 @@ export function ClaimPredictor() {
           icon: Camera
         });
       }
-      
+
       if (!formData.hasContractorEstimate) {
         improvements.push({
           priority: 'high',
@@ -213,7 +213,7 @@ export function ClaimPredictor() {
           icon: DollarSign
         });
       }
-      
+
       if (formData.description.length < 100) {
         improvements.push({
           priority: 'medium',
@@ -223,7 +223,7 @@ export function ClaimPredictor() {
           icon: FileText
         });
       }
-      
+
       if (!formData.hasReceipts && formData.severity !== 'minor') {
         improvements.push({
           priority: 'medium',
@@ -233,7 +233,7 @@ export function ClaimPredictor() {
           icon: FileText
         });
       }
-      
+
       const newPrediction: ClaimPrediction = {
         approvalLikelihood: approvalScore,
         estimatedSettlementDays: settlementDays,
@@ -248,9 +248,9 @@ export function ClaimPredictor() {
           avgPayout: 18500
         }
       };
-      
+
       setPrediction(newPrediction);
-      
+
       // Log analysis for audit
       await supabase.from('audit_logs').insert({
         action: 'claim_prediction',
@@ -261,7 +261,7 @@ export function ClaimPredictor() {
           approvalLikelihood: approvalScore
         }
       });
-      
+
     } catch (error) {
       console.error('Error analyzing claim:', error);
       toast.error('Failed to analyze claim');
@@ -625,12 +625,12 @@ export function ClaimPredictor() {
                       <p className="text-sm text-gray-600">Confidence</p>
                     </div>
                   </div>
-                  
+
                   <Alert className="mt-4">
                     <Info className="h-4 w-4" />
                     <AlertDescription>
-                      This analysis is based on anonymized claim data from similar properties 
-                      with {formData.damageType.replace('_', ' ')} damage of {formData.severity} severity 
+                      This analysis is based on anonymized claim data from similar properties
+                      with {formData.damageType.replace('_', ' ')} damage of {formData.severity} severity
                       in Florida over the past 12 months.
                     </AlertDescription>
                   </Alert>
@@ -657,7 +657,7 @@ export function ClaimPredictor() {
                         <p className="text-sm text-gray-500">Day 1</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center">
                         <FileText className="h-5 w-5" />
@@ -667,7 +667,7 @@ export function ClaimPredictor() {
                         <p className="text-sm text-gray-500">Days 2-5</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-purple-500 text-white rounded-full flex items-center justify-center">
                         <Shield className="h-5 w-5" />
@@ -677,7 +677,7 @@ export function ClaimPredictor() {
                         <p className="text-sm text-gray-500">Days 6-10</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-yellow-500 text-white rounded-full flex items-center justify-center">
                         <Camera className="h-5 w-5" />
@@ -687,7 +687,7 @@ export function ClaimPredictor() {
                         <p className="text-sm text-gray-500">Days 11-20</p>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center space-x-3">
                       <div className="flex-shrink-0 w-10 h-10 bg-green-500 text-white rounded-full flex items-center justify-center">
                         <DollarSign className="h-5 w-5" />

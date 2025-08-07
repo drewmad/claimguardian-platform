@@ -18,12 +18,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { 
-      toolName, 
-      inputLength = 0, 
-      outputLength = 300, 
+    const {
+      toolName,
+      inputLength = 0,
+      outputLength = 300,
       imageCount = 0,
-      audioSeconds = 0 
+      audioSeconds = 0
     } = body
 
     if (!toolName) {
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       imageCount,
       audioSeconds
     )
-    
+
     return NextResponse.json({
       estimatedCost,
       breakdown: {

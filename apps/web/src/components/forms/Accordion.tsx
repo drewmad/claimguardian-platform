@@ -41,7 +41,7 @@ export function Accordion({ title, children, defaultOpen = false, className }: A
           <ChevronRight className="h-4 w-4 text-gray-400" />
         )}
       </button>
-      
+
       {isOpen && (
         <div className="px-4 py-3 border-t border-gray-600 bg-gray-900/50">
           <div className="text-sm text-gray-300">

@@ -15,36 +15,36 @@ const OUTPUT_DIR = 'data/charlotte_county';
 
 async function extractCharlotteCounty() {
     console.log('🏖️  Extracting Charlotte County data for Phase 1...');
-    
+
     // Create output directory
     if (!fs.existsSync(OUTPUT_DIR)) {
         fs.mkdirSync(OUTPUT_DIR, { recursive: true });
     }
-    
+
     // Get all CSV files
     const csvFiles = fs.readdirSync(INPUT_DIR)
         .filter(f => f.endsWith('.csv'))
         .sort();
-    
+
     console.log(`📄 Found ${csvFiles.length} CSV files to process`);
-    
+
     let totalRecords = 0;
     let charlotteRecords = 0;
     const outputFile = path.join(OUTPUT_DIR, 'charlotte_parcels.csv');
     const outputStream = createWriteStream(outputFile);
     let headerWritten = false;
-    
+
     for (const csvFile of csvFiles) {
         const filePath = path.join(INPUT_DIR, csvFile);
         console.log(`   Processing: ${csvFile}`);
-        
+
         const records = await new Promise((resolve, reject) => {
             const results = [];
             fs.createReadStream(filePath)
                 .pipe(csv())
                 .on('data', (data) => {
                     totalRecords++;
-                    
+
                     // Check if this is Charlotte County
                     if (data.CO_NO === CHARLOTTE_FIPS || data.co_no === CHARLOTTE_FIPS) {
                         results.push(data);
@@ -54,7 +54,7 @@ async function extractCharlotteCounty() {
                 .on('end', () => resolve(results))
                 .on('error', reject);
         });
-        
+
         // Write Charlotte County records
         if (records.length > 0) {
             if (!headerWritten) {
@@ -63,42 +63,42 @@ async function extractCharlotteCounty() {
                 outputStream.write(headers.join(',') + '\n');
                 headerWritten = true;
             }
-            
+
             // Write data rows
             for (const record of records) {
-                const values = Object.values(record).map(val => 
+                const values = Object.values(record).map(val =>
                     typeof val === 'string' && val.includes(',') ? `"${val}"` : val
                 );
                 outputStream.write(values.join(',') + '\n');
             }
-            
+
             console.log(`     ✅ Found ${records.length} Charlotte County records`);
         }
     }
-    
+
     outputStream.end();
-    
+
     console.log('\n📊 Extraction Summary:');
     console.log(`   Total records processed: ${totalRecords.toLocaleString()}`);
     console.log(`   Charlotte County records: ${charlotteRecords.toLocaleString()}`);
     console.log(`   Output file: ${outputFile}`);
     console.log(`   File size: ${(fs.statSync(outputFile).size / 1024 / 1024).toFixed(2)} MB`);
-    
+
     if (charlotteRecords === 0) {
         console.log('\n⚠️  No Charlotte County records found!');
         console.log('   Checking CO_NO values in sample files...');
         await checkCountyValues();
     }
-    
+
     return charlotteRecords;
 }
 
 async function checkCountyValues() {
     const sampleFile = path.join(INPUT_DIR, fs.readdirSync(INPUT_DIR)[0]);
     console.log(`   Sampling: ${sampleFile}`);
-    
+
     const countyCounts = {};
-    
+
     return new Promise((resolve) => {
         let count = 0;
         fs.createReadStream(sampleFile)
@@ -109,7 +109,7 @@ async function checkCountyValues() {
                 if (county) {
                     countyCounts[county] = (countyCounts[county] || 0) + 1;
                 }
-                
+
                 // Stop after 1000 records to get a sample
                 if (count >= 1000) {
                     return;

@@ -18,7 +18,7 @@ export async function GET(request: NextRequest) {
     }
 
     const budgetStatus = await costTrackingService.checkBudgetStatus()
-    
+
     return NextResponse.json(budgetStatus)
 
   } catch (error) {

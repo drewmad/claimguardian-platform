@@ -99,7 +99,7 @@ export function MLOperationsDashboard() {
   const loadMLData = async () => {
     try {
       setLoading(true)
-      
+
       // Mock data for demonstration
       const mockModels: Model[] = [
         {
@@ -409,8 +409,8 @@ export function MLOperationsDashboard() {
           {/* Models Grid */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             {models.map(model => (
-              <Card 
-                key={model.id} 
+              <Card
+                key={model.id}
                 className="bg-gray-800 border-gray-700 cursor-pointer hover:border-gray-600"
                 onClick={() => setSelectedModel(model)}
               >
@@ -422,7 +422,7 @@ export function MLOperationsDashboard() {
                         {model.version} • {(model.size_mb).toFixed(1)} MB • {(model.parameters / 1000000).toFixed(1)}M params
                       </CardDescription>
                     </div>
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className={
                         model.status === 'deployed' ? 'border-green-500 text-green-500' :
@@ -487,7 +487,7 @@ export function MLOperationsDashboard() {
                         fillOpacity={0.3}
                       />
                     ))}
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -504,20 +504,20 @@ export function MLOperationsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={metrics.slice(-24)}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="timestamp" 
+                    <XAxis
+                      dataKey="timestamp"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => format(new Date(value), 'HH:mm')}
                     />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelFormatter={(value) => format(new Date(value), 'MMM d, HH:mm')}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="avg_latency" 
-                      stroke="#3B82F6" 
+                    <Line
+                      type="monotone"
+                      dataKey="avg_latency"
+                      stroke="#3B82F6"
                       strokeWidth={2}
                       dot={false}
                     />
@@ -621,20 +621,20 @@ export function MLOperationsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <AreaChart data={metrics}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="timestamp" 
+                    <XAxis
+                      dataKey="timestamp"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => format(new Date(value), 'HH:mm')}
                     />
                     <YAxis stroke="#9CA3AF" />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelFormatter={(value) => format(new Date(value), 'MMM d, HH:mm')}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="predictions" 
-                      stroke="#10B981" 
+                    <Area
+                      type="monotone"
+                      dataKey="predictions"
+                      stroke="#10B981"
                       fill="#10B981"
                       fillOpacity={0.3}
                     />
@@ -651,20 +651,20 @@ export function MLOperationsDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={metrics}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="timestamp" 
+                    <XAxis
+                      dataKey="timestamp"
                       stroke="#9CA3AF"
                       tickFormatter={(value) => format(new Date(value), 'HH:mm')}
                     />
                     <YAxis stroke="#9CA3AF" domain={[80, 100]} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelFormatter={(value) => format(new Date(value), 'MMM d, HH:mm')}
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="confidence" 
-                      stroke="#F59E0B" 
+                    <Line
+                      type="monotone"
+                      dataKey="confidence"
+                      stroke="#F59E0B"
                       strokeWidth={2}
                       dot={false}
                     />

@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { 
-  X, User, Bell, Shield, Key, Palette, Globe, 
+import {
+  X, User, Bell, Shield, Key, Palette, Globe,
   CreditCard, HelpCircle, LogOut, ChevronRight,
   Moon, Sun, Monitor, Smartphone, Volume2, Mail,
   Lock, Eye, EyeOff, Save, AlertCircle, CheckCircle
@@ -486,14 +486,14 @@ export function SettingsModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={closeModal} />
-      
+
       <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-2xl max-h-[80vh] shadow-2xl overflow-hidden flex">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
-        
+
         {/* Sidebar */}
         <div className="w-56 bg-slate-900/50 border-r border-slate-700 p-4">
           <h2 className="text-xl font-bold text-white mb-4">Settings</h2>
-          
+
           <nav className="space-y-1">
             {tabs.map(({ id, label, icon: Icon }) => (
               <button

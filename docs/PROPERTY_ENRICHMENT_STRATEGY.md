@@ -50,12 +50,12 @@ interface EnrichedPropertyData {
   country: string;
   formatted_address: string;
   address_components: AddressComponent[];
-  
+
   // Elevation Data
   elevation_meters: number;
   elevation_resolution: number;
   flood_zone: string; // Derived from elevation
-  
+
   // Visual Documentation
   street_view_images: {
     north: string; // URL to image
@@ -67,13 +67,13 @@ interface EnrichedPropertyData {
       pano_id: string;
     }
   };
-  
+
   aerial_view_images: {
     zoom_15: string; // Neighborhood view
-    zoom_18: string; // Property view  
+    zoom_18: string; // Property view
     zoom_20: string; // Detailed roof view
   };
-  
+
   // Emergency Services
   fire_protection: {
     nearest_station: {
@@ -86,7 +86,7 @@ interface EnrichedPropertyData {
     };
     protection_class: number; // 1-10 rating
   };
-  
+
   medical_services: {
     nearest_hospital: {
       name: string;
@@ -94,11 +94,11 @@ interface EnrichedPropertyData {
       trauma_center: boolean;
     };
   };
-  
+
   // Risk Factors
   distance_to_coast_meters: number;
   hurricane_evacuation_zone: string;
-  
+
   // Metadata
   enrichment_version: string;
   enriched_at: string;
@@ -125,42 +125,42 @@ CREATE TABLE property_enrichments (
   property_id UUID REFERENCES properties(id) NOT NULL,
   version INTEGER NOT NULL DEFAULT 1,
   is_current BOOLEAN DEFAULT true,
-  
+
   -- Location Data
   plus_code TEXT,
   neighborhood TEXT,
   census_tract TEXT,
   county TEXT NOT NULL,
-  
+
   -- Elevation & Flood Risk
   elevation_meters DECIMAL(8,2),
   elevation_resolution DECIMAL(5,2),
   flood_zone VARCHAR(10),
   flood_risk_score INTEGER, -- 1-10
-  
+
   -- Visual Documentation
   street_view_data JSONB, -- Contains URLs, pano_ids, dates
   aerial_view_data JSONB, -- Multiple zoom levels
-  
+
   -- Emergency Services
   fire_protection JSONB,
   medical_services JSONB,
   police_services JSONB,
-  
+
   -- Risk Assessment
   distance_to_coast_meters INTEGER,
   hurricane_zone VARCHAR(10),
   storm_surge_zone VARCHAR(10),
-  
+
   -- Insurance Factors
   insurance_risk_factors JSONB, -- Computed scores
-  
+
   -- Metadata
   source_apis JSONB, -- Which APIs were called
   api_costs JSONB, -- Cost breakdown
   enriched_at TIMESTAMPTZ DEFAULT NOW(),
   enriched_by UUID REFERENCES auth.users(id),
-  
+
   -- Constraints
   UNIQUE(property_id, version)
 );
@@ -186,7 +186,7 @@ CREATE TABLE enrichment_audit_log (
 
 ### Current Costs (Full Enrichment)
 - Geocoding API: $0.005 per property
-- Elevation API: $0.005 per property  
+- Elevation API: $0.005 per property
 - Street View (4 images): $0.028 per property
 - Maps Static (3 zoom levels): $0.021 per property
 - Places Nearby (emergency only): $0.005 per property
@@ -206,7 +206,7 @@ CREATE TABLE enrichment_audit_log (
 - Total cost: $0.038 per property
 
 #### Premium Tier ($19.99/month)
-- Everything in Standard  
+- Everything in Standard
 - Aerial imagery (3 zoom levels)
 - Advanced risk scoring
 - Quarterly updates
@@ -270,14 +270,14 @@ export async function enrichPropertyData(
     property_id: propertyId,
     version: newVersion,
     is_current: true,
-    
+
     // All captured data...
     plus_code: geocodeData.plus_code,
     neighborhood: geocodeData.neighborhood,
     census_tract: geocodeData.census_tract,
-    
+
     // ... rest of fields
-    
+
     source_apis: {
       geocoding: 'v1',
       elevation: 'v1',
@@ -285,7 +285,7 @@ export async function enrichPropertyData(
       maps_static: 'v1',
       places: 'v3'
     },
-    
+
     api_costs: {
       geocoding: 0.005,
       elevation: 0.005,

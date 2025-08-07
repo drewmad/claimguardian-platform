@@ -17,7 +17,7 @@ export default function NotificationSettingsPage() {
             Control how and when you receive updates about your properties, claims, and community alerts
           </p>
         </div>
-        
+
         <NotificationPreferences />
       </div>
     </DashboardLayout>

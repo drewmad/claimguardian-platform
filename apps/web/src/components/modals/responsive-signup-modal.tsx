@@ -12,9 +12,9 @@
 
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Mail, Lock, Eye, EyeOff, User, Smartphone, 
-  CheckCircle, AlertTriangle, Loader2 
+import {
+  Mail, Lock, Eye, EyeOff, User, Smartphone,
+  CheckCircle, AlertTriangle, Loader2
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -46,7 +46,7 @@ export function ResponsiveSignupModal() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [step, setStep] = useState<'form' | 'verification'>('form')
-  
+
   const [formData, setFormData] = useState<FormData>({
     email: '',
     password: '',
@@ -82,7 +82,7 @@ export function ResponsiveSignupModal() {
         if (!value) return 'Email is required'
         if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return 'Please enter a valid email'
         return undefined
-      
+
       case 'password':
         if (!value) return 'Password is required'
         if (value.length < 6) return 'Password must be at least 6 characters'
@@ -90,12 +90,12 @@ export function ResponsiveSignupModal() {
           return 'Password must contain uppercase, lowercase, and number'
         }
         return undefined
-      
+
       case 'confirmPassword':
         if (!value) return 'Please confirm your password'
         if (value !== formData.password) return 'Passwords do not match'
         return undefined
-      
+
       default:
         return undefined
     }
@@ -103,12 +103,12 @@ export function ResponsiveSignupModal() {
 
   const handleFieldChange = (name: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [name]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: undefined }))
     }
-    
+
     // Validate confirm password when password changes
     if (name === 'password' && formData.confirmPassword) {
       const confirmError = validateField('confirmPassword', formData.confirmPassword)
@@ -124,21 +124,21 @@ export function ResponsiveSignupModal() {
 
   const validateForm = (): boolean => {
     const newErrors: ValidationErrors = {}
-    
+
     Object.keys(formData).forEach(key => {
       const error = validateField(key, formData[key as keyof FormData] || '')
       if (error) newErrors[key as keyof ValidationErrors] = error
     })
-    
+
     setErrors(newErrors)
     setTouchedFields(new Set(Object.keys(formData)))
-    
+
     return Object.keys(newErrors).length === 0
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!validateForm()) {
       toast.error('Please fix the errors below')
       return
@@ -152,7 +152,7 @@ export function ResponsiveSignupModal() {
         email: formData.email,
         password: formData.password
       })
-      
+
       if (success) {
         setStep('verification')
         setSubmitted(true)
@@ -257,7 +257,7 @@ export function ResponsiveSignupModal() {
               {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
             </button>
           </div>
-          
+
           {/* Password Strength Indicator */}
           {formData.password && (
             <motion.div
@@ -274,10 +274,10 @@ export function ResponsiveSignupModal() {
               <div className="w-full bg-gray-200 rounded-full h-1">
                 <div
                   className={`h-1 rounded-full transition-all ${
-                    getPasswordStrength(formData.password).score <= 2 
-                      ? 'bg-red-500' 
-                      : getPasswordStrength(formData.password).score <= 4 
-                        ? 'bg-yellow-500' 
+                    getPasswordStrength(formData.password).score <= 2
+                      ? 'bg-red-500'
+                      : getPasswordStrength(formData.password).score <= 4
+                        ? 'bg-yellow-500'
                         : 'bg-green-500'
                   }`}
                   style={{ width: `${(getPasswordStrength(formData.password).score / 6) * 100}%` }}
@@ -285,7 +285,7 @@ export function ResponsiveSignupModal() {
               </div>
             </motion.div>
           )}
-          
+
           {errors.password && touchedFields.has('password') && (
             <motion.p
               initial={{ opacity: 0, y: -10 }}

@@ -187,10 +187,10 @@ const cameraSlice = createSlice({
     // Statistics tracking
     recordCaptureAttempt: (state, action: PayloadAction<{ success: boolean; captureTime?: number }>) => {
       state.captureStats.totalPhotos += 1
-      
+
       if (action.payload.success) {
         state.captureStats.successfulCaptures += 1
-        
+
         // Update average capture time if provided
         if (action.payload.captureTime) {
           const totalTime = state.captureStats.averageCaptureTime * (state.captureStats.successfulCaptures - 1) + action.payload.captureTime
@@ -292,7 +292,7 @@ const cameraSlice = createSlice({
       state.hasPermission = action.payload.hasPermission
       state.permissionStatus = action.payload.hasPermission ? 'granted' : 'denied'
       state.isAvailable = action.payload.hasPermission
-      
+
       if (action.payload.supportedRatios) {
         state.supportedRatios = action.payload.supportedRatios
       }

@@ -122,13 +122,13 @@ class ColumnTransform extends Transform {
 
   _transform(chunk, encoding, callback) {
     const transformed = {};
-    
+
     for (const [key, value] of Object.entries(chunk)) {
       const mappedKey = columnMappings[key.toLowerCase()] || key.toUpperCase();
       // Convert empty strings to null
       transformed[mappedKey] = value === '' ? null : value;
     }
-    
+
     callback(null, transformed);
   }
 }
@@ -160,9 +160,9 @@ async function processCSVFile(filePath) {
     const fileName = path.basename(filePath);
     const fileStats = fs.statSync(filePath);
     stats.estimatedStorageGB += fileStats.size / (1024 * 1024 * 1024);
-    
+
     console.log(`\n📄 Processing: ${fileName} (${(fileStats.size / 1024 / 1024).toFixed(2)} MB)`);
-    
+
     const records = [];
     let recordCount = 0;
     const batchPromises = [];
@@ -178,15 +178,15 @@ async function processCSVFile(filePath) {
         if (records.length >= BATCH_SIZE) {
           stream.pause();
           const batch = records.splice(0, BATCH_SIZE);
-          
+
           const batchPromise = importBatch(batch, fileName)
             .then(() => {
               process.stdout.write(`\r  Progress: ${recordCount} records processed...`);
               stream.resume();
             });
-          
+
           batchPromises.push(batchPromise);
-          
+
           // Limit concurrent batches
           if (batchPromises.length >= MAX_CONCURRENT_BATCHES) {
             await Promise.race(batchPromises);
@@ -198,10 +198,10 @@ async function processCSVFile(filePath) {
         if (records.length > 0) {
           await importBatch(records, fileName);
         }
-        
+
         // Wait for all batches to complete
         await Promise.all(batchPromises);
-        
+
         console.log(`\n  ✅ Completed: ${recordCount} records from ${fileName}`);
         stats.processedFiles++;
         resolve();
@@ -215,15 +215,15 @@ async function processCSVFile(filePath) {
 
 async function transferToMainTable() {
   console.log('\n🔄 Transferring data from staging to main table...');
-  
+
   try {
     const { data, error } = await supabase.rpc('transfer_florida_parcels_staging');
-    
+
     if (error) {
       console.error('❌ Transfer error:', error.message);
       return false;
     }
-    
+
     console.log('✅ Data transferred successfully!');
     return true;
   } catch (err) {
@@ -234,37 +234,37 @@ async function transferToMainTable() {
 
 async function calculateCosts() {
   const runtime = (Date.now() - stats.startTime) / 1000 / 60; // minutes
-  
+
   console.log('\n💰 Supabase Cost Estimation:');
   console.log('============================');
-  
+
   // Storage costs
   const storageGB = stats.estimatedStorageGB;
   const storageCostPerGB = 0.021; // $0.021 per GB per month
   const monthlystorageCost = storageGB * storageCostPerGB;
-  
+
   console.log(`📦 Storage: ${storageGB.toFixed(2)} GB`);
   console.log(`   Monthly cost: $${monthlystorageCost.toFixed(2)}`);
-  
+
   // Database size (with indexes, typically 2-3x raw data)
   const estimatedDBSize = storageGB * 2.5;
   const dbCostPerGB = 0.125; // $0.125 per GB per month
   const monthlyDBCost = estimatedDBSize * dbCostPerGB;
-  
+
   console.log(`💾 Database size (with indexes): ~${estimatedDBSize.toFixed(2)} GB`);
   console.log(`   Monthly cost: $${monthlyDBCost.toFixed(2)}`);
-  
+
   // API requests (read operations)
   const estimatedMonthlyReads = stats.totalRecords * 10; // Assume 10 reads per record per month
   const apiCostPer1M = 0.40; // $0.40 per million requests
   const monthlyAPICost = (estimatedMonthlyReads / 1000000) * apiCostPer1M;
-  
+
   console.log(`🔍 Estimated monthly API calls: ${(estimatedMonthlyReads / 1000000).toFixed(2)}M`);
   console.log(`   Monthly cost: $${monthlyAPICost.toFixed(2)}`);
-  
+
   const totalMonthlyCost = monthlystorageCost + monthlyDBCost + monthlyAPICost;
   console.log(`\n💵 Total estimated monthly cost: $${totalMonthlyCost.toFixed(2)}`);
-  
+
   // One-time import costs
   const importAPICalls = Math.ceil(stats.totalRecords / BATCH_SIZE) * 2; // insert + transfer
   const importCost = (importAPICalls / 1000000) * apiCostPer1M;
@@ -273,7 +273,7 @@ async function calculateCosts() {
 
 async function main() {
   const csvDirectory = process.argv[2] || './florida_parcels_data';
-  
+
   if (!fs.existsSync(csvDirectory)) {
     console.error(`❌ Directory not found: ${csvDirectory}`);
     process.exit(1);

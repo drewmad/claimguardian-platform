@@ -16,7 +16,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -27,7 +27,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true };
@@ -47,10 +47,10 @@ async function applyUppercaseView() {
   console.log('🏘️  Creating UPPERCASE Column View for Florida Parcels');
   console.log('=' .repeat(50));
   console.log('\nThis will create a view that allows CSV imports with UPPERCASE headers');
-  
+
   // Read migration file
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/024_add_uppercase_column_aliases.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -61,15 +61,15 @@ async function applyUppercaseView() {
 
   if (result.success) {
     console.log('\n🎉 UPPERCASE view created successfully!');
-    
+
     // Test the view
     console.log('\n🧪 Testing the view...');
-    
+
     const testQueries = [
       {
         name: 'Check view columns',
-        query: `SELECT COUNT(*) as column_count 
-                FROM information_schema.columns 
+        query: `SELECT COUNT(*) as column_count
+                FROM information_schema.columns
                 WHERE table_name = 'florida_parcels_uppercase'`
       },
       {
@@ -81,7 +81,7 @@ async function applyUppercaseView() {
     for (const test of testQueries) {
       await executeSQL(test.query, test.name);
     }
-    
+
     console.log('\n✨ Solution Applied Successfully!');
     console.log('\n📝 How to use:');
     console.log('1. Go to Supabase Dashboard → Table Editor');
@@ -93,7 +93,7 @@ async function applyUppercaseView() {
     console.log('  • Derives county_fips from CO_NO field');
     console.log('  • Handles duplicate parcels with UPSERT logic');
     console.log('  • Updates existing records if parcel_id matches');
-    
+
   } else {
     console.log('\n⚠️  Failed to create view. Please check the error above.');
   }

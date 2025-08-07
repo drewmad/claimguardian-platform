@@ -48,7 +48,7 @@ Deno.serve(async (req) => {
     // Convert geometry
     let wkt = null
     if (geometry && geometry.rings) {
-      const rings = geometry.rings.map((ring: number[][]) => 
+      const rings = geometry.rings.map((ring: number[][]) =>
         `(${ring.map(coord => `${coord[0]} ${coord[1]}`).join(',')})`
       ).join(',')
       wkt = `SRID=4326;MULTIPOLYGON((${rings}))`
@@ -96,7 +96,7 @@ Deno.serve(async (req) => {
 
     if (error) {
       console.error('Insert error:', error)
-      return new Response(JSON.stringify({ 
+      return new Response(JSON.stringify({
         error: error.message,
         details: error,
         record: record
@@ -106,7 +106,7 @@ Deno.serve(async (req) => {
       })
     }
 
-    return new Response(JSON.stringify({ 
+    return new Response(JSON.stringify({
       success: true,
       data: data,
       record: record

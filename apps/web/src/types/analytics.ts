@@ -63,7 +63,7 @@ export interface WidgetConfig {
   filters?: AnalyticsFilter[]
 }
 
-export type AnalyticsData = 
+export type AnalyticsData =
   | AnalyticsMetric
   | AnalyticsMetric[]
   | TimeSeriesData

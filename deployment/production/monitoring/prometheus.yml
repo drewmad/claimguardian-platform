@@ -148,39 +148,39 @@ recording_rules:
       # HTTP request rate
       - record: claimguardian:http_requests_per_second
         expr: rate(http_requests_total[5m])
-      
+
       # HTTP request duration 99th percentile
       - record: claimguardian:http_request_duration_p99
         expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m]))
-      
+
       # Error rate
       - record: claimguardian:http_error_rate
         expr: rate(http_requests_total{status=~"5.."}[5m]) / rate(http_requests_total[5m])
-      
+
       # AI cost per hour
       - record: claimguardian:ai_cost_per_hour
         expr: increase(ai_request_cost_total[1h])
-      
+
       # AI requests per second
       - record: claimguardian:ai_requests_per_second
         expr: rate(ai_requests_total[5m])
-      
+
       # Active WebSocket connections
       - record: claimguardian:websocket_connections_active
         expr: websocket_connections_total - websocket_connections_closed_total
-      
+
       # Database connection utilization
       - record: claimguardian:db_connection_utilization
         expr: pg_stat_activity_count / pg_settings_max_connections
-      
+
       # Memory utilization
       - record: claimguardian:memory_utilization
         expr: (node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes
-      
+
       # CPU utilization
       - record: claimguardian:cpu_utilization
         expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100)
-      
+
       # Disk utilization
       - record: claimguardian:disk_utilization
         expr: (node_filesystem_size_bytes - node_filesystem_free_bytes) / node_filesystem_size_bytes

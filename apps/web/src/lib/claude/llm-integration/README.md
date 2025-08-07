@@ -49,7 +49,7 @@ class ServiceName {
     // TODO: Implement with Opus
     throw new Error('Feature requires Opus model. Implementation pending.')
   }
-  
+
   // Statistics and monitoring ready
   getStats(): ServiceStats {
     // Working implementation
@@ -63,12 +63,12 @@ export const serviceName = new ServiceName(config)
 ## Usage (When Activated)
 
 ```typescript
-import { 
+import {
   llmLearningSynthesis,
   semanticSimilarityService,
   naturalLanguageGenerator,
   aiBottleneckResolver,
-  autoFixService 
+  autoFixService
 } from '@claimguardian/claude/llm-integration'
 
 // Synthesize patterns
@@ -158,7 +158,7 @@ async applyLearning(task: string) {
     query: task,
     candidates: this.learnings
   })
-  
+
   // Apply the most relevant
   return this.applyBestMatch(similar[0])
 }
@@ -176,7 +176,7 @@ async generateInsights() {
     patterns: this.activePatterns,
     timeframe: 'day'
   })
-  
+
   // Generate natural language summary
   return naturalLanguageGenerator.generateExecutiveSummary(
     bottlenecks.recommendations,

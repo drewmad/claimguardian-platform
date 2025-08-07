@@ -98,7 +98,7 @@ export class IndexAnalyzer {
   constructor() {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    
+
     this.supabase = createClient(supabaseUrl, supabaseKey)
     this.queryOptimizer = getQueryOptimizer()
   }
@@ -133,13 +133,13 @@ export class IndexAnalyzer {
     try {
       // Get database schema information
       const schemaInfo = await this.getSchemaInformation(tables)
-      
+
       // Get existing index information
       const existingIndexes = await this.getExistingIndexes(tables)
-      
+
       // Analyze query patterns from metrics
       const queryPatterns = await this.analyzeQueryPatterns(minQueryFrequency)
-      
+
       // Generate recommendations
       const recommendations = await this.generateRecommendations(
         schemaInfo,
@@ -149,7 +149,7 @@ export class IndexAnalyzer {
       )
 
       // Get usage statistics if requested
-      const usageStats = includeUsageStats 
+      const usageStats = includeUsageStats
         ? await this.getIndexUsageStats(tables)
         : []
 
@@ -178,18 +178,18 @@ export class IndexAnalyzer {
    * Perform detailed impact analysis for a specific recommendation
    */
   async analyzeImpact(recommendation: IndexRecommendation): Promise<IndexImpactAnalysis> {
-    logger.info('Analyzing impact for recommendation', { 
+    logger.info('Analyzing impact for recommendation', {
       table: recommendation.table,
-      columns: recommendation.columns 
+      columns: recommendation.columns
     })
 
     try {
       // Analyze performance impact
       const performance = await this.analyzePerformanceImpact(recommendation)
-      
+
       // Calculate costs
       const cost = await this.calculateIndexCost(recommendation)
-      
+
       // Assess risks
       const riskAssessment = await this.assessRisks(recommendation)
 
@@ -220,16 +220,16 @@ export class IndexAnalyzer {
   async getRecommendationsForTable(tableName: string): Promise<IndexRecommendation[]> {
     const cacheKey = `table:${tableName}`
     const cached = this.analysisCache.get(cacheKey)
-    
+
     if (cached && this.isCacheValid(cacheKey)) {
       return cached
     }
 
-    const analysis = await this.analyzeIndexes({ 
+    const analysis = await this.analyzeIndexes({
       tables: [tableName],
-      includeUsageStats: false 
+      includeUsageStats: false
     })
-    
+
     this.analysisCache.set(cacheKey, analysis.recommendations)
     return analysis.recommendations
   }
@@ -268,14 +268,14 @@ export class IndexAnalyzer {
 
       const existingColumns = columns?.map(c => c.column_name) || []
       const missingColumns = recommendation.columns.filter(col => !existingColumns.includes(col))
-      
+
       if (missingColumns.length > 0) {
         blockers.push(`Columns do not exist: ${missingColumns.join(', ')}`)
       }
 
       // Check for existing similar indexes
       const existingIndexes = await this.getExistingIndexes([recommendation.table])
-      const similarIndexes = existingIndexes.filter(idx => 
+      const similarIndexes = existingIndexes.filter(idx =>
         idx.tableName === recommendation.table &&
         this.hasSimilarColumns(idx.columns, recommendation.columns)
       )
@@ -331,7 +331,7 @@ export class IndexAnalyzer {
       // Get baseline metrics
       const baselineStats = await this.getIndexUsageStats()
       const targetIndex = baselineStats.find(stat => stat.indexName === indexName)
-      
+
       if (!targetIndex) {
         throw new Error(`Index ${indexName} not found`)
       }
@@ -356,7 +356,7 @@ export class IndexAnalyzer {
 
       // Determine recommendation
       let recommendation: 'keep' | 'modify' | 'drop' = 'keep'
-      
+
       if (updatedIndex.usage.efficiency < 0.1) {
         recommendation = 'drop'
         performance.regressions.push('Very low usage efficiency')
@@ -527,7 +527,7 @@ export class IndexAnalyzer {
             pattern,
             tableInfo
           })
-          
+
           if (recommendation && !this.isDuplicate(recommendation, recommendations, existingIndexes)) {
             recommendations.push(recommendation)
           }
@@ -543,7 +543,7 @@ export class IndexAnalyzer {
             pattern,
             tableInfo
           })
-          
+
           if (recommendation && !this.isDuplicate(recommendation, recommendations, existingIndexes)) {
             recommendations.push(recommendation)
           }
@@ -556,7 +556,7 @@ export class IndexAnalyzer {
       const priorityOrder = { critical: 4, high: 3, medium: 2, low: 1 }
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority]
       if (priorityDiff !== 0) return priorityDiff
-      
+
       return b.estimatedImpact.querySpeedup - a.estimatedImpact.querySpeedup
     })
 
@@ -572,12 +572,12 @@ export class IndexAnalyzer {
     tableInfo: any
   }): IndexRecommendation | null {
     const { table, columns, type, reason, pattern, tableInfo } = params
-    
+
     if (columns.length === 0) return null
 
     const estimatedSpeedup = Math.max(1.5, Math.min(10, pattern.averageTime / 100))
     const priority = this.determinePriority(pattern, estimatedSpeedup)
-    
+
     return {
       id: `rec_${table}_${columns.join('_')}_${Date.now()}`,
       table,
@@ -611,7 +611,7 @@ export class IndexAnalyzer {
   private generateIndexSQL(table: string, columns: string[], type: string): string {
     const indexName = `idx_${table}_${columns.join('_').toLowerCase()}`
     const columnList = columns.join(', ')
-    
+
     switch (type) {
       case 'gin':
         return `CREATE INDEX ${indexName} ON ${table} USING GIN (${columnList})`
@@ -632,7 +632,7 @@ export class IndexAnalyzer {
     indexes: any[]
   ): boolean {
     // Check against existing recommendations
-    const duplicateRec = existing.some(rec => 
+    const duplicateRec = existing.some(rec =>
       rec.table === recommendation.table &&
       this.hasSimilarColumns(rec.columns, recommendation.columns)
     )
@@ -654,7 +654,7 @@ export class IndexAnalyzer {
   private estimateDiskSpace(rowCount: number, columnCount: number): string {
     const bytesPerRow = columnCount * 8 + 24 // Rough estimate
     const totalBytes = rowCount * bytesPerRow
-    
+
     if (totalBytes < 1024 * 1024) {
       return `${Math.round(totalBytes / 1024)} KB`
     } else if (totalBytes < 1024 * 1024 * 1024) {
@@ -666,7 +666,7 @@ export class IndexAnalyzer {
 
   private estimateCreationTime(rowCount: number, columnCount: number): string {
     const timeMs = Math.max(1000, rowCount * columnCount * 0.001)
-    
+
     if (timeMs < 60000) {
       return `${Math.round(timeMs / 1000)}s`
     } else {
@@ -702,7 +702,7 @@ export class IndexAnalyzer {
   private calculateAnalysisSummary(recommendations: IndexRecommendation[], tableCount: number, queryCount: number) {
     const totalSpeedup = recommendations.reduce((sum, rec) => sum + rec.estimatedImpact.querySpeedup, 0)
     const avgSpeedup = recommendations.length > 0 ? totalSpeedup / recommendations.length : 1
-    
+
     const totalSpace = recommendations.reduce((sum, rec) => {
       const match = rec.estimatedImpact.diskSpace.match(/(\d+(?:\.\d+)?)\s*(KB|MB|GB)/)
       if (match) {
@@ -752,7 +752,7 @@ export class IndexAnalyzer {
   private async assessRisks(recommendation: IndexRecommendation) {
     const factors: string[] = []
     const mitigation: string[] = []
-    
+
     if (recommendation.columns.length > 3) {
       factors.push('Multi-column index may have high maintenance cost')
       mitigation.push('Consider separate single-column indexes if queries allow')
@@ -776,7 +776,7 @@ export class IndexAnalyzer {
   private calculateSpeedup(baseline: IndexUsageStats, current: IndexUsageStats): number {
     const baselineEfficiency = baseline.usage.efficiency
     const currentEfficiency = current.usage.efficiency
-    
+
     if (baselineEfficiency === 0) return 1
     return currentEfficiency / baselineEfficiency
   }

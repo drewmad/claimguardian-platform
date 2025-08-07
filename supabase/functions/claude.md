@@ -77,13 +77,13 @@ Deno.serve(async (req: Request): Promise<Response> => {
   try {
     // Parse request body
     const body: RequestBody = await req.json()
-    
+
     // Validate required fields
     if (!body.propertyId || !body.userId) {
       return new Response(
         JSON.stringify({ success: false, error: 'Missing required fields' }),
-        { 
-          status: 400, 
+        {
+          status: 400,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
@@ -91,7 +91,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     // Your function logic here
     const result = await processRequest(body)
-    
+
     // Return success response
     const response: ResponseData = {
       success: true,
@@ -100,7 +100,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify(response),
-      { 
+      {
         status: 200,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
@@ -108,7 +108,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
   } catch (error) {
     console.error('Function error:', error)
-    
+
     const errorResponse: ResponseData = {
       success: false,
       error: error.message || 'Internal server error'
@@ -116,7 +116,7 @@ Deno.serve(async (req: Request): Promise<Response> => {
 
     return new Response(
       JSON.stringify(errorResponse),
-      { 
+      {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
@@ -175,8 +175,8 @@ async function analyzeWithOpenAI(prompt: string, imageBase64?: string) {
           role: 'user',
           content: [
             { type: 'text', text: prompt },
-            ...(imageBase64 ? [{ 
-              type: 'image_url', 
+            ...(imageBase64 ? [{
+              type: 'image_url',
               image_url: { url: `data:image/jpeg;base64,${imageBase64}` }
             }] : [])
           ]
@@ -343,7 +343,7 @@ function createErrorResponse(error: Error, code?: string): Response {
 
   return new Response(
     JSON.stringify(errorResponse),
-    { 
+    {
       status: 500,
       headers: { 'Content-Type': 'application/json' }
     }
@@ -403,7 +403,7 @@ const RequestSchema = z.object({
 
 async function validateRequest(req: Request) {
   const body = await req.json()
-  
+
   try {
     return RequestSchema.parse(body)
   } catch (error) {
@@ -489,13 +489,13 @@ const startTime = Date.now()
 
 try {
   const result = await processRequest(body)
-  
+
   // Log success metrics
   log('info', 'Function completed successfully', {
     duration: Date.now() - startTime,
     resultSize: JSON.stringify(result).length
   })
-  
+
   return result
 } catch (error) {
   // Log error metrics
@@ -503,7 +503,7 @@ try {
     duration: Date.now() - startTime,
     error: error.message
   })
-  
+
   throw error
 }
 ```
@@ -514,7 +514,7 @@ try {
 - **Issue**: Module not found errors
 - **Fix**: Use JSR imports, check import_map.json
 
-### Cold Starts  
+### Cold Starts
 - **Issue**: Slow first request
 - **Fix**: Cache connections, optimize imports
 
@@ -530,7 +530,7 @@ try {
 1. Test function locally with `supabase functions serve`
 2. Validate environment variables are set
 3. Check import map configuration
-4. Test CORS headers for browser requests  
+4. Test CORS headers for browser requests
 5. Deploy with `supabase functions deploy`
 6. Monitor logs for errors after deployment
 7. Test function invocation from application

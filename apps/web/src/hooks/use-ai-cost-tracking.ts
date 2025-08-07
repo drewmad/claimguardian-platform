@@ -205,7 +205,7 @@ export function useBudgetMonitor() {
       if (response.ok) {
         const status = await response.json()
         setBudgetStatus(status)
-        
+
         // Show alerts if budget thresholds are exceeded
         if (status.alertsNeeded && status.alertsNeeded.length > 0) {
           setAlerts(status.alertsNeeded)
@@ -271,7 +271,7 @@ export const costTrackingUtils = {
   } => {
     const difference = previousCost - currentCost
     const percentage = previousCost > 0 ? (difference / previousCost) * 100 : 0
-    
+
     return {
       amount: Math.abs(difference),
       percentage: Math.abs(percentage),

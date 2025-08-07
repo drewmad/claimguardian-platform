@@ -44,7 +44,7 @@ const MOBILE_FEATURE_PERMISSIONS: Record<string, MobilePermissionConfig> = {
     storageRequired: 10,
     aiRequestsRequired: 1
   },
-  
+
   // Property Inspection
   'mobile_property_inspection': {
     requiresOnline: false,
@@ -62,7 +62,7 @@ const MOBILE_FEATURE_PERMISSIONS: Record<string, MobilePermissionConfig> = {
     storageRequired: 5,
     aiRequestsRequired: 2 // Generate report + analysis
   },
-  
+
   // Inventory Management
   'mobile_inventory_scan': {
     requiresOnline: false,
@@ -80,7 +80,7 @@ const MOBILE_FEATURE_PERMISSIONS: Record<string, MobilePermissionConfig> = {
     storageRequired: 1,
     aiRequestsRequired: 1 // Product lookup
   },
-  
+
   // Maintenance Logs
   'mobile_maintenance_log': {
     requiresOnline: false,
@@ -98,7 +98,7 @@ const MOBILE_FEATURE_PERMISSIONS: Record<string, MobilePermissionConfig> = {
     storageRequired: 1,
     aiRequestsRequired: 1 // Smart scheduling
   },
-  
+
   // Advanced Features
   'mobile_video_documentation': {
     requiresOnline: false,
@@ -265,7 +265,7 @@ export class MobilePermissionChecker {
     }
 
     // Determine if allowed
-    const hasAllRequirements = 
+    const hasAllRequirements =
       result.requirements.deviceCapabilities.length === 0 &&
       result.requirements.userUpgrades.length === 0 &&
       result.requirements.resourceLimits.length === 0
@@ -295,7 +295,7 @@ export class MobilePermissionChecker {
       const config = MOBILE_FEATURE_PERMISSIONS[feature]
       if (!config) return
 
-      const deviceSupported = 
+      const deviceSupported =
         (!config.requiresCamera || deviceCapabilities.hasCamera) &&
         (!config.requiresLocation || deviceCapabilities.hasGPS) &&
         (!config.requiresMicrophone || deviceCapabilities.hasMicrophone) &&
@@ -309,11 +309,11 @@ export class MobilePermissionChecker {
     // Check features available in higher tiers
     const allTiers: UserTier[] = ['free', 'renter', 'essential', 'plus', 'pro']
     const currentTierIndex = allTiers.indexOf(userTier)
-    
+
     for (let i = currentTierIndex + 1; i < allTiers.length; i++) {
       const higherTier = allTiers[i]
       const higherTierFeatures = TIER_MOBILE_FEATURES[higherTier] || []
-      
+
       higherTierFeatures.forEach(feature => {
         if (!tierFeatures.includes(feature) && !upgrade_required.includes(feature)) {
           upgrade_required.push(feature)

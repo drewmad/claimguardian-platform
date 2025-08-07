@@ -10,8 +10,8 @@
  */
 'use client'
 
-import { 
-  AlertTriangle, Shield, Zap, Heart, MapPin, ExternalLink, 
+import {
+  AlertTriangle, Shield, Zap, Heart, MapPin, ExternalLink,
   CheckCircle
 } from 'lucide-react'
 import Link from 'next/link'
@@ -199,11 +199,11 @@ const PreparednessChecklist = () => {
     if (!item) return
 
     const newCompletedState = !item.completed
-    
+
     // Optimistically update UI
     setChecklist(prev => ({
       ...prev,
-      [tab]: prev[tab].map(i => 
+      [tab]: prev[tab].map(i =>
         i.id === id ? { ...i, completed: newCompletedState } : i
       )
     }))

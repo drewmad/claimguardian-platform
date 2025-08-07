@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   ArrowRight,
   ArrowLeft,
   GitCompare,
@@ -72,7 +72,7 @@ export function ResultsComparisonView({
   const [selectedResults, setSelectedResults] = useState<[AIResult | null, AIResult | null]>([null, null])
   const [comparisonMode, setComparisonMode] = useState<'metrics' | 'detailed' | 'timeline'>('metrics')
   const [showDifferencesOnly, setShowDifferencesOnly] = useState(false)
-  
+
   const { success, info } = useToast()
 
   // Available results for comparison
@@ -93,9 +93,9 @@ export function ResultsComparisonView({
       resultA: resultA.confidence,
       resultB: resultB.confidence,
       difference: resultB.confidence - resultA.confidence,
-      trend: resultB.confidence > resultA.confidence ? 'up' : 
+      trend: resultB.confidence > resultA.confidence ? 'up' :
              resultB.confidence < resultA.confidence ? 'down' : 'equal',
-      significance: Math.abs(resultB.confidence - resultA.confidence) > 10 ? 'high' : 
+      significance: Math.abs(resultB.confidence - resultA.confidence) > 10 ? 'high' :
                    Math.abs(resultB.confidence - resultA.confidence) > 5 ? 'medium' : 'low'
     })
 
@@ -105,9 +105,9 @@ export function ResultsComparisonView({
       resultA: resultA.processingTime,
       resultB: resultB.processingTime,
       difference: resultB.processingTime - resultA.processingTime,
-      trend: resultB.processingTime < resultA.processingTime ? 'up' : 
+      trend: resultB.processingTime < resultA.processingTime ? 'up' :
              resultB.processingTime > resultA.processingTime ? 'down' : 'equal',
-      significance: Math.abs(resultB.processingTime - resultA.processingTime) > 5 ? 'high' : 
+      significance: Math.abs(resultB.processingTime - resultA.processingTime) > 5 ? 'high' :
                    Math.abs(resultB.processingTime - resultA.processingTime) > 2 ? 'medium' : 'low'
     })
 
@@ -121,7 +121,7 @@ export function ResultsComparisonView({
               resultA: resultA.data.severityScore,
               resultB: resultB.data.severityScore,
               difference: resultB.data.severityScore - resultA.data.severityScore,
-              trend: resultB.data.severityScore > resultA.data.severityScore ? 'up' : 
+              trend: resultB.data.severityScore > resultA.data.severityScore ? 'up' :
                      resultB.data.severityScore < resultA.data.severityScore ? 'down' : 'equal',
               significance: Math.abs(resultB.data.severityScore - resultA.data.severityScore) > 20 ? 'high' : 'medium'
             })
@@ -135,7 +135,7 @@ export function ResultsComparisonView({
               resultA: resultA.data.itemCount,
               resultB: resultB.data.itemCount,
               difference: resultB.data.itemCount - resultA.data.itemCount,
-              trend: resultB.data.itemCount > resultA.data.itemCount ? 'up' : 
+              trend: resultB.data.itemCount > resultA.data.itemCount ? 'up' :
                      resultB.data.itemCount < resultA.data.itemCount ? 'down' : 'equal',
               significance: Math.abs(resultB.data.itemCount - resultA.data.itemCount) > 5 ? 'high' : 'medium'
             })
@@ -174,7 +174,7 @@ export function ResultsComparisonView({
     }
 
     onExport?.(exportData)
-    
+
     success('Comparison exported', {
       subtitle: 'Comparison data saved for review'
     })
@@ -209,7 +209,7 @@ export function ResultsComparisonView({
             <Filter className="w-4 h-4 mr-1" />
             {showDifferencesOnly ? 'Show All' : 'Differences Only'}
           </Button>
-          
+
           {selectedResults[0] && selectedResults[1] && (
             <Button variant="outline" size="sm" onClick={handleExport}>
               <Download className="w-4 h-4 mr-1" />
@@ -271,7 +271,7 @@ export function ResultsComparisonView({
 
             {/* Comparison Views */}
             {comparisonMode === 'metrics' && (
-              <ComparisonMetrics 
+              <ComparisonMetrics
                 comparisons={comparisonData}
                 resultA={selectedResults[0]}
                 resultB={selectedResults[1]}
@@ -279,14 +279,14 @@ export function ResultsComparisonView({
             )}
 
             {comparisonMode === 'detailed' && (
-              <DetailedComparison 
+              <DetailedComparison
                 resultA={selectedResults[0]}
                 resultB={selectedResults[1]}
               />
             )}
 
             {comparisonMode === 'timeline' && (
-              <TimelineComparison 
+              <TimelineComparison
                 resultA={selectedResults[0]}
                 resultB={selectedResults[1]}
               />
@@ -339,7 +339,7 @@ function ResultSelector({
       <CardHeader className="pb-3">
         <CardTitle className="text-lg">{title}</CardTitle>
       </CardHeader>
-      
+
       <CardContent>
         {selectedResult ? (
           <div className="space-y-3">
@@ -470,11 +470,11 @@ function ComparisonMetrics({ comparisons, resultA, resultB }: ComparisonMetricsP
 
                 <div className="flex items-center gap-3">
                   {getTrendIcon(comparison.trend)}
-                  
+
                   <Badge className={cn("text-xs border", getSignificanceColor(comparison.significance))}>
                     {comparison.significance}
                   </Badge>
-                  
+
                   {comparison.trend !== 'equal' && (
                     <span className={cn(
                       "text-sm font-medium",
@@ -631,7 +631,7 @@ function TimelineComparison({ resultA, resultB }: { resultA: AIResult; resultB: 
               <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
                 <p className="text-sm text-gray-600">Faster Result</p>
                 <p className="text-lg font-medium">
-                  {resultA.processingTime < resultB.processingTime ? 'Result A' : 
+                  {resultA.processingTime < resultB.processingTime ? 'Result A' :
                    resultB.processingTime < resultA.processingTime ? 'Result B' : 'Equal'}
                 </p>
               </div>

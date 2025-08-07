@@ -19,7 +19,7 @@ supabase functions deploy fgio-sync \
   --no-verify-jwt \
   --import-file ./fgio_sync.ts
 
-# Deploy FDOT delta sync function  
+# Deploy FDOT delta sync function
 echo "📦 Deploying FDOT weekly delta sync function..."
 supabase functions deploy fdot-delta \
   --no-verify-jwt \

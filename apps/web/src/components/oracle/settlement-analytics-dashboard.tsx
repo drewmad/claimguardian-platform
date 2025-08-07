@@ -19,10 +19,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
-  TrendingUp, 
-  DollarSign, 
-  Calendar, 
+import {
+  TrendingUp,
+  DollarSign,
+  Calendar,
   Target,
   Brain,
   BarChart3,
@@ -39,7 +39,7 @@ import {
   Shield
 } from 'lucide-react'
 import { format, addDays } from 'date-fns'
-import { 
+import {
   predictiveSettlementAnalyticsService,
   type SettlementPrediction,
   type PredictionRequest,
@@ -71,7 +71,7 @@ export function SettlementAnalyticsDashboard() {
   const [loading, setLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
   const [showNewPrediction, setShowNewPrediction] = useState(false)
-  
+
   const [newPrediction, setNewPrediction] = useState<NewPredictionForm>({
     claim_id: '',
     damage_type: 'hurricane',
@@ -159,7 +159,7 @@ export function SettlementAnalyticsDashboard() {
           created_at: new Date().toISOString()
         }
       ]
-      
+
       setPredictions(mockPredictions)
     } catch (error) {
       console.error('Error loading predictions:', error)
@@ -209,13 +209,13 @@ export function SettlementAnalyticsDashboard() {
       }
 
       const prediction = await predictiveSettlementAnalyticsService.generatePrediction(request)
-      
+
       if (prediction) {
         toast.success('Settlement prediction generated successfully')
         setSelectedPrediction(prediction)
         await loadPredictions()
         setShowNewPrediction(false)
-        
+
         // Reset form
         setNewPrediction({
           ...newPrediction,
@@ -272,13 +272,13 @@ export function SettlementAnalyticsDashboard() {
             <p className="text-gray-400">ML-powered settlement prediction with market trend analysis</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Badge className="bg-purple-600/20 text-purple-400 border-purple-600/30">
             <Brain className="h-3 w-3 mr-1" />
             AI-Powered
           </Badge>
-          <Button 
+          <Button
             onClick={() => setShowNewPrediction(true)}
             className="bg-purple-600 hover:bg-purple-700"
           >
@@ -370,11 +370,11 @@ export function SettlementAnalyticsDashboard() {
               <CardContent>
                 <div className="space-y-3">
                   {predictions.map(prediction => (
-                    <div 
-                      key={prediction.id} 
+                    <div
+                      key={prediction.id}
                       className={`p-4 rounded-lg border cursor-pointer transition-colors ${
-                        selectedPrediction?.id === prediction.id 
-                          ? 'bg-purple-900/20 border-purple-700' 
+                        selectedPrediction?.id === prediction.id
+                          ? 'bg-purple-900/20 border-purple-700'
                           : 'bg-gray-700/30 border-gray-700/50 hover:bg-gray-700/50'
                       }`}
                       onClick={() => setSelectedPrediction(prediction)}
@@ -385,7 +385,7 @@ export function SettlementAnalyticsDashboard() {
                           {Math.round(prediction.confidence_score * 100)}% confident
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center justify-between text-sm">
                         <span className="text-gray-300">
                           Predicted: <span className="text-green-400 font-medium">
@@ -396,7 +396,7 @@ export function SettlementAnalyticsDashboard() {
                           ~{prediction.timeline_prediction.estimated_days} days
                         </span>
                       </div>
-                      
+
                       <div className="mt-2 text-xs text-gray-500">
                         Range: ${prediction.amount_range.low.toLocaleString()} - ${prediction.amount_range.high.toLocaleString()}
                       </div>
@@ -449,7 +449,7 @@ export function SettlementAnalyticsDashboard() {
                         {selectedPrediction.timeline_prediction.estimated_days} days
                       </span>
                     </p>
-                    
+
                     <div className="space-y-2">
                       {Object.entries(selectedPrediction.timeline_prediction.probability_by_timeframe).map(([timeframe, probability]) => (
                         <div key={timeframe} className="flex items-center justify-between text-sm">
@@ -581,21 +581,21 @@ export function SettlementAnalyticsDashboard() {
                         {Math.round(analytics.accuracy_rate * 100)}%
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Average Variance</span>
                       <span className="text-blue-400 font-medium">
                         {Math.round(analytics.prediction_variance * 100)}%
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Predicted vs Actual</span>
                       <span className="text-purple-400 font-medium">
                         ${(analytics.average_predicted_amount / 1000).toFixed(0)}K vs ${(analytics.average_actual_amount / 1000).toFixed(0)}K
                       </span>
                     </div>
-                    
+
                     <div className="pt-4 border-t border-gray-700">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-white mb-1">A+</p>
@@ -634,8 +634,8 @@ export function SettlementAnalyticsDashboard() {
 
                   <div>
                     <Label className="text-gray-300">Damage Type</Label>
-                    <Select 
-                      value={newPrediction.damage_type} 
+                    <Select
+                      value={newPrediction.damage_type}
                       onValueChange={(value) => setNewPrediction({...newPrediction, damage_type: value})}
                     >
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
@@ -654,8 +654,8 @@ export function SettlementAnalyticsDashboard() {
 
                   <div>
                     <Label className="text-gray-300">Property Type</Label>
-                    <Select 
-                      value={newPrediction.property_type} 
+                    <Select
+                      value={newPrediction.property_type}
                       onValueChange={(value) => setNewPrediction({...newPrediction, property_type: value})}
                     >
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
@@ -673,8 +673,8 @@ export function SettlementAnalyticsDashboard() {
 
                   <div>
                     <Label className="text-gray-300">County</Label>
-                    <Select 
-                      value={newPrediction.county} 
+                    <Select
+                      value={newPrediction.county}
                       onValueChange={(value) => setNewPrediction({...newPrediction, county: value})}
                     >
                       <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
@@ -744,9 +744,9 @@ export function SettlementAnalyticsDashboard() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                   <Label className="text-gray-300">Documentation Quality</Label>
-                  <Select 
-                    value={newPrediction.documentation_quality} 
-                    onValueChange={(value: 'excellent' | 'good' | 'fair' | 'poor') => 
+                  <Select
+                    value={newPrediction.documentation_quality}
+                    onValueChange={(value: 'excellent' | 'good' | 'fair' | 'poor') =>
                       setNewPrediction({...newPrediction, documentation_quality: value})
                     }
                   >
@@ -786,7 +786,7 @@ export function SettlementAnalyticsDashboard() {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 onClick={generatePrediction}
                 disabled={generating || !newPrediction.claim_id || !newPrediction.estimated_damage}
                 className="w-full bg-purple-600 hover:bg-purple-700"

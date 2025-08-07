@@ -13,7 +13,7 @@ import { AIRequest, ChatRequest, ImageAnalysisRequest } from '../types/index';
 
 /**
  * Gemini 2.0 Strategy - Optimal Use Cases for ClaimGuardian
- * 
+ *
  * Based on the latest Gemini updates (Jan 2025):
  * - Gemini 2.0 Flash Experimental: FREE, excellent for high-volume tasks
  * - Gemini 1.5 Pro-002: Better performance, stable for production
@@ -51,7 +51,7 @@ export class GeminiStrategy {
           'Handwriting support'
         ]
       },
-      
+
       'policy-analysis': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Free long-context analysis (up to 1M tokens input)',
@@ -64,7 +64,7 @@ export class GeminiStrategy {
           'Coverage gap analysis'
         ]
       },
-      
+
       'damage-assessment': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Superior vision capabilities with zero cost',
@@ -77,7 +77,7 @@ export class GeminiStrategy {
           'Before/after comparison'
         ]
       },
-      
+
       'receipt-scanning': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Excellent OCR with structured data extraction at no cost',
@@ -90,7 +90,7 @@ export class GeminiStrategy {
           'Date/time parsing'
         ]
       },
-      
+
       'property-imagery': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Advanced vision for property condition assessment',
@@ -103,7 +103,7 @@ export class GeminiStrategy {
           'Square footage estimation'
         ]
       },
-      
+
       // MEDIUM PRIORITY - USE GEMINI FOR COST EFFICIENCY
       'claim-summarization': {
         model: 'gemini-2.0-flash-exp',
@@ -117,7 +117,7 @@ export class GeminiStrategy {
           'Risk factor detection'
         ]
       },
-      
+
       'customer-communication': {
         model: 'gemini-1.5-pro-002',
         reason: 'Stable, professional responses for customer-facing content',
@@ -130,7 +130,7 @@ export class GeminiStrategy {
           'Multi-language support'
         ]
       },
-      
+
       // SPECIALIZED USE CASES
       'florida-regulation-compliance': {
         model: 'gemini-1.5-pro-002',
@@ -144,7 +144,7 @@ export class GeminiStrategy {
           'Filing requirement identification'
         ]
       },
-      
+
       'hurricane-damage-analysis': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Specialized vision for wind/water damage differentiation',
@@ -157,7 +157,7 @@ export class GeminiStrategy {
           'Debris impact analysis'
         ]
       },
-      
+
       'batch-processing': {
         model: 'gemini-2.0-flash-exp',
         reason: 'Free processing for high-volume tasks',
@@ -171,7 +171,7 @@ export class GeminiStrategy {
         ]
       }
     };
-    
+
     // Default strategy if task type not found
     const defaultStrategy: GeminiTaskRecommendation = {
       model: 'gemini-2.0-flash-exp',
@@ -180,10 +180,10 @@ export class GeminiStrategy {
       costSavings: 100,
       features: ['General purpose processing']
     };
-    
+
     return taskStrategies[taskType] || defaultStrategy;
   }
-  
+
   /**
    * Determines if Gemini should be preferred over other providers
    */
@@ -193,25 +193,25 @@ export class GeminiStrategy {
     requiresStability: boolean = false
   ): boolean {
     const recommendation = this.getOptimalConfiguration(taskType, {} as AIRequest);
-    
+
     // Always prefer Gemini for free tasks
     if (recommendation.costSavings === 100 && costSensitive) {
       return true;
     }
-    
+
     // Prefer Gemini for high priority tasks
     if (recommendation.priority >= 8) {
       return true;
     }
-    
+
     // Use stable model if stability required
     if (requiresStability && recommendation.model === 'gemini-1.5-pro-002') {
       return true;
     }
-    
+
     return recommendation.priority >= 6;
   }
-  
+
   /**
    * Get optimal parameters for specific Gemini models
    */
@@ -221,7 +221,7 @@ export class GeminiStrategy {
       temperature: 0.7,
       topP: 0.95
     };
-    
+
     // Task-specific optimizations
     const taskParams: Record<string, Partial<typeof baseParams>> = {
       'document-extraction': {
@@ -241,18 +241,18 @@ export class GeminiStrategy {
         maxOutputTokens: 8192 // Comprehensive analysis
       }
     };
-    
-    const modelSpecific = model.includes('2.0') ? 
-      { topK: 64 } : 
+
+    const modelSpecific = model.includes('2.0') ?
+      { topK: 64 } :
       { topK: 40 };
-    
+
     return {
       ...baseParams,
       ...taskParams[taskType],
       ...modelSpecific
     };
   }
-  
+
   /**
    * Insurance-specific Gemini prompts
    */
@@ -266,7 +266,7 @@ export class GeminiStrategy {
 5. Recommend next steps for the adjuster
 
 Format your response as structured JSON with sections for: validation_status, missing_items, red_flags, coverage_analysis, value_estimate, and recommendations.`,
-      
+
       'florida-hurricane-assessment': `You are a Florida hurricane damage assessment specialist. Analyze the provided images and information to:
 1. Classify damage type (wind vs. water)
 2. Estimate damage severity (1-10 scale)
@@ -276,7 +276,7 @@ Format your response as structured JSON with sections for: validation_status, mi
 6. Estimate repair timeline and costs
 
 Consider Florida-specific factors like building codes, impact windows requirements, and hurricane deductibles.`,
-      
+
       'policy-comparison': `Compare the provided insurance policies and create a detailed analysis including:
 1. Coverage differences (dwelling, personal property, liability)
 2. Deductible variations (standard vs. hurricane)
@@ -288,7 +288,7 @@ Consider Florida-specific factors like building codes, impact windows requiremen
 Present findings in a clear, tabular format with recommendations.`
     };
   }
-  
+
   /**
    * Batch processing optimization for Gemini
    */
@@ -339,20 +339,20 @@ export class GeminiCostAnalyzer {
       'policy-analysis': { input: 5000, output: 3000 },
       'customer-communication': { input: 500, output: 500 }
     };
-    
+
     const tokens = avgTokensPerTask[taskType] || { input: 1000, output: 1000 };
-    
+
     // Gemini 2.0 Flash Experimental is FREE
     const geminiCostPerTask = 0;
-    
+
     // GPT-4 Turbo pricing (approximate)
     const gpt4CostPerTask = (tokens.input * 0.01 + tokens.output * 0.03) / 1000;
-    
+
     const geminiMonthly = geminiCostPerTask * monthlyVolume;
     const openAIMonthly = gpt4CostPerTask * monthlyVolume;
     const savings = openAIMonthly - geminiMonthly;
     const savingsPercent = (savings / openAIMonthly) * 100;
-    
+
     return {
       geminiCost: geminiMonthly,
       openAICost: openAIMonthly,

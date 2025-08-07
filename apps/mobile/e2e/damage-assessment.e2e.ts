@@ -12,16 +12,16 @@ describe('Damage Assessment E2E Tests', () => {
 
   beforeEach(async () => {
     await device.reloadReactNative()
-    
+
     // Login flow
     await waitFor(element(by.id('login-screen')))
       .toBeVisible()
       .withTimeout(10000)
-    
+
     await element(by.id('email-input')).typeText('test@claimguardianai.com')
     await element(by.id('password-input')).typeText('testpass123')
     await element(by.id('signin-button')).tap()
-    
+
     await waitFor(element(by.id('dashboard-screen')))
       .toBeVisible()
       .withTimeout(15000)
@@ -31,7 +31,7 @@ describe('Damage Assessment E2E Tests', () => {
     test('should create a comprehensive damage assessment', async () => {
       // Navigate to assessments
       await element(by.id('assessments-tab')).tap()
-      
+
       await waitFor(element(by.id('assessments-list-screen')))
         .toBeVisible()
         .withTimeout(5000)
@@ -45,7 +45,7 @@ describe('Damage Assessment E2E Tests', () => {
 
       // Step 1: Basic Assessment Information
       await element(by.id('assessment-title-input')).typeText('Hurricane Damage Assessment')
-      
+
       await element(by.id('property-selector')).tap()
       await waitFor(element(by.id('property-selection-modal')))
         .toBeVisible()
@@ -85,7 +85,7 @@ describe('Damage Assessment E2E Tests', () => {
 
       // Take first photo
       await element(by.id('capture-photo-button')).tap()
-      
+
       await waitFor(element(by.id('camera-screen')))
         .toBeVisible()
         .withTimeout(5000)
@@ -120,7 +120,7 @@ describe('Damage Assessment E2E Tests', () => {
         .withTimeout(3000)
 
       await element(by.id('estimated-repair-cost-input')).typeText('8500')
-      
+
       await element(by.id('urgency-level-picker')).tap()
       await element(by.text('High')).tap()
 
@@ -173,7 +173,7 @@ describe('Damage Assessment E2E Tests', () => {
       await element(by.id('assessment-title-input')).typeText('Test Assessment')
       await element(by.id('property-selector')).tap()
       await element(by.text('Main Residence')).tap()
-      
+
       await element(by.id('next-step-button')).tap()
 
       // Should proceed to next step
@@ -207,7 +207,7 @@ describe('Damage Assessment E2E Tests', () => {
     test('should capture and organize multiple photos', async () => {
       // Capture first photo
       await element(by.id('capture-photo-button')).tap()
-      
+
       await waitFor(element(by.id('camera-screen')))
         .toBeVisible()
         .withTimeout(5000)
@@ -255,7 +255,7 @@ describe('Damage Assessment E2E Tests', () => {
 
       // Edit the photo
       await element(by.text('Original Title')).tap()
-      
+
       await waitFor(element(by.id('photo-detail-screen')))
         .toBeVisible()
         .withTimeout(3000)
@@ -269,7 +269,7 @@ describe('Damage Assessment E2E Tests', () => {
       // Update photo details
       await element(by.id('photo-title-input')).clearText()
       await element(by.id('photo-title-input')).typeText('Updated Title')
-      
+
       await element(by.id('photo-notes-input')).clearText()
       await element(by.id('photo-notes-input')).typeText('Updated description with more details')
 
@@ -480,7 +480,7 @@ describe('Damage Assessment E2E Tests', () => {
     test('should export assessment report', async () => {
       // Navigate to existing assessment
       await element(by.id('assessments-tab')).tap()
-      
+
       // Assume we have at least one assessment from previous tests
       await element(by.id('first-assessment-item')).tap()
 
@@ -540,7 +540,7 @@ describe('Damage Assessment E2E Tests', () => {
       await element(by.id('next-step-button')).tap()
       await element(by.id('estimated-repair-cost-input')).typeText('1500')
       await element(by.id('next-step-button')).tap()
-      
+
       await element(by.id('submit-assessment-button')).tap()
 
       // Verify offline save

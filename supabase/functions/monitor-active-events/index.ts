@@ -22,7 +22,7 @@ serve(async (req) => {
     const wildfireResponse = await fetch(
       'https://services3.arcgis.com/2p3s2n29pGgURi54/arcgis/rest/services/FFS_Active_Wildfires/FeatureServer/0/query?where=1%3D1&outFields=*&f=json'
     )
-    
+
     if (!wildfireResponse.ok) {
       throw new Error('Failed to fetch wildfire data')
     }
@@ -114,14 +114,14 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         wildfires_processed: features.length,
         affected_properties: affectedProperties?.length || 0
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     )
 
@@ -129,7 +129,7 @@ serve(async (req) => {
     console.error('Error in monitor-active-events:', error)
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }
@@ -151,7 +151,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         ae.id as event_id,
         ae.event_type,
         ae.event_name,

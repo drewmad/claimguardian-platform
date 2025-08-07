@@ -42,21 +42,21 @@ export function LegalDocumentModal({
       try {
         setLoading(true)
         setError('')
-        
+
         // Try to fetch content from Supabase via our legal service
         const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
         setContent(htmlContent)
-        
+
         logger.track('legal_document_modal_opened', {
           documentId: document.id,
           slug: document.slug,
           version: document.version
         })
-        
+
       } catch (err) {
         logger.error('Failed to load document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
         setError('Failed to load document content.')
-        
+
         // Fallback to direct content if available from the document object
         if (document.content) {
           setContent(document.content)
@@ -90,14 +90,14 @@ export function LegalDocumentModal({
   const loadDocumentContent = async () => {
     // This function is now only used for retry button
     if (!document) return
-    
+
     try {
       setLoading(true)
       setError('')
-      
+
       const htmlContent = await legalServiceClientFix.getDocumentContent(document.slug)
       setContent(htmlContent)
-      
+
     } catch (err) {
       logger.error('Failed to reload document content', { documentId: document.id }, err instanceof Error ? err : new Error(String(err)))
       setError('Failed to load document content.')
@@ -146,7 +146,7 @@ export function LegalDocumentModal({
               </div>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={openInNewTab}
@@ -182,7 +182,7 @@ export function LegalDocumentModal({
               </button>
             </div>
           ) : (
-            <div 
+            <div
               className="prose prose-slate prose-invert max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
@@ -194,7 +194,7 @@ export function LegalDocumentModal({
           <div className="text-xs text-slate-500 font-mono">
             Document Hash: {document.sha256_hash}
           </div>
-          
+
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}

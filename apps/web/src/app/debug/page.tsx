@@ -77,10 +77,10 @@ export default function DebugIndexPage() {
   const [activeTab, setActiveTab] = useState('auth')
 
   const supabase = createBrowserSupabaseClient()
-  
+
   // Test Google Maps integration
   const { isLoaded: googleLoaded, isLoading: googleLoading, error: googleError } = useGooglePlaces()
-  
+
   // Performance monitoring state
   const [performanceMetrics, setPerformanceMetrics] = useState({
     pageLoadTime: 0,
@@ -88,11 +88,11 @@ export default function DebugIndexPage() {
     supabaseConnectionTime: 0,
     lastRefresh: new Date().toISOString()
   })
-  
+
   // Test execution state
   const [testResults, setTestResults] = useState<Record<string, 'idle' | 'running' | 'success' | 'error'>>({})
   const [testOutput, setTestOutput] = useState<Record<string, string>>({})
-  
+
   // Copy to clipboard helper
   const copyToClipboard = async (text: string) => {
     try {
@@ -102,14 +102,14 @@ export default function DebugIndexPage() {
       logger.error('Failed to copy:', err)
     }
   }
-  
+
   // Run individual integration test
   const runIntegrationTest = async (testName: string, testPath: string) => {
     setTestResults(prev => ({ ...prev, [testName]: 'running' }))
-    
+
     try {
       const startTime = performance.now()
-      
+
       // Different test strategies based on component type
       if (testPath.startsWith('/')) {
         // Page-based test - measure load time
@@ -138,12 +138,12 @@ export default function DebugIndexPage() {
       setTestResults(prev => ({ ...prev, [testName]: 'error' }))
     }
   }
-  
+
   // Collect performance metrics
   const collectPerformanceMetrics = useCallback(() => {
     const now = performance.now()
     const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming
-    
+
     setPerformanceMetrics({
       pageLoadTime: navigation ? Math.round(navigation.loadEventEnd - navigation.fetchStart) : 0,
       googleMapsLoadTime: googleLoaded ? Math.round(now) : 0,
@@ -154,16 +154,16 @@ export default function DebugIndexPage() {
 
   const collectGoogleMapsStatus = useCallback(async () => {
     // Check environment variables
-    const clientKeyConfigured = !!(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY && 
+    const clientKeyConfigured = !!(process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY &&
       process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY !== 'YOUR_GOOGLE_MAPS_API_KEY_HERE')
-    
+
     // Check if Google Maps script exists
     const scriptExists = !!document.querySelector('script[src*="maps.googleapis.com"]')
-    
+
     // Check API loading status
     const apiLoaded = !!((window as unknown) as Record<string, any>).google?.maps
     const placesLoaded = !!((window as unknown) as Record<string, any>).google?.maps?.places
-    
+
     // Determine hook status
     let hookStatus: 'loading' | 'loaded' | 'error' | 'not-configured' = 'not-configured'
     if (googleLoading) hookStatus = 'loading'
@@ -383,7 +383,7 @@ export default function DebugIndexPage() {
                           {debugInfo.authStatus.hasSession ? 'Authenticated' : 'Not Authenticated'}
                         </span>
                       </div>
-                      
+
                       {debugInfo.authStatus.sessionDetails && (
                         <div className="bg-gray-700/50 rounded-lg p-3 text-sm">
                           <div><strong>User ID:</strong> {debugInfo.authStatus.sessionDetails.userId}</div>
@@ -392,7 +392,7 @@ export default function DebugIndexPage() {
                           <div><strong>Expires:</strong> {new Date(debugInfo.authStatus.sessionDetails.expiresAt).toLocaleString()}</div>
                         </div>
                       )}
-                      
+
                       {debugInfo.authStatus.error && (
                         <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-3 text-red-300 text-sm">
                           <strong>Error:</strong> {debugInfo.authStatus.error}
@@ -540,7 +540,7 @@ export default function DebugIndexPage() {
                           <span className="text-gray-300">Hook Status</span>
                         </div>
                       </div>
-                      
+
                       {debugInfo.googleMapsStatus.error && (
                         <div className="bg-red-900/20 border border-red-600/30 rounded-lg p-3 text-red-300 text-sm">
                           <strong>Error:</strong> {debugInfo.googleMapsStatus.error}
@@ -580,7 +580,7 @@ export default function DebugIndexPage() {
                         <span className="text-white text-xs">{new Date(performanceMetrics.lastRefresh).toLocaleTimeString()}</span>
                       </div>
                     </div>
-                    
+
                     <div className="border-t border-gray-700 pt-3">
                       <div className="text-xs text-gray-400 mb-2">Quick Actions</div>
                       <div className="grid grid-cols-2 gap-2">
@@ -653,9 +653,9 @@ export default function DebugIndexPage() {
                                 <Play className="w-3 h-3" />
                               )}
                             </Button>
-                            <Badge 
+                            <Badge
                               className={
-                                testResults[test.name] === 'success' || test.status === 'pass' 
+                                testResults[test.name] === 'success' || test.status === 'pass'
                                   ? 'bg-green-900/20 border-green-600/30 text-green-300'
                                   : testResults[test.name] === 'error' || test.status === 'warning'
                                   ? 'bg-yellow-900/20 border-yellow-600/30 text-yellow-300'
@@ -666,7 +666,7 @@ export default function DebugIndexPage() {
                             </Badge>
                           </div>
                         </div>
-                        
+
                         {testOutput[test.name] && (
                           <div className="mt-2 p-2 bg-gray-800/50 rounded text-xs text-gray-300 font-mono">
                             {testOutput[test.name]}
@@ -675,7 +675,7 @@ export default function DebugIndexPage() {
                       </div>
                     ))}
                   </div>
-                  
+
                   <div className="mt-4 pt-4 border-t border-gray-700">
                     <div className="flex items-center justify-between">
                       <div className="text-sm text-gray-400">
@@ -717,7 +717,7 @@ export default function DebugIndexPage() {
                   </Button>
                 </CardContent>
               </Card>
-              
+
               <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50">
                 <CardHeader>
                   <CardTitle className="text-white">AI Complete Test</CardTitle>
@@ -827,7 +827,7 @@ export default function DebugIndexPage() {
                           CONNECTED
                         </Badge>
                       </div>
-                      
+
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           {debugInfo.googleMapsStatus?.apiLoaded ? (
@@ -837,14 +837,14 @@ export default function DebugIndexPage() {
                           )}
                           <span className="text-gray-300 text-sm">Google Maps</span>
                         </div>
-                        <Badge className={debugInfo.googleMapsStatus?.apiLoaded 
+                        <Badge className={debugInfo.googleMapsStatus?.apiLoaded
                           ? "bg-green-900/20 border-green-600/30 text-green-300"
                           : "bg-red-900/20 border-red-600/30 text-red-300"
                         }>
                           {debugInfo.googleMapsStatus?.apiLoaded ? 'LOADED' : 'NOT LOADED'}
                         </Badge>
                       </div>
-                      
+
                       <div className="text-xs text-gray-400 mt-3">
                         <div>Project: {debugInfo.supabaseStatus.projectUrl.split('//')[1]?.split('.')[0] || 'Unknown'}</div>
                         <div>Auth: {debugInfo.authStatus.hasSession ? 'Authenticated' : 'Anonymous'}</div>
@@ -893,7 +893,7 @@ export default function DebugIndexPage() {
                         <span className="text-gray-400">Storage Size</span>
                         <span className="text-white">{Math.round(debugInfo.localStorage.reduce((acc, item) => acc + item.size, 0) / 1024)}KB</span>
                       </div>
-                      
+
                       <div className="border-t border-gray-700 pt-3">
                         <div className="text-xs text-gray-400 mb-2">Network Performance</div>
                         <div className="flex justify-between text-sm">
@@ -905,7 +905,7 @@ export default function DebugIndexPage() {
                           <span className="text-white text-xs">{new Date(performanceMetrics.lastRefresh).toLocaleTimeString()}</span>
                         </div>
                       </div>
-                      
+
                       <div className="mt-3">
                         <Button
                           size="sm"
@@ -938,7 +938,7 @@ export default function DebugIndexPage() {
                 <div>
                   <h3 className="text-yellow-300 font-semibold">Development Environment Only</h3>
                   <p className="text-yellow-400/80 text-sm">
-                    These debug tools are for development and testing purposes only. 
+                    These debug tools are for development and testing purposes only.
                     They should not be accessible in production environments.
                   </p>
                 </div>

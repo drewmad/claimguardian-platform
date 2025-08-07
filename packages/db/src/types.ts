@@ -1,5 +1,5 @@
 /**
- * @fileMetadata  
+ * @fileMetadata
  * @owner @platform-team
  * @purpose "TypeScript types for ClaimGuardian database schema with temporal digital twin support"
  * @dependencies ["@supabase/supabase-js"]
@@ -370,7 +370,7 @@ export interface Database {
 
 // Re-export commonly used types
 export type Property = CoreProperty
-export type Structure = CoreStructure  
+export type Structure = CoreStructure
 export type Space = CoreSpace
 export type Scan = CoreScan
 export type DigitalModel = CoreDigitalModel

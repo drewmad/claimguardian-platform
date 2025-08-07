@@ -14,11 +14,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
-    
+
     const status = searchParams.get('status')
     const type = searchParams.get('type')
     const limit = parseInt(searchParams.get('limit') || '50')
-    
+
     let query = supabase
       .from('ics_incidents')
       .select(`
@@ -40,22 +40,22 @@ export async function GET(request: NextRequest) {
       `)
       .order('start_date', { ascending: false })
       .limit(limit)
-    
+
     if (status) {
       query = query.eq('status', status)
     }
-    
+
     if (type) {
       query = query.eq('incident_type', type)
     }
-    
+
     const { data, error } = await query
-    
+
     if (error) {
       console.error('Failed to fetch incidents:', error)
       return NextResponse.json({ error: 'Failed to fetch incidents' }, { status: 500 })
     }
-    
+
     return NextResponse.json({
       incidents: data,
       total: data.length
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Validate required fields
     if (!body.incident_name || !body.incident_type || !body.location) {
       return NextResponse.json(
@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     // Create incident using ICS integration service
     const incident = await icsIntegrationService.createIncident(body)
-    
+
     // Auto-generate ICS-201 form for new incidents
     try {
       await icsIntegrationService.generateICS201(incident.id)
@@ -88,7 +88,7 @@ export async function POST(request: NextRequest) {
       console.warn('Failed to generate ICS-201:', formError)
       // Don't fail incident creation if form generation fails
     }
-    
+
     return NextResponse.json({
       incident,
       message: 'Incident created successfully'

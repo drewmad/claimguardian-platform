@@ -99,7 +99,7 @@ export class RealtimeManager {
   constructor(config: Partial<RealtimeConfig> = {}) {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
     const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-    
+
     this.supabase = createClient<Database>(supabaseUrl, supabaseKey, {
       realtime: {
         params: {
@@ -218,7 +218,7 @@ export class RealtimeManager {
           // Execute callback
           try {
             await callback(event)
-            
+
             // Update subscription metrics
             const subscription = this.subscriptions.get(subscriptionId)
             if (subscription) {
@@ -306,7 +306,7 @@ export class RealtimeManager {
       // Clean up resources
       this.subscriptions.delete(subscriptionId)
       this.messageBuffer.delete(subscriptionId)
-      
+
       const timeout = this.reconnectTimeouts.get(subscriptionId)
       if (timeout) {
         clearTimeout(timeout)
@@ -343,7 +343,7 @@ export class RealtimeManager {
         .on('presence', { event: 'sync' }, () => {
           const state = realtimeChannel.presenceState()
           const presenceMap = new Map<string, PresenceState>()
-          
+
           Object.entries(state).forEach(([userId, presences]) => {
             const presence = Array.isArray(presences) ? presences[0] : presences
             if (presence) {
@@ -547,7 +547,7 @@ export class RealtimeManager {
       this.reconnectTimeouts.clear()
 
       // Unsubscribe from all channels
-      const unsubscribePromises = Array.from(this.channels.values()).map(channel => 
+      const unsubscribePromises = Array.from(this.channels.values()).map(channel =>
         channel.unsubscribe()
       )
       await Promise.all(unsubscribePromises)
@@ -593,7 +593,7 @@ export class RealtimeManager {
   private async updateCache(event: RealtimeEvent): Promise<void> {
     try {
       const cacheKey = `${event.table}:${event.new?.id || event.old?.id}`
-      
+
       switch (event.type) {
         case 'INSERT':
         case 'UPDATE':
@@ -601,7 +601,7 @@ export class RealtimeManager {
             await this.cacheManager.set(cacheKey, event.new, { ttl: 5 * 60 * 1000 })
           }
           break
-          
+
         case 'DELETE':
           await this.cacheManager.delete(cacheKey)
           break
@@ -644,7 +644,7 @@ export class RealtimeManager {
     const timeout = setTimeout(async () => {
       try {
         logger.info('Attempting to reconnect subscription', { subscriptionId })
-        
+
         // Recreate subscription with same parameters
         const newSubscriptionId = await this.subscribe(
           subscription.table,
@@ -723,7 +723,7 @@ export const realtimeUtils = {
     return manager.subscribe(table, events, async (event) => {
       // Execute original callback
       await callback(event)
-      
+
       // Invalidate related cache keys
       if (cacheKeyGenerator) {
         const cacheManager = getCacheManager()

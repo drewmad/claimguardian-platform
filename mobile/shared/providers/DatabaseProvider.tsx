@@ -49,18 +49,18 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
 
         // Enable foreign key constraints
         await db.execAsync('PRAGMA foreign_keys = ON;')
-        
+
         // Create tables
         await createTables(db)
-        
+
         // Load initial data from database
         await loadInitialData()
-        
+
         console.log('Database initialized successfully')
-        
+
       } catch (error) {
         console.error('Failed to initialize database:', error)
-        
+
         Alert.alert(
           'Database Error',
           'Failed to initialize local database. Some features may not work properly.',
@@ -247,17 +247,17 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
 
         // Clean up orphaned photos (not linked to any assessment or damage item)
         await dbRef.current.execAsync(`
-          DELETE FROM photos 
-          WHERE assessment_id IS NULL 
-            AND damage_item_id IS NULL 
+          DELETE FROM photos
+          WHERE assessment_id IS NULL
+            AND damage_item_id IS NULL
             AND created_at < '${sevenDaysAgo}';
         `)
 
         // Clean up orphaned voice notes
         await dbRef.current.execAsync(`
-          DELETE FROM voice_notes 
-          WHERE assessment_id IS NULL 
-            AND damage_item_id IS NULL 
+          DELETE FROM voice_notes
+          WHERE assessment_id IS NULL
+            AND damage_item_id IS NULL
             AND created_at < '${sevenDaysAgo}';
         `)
 
@@ -287,7 +287,7 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
         if (result && typeof result === 'object' && 'integrity_check' in result) {
           if (result.integrity_check !== 'ok') {
             console.error('Database integrity check failed:', result.integrity_check)
-            
+
             Alert.alert(
               'Database Integrity Issue',
               'Local database may be corrupted. Consider clearing app data if problems persist.',
@@ -316,11 +316,11 @@ export function DatabaseProvider({ children }: DatabaseProviderProps) {
         // Get database size information
         const result = await dbRef.current.getFirstAsync('PRAGMA page_count;')
         const pageSize = await dbRef.current.getFirstAsync('PRAGMA page_size;')
-        
-        if (result && pageSize && 
+
+        if (result && pageSize &&
             typeof result === 'object' && 'page_count' in result &&
             typeof pageSize === 'object' && 'page_size' in pageSize) {
-          
+
           const totalSize = Number(result.page_count) * Number(pageSize.page_size)
           const sizeMB = totalSize / (1024 * 1024)
 

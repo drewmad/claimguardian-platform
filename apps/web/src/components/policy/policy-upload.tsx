@@ -78,7 +78,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
     const interval = setInterval(async () => {
       attempts++
       const isComplete = await checkStatus()
-      
+
       if (isComplete || attempts >= maxAttempts) {
         clearInterval(interval)
         if (attempts >= maxAttempts) {
@@ -92,7 +92,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
     if (!user || acceptedFiles.length === 0) return
 
     const file = acceptedFiles[0]
-    
+
     // Validate file
     if (!file.type.includes('pdf')) {
       toast.error('Please upload a PDF file')
@@ -114,7 +114,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
 
       const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}/${propertyId}/${Date.now()}.${fileExt}`
-      
+
       const { error: uploadError } = await supabase.storage
         .from('policy-documents')
         .upload(fileName, file)
@@ -177,7 +177,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
       })
 
       toast.success('Policy document uploaded successfully')
-      
+
       if (onUploadComplete) {
         onUploadComplete(document.id)
       }
@@ -230,8 +230,8 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
             className={`
               border-2 border-dashed rounded-lg p-8 text-center cursor-pointer
               transition-colors duration-200
-              ${isDragActive 
-                ? 'border-cyan-400 bg-cyan-500/10' 
+              ${isDragActive
+                ? 'border-cyan-400 bg-cyan-500/10'
                 : 'border-gray-600 hover:border-gray-500 bg-gray-700/50'
               }
             `}
@@ -292,7 +292,7 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
               <span className="text-sm text-gray-400">{uploadStatus.progress}%</span>
             </div>
             <div className="w-full bg-gray-700 rounded-full h-2">
-              <div 
+              <div
                 className="bg-cyan-500 h-2 rounded-full transition-all duration-300"
                 style={{ width: `${uploadStatus.progress}%` }}
               />
@@ -308,8 +308,8 @@ export function PolicyUpload({ propertyId, onUploadComplete }: PolicyUploadProps
                     <div className="w-4 h-4 rounded-full border border-gray-600" />
                   )}
                   <span className={`text-sm ${
-                    uploadStatus.stage === stage 
-                      ? 'text-white' 
+                    uploadStatus.stage === stage
+                      ? 'text-white'
                       : uploadStatus.progress > getStageProgress(stage)
                         ? 'text-gray-400'
                         : 'text-gray-500'

@@ -7,10 +7,10 @@
  */
 'use client'
 
-import { 
-  AlertCircle, BarChart3, Camera, Car, ChevronRight, Diamond, 
-  DollarSign, Download, Edit, Eye, FileText, Gamepad, Grid, 
-  List, Music, Package, Plus, Search, Shield, Shirt, Sofa, 
+import {
+  AlertCircle, BarChart3, Camera, Car, ChevronRight, Diamond,
+  DollarSign, Download, Edit, Eye, FileText, Gamepad, Grid,
+  List, Music, Package, Plus, Search, Shield, Shirt, Sofa,
   Sparkles, Trash2, Tv, Watch, Home, ScanLine,
   MapPin, Tag, Filter, Share2, CheckCircle,
   Upload, QrCode, History, TrendingUp, TrendingDown, Star, Info
@@ -57,7 +57,7 @@ interface PropertyItem {
   condition?: 'new' | 'excellent' | 'good' | 'fair' | 'poor'
   barcode?: string
   lastUpdated?: string
-  location?: { 
+  location?: {
     room: string
     specific?: string
     coordinates?: { x: number; y: number }
@@ -184,7 +184,7 @@ function PersonalPropertyContent() {
   const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set())
   const [isSelectionMode, setIsSelectionMode] = useState(false)
   const [showBatchActions, setShowBatchActions] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Calculate statistics
@@ -194,7 +194,7 @@ function PersonalPropertyContent() {
   const highValueItems = items.filter(item => item.currentValue >= 5000).length
   const totalPurchaseValue = items.reduce((sum, item) => sum + item.purchasePrice, 0)
   const valueChange = totalValue - totalPurchaseValue
-  
+
   // Calculate depreciation values and alerts
   const itemsWithDepreciation = items.map(item => {
     const depreciation = calculateDepreciation(item.purchasePrice, item.purchaseDate, item.category)
@@ -204,9 +204,9 @@ function PersonalPropertyContent() {
       depreciationData: depreciation
     }
   })
-  
+
   // Get all depreciation alerts
-  const allAlerts = items.flatMap(item => 
+  const allAlerts = items.flatMap(item =>
     getDepreciationAlerts({
       purchasePrice: item.purchasePrice,
       purchaseDate: item.purchaseDate,
@@ -219,7 +219,7 @@ function PersonalPropertyContent() {
   const filteredItems = items.filter(item => {
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
     const matchesRoom = selectedRoom === 'all' || item.room === selectedRoom
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.brand?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.room.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -246,7 +246,7 @@ function PersonalPropertyContent() {
   const startBarcodeScanning = () => {
     setIsScanning(true)
     setScanProgress(0)
-    
+
     // Store interval ID to clear on cancel
     const interval = setInterval(() => {
       setScanProgress(prev => {
@@ -261,7 +261,7 @@ function PersonalPropertyContent() {
         return prev + 10
       })
     }, 200)
-    
+
     // Store interval ID for cancellation
     ;(window as any).scanInterval = interval
   }
@@ -332,7 +332,7 @@ function PersonalPropertyContent() {
   }
 
   // const handleBatchUpdateRoom = (newRoom: string) => {
-  //   setItems(items.map(item => 
+  //   setItems(items.map(item =>
   //     selectedItems.has(item.id) ? { ...item, room: newRoom } : item
   //   ))
   //   toast.success(`Updated room for ${selectedItems.size} items`)
@@ -353,7 +353,7 @@ function PersonalPropertyContent() {
               <p className="text-gray-400">Your complete home inventory management system</p>
             </div>
             <div className="flex gap-3">
-              <Button 
+              <Button
                 variant="outline"
                 className="bg-gray-700 hover:bg-gray-600"
                 onClick={() => fileInputRef.current?.click()}
@@ -367,7 +367,7 @@ function PersonalPropertyContent() {
                   AI Scanner
                 </Button>
               </Link>
-              <Button 
+              <Button
                 onClick={() => setShowAddModal(true)}
                 className="bg-blue-600 hover:bg-blue-700"
               >
@@ -390,7 +390,7 @@ function PersonalPropertyContent() {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -412,8 +412,8 @@ function PersonalPropertyContent() {
                   <div>
                     <p className="text-2xl font-bold text-white">{insuredItems}</p>
                     <p className="text-sm text-gray-400">Insured Items</p>
-                    <Progress 
-                      value={(insuredItems / totalItems) * 100} 
+                    <Progress
+                      value={(insuredItems / totalItems) * 100}
                       className="mt-2 h-1 bg-gray-700"
                     />
                   </div>
@@ -462,7 +462,7 @@ function PersonalPropertyContent() {
             <TabsContent value="overview" className="space-y-6">
               {/* Quick Actions */}
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <Card 
+                <Card
                   className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
                   onClick={startBarcodeScanning}
                 >
@@ -479,7 +479,7 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card 
+                <Card
                   className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
                   onClick={() => toast.info('Photo capture feature coming soon!')}
                 >
@@ -496,7 +496,7 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card 
+                <Card
                   className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
                   onClick={() => toast.info('Report generation feature coming soon!')}
                 >
@@ -513,7 +513,7 @@ function PersonalPropertyContent() {
                   </CardContent>
                 </Card>
 
-                <Card 
+                <Card
                   className="bg-gray-800 border-gray-700 hover:border-gray-600 cursor-pointer transition-all"
                   onClick={() => toast.info('Sharing feature coming soon!')}
                 >
@@ -562,7 +562,7 @@ function PersonalPropertyContent() {
 
               {/* Depreciation Alerts */}
               {allAlerts.length > 0 && (
-                <DepreciationAlerts 
+                <DepreciationAlerts
                   alerts={allAlerts}
                   onDismiss={(alert) => {
                     toast.info(`Dismissed alert: ${alert.title}`)
@@ -691,7 +691,7 @@ function PersonalPropertyContent() {
                         />
                       </div>
                     </div>
-                    
+
                     <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                       <SelectTrigger className="w-48 bg-gray-700 border-gray-600">
                         <SelectValue placeholder="All Categories" />
@@ -715,14 +715,14 @@ function PersonalPropertyContent() {
                         ))}
                       </SelectContent>
                     </Select>
-                    
+
                     <div className="flex gap-1">
                       <Button
                         size="icon"
                         variant={viewMode === 'grid' ? 'default' : 'outline'}
                         onClick={() => setViewMode('grid')}
-                        className={viewMode === 'grid' 
-                          ? 'bg-blue-600 hover:bg-blue-700' 
+                        className={viewMode === 'grid'
+                          ? 'bg-blue-600 hover:bg-blue-700'
                           : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}
                       >
                         <Grid className="h-4 w-4" />
@@ -731,8 +731,8 @@ function PersonalPropertyContent() {
                         size="icon"
                         variant={viewMode === 'list' ? 'default' : 'outline'}
                         onClick={() => setViewMode('list')}
-                        className={viewMode === 'list' 
-                          ? 'bg-blue-600 hover:bg-blue-700' 
+                        className={viewMode === 'list'
+                          ? 'bg-blue-600 hover:bg-blue-700'
                           : 'bg-gray-700 hover:bg-gray-600 text-gray-300 border-gray-600'}
                       >
                         <List className="h-4 w-4" />
@@ -783,10 +783,10 @@ function PersonalPropertyContent() {
                   {filteredItems.map(item => {
                     const Icon = getCategoryIcon(item.category)
                     const categoryColor = getCategoryColor(item.category)
-                    
+
                     return (
-                      <Card 
-                        key={item.id} 
+                      <Card
+                        key={item.id}
                         className={`bg-gray-800 border-gray-700 hover:border-gray-600 transition-all cursor-pointer relative ${
                           isSelectionMode && selectedItems.has(item.id) ? 'ring-2 ring-blue-500' : ''
                         }`}
@@ -810,7 +810,7 @@ function PersonalPropertyContent() {
                             />
                           </div>
                         )}
-                        
+
                         <CardContent className="p-4">
                           {/* Item Header */}
                           <div className="flex items-start justify-between mb-3">
@@ -881,9 +881,9 @@ function PersonalPropertyContent() {
 
                           {/* Quick Actions */}
                           <div className="flex items-center gap-2 mt-4 pt-4 border-t border-gray-700">
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
+                            <Button
+                              size="sm"
+                              variant="ghost"
                               className="flex-1 text-gray-400 hover:text-white"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -892,9 +892,9 @@ function PersonalPropertyContent() {
                             >
                               <Eye className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
+                            <Button
+                              size="sm"
+                              variant="ghost"
                               className="flex-1 text-gray-400 hover:text-white"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -903,9 +903,9 @@ function PersonalPropertyContent() {
                             >
                               <Edit className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
+                            <Button
+                              size="sm"
+                              variant="ghost"
                               className="flex-1 text-gray-400 hover:text-white"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -914,9 +914,9 @@ function PersonalPropertyContent() {
                             >
                               <Camera className="h-4 w-4" />
                             </Button>
-                            <Button 
-                              size="sm" 
-                              variant="ghost" 
+                            <Button
+                              size="sm"
+                              variant="ghost"
                               className="flex-1 text-gray-400 hover:text-white"
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -938,10 +938,10 @@ function PersonalPropertyContent() {
                       {filteredItems.map(item => {
                         const Icon = getCategoryIcon(item.category)
                         const categoryColor = getCategoryColor(item.category)
-                        
+
                         return (
-                          <div 
-                            key={item.id} 
+                          <div
+                            key={item.id}
                             className={`p-4 hover:bg-gray-700/50 transition-all cursor-pointer ${
                               isSelectionMode && selectedItems.has(item.id) ? 'bg-blue-900/20' : ''
                             }`}
@@ -967,7 +967,7 @@ function PersonalPropertyContent() {
                               <div className={`p-2 bg-${categoryColor}-600/20 rounded-lg`}>
                                 <Icon className={`h-5 w-5 text-${categoryColor}-400`} />
                               </div>
-                              
+
                               <div className="flex-1">
                                 <div className="flex items-center gap-3 mb-1">
                                   <h3 className="font-semibold text-white">{item.name}</h3>
@@ -1039,7 +1039,7 @@ function PersonalPropertyContent() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {mockRooms.map(room => {
                   const roomItems = items.filter(item => item.room === room.name)
-                  
+
                   return (
                     <Card key={room.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all">
                       <CardHeader>
@@ -1062,7 +1062,7 @@ function PersonalPropertyContent() {
                             <p className="text-2xl font-bold text-white">${room.totalValue.toLocaleString()}</p>
                             <p className="text-sm text-gray-400">Total value</p>
                           </div>
-                          
+
                           {/* Recent items in room */}
                           <div className="space-y-2">
                             {roomItems.slice(0, 3).map(item => (
@@ -1090,7 +1090,7 @@ function PersonalPropertyContent() {
                   const Icon = category.icon
                   const categoryItems = items.filter(item => item.category === category.id)
                   const categoryValue = categoryItems.reduce((sum, item) => sum + item.currentValue, 0)
-                  
+
                   return (
                     <Card key={category.id} className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-all">
                       <CardContent className="p-6">
@@ -1171,7 +1171,7 @@ function PersonalPropertyContent() {
                       </div>
                     ))}
                   </div>
-                  
+
                   {items.filter(item => item.images.length > 0).length === 0 && (
                     <div className="text-center py-12">
                       <Camera className="h-16 w-16 text-gray-600 mx-auto mb-4" />
@@ -1207,7 +1207,7 @@ function PersonalPropertyContent() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="bg-gray-800 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -1221,7 +1221,7 @@ function PersonalPropertyContent() {
                     </div>
                   </CardContent>
                 </Card>
-                
+
                 <Card className="bg-gray-800 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between">
@@ -1254,7 +1254,7 @@ function PersonalPropertyContent() {
                         const depreciationAmount = categoryPurchaseValue - categoryValue
                         const currentTotalValue = itemsWithDepreciation.reduce((sum, item) => sum + item.currentValue, 0)
                         const percentage = (categoryValue / currentTotalValue) * 100
-                        
+
                         return (
                           <div key={category.id}>
                             <div className="flex items-center justify-between mb-1">
@@ -1294,7 +1294,7 @@ function PersonalPropertyContent() {
                           {Math.round((insuredItems / totalItems) * 100)}%
                         </p>
                       </div>
-                      
+
                       <div className="p-4 bg-orange-900/20 rounded-lg">
                         <div className="flex items-center gap-3 mb-2">
                           <AlertCircle className="h-5 w-5 text-orange-400" />
@@ -1336,7 +1336,7 @@ function PersonalPropertyContent() {
                       <p className="text-sm text-gray-400">Average Depreciation Rate</p>
                     </div>
                   </div>
-                  
+
                   <div className="p-4 bg-yellow-900/20 rounded-lg">
                     <div className="flex items-center gap-3 mb-2">
                       <AlertCircle className="h-5 w-5 text-yellow-400" />
@@ -1346,7 +1346,7 @@ function PersonalPropertyContent() {
                       {allAlerts.filter(a => a.type === 'maintenance').length} items need maintenance soon
                     </p>
                   </div>
-                  
+
                   <div className="p-4 bg-red-900/20 rounded-lg">
                     <div className="flex items-center gap-3 mb-2">
                       <TrendingDown className="h-5 w-5 text-red-400" />
@@ -1493,7 +1493,7 @@ function PersonalPropertyContent() {
                 {selectedItem.name}
               </DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-6 mt-4">
               {/* Basic Info */}
               <div className="grid grid-cols-2 gap-4">
@@ -1582,7 +1582,7 @@ function PersonalPropertyContent() {
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold text-white">Add New Item</DialogTitle>
             </DialogHeader>
-            
+
             <div className="space-y-6 mt-4">
               {/* Quick Category Selection */}
               <div>

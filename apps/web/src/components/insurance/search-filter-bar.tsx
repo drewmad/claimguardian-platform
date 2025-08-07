@@ -39,11 +39,11 @@ interface SearchFilterBarProps {
   className?: string
 }
 
-export function SearchFilterBar({ 
-  onFiltersChange, 
+export function SearchFilterBar({
+  onFiltersChange,
   availableCarriers = [],
   availablePolicyTypes = [],
-  className 
+  className
 }: SearchFilterBarProps) {
   const [isFilterOpen, setIsFilterOpen] = useState(false)
   const [filters, setFilters] = useState<FilterOptions>({
@@ -90,10 +90,10 @@ export function SearchFilterBar({
     onFiltersChange(clearedFilters)
   }
 
-  const activeFilterCount = 
-    filters.policyTypes.length + 
-    filters.carriers.length + 
-    filters.status.length + 
+  const activeFilterCount =
+    filters.policyTypes.length +
+    filters.carriers.length +
+    filters.status.length +
     (filters.dateRange.start ? 1 : 0)
 
   return (
@@ -137,7 +137,7 @@ export function SearchFilterBar({
             Filters
             <AnimatePresence>
               {activeFilterCount > 0 && (
-                <motion.span 
+                <motion.span
                   initial={{ scale: 0, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
                   exit={{ scale: 0, opacity: 0 }}

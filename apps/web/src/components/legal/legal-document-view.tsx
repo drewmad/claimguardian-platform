@@ -29,22 +29,22 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
       try {
         setLoading(true)
         setError('')
-        
+
         const doc = await legalService.getDocumentByType(documentType)
-        
+
         if (!doc) {
           setError('Document not found')
           return
         }
-        
+
         setDocument(doc)
-        
+
         logger.track('legal_document_viewed', {
           documentType,
           documentId: doc.id,
           version: doc.version
         })
-        
+
       } catch (err) {
         logger.error('Failed to load legal document', { documentType }, err instanceof Error ? err : new Error(String(err)))
         setError('Failed to load document. Please try again.')
@@ -106,14 +106,14 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <Link 
+        <Link
           href="/"
           className="inline-flex items-center gap-2 text-slate-400 hover:text-white transition-colors mb-6"
         >
           <ChevronLeft className="w-4 h-4" />
           Back to Home
         </Link>
-        
+
         <div className="flex items-start justify-between gap-6">
           <div>
             <h1 className="text-3xl font-bold text-white mb-2">{document.title}</h1>
@@ -132,7 +132,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Actions */}
           <div className="flex items-center gap-2">
             <button
@@ -174,7 +174,7 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
 
       {/* Document Content */}
       <div className="prose prose-invert max-w-none">
-        <div 
+        <div
           className="bg-slate-800/50 rounded-lg p-8 border border-slate-700"
           dangerouslySetInnerHTML={{ __html: formatContent(document.content) }}
         />
@@ -209,19 +209,19 @@ export function LegalDocumentView({ documentType }: LegalDocumentViewProps) {
         <div className="flex items-center justify-between text-sm text-slate-500">
           <p>Last updated: {new Date(document.created_at).toLocaleDateString()}</p>
           <div className="flex items-center gap-4">
-            <Link 
+            <Link
               href="/legal/privacy-policy"
               className="hover:text-slate-300 transition-colors"
             >
               Privacy Policy
             </Link>
-            <Link 
+            <Link
               href="/legal/terms-of-service"
               className="hover:text-slate-300 transition-colors"
             >
               Terms of Service
             </Link>
-            <Link 
+            <Link
               href="/legal/ai-use-agreement"
               className="hover:text-slate-300 transition-colors"
             >
@@ -269,13 +269,13 @@ function formatContent(content: string): string {
         return `<h${level} class="text-white font-semibold mb-4 mt-8">${text}</h${level}>`
       }
       if (paragraph.startsWith('- ')) {
-        const items = paragraph.split('\n').map(item => 
+        const items = paragraph.split('\n').map(item =>
           `<li class="mb-2">${item.replace(/^-\s*/, '')}</li>`
         ).join('')
         return `<ul class="list-disc list-inside space-y-2 mb-6">${items}</ul>`
       }
       if (paragraph.startsWith('1. ')) {
-        const items = paragraph.split('\n').map(item => 
+        const items = paragraph.split('\n').map(item =>
           `<li class="mb-2">${item.replace(/^\d+\.\s*/, '')}</li>`
         ).join('')
         return `<ol class="list-decimal list-inside space-y-2 mb-6">${items}</ol>`

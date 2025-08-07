@@ -12,7 +12,7 @@
 import { logger } from '@/lib/logger'
 import { toError } from '@claimguardian/utils'
 
-export type PropertyImageStyle = 
+export type PropertyImageStyle =
   | 'modern-home'
   | 'traditional-home'
   | 'florida-style'
@@ -49,7 +49,7 @@ export function getPropertyImagePrompt(options: PropertyImageOptions = {}): stri
   }
 
   let prompt = basePrompts[style] || basePrompts['florida-style']
-  
+
   // Add property type specifics
   if (propertyType.toLowerCase().includes('condo')) {
     prompt = basePrompts['condo-building']
@@ -77,14 +77,14 @@ export async function generatePropertyImage(options: PropertyImageOptions = {}):
   try {
     const apiKey = process.env.NEXT_PUBLIC_OPENAI_API_KEY || process.env.OPENAI_API_KEY
     // WARNING: API key moved to server-side - use /api/ai endpoint instead
-    
+
     if (!apiKey) {
       logger.warn('OpenAI API key not found. Cannot generate property images.')
       return null
     }
 
     const prompt = getPropertyImagePrompt(options)
-    
+
     const response = await fetch('https://api.openai.com/v1/images/generations', {
       method: 'POST',
       headers: {
@@ -106,11 +106,11 @@ export async function generatePropertyImage(options: PropertyImageOptions = {}):
     }
 
     const data = await response.json()
-    
+
     if (data.data && data.data[0] && data.data[0].url) {
       return data.data[0].url
     }
-    
+
     return null
   } catch (error) {
     logger.error('Error generating property image:', undefined, toError(error))
@@ -137,7 +137,7 @@ export async function getPropertyImage(options: PropertyImageOptions = {}): Prom
   if (aiImage) {
     return aiImage
   }
-  
+
   // Fallback to curated images
   const imageIndex = Math.floor(Math.random() * DEFAULT_PROPERTY_IMAGES.length)
   return DEFAULT_PROPERTY_IMAGES[imageIndex]
@@ -152,6 +152,6 @@ export function getPropertyImageByType(propertyType: string): string {
     'Multi-Family': DEFAULT_PROPERTY_IMAGES[3],
     'Vacation Home': DEFAULT_PROPERTY_IMAGES[4]
   }
-  
+
   return typeImageMap[propertyType] || DEFAULT_PROPERTY_IMAGES[0]
 }

@@ -36,7 +36,7 @@ export function PermissionGuard({
 }: PermissionGuardProps) {
   // Handle single permission
   const singlePermissionCheck = usePermission(permission || '')
-  
+
   // Handle multiple permissions
   const anyPermissionCheck = useHasAnyPermission(permissions)
   const allPermissionsCheck = useHasAllPermissions(permissions)
@@ -146,10 +146,10 @@ interface FeatureLockProps {
   children: ReactNode
 }
 
-export function FeatureLock({ 
-  isLocked, 
+export function FeatureLock({
+  isLocked,
   featureName = 'This feature',
-  children 
+  children
 }: FeatureLockProps) {
   if (!isLocked) {
     return <>{children}</>

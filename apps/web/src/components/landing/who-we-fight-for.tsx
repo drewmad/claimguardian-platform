@@ -40,10 +40,10 @@ export function WhoWeFightFor() {
         <p className="text-lg text-slate-400 text-center max-w-3xl mx-auto mb-12">
           Behind every claim is a story. We're here to ensure your story ends with the settlement you deserve.
         </p>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {images.map((image, index) => (
-            <div 
+            <div
               key={index}
               className="relative group overflow-hidden rounded-lg"
               style={{
@@ -66,7 +66,7 @@ export function WhoWeFightFor() {
           ))}
         </div>
       </div>
-      
+
       <style jsx>{`
         @keyframes fadeInUp {
           from {

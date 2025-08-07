@@ -90,8 +90,8 @@ export default function WarrantyWatchPage() {
     }
   }
 
-  const filteredWarranties = filter === 'all' 
-    ? warranties 
+  const filteredWarranties = filter === 'all'
+    ? warranties
     : warranties.filter(w => w.status === filter)
 
   return (
@@ -153,8 +153,8 @@ export default function WarrantyWatchPage() {
             <button
               onClick={() => setFilter('all')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'all' 
-                  ? 'bg-cyan-600 text-white' 
+                filter === 'all'
+                  ? 'bg-cyan-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -163,8 +163,8 @@ export default function WarrantyWatchPage() {
             <button
               onClick={() => setFilter('active')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'active' 
-                  ? 'bg-cyan-600 text-white' 
+                filter === 'active'
+                  ? 'bg-cyan-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -173,8 +173,8 @@ export default function WarrantyWatchPage() {
             <button
               onClick={() => setFilter('expiring')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'expiring' 
-                  ? 'bg-cyan-600 text-white' 
+                filter === 'expiring'
+                  ? 'bg-cyan-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -183,8 +183,8 @@ export default function WarrantyWatchPage() {
             <button
               onClick={() => setFilter('expired')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                filter === 'expired' 
-                  ? 'bg-cyan-600 text-white' 
+                filter === 'expired'
+                  ? 'bg-cyan-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -206,7 +206,7 @@ export default function WarrantyWatchPage() {
                       <div>
                         <h3 className="text-lg font-semibold text-white">{warranty.item}</h3>
                         <p className="text-sm text-gray-400 mb-2">{warranty.category}</p>
-                        
+
                         <div className="flex items-center gap-4 text-sm">
                           <span className="text-gray-400">
                             Purchased: {new Date(warranty.purchaseDate).toLocaleDateString()}
@@ -248,7 +248,7 @@ export default function WarrantyWatchPage() {
                         </div>
                       </div>
                     </div>
-                    
+
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </div>
                 </div>
@@ -268,7 +268,7 @@ export default function WarrantyWatchPage() {
                   </div>
                   <ChevronRight className="w-4 h-4 text-gray-400" />
                 </button>
-                
+
                 <button className="w-full flex items-center justify-between p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-5 h-5 text-blue-400" />
@@ -300,7 +300,7 @@ export default function WarrantyWatchPage() {
                     Learn More <ExternalLink className="w-3 h-3" />
                   </button>
                 </div>
-                
+
                 <div className="p-4 bg-blue-900/20 border border-blue-500/30 rounded-lg">
                   <p className="text-blue-300 font-medium">Electronics Care Plan</p>
                   <p className="text-sm text-gray-400 mt-1">Comprehensive electronics coverage</p>

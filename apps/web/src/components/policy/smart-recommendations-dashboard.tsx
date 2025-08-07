@@ -14,12 +14,12 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  TrendingUp, 
-  AlertTriangle, 
-  CheckCircle, 
-  Clock, 
-  DollarSign, 
+import {
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Clock,
+  DollarSign,
   Target,
   Brain,
   Users,
@@ -73,7 +73,7 @@ export function SmartRecommendationsDashboard({ userId, propertyId, className }:
   }
 
   const updateRecommendationStatus = async (
-    recommendationId: string, 
+    recommendationId: string,
     status: 'reviewing' | 'implemented' | 'dismissed',
     notes?: string
   ) => {
@@ -134,7 +134,7 @@ export function SmartRecommendationsDashboard({ userId, propertyId, className }:
     reviewing: recommendations.filter(r => r.status === 'reviewing').length,
     implemented: recommendations.filter(r => r.status === 'implemented').length,
     totalSavings: recommendations.reduce((sum, r) => sum + (r.market_analysis.potential_savings || 0), 0),
-    avgConfidence: recommendations.length > 0 
+    avgConfidence: recommendations.length > 0
       ? Math.round(recommendations.reduce((sum, r) => sum + r.confidence, 0) / recommendations.length)
       : 0
   }
@@ -327,7 +327,7 @@ export function SmartRecommendationsDashboard({ userId, propertyId, className }:
                   <div className="bg-gray-900 rounded-lg p-4">
                     <h4 className="font-semibold text-white mb-2">Recommended Action</h4>
                     <p className="text-gray-300 mb-3">{recommendation.recommendation.details}</p>
-                    
+
                     {recommendation.recommendation.implementation_steps.length > 0 && (
                       <div>
                         <p className="font-medium text-gray-400 mb-2">Implementation Steps:</p>
@@ -404,7 +404,7 @@ export function SmartRecommendationsDashboard({ userId, propertyId, className }:
                       <Clock className="h-4 w-4" />
                       <span>Created {format(new Date(recommendation.created_at), 'MMM d, yyyy')}</span>
                     </div>
-                    
+
                     {recommendation.status === 'pending' && (
                       <div className="flex items-center space-x-2">
                         <Button

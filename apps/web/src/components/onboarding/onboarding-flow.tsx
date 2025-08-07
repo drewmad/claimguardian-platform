@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   UserCheck,
   UserPlus,
   Shield,
@@ -77,14 +77,14 @@ interface OnboardingData {
   propertyPlaceId?: string
   professionalRole?: string
   landlordUnits?: string
-  
+
   // Property Details
   propertyStories?: number
   propertyBedrooms?: number
   propertyBathrooms?: number
   roomsPerFloor?: { [floor: number]: number }
   propertyStructures?: string[]
-  
+
   // Step 2: Insurance Status
   hasPropertyInsurance?: boolean
   hasFloodInsurance?: boolean
@@ -92,7 +92,7 @@ interface OnboardingData {
   insuranceProvider?: string
   otherInsuranceType?: string
   otherInsuranceDescription?: string
-  
+
   // Completion tracking
   profileComplete: boolean
   insuranceComplete: boolean
@@ -157,11 +157,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
             })
         }
 
-        
+
 
         // Update step completion status
         const updatedSteps = [...ONBOARDING_STEPS]
-        
+
         // Check user profile completion
         if (prefs?.user_type && (prefs?.property_address || prefs?.professional_role)) {
           updatedSteps[0].completed = true
@@ -196,11 +196,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         }
 
         setSteps(updatedSteps)
-        
+
         // Find first incomplete step
         const firstIncomplete = updatedSteps.findIndex(step => !step.completed)
         setCurrentStep(firstIncomplete !== -1 ? firstIncomplete : 0)
-        
+
       } catch (error) {
         logger.error('Error checking onboarding status:', error)
       } finally {
@@ -212,7 +212,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
   }, [user, router, supabase])
 
 
-  // const updatePreferences = async (updates: Partial<{ 
+  // const updatePreferences = async (updates: Partial<{
   //   email_notifications?: boolean
   //   sms_notifications?: boolean
   //   marketing_emails?: boolean
@@ -243,7 +243,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 
   const completeStep = async (stepId: string) => {
     if (!user) return
-    
+
     const stepIndex = steps.findIndex(s => s.id === stepId)
     if (stepIndex === -1) return
 
@@ -254,11 +254,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
     // Save progress to database
     try {
       await saveOnboardingProgress(user.id, onboardingData)
-      
+
       // Track step completion for analytics
       await trackOnboardingStep(
-        user.id, 
-        stepIndex + 1, 
+        user.id,
+        stepIndex + 1,
         stepId
       )
     } catch (error) {
@@ -276,18 +276,18 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 
   const handleOnboardingComplete = async () => {
     if (!user) return
-    
+
     try {
       const finalData = {
         ...onboardingData,
         onboardingComplete: true,
         completedAt: new Date().toISOString()
       }
-      
+
       await completeOnboarding(user.id, finalData)
-      
+
       toast.success('Welcome to ClaimGuardian! Your account is all set up.')
-      
+
       // If we're in modal mode (onComplete provided), close the modal
       // Otherwise let QuickStartStep handle navigation
       if (onComplete && currentStep === steps.length - 1) {
@@ -303,7 +303,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 
   const skipOnboarding = async () => {
     if (!user) return
-    
+
     try {
       // Mark onboarding as skipped in user preferences
       const { error } = await supabase
@@ -314,11 +314,11 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
           onboarding_skipped_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-      
+
       if (error) {
         logger.error('Failed to skip onboarding:', error)
       }
-      
+
       // Call onComplete callback if provided, otherwise redirect
       if (onComplete) {
         onComplete()
@@ -342,24 +342,24 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
     switch (step.id) {
       case 'user-profile':
         return (
-          <UserProfileStep 
+          <UserProfileStep
             data={onboardingData}
             onUpdate={setOnboardingData}
             onComplete={() => completeStep('user-profile')}
             onBack={currentStep > 0 ? () => setCurrentStep(currentStep - 1) : undefined}
           />
         )
-        
+
       case 'insurance-status':
         return (
-          <InsuranceStatusStep 
+          <InsuranceStatusStep
             data={onboardingData}
             onUpdate={setOnboardingData}
             onComplete={() => completeStep('insurance-status')}
             onBack={() => setCurrentStep(currentStep - 1)}
           />
         )
-        
+
       case 'quick-start':
         return (
           <QuickStartStep
@@ -368,7 +368,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
             onFlowComplete={onComplete}
           />
         )
-        
+
       default:
         return null
     }
@@ -408,10 +408,10 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
                 <div
                   className={`
                     w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-sm border-2 transition-all duration-300
-                    ${step.completed 
-                      ? 'bg-success border-success text-text-primary shadow-lg' 
-                      : index === currentStep 
-                        ? 'bg-accent border-accent-border text-text-primary shadow-lg' 
+                    ${step.completed
+                      ? 'bg-success border-success text-text-primary shadow-lg'
+                      : index === currentStep
+                        ? 'bg-accent border-accent-border text-text-primary shadow-lg'
                         : 'bg-panel border-border text-text-secondary'
                     }
                   `}
@@ -423,7 +423,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
                   )}
                 </div>
                 {index < steps.length - 1 && (
-                  <div 
+                  <div
                     className={`
                       w-full h-1 mx-4 rounded-full transition-all duration-300
                       ${step.completed ? 'bg-success' : 'bg-border'}
@@ -464,16 +464,16 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 }
 
 // Step Components
-function UserProfileStep({ 
-  data, 
-  onUpdate, 
+function UserProfileStep({
+  data,
+  onUpdate,
   onComplete,
-  onBack 
-}: { 
+  onBack
+}: {
   data: OnboardingData
   onUpdate: (data: OnboardingData) => void
   onComplete: () => void
-  onBack?: () => void 
+  onBack?: () => void
 }) {
   const [selectedType, setSelectedType] = useState<UserType>(data.userType)
   const [propertyAddress, setPropertyAddress] = useState(data.propertyAddress || '')
@@ -482,17 +482,17 @@ function UserProfileStep({
   const autocompleteRef = useRef<google.maps.places.Autocomplete | null>(null)
   const [professionalRole, setProfessionalRole] = useState(data.professionalRole || '')
   const [landlordUnits, setLandlordUnits] = useState(data.landlordUnits || '')
-  
+
   // Property details state
   const [propertyStories, setPropertyStories] = useState(data.propertyStories || 1)
   const [propertyBedrooms, setPropertyBedrooms] = useState(data.propertyBedrooms || 1)
   const [propertyBathrooms, setPropertyBathrooms] = useState(data.propertyBathrooms || 1)
   const [propertyStructures, setPropertyStructures] = useState<string[]>(data.propertyStructures || [])
   const [roomsPerFloor, setRoomsPerFloor] = useState<Record<number, number>>(data.roomsPerFloor || { 1: 4 })
-  
+
   // Use centralized Google Maps hook
   const { isLoaded: isGoogleLoaded, isLoading: isGoogleLoading, error: googleError } = useGooglePlaces()
-  
+
   // Computed values - declare early to avoid hoisting issues
   const isProfessional = selectedType === 'property-professional'
   const isLandlord = selectedType === 'landlord'
@@ -516,7 +516,7 @@ function UserProfileStep({
 
   const landlordUnitRanges = [
     '1-2 units',
-    '3-5 units', 
+    '3-5 units',
     '6-10 units',
     '11-25 units',
     '26-50 units',
@@ -536,9 +536,9 @@ function UserProfileStep({
       setProfessionalRole('')
       setLandlordUnits('')
     }
-    
-    onUpdate({ 
-      ...data, 
+
+    onUpdate({
+      ...data,
       userType: type,
       propertyAddress: type !== 'property-professional' ? propertyAddress : undefined,
       professionalRole: type === 'property-professional' ? professionalRole : undefined,
@@ -549,8 +549,8 @@ function UserProfileStep({
   const handleAddressChange = (address: string) => {
     setPropertyAddress(address)
     setAddressVerified(false)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       propertyAddress: address,
       addressVerified: false
     })
@@ -577,7 +577,7 @@ function UserProfileStep({
         if (place?.formatted_address && place.geometry?.location) {
           const lat = place.geometry.location.lat()
           const lng = place.geometry.location.lng()
-          
+
           setPropertyAddress(place.formatted_address)
           setAddressVerified(true)
           onUpdate({
@@ -588,7 +588,7 @@ function UserProfileStep({
             propertyLongitude: lng,
             propertyPlaceId: (place as { place_id?: string }).place_id
           })
-          
+
           logger.info('Address coordinates:', { lat, lng, placeId: (place as { place_id?: string }).place_id })
         }
       })
@@ -607,16 +607,16 @@ function UserProfileStep({
 
   const handleRoleSelect = (role: string) => {
     setProfessionalRole(role)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       professionalRole: role
     })
   }
 
   const handleUnitsSelect = (units: string) => {
     setLandlordUnits(units)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       landlordUnits: units
     })
   }
@@ -643,7 +643,7 @@ function UserProfileStep({
   }
 
   const canProceed = selectedType && (
-    selectedType === 'property-professional' 
+    selectedType === 'property-professional'
       ? professionalRole
       : selectedType === 'landlord'
         ? (addressVerified && landlordUnits)
@@ -655,19 +655,19 @@ function UserProfileStep({
     // Climate Control
     'Central Air/Heat', 'Window AC Units', 'Heat Pump', 'Radiant Floor Heating',
     // Outdoor Features
-    'Pool', 'Hot Tub/Spa', 'Deck/Patio', 'Outdoor Kitchen', 'Fire Pit', 
+    'Pool', 'Hot Tub/Spa', 'Deck/Patio', 'Outdoor Kitchen', 'Fire Pit',
     'Pergola/Gazebo', 'Shed/Storage Building', 'Greenhouse',
     // Parking & Access
-    'Attached Garage', 'Detached Garage', 'Carport', 'Circular Driveway', 
+    'Attached Garage', 'Detached Garage', 'Carport', 'Circular Driveway',
     'RV/Boat Parking', 'Workshop',
     // Security & Safety
     'Security System', 'Security Cameras', 'Smart Doorbell', 'Gate/Gated Entry',
     'Fence', 'Storm Shutters', 'Impact Windows', 'Safe Room',
     // Utilities & Energy
-    'Solar Panels', 'Generator', 'Well Water', 'Septic System', 
+    'Solar Panels', 'Generator', 'Well Water', 'Septic System',
     'Water Softener', 'Sump Pump', 'French Drain',
     // Interior Features
-    'Fireplace', 'Wet Bar', 'Home Theater', 'Elevator', 
+    'Fireplace', 'Wet Bar', 'Home Theater', 'Elevator',
     'Central Vacuum', 'Intercom System', 'Smart Home System',
     // Roofing & Structure
     'Metal Roof', 'Tile Roof', 'New Roof (< 5 years)', 'Skylights'
@@ -710,7 +710,7 @@ function UserProfileStep({
                     <p className="text-sm text-text-secondary text-center mb-3">{type.description}</p>
                     <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-200 ${
                       selectedType === type.value
-                        ? 'border-accent bg-accent shadow-lg' 
+                        ? 'border-accent bg-accent shadow-lg'
                         : 'border-border'
                     }`}>
                       {selectedType === type.value && <div className="w-2 h-2 bg-text-primary rounded-full" />}
@@ -835,7 +835,7 @@ function UserProfileStep({
             {needsPropertyDetails && (
               <div className="border-t border-border pt-8 mt-8">
                 <h3 className="text-2xl font-bold text-text-primary mb-6">Tell us about your property</h3>
-                
+
                 {/* Property basics */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   <div>
@@ -856,7 +856,7 @@ function UserProfileStep({
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-text-primary mb-3">
                       Bedrooms
@@ -875,7 +875,7 @@ function UserProfileStep({
                       ))}
                     </select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-semibold text-text-primary mb-3">
                       Bathrooms
@@ -930,7 +930,7 @@ function UserProfileStep({
                     </div>
                   </div>
                 )}
-                
+
                 {/* Property structures */}
                 <div>
                   <label className="block text-lg font-semibold text-text-primary mb-4">
@@ -994,12 +994,12 @@ function UserProfileStep({
   )
 }
 
-function InsuranceStatusStep({ 
+function InsuranceStatusStep({
   data,
   onUpdate,
   onComplete,
-  onBack 
-}: { 
+  onBack
+}: {
   data: OnboardingData
   onUpdate: (data: OnboardingData) => void
   onComplete: () => void
@@ -1022,16 +1022,16 @@ function InsuranceStatusStep({
 
   const handlePropertyInsuranceChange = (status: boolean) => {
     setHasPropertyInsurance(status)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       hasPropertyInsurance: status
     })
   }
 
   const handleFloodInsuranceChange = (status: boolean) => {
     setHasFloodInsurance(status)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       hasFloodInsurance: status
     })
   }
@@ -1041,8 +1041,8 @@ function InsuranceStatusStep({
     if (!status) {
       setOtherInsuranceType('')
     }
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       hasOtherInsurance: status,
       otherInsuranceType: status ? otherInsuranceType : ''
     })
@@ -1061,8 +1061,8 @@ function InsuranceStatusStep({
 
   const handleProviderChange = (provider: string) => {
     setInsuranceProvider(provider)
-    onUpdate({ 
-      ...data, 
+    onUpdate({
+      ...data,
       insuranceProvider: provider
     })
   }
@@ -1084,20 +1084,20 @@ function InsuranceStatusStep({
 
   const getSteps = () => {
     const steps = []
-    
+
     if (data.userType === 'homeowner' || data.userType === 'landlord') {
       steps.push('property', 'flood', 'other')
     } else {
       steps.push('renters')
     }
-    
+
     return steps
   }
 
   const getCurrentStepData = () => {
     const steps = getSteps()
     const stepType = steps[currentStep]
-    
+
     switch (stepType) {
       case 'property':
         return {
@@ -1139,7 +1139,7 @@ function InsuranceStatusStep({
 
   const stepData = getCurrentStepData()
   const steps = getSteps()
-  
+
   if (!stepData) return null
 
   return (
@@ -1168,7 +1168,7 @@ function InsuranceStatusStep({
               <h3 className="text-xl font-bold text-text-primary mb-3">Yes</h3>
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mx-auto transition-all duration-200 ${
                 stepData.value === true
-                  ? 'border-success bg-success shadow-lg' 
+                  ? 'border-success bg-success shadow-lg'
                   : 'border-border'
               }`}>
                 {stepData.value === true && <div className="w-2.5 h-2.5 bg-text-primary rounded-full" />}
@@ -1187,7 +1187,7 @@ function InsuranceStatusStep({
               <h3 className="text-xl font-bold text-text-primary mb-3">No</h3>
               <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center mx-auto transition-all duration-200 ${
                 stepData.value === false
-                  ? 'border-error bg-error shadow-lg' 
+                  ? 'border-error bg-error shadow-lg'
                   : 'border-border'
               }`}>
                 {stepData.value === false && <div className="w-2.5 h-2.5 bg-text-primary rounded-full" />}
@@ -1400,7 +1400,7 @@ function QuickStartStep({
       <div className="space-y-4">
         {quickActions.map((action, index) => {
           const priorityColor = action.priority === 'high' ? 'border-accent/30 bg-accent/10' : 'border-border bg-panel/30'
-          
+
           return (
             <button
               key={index}
@@ -1444,4 +1444,3 @@ function QuickStartStep({
     </div>
   )
 }
-

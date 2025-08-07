@@ -97,12 +97,12 @@ export function AIMonitoringDashboard() {
   const [alerts, setAlerts] = useState<SystemAlert[]>([])
   const [refreshing, setRefreshing] = useState(false)
   const [autoRefresh, setAutoRefresh] = useState(true)
-  
+
   const supabase = createClient()
 
   useEffect(() => {
     loadMonitoringData()
-    
+
     if (autoRefresh) {
       const interval = setInterval(loadMonitoringData, 30000) // Refresh every 30 seconds
       return () => clearInterval(interval)
@@ -115,7 +115,7 @@ export function AIMonitoringDashboard() {
     try {
       await Promise.all([
         loadSystemMetrics(),
-        loadEdgeFunctionMetrics(), 
+        loadEdgeFunctionMetrics(),
         loadModelUsage(),
         loadAlerts()
       ])
@@ -281,7 +281,7 @@ export function AIMonitoringDashboard() {
   }
 
   const acknowledgeAlert = async (alertId: string) => {
-    setAlerts(prev => prev.map(alert => 
+    setAlerts(prev => prev.map(alert =>
       alert.id === alertId ? { ...alert, acknowledged: true } : alert
     ))
     toast.success('Alert acknowledged')
@@ -290,7 +290,7 @@ export function AIMonitoringDashboard() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'healthy': case 'active': return 'text-green-500'
-      case 'warning': return 'text-yellow-500'  
+      case 'warning': return 'text-yellow-500'
       case 'critical': case 'error': return 'text-red-500'
       case 'offline': return 'text-gray-500'
       default: return 'text-gray-500'
@@ -342,10 +342,10 @@ export function AIMonitoringDashboard() {
           </h2>
           <p className="text-gray-600">Monitor AI system performance, costs, and alerts</p>
         </div>
-        
+
         <div className="flex gap-2">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => setAutoRefresh(!autoRefresh)}
             className={autoRefresh ? 'bg-green-50' : ''}
           >
@@ -364,7 +364,7 @@ export function AIMonitoringDashboard() {
         {metrics.map((metric) => {
           const StatusIcon = getStatusIcon(metric.status)
           const TrendIcon = getTrendIcon(metric.trend)
-          
+
           return (
             <Card key={metric.id}>
               <CardContent className="p-6">
@@ -384,7 +384,7 @@ export function AIMonitoringDashboard() {
                       {metric.metric_type === 'latency' ? 's' : ''}
                     </p>
                     <TrendIcon className={`h-4 w-4 ${
-                      metric.trend === 'up' ? 'text-green-500' : 
+                      metric.trend === 'up' ? 'text-green-500' :
                       metric.trend === 'down' ? 'text-red-500' : 'text-gray-500'
                     }`} />
                   </div>
@@ -392,12 +392,12 @@ export function AIMonitoringDashboard() {
                     {metric.metric_type.replace('_', ' ')}
                   </p>
                   {metric.metric_type !== 'cost' && (
-                    <Progress 
-                      value={metric.metric_type === 'error_rate' ? 
+                    <Progress
+                      value={metric.metric_type === 'error_rate' ?
                         100 - (metric.current_value / metric.threshold_critical * 100) :
                         (metric.current_value / metric.threshold_warning * 100)
-                      } 
-                      className="h-1" 
+                      }
+                      className="h-1"
                     />
                   )}
                 </div>
@@ -497,7 +497,7 @@ export function AIMonitoringDashboard() {
                         {func.status}
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-4 gap-4 text-sm">
                       <div>
                         <p className="text-gray-500">Success Rate</p>
@@ -516,7 +516,7 @@ export function AIMonitoringDashboard() {
                         <p className="font-medium capitalize">{func.status}</p>
                       </div>
                     </div>
-                    
+
                     {func.last_error && (
                       <div className="mt-3 p-2 bg-red-50 rounded text-sm text-red-600">
                         <strong>Last Error:</strong> {func.last_error}
@@ -557,7 +557,7 @@ export function AIMonitoringDashboard() {
                         <p className="text-xs text-gray-500">24h cost</p>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-gray-500">Avg Latency</p>
@@ -592,7 +592,7 @@ export function AIMonitoringDashboard() {
                   <Sparkles className="h-4 w-4" />
                   <AlertTitle>Performance Insights</AlertTitle>
                   <AlertDescription>
-                    All AI systems are performing within normal parameters. Average response times have improved 
+                    All AI systems are performing within normal parameters. Average response times have improved
                     15% over the past week due to optimization efforts.
                   </AlertDescription>
                 </Alert>
@@ -619,7 +619,7 @@ export function AIMonitoringDashboard() {
                   <Area type="monotone" dataKey="gemini" stackId="1" stroke="#82ca9d" fill="#82ca9d" name="Gemini (Free)" />
                 </AreaChart>
               </ResponsiveContainer>
-              
+
               <div className="mt-6 grid grid-cols-3 gap-4">
                 <div className="text-center p-4 bg-gray-50 rounded-lg">
                   <p className="text-2xl font-bold text-green-600">$67.45</p>

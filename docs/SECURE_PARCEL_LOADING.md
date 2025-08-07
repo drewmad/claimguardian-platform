@@ -74,9 +74,9 @@ FDOT API → Edge Function → Transform → Validate → Insert to DB
 SELECT COUNT(*) FROM parcels WHERE county_name = 'CHARLOTTE';
 -- Result: 5+ parcels loaded
 
-SELECT parcel_id, owner_name, assessed_value 
-FROM parcels 
-WHERE county_name = 'CHARLOTTE' 
+SELECT parcel_id, owner_name, assessed_value
+FROM parcels
+WHERE county_name = 'CHARLOTTE'
 LIMIT 5;
 ```
 
@@ -145,13 +145,13 @@ supabase functions logs load-charlotte-simple
 
 # Verify data in database
 SELECT COUNT(*), COUNT(geom), AVG(assessed_value)
-FROM parcels 
+FROM parcels
 WHERE county_name = 'CHARLOTTE';
 
 # Check geometry validity
 SELECT parcel_id, ST_IsValid(geom), ST_GeometryType(geom)
-FROM parcels 
-WHERE county_name = 'CHARLOTTE' 
+FROM parcels
+WHERE county_name = 'CHARLOTTE'
 AND NOT ST_IsValid(geom);
 ```
 

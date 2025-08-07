@@ -80,18 +80,18 @@ export class AICommunicationHelper {
     error?: string
   }> {
     try {
-      logger.info('Generating AI communication', { 
-        type: request.type, 
+      logger.info('Generating AI communication', {
+        type: request.type,
         recipient: request.recipient,
         urgency: request.context.urgency
       })
 
       // Get communication templates and best practices
       const templates = await this.getCommunicationTemplates(request.type, request.recipient)
-      
+
       // Generate personalized content using AI
       const aiGenerated = await this.generateWithAI(request, templates)
-      
+
       // Add negotiation insights if applicable
       const negotiationTips = request.type === 'negotiation' || request.context.currentOffer
         ? await this.generateNegotiationTips(request)
@@ -200,7 +200,7 @@ Provide analysis in JSON format:
       return JSON.parse(response)
     } catch (error) {
       logger.error('Response analysis failed', { error: toError(error) })
-      
+
       // Fallback analysis
       return {
         analysis: {
@@ -275,11 +275,11 @@ Provide strategy in JSON format:
       return JSON.parse(response)
     } catch (error) {
       logger.error('Negotiation strategy generation failed', { error: toError(error) })
-      
+
       // Fallback strategy
       const gap = claimDetails.estimatedDamage - claimDetails.currentOffer
       const gapPercentage = (gap / claimDetails.estimatedDamage) * 100
-      
+
       return {
         approach: gapPercentage > 50 ? 'evidence-based' : 'collaborative',
         tactics: [
@@ -399,8 +399,8 @@ CONTEXT:
 KEY POINTS TO INCLUDE:
 ${request.keyPoints.map(point => `- ${point}`).join('\n')}
 
-${request.attachments?.length ? 
-  `ATTACHMENTS REFERENCED:\n${request.attachments.map(att => `- ${att.name}: ${att.description}`).join('\n')}` 
+${request.attachments?.length ?
+  `ATTACHMENTS REFERENCED:\n${request.attachments.map(att => `- ${att.name}: ${att.description}`).join('\n')}`
   : ''
 }
 
@@ -605,14 +605,14 @@ Generate comprehensive response in JSON format:
         return (received - sent) / (1000 * 60 * 60) // Hours
       })
 
-    return responseTimes.length > 0 
-      ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length 
+    return responseTimes.length > 0
+      ? responseTimes.reduce((sum, time) => sum + time, 0) / responseTimes.length
       : 0
   }
 
   private identifySuccessfulStrategies(communications: any[]): string[] {
     // Analyze which communication strategies led to successful outcomes
-    const successful = communications.filter(comm => 
+    const successful = communications.filter(comm =>
       comm.outcome_rating && comm.outcome_rating >= 4
     )
 

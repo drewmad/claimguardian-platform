@@ -70,15 +70,15 @@ export function ParcelLookup() {
 
     setLoading(true)
     setError(null)
-    
+
     try {
       const result = await searchParcels(searchParams)
-      
+
       if (result.error) {
         setError(result.error.message)
         return
       }
-      
+
       setResults(result.data || [])
     } catch (err) {
       setError('Search failed. Please try again.')
@@ -90,7 +90,7 @@ export function ParcelLookup() {
   const handleParcelSelect = async (parcel: ParcelData) => {
     setSelectedParcel(parcel)
     setLoading(true)
-    
+
     try {
       const riskResult = await assessPropertyRisk(parcel.parcelId)
       if (riskResult.data) {
@@ -141,7 +141,7 @@ export function ParcelLookup() {
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Owner Name
@@ -153,7 +153,7 @@ export function ParcelLookup() {
                 className="bg-gray-700 border-gray-600 text-white"
               />
             </div>
-            
+
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Parcel ID
@@ -166,7 +166,7 @@ export function ParcelLookup() {
               />
             </div>
           </div>
-          
+
           <div className="flex gap-4">
             <Button
               onClick={handleSearch}
@@ -175,7 +175,7 @@ export function ParcelLookup() {
             >
               {loading ? 'Searching...' : 'Search Parcels'}
             </Button>
-            
+
             <Button
               variant="secondary"
               onClick={() => {
@@ -189,7 +189,7 @@ export function ParcelLookup() {
               Clear
             </Button>
           </div>
-          
+
           {error && (
             <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
               <p className="text-red-400">{error}</p>
@@ -222,18 +222,18 @@ export function ParcelLookup() {
                           {parcel.address}
                         </span>
                       </div>
-                      
+
                       <div className="flex items-center gap-2 text-gray-300">
                         <Home className="w-4 h-4" />
                         <span>Owner: {parcel.owner}</span>
                       </div>
-                      
+
                       <div className="flex items-center gap-4 text-sm text-gray-400">
                         <span>Parcel: {parcel.parcelId}</span>
                         <span>Built: {parcel.yearBuilt || 'Unknown'}</span>
                       </div>
                     </div>
-                    
+
                     <div className="text-right">
                       <div className="text-white font-semibold">
                         {formatCurrency(parcel.totalValue)}
@@ -316,7 +316,7 @@ export function ParcelLookup() {
                   </div>
                   <div className="text-gray-400">Overall Risk Score</div>
                 </div>
-                
+
                 <div className="space-y-3">
                   {Object.entries(riskAssessment.riskFactors).map(([key, value]) => (
                     <div key={key} className="flex items-center justify-between">
@@ -337,7 +337,7 @@ export function ParcelLookup() {
                     </div>
                   ))}
                 </div>
-                
+
                 {riskAssessment.recommendations.length > 0 && (
                   <div>
                     <h4 className="text-white font-medium mb-2">Recommendations:</h4>

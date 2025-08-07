@@ -33,21 +33,21 @@ export function ProgressBar({ currentStep, totalSteps, className }: ProgressBarP
           {Math.round(progress)}% complete
         </span>
       </div>
-      
+
       <div className="w-full bg-gray-700 rounded-full h-2">
         <div
           className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-300 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>
-      
+
       {/* Step indicators */}
       <div className="flex justify-between mt-4">
         {Array.from({ length: totalSteps }, (_, i) => {
           const stepNumber = i + 1
           const isCompleted = stepNumber < currentStep
           const isCurrent = stepNumber === currentStep
-          
+
           return (
             <div
               key={stepNumber}

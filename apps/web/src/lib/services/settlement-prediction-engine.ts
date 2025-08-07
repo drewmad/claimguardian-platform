@@ -86,7 +86,7 @@ export class SettlementPredictionEngine {
     error?: string
   }> {
     try {
-      logger.info('Starting settlement prediction analysis', { 
+      logger.info('Starting settlement prediction analysis', {
         damageType: claimData.damageType,
         severity: claimData.severity,
         location: claimData.location
@@ -94,13 +94,13 @@ export class SettlementPredictionEngine {
 
       // Gather market intelligence
       const marketData = await this.getMarketIntelligence(claimData.location)
-      
+
       // Find comparable claims
       const comparableSettlements = await this.findComparableSettlements(claimData)
-      
+
       // Get carrier-specific patterns
       const carrierPatterns = await this.getCarrierPatterns(claimData.policyInfo.carrier)
-      
+
       // Generate AI-powered prediction
       const aiPrediction = await this.generateAIPrediction(
         claimData,
@@ -236,7 +236,7 @@ export class SettlementPredictionEngine {
     try {
       // Get similar claims for benchmarking
       const comparables = await this.findComparableSettlements(claimData, 100)
-      
+
       if (comparables.length === 0) {
         return {
           percentile: 50,
@@ -249,7 +249,7 @@ export class SettlementPredictionEngine {
       // Calculate percentile position
       const sortedAmounts = comparables.map(c => c.amount).sort((a, b) => a - b)
       const estimatedPosition = this.findPercentile(sortedAmounts, claimData.estimatedDamage)
-      
+
       let marketPosition: 'below' | 'average' | 'above'
       if (estimatedPosition < 40) marketPosition = 'below'
       else if (estimatedPosition > 60) marketPosition = 'above'
@@ -294,7 +294,7 @@ export class SettlementPredictionEngine {
           .not('BLDG_VAL', 'is', null)
           .not('TOT_LVG_AREA', 'is', null)
           .limit(100),
-        
+
         this.supabase
           .from('noaa_weather_events')
           .select('event_type, begin_date, damage_crops, damage_property')
@@ -305,21 +305,21 @@ export class SettlementPredictionEngine {
           .limit(10)
       ])
 
-      const avgCostPerSqFt = costData.data && costData.data.length > 0 
+      const avgCostPerSqFt = costData.data && costData.data.length > 0
         ? costData.data.reduce((sum, p) => sum + (p.BLDG_VAL / p.TOT_LVG_AREA), 0) / costData.data.length
         : 150 // Default estimate
 
-      const recentWeatherEvents = weatherData.data?.map(event => 
+      const recentWeatherEvents = weatherData.data?.map(event =>
         `${event.event_type} on ${event.begin_date.split('T')[0]}`
       ) || []
 
       return {
         avgCostPerSqFt,
-        contractorAvailability: recentWeatherEvents.length > 3 ? 'low' : 
+        contractorAvailability: recentWeatherEvents.length > 3 ? 'low' :
                                recentWeatherEvents.length > 1 ? 'medium' : 'high',
         recentWeatherEvents,
-        marketConditions: recentWeatherEvents.length > 3 
-          ? 'High demand due to recent weather events' 
+        marketConditions: recentWeatherEvents.length > 3
+          ? 'High demand due to recent weather events'
           : 'Normal market conditions'
       }
     } catch (error) {
@@ -395,14 +395,14 @@ export class SettlementPredictionEngine {
     - Coverage Limit: $${claimData.policyInfo.coverageAmount.toLocaleString()}
     - Deductible: $${claimData.policyInfo.deductible.toLocaleString()}
     - Carrier: ${claimData.policyInfo.carrier}
-    
+
     MARKET CONDITIONS:
     - Average Cost/Sq Ft: $${marketData.avgCostPerSqFt}
     - Contractor Availability: ${marketData.contractorAvailability}
     - Recent Weather Events: ${marketData.recentWeatherEvents.slice(0, 3).join(', ')}
-    
+
     COMPARABLE SETTLEMENTS: ${comparables.slice(0, 5).map(c => `$${c.amount.toLocaleString()}`).join(', ')}
-    
+
     Provide analysis in JSON format:
     {
       "settlement": {
@@ -435,7 +435,7 @@ export class SettlementPredictionEngine {
       return JSON.parse(response)
     } catch (error) {
       logger.error('AI prediction generation failed', { error: toError(error) })
-      
+
       // Fallback to basic calculation
       const median = Math.min(claimData.estimatedDamage, claimData.policyInfo.coverageAmount) - claimData.policyInfo.deductible
       return {
@@ -491,10 +491,10 @@ export class SettlementPredictionEngine {
     // Simple risk assessment logic (could be enhanced with ML models)
     const disputeRisk = claimData.estimatedDamage > claimData.policyInfo.coverageAmount * 0.8 ? 'high' :
                        claimData.estimatedDamage > claimData.policyInfo.coverageAmount * 0.5 ? 'medium' : 'low'
-    
+
     const underpaymentRisk = claimData.severity === 'catastrophic' ? 'high' :
                             claimData.severity === 'severe' ? 'medium' : 'low'
-    
+
     const delayRisk = claimData.historicalClaims && claimData.historicalClaims.length > 2 ? 'high' : 'low'
 
     return { disputeRisk, underpaymentRisk, delayRisk }
@@ -505,17 +505,17 @@ export class SettlementPredictionEngine {
    */
   private calculateSimilarityScore(claimData: ClaimData, settlement: any): number {
     let score = 0.5 // Base similarity
-    
+
     // Property value similarity
-    const valueRatio = Math.min(claimData.propertyValue, settlement.property_value) / 
+    const valueRatio = Math.min(claimData.propertyValue, settlement.property_value) /
                       Math.max(claimData.propertyValue, settlement.property_value)
     score += valueRatio * 0.3
-    
+
     // Location similarity (same county)
     if (settlement.location_data?.county === claimData.location.county) {
       score += 0.2
     }
-    
+
     return Math.min(1, score)
   }
 

@@ -102,15 +102,15 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         notification,
         scheduledFor: optimalTime,
         channels: selectedChannels
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     )
 
@@ -118,7 +118,7 @@ serve(async (req) => {
     console.error('Error in smart notification engine:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
       }
@@ -176,11 +176,11 @@ async function calculateOptimalSendTime(
 
   // Calculate next optimal time
   const optimalTime = new Date()
-  
+
   // Medium urgency (5-8): within 24 hours
   if (urgency >= 5) {
     optimalTime.setDate(optimalTime.getDate() + 1)
-  } 
+  }
   // Low urgency (1-4): within 48-72 hours
   else {
     optimalTime.setDate(optimalTime.getDate() + 2)
@@ -214,7 +214,7 @@ function determineChannels(
   }
 
   const enabledChannels = []
-  
+
   if (preferences.email_enabled && requestedChannels.includes('email')) {
     enabledChannels.push('email')
   }
@@ -239,9 +239,9 @@ function determineChannels(
 async function sendNotification(supabase: any, notification: any) {
   // This would integrate with actual notification services
   // For now, we'll just update the status
-  
+
   const channels = notification.channels as string[]
-  
+
   for (const channel of channels) {
     switch (channel) {
       case 'email':
@@ -272,7 +272,7 @@ async function sendNotification(supabase: any, notification: any) {
 async function updateEngagementPatterns(supabase: any, userId: string) {
   // This function would run ML analysis on engagement patterns
   // For now, it's a placeholder for future enhancement
-  
+
   const { data: recentActivity } = await supabase
     .from('notifications')
     .select('sent_at, read_at, type, urgency')

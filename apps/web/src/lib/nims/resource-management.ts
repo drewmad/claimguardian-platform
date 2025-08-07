@@ -12,7 +12,7 @@ import { NIMSResource } from './ics-integration'
 // NIMS Resource Categories (standardized)
 export enum ResourceCategory {
   PERSONNEL = 'personnel',
-  TEAMS = 'teams', 
+  TEAMS = 'teams',
   EQUIPMENT = 'equipment',
   SUPPLIES = 'supplies',
   FACILITIES = 'facilities'
@@ -24,16 +24,16 @@ export enum ResourceKind {
   SINGLE_RESOURCE = 'single_resource',
   CREW = 'crew',
   TEAM = 'team',
-  
-  // Equipment  
+
+  // Equipment
   TRANSPORT = 'transport',
   SUPPORT = 'support',
   OPERATIONAL = 'operational',
-  
+
   // Supplies
   CONSUMABLES = 'consumables',
   DURABLE_GOODS = 'durable_goods',
-  
+
   // Facilities
   TEMPORARY = 'temporary',
   PERMANENT = 'permanent',
@@ -113,7 +113,7 @@ export const NIMS_RESOURCE_TYPES: Record<string, ResourceType> = {
     ],
     training_requirements: [
       'IS-100.b Introduction to ICS',
-      'IS-200.b ICS for Single Resources', 
+      'IS-200.b ICS for Single Resources',
       'IS-700.a NIMS Introduction',
       'Safety Officer specific training',
       'OSHA 30-hour certification'
@@ -394,7 +394,7 @@ export class NIMSResourceManager {
     // Verify resource meets minimum capabilities
     const resource = await this.getResource(resourceId)
     const complianceCheck = await this.checkTypeCompliance(resource, nimsType)
-    
+
     if (!complianceCheck.compliant) {
       throw new Error(`Resource does not meet NIMS standards: ${complianceCheck.deficiencies.join(', ')}`)
     }
@@ -463,7 +463,7 @@ export class NIMSResourceManager {
       resources = resources.filter(resource => {
         const resourceType = NIMS_RESOURCE_TYPES[resource.type]
         if (!resourceType) return false
-        
+
         return criteria.capabilities!.every(capability =>
           resourceType.minimum_capabilities.includes(capability) ||
           resource.qualifications.includes(capability)
@@ -483,7 +483,7 @@ export class NIMSResourceManager {
     deploymentData: Partial<ResourceDeployment>
   ): Promise<ResourceDeployment> {
     const resource = await this.getResource(resourceId)
-    
+
     if (resource.status !== ResourceStatus.AVAILABLE) {
       throw new Error(`Resource ${resourceId} is not available for deployment`)
     }
@@ -505,7 +505,7 @@ export class NIMSResourceManager {
     // Update resource status
     await this.supabase
       .from('nims_resources')
-      .update({ 
+      .update({
         status: ResourceStatus.ASSIGNED,
         last_updated: new Date().toISOString()
       })
@@ -631,8 +631,8 @@ export class NIMSResourceManager {
 
   private async assessInventoryCompliance(resources: NIMSResource[]): Promise<'compliant' | 'needs_attention' | 'non_compliant'> {
     const totalResources = resources.length
-    const compliantResources = resources.filter(resource => 
-      NIMS_RESOURCE_TYPES[resource.type] && 
+    const compliantResources = resources.filter(resource =>
+      NIMS_RESOURCE_TYPES[resource.type] &&
       resource.qualifications.length > 0
     ).length
 

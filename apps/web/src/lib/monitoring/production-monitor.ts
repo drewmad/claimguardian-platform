@@ -149,7 +149,7 @@ export class ProductionMonitor {
     }
 
     this.isMonitoring = true
-    
+
     logger.info('Starting production monitoring', {
       interval: intervalMs,
       healthChecks: this.healthChecks.length,
@@ -172,7 +172,7 @@ export class ProductionMonitor {
     if (!this.isMonitoring) return
 
     this.isMonitoring = false
-    
+
     if (this.monitoringInterval) {
       clearInterval(this.monitoringInterval)
       this.monitoringInterval = null
@@ -184,7 +184,7 @@ export class ProductionMonitor {
   private async collectMetrics(): Promise<void> {
     try {
       const startTime = Date.now()
-      
+
       // Collect system metrics
       const metrics: MonitoringMetrics = {
         timestamp: startTime,
@@ -215,18 +215,18 @@ export class ProductionMonitor {
 
   private async measureResponseTime(): Promise<number> {
     const start = Date.now()
-    
+
     try {
       // Test internal API endpoint
-      const response = await fetch('/api/health', { 
+      const response = await fetch('/api/health', {
         method: 'GET',
         headers: { 'x-monitoring-check': 'true' }
       })
-      
+
       if (!response.ok) {
         throw new Error(`Health check failed: ${response.status}`)
       }
-      
+
       return Date.now() - start
     } catch (error) {
       logger.error('Response time measurement failed', error)
@@ -237,7 +237,7 @@ export class ProductionMonitor {
   private async calculateErrorRate(): Promise<number> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       const { data, error } = await supabase
         .from('request_logs')
         .select('status_code, created_at')
@@ -260,7 +260,7 @@ export class ProductionMonitor {
   private async calculateThroughput(): Promise<number> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       const { count, error } = await supabase
         .from('request_logs')
         .select('*', { count: 'exact', head: true })
@@ -279,9 +279,9 @@ export class ProductionMonitor {
     // For now, return a mock value based on response times
     const recentMetrics = this.metrics.slice(-5)
     if (recentMetrics.length === 0) return 0
-    
+
     const avgResponseTime = recentMetrics.reduce((sum, m) => sum + m.responseTime, 0) / recentMetrics.length
-    
+
     // Estimate CPU usage based on response time (rough approximation)
     return Math.min((avgResponseTime / 10), 100)
   }
@@ -295,7 +295,7 @@ export class ProductionMonitor {
   private async getActiveConnections(): Promise<number> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       // Query active sessions or connections
       const { data, error } = await supabase
         .from('user_sessions')
@@ -313,7 +313,7 @@ export class ProductionMonitor {
   private async getQueueSize(): Promise<number> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       const { count, error } = await supabase
         .from('ai_processing_queue')
         .select('*', { count: 'exact', head: true })
@@ -330,7 +330,7 @@ export class ProductionMonitor {
   private async storeMetrics(metrics: MonitoringMetrics): Promise<void> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       const { error } = await supabase
         .from('system_metrics')
         .insert({
@@ -361,15 +361,15 @@ export class ProductionMonitor {
     const results = await Promise.allSettled(
       this.healthChecks.map(async (check) => {
         const startTime = Date.now()
-        
+
         try {
           const timeoutPromise = new Promise<boolean>((_, reject) => {
             setTimeout(() => reject(new Error(`Health check timeout: ${check.name}`)), check.timeout)
           })
-          
+
           const result = await Promise.race([check.check(), timeoutPromise])
           const duration = Date.now() - startTime
-          
+
           logger.debug(`Health check ${check.name}: ${result ? 'PASS' : 'FAIL'}`, {
             duration,
             critical: check.critical
@@ -384,7 +384,7 @@ export class ProductionMonitor {
         } catch (error) {
           const duration = Date.now() - startTime
           logger.error(`Health check ${check.name} error`, error)
-          
+
           if (check.critical) {
             await this.triggerCriticalAlert(`Critical health check error: ${check.name} - ${error instanceof Error ? error.message : 'Unknown error'}`)
           }
@@ -417,7 +417,7 @@ export class ProductionMonitor {
     try {
       // Check key external dependencies
       const checks = await Promise.allSettled([
-        fetch('https://api.openai.com/v1/models', { 
+        fetch('https://api.openai.com/v1/models', {
           method: 'GET',
           headers: { 'Authorization': `Bearer ${process.env.OPENAI_API_KEY}` },
           signal: AbortSignal.timeout(5000)
@@ -447,7 +447,7 @@ export class ProductionMonitor {
   private async checkStorageHealth(): Promise<boolean> {
     try {
       const supabase = await createClient()
-      
+
       // Test storage by trying to list files (doesn't require actual files)
       const { error } = await supabase.storage.from('claim-documents').list('', { limit: 1 })
       return !error
@@ -472,7 +472,7 @@ export class ProductionMonitor {
 
           if (canTrigger) {
             await this.triggerAlert(rule, latestMetrics)
-            
+
             this.alertStates.set(rule.id, {
               lastTriggered: now,
               isActive: true,
@@ -533,7 +533,7 @@ export class ProductionMonitor {
   private async storeAlert(alertData: Record<string, unknown>): Promise<void> {
     const result = await withRetry(async () => {
       const supabase = await createClient()
-      
+
       const { error } = await supabase
         .from('system_alerts')
         .insert(alertData)
@@ -550,7 +550,7 @@ export class ProductionMonitor {
   private async sendAlertNotifications(rule: AlertRule, alertData: Record<string, unknown>): Promise<void> {
     // Implement notification sending based on channels
     // This would integrate with email, Slack, webhook services
-    
+
     if (process.env.NODE_ENV === 'production') {
       // Send actual notifications in production
       logger.info(`Alert notification sent for ${rule.name}`, { channels: rule.channels })
@@ -584,10 +584,10 @@ export class ProductionMonitor {
     metrics?: MonitoringMetrics
   }> {
     const latest = await this.getLatestMetrics()
-    
+
     // Determine overall system status
     let status: 'healthy' | 'degraded' | 'critical' = 'healthy'
-    
+
     if (latest) {
       if (latest.errorRate > 0.1 || latest.responseTime > 5000) {
         status = 'critical'

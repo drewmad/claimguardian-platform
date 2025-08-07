@@ -19,7 +19,7 @@ import {
 export function useAnalytics() {
   const pathname = usePathname()
   const previousPath = useRef<string>('')
-  
+
   // TODO: Re-enable auth integration after build fix
   // For now, analytics works without user context to fix build
   const user = null
@@ -47,7 +47,7 @@ export function useAnalytics() {
     metadata?: Record<string, any>
   ) => {
     trackFeature(featureName, category, metadata)
-    
+
     // Return a function to mark feature as complete
     return () => {
       analytics.trackFeatureComplete(featureName, metadata)
@@ -67,11 +67,11 @@ export function useAnalytics() {
     }
   ) => {
     const startTime = Date.now()
-    
+
     // Return a function to complete the tracking
     return (result?: { success?: boolean; tokens?: number; error?: string }) => {
       const responseTime = Date.now() - startTime
-      
+
       trackAIUsage(feature, action, {
         model: options?.model,
         tokens: result?.tokens || options?.tokens,

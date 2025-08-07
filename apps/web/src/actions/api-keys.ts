@@ -31,7 +31,7 @@ export interface UpdateAPIKeyParams {
 export async function createAPIKey(params: CreateAPIKeyParams) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -59,19 +59,19 @@ export async function createAPIKey(params: CreateAPIKeyParams) {
 
     revalidatePath('/admin/api-keys')
     revalidatePath('/dashboard/api-keys')
-    
-    return { 
+
+    return {
       data: {
         apiKey: result.key,
         plainTextKey: result.plainTextKey
-      }, 
-      error: null 
+      },
+      error: null
     }
   } catch (error) {
     console.error('Failed to create API key:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to create API key' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to create API key'
     }
   }
 }
@@ -82,7 +82,7 @@ export async function createAPIKey(params: CreateAPIKeyParams) {
 export async function listAPIKeys() {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -90,13 +90,13 @@ export async function listAPIKeys() {
     }
 
     const apiKeys = await apiKeyManager.listAPIKeys(user.id)
-    
+
     return { data: apiKeys, error: null }
   } catch (error) {
     console.error('Failed to list API keys:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to list API keys' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to list API keys'
     }
   }
 }
@@ -107,7 +107,7 @@ export async function listAPIKeys() {
 export async function revokeAPIKey(keyId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -118,13 +118,13 @@ export async function revokeAPIKey(keyId: string) {
 
     revalidatePath('/admin/api-keys')
     revalidatePath('/dashboard/api-keys')
-    
+
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to revoke API key:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to revoke API key' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to revoke API key'
     }
   }
 }
@@ -135,7 +135,7 @@ export async function revokeAPIKey(keyId: string) {
 export async function updateAPIKeyPermissions(params: UpdateAPIKeyParams) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -146,13 +146,13 @@ export async function updateAPIKeyPermissions(params: UpdateAPIKeyParams) {
 
     revalidatePath('/admin/api-keys')
     revalidatePath('/dashboard/api-keys')
-    
+
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to update API key permissions:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to update API key permissions' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to update API key permissions'
     }
   }
 }
@@ -163,7 +163,7 @@ export async function updateAPIKeyPermissions(params: UpdateAPIKeyParams) {
 export async function getAPIUsageStats(days: number = 30) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -171,13 +171,13 @@ export async function getAPIUsageStats(days: number = 30) {
     }
 
     const stats = await apiKeyManager.getUsageStats(user.id, days)
-    
+
     return { data: stats, error: null }
   } catch (error) {
     console.error('Failed to get API usage stats:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get API usage statistics' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get API usage statistics'
     }
   }
 }
@@ -188,7 +188,7 @@ export async function getAPIUsageStats(days: number = 30) {
 export async function adminListAllAPIKeys() {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication and admin role
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -222,9 +222,9 @@ export async function adminListAllAPIKeys() {
     return { data: apiKeys, error: null }
   } catch (error) {
     console.error('Failed to list all API keys:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to list API keys' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to list API keys'
     }
   }
 }
@@ -235,7 +235,7 @@ export async function adminListAllAPIKeys() {
 export async function adminGetAPIAnalytics(days: number = 30) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication and admin role
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -301,9 +301,9 @@ export async function adminGetAPIAnalytics(days: number = 30) {
     return { data: analytics, error: null }
   } catch (error) {
     console.error('Failed to get API analytics:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get API analytics' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get API analytics'
     }
   }
 }
@@ -324,7 +324,7 @@ export async function adminUpdateTierLimits(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication and admin role
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -357,13 +357,13 @@ export async function adminUpdateTierLimits(
     }
 
     revalidatePath('/admin/api-keys')
-    
+
     return { data: { success: true }, error: null }
   } catch (error) {
     console.error('Failed to update tier limits:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to update tier limits' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to update tier limits'
     }
   }
 }
@@ -400,7 +400,7 @@ function calculateDailyUsage(usageLogs: Record<string, unknown>[]): Array<{ date
   const dailyCounts = usageLogs.reduce((acc, log) => {
     const createdAt = log.created_at as string
     const date = new Date(createdAt).toISOString().split('T')[0]
-    acc[date] = (acc[date] as number || 0) + 1  
+    acc[date] = (acc[date] as number || 0) + 1
     return acc
   }, {} as Record<string, number>)
 

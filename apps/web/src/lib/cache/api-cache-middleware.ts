@@ -31,7 +31,7 @@ export function withCacheMiddleware(
     // Skip caching for non-GET requests unless specifically configured
     if (method !== 'GET' || skipCache) {
       const response = await handler(request, context)
-      
+
       // Invalidate cache on mutations if configured
       if (invalidateOnMutate && ['POST', 'PUT', 'DELETE', 'PATCH'].includes(method)) {
         const config = CACHE_CONFIGS[endpoint]
@@ -41,7 +41,7 @@ export function withCacheMiddleware(
           )
         }
       }
-      
+
       return response
     }
 
@@ -50,7 +50,7 @@ export function withCacheMiddleware(
       const url = new URL(request.url)
       const params = Object.fromEntries(url.searchParams.entries())
       const userId = context?.userId
-      
+
       const cacheKey = customKey || generateAPIKey(
         `${endpoint}_${method}`,
         params,
@@ -64,40 +64,40 @@ export function withCacheMiddleware(
       // Try to get cached response
       const startTime = Date.now()
       const cachedResponse = await cacheManager.get(cacheKey)
-      
+
       if (cachedResponse) {
         const responseTime = Date.now() - startTime
-        
+
         // Add cache headers
         const response = NextResponse.json(cachedResponse)
         response.headers.set('X-Cache', 'HIT')
         response.headers.set('X-Cache-Time', `${responseTime}ms`)
         response.headers.set('X-Cache-Key', cacheKey.substring(0, 16))
-        
+
         return response
       }
 
       // Cache miss - execute handler
       const response = await handler(request, context)
-      
+
       // Only cache successful responses
       if (response.status >= 200 && response.status < 300) {
         try {
           // Clone response to read body
           const responseClone = response.clone()
           const responseData = await responseClone.json()
-          
+
           // Cache the response data
           await cacheManager.set(cacheKey, responseData, {
             ttl,
             tags: cacheConfig?.tags,
             compress: true
           })
-          
+
           // Add cache headers to original response
           response.headers.set('X-Cache', 'MISS')
           response.headers.set('X-Cache-Key', cacheKey.substring(0, 16))
-          
+
         } catch (error) {
           // If response is not JSON, just return without caching
           console.warn(`[Cache] Could not cache response for ${endpoint}:`, error)
@@ -178,7 +178,7 @@ export class CacheInvalidator {
   static async scheduledCleanup(): Promise<void> {
     // This would typically be called by a cron job
     const metrics = cacheManager.getMetrics()
-    
+
     console.log('[Cache] Scheduled cleanup:', {
       entries: metrics.entryCount,
       hitRate: `${(metrics.hitRate * 100).toFixed(2)}%`,

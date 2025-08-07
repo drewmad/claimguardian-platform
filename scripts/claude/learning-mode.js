@@ -12,7 +12,7 @@ import chalk from 'chalk'
 // Mock the learning system components for CLI demo
 const TASK_TYPES = [
   'code-generation',
-  'file-modification', 
+  'file-modification',
   'debugging',
   'analysis',
   'planning'
@@ -34,7 +34,7 @@ const DEMO_TASKS = {
     'Add error boundary to component tree'
   ],
   'debugging': [
-    'Fix authentication redirect loop issue', 
+    'Fix authentication redirect loop issue',
     'Resolve React hydration mismatch errors',
     'Debug performance issues in component rendering',
     'Fix TypeScript compilation errors'
@@ -203,7 +203,7 @@ class ClaudeLearningCLI {
     for (let i = 0; i < steps.length; i++) {
       await this.delay(1200)
       console.log(chalk.white(`   ${i + 1}. ${steps[i]}`))
-      
+
       // Simulate learning application
       if (i === 1) {
         console.log(chalk.cyan('      🧠 Applying learned pattern: "Always validate props first"'))
@@ -334,7 +334,7 @@ class ClaudeLearningCLI {
     try {
       console.log(chalk.cyan('Executing: apps/web/src/lib/claude/method-1-live-execution.ts'))
       console.log()
-      
+
       // Simulate demo execution
       console.log(chalk.white('1️⃣ Component Generation with Learning System...'))
       await this.delay(2000)
@@ -413,7 +413,7 @@ class ClaudeLearningCLI {
 
     const tests = [
       'Learning system initialization',
-      'Error logger integration', 
+      'Error logger integration',
       'Self-reflection system',
       'Reflection triggers',
       'Dashboard data loading',

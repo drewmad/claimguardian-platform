@@ -12,8 +12,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Smartphone, Monitor, Download, X, Share, 
+import {
+  Smartphone, Monitor, Download, X, Share,
   Plus, Home, Zap, Shield, Star, ArrowRight
 } from 'lucide-react'
 
@@ -112,7 +112,7 @@ export function InstallPrompt({
 
   const handleInstall = async () => {
     setHasInteracted(true)
-    
+
     if (platform === 'ios') {
       // For iOS, we can't programmatically trigger installation
       // Just show instructions
@@ -121,7 +121,7 @@ export function InstallPrompt({
     }
 
     const success = await showInstallPrompt()
-    
+
     if (success) {
       onInstall?.()
       setShowPrompt(false)
@@ -154,7 +154,7 @@ export function InstallPrompt({
             <p className="text-sm opacity-90">Get the full app experience</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <TouchButton
             size="sm"
@@ -165,7 +165,7 @@ export function InstallPrompt({
             <Download className="w-4 h-4 mr-2" />
             Install
           </TouchButton>
-          
+
           <TouchButton
             size="sm"
             variant="ghost"
@@ -188,7 +188,7 @@ export function InstallPrompt({
         className="absolute inset-0 bg-black/60 backdrop-blur-sm"
         onClick={handleDismiss}
       />
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -211,11 +211,11 @@ export function InstallPrompt({
             <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 dark:from-blue-900/30 dark:to-purple-900/30 rounded-full w-fit mx-auto mb-4">
               <PlatformIcon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             </div>
-            
+
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
               Install ClaimGuardian
             </h2>
-            
+
             <p className="text-gray-600 dark:text-gray-400">
               Get the best experience with our app
             </p>
@@ -262,7 +262,7 @@ export function InstallPrompt({
                   ))}
                 </ol>
               </div>
-              
+
               <TouchButton
                 onClick={handleDismiss}
                 className="w-full"
@@ -283,7 +283,7 @@ export function InstallPrompt({
                 <Download className="w-4 h-4 mr-2" />
                 Install App
               </TouchButton>
-              
+
               <TouchButton
                 variant="outline"
                 onClick={handleDismiss}
@@ -312,13 +312,13 @@ export function InstallPrompt({
               </p>
             </div>
           </div>
-          
+
           <Badge variant="secondary" className="bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-400">
             PWA
           </Badge>
         </div>
       </CardHeader>
-      
+
       <CardContent>
         <div className="flex items-center justify-between">
           <div className="flex gap-4 text-xs text-gray-600 dark:text-gray-400">
@@ -335,7 +335,7 @@ export function InstallPrompt({
               Home Screen
             </span>
           </div>
-          
+
           <TouchButton
             size="sm"
             onClick={handleInstall}

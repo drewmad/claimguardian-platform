@@ -27,12 +27,12 @@ interface GlobalLoadingState {
 export const useGlobalLoadingStore = create<GlobalLoadingState>((set, get) => ({
   loadingStates: {},
   loadingMessages: {},
-  setLoading: (key: string, isLoading: boolean, message?: string) => 
+  setLoading: (key: string, isLoading: boolean, message?: string) =>
     set((state) => ({
       loadingStates: { ...state.loadingStates, [key]: isLoading },
       loadingMessages: { ...state.loadingMessages, [key]: message || '' }
     })),
-  clearLoading: (key: string) => 
+  clearLoading: (key: string) =>
     set((state) => {
       const newStates = { ...state.loadingStates }
       const newMessages = { ...state.loadingMessages }
@@ -56,16 +56,16 @@ export interface LoadingStateOptions {
 
 export function useLoadingState(options: LoadingStateOptions = {}) {
   const { key, initialState = false, timeout, onTimeout, minDuration } = options
-  
+
   const [isLoading, setIsLoading] = useState(initialState)
   const [message, setMessage] = useState<string>('')
   const [error, setError] = useState<Error | null>(null)
   const [progress, setProgress] = useState<number>(0)
-  
+
   const timeoutRef = useRef<NodeJS.Timeout>()
   const minDurationRef = useRef<NodeJS.Timeout>()
   const startTimeRef = useRef<number>()
-  
+
   const { setLoading: setGlobalLoading, clearLoading: clearGlobalLoading } = useGlobalLoadingStore()
 
   const startLoading = useCallback((loadingMessage?: string) => {
@@ -74,7 +74,7 @@ export function useLoadingState(options: LoadingStateOptions = {}) {
     setMessage(loadingMessage || '')
     setError(null)
     setProgress(0)
-    
+
     if (key) {
       setGlobalLoading(key, true, loadingMessage)
     }
@@ -100,11 +100,11 @@ export function useLoadingState(options: LoadingStateOptions = {}) {
       setIsLoading(false)
       setMessage('')
       setProgress(100)
-      
+
       if (key) {
         clearGlobalLoading(key)
       }
-      
+
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current)
       }
@@ -173,7 +173,7 @@ export function useAsyncOperation() {
 
     try {
       loadingState.startLoading(loadingMessage)
-      
+
       if (showProgress) {
         // Simulate progress for better UX
         const progressInterval = setInterval(() => {
@@ -184,10 +184,10 @@ export function useAsyncOperation() {
         }, 200)
 
         const result = await operation()
-        
+
         clearInterval(progressInterval)
         loadingState.updateProgress(100)
-        
+
         // Show success message briefly
         if (successMessage) {
           loadingState.updateMessage(successMessage)
@@ -195,7 +195,7 @@ export function useAsyncOperation() {
         } else {
           loadingState.stopLoading()
         }
-        
+
         return result
       } else {
         const result = await operation()
@@ -230,14 +230,14 @@ export function useMultiStepLoading(initialSteps: Omit<Step, 'status'>[]) {
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
 
   const startStep = useCallback((stepId: string, message?: string) => {
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
-        step.id === stepId 
+    setSteps(prevSteps =>
+      prevSteps.map(step =>
+        step.id === stepId
           ? { ...step, status: 'loading' }
           : step
       )
     )
-    
+
     const stepIndex = steps.findIndex(step => step.id === stepId)
     if (stepIndex !== -1) {
       setCurrentStepIndex(stepIndex)
@@ -245,9 +245,9 @@ export function useMultiStepLoading(initialSteps: Omit<Step, 'status'>[]) {
   }, [steps])
 
   const completeStep = useCallback((stepId: string) => {
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
-        step.id === stepId 
+    setSteps(prevSteps =>
+      prevSteps.map(step =>
+        step.id === stepId
           ? { ...step, status: 'completed' }
           : step
       )
@@ -255,9 +255,9 @@ export function useMultiStepLoading(initialSteps: Omit<Step, 'status'>[]) {
   }, [])
 
   const errorStep = useCallback((stepId: string, error?: string) => {
-    setSteps(prevSteps => 
-      prevSteps.map(step => 
-        step.id === stepId 
+    setSteps(prevSteps =>
+      prevSteps.map(step =>
+        step.id === stepId
           ? { ...step, status: 'error' }
           : step
       )
@@ -265,7 +265,7 @@ export function useMultiStepLoading(initialSteps: Omit<Step, 'status'>[]) {
   }, [])
 
   const resetSteps = useCallback(() => {
-    setSteps(prevSteps => 
+    setSteps(prevSteps =>
       prevSteps.map(step => ({ ...step, status: 'pending' }))
     )
     setCurrentStepIndex(0)

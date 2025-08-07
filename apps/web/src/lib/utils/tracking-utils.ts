@@ -51,17 +51,17 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
     // User Agent and Device Info
     const userAgent = navigator.userAgent
     trackingData.userAgent = userAgent
-    
+
     const parser = new UAParser(userAgent)
     const result = parser.getResult()
-    
+
     trackingData.browserInfo = {
       name: result.browser.name,
       version: result.browser.version,
       os: result.os.name,
       osVersion: result.os.version
     }
-    
+
     // Device Type
     if (result.device.type === 'mobile') {
       trackingData.deviceType = 'mobile'
@@ -70,16 +70,16 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
     } else {
       trackingData.deviceType = 'desktop'
     }
-    
+
     // Screen Resolution
     trackingData.screenResolution = `${screen.width}x${screen.height}`
-    
+
     // Referrer
     trackingData.referrer = document.referrer || undefined
-    
+
     // Landing Page
     trackingData.landingPage = window.location.href
-    
+
     // UTM Parameters
     const urlParams = new URLSearchParams(window.location.search)
     const utmParams = {
@@ -89,18 +89,18 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
       term: urlParams.get('utm_term') || undefined,
       content: urlParams.get('utm_content') || undefined
     }
-    
+
     // Only include UTM params if at least one exists
     if (Object.values(utmParams).some(value => value !== undefined)) {
       trackingData.utmParams = utmParams
     }
-    
+
     // Device Fingerprint (basic)
     trackingData.deviceFingerprint = generateDeviceFingerprint()
-    
+
     // IP Address will be determined server-side for security
     // Client-side IP detection removed to avoid external API dependencies
-    
+
     // Geolocation (with user permission)
     if (navigator.geolocation) {
       try {
@@ -110,7 +110,7 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
             enableHighAccuracy: false
           })
         })
-        
+
         trackingData.geolocation = {
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
@@ -121,11 +121,11 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
         logger.debug('Geolocation not available', toError(error))
       }
     }
-    
+
   } catch (error) {
     logger.error('Error collecting tracking data:', toError(error))
   }
-  
+
   return trackingData
 }
 
@@ -137,7 +137,7 @@ function generateDeviceFingerprint(): string {
   const ctx = canvas.getContext('2d')
   ctx?.fillText('fingerprint', 10, 10)
   const canvasData = canvas.toDataURL()
-  
+
   const fingerprint = [
     navigator.userAgent,
     navigator.language,
@@ -147,7 +147,7 @@ function generateDeviceFingerprint(): string {
     'deviceMemory' in navigator ? (navigator as Navigator & { deviceMemory?: number }).deviceMemory || 0 : 0,
     canvasData.slice(-50) // Last 50 chars of canvas data
   ].join('|')
-  
+
   // Simple hash
   let hash = 0
   for (let i = 0; i < fingerprint.length; i++) {
@@ -155,7 +155,7 @@ function generateDeviceFingerprint(): string {
     hash = ((hash << 5) - hash) + char
     hash = hash & hash // Convert to 32-bit integer
   }
-  
+
   return Math.abs(hash).toString(36)
 }
 

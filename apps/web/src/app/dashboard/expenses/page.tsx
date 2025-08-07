@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   DollarSign, Receipt, TrendingUp,
   Calendar, Filter, Download, Upload, Search,
   Home, Wrench, ShoppingCart, Zap, Package,
@@ -116,7 +116,7 @@ export default function ExpensesPage() {
               <p className="text-gray-400">Track and categorize all property-related expenses</p>
             </div>
             <div className="flex gap-3 mt-4 md:mt-0">
-              <button 
+              <button
                 onClick={() => router.push('/ai-tools/receipt-scanner')}
                 className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-lg transition-colors flex items-center gap-2"
               >
@@ -282,7 +282,7 @@ export default function ExpensesPage() {
                 <p className="text-sm text-gray-400">Upload CSV or connect bank</p>
               </div>
             </button>
-            
+
             <button className="p-4 bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-lg transition-all flex items-center gap-3">
               <Calendar className="w-5 h-5 text-green-400" />
               <div className="text-left">

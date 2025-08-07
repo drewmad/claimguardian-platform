@@ -115,7 +115,7 @@ interface StreetViewIntelligence {
 const GOOGLE_MAPS_API_KEY = Deno.env.get('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY') || Deno.env.get('GOOGLE_MAPS_API_KEY')
 
 function generateStreetViewUrl(
-  location: { lat: number, lng: number }, 
+  location: { lat: number, lng: number },
   options: any = {}
 ): string {
   const params = new URLSearchParams({
@@ -150,7 +150,7 @@ function generateStreetViewUrl(
 async function checkStreetViewAvailability(location: { lat: number, lng: number }): Promise<any> {
   try {
     const url = `https://maps.googleapis.com/maps/api/streetview/metadata?location=${location.lat},${location.lng}&key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const response = await fetch(url)
     if (response.ok) {
       const metadata = await response.json()
@@ -187,7 +187,7 @@ function generateMockMetadata(location: { lat: number, lng: number }): any {
 }
 
 function generateMultiAngleViews(location: { lat: number, lng: number }, options: any = {}): any {
-  const baseOptions = { 
+  const baseOptions = {
     size: options.size || '640x640',
     fov: options.fov || 90,
     pitch: options.pitch || 0,
@@ -204,13 +204,13 @@ function generateMultiAngleViews(location: { lat: number, lng: number }, options
 
 function analyzePropertyFromStreetView(location: { lat: number, lng: number }, address?: string): any {
   const isFloridaProperty = address?.toLowerCase().includes('fl') || address?.toLowerCase().includes('florida')
-  
+
   // Mock property analysis based on typical Florida characteristics
   const buildingCondition = {
     roofVisible: Math.random() > 0.3, // 70% chance roof is visible from street
     siding: {
-      material: isFloridaProperty ? 
-        (Math.random() > 0.5 ? 'stucco' : 'concrete_block') : 
+      material: isFloridaProperty ?
+        (Math.random() > 0.5 ? 'stucco' : 'concrete_block') :
         (Math.random() > 0.5 ? 'vinyl' : 'wood'),
       condition: (() => {
         const rand = Math.random()
@@ -275,7 +275,7 @@ function analyzePropertyFromStreetView(location: { lat: number, lng: number }, a
 
 function generateDamageDocumentation(location: { lat: number, lng: number }, hasRecentDamage: boolean = false): any {
   const visibleDamage = []
-  
+
   if (hasRecentDamage || Math.random() > 0.7) {
     const damageTypes = [
       { type: 'Roof damage', location: 'roof edge', severity: 'moderate' as const },
@@ -283,7 +283,7 @@ function generateDamageDocumentation(location: { lat: number, lng: number }, has
       { type: 'Window damage', location: 'front windows', severity: 'severe' as const },
       { type: 'Landscaping damage', location: 'front yard', severity: 'minor' as const }
     ]
-    
+
     const numDamages = Math.floor(Math.random() * 3) + 1
     for (let i = 0; i < numDamages; i++) {
       const damage = damageTypes[Math.floor(Math.random() * damageTypes.length)]
@@ -517,7 +517,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Street View Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

@@ -8,7 +8,7 @@ ClaimGuardian is an AI-powered insurance claim advocacy platform for Florida pro
 ## Quick Reference Links
 - [Main Documentation](../CLAUDE.md) - Primary project documentation
 - [Authentication System](../apps/web/src/app/auth/claude.md)
-- [AI Tools System](../apps/web/src/app/ai-tools/claude.md)  
+- [AI Tools System](../apps/web/src/app/ai-tools/claude.md)
 - [Database Package](../packages/db/claude.md)
 - [UI Package](../packages/ui/claude.md)
 - [Supabase Functions](../supabase/functions/claude.md)
@@ -231,7 +231,7 @@ SENTRY_AUTH_TOKEN=your-sentry-token
 
 ### Documentation Priority
 1. This file for quick reference
-2. `../CLAUDE.md` for comprehensive documentation  
+2. `../CLAUDE.md` for comprehensive documentation
 3. Area-specific claude.md files for detailed guidance
 4. Package README files for API documentation
 

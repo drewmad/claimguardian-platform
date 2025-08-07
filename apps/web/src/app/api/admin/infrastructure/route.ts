@@ -75,7 +75,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // Verify admin access
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -136,7 +136,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const responseTime = Date.now() - startTime
-    
+
     logger.debug('Infrastructure metrics collected', {
       responseTime,
       systemStatus: metrics.system.status
@@ -146,7 +146,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
   } catch (error) {
     logger.error('Failed to collect infrastructure metrics', error)
-    
+
     return NextResponse.json(
       { error: 'Failed to collect infrastructure metrics' },
       { status: 500 }
@@ -161,7 +161,7 @@ async function getSystemStatus(): Promise<{
   environment: string
 }> {
   const systemStatus = await productionMonitor.getSystemStatus()
-  
+
   return {
     status: systemStatus.status,
     uptime: process.uptime(),
@@ -209,7 +209,7 @@ async function getQueryPerformance(): Promise<{
 }> {
   try {
     const supabase = await createClient()
-    
+
     // Query recent performance metrics if table exists
     const { data, error } = await supabase
       .from('query_performance_logs')
@@ -312,7 +312,7 @@ async function getApplicationMetrics(): Promise<{
 async function getActiveUsersCount(): Promise<number> {
   try {
     const supabase = await createClient()
-    
+
     const { count, error } = await supabase
       .from('user_sessions')
       .select('*', { count: 'exact', head: true })
@@ -339,13 +339,13 @@ async function getAlertMetrics(supabase: any): Promise<{
         .from('system_alerts')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active'),
-      
+
       supabase
         .from('system_alerts')
         .select('*', { count: 'exact', head: true })
         .eq('status', 'active')
         .eq('severity', 'critical'),
-      
+
       supabase
         .from('system_alerts')
         .select('*', { count: 'exact', head: true })
@@ -369,7 +369,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
   try {
     const supabase = await createClient()
     const { data: { user }, error: authError } = await supabase.auth.getUser()
-    
+
     if (authError || !user) {
       return NextResponse.json({ error: 'Authentication required' }, { status: 401 })
     }
@@ -403,16 +403,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 async function getHistoricalMetrics(timeRange: string): Promise<any[]> {
   try {
     // Convert time range to hours
-    const hours = timeRange === '1h' ? 1 : 
-                 timeRange === '6h' ? 6 : 
+    const hours = timeRange === '1h' ? 1 :
+                 timeRange === '6h' ? 6 :
                  timeRange === '24h' ? 24 : 1
 
     const metrics = await productionMonitor.getMetricHistory(hours)
-    
+
     // Sample data points for better visualization (max 100 points)
     const sampleSize = Math.min(100, metrics.length)
     const step = Math.max(1, Math.floor(metrics.length / sampleSize))
-    
+
     return metrics.filter((_, index) => index % step === 0)
   } catch (error) {
     logger.error('Failed to get historical metrics', error)
@@ -423,7 +423,7 @@ async function getHistoricalMetrics(timeRange: string): Promise<any[]> {
 async function getPerformanceBreakdown(): Promise<Record<string, unknown>> {
   try {
     const supabase = await createClient()
-    
+
     // Get endpoint performance breakdown
     const { data: endpointData } = await supabase
       .from('request_logs')

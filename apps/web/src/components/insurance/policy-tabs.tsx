@@ -155,7 +155,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card variant="elevated">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -167,7 +167,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card variant="elevated">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -179,7 +179,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                 </div>
               </CardContent>
             </Card>
-            
+
             <Card variant="elevated">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
@@ -271,8 +271,8 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                     </span>
                     <span className="text-white font-semibold">{formatCurrency(value)}</span>
                   </div>
-                  <Progress 
-                    value={(value / totalCoverage) * 100} 
+                  <Progress
+                    value={(value / totalCoverage) * 100}
                     className="h-2 bg-gray-700"
                   />
                 </div>
@@ -300,7 +300,7 @@ export function PolicyTabs({ policy, onEdit, className }: PolicyTabsProps) {
                   </span>
                 </div>
               )}
-              
+
               {policy.riders.length > 0 && (
                 <>
                   <div className="pt-4 border-t border-gray-700">

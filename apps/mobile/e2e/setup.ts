@@ -13,14 +13,14 @@ beforeAll(async () => {
     initGlobals: true,
     launchApp: true
   });
-  
+
   console.log('📱 Detox E2E environment initialized');
 });
 
 afterAll(async () => {
   // Cleanup Detox
   await cleanup();
-  
+
   console.log('🧹 Detox E2E environment cleaned up');
 });
 
@@ -56,7 +56,7 @@ expect.extend({
       pass: true // Simplified for now
     };
   },
-  
+
   toHaveValidData(received) {
     // Custom matcher to validate data integrity
     const isValid = received && typeof received === 'object' && Object.keys(received).length > 0;

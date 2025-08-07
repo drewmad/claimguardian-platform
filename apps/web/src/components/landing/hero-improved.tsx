@@ -59,8 +59,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   const [ref, isInView] = useInView({ threshold: 0.1 })
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -72,9 +72,9 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
 // Professional logo with enhanced styling for hero section
 const GuardianHeroLogo = () => (
   <div className="relative">
-    <OptimizedImage 
-      src="/ClaimGuardian.png" 
-      alt="ClaimGuardian Logo" 
+    <OptimizedImage
+      src="/ClaimGuardian.png"
+      alt="ClaimGuardian Logo"
       width={80}
       height={80}
       priority={true}
@@ -87,7 +87,7 @@ const GuardianHeroLogo = () => (
 
 export function Hero() {
   const [hoveredCTA, setHoveredCTA] = useState(false)
-  
+
   const pills = [
     { label: 'Homeowners', icon: Home },
     { label: 'Renters', icon: KeyRound },
@@ -108,18 +108,18 @@ export function Hero() {
       </div>
 
       <section className="hero-liquid-glass relative min-h-[80vh] flex items-center justify-center overflow-hidden">
-        
+
         {/* Skip Link for Accessibility */}
         <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 bg-blue-600 text-white px-4 py-2 rounded z-50 focus:ring-2 focus:ring-blue-300">
           Skip to main content
         </a>
-        
+
         {/* Animated Background - Reduced motion for accessibility */}
         <div className="absolute top-0 left-0 w-full h-full z-0 overflow-hidden motion-reduce:hidden">
           <div className={liquidGlass.orbs.header} />
           <div className={liquidGlass.orbs.section} />
         </div>
-        
+
         {/* Content */}
         <div className="relative z-10 container mx-auto px-4 text-center pt-12 pb-16" id="main">
           <AnimatedSection>
@@ -130,7 +130,7 @@ export function Hero() {
               </h1>
             </header>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={100}>
             <p className="mt-4 text-[clamp(1.5rem,3vw,2rem)] font-bold text-white max-w-4xl mx-auto">
               Build the Digital Twin. Activate Your Digital Guardian
@@ -142,7 +142,7 @@ export function Hero() {
               AI-powered property intelligence that creates living digital twins of everything you own—tracking every warranty, scheduling every maintenance, documenting every upgrade.
             </p>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={200}>
             <div className="mt-6 max-w-4xl mx-auto space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
@@ -164,17 +164,17 @@ export function Hero() {
               </p>
             </div>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={300}>
             <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center" role="group" aria-label="Primary actions">
               <Link
                 href="/auth/signup"
                 className={`group relative font-bold py-5 px-10 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
-                style={{ 
-                  background: hoveredCTA 
-                    ? `linear-gradient(135deg, #39FF14, #00FF7F)` 
+                style={{
+                  background: hoveredCTA
+                    ? `linear-gradient(135deg, #39FF14, #00FF7F)`
                     : `linear-gradient(135deg, #39FF14, #32CD32)`,
-                  boxShadow: hoveredCTA 
+                  boxShadow: hoveredCTA
                     ? '0 0 40px rgba(57, 255, 20, 0.6), 0 20px 60px rgba(0, 0, 0, 0.4)'
                     : '0 0 20px rgba(57, 255, 20, 0.4), 0 10px 40px rgba(0, 0, 0, 0.3)'
                 }}
@@ -184,7 +184,7 @@ export function Hero() {
               >
                 <span className="relative z-10 font-black tracking-wide">Create My Digital Twin →</span>
               </Link>
-              
+
               <Link
                 href="#how-it-works"
                 className={`${liquidGlass.buttons.secondary} font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50 a11y-touch-target`}
@@ -196,14 +196,14 @@ export function Hero() {
               </Link>
             </div>
           </AnimatedSection>
-          
+
           <AnimatedSection delay={400}>
             {/* Horizontal scroll chips for mobile */}
             <div className="mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <div className="flex gap-3 justify-center min-w-max px-4">
                 {pills.map(pill => (
-                  <button 
-                    key={pill.label} 
+                  <button
+                    key={pill.label}
                     className={`${liquidGlass.backgrounds.secondary} flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle}`}
                     onClick={() => document.getElementById('who-we-serve')?.scrollIntoView({ behavior: 'smooth' })}
                   >
@@ -214,7 +214,7 @@ export function Hero() {
               </div>
             </div>
           </AnimatedSection>
-          
+
           {/* Trust Signals */}
           <AnimatedSection delay={500}>
             <div className="mt-12 pt-8 border-t border-white/10">
@@ -242,7 +242,7 @@ export function Hero() {
           </AnimatedSection>
         </div>
       </section>
-      
+
       {/* Results Section - Compressed spacing */}
       <section className="px-4 md:px-8 py-12 bg-gradient-to-b from-gray-900 to-black">
         <AnimatedSection>
@@ -272,10 +272,10 @@ export function Hero() {
             <div className="flex flex-col md:flex-row items-center gap-8">
               <div className="flex-1 text-left">
                 <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">
-                  Built by a Florida Family, 
+                  Built by a Florida Family,
                   <span className="block text-green-400">For Florida Families</span>
                 </h2>
-                
+
                 {/* Founder Quote */}
                 <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-6 mb-6 shadow-[0_20px_60px_rgba(0,0,0,0.3)]">
                   <div className="flex items-start gap-4">
@@ -289,7 +289,7 @@ export function Hero() {
                       </p>
                     </div>
                   </div>
-                  
+
                   <div className="mt-6 pt-4 border-t border-gray-600/30">
                     <p className="text-sm font-semibold text-white">— Drew M., P.E., Florida Professional Engineer & Founder</p>
                     <p className="text-xs text-gray-400 mt-1">Family team of five • Building one feature at a time based on real user needs</p>
@@ -310,7 +310,7 @@ export function Hero() {
                   </div>
                 </div>
               </div>
-              
+
               {/* Founders Photo */}
               <div className="flex-shrink-0 w-80 h-64 bg-gradient-to-br from-gray-800/70 to-gray-900/70 backdrop-blur-xl border border-gray-700/50 rounded-2xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.4)]">
                 <Image
@@ -325,7 +325,7 @@ export function Hero() {
           </div>
         </AnimatedSection>
       </section>
-      
+
     </>
   )
 }

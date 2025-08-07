@@ -29,9 +29,9 @@ process_county() {
     local CSV_FILE="$WORK_DIR/county_${COUNTY_CODE}.csv"
     local CLEAN_CSV="$WORK_DIR/county_${COUNTY_CODE}_clean.csv"
     local START_TIME=$(date +%s)
-    
+
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Starting..." | tee -a "$LOG_FILE"
-    
+
     # Extract county to CSV
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Extracting from GDB..." | tee -a "$LOG_FILE"
     ogr2ogr -f CSV \
@@ -41,17 +41,17 @@ process_county() {
         -where "CO_NO = $COUNTY_CODE" \
         -progress \
         2>&1 | grep -v "Warning" || true
-    
+
     # Check if CSV was created
     if [ ! -f "$CSV_FILE" ]; then
         echo "[County $COUNTY_CODE - $COUNTY_NAME] ERROR: Failed to extract data" | tee -a "$LOG_FILE"
         return 1
     fi
-    
+
     # Get row count
     local ROW_COUNT=$(wc -l < "$CSV_FILE")
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Extracted $ROW_COUNT rows" | tee -a "$LOG_FILE"
-    
+
     # Create clean CSV with required columns
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Preparing data..." | tee -a "$LOG_FILE"
     awk -F',' '
@@ -64,14 +64,14 @@ process_county() {
             $41,$42,$74,$75,$76,$77,$78,$79,$99,$100,$101,$102,$52,$49,$53,
             $57,$58,$59,$60,$61,$62,$55,$67,$68,$69,$70,$71,$72,$65,$87,$88,$89,$90
     }' "$CSV_FILE" > "$CLEAN_CSV"
-    
+
     # Remove duplicates
     local UNIQUE_CSV="$WORK_DIR/county_${COUNTY_CODE}_unique.csv"
     awk -F',' 'NR==1 || !seen[$2]++' "$CLEAN_CSV" > "$UNIQUE_CSV"
-    
+
     local UNIQUE_COUNT=$(wc -l < "$UNIQUE_CSV")
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Unique parcels: $UNIQUE_COUNT" | tee -a "$LOG_FILE"
-    
+
     # Import to database
     echo "[County $COUNTY_CODE - $COUNTY_NAME] Importing to database..." | tee -a "$LOG_FILE"
     PGPASSWORD="$DB_PASSWORD" psql \
@@ -80,17 +80,17 @@ process_county() {
         -U "$DB_USER" \
         -d "$DB_NAME" \
         -c "\COPY florida_parcels(co_no,parcel_id,file_t,asmnt_yr,bas_strt,atv_strt,grp_no,dor_uc,pa_uc,spass_cd,jv,jv_chng,jv_chng_cd,av_sd,av_nsd,tv_sd,tv_nsd,jv_hmstd,av_hmstd,jv_non_hms,lnd_val,imp_val,own_name,own_addr1,own_addr2,own_city,own_state,own_zipcd,phy_addr1,phy_addr2,phy_city,phy_zipcd,lnd_sqfoot,tot_lvg_ar,no_buldng,sale_prc1,sale_yr1,sale_mo1,or_book1,or_page1,clerk_no1,qual_cd1,sale_prc2,sale_yr2,sale_mo2,or_book2,or_page2,clerk_no2,qual_cd2,s_legal,twn,rng,sec) FROM '$UNIQUE_CSV' WITH (FORMAT csv, HEADER true);" 2>&1 | tee -a "$LOG_FILE"
-    
+
     # Check import success
     local IMPORT_COUNT=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -t -c "SELECT COUNT(*) FROM florida_parcels WHERE co_no = $COUNTY_CODE;")
-    
+
     # Clean up temporary files
     rm -f "$CSV_FILE" "$CLEAN_CSV" "$UNIQUE_CSV"
-    
+
     # Calculate time
     local END_TIME=$(date +%s)
     local ELAPSED=$((END_TIME - START_TIME))
-    
+
     echo "[County $COUNTY_CODE - $COUNTY_NAME] ✅ Complete! Imported $IMPORT_COUNT parcels in ${ELAPSED}s" | tee -a "$LOG_FILE"
     echo "================================" >> "$LOG_FILE"
 }

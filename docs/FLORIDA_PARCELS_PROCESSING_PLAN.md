@@ -107,7 +107,7 @@ watch -n 10 "curl -s $MONITOR_URL | jq '.summary'"
 
 1. **Data Conversion**: 2-3 hours (can run overnight)
 2. **Upload to Storage**: 1-2 hours (depends on internet speed)
-3. **Database Processing**: 
+3. **Database Processing**:
    - Priority counties: 4-6 hours
    - All counties: 24-48 hours
 4. **Total Time**: 2-3 days for complete import
@@ -143,7 +143,7 @@ watch -n 10 "curl -s $MONITOR_URL | jq '.summary'"
    ```sql
    -- Check progress by county
    SELECT * FROM florida_parcels_import_status;
-   
+
    -- Verify parcel counts
    SELECT CO_NO, COUNT(*) FROM florida_parcels GROUP BY CO_NO;
    ```

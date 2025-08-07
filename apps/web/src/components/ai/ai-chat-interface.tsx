@@ -77,7 +77,7 @@ export function AIChatInterface({
 
     try {
       const response = await onSendMessage(userMessage.content, messages)
-      
+
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -122,7 +122,7 @@ export function AIChatInterface({
                 </div>
               </div>
             )}
-            
+
             <div
               className={cn(
                 'max-w-[80%] rounded-lg px-4 py-2',
@@ -151,7 +151,7 @@ export function AIChatInterface({
             )}
           </div>
         ))}
-        
+
         {isLoading && (
           <div className="flex gap-3">
             <div className="flex-shrink-0">
@@ -164,7 +164,7 @@ export function AIChatInterface({
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 

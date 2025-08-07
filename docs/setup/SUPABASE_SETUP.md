@@ -6,7 +6,7 @@ Your Supabase connection is now fully configured and working.
 
 ### 📋 Configuration Files Created:
 - `.env.local` - Environment variables for Next.js
-- `supabase/config.toml` - Supabase CLI configuration  
+- `supabase/config.toml` - Supabase CLI configuration
 - `scripts/supabase-examples.sh` - API usage examples
 
 ### 🔑 Credentials Configured:
@@ -24,7 +24,7 @@ curl -X GET "https://tmlrvecuwgppbaynesji.supabase.co/rest/v1/forms" \
   -H "apikey: YOUR_ANON_KEY" \
   -H "Authorization: Bearer YOUR_ANON_KEY"
 
-# Create data  
+# Create data
 curl -X POST "https://tmlrvecuwgppbaynesji.supabase.co/rest/v1/forms" \
   -H "apikey: YOUR_SERVICE_KEY" \
   -H "Authorization: Bearer YOUR_SERVICE_KEY" \
@@ -99,11 +99,11 @@ Your database contains these tables:
 
 ## ✅ Test Results
 
-**Connection**: ✅ Working  
-**Authentication**: ✅ Valid  
-**Read Operations**: ✅ Tested  
-**Write Operations**: ✅ Tested  
-**API Schema**: ✅ Loaded  
+**Connection**: ✅ Working
+**Authentication**: ✅ Valid
+**Read Operations**: ✅ Tested
+**Write Operations**: ✅ Tested
+**API Schema**: ✅ Loaded
 
 ## 🚨 Security Notes
 
@@ -186,14 +186,14 @@ class SupabaseGeminiClient:
             "Authorization": f"Bearer {self.key}",
             "Content-Type": "application/json"
         }
-    
+
     def query_forms(self, limit=10):
         response = requests.get(
             f"{self.url}/rest/v1/forms?limit={limit}",
             headers=self.headers
         )
         return response.json()
-    
+
     def create_form(self, data):
         response = requests.post(
             f"{self.url}/rest/v1/forms",

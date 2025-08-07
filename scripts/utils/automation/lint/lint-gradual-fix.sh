@@ -48,12 +48,12 @@ echo -e "\n🔧 Fixing files..."
 
 while IFS= read -r file; do
   echo -e "\n📄 Processing: $(basename "$file")"
-  
+
   # Count issues before
   BEFORE=$(pnpm eslint "$file" --format compact 2>&1 | grep -c ":" || echo "0")
-  
+
   # Apply fixes in order of safety
-  
+
   # 1. Safe auto-fixes
   pnpm eslint "$file" --fix \
     --rule "react/no-unescaped-entities: error" \
@@ -62,12 +62,12 @@ while IFS= read -r file; do
     --rule "comma-dangle: error" \
     --rule "import/order: error" \
     2>/dev/null || true
-  
+
   # 2. Handle unused vars by prefixing with underscore
   pnpm eslint "$file" --fix \
     --rule "@typescript-eslint/no-unused-vars: error" \
     2>/dev/null || true
-  
+
   # 3. Add type annotations for common patterns
   if grep -q "any" "$file"; then
     echo "  ⚠️  Found 'any' types - requires manual review"
@@ -75,12 +75,12 @@ while IFS= read -r file; do
     sed -i '' 's/: any/: any \/\/ TODO: Replace with proper type/g' "$file" 2>/dev/null || \
     sed -i 's/: any/: any \/\/ TODO: Replace with proper type/g' "$file"
   fi
-  
+
   # Count issues after
   AFTER=$(pnpm eslint "$file" --format compact 2>&1 | grep -c ":" || echo "0")
-  
+
   echo "  ✅ Fixed $((BEFORE - AFTER)) issues ($(basename "$file"))"
-  
+
 done < files-to-fix.txt
 
 # Type check changed files

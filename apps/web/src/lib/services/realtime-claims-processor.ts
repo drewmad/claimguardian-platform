@@ -231,7 +231,7 @@ class RealtimeClaimsProcessor {
       claim_id: claimId,
       event_type: 'validated',
       timestamp: new Date().toISOString(),
-      data: { 
+      data: {
         validation_result: validationResult,
         is_valid: validationResult.is_valid,
         confidence_score: validationResult.confidence_score
@@ -386,12 +386,12 @@ class RealtimeClaimsProcessor {
     const today = new Date()
     today.setHours(0, 0, 0, 0)
 
-    const todayEvents = this.eventHistory.filter(event => 
+    const todayEvents = this.eventHistory.filter(event =>
       new Date(event.timestamp) >= today
     )
 
     const totalClaimsToday = new Set(todayEvents.map(e => e.claim_id)).size
-    const processedClaimsToday = todayEvents.filter(e => 
+    const processedClaimsToday = todayEvents.filter(e =>
       e.event_type === 'approved' || e.event_type === 'denied'
     ).length
 
@@ -544,7 +544,7 @@ class RealtimeClaimsProcessor {
     // Simulate finding available human processor
     const availableProcessors = ['claims-officer-001', 'claims-officer-002', 'claims-officer-003']
     const assignedProcessor = availableProcessors[Math.floor(Math.random() * availableProcessors.length)]
-    
+
     await this.assignClaim(claimId, assignedProcessor)
   }
 }

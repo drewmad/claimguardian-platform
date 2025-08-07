@@ -67,7 +67,7 @@ const variantStyles = {
 export function SuccessModal() {
   const { activeModal, modalData, closeModal } = useModalStore()
   const [isClosing, setIsClosing] = useState(false)
-  
+
   const config = modalData as ModalConfig | null
 
   useEffect(() => {
@@ -95,10 +95,10 @@ export function SuccessModal() {
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleClose} />
-      
+
       <div className={`relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all duration-200 ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
-        
+
         <div className="relative p-6">
           <button
             onClick={handleClose}
@@ -111,11 +111,11 @@ export function SuccessModal() {
             <div className={`w-16 h-16 bg-gradient-to-br ${styles.iconBg} rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg animate-scaleIn`}>
               <Icon className={`w-8 h-8 ${styles.iconColor}`} />
             </div>
-            
+
             <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
               {config.title}
             </h2>
-            
+
             <p className="text-gray-300 mb-6">
               {config.message}
             </p>
@@ -133,7 +133,7 @@ export function SuccessModal() {
                     {config.actions.primary.label}
                   </button>
                 )}
-                
+
                 {config.actions.secondary && (
                   <button
                     onClick={() => {
@@ -166,7 +166,7 @@ export function SuccessModal() {
 export function ConfirmationModal() {
   const { activeModal, modalData, closeModal } = useModalStore()
   const [isClosing, setIsClosing] = useState(false)
-  
+
   const config = modalData as {
     title: string
     message: string
@@ -213,10 +213,10 @@ export function ConfirmationModal() {
   return (
     <div className={`fixed inset-0 z-50 flex items-center justify-center p-4 ${isClosing ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={handleCancel} />
-      
+
       <div className={`relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden transform transition-all duration-200 ${isClosing ? 'scale-95 opacity-0' : 'scale-100 opacity-100'}`}>
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/5 to-cyan-600/5 pointer-events-none" />
-        
+
         <div className="relative p-6">
           <button
             onClick={handleCancel}
@@ -229,11 +229,11 @@ export function ConfirmationModal() {
             <div className="w-16 h-16 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
               <AlertTriangle className="w-8 h-8 text-white" />
             </div>
-            
+
             <h2 className="text-2xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent mb-2">
               {config.title}
             </h2>
-            
+
             <p className="text-gray-300 mb-6">
               {config.message}
             </p>
@@ -245,7 +245,7 @@ export function ConfirmationModal() {
               >
                 {config.cancelLabel || 'Cancel'}
               </button>
-              
+
               <button
                 onClick={handleConfirm}
                 className={`flex-1 py-3 px-4 ${getConfirmButtonStyles()} text-white font-semibold rounded-lg shadow-lg transition-all duration-200 transform hover:scale-[1.02] hover:shadow-xl`}

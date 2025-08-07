@@ -44,11 +44,11 @@ CREATE TABLE IF NOT EXISTS florida_parcels_staging (LIKE florida_parcels INCLUDI
 
 -- Import CSV data directly
 -- Run this from psql or Supabase SQL Editor
-COPY florida_parcels_staging FROM '/path/to/florida_parcels.csv' 
+COPY florida_parcels_staging FROM '/path/to/florida_parcels.csv'
 WITH (FORMAT csv, HEADER true, DELIMITER ',');
 
 -- Move to production table
-INSERT INTO florida_parcels 
+INSERT INTO florida_parcels
 SELECT * FROM florida_parcels_staging
 ON CONFLICT (parcel_id) DO UPDATE SET
   updated_at = EXCLUDED.updated_at;
@@ -111,12 +111,12 @@ def stream_parcels(csv_file):
     cur = conn.cursor()
     batch = []
     batch_size = 10000
-    
+
     with open(csv_file, 'r') as f:
         reader = csv.DictReader(f)
         for row in reader:
             batch.append(row)
-            
+
             if len(batch) >= batch_size:
                 execute_values(
                     cur,
@@ -127,12 +127,12 @@ def stream_parcels(csv_file):
                 conn.commit()
                 batch = []
                 print(f"Inserted {batch_size} records")
-    
+
     # Insert remaining
     if batch:
         execute_values(cur, "INSERT INTO florida_parcels VALUES %s", batch)
         conn.commit()
-    
+
     cur.close()
     conn.close()
 

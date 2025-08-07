@@ -8,11 +8,11 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { 
-  AIQualityScore, 
+import type {
+  AIQualityScore,
   CreateQualityScoreRequest,
   QualityMetricsSummary,
-  AIOperationsResponse 
+  AIOperationsResponse
 } from '@/types/ai-operations'
 
 // GET /api/admin/quality-scores - Get quality scores and analytics

@@ -44,26 +44,26 @@ export function SignInForm({ message }: SignInFormProps) {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    
+
     logger.info('[SIGNIN FORM] Submit started', { email, hasPassword: !!password })
-    
+
     // Clear any existing errors
     setFormError(null)
     clearError()
-    
+
     // Basic validation
     if (!email || !password) {
       setFormError('Please enter both email and password')
       return
     }
-    
+
     setIsLoading(true)
-    
+
     try {
       logger.info('[SIGNIN FORM] Calling signIn...')
       const success = await signIn(email, password)
       logger.info('[SIGNIN FORM] SignIn result:', { success })
-      
+
       if (success) {
         logger.info('[SIGNIN FORM] Sign in successful, refreshing router...')
         // Successful sign in - router will handle navigation via auth provider

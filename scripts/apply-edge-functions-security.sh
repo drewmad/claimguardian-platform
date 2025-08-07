@@ -34,17 +34,17 @@ FUNCTIONS=(
 apply_security_to_function() {
   local func_path="$1"
   local func_file="supabase/functions/$func_path/index.ts"
-  
+
   if [ ! -f "$func_file" ]; then
     echo -e "${YELLOW}  ⚠️  Function not found: $func_path${NC}"
     return 1
   fi
-  
+
   echo -e "${BLUE}Securing $func_path...${NC}"
-  
+
   # Create temp file
   local temp_file=$(mktemp)
-  
+
   # Apply security patches with sed
   sed -E '
     # Add ALLOWED_ORIGINS after imports
@@ -58,23 +58,23 @@ const ALLOWED_ORIGINS = [\
   Deno.env.get('\''ENVIRONMENT'\'') === '\''development'\'' ? '\''http://localhost:3000'\'' : null\
 ].filter(Boolean)
     }
-    
+
     # Replace wildcard CORS
     s/'\''Access-Control-Allow-Origin'\'': '\''[*]'\''/'\''Access-Control-Allow-Origin'\'': origin \&\& ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\''/g
-    
+
     # Add origin extraction after Deno.serve
     /^Deno\.serve\(async \(req: Request\)/ {
       a\
   const origin = req.headers.get('\''origin'\'')
     }
-    
+
     # Add security headers to corsHeaders
     /^const corsHeaders = \{$/ {
       a\
   '\''Access-Control-Allow-Origin'\'': origin \&\& ALLOWED_ORIGINS.includes(origin) ? origin : '\'''\'',
       d
     }
-    
+
     # Add security headers after Access-Control-Allow-Headers
     /'\''Access-Control-Allow-Headers'\'':.*,$/ {
       a\
@@ -85,10 +85,10 @@ const ALLOWED_ORIGINS = [\
   '\''Strict-Transport-Security'\'': '\''max-age=31536000; includeSubDomains'\''
     }
   ' "$func_file" > "$temp_file"
-  
+
   # Move temp file back
   mv "$temp_file" "$func_file"
-  
+
   echo -e "${GREEN}  ✓ $func_path secured${NC}"
   return 0
 }

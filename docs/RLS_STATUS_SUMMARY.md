@@ -1,6 +1,6 @@
 # RLS Security Status Summary
 
-**Generated**: August 5, 2025  
+**Generated**: August 5, 2025
 **Status**: Security Fixes Applied - Verification Needed
 
 ## Current RLS Status
@@ -10,7 +10,7 @@
 Based on the database query results:
 
 1. **ai_usage_logs** - RLS Enabled with 2 policies
-2. **audit_logs** - RLS Enabled with 3 policies  
+2. **audit_logs** - RLS Enabled with 3 policies
 3. **claims** - RLS Enabled with 2 policies
 4. **error_logs** - RLS Enabled with 2 policies
 5. **login_activity** - RLS Enabled with 3 policies
@@ -49,7 +49,7 @@ Since the Supabase CLI has issues with the flags, apply fixes manually:
 
 ```sql
 -- Check if PostGIS needs securing
-SELECT 
+SELECT
     tablename,
     relrowsecurity as rls_enabled
 FROM pg_tables t
@@ -82,37 +82,37 @@ RETURNS TABLE(
 BEGIN
     -- Test 1: Properties isolation
     RETURN QUERY
-    SELECT 
+    SELECT
         'Properties RLS'::TEXT,
-        CASE 
+        CASE
             WHEN EXISTS (
-                SELECT 1 FROM pg_policies 
-                WHERE tablename = 'properties' 
+                SELECT 1 FROM pg_policies
+                WHERE tablename = 'properties'
                 AND qual LIKE '%auth.uid()%'
             ) THEN 'PASS - User isolation active'
             ELSE 'FAIL - Missing user isolation'
         END::TEXT;
-    
+
     -- Test 2: Claims isolation
     RETURN QUERY
-    SELECT 
+    SELECT
         'Claims RLS'::TEXT,
-        CASE 
+        CASE
             WHEN EXISTS (
-                SELECT 1 FROM pg_policies 
-                WHERE tablename = 'claims' 
+                SELECT 1 FROM pg_policies
+                WHERE tablename = 'claims'
                 AND qual LIKE '%auth.uid()%'
             ) THEN 'PASS - User isolation active'
             ELSE 'FAIL - Missing user isolation'
         END::TEXT;
-    
+
     -- Test 3: Service role policies
     RETURN QUERY
-    SELECT 
+    SELECT
         'Service Role Access'::TEXT,
-        CASE 
+        CASE
             WHEN EXISTS (
-                SELECT 1 FROM pg_policies 
+                SELECT 1 FROM pg_policies
                 WHERE 'service_role' = ANY(roles)
             ) THEN 'PASS - Admin access configured'
             ELSE 'WARNING - No service role policies'

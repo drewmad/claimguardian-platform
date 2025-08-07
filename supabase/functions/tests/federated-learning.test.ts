@@ -10,14 +10,14 @@ const addNoise = (value: number, epsilon: number) => {
 // Federated Learning handler logic
 const handleFederatedLearningRequest = async (request: any, supabase: any) => {
   const { action, data } = request
-  
+
   switch (action) {
     case 'register_node':
       // Validate node registration
       if (!data.nodeIdentifier || !data.computeCapacity) {
         throw new Error('Missing required fields for node registration')
       }
-      
+
       // Calculate initial trust score based on capacity
       const trustScore = Math.min(
         0.5 + (data.computeCapacity.cpu / 32) * 0.2 +
@@ -25,7 +25,7 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
         (data.computeCapacity.gpu ? 0.1 : 0),
         1.0
       )
-      
+
       return {
         success: true,
         nodeId: `node-${Date.now()}`,
@@ -33,12 +33,12 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
         trustScore,
         certificateExpiry: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString()
       }
-    
+
     case 'start_round':
       if (!data.modelFamily || !data.aggregationStrategy) {
         throw new Error('Missing required fields for starting round')
       }
-      
+
       const roundId = `round-${Date.now()}`
       return {
         success: true,
@@ -48,12 +48,12 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
         minParticipants: data.minParticipants || 3,
         aggregationStrategy: data.aggregationStrategy
       }
-    
+
     case 'submit_update':
       if (!data.roundId || !data.nodeId || !data.modelUpdate) {
         throw new Error('Missing required fields for update submission')
       }
-      
+
       // Apply differential privacy if configured
       let processedUpdate = data.modelUpdate
       if (data.applyDifferentialPrivacy) {
@@ -63,19 +63,19 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
           weights: data.modelUpdate.weights.map((w: number) => addNoise(w, epsilon))
         }
       }
-      
+
       return {
         success: true,
         updateId: `update-${Date.now()}`,
         processed: true,
         privacyApplied: !!data.applyDifferentialPrivacy
       }
-    
+
     case 'aggregate_round':
       if (!data.roundId) {
         throw new Error('Round ID required for aggregation')
       }
-      
+
       // Mock aggregation result
       const aggregationResult = {
         globalWeights: new Array(100).fill(0).map(() => Math.random()),
@@ -83,7 +83,7 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
         convergenceDelta: Math.random() * 0.01,
         aggregationMethod: data.method || 'fedavg'
       }
-      
+
       return {
         success: true,
         roundId: data.roundId,
@@ -91,7 +91,7 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
         result: aggregationResult,
         nextRoundReady: true
       }
-    
+
     case 'get_node_stats':
       return {
         success: true,
@@ -103,7 +103,7 @@ const handleFederatedLearningRequest = async (request: any, supabase: any) => {
           successRate: 0.94
         }
       }
-    
+
     default:
       throw new Error(`Unknown action: ${action}`)
   }
@@ -126,7 +126,7 @@ Deno.test("Federated Learning - Node Registration Success", async () => {
       }
     }
   }
-  
+
   const result = await handleFederatedLearningRequest(request, {})
   assertEquals(result.success, true)
   assertExists(result.nodeId)
@@ -143,7 +143,7 @@ Deno.test("Federated Learning - Node Registration Failure", async () => {
       dataCharacteristics: {}
     }
   }
-  
+
   await assertThrows(
     async () => await handleFederatedLearningRequest(request, {}),
     Error,
@@ -164,7 +164,7 @@ Deno.test("Federated Learning - Start Training Round", async () => {
       }
     }
   }
-  
+
   const result = await handleFederatedLearningRequest(request, {})
   assertEquals(result.success, true)
   assertExists(result.roundId)
@@ -190,7 +190,7 @@ Deno.test("Federated Learning - Submit Model Update", async () => {
       epsilon: 0.5
     }
   }
-  
+
   const result = await handleFederatedLearningRequest(request, {})
   assertEquals(result.success, true)
   assertExists(result.updateId)
@@ -207,7 +207,7 @@ Deno.test("Federated Learning - Aggregate Round", async () => {
       method: 'fedprox'
     }
   }
-  
+
   const result = await handleFederatedLearningRequest(request, {})
   assertEquals(result.success, true)
   assertEquals(result.aggregationComplete, true)
@@ -222,7 +222,7 @@ Deno.test("Federated Learning - Get Node Statistics", async () => {
     action: 'get_node_stats',
     data: {}
   }
-  
+
   const result = await handleFederatedLearningRequest(request, {})
   assertEquals(result.success, true)
   assertExists(result.stats)
@@ -240,7 +240,7 @@ Deno.test("Federated Learning - Privacy Budget Calculation", () => {
     if (dataVolume > 100) return 1.0
     return 2.0
   }
-  
+
   assertEquals(calculatePrivacyBudget(50000), 0.1)
   assertEquals(calculatePrivacyBudget(5000), 0.5)
   assertEquals(calculatePrivacyBudget(500), 1.0)
@@ -252,21 +252,21 @@ Deno.test("Federated Learning - Secure Aggregation", () => {
   const secureAggregate = (updates: number[][]): number[] => {
     const n = updates.length
     if (n === 0) return []
-    
+
     const avgWeights = updates[0].map((_, i) => {
       const sum = updates.reduce((acc, update) => acc + update[i], 0)
       return sum / n
     })
-    
+
     return avgWeights
   }
-  
+
   const updates = [
     [0.1, 0.2, 0.3],
     [0.2, 0.3, 0.4],
     [0.15, 0.25, 0.35]
   ]
-  
+
   const result = secureAggregate(updates)
   assertEquals(result.length, 3)
   assertEquals(Math.abs(result[0] - 0.15) < 0.01, true)

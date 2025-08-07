@@ -22,7 +22,7 @@ function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://tmlrvecuwgppbaynesji.supabase.co'
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRtbHJ2ZWN1d2dwcGJheW5lc2ppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkwNzUwMzksImV4cCI6MjA2NDY1MTAzOX0.P69j3GyOQ9NeGXeLul_ZyhWOvuyepL9FskjYAK-CDMU'
   const supabaseServiceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY
-  
+
   if (process.env.NODE_ENV === 'development' && process.env.VERBOSE_LOGS === 'true') {
     console.log('[Supabase Factory] Configuration:', {
       hasUrl: !!supabaseUrl,
@@ -31,7 +31,7 @@ function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & {
       anonKeyLength: supabaseAnonKey?.length
     })
   }
-  
+
   if (!supabaseUrl || !supabaseAnonKey) {
     console.error('[Supabase Factory] Missing environment variables:', {
       hasUrl: !!supabaseUrl,
@@ -41,7 +41,7 @@ function getConfig(): Required<Omit<ClientConfig, 'supabaseServiceRoleKey'>> & {
     })
     throw new Error('Missing required Supabase environment variables. Please set NEXT_PUBLIC_SUPABASE_ANON_KEY in Vercel.')
   }
-  
+
   return {
     supabaseUrl,
     supabaseAnonKey,
@@ -59,7 +59,7 @@ export function createServerSupabaseClient(cookieStore: {
   set: (options: { name: string; value: string } & CookieOptions) => void
 }) {
   const config = getConfig()
-  
+
   return createServerClient(
     config.supabaseUrl,
     config.supabaseAnonKey,
@@ -97,7 +97,7 @@ export function createServerSupabaseClient(cookieStore: {
  */
 export function createBrowserSupabaseClient() {
   const config = getConfig()
-  
+
   return createBrowserClient(
     config.supabaseUrl,
     config.supabaseAnonKey
@@ -110,11 +110,11 @@ export function createBrowserSupabaseClient() {
  */
 export function createServiceRoleClient(): SupabaseClient {
   const config = getConfig()
-  
+
   if (!config.supabaseServiceRoleKey) {
     throw new Error('Service role key not configured')
   }
-  
+
   return createSupabaseClient(
     config.supabaseUrl,
     config.supabaseServiceRoleKey,
@@ -132,14 +132,14 @@ export function createServiceRoleClient(): SupabaseClient {
  */
 export function createEdgeFunctionClient(authHeader?: string): SupabaseClient {
   const config = getConfig()
-  
+
   const options: any = {
     auth: {
       autoRefreshToken: false,
       persistSession: false
     }
   }
-  
+
   // If auth header is provided, use it
   if (authHeader) {
     options.global = {
@@ -148,7 +148,7 @@ export function createEdgeFunctionClient(authHeader?: string): SupabaseClient {
       }
     }
   }
-  
+
   return createSupabaseClient(
     config.supabaseUrl,
     config.supabaseAnonKey,

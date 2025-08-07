@@ -21,28 +21,28 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 async function simulateRealSignup() {
   console.log('🧪 SIMULATING REAL SIGNUP WITH TRACKING')
   console.log('======================================\n')
-  
+
   const testEmail = `test-user-${Date.now()}@claimguardian.test`
   const testPassword = 'TestPassword123\!'
-  
+
   console.log(`1. Creating test user: ${testEmail}`)
-  
+
   // Create a real user account
   const { data: signupData, error: signupError } = await supabase.auth.admin.createUser({
     email: testEmail,
     password: testPassword,
     email_confirm: true
   })
-  
+
   if (signupError) {
     console.log('❌ Failed to create test user:', signupError.message)
     return
   }
-  
+
   const userId = signupData.user.id
   console.log(`✅ Created user with ID: ${userId}`)
   console.log('')
-  
+
   // Test signup tracking
   console.log('2. Testing capture_signup_data...')
   try {
@@ -66,7 +66,7 @@ async function simulateRealSignup() {
         longitude: -80.1918
       }
     })
-    
+
     if (error) {
       console.log(`❌ Signup tracking failed: ${error.message}`)
     } else {
@@ -75,9 +75,9 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Signup tracking error: ${e.message}`)
   }
-  
+
   console.log('')
-  
+
   // Test login tracking
   console.log('3. Testing track_user_login...')
   try {
@@ -91,7 +91,7 @@ async function simulateRealSignup() {
       p_utm_source: 'direct',
       p_login_method: 'email'
     })
-    
+
     if (error) {
       console.log(`❌ Login tracking failed: ${error.message}`)
     } else {
@@ -100,9 +100,9 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Login tracking error: ${e.message}`)
   }
-  
+
   console.log('')
-  
+
   // Test activity tracking
   console.log('4. Testing log_user_activity...')
   try {
@@ -112,7 +112,7 @@ async function simulateRealSignup() {
       { type: 'button_click', name: 'add_property_click', url: '/properties' },
       { type: 'feature_use', name: 'ai_damage_analyzer', url: '/ai-tools/damage-analyzer' }
     ]
-    
+
     for (const activity of activities) {
       const { data, error } = await supabase.rpc('log_user_activity', {
         p_user_id: userId,
@@ -122,7 +122,7 @@ async function simulateRealSignup() {
         p_page_url: activity.url,
         p_page_title: `ClaimGuardian - ${activity.name}`
       })
-      
+
       if (error) {
         console.log(`❌ Activity "${activity.name}" failed: ${error.message}`)
       } else {
@@ -132,10 +132,10 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Activity tracking error: ${e.message}`)
   }
-  
+
   console.log('')
   console.log('5. Verifying captured data...')
-  
+
   // Check user_profiles
   try {
     const { data, error } = await supabase
@@ -143,7 +143,7 @@ async function simulateRealSignup() {
       .select('*')
       .eq('user_id', userId)
       .single()
-    
+
     if (error) {
       console.log(`❌ Error reading user_profiles: ${error.message}`)
     } else {
@@ -156,9 +156,9 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Profile check error: ${e.message}`)
   }
-  
+
   console.log('')
-  
+
   // Check user_tracking
   try {
     const { data, error } = await supabase
@@ -167,7 +167,7 @@ async function simulateRealSignup() {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(3)
-    
+
     if (error) {
       console.log(`❌ Error reading user_tracking: ${error.message}`)
     } else if (data.length > 0) {
@@ -181,9 +181,9 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Login tracking check error: ${e.message}`)
   }
-  
+
   console.log('')
-  
+
   // Check user_activity_log
   try {
     const { data, error } = await supabase
@@ -192,7 +192,7 @@ async function simulateRealSignup() {
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
       .limit(5)
-    
+
     if (error) {
       console.log(`❌ Error reading user_activity_log: ${error.message}`)
     } else if (data.length > 0) {
@@ -206,10 +206,10 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`❌ Activity log check error: ${e.message}`)
   }
-  
+
   console.log('')
   console.log('6. Cleaning up test user...')
-  
+
   // Clean up - delete test user
   try {
     const { error } = await supabase.auth.admin.deleteUser(userId)
@@ -222,7 +222,7 @@ async function simulateRealSignup() {
   } catch (e) {
     console.log(`⚠️ Cleanup error: ${e.message}`)
   }
-  
+
   console.log('')
   console.log('🎉 SIMULATION COMPLETE\!')
   console.log('======================')

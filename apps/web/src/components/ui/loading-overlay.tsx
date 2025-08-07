@@ -37,7 +37,7 @@ export function LoadingOverlay({
   return (
     <div className={cn("relative", className)}>
       {children}
-      
+
       <AnimatePresence>
         {isLoading && (
           <motion.div
@@ -62,7 +62,7 @@ export function LoadingOverlay({
               {variant === 'pulse' && <LoadingPulse size={size} />}
               {variant === 'bars' && <LoadingBars size={size} />}
               {variant === 'sparkles' && <LoadingSparkles size={size} />}
-              
+
               {message && (
                 <motion.p
                   initial={{ opacity: 0 }}
@@ -101,13 +101,13 @@ export function LoadingSpinner({ size = 'md', className, color = 'primary' }: Lo
   }
 
   return (
-    <Loader2 
+    <Loader2
       className={cn(
-        "animate-spin", 
-        sizeClasses[size], 
+        "animate-spin",
+        sizeClasses[size],
         colorClasses[color],
         className
-      )} 
+      )}
     />
   )
 }
@@ -219,7 +219,7 @@ export function LoadingSparkles({ size = 'md', className }: LoadingSpinnerProps)
       transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
     >
       <Sparkles className={cn("text-purple-600", sparkleSize[size])} />
-      
+
       {/* Floating sparkle effects */}
       {[0, 1, 2, 3].map((index) => (
         <motion.div
@@ -284,7 +284,7 @@ export function ProgressIndicator({
           )}
         </div>
       )}
-      
+
       <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2 overflow-hidden">
         <motion.div
           className={cn("h-full rounded-full", colorClasses[color])}
@@ -334,7 +334,7 @@ export function StepIndicator({ steps, currentStep, className }: StepIndicatorPr
                 index + 1
               )}
             </motion.div>
-            
+
             <div className="ml-2 mr-4">
               <div className={cn(
                 "text-xs font-medium",

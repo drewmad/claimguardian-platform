@@ -26,16 +26,16 @@ interface UseGoogleMapsReturn {
 
 /**
  * Centralized hook for loading Google Maps JavaScript API
- * 
+ *
  * @param config Configuration options for Google Maps API
  * @returns Object with loading state and error information
- * 
+ *
  * @example
  * ```tsx
  * const { isLoaded, isLoading, error } = useGoogleMaps({
  *   libraries: ['places']
  * })
- * 
+ *
  * if (isLoaded) {
  *   // Google Maps API is ready to use
  *   const autocomplete = new google.maps.places.Autocomplete(...)
@@ -79,7 +79,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
           setIsLoading(false)
           return
         }
-        
+
         // Wait for existing script to finish loading
         await new Promise((resolve, reject) => {
           const checkInterval = setInterval(() => {
@@ -88,14 +88,14 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
               resolve(true)
             }
           }, 100)
-          
+
           // Timeout after 10 seconds
           setTimeout(() => {
             clearInterval(checkInterval)
             reject(new Error('Google Maps API loading timeout'))
           }, 10000)
         })
-        
+
         setIsLoaded(true)
         setIsLoading(false)
         return
@@ -106,7 +106,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
       const libraries = config.libraries?.join(',') || 'places'
       const language = config.language || 'en'
       const region = config.region || 'US'
-      
+
       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=${libraries}&language=${language}&region=${region}&callback=initGoogleMaps`
       script.async = true
       script.defer = true
@@ -164,7 +164,7 @@ export function useGoogleMaps(config: GoogleMapsConfig = { libraries: ['places']
  */
 export function useGooglePlaces() {
   const mapsState = useGoogleMaps({ libraries: ['places'] })
-  
+
   return {
     ...mapsState,
     createAutocomplete: useCallback((

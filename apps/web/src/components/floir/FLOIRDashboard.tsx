@@ -47,7 +47,7 @@ export default function FLOIRDashboard() {
   const [recentRuns, setRecentRuns] = useState<CrawlRun[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-  
+
   const supabase = createClient()
 
   const fetchData = useCallback(async () => {
@@ -55,18 +55,18 @@ export default function FLOIRDashboard() {
       // Fetch FLOIR statistics
       const { data: statsData, error: statsError } = await supabase
         .rpc('get_floir_crawl_stats')
-      
+
       if (statsError) throw statsError
-      
+
       // Fetch recent crawl runs
       const { data: runsData, error: runsError } = await supabase
         .from('crawl_runs')
         .select('*')
         .order('started_at', { ascending: false })
         .limit(10)
-      
+
       if (runsError) throw runsError
-      
+
       setStats(statsData || [])
       setRecentRuns(runsData || [])
     } catch (error) {
@@ -80,15 +80,15 @@ export default function FLOIRDashboard() {
   const triggerCrawl = async (dataType: string) => {
     try {
       setRefreshing(true)
-      
+
       const { error } = await supabase
         .rpc('trigger_floir_crawl', {
           p_data_type: dataType,
           p_force_refresh: false
         })
-      
+
       if (error) throw error
-      
+
       // Refresh data after triggering crawl
       setTimeout(fetchData, 2000)
     } catch (error) {
@@ -98,7 +98,7 @@ export default function FLOIRDashboard() {
 
   useEffect(() => {
     fetchData()
-    
+
     // Set up real-time subscriptions for crawl updates
     Object.values(DATA_TYPE_CONFIG).forEach(config => {
       supabase.channel(`floir:${config.key}`)
@@ -108,10 +108,10 @@ export default function FLOIRDashboard() {
         })
         .subscribe()
     })
-    
+
     // Refresh every 30 seconds
     const interval = setInterval(fetchData, 30000)
-    
+
     return () => {
       clearInterval(interval)
       supabase.removeAllChannels()

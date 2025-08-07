@@ -144,17 +144,17 @@ info "Validating consolidated schema"
 # Check if schema is valid SQL
 if command -v psql >/dev/null 2>&1; then
     info "PostgreSQL client found, performing syntax validation"
-    
+
     # Create temporary database for validation
     if psql -c "SELECT 1;" >/dev/null 2>&1; then
         psql -c "CREATE DATABASE claimguardian_schema_test;" 2>/dev/null || true
-        
+
         if psql -d claimguardian_schema_test -f supabase/schema.sql >/dev/null 2>&1; then
             success "Schema syntax validation passed"
         else
             warn "Schema syntax validation failed - manual review needed"
         fi
-        
+
         # Cleanup test database
         psql -c "DROP DATABASE IF EXISTS claimguardian_schema_test;" 2>/dev/null || true
     else

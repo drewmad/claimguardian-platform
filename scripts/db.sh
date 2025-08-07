@@ -71,7 +71,7 @@ run_migration() {
     local action="$1"
     local option1="$2"
     local option2="$3"
-    
+
     log_info "Running migration: $action $option1 $option2"
     # The DATABASE_URL is now in the environment, so this should just work.
     # We specify the migrations directory and a migrations table name.

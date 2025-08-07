@@ -11,7 +11,7 @@ claude_learn() {
     local description="$2"
     local context="$3"
     local priority="${4:-Medium}"
-    
+
     cat >> "$LEARNING_LOG" << EOF
 
 ## $(date +'%Y-%m-%d %H:%M') - $type
@@ -20,7 +20,7 @@ claude_learn() {
 **Priority**: $priority
 **Session**: $(pwd)
 EOF
-    
+
     echo "✅ Logged to $LEARNING_LOG"
 }
 
@@ -29,7 +29,7 @@ claude_error() {
     local error="$1"
     local solution="$2"
     local file="${3:-Unknown}"
-    
+
     claude_learn "Error Pattern" "$error" "File: $file, Solution: $solution" "High"
 }
 
@@ -37,7 +37,7 @@ claude_error() {
 claude_command() {
     local cmd="$1"
     local purpose="$2"
-    
+
     claude_learn "Command" "$cmd" "Purpose: $purpose" "Low"
 }
 
@@ -46,7 +46,7 @@ claude_pattern() {
     local pattern="$1"
     local better="$2"
     local file="${3:-General}"
-    
+
     claude_learn "Code Pattern" "$pattern → $better" "Found in: $file" "Medium"
 }
 

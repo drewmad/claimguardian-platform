@@ -12,8 +12,8 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Smartphone, Monitor, Download, Wifi, WifiOff, 
+import {
+  Smartphone, Monitor, Download, Wifi, WifiOff,
   Bell, Share, FileText, Camera, Heart, Bookmark,
   Zap, Shield, Star, Globe, Cloud,
   CheckCircle, ArrowRight, Sparkles, Home, Plus
@@ -93,7 +93,7 @@ export default function PWADemoPage() {
   const { isVisible: installVisible, showInstallPrompt, hideInstallPrompt } = useInstallPrompt()
   const offlineStatus = useOfflineStatus()
   const { isRegistered, hasUpdate, updateServiceWorker } = useServiceWorker()
-  
+
   const [showInstallModal, setShowInstallModal] = useState(false)
   const [forceOfflineMode, setForceOfflineMode] = useState(false)
   const [notificationsEnabled, setNotificationsEnabled] = useState(false)
@@ -120,10 +120,10 @@ export default function PWADemoPage() {
     if ('Notification' in window) {
       const permission = await Notification.requestPermission()
       setNotificationsEnabled(permission === 'granted')
-      
+
       if (permission === 'granted') {
         toast.success('Push notifications enabled!')
-        
+
         // Show a demo notification
         new Notification('ClaimGuardian', {
           body: 'You\'ll now receive important updates about your properties',
@@ -177,13 +177,13 @@ export default function PWADemoPage() {
           <div className="p-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full w-fit mx-auto mb-4">
             <Sparkles className="w-8 h-8 text-blue-600" />
           </div>
-          
+
           <h1 className="text-4xl font-bold text-white mb-4">
             Progressive Web App Demo
           </h1>
-          
+
           <p className="text-lg text-gray-300 max-w-3xl mx-auto">
-            Experience ClaimGuardian's PWA capabilities including offline support, 
+            Experience ClaimGuardian's PWA capabilities including offline support,
             native installation, and app-like features.
           </p>
         </motion.div>
@@ -330,10 +330,10 @@ export default function PWADemoPage() {
                     <div className="p-3 bg-blue-600/20 rounded-lg">
                       <Icon className="w-6 h-6 text-blue-400" />
                     </div>
-                    <Badge 
+                    <Badge
                       className={
-                        feature.status === 'available' 
-                          ? 'bg-green-600' 
+                        feature.status === 'available'
+                          ? 'bg-green-600'
                           : 'bg-yellow-600'
                       }
                     >
@@ -388,10 +388,10 @@ export default function PWADemoPage() {
                         <Icon className="w-5 h-5 text-gray-400" />
                         <span className="text-white font-medium">{device.platform}</span>
                       </div>
-                      <Badge 
+                      <Badge
                         className={
-                          device.color === 'green' 
-                            ? 'bg-green-600' 
+                          device.color === 'green'
+                            ? 'bg-green-600'
                             : device.color === 'yellow'
                             ? 'bg-yellow-600'
                             : 'bg-red-600'

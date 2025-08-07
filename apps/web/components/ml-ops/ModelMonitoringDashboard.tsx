@@ -186,7 +186,7 @@ export function ModelMonitoringDashboard() {
               <div className="flex justify-between items-start">
                 <CardTitle className="text-lg">{model.version}</CardTitle>
                 <span className={`text-sm px-2 py-1 rounded ${
-                  model.deploymentStatus === 'active' 
+                  model.deploymentStatus === 'active'
                     ? 'bg-green-100 text-green-700'
                     : 'bg-yellow-100 text-yellow-700'
                 }`}>

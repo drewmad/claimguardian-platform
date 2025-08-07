@@ -17,13 +17,13 @@ export default function HurricanePrepPage() {
           <ArrowLeft className="w-4 h-4 mr-2" />
           Back to Home
         </Link>
-        
+
         <div className="text-center mb-12">
           <Shield className="w-16 h-16 text-green-400 mx-auto mb-4" />
           <h1 className="text-4xl font-bold text-white mb-4">Hurricane Season 2025 Prep Playbook</h1>
           <p className="text-xl text-gray-300">Your complete guide to protecting your Florida property</p>
         </div>
-        
+
         <div className="bg-gray-900 border border-gray-800 rounded-lg p-8 mb-8">
           <h2 className="text-2xl font-bold text-white mb-6">Pre-Hurricane Checklist</h2>
           <div className="space-y-4">
@@ -50,7 +50,7 @@ export default function HurricanePrepPage() {
             </div>
           </div>
         </div>
-        
+
         <div className="text-center">
           <Link
             href="/auth/signup"
@@ -59,7 +59,7 @@ export default function HurricanePrepPage() {
             <Home className="w-5 h-5" />
             Start Protecting Your Property
           </Link>
-          
+
           <p className="mt-4 text-gray-400">
             Built specifically for Florida property owners
           </p>

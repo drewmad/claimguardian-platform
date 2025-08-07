@@ -131,7 +131,7 @@ function DamageItemCard({ item, onPress, onDelete }: DamageItemCardProps) {
             color="#EF4444"
           />
         </View>
-        
+
         <TouchableOpacity
           style={styles.damageItemDeleteButton}
           onPress={onDelete}
@@ -333,7 +333,7 @@ export default function AssessmentDetailScreen() {
                 color="#3B82F6"
               />
             </View>
-            
+
             <View style={styles.assessmentInfo}>
               <Text style={styles.assessmentDate}>
                 {new Date(assessment.assessment_date).toLocaleDateString()}
@@ -341,7 +341,7 @@ export default function AssessmentDetailScreen() {
               <Text style={styles.assessmentTime}>
                 {new Date(assessment.assessment_date).toLocaleTimeString()}
               </Text>
-              
+
               <View style={styles.syncStatus}>
                 <View style={[
                   styles.syncIndicator,
@@ -353,7 +353,7 @@ export default function AssessmentDetailScreen() {
               </View>
             </View>
 
-            <TouchableOpacity 
+            <TouchableOpacity
               style={styles.detailsButton}
               onPress={() => setShowDetailsModal(true)}
             >
@@ -365,7 +365,7 @@ export default function AssessmentDetailScreen() {
         {/* Assessment Summary */}
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Assessment Summary</Text>
-          
+
           <View style={styles.summaryGrid}>
             <View style={styles.summaryItem}>
               <Text style={styles.summaryLabel}>Overall Condition</Text>

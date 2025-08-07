@@ -121,8 +121,8 @@ export default function FLOIRSearch() {
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
               className="flex-1"
             />
-            <Button 
-              onClick={handleSearch} 
+            <Button
+              onClick={handleSearch}
               disabled={loading || !query.trim()}
             >
               {loading ? (
@@ -185,7 +185,7 @@ export default function FLOIRSearch() {
           {/* Search Results */}
           <div className="space-y-4">
             {results.results.map((result) => (
-              <Card 
+              <Card
                 key={result.id}
                 className="bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:shadow-md transition-shadow"
               >

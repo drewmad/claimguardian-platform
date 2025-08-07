@@ -31,7 +31,7 @@ ogrinfo -so "$GDB_PATH" 2>/dev/null | grep "Layer name:" | sed 's/^.*Layer name:
 if [ ! -s /tmp/gdb_layers.txt ]; then
     echo "Error: Could not read layers from GDB file"
     echo "Trying alternative method..."
-    
+
     # Try extracting from ZIP if GDB is corrupted
     if [ -f "Cadastral_Statewide.zip" ]; then
         echo "Attempting to use ZIP file instead..."
@@ -40,17 +40,17 @@ if [ ! -s /tmp/gdb_layers.txt ]; then
         if [ ! -d "/dev/shm" ]; then
             TEMP_DIR="/tmp/parcels_temp"
         fi
-        
+
         mkdir -p "$TEMP_DIR"
         cd "$TEMP_DIR"
-        
+
         # Extract only the layer info
         unzip -q "../Cadastral_Statewide.zip" "*/a00000009.gdbtable" 2>/dev/null || true
-        
+
         # Try reading from extracted path
         GDB_PATH="$TEMP_DIR/Cadastral_Statewide.gdb"
         ogrinfo -so "$GDB_PATH" 2>/dev/null | grep "Layer name:" | sed 's/^.*Layer name: //'
-        
+
         cd - > /dev/null
     fi
     exit 1

@@ -18,12 +18,12 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Upload, TestTube, FileText, CheckCircle, AlertCircle, 
+import {
+  Upload, TestTube, FileText, CheckCircle, AlertCircle,
   XCircle, Clock, Database, Zap, BarChart3, Settings
 } from 'lucide-react'
-import { 
-  processEnhancedExtraction, 
+import {
+  processEnhancedExtraction,
   getExtractionStatistics,
   getExtractionQueue
 } from '@/actions/enhanced-ai-extraction'
@@ -57,7 +57,7 @@ export function EnhancedExtractionTester() {
   const [stats, setStats] = useState<ExtractionStats | null>(null)
   const [reviewQueue, setReviewQueue] = useState<any[]>([])
   const [selectedProvider, setSelectedProvider] = useState<'auto' | 'gemini' | 'openai' | 'claude'>('auto')
-  
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
     if (!file) return
@@ -164,7 +164,7 @@ export function EnhancedExtractionTester() {
               <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Upload Test Document</h3>
-                  
+
                   {/* Provider Selection */}
                   <div className="mb-4">
                     <label className="block text-sm font-medium text-gray-400 mb-2">
@@ -223,7 +223,7 @@ export function EnhancedExtractionTester() {
 
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Test Results</h3>
-                  
+
                   {testResult && (
                     <div className="space-y-4">
                       <div className="bg-gray-900 p-4 rounded-lg">
@@ -231,7 +231,7 @@ export function EnhancedExtractionTester() {
                           <span className="text-gray-400">Status</span>
                           {getStatusBadge(testResult.success)}
                         </div>
-                        
+
                         {testResult.success ? (
                           <>
                             <div className="grid grid-cols-2 gap-4 text-sm">
@@ -260,7 +260,7 @@ export function EnhancedExtractionTester() {
                                 </div>
                               </div>
                             </div>
-                            
+
                             {testResult.extractionId && (
                               <div className="mt-3 pt-3 border-t border-gray-700">
                                 <span className="text-gray-400 text-xs">Extraction ID</span>
@@ -294,7 +294,7 @@ export function EnhancedExtractionTester() {
                   Refresh
                 </Button>
               </div>
-              
+
               {stats && (
                 <div className="grid grid-cols-4 gap-4">
                   <Card className="bg-gray-900 border-gray-700">
@@ -303,21 +303,21 @@ export function EnhancedExtractionTester() {
                       <div className="text-sm text-gray-400">Total Extractions</div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-gray-900 border-gray-700">
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-green-500">{stats.successful_extractions}</div>
                       <div className="text-sm text-gray-400">Successful</div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-gray-900 border-gray-700">
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-yellow-500">{stats.review_required_count}</div>
                       <div className="text-sm text-gray-400">Need Review</div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-gray-900 border-gray-700">
                     <CardContent className="p-4">
                       <div className="text-2xl font-bold text-blue-500">{stats.auto_applied_count}</div>
@@ -326,7 +326,7 @@ export function EnhancedExtractionTester() {
                   </Card>
                 </div>
               )}
-              
+
               {stats && (
                 <div className="grid grid-cols-2 gap-6">
                   <Card className="bg-gray-900 border-gray-700">
@@ -354,7 +354,7 @@ export function EnhancedExtractionTester() {
                       </div>
                     </CardContent>
                   </Card>
-                  
+
                   <Card className="bg-gray-900 border-gray-700">
                     <CardHeader>
                       <CardTitle className="text-white text-sm">AI Provider Usage</CardTitle>
@@ -389,7 +389,7 @@ export function EnhancedExtractionTester() {
                   Refresh
                 </Button>
               </div>
-              
+
               <div className="bg-gray-900 rounded-lg overflow-hidden">
                 <div className="overflow-x-auto">
                   <table className="w-full text-sm text-left">

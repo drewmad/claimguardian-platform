@@ -238,8 +238,8 @@ class LegalService {
   async hasAcceptedAllRequiredDocuments(userId: string): Promise<boolean> {
     try {
       const consentStatus = await this.getUserConsentStatus(userId)
-      
-      return consentStatus.every(status => 
+
+      return consentStatus.every(status =>
         status.is_accepted && !status.needs_update
       )
     } catch (error) {
@@ -304,9 +304,9 @@ class LegalService {
     // For now, we'll create a basic fingerprint
     const nav = navigator
     const screen = window.screen
-    
+
     const fingerprint = await this.generateFingerprint()
-    
+
     return {
       fingerprint,
       userAgent: nav.userAgent,
@@ -324,7 +324,7 @@ class LegalService {
     // Basic fingerprinting - in production, use FingerprintJS
     const canvas = document.createElement('canvas')
     const ctx = canvas.getContext('2d')
-    
+
     if (ctx) {
       ctx.textBaseline = 'top'
       ctx.font = '14px "Arial"'
@@ -336,9 +336,9 @@ class LegalService {
       ctx.fillStyle = 'rgba(102, 204, 0, 0.7)'
       ctx.fillText('ClaimGuardian', 4, 17)
     }
-    
+
     const canvasData = canvas.toDataURL()
-    
+
     // Combine with other browser properties
     const fingerPrintData = [
       navigator.userAgent,
@@ -348,13 +348,13 @@ class LegalService {
       new Date().getTimezoneOffset(),
       canvasData
     ].join('|')
-    
+
     // Hash the fingerprint data
     const msgUint8 = new TextEncoder().encode(fingerPrintData)
     const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-    
+
     return hashHex
   }
 
@@ -370,7 +370,7 @@ class LegalService {
       // Server-side IP detection from headers (more secure and reliable)
       // This should be called from server actions that have access to headers
       logger.info('Client-side geolocation API disabled for security')
-      
+
       return {
         ip: 'client-detected', // Will be replaced server-side
         geolocation: undefined // Server-side will populate if needed

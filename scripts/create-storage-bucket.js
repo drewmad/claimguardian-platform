@@ -41,15 +41,15 @@ const options = {
 
 const req = https.request(options, (res) => {
   let responseData = '';
-  
+
   res.on('data', (chunk) => {
     responseData += chunk;
   });
-  
+
   res.on('end', () => {
     console.log('Status:', res.statusCode);
     console.log('Response:', responseData);
-    
+
     if (res.statusCode === 200 || res.statusCode === 201) {
       console.log('✅ Bucket created successfully!');
     } else if (res.statusCode === 400 && responseData.includes('already exists')) {

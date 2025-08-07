@@ -23,16 +23,16 @@ function VerifyEmailContent() {
     // Redirect to enhanced verification page with all parameters preserved
     const currentUrl = new URL(window.location.href)
     const enhancedUrl = new URL('/auth/verify-enhanced', window.location.origin)
-    
+
     // Copy all search params and hash to the enhanced version
     currentUrl.searchParams.forEach((value, key) => {
       enhancedUrl.searchParams.set(key, value)
     })
-    
+
     if (currentUrl.hash) {
       enhancedUrl.hash = currentUrl.hash
     }
-    
+
     router.replace(enhancedUrl.toString())
   }, [router, searchParams])
 

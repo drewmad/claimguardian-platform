@@ -11,9 +11,9 @@ import { Alert } from 'react-native'
 import * as Network from 'expo-network'
 import { useDispatch } from 'react-redux'
 
-import { 
-  setNetworkState, 
-  recordConnectionEvent, 
+import {
+  setNetworkState,
+  recordConnectionEvent,
   enableOfflineMode,
   disableOfflineMode,
   testConnectionSpeed,
@@ -91,7 +91,7 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
         // Connected
         dispatch(recordConnectionEvent({ event: 'connected' }))
         dispatch(disableOfflineMode())
-        
+
         // Clear offline timer
         if (offlineTimerRef.current) {
           clearTimeout(offlineTimerRef.current)
@@ -113,11 +113,11 @@ export function NetworkProvider({ children }: NetworkProviderProps) {
       } else if (wasConnected && !isConnected) {
         // Disconnected
         dispatch(recordConnectionEvent({ event: 'disconnected' }))
-        
+
         // Start offline mode after delay to avoid false alarms
         offlineTimerRef.current = setTimeout(() => {
           dispatch(enableOfflineMode())
-          
+
           Alert.alert(
             'Working Offline',
             'Internet connection lost. You can continue working - data will sync when connection is restored.',

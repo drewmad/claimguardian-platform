@@ -128,7 +128,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
   }, {} as Record<string, TimelineEvent[]>)
 
   // Sort dates in descending order
-  const sortedDates = Object.keys(groupedEvents).sort((a, b) => 
+  const sortedDates = Object.keys(groupedEvents).sort((a, b) =>
     new Date(b).getTime() - new Date(a).getTime()
   )
 
@@ -140,7 +140,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
 
     try {
       const supabase = createBrowserSupabaseClient()
-      
+
       // Create new event
       const event: TimelineEvent = {
         id: `temp-${Date.now()}`,
@@ -170,7 +170,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
 
       // Update local state
       setEvents(prev => [event, ...prev])
-      
+
       // Notify parent
       if (onEventAdd) {
         onEventAdd(event)
@@ -184,7 +184,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
         time: new Date().toTimeString().split(' ')[0].substring(0, 5)
       })
       setIsAddingEvent(false)
-      
+
       toast.success('Timeline event added')
     } catch (error) {
       logger.error('Error adding timeline event:', error)
@@ -231,7 +231,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                   Record an important event in your claim history
                 </DialogDescription>
               </DialogHeader>
-              
+
               <div className="space-y-4">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -250,7 +250,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="event-category">Category</Label>
                     <Select
@@ -281,7 +281,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                       max={new Date().toISOString().split('T')[0]}
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="event-time">Time (optional)</Label>
                     <Input
@@ -429,7 +429,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                 <h3 className="font-medium text-white">{date}</h3>
                 <div className="flex-1 h-px bg-gray-700" />
               </div>
-              
+
               {/* Events for this date */}
               <div className="ml-9 space-y-4">
                 {groupedEvents[date]
@@ -442,10 +442,10 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                   })
                   .map((event, eventIndex) => {
                     const Icon = getEventIcon(event.type)
-                    const isLastEvent = 
-                      dateIndex === sortedDates.length - 1 && 
+                    const isLastEvent =
+                      dateIndex === sortedDates.length - 1 &&
                       eventIndex === groupedEvents[date].length - 1
-                    
+
                     return (
                       <div key={event.id} className="flex gap-4">
                         <div className="relative">
@@ -456,7 +456,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                             <div className="absolute top-10 left-5 w-px h-full bg-gray-700" />
                           )}
                         </div>
-                        
+
                         <Card className="flex-1 bg-gray-800 border-gray-700">
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between mb-2">
@@ -477,9 +477,9 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                                 {EVENT_TYPE_CONFIG[event.type]?.label}
                               </Badge>
                             </div>
-                            
+
                             <p className="text-gray-300 mb-3">{event.description}</p>
-                            
+
                             {/* Metadata display */}
                             {event.metadata && (
                               <div className="flex flex-wrap gap-4 text-sm">
@@ -491,7 +491,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                                     </span>
                                   </div>
                                 )}
-                                
+
                                 {event.metadata.contactName && (
                                   <div className="flex items-center gap-2">
                                     <User className="w-4 h-4 text-gray-400" />
@@ -500,7 +500,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                                     </span>
                                   </div>
                                 )}
-                                
+
                                 {event.metadata.contactMethod && (
                                   <div className="flex items-center gap-2">
                                     {event.metadata.contactMethod === 'phone' && <Phone className="w-4 h-4 text-gray-400" />}
@@ -510,7 +510,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                                     </span>
                                   </div>
                                 )}
-                                
+
                                 {event.metadata.documentCount && (
                                   <div className="flex items-center gap-2">
                                     <FileText className="w-4 h-4 text-gray-400" />
@@ -521,7 +521,7 @@ export function ClaimTimeline({ claimId, events: initialEvents = [], onEventAdd,
                                 )}
                               </div>
                             )}
-                            
+
                             {/* Attachments */}
                             {event.attachments && event.attachments.length > 0 && (
                               <div className="mt-3 pt-3 border-t border-gray-700">

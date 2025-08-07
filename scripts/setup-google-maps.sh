@@ -88,14 +88,14 @@ if ! command -v vercel &> /dev/null; then
 else
     echo "Do you want to add the Google Maps API key to Vercel? (y/N):"
     read ADD_TO_VERCEL
-    
+
     if [ "$ADD_TO_VERCEL" = "y" ] || [ "$ADD_TO_VERCEL" = "Y" ]; then
         if [ -z "$GOOGLE_MAPS_KEY" ]; then
             echo "Enter your Google Maps API key:"
             read -s GOOGLE_MAPS_KEY
             echo ""
         fi
-        
+
         if [ -n "$GOOGLE_MAPS_KEY" ]; then
             echo "Adding to Vercel..."
             echo "$GOOGLE_MAPS_KEY" | vercel env add NEXT_PUBLIC_GOOGLE_MAPS_API_KEY production

@@ -145,23 +145,23 @@ export class PredictiveSettlementAnalyticsService {
     try {
       // Get historical comparable claims
       const comparableClaims = await this.findComparableClaims(request)
-      
+
       // Analyze market trends
       const marketTrends = await this.analyzeMarketTrends(request)
-      
+
       // Calculate AI-powered prediction
       const aiPrediction = await this.generateAIPrediction(request, comparableClaims, marketTrends)
-      
+
       // Calculate statistical model prediction
       const statisticalPrediction = await this.calculateStatisticalPrediction(request, comparableClaims)
-      
+
       // Combine predictions using hybrid approach
       const hybridPrediction = this.combinepredictions(aiPrediction, statisticalPrediction)
-      
+
       // Identify success and risk factors
       const successFactors = await this.identifySuccessFactors(request, comparableClaims)
       const riskFactors = await this.identifyRiskFactors(request, comparableClaims)
-      
+
       // Generate recommendations
       const recommendations = this.generateRecommendations(successFactors, riskFactors, marketTrends)
 
@@ -424,7 +424,7 @@ Provide a JSON response with:
     }
 
     const legalMultiplier = request.legal_representation ? 1.12 : 1.0
-    
+
     const finalAmount = Math.min(
       baseAmount * qualityMultiplier * legalMultiplier,
       request.claim_details.policy_limits - request.claim_details.deductible
@@ -486,7 +486,7 @@ Provide a JSON response with:
       },
       timeline: {
         estimated_days: Math.round(
-          aiPred.timeline.estimated_days * aiWeight + 
+          aiPred.timeline.estimated_days * aiWeight +
           statPred.timeline.estimated_days * statWeight
         ),
         probability_by_timeframe: {

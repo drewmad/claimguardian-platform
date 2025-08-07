@@ -44,12 +44,12 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
     logger.warn('[MIDDLEWARE] Invalid request or response objects for cookie clearing')
     return
   }
-  
+
   const cookies = request.cookies.getAll()
-  
+
   cookies.forEach(cookie => {
     // Clear Supabase auth cookies and any custom auth cookies
-    if (cookie.name.includes('sb-') || 
+    if (cookie.name.includes('sb-') ||
         cookie.name.includes('auth') ||
         cookie.name === 'supabase-auth-token') {
       response.cookies.set(cookie.name, '', {
@@ -62,7 +62,7 @@ function clearAuthCookies(request: NextRequest, response: NextResponse) {
       })
     }
   })
-  
+
   logger.info('[MIDDLEWARE] Cleared all auth cookies')
 }
 
@@ -76,11 +76,11 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
   response.headers.set('X-DNS-Prefetch-Control', 'on')
   response.headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload')
   response.headers.set('X-Permitted-Cross-Domain-Policies', 'none')
-  
+
   // Content Security Policy with comprehensive directives
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
   const supabaseHost = supabaseUrl ? new URL(supabaseUrl).hostname : ''
-  
+
   const cspDirectives = [
     "default-src 'self'",
     // Scripts: Allow self, inline (for Next.js), Google Maps, and specific CDNs
@@ -112,18 +112,18 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
     // Frame sources (if needed for embeds)
     "frame-src 'self' https://www.google.com https://maps.google.com"
   ].filter(Boolean)
-  
+
   response.headers.set('Content-Security-Policy', cspDirectives.join('; '))
-  
+
   // Report-Only CSP for monitoring violations without blocking
   if (process.env.NODE_ENV === 'production') {
     const reportUri = process.env.CSP_REPORT_URI || '/api/csp-report'
     const reportOnlyDirectives = [...cspDirectives, `report-uri ${reportUri}`]
     response.headers.set('Content-Security-Policy-Report-Only', reportOnlyDirectives.join('; '))
   }
-  
+
   // Permissions Policy based on route
-  if (pathname.includes('/damage-analyzer') || 
+  if (pathname.includes('/damage-analyzer') ||
       pathname.includes('/ai-tools') ||
       pathname.includes('/evidence-organizer') ||
       pathname.includes('/3d-model-generator')) {
@@ -136,7 +136,7 @@ function addSecurityHeaders(response: NextResponse, pathname: string) {
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next()
   const pathname = request.nextUrl.pathname
-  
+
   // Skip middleware for static assets and health checks
   const skipRateLimit = [
     '/_next',
@@ -144,7 +144,7 @@ export async function middleware(request: NextRequest) {
     '/api/health',
     '/debug'
   ]
-  
+
   // Skip middleware for static assets and API routes that don't need auth
   const publicPaths = [
     '/_next',
@@ -153,7 +153,7 @@ export async function middleware(request: NextRequest) {
     '/api/legal/documents',
     '/debug'
   ]
-  
+
   // Define truly public pages that don't require authentication
   const publicPages = [
     '/',
@@ -172,7 +172,7 @@ export async function middleware(request: NextRequest) {
     '/hurricane-prep',
     '/onboarding'
   ]
-  
+
   if (publicPaths.some(path => pathname.startsWith(path))) {
     return response
   }
@@ -181,7 +181,7 @@ export async function middleware(request: NextRequest) {
   if (!skipRateLimit.some(path => pathname.startsWith(path))) {
     const rateLimitConfig = getRateLimitConfigForPath(pathname)
     const rateLimitResult = await rateLimiter.isRateLimited(request, pathname, rateLimitConfig)
-    
+
     if (rateLimitResult.limited) {
       // Log rate limit violation for security monitoring
       logger.warn('[RATE_LIMIT_EXCEEDED]', {
@@ -192,7 +192,7 @@ export async function middleware(request: NextRequest) {
         userAgent: request.headers.get('user-agent'),
         resetTime: new Date(rateLimitResult.resetTime).toISOString()
       })
-      
+
       return new NextResponse(
         JSON.stringify({
           error: 'Rate limit exceeded',
@@ -211,16 +211,16 @@ export async function middleware(request: NextRequest) {
         }
       )
     }
-    
+
     // Add rate limit headers to successful responses
     response.headers.set('X-RateLimit-Limit', rateLimitConfig.maxRequests.toString())
     response.headers.set('X-RateLimit-Remaining', rateLimitResult.remaining.toString())
     response.headers.set('X-RateLimit-Reset', rateLimitResult.resetTime.toString())
   }
-  
+
   // Bot protection check
   const botCheck = botProtection.checkRequest(request)
-  
+
   // Block obvious bots
   if (botCheck.shouldBlock) {
     logger.info('[MIDDLEWARE] Bot blocked:', {
@@ -229,41 +229,41 @@ export async function middleware(request: NextRequest) {
       path: pathname,
       userAgent: request.headers.get('user-agent')
     })
-    
-    return new NextResponse('Access Denied', { 
+
+    return new NextResponse('Access Denied', {
       status: 403,
       headers: {
         'Content-Type': 'text/plain',
       }
     })
   }
-  
+
   // Add bot detection headers for client-side handling
   if (botCheck.shouldChallenge) {
     response.headers.set('X-Bot-Challenge', 'true')
     response.headers.set('X-Bot-Confidence', botCheck.confidence.toString())
   }
-  
+
   // Determine if this is a public page
-  const isPublicPage = publicPages.includes(pathname) || 
+  const isPublicPage = publicPages.includes(pathname) ||
                       publicPages.some(page => pathname.startsWith(page))
-  
+
   // Create Supabase client for middleware
   const supabase = createClient(request, response)
-  
+
   try {
     const { data: { user }, error } = await supabase.auth.getUser()
-    
+
     // Only log auth errors for protected routes, not public pages
     if (error && !isPublicPage) {
       logger.error(`[MIDDLEWARE] Session error at ${pathname}:`, new Error(error.message))
-      
+
       // Handle refresh token errors by clearing cookies (only for protected routes)
-      if (error.message.includes('refresh_token_not_found') || 
+      if (error.message.includes('refresh_token_not_found') ||
           error.message.includes('Invalid Refresh Token') ||
           error.message.includes('invalid_grant')) {
         clearAuthCookies(request, response)
-        
+
         // Redirect to signin if on protected route
         const protectedPaths = ['/dashboard', '/ai-tools', '/account', '/admin']
         if (protectedPaths.some(path => pathname.startsWith(path))) {
@@ -274,12 +274,12 @@ export async function middleware(request: NextRequest) {
       // For public pages, silently handle auth errors without logging
       // This is expected behavior - public pages don't require auth
     }
-    
+
     // Double-validate session for extra security on protected routes only
     let validatedUser = null
     if (user && !error && !isPublicPage) {
       const { data: { user: validatedUserFromGet }, error: userError } = await supabase.auth.getUser()
-      
+
       if (!userError && validatedUserFromGet) {
         validatedUser = validatedUserFromGet
       } else if (userError) {
@@ -288,9 +288,9 @@ export async function middleware(request: NextRequest) {
           path: pathname,
           sessionUser: user.email
         })
-        
+
         // Clear cookies on validation failure
-        if (userError.message?.includes('refresh_token') || 
+        if (userError.message?.includes('refresh_token') ||
             userError.message?.includes('Invalid') ||
             userError.message?.includes('User from sub claim in JWT does not exist')) {
           clearAuthCookies(request, response)
@@ -302,17 +302,17 @@ export async function middleware(request: NextRequest) {
       // For public pages, if user exists, use them directly without double validation
       validatedUser = user
     }
-    
+
     // Audit logging for security and compliance
     try {
       // Get IP address and user agent
-      const ip = request.headers.get('x-forwarded-for')?.split(',')[0] || 
+      const ip = request.headers.get('x-forwarded-for')?.split(',')[0] ||
                  request.headers.get('x-real-ip') ||
                  request.headers.get('cf-connecting-ip') ||
                  'unknown'
-      
+
       const userAgent = request.headers.get('user-agent') || 'unknown'
-      
+
       // Build metadata for logging
       const metadata = {
         method: request.method,
@@ -321,7 +321,7 @@ export async function middleware(request: NextRequest) {
         referer: request.headers.get('referer'),
         timestamp: new Date().toISOString()
       }
-      
+
       // Log authenticated requests to audit_logs (only for protected routes to reduce noise)
       if (validatedUser && !isPublicPage) {
         await supabase.from('audit_logs').insert({
@@ -334,17 +334,17 @@ export async function middleware(request: NextRequest) {
           metadata
         })
       }
-      
+
       // Log security-sensitive events to security_logs
       const securityPaths = ['/auth/', '/api/', '/admin/']
       const shouldLogSecurity = securityPaths.some(path => pathname.startsWith(path))
-      
+
       if (shouldLogSecurity || (request.method !== 'GET' && request.method !== 'HEAD')) {
         const severity = pathname.startsWith('/admin/') ? 'warning' : 'info'
-        const eventType = pathname.startsWith('/auth/') ? 'auth_attempt' : 
-                         pathname.startsWith('/api/') ? 'api_call' : 
+        const eventType = pathname.startsWith('/auth/') ? 'auth_attempt' :
+                         pathname.startsWith('/api/') ? 'api_call' :
                          'admin_access'
-        
+
         await supabase.from('security_logs').insert({
           event_type: eventType,
           severity: severity,
@@ -366,7 +366,7 @@ export async function middleware(request: NextRequest) {
         path: pathname
       })
     }
-    
+
     // Log access attempts for security monitoring
     if (process.env.NODE_ENV === 'production' && pathname.startsWith('/admin')) {
       logger.info('[SECURITY] Admin access attempt:', {
@@ -374,12 +374,12 @@ export async function middleware(request: NextRequest) {
         userId: validatedUser?.id || 'unauthenticated',
         userEmail: validatedUser?.email || 'unknown',
         path: pathname,
-        ip: request.headers.get('x-forwarded-for')?.split(',')[0] || 
+        ip: request.headers.get('x-forwarded-for')?.split(',')[0] ||
             request.headers.get('x-real-ip') || 'unknown',
         userAgent: request.headers.get('user-agent')
       })
     }
-    
+
     // Protected routes configuration
     const protectedRoutes = [
       { path: '/dashboard', requiresAuth: true },
@@ -387,19 +387,19 @@ export async function middleware(request: NextRequest) {
       { path: '/account', requiresAuth: true },
       { path: '/admin', requiresAuth: true, requiresAdmin: true }
     ]
-    
+
     // Check if current path is protected
     const matchedRoute = protectedRoutes.find(route => pathname.startsWith(route.path))
-    
+
     if (matchedRoute?.requiresAuth && !validatedUser) {
       // Store the attempted URL for redirect after login
       const redirectUrl = new URL('/auth/signin', request.url)
       redirectUrl.searchParams.set('redirect', pathname)
       redirectUrl.searchParams.set('message', 'Please sign in to continue')
-      
+
       return NextResponse.redirect(redirectUrl)
     }
-    
+
     // Check admin routes (placeholder for future implementation)
     if (matchedRoute?.requiresAdmin && validatedUser) {
       // TODO: Check if user has admin role
@@ -410,7 +410,7 @@ export async function middleware(request: NextRequest) {
         path: pathname
       })
     }
-    
+
     // Auth pages redirect if already authenticated
     const authPaths = ['/auth/signin', '/auth/signup']
     if (authPaths.includes(pathname) && validatedUser) {
@@ -418,54 +418,54 @@ export async function middleware(request: NextRequest) {
       const redirectTo = request.nextUrl.searchParams.get('redirect') || '/dashboard'
       return NextResponse.redirect(new URL(redirectTo, request.url))
     }
-    
+
   } catch (error) {
     logger.error(`[MIDDLEWARE] Unexpected error at ${pathname}:`, toError(error))
-    
+
     // Don't block requests on unexpected errors
     // Just log and continue
   }
-  
+
   // Add security headers to all responses
   addSecurityHeaders(response, pathname)
-  
+
   // Add request ID for tracking
   response.headers.set('X-Request-Id', crypto.randomUUID())
-  
+
   return response
 }
 
 // Helper function to get rate limit configuration based on path
 function getRateLimitConfigForPath(pathname: string) {
   // Authentication paths - very strict
-  if (pathname.includes('/auth/signin') || 
+  if (pathname.includes('/auth/signin') ||
       pathname.includes('/auth/callback') ||
       pathname.includes('/api/auth/signin')) {
     return RateLimiter.configs.strict
   }
 
   // Password reset paths - very strict
-  if (pathname.includes('/auth/reset') || 
+  if (pathname.includes('/auth/reset') ||
       pathname.includes('/auth/recover') ||
       pathname.includes('/api/auth/reset')) {
     return { maxRequests: 3, windowMs: 60 * 60 * 1000 } // 3 per hour
   }
 
   // Registration paths - strict
-  if (pathname.includes('/auth/signup') || 
+  if (pathname.includes('/auth/signup') ||
       pathname.includes('/api/auth/signup')) {
     return { maxRequests: 5, windowMs: 60 * 60 * 1000 } // 5 per hour
   }
 
   // Upload paths - moderate
-  if (pathname.includes('/upload') || 
+  if (pathname.includes('/upload') ||
       pathname.includes('/api/upload') ||
       pathname.includes('/api/documents')) {
     return { maxRequests: 10, windowMs: 60 * 60 * 1000 } // 10 per hour
   }
 
   // AI processing paths - moderate
-  if (pathname.includes('/ai-tools') || 
+  if (pathname.includes('/ai-tools') ||
       pathname.includes('/api/ai') ||
       pathname.includes('/api/analysis') ||
       pathname.includes('/api/extraction')) {

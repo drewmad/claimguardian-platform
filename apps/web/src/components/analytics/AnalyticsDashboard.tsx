@@ -67,7 +67,7 @@ export function AnalyticsDashboard() {
   const fetchAnalytics = async () => {
     try {
       const supabase = createClient()
-      
+
       // Calculate date range
       const now = new Date()
       const startDate = new Date()

@@ -13,7 +13,7 @@ import { logger } from '@/lib/logger'
 
 /**
  * INTEGRATION EXAMPLE 1: Smart Task Execution with Full Learning System
- * 
+ *
  * This example shows how to execute a task with all learning systems working together:
  * - Pre-task analytics and prediction
  * - Auto-optimization application
@@ -43,7 +43,7 @@ async function executeTaskWithFullLearning<T>(
   }
 }> {
   const startTime = Date.now()
-  
+
   logger.info('Starting task with full learning system', { taskType, taskDescription })
 
   // PHASE 1: Pre-task Analytics
@@ -51,8 +51,8 @@ async function executeTaskWithFullLearning<T>(
     taskContext.complexity,
     { ...taskContext, taskType: taskType as any }
   )
-  
-  logger.info('Task prediction generated', { 
+
+  logger.info('Task prediction generated', {
     successProbability: prediction.successProbability,
     estimatedTime: prediction.estimatedTime
   })
@@ -62,8 +62,8 @@ async function executeTaskWithFullLearning<T>(
     ...taskContext,
     taskType: taskType as any
   })
-  
-  logger.info('Auto-optimizations applied', { 
+
+  logger.info('Auto-optimizations applied', {
     applied: optimization.appliedOptimizations.length,
     suggested: optimization.suggestedOptimizations.length
   })
@@ -73,7 +73,7 @@ async function executeTaskWithFullLearning<T>(
     ...taskContext,
     taskType: taskType as any
   })
-  
+
   logger.info('Proactive suggestions generated', { count: suggestions.length })
 
   // PHASE 4: Smart Delegation
@@ -81,8 +81,8 @@ async function executeTaskWithFullLearning<T>(
     ...taskContext,
     taskType: taskType as any
   })
-  
-  logger.info('Smart delegation determined', { 
+
+  logger.info('Smart delegation determined', {
     approach: delegation.bestApproach,
     tools: delegation.recommendedTools
   })
@@ -115,7 +115,7 @@ async function executeTaskWithFullLearning<T>(
 
 /**
  * INTEGRATION EXAMPLE 2: Batch Processing with Accumulated Learning
- * 
+ *
  * Process multiple similar tasks with learning accumulation
  */
 async function processBatchWithLearning<T>(
@@ -143,7 +143,7 @@ async function processBatchWithLearning<T>(
 
   // Process batch with accumulated learning
   const batchSession = await claudeEnhancedAutomation.processBatchLearning(batchTasks as any)
-  
+
   // Execute tasks with learning application
   const results: T[] = []
   for (const task of tasks) {
@@ -165,7 +165,7 @@ async function processBatchWithLearning<T>(
 
 /**
  * INTEGRATION EXAMPLE 3: Real-time Monitoring and Analytics
- * 
+ *
  * Monitor system performance and generate analytics reports
  */
 async function generateSystemAnalytics(timeframe: 'week' | 'month' | 'quarter' = 'month') {
@@ -189,7 +189,7 @@ async function generateSystemAnalytics(timeframe: 'week' | 'month' | 'quarter' =
   const comprehensiveReport = {
     timestamp: new Date(),
     timeframe,
-    
+
     // Learning System Overview
     overview: {
       totalTasks: learningStats.learningPatterns || 0,
@@ -245,7 +245,7 @@ async function generateSystemAnalytics(timeframe: 'week' | 'month' | 'quarter' =
 
 /**
  * INTEGRATION EXAMPLE 4: Simple Task Wrapper
- * 
+ *
  * Easy-to-use wrapper for any task that wants learning integration
  */
 async function withAdvancedLearning<T>(
@@ -275,7 +275,7 @@ async function withAdvancedLearning<T>(
     // Generate proactive suggestions (logged for awareness)
     const suggestions = await claudeEnhancedAutomation.generateProactiveSuggestions(context as any)
     if (suggestions.length > 0) {
-      logger.info('Proactive suggestions available', { 
+      logger.info('Proactive suggestions available', {
         count: suggestions.length,
         topSuggestion: suggestions[0].suggestion
       })
@@ -296,7 +296,7 @@ async function withAdvancedLearning<T>(
 
 /**
  * QUICK START EXAMPLES
- * 
+ *
  * These examples show the simplest ways to integrate the learning system
  */
 
@@ -336,7 +336,7 @@ const quickExample3 = async () => {
       function: async () => 'User component created'
     },
     {
-      id: '2', 
+      id: '2',
       type: 'code-generation',
       description: 'Create profile component',
       context: { complexity: 'simple', framework: 'react' },
@@ -362,7 +362,7 @@ export const AVAILABLE_COMMANDS = {
   'claudeAdvancedAnalytics.predictTaskSuccess()': 'Predict task outcomes',
   'claudeAdvancedAnalytics.identifyBottlenecks()': 'Find system inefficiencies',
   'claudeAdvancedAnalytics.calculateROI()': 'Measure learning system ROI',
-  
+
   'claudeEnhancedAutomation.applyAutoOptimizations()': 'Apply high-confidence optimizations',
   'claudeEnhancedAutomation.generateProactiveSuggestions()': 'Get improvement suggestions',
   'claudeEnhancedAutomation.determineSmartDelegation()': 'Optimal task routing',
@@ -387,7 +387,7 @@ export async function getSystemStatus() {
     status: 'active',
     components: {
       advancedAnalytics: 'operational',
-      enhancedAutomation: 'operational', 
+      enhancedAutomation: 'operational',
       completeLearningSystem: 'operational',
       dashboard: 'available'
     },

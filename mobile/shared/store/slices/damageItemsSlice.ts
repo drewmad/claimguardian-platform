@@ -176,10 +176,10 @@ export const createDamageItem = createAsyncThunk<
         updated_at: new Date().toISOString(),
         synced: false
       }
-      
+
       // Save to SQLite and add to sync queue
       // Implementation would save to database
-      
+
       return damageItem
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create damage item')
@@ -204,7 +204,7 @@ export const bulkCreateDamageItems = createAsyncThunk<
         updated_at: now,
         synced: false
       }))
-      
+
       return damageItems
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create damage items')
@@ -302,9 +302,9 @@ const damageItemsSlice = createSlice({
       }
     },
 
-    updateMeasurements: (state, action: PayloadAction<{ 
-      itemId: string; 
-      measurements: DamageItem['measurements'] 
+    updateMeasurements: (state, action: PayloadAction<{
+      itemId: string;
+      measurements: DamageItem['measurements']
     }>) => {
       const item = state.items.find(item => item.id === action.payload.itemId)
       if (item) {

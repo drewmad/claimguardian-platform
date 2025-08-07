@@ -39,7 +39,7 @@ export function LearningWidget() {
 
   const handleSearch = async () => {
     if (!query.trim()) return
-    
+
     setLoading(true)
     try {
       const searchResults = await learningAssistant.searchLearnings({ query })
@@ -127,8 +127,8 @@ export function LearningWidget() {
             <div>
               <span className="text-gray-400">Trend:</span>
               <span className={`ml-1 font-medium ${
-                stats.recentTrends === 'increasing' ? 'text-orange-400' : 
-                stats.recentTrends === 'decreasing' ? 'text-green-400' : 
+                stats.recentTrends === 'increasing' ? 'text-orange-400' :
+                stats.recentTrends === 'decreasing' ? 'text-green-400' :
                 'text-gray-300'
               }`}>
                 {stats.recentTrends}

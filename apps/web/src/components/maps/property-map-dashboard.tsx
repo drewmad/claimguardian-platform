@@ -171,7 +171,7 @@ export function PropertyMapDashboard({
   const stats = useMemo(() => {
     const totalValue = filteredProperties.reduce((sum, prop) => sum + prop.value, 0)
     const totalClaims = filteredProperties.reduce((sum, prop) => sum + prop.claimsCount, 0)
-    
+
     const statusCounts = filteredProperties.reduce((acc, prop) => {
       acc[prop.insuranceStatus] = (acc[prop.insuranceStatus] || 0) + 1
       return acc
@@ -213,7 +213,7 @@ export function PropertyMapDashboard({
     const dataStr = JSON.stringify(filteredProperties, null, 2)
     const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr)
     const exportFileDefaultName = 'properties.json'
-    
+
     const linkElement = document.createElement('a')
     linkElement.setAttribute('href', dataUri)
     linkElement.setAttribute('download', exportFileDefaultName)
@@ -221,7 +221,7 @@ export function PropertyMapDashboard({
   }
 
   // Format currency
-  const formatCurrency = (value: number) => 
+  const formatCurrency = (value: number) =>
     new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(value)
 
   return (
@@ -317,7 +317,7 @@ export function PropertyMapDashboard({
                 Clear All
               </button>
             </div>
-            
+
             <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
               {/* Insurance Status Filter */}
               <div>
@@ -467,7 +467,7 @@ export function PropertyMapDashboard({
         <motion.div variants={fadeInUp}>
           <Card variant="default" className="p-6">
             <h2 className="text-lg font-semibold text-white mb-4">Property Details</h2>
-            
+
             {selectedProperty ? (
               <div className="space-y-4">
                 <div>

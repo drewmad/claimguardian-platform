@@ -9,13 +9,13 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Activity, 
-  Database, 
-  Zap, 
-  Server, 
-  Brain, 
-  TrendingUp, 
+import {
+  Activity,
+  Database,
+  Zap,
+  Server,
+  Brain,
+  TrendingUp,
   AlertTriangle,
   CheckCircle,
   RefreshCw,
@@ -77,11 +77,11 @@ export function PerformanceDashboard() {
     try {
       const response = await fetch('/api/admin/performance')
       if (!response.ok) throw new Error('Failed to fetch metrics')
-      
+
       const data = await response.json()
       setMetrics(data)
       setLastUpdated(new Date())
-      
+
     } catch (error) {
       console.error('Error fetching metrics:', error)
       toast.error('Failed to load performance metrics')
@@ -99,11 +99,11 @@ export function PerformanceDashboard() {
       })
 
       if (!response.ok) throw new Error('Failed to clear cache')
-      
+
       const result = await response.json()
       toast.success(result.message)
       fetchMetrics() // Refresh metrics
-      
+
     } catch (error) {
       console.error('Error clearing cache:', error)
       toast.error('Failed to clear cache')
@@ -112,12 +112,12 @@ export function PerformanceDashboard() {
 
   useEffect(() => {
     fetchMetrics()
-    
+
     let interval: NodeJS.Timeout
     if (autoRefresh) {
       interval = setInterval(fetchMetrics, 30000) // Refresh every 30 seconds
     }
-    
+
     return () => {
       if (interval) clearInterval(interval)
     }
@@ -231,7 +231,7 @@ export function PerformanceDashboard() {
           <CardContent>
             <div className="flex items-center gap-2 mb-2">
               {getStatusIcon(metrics.metrics.database.status)}
-              <Badge 
+              <Badge
                 className={`${getStatusColor(metrics.metrics.database.status)} text-white`}
               >
                 {metrics.metrics.database.status}
@@ -257,7 +257,7 @@ export function PerformanceDashboard() {
           <CardContent>
             <div className="flex items-center gap-2 mb-2">
               {getStatusIcon(metrics.metrics.cache.status)}
-              <Badge 
+              <Badge
                 className={`${getStatusColor(metrics.metrics.cache.status)} text-white`}
               >
                 {metrics.metrics.cache.status}
@@ -287,7 +287,7 @@ export function PerformanceDashboard() {
             <p className="text-xs text-gray-400 mb-2">
               {metrics.metrics.api.totalRequests.toLocaleString()} total requests
             </p>
-            <Progress 
+            <Progress
               value={(metrics.metrics.api.rateLimit.current / metrics.metrics.api.rateLimit.limit) * 100}
               className="h-2"
             />

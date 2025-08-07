@@ -107,7 +107,7 @@ export function ErrorDashboard() {
         .eq('id', errorId)
 
       if (error) throw error
-      
+
       // Refresh the list
       fetchErrors()
     } catch (error) {
@@ -153,8 +153,8 @@ export function ErrorDashboard() {
           <button
             onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'all' 
-                ? 'bg-blue-600 text-white' 
+              filter === 'all'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 dark:bg-gray-700'
             }`}
           >
@@ -163,8 +163,8 @@ export function ErrorDashboard() {
           <button
             onClick={() => setFilter('unresolved')}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'unresolved' 
-                ? 'bg-blue-600 text-white' 
+              filter === 'unresolved'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 dark:bg-gray-700'
             }`}
           >
@@ -173,8 +173,8 @@ export function ErrorDashboard() {
           <button
             onClick={() => setFilter('critical')}
             className={`px-4 py-2 rounded-lg ${
-              filter === 'critical' 
-                ? 'bg-blue-600 text-white' 
+              filter === 'critical'
+                ? 'bg-blue-600 text-white'
                 : 'bg-gray-200 dark:bg-gray-700'
             }`}
           >

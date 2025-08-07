@@ -27,7 +27,7 @@ export function PricingPlans() {
 
   const handleSubscribe = async (planId: string) => {
     if (authLoading) return
-    
+
     if (!user) {
       router.push('/auth/signin?redirect=/pricing')
       return
@@ -39,7 +39,7 @@ export function PricingPlans() {
     }
 
     setLoading(planId)
-    
+
     try {
       const result = await createCheckoutSession({
         planId: planId as 'homeowner' | 'landlord' | 'enterprise',
@@ -99,16 +99,16 @@ export function PricingPlans() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {plans.map((planId) => {
           const plan = PRICING_PLANS[planId]
-          const price = billingInterval === 'monthly' 
-            ? plan.price.monthly 
+          const price = billingInterval === 'monthly'
+            ? plan.price.monthly
             : Math.floor(plan.price.annually / 12)
 
           return (
-            <Card 
-              key={plan.id} 
+            <Card
+              key={plan.id}
               className={`relative bg-gray-800 border ${
-                plan.popular 
-                  ? 'border-blue-500 shadow-2xl shadow-blue-500/20 scale-105' 
+                plan.popular
+                  ? 'border-blue-500 shadow-2xl shadow-blue-500/20 scale-105'
                   : 'border-gray-700'
               } hover:border-gray-600 transition-all`}
             >
@@ -119,7 +119,7 @@ export function PricingPlans() {
                   </span>
                 </div>
               )}
-              
+
               <CardHeader className="text-center pt-8">
                 <CardTitle className="text-xl font-bold text-white">{plan.name}</CardTitle>
                 <CardDescription className="text-gray-400 mt-2">{plan.description}</CardDescription>
@@ -135,14 +135,14 @@ export function PricingPlans() {
                   )}
                 </div>
               </CardHeader>
-              
+
               <CardContent className="pt-6">
                 <Button
                   onClick={() => handleSubscribe(plan.id)}
                   disabled={loading !== null}
                   className={`w-full mb-6 py-6 text-lg font-semibold transition-all ${
-                    plan.popular 
-                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg' 
+                    plan.popular
+                      ? 'bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white shadow-lg'
                       : plan.id === 'free'
                       ? 'bg-gray-700 hover:bg-gray-600 text-white'
                       : 'bg-transparent border-2 border-gray-600 hover:border-blue-500 hover:bg-gray-700 text-white'
@@ -157,7 +157,7 @@ export function PricingPlans() {
                     'Subscribe'
                   )}
                 </Button>
-                
+
                 <ul className="space-y-4">
                   {plan.features.map((feature, index) => (
                     <li key={index} className="flex items-start">

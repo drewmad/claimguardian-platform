@@ -60,44 +60,44 @@ async function importCSV(filePath) {
   const fileName = path.basename(filePath);
   const fileSize = (fs.statSync(filePath).size / 1024 / 1024).toFixed(1);
   const client = new Client(DB_CONFIG);
-  
+
   try {
     console.log(`\n📄 Processing ${fileName} (${fileSize} MB)...`);
     const startTime = Date.now();
-    
+
     await client.connect();
-    
+
     // Direct COPY for maximum speed
     const stream = client.query(copyFrom(`
-      COPY florida_parcels_csv_import FROM STDIN 
+      COPY florida_parcels_csv_import FROM STDIN
       WITH (FORMAT csv, HEADER true, DELIMITER ',', QUOTE '"')
     `));
-    
+
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(stream);
-    
+
     await new Promise((resolve, reject) => {
       stream.on('finish', resolve);
       stream.on('error', reject);
       fileStream.on('error', reject);
     });
-    
+
     // Get count of imported records
     const countResult = await client.query(
       'SELECT COUNT(*) FROM florida_parcels_staging'
     );
     const recordCount = parseInt(countResult.rows[0].count);
-    
+
     // Transfer to main table
     console.log(`🔄 Transferring ${recordCount.toLocaleString()} records...`);
     await client.query('SELECT transfer_florida_parcels_staging()');
-    
+
     const duration = (Date.now() - startTime) / 1000;
     const rate = (recordCount / duration).toFixed(0);
-    
+
     console.log(`✅ Success! ${recordCount.toLocaleString()} records in ${duration.toFixed(1)}s (${rate} rec/s)`);
     return true;
-    
+
   } catch (error) {
     console.error(`❌ Error: ${error.message}`);
     return false;
@@ -109,7 +109,7 @@ async function importCSV(filePath) {
 async function testConnection() {
   console.log('🔍 Testing database connection...');
   const client = new Client(DB_CONFIG);
-  
+
   try {
     await client.connect();
     const result = await client.query('SELECT COUNT(*) FROM florida_parcels');
@@ -125,40 +125,40 @@ async function testConnection() {
 
 async function main() {
   console.log('🚀 Direct PostgreSQL Import (Optimized)\n');
-  
+
   // Test connection first
   const connected = await testConnection();
   if (!connected) {
     process.exit(1);
   }
-  
+
   const csvDir = './CleanedSplit';
   if (!fs.existsSync(csvDir)) {
     console.error(`❌ Directory not found: ${csvDir}`);
     console.error('   Upload your CSV files first!');
     process.exit(1);
   }
-  
+
   const files = fs.readdirSync(csvDir)
     .filter(f => f.endsWith('.csv'))
     .sort();
-  
+
   console.log(`\n📊 Found ${files.length} CSV files to import\n`);
-  
+
   const startTime = Date.now();
   let successCount = 0;
-  
+
   for (let i = 0; i < files.length; i++) {
     console.log(`\n${'='.repeat(60)}`);
     console.log(`[${i + 1}/${files.length}] ${files[i]}`);
     console.log('='.repeat(60));
-    
+
     const filePath = path.join(csvDir, files[i]);
     const success = await importCSV(filePath);
-    
+
     if (success) {
       successCount++;
-      
+
       // Move to imported folder
       const importedDir = './CleanedSplit_imported';
       if (!fs.existsSync(importedDir)) {
@@ -167,18 +167,18 @@ async function main() {
       fs.renameSync(filePath, path.join(importedDir, files[i]));
       console.log('📦 Moved to imported folder');
     }
-    
+
     // Progress summary
     const elapsed = (Date.now() - startTime) / 1000;
     const remaining = files.length - i - 1;
     const avgTime = elapsed / (i + 1);
     const eta = remaining * avgTime;
-    
+
     if (remaining > 0) {
       console.log(`\n⏳ ETA: ${Math.ceil(eta / 60)} minutes for ${remaining} remaining files`);
     }
   }
-  
+
   // Final summary
   const totalDuration = (Date.now() - startTime) / 1000;
   console.log('\n' + '='.repeat(60));
@@ -187,7 +187,7 @@ async function main() {
   console.log(`✅ Success: ${successCount}/${files.length} files`);
   console.log(`⏱️  Total time: ${Math.floor(totalDuration / 60)}m ${Math.floor(totalDuration % 60)}s`);
   console.log(`⚡ Average: ${(totalDuration / files.length).toFixed(1)}s per file`);
-  
+
   // Final record count
   const client = new Client(DB_CONFIG);
   await client.connect();

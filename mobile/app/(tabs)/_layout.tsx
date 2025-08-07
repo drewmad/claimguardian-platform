@@ -19,7 +19,7 @@ export default function TabsLayout() {
 
   const SyncBadge = ({ count }: { count: number }) => {
     if (count === 0) return null
-    
+
     return (
       <View style={{
         position: 'absolute',
@@ -45,7 +45,7 @@ export default function TabsLayout() {
 
   const NetworkIndicator = () => {
     if (network.isConnected) return null
-    
+
     return (
       <View style={{
         position: 'absolute',
@@ -94,7 +94,7 @@ export default function TabsLayout() {
           ),
         }}
       />
-      
+
       <Tabs.Screen
         name="properties"
         options={{
@@ -107,11 +107,11 @@ export default function TabsLayout() {
           ),
         }}
       />
-      
+
       <Tabs.Screen
         name="assessments"
         options={{
-          title: 'Assessments', 
+          title: 'Assessments',
           tabBarIcon: ({ color, size }) => (
             <View>
               <MaterialCommunityIcons name="clipboard-check" size={size} color={color} />
@@ -120,17 +120,17 @@ export default function TabsLayout() {
           ),
         }}
       />
-      
+
       <Tabs.Screen
         name="sync"
         options={{
           title: 'Sync',
           tabBarIcon: ({ color, size }) => (
             <View>
-              <MaterialCommunityIcons 
-                name={network.isConnected ? "cloud-sync" : "cloud-off-outline"} 
-                size={size} 
-                color={color} 
+              <MaterialCommunityIcons
+                name={network.isConnected ? "cloud-sync" : "cloud-off-outline"}
+                size={size}
+                color={color}
               />
               <SyncBadge count={unsyncedData.totalCount} />
             </View>

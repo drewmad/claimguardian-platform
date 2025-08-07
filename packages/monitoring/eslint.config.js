@@ -40,7 +40,7 @@ export default [
       // Allow empty interfaces for monitoring interfaces
       '@typescript-eslint/no-empty-object-type': 'off',
       // Configure no-unused-expressions properly
-      '@typescript-eslint/no-unused-expressions': ['error', { 
+      '@typescript-eslint/no-unused-expressions': ['error', {
         allowShortCircuit: true,
         allowTernary: true,
         allowTaggedTemplates: true

@@ -79,10 +79,10 @@ export async function trackAIMetric({
 }: TrackAIMetricParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     const { data, error } = await supabase
       .from('ai_performance_metrics')
       .insert({
@@ -113,9 +113,9 @@ export async function trackAIMetric({
     return { data, error: null }
   } catch (error) {
     console.error('Error tracking AI metric:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -135,7 +135,7 @@ export async function getAIMetrics({
 }: MetricsQuery = {}) {
   try {
     const supabase = await createClient()
-    
+
     let query = supabase
       .from('ai_performance_metrics')
       .select('*')
@@ -147,15 +147,15 @@ export async function getAIMetrics({
     if (metricNames?.length) {
       query = query.in('metric_name', metricNames)
     }
-    
+
     if (featureIds?.length) {
       query = query.in('feature_id', featureIds)
     }
-    
+
     if (models?.length) {
       query = query.in('model_name', models)
     }
-    
+
     if (providers?.length) {
       query = query.in('provider', providers)
     }
@@ -174,9 +174,9 @@ export async function getAIMetrics({
     return { data: data as AIMetricData[], error: null }
   } catch (error) {
     console.error('Error getting AI metrics:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -195,7 +195,7 @@ export async function getAggregatedAIMetrics({
 }: MetricsQuery = {}) {
   try {
     const supabase = await createClient()
-    
+
     // Map aggregation intervals
     const intervalMap = {
       'minute': '1 minute',
@@ -206,10 +206,10 @@ export async function getAggregatedAIMetrics({
     }
 
     const interval = intervalMap[aggregateBy]
-    
+
     let baseQuery = `
-      SELECT 
-        date_trunc('${aggregateBy === 'minute' ? 'minute' : 
+      SELECT
+        date_trunc('${aggregateBy === 'minute' ? 'minute' :
                     aggregateBy === '5minutes' ? 'minute' :
                     aggregateBy === '15minutes' ? 'minute' :
                     aggregateBy === 'hour' ? 'hour' : 'day'}', timestamp) as time_bucket,
@@ -271,9 +271,9 @@ export async function getAggregatedAIMetrics({
     return { data: data as AggregatedMetric[], error: null }
   } catch (error) {
     console.error('Error getting aggregated metrics:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -294,7 +294,7 @@ export async function getAIAnomalies({
 } = {}) {
   try {
     const supabase = await createClient()
-    
+
     let query = supabase
       .from('ai_anomalies')
       .select('*')
@@ -320,9 +320,9 @@ export async function getAIAnomalies({
     return { data, error: null }
   } catch (error) {
     console.error('Error getting AI anomalies:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -341,7 +341,7 @@ export async function getAIInsights({
 } = {}) {
   try {
     const supabase = await createClient()
-    
+
     let query = supabase
       .from('ai_performance_insights')
       .select('*')
@@ -369,9 +369,9 @@ export async function getAIInsights({
     return { data, error: null }
   } catch (error) {
     console.error('Error getting AI insights:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -390,10 +390,10 @@ export async function updateInsightStatus({
 }) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     const { data, error } = await supabase
       .from('ai_performance_insights')
       .update({
@@ -417,9 +417,9 @@ export async function updateInsightStatus({
     return { data, error: null }
   } catch (error) {
     console.error('Error updating insight status:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -436,7 +436,7 @@ export async function triggerMetricAggregation({
 } = {}) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase.rpc('aggregate_ai_metrics', {
       window_interval: windowInterval,
       lookback_period: lookbackPeriod
@@ -450,9 +450,9 @@ export async function triggerMetricAggregation({
     return { data: 'Aggregation completed', error: null }
   } catch (error) {
     console.error('Error triggering metric aggregation:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -469,7 +469,7 @@ export async function triggerAnomalyDetection({
 } = {}) {
   try {
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase.rpc('detect_ai_anomalies', {
       lookback_hours: lookbackHours,
       sensitivity
@@ -483,9 +483,9 @@ export async function triggerAnomalyDetection({
     return { data: `Detected ${data} anomalies`, error: null }
   } catch (error) {
     console.error('Error triggering anomaly detection:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -504,7 +504,7 @@ export async function getPerformanceBenchmarks({
 } = {}) {
   try {
     const supabase = await createClient()
-    
+
     let query = supabase
       .from('ai_performance_benchmarks')
       .select('*')
@@ -533,9 +533,9 @@ export async function getPerformanceBenchmarks({
     return { data, error: null }
   } catch (error) {
     console.error('Error getting performance benchmarks:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }
@@ -568,10 +568,10 @@ export async function createPerformanceBenchmark({
 }) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user } } = await supabase.auth.getUser()
-    
+
     const { data, error } = await supabase
       .from('ai_performance_benchmarks')
       .upsert({
@@ -599,9 +599,9 @@ export async function createPerformanceBenchmark({
     return { data, error: null }
   } catch (error) {
     console.error('Error creating performance benchmark:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Unknown error' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
 }

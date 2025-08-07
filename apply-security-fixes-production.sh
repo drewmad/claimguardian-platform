@@ -55,7 +55,7 @@ BEGIN;
 DROP VIEW IF EXISTS public.recent_security_events CASCADE;
 
 CREATE OR REPLACE VIEW public.recent_security_events AS
-SELECT 
+SELECT
   COALESCE(se.id, gen_random_uuid()) as id,
   COALESCE(se.event_type, 'unknown') as event_type,
   COALESCE(se.created_at, NOW()) as created_at,
@@ -74,10 +74,10 @@ DECLARE
   policy_exists BOOLEAN;
 BEGIN
   -- Enable RLS on all critical tables
-  FOR tbl IN 
-    SELECT tablename 
-    FROM pg_tables 
-    WHERE schemaname = 'public' 
+  FOR tbl IN
+    SELECT tablename
+    FROM pg_tables
+    WHERE schemaname = 'public'
       AND tablename IN (
         'user_tracking', 'user_consents', 'consent_audit_log',
         'signup_consents', 'user_activity_log', 'ai_processing_queue',
@@ -88,15 +88,15 @@ BEGIN
     EXECUTE format('ALTER TABLE public.%I ENABLE ROW LEVEL SECURITY', tbl.tablename);
     RAISE NOTICE 'Enabled RLS on: %', tbl.tablename;
   END LOOP;
-  
+
   -- Create basic RLS policies for user isolation
   -- User tracking
   SELECT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'user_tracking' 
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'user_tracking'
     AND policyname = 'users_view_own_tracking'
   ) INTO policy_exists;
-  
+
   IF NOT policy_exists AND EXISTS (
     SELECT 1 FROM pg_tables WHERE tablename = 'user_tracking'
   ) THEN
@@ -108,11 +108,11 @@ BEGIN
 
   -- User consents
   SELECT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'user_consents' 
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'user_consents'
     AND policyname = 'users_view_own_consents'
   ) INTO policy_exists;
-  
+
   IF NOT policy_exists AND EXISTS (
     SELECT 1 FROM pg_tables WHERE tablename = 'user_consents'
   ) THEN
@@ -124,11 +124,11 @@ BEGIN
 
   -- AI processing queue
   SELECT EXISTS (
-    SELECT 1 FROM pg_policies 
-    WHERE tablename = 'ai_processing_queue' 
+    SELECT 1 FROM pg_policies
+    WHERE tablename = 'ai_processing_queue'
     AND policyname = 'users_view_own_ai_requests'
   ) INTO policy_exists;
-  
+
   IF NOT policy_exists AND EXISTS (
     SELECT 1 FROM pg_tables WHERE tablename = 'ai_processing_queue'
   ) THEN
@@ -140,17 +140,17 @@ BEGIN
 END $$;
 
 -- 3. Fix other SECURITY DEFINER views
-CREATE OR REPLACE VIEW public.claims_summary 
+CREATE OR REPLACE VIEW public.claims_summary
 WITH (security_invoker = true) AS
-SELECT 
+SELECT
   c.id, c.claim_number, c.status, c.created_at,
   c.updated_at, c.property_id, c.user_id
 FROM claims c
 WHERE c.user_id = auth.uid();
 
-CREATE OR REPLACE VIEW public.active_policies 
+CREATE OR REPLACE VIEW public.active_policies
 WITH (security_invoker = true) AS
-SELECT 
+SELECT
   p.id, p.policy_number, p.carrier_name,
   p.effective_date, p.expiration_date, p.user_id
 FROM policies p
@@ -174,7 +174,7 @@ SECURITY DEFINER
 SET search_path = public
 AS $$
   WITH security_checks AS (
-    SELECT 
+    SELECT
       'Tables without RLS' as check_name,
       COUNT(*) as issue_count
     FROM pg_tables t
@@ -183,21 +183,21 @@ AS $$
     WHERE t.schemaname = 'public'
       AND c.relrowsecurity = false
       AND t.tablename NOT IN ('spatial_ref_sys', 'schema_migrations')
-      AND t.tablename LIKE '%user%' OR t.tablename LIKE '%consent%' 
+      AND t.tablename LIKE '%user%' OR t.tablename LIKE '%consent%'
         OR t.tablename LIKE '%claim%' OR t.tablename LIKE '%polic%'
-    
+
     UNION ALL
-    
-    SELECT 
+
+    SELECT
       'Views exposing auth.users' as check_name,
       COUNT(*) as issue_count
     FROM pg_views
     WHERE schemaname = 'public'
       AND definition LIKE '%auth.users%'
   )
-  SELECT 
+  SELECT
     check_name,
-    CASE 
+    CASE
       WHEN issue_count = 0 THEN '✅ SECURE'
       ELSE '❌ VULNERABLE'
     END as status,
@@ -237,12 +237,12 @@ if [ ! -z "$FUNCTIONS_TO_UPDATE" ]; then
     echo "Found functions to update:$FUNCTIONS_TO_UPDATE"
     echo ""
     echo "Deploying secure versions..."
-    
+
     for func in $FUNCTIONS_TO_UPDATE; do
         echo "Deploying $func..."
         supabase functions deploy $func
     done
-    
+
     echo -e "${GREEN}✓ Edge Functions deployed${NC}"
 else
     echo -e "${YELLOW}No Edge Functions found to update${NC}"
@@ -257,10 +257,10 @@ cat > verify-production-security.sql << 'EOF'
 -- Run this in Supabase SQL Editor
 
 -- Check critical tables for RLS
-SELECT 
+SELECT
   t.tablename,
   CASE WHEN c.relrowsecurity THEN '✅ RLS Enabled' ELSE '❌ RLS DISABLED' END as status,
-  CASE 
+  CASE
     WHEN t.tablename LIKE '%user%' OR t.tablename LIKE '%consent%' THEN 'CRITICAL'
     WHEN t.tablename LIKE '%claim%' OR t.tablename LIKE '%polic%' THEN 'HIGH'
     ELSE 'MEDIUM'
@@ -270,14 +270,14 @@ JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON c.relnamespace = n.oid AND n.nspname = t.schemaname
 WHERE t.schemaname = 'public'
   AND t.tablename NOT IN ('spatial_ref_sys', 'schema_migrations')
-ORDER BY 
+ORDER BY
   CASE WHEN c.relrowsecurity = false THEN 0 ELSE 1 END,
   priority;
 
 -- Check for exposed views
-SELECT 
+SELECT
   viewname,
-  CASE 
+  CASE
     WHEN definition LIKE '%auth.users%' THEN '❌ EXPOSES USER DATA'
     WHEN definition LIKE '%SECURITY DEFINER%' THEN '⚠️  ELEVATED PRIVILEGES'
     ELSE '✅ OK'

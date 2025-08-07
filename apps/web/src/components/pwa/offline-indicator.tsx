@@ -12,8 +12,8 @@
 
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  WifiOff, Wifi, Cloud, CloudOff, RefreshCw, 
+import {
+  WifiOff, Wifi, Cloud, CloudOff, RefreshCw,
   AlertTriangle, CheckCircle, Clock, X, Info
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -52,11 +52,11 @@ export function OfflineIndicator({
   useEffect(() => {
     if (isOnline && wasOffline) {
       toast.success('Connection restored! Syncing your data...')
-      
+
       // Trigger background sync for pending data
       requestBackgroundSync('property-sync')
       requestBackgroundSync('claim-sync')
-      
+
       logger.track('connection_restored')
     }
   }, [isOnline, wasOffline])
@@ -64,7 +64,7 @@ export function OfflineIndicator({
   const handleManualReconnect = async () => {
     setIsManualReconnect(true)
     onReconnect?.()
-    
+
     // Simulate reconnection attempt
     setTimeout(() => {
       setIsManualReconnect(false)
@@ -81,7 +81,7 @@ export function OfflineIndicator({
     const diff = now.getTime() - date.getTime()
     const minutes = Math.floor(diff / 60000)
     const hours = Math.floor(minutes / 60)
-    
+
     if (hours > 0) {
       return `${hours}h ${minutes % 60}m ago`
     } else if (minutes > 0) {
@@ -105,8 +105,8 @@ export function OfflineIndicator({
       <Badge
         variant={isOnline ? 'default' : 'destructive'}
         className={`px-4 py-2 text-sm font-medium shadow-lg backdrop-blur-sm ${
-          isOnline 
-            ? 'bg-green-600 hover:bg-green-700' 
+          isOnline
+            ? 'bg-green-600 hover:bg-green-700'
             : 'bg-red-600 hover:bg-red-700'
         }`}
       >
@@ -133,7 +133,7 @@ export function OfflineIndicator({
       className={`fixed ${position === 'top' ? 'top-4' : 'bottom-4'} left-4 right-4 z-50 max-w-sm mx-auto`}
     >
       <Card className={`shadow-lg backdrop-blur-sm border-2 ${
-        isOnline 
+        isOnline
           ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800'
           : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800'
       }`}>
@@ -141,8 +141,8 @@ export function OfflineIndicator({
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-3">
               <div className={`p-2 rounded-lg ${
-                isOnline 
-                  ? 'bg-green-100 dark:bg-green-900/30' 
+                isOnline
+                  ? 'bg-green-100 dark:bg-green-900/30'
                   : 'bg-red-100 dark:bg-red-900/30'
               }`}>
                 {isOnline ? (
@@ -151,27 +151,27 @@ export function OfflineIndicator({
                   <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
                 )}
               </div>
-              
+
               <div className="flex-1">
                 <h3 className={`font-medium ${
-                  isOnline 
+                  isOnline
                     ? 'text-green-900 dark:text-green-100'
                     : 'text-red-900 dark:text-red-100'
                 }`}>
                   {isOnline ? 'Connection Restored' : 'You\'re Offline'}
                 </h3>
-                
+
                 <p className={`text-sm mt-1 ${
-                  isOnline 
+                  isOnline
                     ? 'text-green-700 dark:text-green-300'
                     : 'text-red-700 dark:text-red-300'
                 }`}>
-                  {isOnline 
+                  {isOnline
                     ? 'Your data is syncing automatically'
                     : 'Some features may be limited'
                   }
                 </p>
-                
+
                 {!isOnline && offlineAt && (
                   <p className="text-xs text-red-600 dark:text-red-400 mt-1 flex items-center gap-1">
                     <Clock className="w-3 h-3" />
@@ -180,7 +180,7 @@ export function OfflineIndicator({
                 )}
               </div>
             </div>
-            
+
             <div className="flex items-center gap-1">
               {!isOnline && showReconnectButton && (
                 <TouchButton
@@ -197,7 +197,7 @@ export function OfflineIndicator({
                   )}
                 </TouchButton>
               )}
-              
+
               {isOnline && (
                 <TouchButton
                   size="sm"
@@ -260,12 +260,12 @@ export function SyncStatus({
     if (!isOnline || isSyncing) return
 
     setIsSyncing(true)
-    
+
     try {
       await onSync?.()
       requestBackgroundSync('property-sync')
       requestBackgroundSync('claim-sync')
-      
+
       toast.success('Data synced successfully')
       logger.track('manual_sync_completed')
     } catch (error) {
@@ -280,13 +280,13 @@ export function SyncStatus({
     const now = new Date()
     const diff = now.getTime() - date.getTime()
     const minutes = Math.floor(diff / 60000)
-    
+
     if (minutes < 1) return 'Just now'
     if (minutes < 60) return `${minutes}m ago`
-    
+
     const hours = Math.floor(minutes / 60)
     if (hours < 24) return `${hours}h ago`
-    
+
     const days = Math.floor(hours / 24)
     return `${days}d ago`
   }
@@ -299,20 +299,20 @@ export function SyncStatus({
         ) : (
           <CloudOff className="w-4 h-4 text-gray-400" />
         )}
-        
+
         <div className="text-sm">
           <div className="flex items-center gap-2">
             <span className="font-medium text-gray-900 dark:text-white">
               {isOnline ? 'Synced' : 'Offline'}
             </span>
-            
+
             {pendingItems > 0 && (
               <Badge variant="secondary" className="text-xs">
                 {pendingItems} pending
               </Badge>
             )}
           </div>
-          
+
           {lastSync && (
             <p className="text-xs text-gray-500 dark:text-gray-400">
               Last sync: {formatLastSync(lastSync)}
@@ -320,7 +320,7 @@ export function SyncStatus({
           )}
         </div>
       </div>
-      
+
       {isOnline && pendingItems > 0 && (
         <TouchButton
           size="sm"

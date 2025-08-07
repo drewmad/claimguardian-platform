@@ -143,7 +143,7 @@ function generalizeLocation(county: string): string {
   const centralFlorida = ['orange', 'seminole', 'osceola', 'lake', 'volusia', 'polk']
   const northFlorida = ['duval', 'clay', 'st-johns', 'nassau', 'baker']
   const westFlorida = ['pinellas', 'hillsborough', 'pasco', 'hernando', 'citrus']
-  
+
   const countyLower = county.toLowerCase()
   if (southFlorida.includes(countyLower)) return 'south_florida'
   if (centralFlorida.includes(countyLower)) return 'central_florida'
@@ -169,7 +169,7 @@ function getMonthBucket(dateString: string): string {
 function generatePrivateInsights(contributions: any[], privacySettings: PrivacySettings): ClaimInsight[] {
   const dp = new DifferentialPrivacy(privacySettings.epsilon, privacySettings.delta)
   const insights: ClaimInsight[] = []
-  
+
   // Group by damage type
   const damageGroups = contributions.reduce((groups, contrib) => {
     const key = contrib.damage_type
@@ -207,7 +207,7 @@ function generatePrivateInsights(contributions: any[], privacySettings: PrivacyS
 
     // Generate confidence intervals
     const margin = noisyAvgSettlement * 0.15 // 15% margin of error
-    
+
     insights.push({
       damageType: damageType.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
       averageSettlement: Math.round(noisyAvgSettlement),
@@ -289,7 +289,7 @@ Deno.serve(async (req: Request) => {
     if (action === 'contribute') {
       // Anonymize and store contribution
       const anonymizedData = anonymizeContribution(contribution as ClaimContribution)
-      
+
       const { data: contributionRecord, error: contributionError } = await supabase
         .from('community_contributions')
         .insert({

@@ -48,194 +48,194 @@ const DashboardLoadingTable = () => (
 // Property Management Pages
 export const LazyPropertiesPage = dynamic(
   () => import('@/app/dashboard/properties/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyPropertyDetailPage = dynamic(
   () => import('@/app/dashboard/property/[id]/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 export const LazyPersonalPropertyPage = dynamic(
   () => import('@/app/dashboard/personal-property/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
-// Claims Management Pages  
+// Claims Management Pages
 export const LazyClaimsPage = dynamic(
   () => import('@/app/dashboard/claims/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 export const LazyClaimDetailPage = dynamic(
   () => import('@/app/dashboard/claims/[id]/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 // Insurance Management Pages
 export const LazyInsurancePage = dynamic(
   () => import('@/app/dashboard/insurance/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyPoliciesPage = dynamic(
   () => import('@/app/dashboard/policies/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 // Maintenance & Systems Pages
 export const LazyMaintenancePage = dynamic(
   () => import('@/app/dashboard/maintenance/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyHomeSystemsPage = dynamic(
   () => import('@/app/dashboard/home-systems/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyWarrantyWatchPage = dynamic(
   () => import('@/app/dashboard/warranty-watch/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 // Community & Disaster Pages
 export const LazyCommunityPage = dynamic(
   () => import('@/app/dashboard/community/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyDisasterPage = dynamic(
   () => import('@/app/dashboard/disaster/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyContractorsPage = dynamic(
   () => import('@/app/dashboard/contractors/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 // Administrative Pages
 export const LazyBillingPage = dynamic(
   () => import('@/app/dashboard/billing/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 export const LazyAPIKeysPage = dynamic(
   () => import('@/app/dashboard/api-keys/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 // AI Tools Pages (high-impact lazy loading)
 export const LazyAIToolsHub = dynamic(
   () => import('@/app/ai-tools/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 export const LazyDamageAnalyzer = dynamic(
   () => import('@/app/ai-tools/damage-analyzer/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 export const LazyPolicyChat = dynamic(
   () => import('@/app/ai-tools/policy-chat/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 export const LazyInventoryScanner = dynamic(
   () => import('@/app/ai-tools/inventory-scanner/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingGrid />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingGrid />,
+    ssr: false
   }
 )
 
 // Analytics and Reporting Pages
 export const LazyExpensesPage = dynamic(
   () => import('@/app/dashboard/expenses/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 // Settings and Account Pages
 export const LazyProfilePage = dynamic(
   () => import('@/app/account/profile/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
 export const LazyLoginActivityPage = dynamic(
   () => import('@/app/account/login-activity/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingTable />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingTable />,
+    ssr: false
   }
 )
 
 // Mobile-specific pages
 export const LazyMobileFieldPage = dynamic(
   () => import('@/app/mobile/field/page').then(mod => ({ default: mod.default })),
-  { 
-    loading: () => <DashboardLoadingCard />, 
-    ssr: false 
+  {
+    loading: () => <DashboardLoadingCard />,
+    ssr: false
   }
 )
 
@@ -256,10 +256,10 @@ export const trackLazyLoadPerformance = (componentName: string) => {
     const navigationStart = window.performance.timing.navigationStart
     const now = Date.now()
     const loadTime = now - navigationStart
-    
+
     // Send to analytics
     console.log(`[Performance] ${componentName} lazy loaded in ${loadTime}ms`)
-    
+
     // Track in production monitoring
     if (process.env.NODE_ENV === 'production') {
       // Integration with monitoring system

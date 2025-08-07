@@ -99,7 +99,7 @@ export default function ARDamageDocumenterPage() {
   const [measurementUnit, setMeasurementUnit] = useState<'inches' | 'feet' | 'meters'>('feet')
   const [isProcessing, setIsProcessing] = useState(false)
   const [, setArSession] = useState<{ active: boolean } | null>(null)
-  
+
   // Enhanced features
   const [showCameraCapture, setShowCameraCapture] = useState(false)
   const [isCapturing, setIsCapturing] = useState(false)
@@ -109,7 +109,7 @@ export default function ARDamageDocumenterPage() {
   const [beforeImage, setBeforeImage] = useState<CapturedImage | null>(null)
   const [afterImage, setAfterImage] = useState<CapturedImage | null>(null)
   const [comparisonMode, setComparisonMode] = useState<'side-by-side' | 'overlay' | 'slider'>('side-by-side')
-  
+
   // Refs
   const videoRef = useRef<HTMLVideoElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -151,9 +151,9 @@ export default function ARDamageDocumenterPage() {
         canvasRef.current.width = videoRef.current.videoWidth
         canvasRef.current.height = videoRef.current.videoHeight
         context.drawImage(videoRef.current, 0, 0)
-        
+
         const imageData = canvasRef.current.toDataURL('image/jpeg')
-        
+
         // Create new image object
         const newImage: CapturedImage = {
           id: Date.now().toString(),
@@ -170,15 +170,15 @@ export default function ARDamageDocumenterPage() {
             }
           }
         }
-        
+
         setCapturedImages(prev => [...prev, newImage])
         setCurrentImageIndex(capturedImages.length)
-        
+
         // Stop camera
         const stream = videoRef.current.srcObject as MediaStream
         stream?.getTracks().forEach(track => track.stop())
         setIsCapturing(false)
-        
+
         toast.success('Image captured successfully')
       }
     }
@@ -190,7 +190,7 @@ export default function ARDamageDocumenterPage() {
         reject(new Error('Geolocation not supported'))
         return
       }
-      
+
       navigator.geolocation.getCurrentPosition(
         (position) => {
           resolve({
@@ -209,7 +209,7 @@ export default function ARDamageDocumenterPage() {
     if (file) {
       try {
         const currentLocation = await getCurrentLocation().catch(() => null)
-        
+
         const reader = new FileReader()
         reader.onload = (e) => {
           const newImage: CapturedImage = {
@@ -227,17 +227,17 @@ export default function ARDamageDocumenterPage() {
               }
             }
           }
-          
+
           setCapturedImages(prev => [...prev, newImage])
           setCurrentImageIndex(capturedImages.length)
-          
+
           // Set as before/after image based on type
           if (imageType === 'before') {
             setBeforeImage(newImage)
           } else if (imageType === 'after') {
             setAfterImage(newImage)
           }
-          
+
           toast.success(`${imageType.charAt(0).toUpperCase() + imageType.slice(1)} image uploaded successfully`)
         }
         reader.readAsDataURL(file)
@@ -251,7 +251,7 @@ export default function ARDamageDocumenterPage() {
   const handleCameraCapture = async (file: File) => {
     try {
       const currentLocation = await getCurrentLocation().catch(() => null)
-      
+
       const reader = new FileReader()
       reader.onload = (e) => {
         const newImage: CapturedImage = {
@@ -269,17 +269,17 @@ export default function ARDamageDocumenterPage() {
             }
           }
         }
-        
+
         setCapturedImages(prev => [...prev, newImage])
         setCurrentImageIndex(capturedImages.length)
-        
+
         // Set as before/after image based on type
         if (imageType === 'before') {
           setBeforeImage(newImage)
         } else if (imageType === 'after') {
           setAfterImage(newImage)
         }
-        
+
         setShowCameraCapture(false)
         toast.success(`${imageType.charAt(0).toUpperCase() + imageType.slice(1)} image captured successfully`)
       }
@@ -307,7 +307,7 @@ export default function ARDamageDocumenterPage() {
   //   toast.success('Measurement added')
   // }
 
-  // Placeholder for future AR annotation functionality  
+  // Placeholder for future AR annotation functionality
   // const addAnnotation = (position: { x: number; y: number }, text: string, severity: 'low' | 'medium' | 'high') => {
   //   const newAnnotation: Annotation = {
   //     id: Date.now().toString(),
@@ -324,7 +324,7 @@ export default function ARDamageDocumenterPage() {
     try {
       // Simulate AI validation and report generation
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       const report = {
         timestamp: new Date().toISOString(),
         measurements: measurements.length,
@@ -364,7 +364,7 @@ export default function ARDamageDocumenterPage() {
     a.href = url
     a.download = `damage-documentation-${Date.now()}.json`
     a.click()
-    
+
     toast.success('Data exported successfully')
   }
 
@@ -377,10 +377,10 @@ export default function ARDamageDocumenterPage() {
             <div className="mb-8 relative">
               {/* Premium Background Gradient */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-72 h-72 bg-gradient-to-br from-cyan-400/20 via-blue-500/15 to-purple-600/20 rounded-full blur-3xl animate-pulse opacity-40" />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className="text-cyan-400 hover:text-cyan-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-cyan-400/20 shadow-[0_8px_32px_rgba(6,182,212,0.15)] hover:shadow-[0_8px_32px_rgba(6,182,212,0.25)] transition-all duration-300"
                 >
                   ← Back to AI Tools
@@ -451,7 +451,7 @@ export default function ARDamageDocumenterPage() {
                             </SelectContent>
                           </Select>
                         </div>
-                        
+
                         <div className="relative bg-gray-900 rounded-lg overflow-hidden" style={{ minHeight: '400px' }}>
                           {capturedImages.length === 0 && (
                             <div className="absolute inset-0 flex flex-col items-center justify-center space-y-4">
@@ -549,7 +549,7 @@ export default function ARDamageDocumenterPage() {
                                   </Button>
                                 </div>
                               </div>
-                              
+
                               {/* Current Image */}
                               <div className="relative">
                                 <img
@@ -557,7 +557,7 @@ export default function ARDamageDocumenterPage() {
                                   alt={`${capturedImages[currentImageIndex]?.type} damage photo`}
                                   className="w-full h-full object-contain rounded"
                                 />
-                                
+
                                 {/* Image Metadata Overlay */}
                                 <div className="absolute top-2 left-2 bg-black/70 text-white text-xs p-2 rounded">
                                   <div className="flex items-center gap-1 mb-1">
@@ -571,7 +571,7 @@ export default function ARDamageDocumenterPage() {
                                     </div>
                                   )}
                                 </div>
-                                
+
                                 {/* Overlay for measurements and annotations */}
                                 <svg className="absolute inset-0 w-full h-full pointer-events-none">
                                   {measurements.map((measurement) => (
@@ -620,7 +620,7 @@ export default function ARDamageDocumenterPage() {
                                     </g>
                                   ))}
                                 </svg>
-                                
+
                                 {/* Action Buttons */}
                                 <div className="absolute top-4 right-4 flex gap-2">
                                   <Button
@@ -678,7 +678,7 @@ export default function ARDamageDocumenterPage() {
                                 Comparison Ready
                               </Badge>
                             </div>
-                            
+
                             {/* Comparison Display */}
                             <div className="bg-gray-900 rounded-lg p-4">
                               {comparisonMode === 'side-by-side' && (
@@ -711,7 +711,7 @@ export default function ARDamageDocumenterPage() {
                                   </div>
                                 </div>
                               )}
-                              
+
                               {comparisonMode === 'overlay' && (
                                 <div className="relative">
                                   <img
@@ -742,7 +742,7 @@ export default function ARDamageDocumenterPage() {
                           </div>
                         )}
                       </TabsContent>
-                      
+
                       {/* Measure Mode */}
                       <TabsContent value="measure" className="mt-0">
                         <div className="space-y-4">
@@ -768,7 +768,7 @@ export default function ARDamageDocumenterPage() {
                           )}
                         </div>
                       </TabsContent>
-                      
+
                       {/* Annotate Mode */}
                       <TabsContent value="annotate" className="mt-0">
                         <div className="space-y-4">
@@ -816,11 +816,11 @@ export default function ARDamageDocumenterPage() {
                                 {arNotes.length} Notes
                               </Badge>
                             </div>
-                            
+
                             <p className="text-gray-400 text-sm mb-4">
                               Add digital notes directly in your rooms. Pin important information about equipment, maintenance, or access points.
                             </p>
-                            
+
                             {/* AR Note Types */}
                             <div className="grid grid-cols-5 gap-2 mb-4">
                               <button className="p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex flex-col items-center gap-1">
@@ -844,7 +844,7 @@ export default function ARDamageDocumenterPage() {
                                 <span className="text-xs text-gray-300">Access</span>
                               </button>
                             </div>
-                            
+
                             {/* AR Notes Display */}
                             {capturedImages.length > 0 && (
                               <div className="relative bg-black rounded-lg overflow-hidden">
@@ -853,7 +853,7 @@ export default function ARDamageDocumenterPage() {
                                   alt="Room with AR notes"
                                   className="w-full h-full object-contain"
                                 />
-                                
+
                                 {/* AR Notes Overlay */}
                                 {arNotes.map((note: ARNote) => {
                                   const iconMap = {
@@ -863,15 +863,15 @@ export default function ARDamageDocumenterPage() {
                                     safety: AlertTriangle,
                                     access: Home
                                   } as const
-                                  
+
                                   const IconComponent = iconMap[note.type] || StickyNote
-                                  
+
                                   return (
                                     <div
                                       key={note.id}
                                       className={`absolute ${note.pinned ? 'animate-pulse' : ''}`}
-                                      style={{ 
-                                        left: `${note.position.x}%`, 
+                                      style={{
+                                        left: `${note.position.x}%`,
                                         top: `${note.position.y}%`,
                                         transform: 'translate(-50%, -50%)'
                                       }}
@@ -880,7 +880,7 @@ export default function ARDamageDocumenterPage() {
                                         <div className={`w-10 h-10 rounded-full flex items-center justify-center ${note.color} cursor-pointer hover:scale-110 transition-transform`}>
                                           <IconComponent className="h-5 w-5 text-white" />
                                         </div>
-                                        
+
                                         {/* Note Content Tooltip */}
                                         <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white p-3 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">
                                           <p className="font-medium text-sm">{note.text}</p>
@@ -892,7 +892,7 @@ export default function ARDamageDocumenterPage() {
                                     </div>
                                   )
                                 })}
-                                
+
                                 {/* Add Note Instructions */}
                                 {arNotes.length === 0 && (
                                   <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -905,7 +905,7 @@ export default function ARDamageDocumenterPage() {
                                 )}
                               </div>
                             )}
-                            
+
                             {/* Quick Add Templates */}
                             <div className="mt-4 space-y-2">
                               <p className="text-sm text-gray-400">Quick Templates:</p>
@@ -939,7 +939,7 @@ export default function ARDamageDocumenterPage() {
                             <p className="text-gray-400 text-sm mb-4">
                               Get comprehensive AI analysis with policy comparison, before/after evaluation, and detailed recommendations.
                             </p>
-                            
+
                             <EnhancedDamageAnalyzer
                               onAnalysisComplete={(result) => {
                                 toast.success('AI analysis completed successfully')
@@ -1021,7 +1021,7 @@ export default function ARDamageDocumenterPage() {
                             </Button>
                           </div>
                         ))}
-                        
+
                         {/* Quick Actions */}
                         <div className="flex gap-2 pt-2">
                           <Button
@@ -1049,7 +1049,7 @@ export default function ARDamageDocumenterPage() {
                     )}
                   </CardContent>
                 </Card>
-                
+
                 {/* Measurements List */}
                 <Card className="bg-gray-800/70 backdrop-blur-xl border-gray-700/50 shadow-[0_12px_40px_rgba(0,0,0,0.3)] hover:shadow-[0_20px_60px_rgba(59,130,246,0.15)] transition-all duration-500">
                   <CardHeader>
@@ -1180,7 +1180,7 @@ export default function ARDamageDocumenterPage() {
                         </>
                       )}
                     </Button>
-                    
+
                     {beforeImage && afterImage && (
                       <Button
                         onClick={() => {
@@ -1193,7 +1193,7 @@ export default function ARDamageDocumenterPage() {
                         ArrowLeftRight Analysis
                       </Button>
                     )}
-                    
+
                     <Button
                       onClick={() => setCurrentMode('ai-analysis')}
                       disabled={capturedImages.length === 0}
@@ -1202,7 +1202,7 @@ export default function ARDamageDocumenterPage() {
                       <Brain className="h-4 w-4 mr-2" />
                       AI Policy Analysis
                     </Button>
-                    
+
                     <Button
                       onClick={exportData}
                       disabled={capturedImages.length === 0}
@@ -1246,7 +1246,7 @@ export default function ARDamageDocumenterPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Camera Capture Modal */}
         {showCameraCapture && (
           <CameraCapture

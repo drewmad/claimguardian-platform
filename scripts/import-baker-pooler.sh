@@ -16,7 +16,7 @@ NR==1 { print; next }
         gsub(/"$/, "", $i)
         # Trim spaces
         gsub(/^[ \t]+|[ \t]+$/, "", $i)
-        
+
         # Fix numeric fields - these columns should be numbers
         if ((i >= 11 && i <= 22) || (i >= 33 && i <= 38) || (i >= 43 && i <= 45)) {
             if ($i == "" || $i == " " || $i == "  " || $i == "NULL") {

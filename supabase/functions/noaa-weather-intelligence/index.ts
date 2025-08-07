@@ -109,7 +109,7 @@ const NOAA_BASE_URL = 'https://api.weather.gov'
 async function getNOAAGridpoint(lat: number, lng: number): Promise<any> {
   try {
     const url = `${NOAA_BASE_URL}/points/${lat.toFixed(4)},${lng.toFixed(4)}`
-    
+
     const response = await fetch(url, {
       headers: {
         'User-Agent': 'ClaimGuardian/1.0 (contact@claimguardianai.com)' // NOAA requires User-Agent
@@ -155,32 +155,32 @@ async function getCurrentConditions(lat: number, lng: number): Promise<any> {
   try {
     const gridpoint = await getNOAAGridpoint(lat, lng)
     const stationsUrl = gridpoint.properties.observationStations
-    
+
     // Get nearby weather stations
     const stationsResponse = await fetch(stationsUrl, {
       headers: { 'User-Agent': 'ClaimGuardian/1.0 (contact@claimguardianai.com)' }
     })
-    
+
     if (stationsResponse.ok) {
       const stations = await stationsResponse.json()
       const nearestStation = stations.features?.[0]?.id
-      
+
       if (nearestStation) {
         // Get current observations from nearest station
         const obsResponse = await fetch(`${nearestStation}/observations/latest`, {
           headers: { 'User-Agent': 'ClaimGuardian/1.0 (contact@claimguardianai.com)' }
         })
-        
+
         if (obsResponse.ok) {
           const observation = await obsResponse.json()
           return observation
         }
       }
     }
-    
+
     // Fallback to mock data
     return generateMockCurrentConditions(lat, lng)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -194,7 +194,7 @@ async function getCurrentConditions(lat: number, lng: number): Promise<any> {
 function generateMockCurrentConditions(lat: number, lng: number): any {
   const isFloridaLocation = lat > 24 && lat < 31 && lng > -88 && lng < -79
   const baseTemp = isFloridaLocation ? 78 : 65
-  
+
   return {
     properties: {
       timestamp: new Date().toISOString(),
@@ -238,7 +238,7 @@ async function getForecast(gridpoint: any, includeHourly = false): Promise<any> 
     }
 
     return generateMockForecast(includeHourly)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -252,11 +252,11 @@ async function getForecast(gridpoint: any, includeHourly = false): Promise<any> 
 function generateMockForecast(includeHourly: boolean): any {
   const daily = []
   const hourly = []
-  
+
   for (let i = 0; i < 7; i++) {
     const date = new Date()
     date.setDate(date.getDate() + i)
-    
+
     daily.push({
       number: i + 1,
       name: date.toLocaleDateString('en-US', { weekday: 'long' }),
@@ -276,7 +276,7 @@ function generateMockForecast(includeHourly: boolean): any {
     for (let i = 0; i < 48; i++) {
       const time = new Date()
       time.setHours(time.getHours() + i)
-      
+
       hourly.push({
         number: i + 1,
         startTime: time.toISOString(),
@@ -299,7 +299,7 @@ async function getActiveAlerts(lat: number, lng: number): Promise<any> {
   try {
     // Get alerts for the specific point
     const alertsUrl = `${NOAA_BASE_URL}/alerts/active?point=${lat.toFixed(4)},${lng.toFixed(4)}`
-    
+
     const response = await fetch(alertsUrl, {
       headers: { 'User-Agent': 'ClaimGuardian/1.0 (contact@claimguardianai.com)' }
     })
@@ -310,7 +310,7 @@ async function getActiveAlerts(lat: number, lng: number): Promise<any> {
     }
 
     return generateMockAlerts(lat, lng)
-    
+
   } catch (error) {
     console.log(JSON.stringify({
   level: "warn",
@@ -401,7 +401,7 @@ function analyzeWeatherIntelligence(
   const alertsIntel = activeAlerts.map((alert: any) => {
     const props = alert.properties
     const claimRelevance = assessClaimRelevance(props.event, props.severity)
-    
+
     return {
       id: alert.id,
       title: props.headline,
@@ -436,24 +436,24 @@ function analyzeWeatherIntelligence(
 function assessClaimRelevance(eventType: string, severity: string): 'high' | 'medium' | 'low' {
   const highRiskEvents = ['hurricane', 'tornado', 'severe thunderstorm', 'flash flood', 'hail']
   const mediumRiskEvents = ['wind', 'flood', 'winter storm', 'ice storm']
-  
+
   const event = eventType.toLowerCase()
   const sev = severity?.toLowerCase()
-  
+
   if (highRiskEvents.some(risk => event.includes(risk))) {
     return sev === 'extreme' || sev === 'severe' ? 'high' : 'medium'
   }
-  
+
   if (mediumRiskEvents.some(risk => event.includes(risk))) {
     return 'medium'
   }
-  
+
   return 'low'
 }
 
 function generateInsuranceImpactMessage(eventType: string, relevance: 'high' | 'medium' | 'low'): string {
   const event = eventType.toLowerCase()
-  
+
   if (relevance === 'high') {
     if (event.includes('hurricane')) {
       return 'High probability of property damage. Document property condition now. Wind and flood coverage may apply.'
@@ -465,11 +465,11 @@ function generateInsuranceImpactMessage(eventType: string, relevance: 'high' | '
       return 'Hail damage to roof, vehicles, and exterior property likely. Comprehensive coverage applies.'
     }
   }
-  
+
   if (relevance === 'medium') {
     return 'Moderate risk of property damage. Monitor conditions and be prepared to document any damage.'
   }
-  
+
   return 'Low risk of insurance-relevant damage. Continue normal monitoring.'
 }
 
@@ -483,14 +483,14 @@ function generateRiskAssessment(
   const nextWeekRisks = []
   const recommendedActions = []
   const insuranceConsiderations = []
-  
+
   // Analyze current conditions
   if (current?.windSpeed > 39) {
     immediateThreats.push('High winds (tropical storm force)')
     recommendedActions.push('Secure outdoor furniture and potential projectiles')
     insuranceConsiderations.push('Document property condition before storm impact')
   }
-  
+
   // Analyze alerts
   alerts.forEach((alert: any) => {
     if (alert.claimRelevance === 'high') {
@@ -498,38 +498,38 @@ function generateRiskAssessment(
       insuranceConsiderations.push(alert.insuranceImpact)
     }
   })
-  
+
   // Analyze forecast
   const highWindDays = forecasts.daily.filter((day: any) => day.windSpeed > 35).length
   const highPrecipDays = forecasts.daily.filter((day: any) => day.precipitationChance > 70).length
-  
+
   if (highWindDays > 0) {
     nextWeekRisks.push(`${highWindDays} day(s) with high wind potential`)
   }
-  
+
   if (highPrecipDays > 2) {
     nextWeekRisks.push('Extended period of heavy precipitation possible')
     insuranceConsiderations.push('Monitor for flood damage, especially in low-lying areas')
   }
-  
+
   // Determine preparedness level
   let preparednessLevel: 'minimal' | 'standard' | 'heightened' | 'maximum' = 'minimal'
-  
+
   if (immediateThreats.length > 0) {
     preparednessLevel = alerts.some((a: any) => a.severity === 'extreme') ? 'maximum' : 'heightened'
   } else if (nextWeekRisks.length > 1) {
     preparednessLevel = 'standard'
   }
-  
+
   // Seasonal outlook for Florida
   const isFloridaLocation = location.lat > 24 && location.lat < 31 && location.lng > -88 && location.lng < -79
   const currentMonth = new Date().getMonth()
-  
+
   let seasonalOutlook = 'Normal seasonal weather patterns expected'
   if (isFloridaLocation && currentMonth >= 5 && currentMonth <= 10) {
     seasonalOutlook = 'Hurricane season active - monitor tropical development closely'
   }
-  
+
   return {
     immediateThreats,
     nextWeekRisks,
@@ -596,13 +596,13 @@ Deno.serve(async (req: Request) => {
           getActiveAlerts(location.lat, location.lng),
           getCurrentConditions(location.lat, location.lng)
         ])
-        
+
         const stormIntel = analyzeWeatherIntelligence(stormCurrent, null, stormAlerts, location)
         intelligence.activeAlerts = stormIntel.activeAlerts
         intelligence.currentConditions = stormIntel.currentConditions
         intelligence.stormTracking = {
-          activeStorms: stormIntel.activeAlerts?.filter(alert => 
-            alert.event.toLowerCase().includes('hurricane') || 
+          activeStorms: stormIntel.activeAlerts?.filter(alert =>
+            alert.event.toLowerCase().includes('hurricane') ||
             alert.event.toLowerCase().includes('tropical')
           ).map(alert => ({
             name: alert.event,
@@ -624,7 +624,7 @@ Deno.serve(async (req: Request) => {
           getCurrentConditions(location.lat, location.lng),
           getForecast(gridpoint, options.includeHourly)
         ])
-        
+
         intelligence = analyzeWeatherIntelligence(completeCurrent, completeForecasts, completeAlerts, location)
         break
 
@@ -655,7 +655,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[NOAA Weather Intelligence] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

@@ -130,7 +130,7 @@ const useRealtimeChannel = (
 ```typescript
 const ClaimEditor = ({ claimId }: { claimId: string }) => {
   const [claim, setClaim] = useState<Claim | null>(null)
-  
+
   // Real-time updates when others edit the claim
   useRealtimeTable(supabase, 'claims', {
     onUpdate: ({ new: updatedClaim }) => {
@@ -155,13 +155,13 @@ const ClaimEditor = ({ claimId }: { claimId: string }) => {
 ```typescript
 const ClaimStatusTracker = () => {
   const [claims, setClaims] = useState<Claim[]>([])
-  
+
   useRealtimeTable(supabase, 'claims', {
     onUpdate: ({ new: updated }) => {
-      setClaims(prev => prev.map(claim => 
+      setClaims(prev => prev.map(claim =>
         claim.id === updated.id ? updated : claim
       ))
-      
+
       // Show notification for status changes
       if (updated.status === 'approved') {
         toast.success(`Claim ${updated.claim_number} approved!`)
@@ -183,7 +183,7 @@ const ClaimStatusTracker = () => {
 ```typescript
 const ActivityFeed = () => {
   const [activities, setActivities] = useState<Activity[]>([])
-  
+
   useRealtimeTable(supabase, 'activities', {
     onInsert: (newActivity) => {
       setActivities(prev => [newActivity, ...prev.slice(0, 99)]) // Keep last 100
@@ -220,15 +220,15 @@ if (reconnecting) {
 ```typescript
 const ConnectionStatus = () => {
   const [isConnected, setIsConnected] = useState(false)
-  
+
   useEffect(() => {
     const channel = supabase.channel('connection-status')
-    
+
     channel
       .on('system', { event: 'connected' }, () => setIsConnected(true))
       .on('system', { event: 'disconnected' }, () => setIsConnected(false))
       .subscribe()
-    
+
     return () => channel.unsubscribe()
   }, [])
 
@@ -275,7 +275,7 @@ const ClaimForm = () => {
     // Update UI after 500ms of no new changes
     updateClaimDisplay(claim)
   }, 500)
-  
+
   useRealtimeTable(supabase, 'claims', {
     onUpdate: ({ new: updated }) => {
       debouncedUpdate(updated)
@@ -309,10 +309,10 @@ const [networkStatus, setNetworkStatus] = useState('online')
 useEffect(() => {
   const handleOnline = () => setNetworkStatus('online')
   const handleOffline = () => setNetworkStatus('offline')
-  
+
   window.addEventListener('online', handleOnline)
   window.addEventListener('offline', handleOffline)
-  
+
   return () => {
     window.removeEventListener('online', handleOnline)
     window.removeEventListener('offline', handleOffline)
@@ -337,18 +337,18 @@ describe('useRealtimeSubscription', () => {
   it('should handle table updates', () => {
     const mockSupabase = createMockSupabaseClient()
     const onUpdate = vi.fn()
-    
+
     const { result } = renderHook(() =>
       useRealtimeSubscription(mockSupabase, 'claims', { onUpdate })
     )
-    
+
     // Simulate realtime update
     mockSupabase.channel().trigger('postgres_changes', {
       eventType: 'UPDATE',
       new: { id: '1', status: 'approved' },
       old: { id: '1', status: 'pending' }
     })
-    
+
     expect(onUpdate).toHaveBeenCalledWith({
       new: { id: '1', status: 'approved' },
       old: { id: '1', status: 'pending' }

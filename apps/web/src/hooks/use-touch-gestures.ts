@@ -45,7 +45,7 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
     }
     navigator.vibrate(patterns[type])
   }
-  
+
   // iOS haptic feedback (if available)
   if ('hapticFeedback' in navigator) {
     try {
@@ -79,10 +79,10 @@ export function useTouchGestures(config: TouchGestureConfig) {
   const handleTouchStart = useCallback((e: TouchEvent) => {
     const touch = e.touches[0]
     const now = Date.now()
-    
+
     gestureState.current.startTime = now
     gestureState.current.startPosition = { x: touch.clientX, y: touch.clientY }
-    
+
     // Handle long press
     if (config.onLongPress) {
       gestureState.current.longPressTimer = setTimeout(() => {
@@ -118,15 +118,15 @@ export function useTouchGestures(config: TouchGestureConfig) {
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       )
-      
+
       const scale = currentDistance / gestureState.current.initialDistance
-      
+
       if (scale > gestureState.current.currentScale) {
         config.onPinchOut?.(scale)
       } else {
         config.onPinchIn?.(scale)
       }
-      
+
       gestureState.current.currentScale = scale
     }
   }, [config])
@@ -154,7 +154,7 @@ export function useTouchGestures(config: TouchGestureConfig) {
     // Handle swipe gestures
     if (distance > swipeThreshold && deltaTime < 300) {
       const velocity = distance / deltaTime
-      
+
       if (Math.abs(deltaX) > Math.abs(deltaY)) {
         // Horizontal swipe
         if (deltaX > 0) {
@@ -180,7 +180,7 @@ export function useTouchGestures(config: TouchGestureConfig) {
     // Handle tap gestures (only if not a swipe)
     if (distance < 20 && deltaTime < 300) {
       gestureState.current.tapCount++
-      
+
       if (gestureState.current.tapCount === 1) {
         // Wait for potential double tap
         setTimeout(() => {
@@ -211,7 +211,7 @@ export function useTouchGestures(config: TouchGestureConfig) {
       element.removeEventListener('touchstart', handleTouchStart)
       element.removeEventListener('touchmove', handleTouchMove)
       element.removeEventListener('touchend', handleTouchEnd)
-      
+
       // Clear any pending timers
       if (gestureState.current.longPressTimer) {
         clearTimeout(gestureState.current.longPressTimer)
@@ -239,11 +239,11 @@ export function useSwipeGesture(
   const handleDrag = useCallback((event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
     const { offset, velocity } = info
     const distance = Math.hypot(offset.x, offset.y)
-    
+
     if (distance < threshold) return
-    
+
     let direction: SwipeDirection['direction'] = null
-    
+
     if (Math.abs(offset.x) > Math.abs(offset.y)) {
       direction = offset.x > 0 ? 'right' : 'left'
     } else {
@@ -282,7 +282,7 @@ export function usePinchGesture(
 ) {
   const [scale, setScale] = useState(1)
   const [isActive, setIsActive] = useState(false)
-  
+
   const gestureRef = useRef<HTMLElement>(null)
   const initialDistance = useRef(0)
   const currentScale = useRef(1)
@@ -309,7 +309,7 @@ export function usePinchGesture(
         minScale,
         Math.min(maxScale, currentScale.current * (distance / initialDistance.current))
       )
-      
+
       setScale(newScale)
       onPinch(newScale, newScale > currentScale.current)
       e.preventDefault()

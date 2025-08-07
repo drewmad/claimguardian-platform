@@ -18,19 +18,19 @@ fix_category() {
   local category=$1
   local rule=$2
   local description=$3
-  
+
   echo -e "\n${YELLOW}Fixing: ${description}${NC}"
-  
+
   # Count issues before fix
   BEFORE=$(pnpm lint 2>&1 | grep -c "$rule" || true)
-  
+
   if [ "$BEFORE" -eq 0 ]; then
     echo "✅ No issues found for $rule"
     return
   fi
-  
+
   echo "Found $BEFORE issues with $rule"
-  
+
   # Apply targeted fix
   case $category in
     "auto-fixable")
@@ -47,11 +47,11 @@ fix_category() {
       pnpm eslint . --format json --rule "$rule: error" --no-eslintrc > lint-any-types-report.json || true
       ;;
   esac
-  
+
   # Count issues after fix
   AFTER=$(pnpm lint 2>&1 | grep -c "$rule" || true)
   FIXED=$((BEFORE - AFTER))
-  
+
   echo -e "${GREEN}Fixed $FIXED out of $BEFORE issues${NC}"
 }
 

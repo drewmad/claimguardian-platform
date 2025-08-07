@@ -75,7 +75,7 @@ export function DragDropUpload({
   const validateFiles = (fileList: FileList | File[]): File[] => {
     const validFiles: File[] = []
     const filesArray = Array.from(fileList)
-    
+
     for (const file of filesArray) {
       // Check file count
       if (files.length + validFiles.length >= maxFiles) {
@@ -114,29 +114,29 @@ export function DragDropUpload({
 
     // Simulate upload with progress
     for (const uploadFile of newFiles) {
-      setFiles(prev => prev.map(f => 
+      setFiles(prev => prev.map(f =>
         f.id === uploadFile.id ? { ...f, status: 'uploading' } : f
       ))
 
       // Simulate progress
       for (let progress = 0; progress <= 100; progress += 10) {
         await new Promise(resolve => setTimeout(resolve, 100))
-        setFiles(prev => prev.map(f => 
+        setFiles(prev => prev.map(f =>
           f.id === uploadFile.id ? { ...f, progress } : f
         ))
       }
 
       try {
         await onUpload([uploadFile.file])
-        setFiles(prev => prev.map(f => 
+        setFiles(prev => prev.map(f =>
           f.id === uploadFile.id ? { ...f, status: 'success', progress: 100 } : f
         ))
       } catch (error) {
-        setFiles(prev => prev.map(f => 
-          f.id === uploadFile.id ? { 
-            ...f, 
-            status: 'error', 
-            error: error instanceof Error ? error.message : 'Upload failed' 
+        setFiles(prev => prev.map(f =>
+          f.id === uploadFile.id ? {
+            ...f,
+            status: 'error',
+            error: error instanceof Error ? error.message : 'Upload failed'
           } : f
         ))
       }
@@ -231,15 +231,15 @@ export function DragDropUpload({
             'w-12 h-12 mb-4 transition-colors',
             isDragging ? 'text-blue-400' : 'text-gray-500'
           )} />
-          
+
           <p className="text-white font-medium mb-2">
             {isDragging ? 'Drop files here' : 'Drag & drop files here'}
           </p>
-          
+
           <p className="text-sm text-gray-400 mb-4">
             or <span className="text-blue-400">browse</span> to choose files
           </p>
-          
+
           <p className="text-xs text-gray-500">
             Max {maxSize}MB per file • {multiple ? `Up to ${maxFiles} files` : 'Single file only'}
           </p>
@@ -276,12 +276,12 @@ export function DragDropUpload({
                     <p className="text-xs text-gray-400">
                       {(uploadFile.file.size / 1024).toFixed(1)} KB
                     </p>
-                    
+
                     {/* Progress Bar */}
                     {uploadFile.status === 'uploading' && (
                       <Progress value={uploadFile.progress} className="mt-1 h-1" />
                     )}
-                    
+
                     {/* Error Message */}
                     {uploadFile.error && (
                       <p className="text-xs text-red-400 mt-1">{uploadFile.error}</p>
@@ -318,11 +318,11 @@ export function DragDropUpload({
 }
 
 // Simplified version for single image upload
-export function ImageDropUpload({ 
-  onUpload, 
+export function ImageDropUpload({
+  onUpload,
   currentImage,
-  className 
-}: { 
+  className
+}: {
   onUpload: (file: File) => Promise<void>
   currentImage?: string
   className?: string
@@ -332,17 +332,17 @@ export function ImageDropUpload({
 
   const handleUpload = async (files: File[]) => {
     if (files.length === 0) return
-    
+
     setIsUploading(true)
     const file = files[0]
-    
+
     // Create preview
     const reader = new FileReader()
     reader.onloadend = () => {
       setPreview(reader.result as string)
     }
     reader.readAsDataURL(file)
-    
+
     try {
       await onUpload(file)
     } finally {

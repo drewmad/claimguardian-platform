@@ -30,7 +30,7 @@ async function checkLLMIntegration() {
   console.log('='.repeat(60))
 
   const llmDir = path.join(__dirname, '..', '..', 'apps', 'web', 'src', 'lib', 'claude', 'llm-integration')
-  
+
   try {
     // Check if directory exists
     await fs.access(llmDir)
@@ -48,7 +48,7 @@ async function checkLLMIntegration() {
     ]
 
     const fileStats = []
-    
+
     for (const file of requiredFiles) {
       const filePath = path.join(llmDir, file)
       try {
@@ -70,11 +70,11 @@ async function checkLLMIntegration() {
     // Display file status
     console.log(`\n${colors.bright}File Status:${colors.reset}`)
     fileStats.forEach(file => {
-      const status = file.exists 
-        ? `${colors.green}✓${colors.reset}` 
+      const status = file.exists
+        ? `${colors.green}✓${colors.reset}`
         : `${colors.red}✗${colors.reset}`
-      const size = file.exists 
-        ? `(${(file.size / 1024).toFixed(1)} KB)` 
+      const size = file.exists
+        ? `(${(file.size / 1024).toFixed(1)} KB)`
         : '(missing)'
       console.log(`  ${status} ${file.name} ${size}`)
     })
@@ -82,7 +82,7 @@ async function checkLLMIntegration() {
     // Check interface definitions
     const interfacesPath = path.join(llmDir, 'interfaces.ts')
     const interfacesContent = await fs.readFile(interfacesPath, 'utf8')
-    
+
     const interfaces = [
       'LLMProvider',
       'LearningSynthesisRequest',
@@ -99,8 +99,8 @@ async function checkLLMIntegration() {
     console.log(`\n${colors.bright}Interface Definitions:${colors.reset}`)
     interfaces.forEach(intf => {
       const exists = interfacesContent.includes(`interface ${intf}`)
-      const status = exists 
-        ? `${colors.green}✓${colors.reset}` 
+      const status = exists
+        ? `${colors.green}✓${colors.reset}`
         : `${colors.red}✗${colors.reset}`
       console.log(`  ${status} ${intf}`)
     })
@@ -122,7 +122,7 @@ async function checkLLMIntegration() {
         const hasClass = content.includes(`class ${service.class}`)
         const hasInstance = content.includes(`export const ${service.instance}`)
         const hasPendingError = content.includes('requires Opus model')
-        
+
         const status = hasClass && hasInstance && hasPendingError
           ? `${colors.yellow}⚠${colors.reset}`  // Ready but pending
           : hasClass && hasInstance
@@ -142,11 +142,11 @@ async function checkLLMIntegration() {
     console.log(`  Files Ready: ${fileStats.filter(f => f.exists).length}`)
     console.log(`  Interfaces Defined: ${interfaces.length}`)
     console.log(`  Services Prepared: ${services.length}`)
-    
+
     console.log(`\n${colors.bright}${colors.yellow}Status: Structure Ready for Opus Integration${colors.reset}`)
     console.log('\nAll LLM integration components are structurally complete.')
     console.log('Implementation will be activated when Opus model is available.')
-    
+
     // Next steps
     console.log(`\n${colors.bright}Next Steps:${colors.reset}`)
     console.log('1. When Opus is available, run: npm run claude:enable-llm')
@@ -163,7 +163,7 @@ async function checkLLMIntegration() {
 // Generate summary report
 async function generateLLMReadinessReport() {
   const reportPath = path.join(__dirname, '..', '..', 'docs', 'LLM_INTEGRATION_STATUS.md')
-  
+
   const report = `# LLM Integration Status Report
 
 Generated: ${new Date().toISOString()}

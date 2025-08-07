@@ -24,14 +24,14 @@ PROJECT_ID="tmlrvecuwgppbaynesji"
 apply_optimization() {
     local description="$1"
     local sql="$2"
-    
+
     echo -e "${BLUE}Applying: $description${NC}"
-    
+
     # Try to execute via Supabase API
     response=$(supabase functions invoke execute-sql \
         --project-ref "$PROJECT_ID" \
         --body "{\"query\": \"$sql\"}" 2>&1 || true)
-    
+
     if [[ "$response" == *"error"* ]]; then
         echo -e "${YELLOW}  Warning: $description may have failed${NC}"
         return 1
@@ -83,10 +83,10 @@ SELECT cron.schedule(
   '0 2 * * 0', -- Sunday at 2 AM
   $$
   INSERT INTO maintenance_log (maintenance_type, details)
-  SELECT 
+  SELECT
     'index_usage_analysis',
     jsonb_build_object(
-      'unused_indexes', 
+      'unused_indexes',
       array_agg(indexname)
     )
   FROM analyze_index_usage()

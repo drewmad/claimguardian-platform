@@ -47,7 +47,7 @@ export SUPABASE_SERVICE_KEY="<your-service-role-key>"
 query_supabase() {
     local table=$1
     local query=$2
-    
+
     curl -s -X GET "${SUPABASE_URL}/rest/v1/${table}?${query}" \
         -H "apikey: ${SUPABASE_ANON_KEY}" \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
@@ -58,7 +58,7 @@ query_supabase() {
 insert_supabase() {
     local table=$1
     local data=$2
-    
+
     curl -s -X POST "${SUPABASE_URL}/rest/v1/${table}" \
         -H "apikey: ${SUPABASE_SERVICE_KEY}" \
         -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
@@ -72,7 +72,7 @@ update_supabase() {
     local table=$1
     local filter=$2
     local data=$3
-    
+
     curl -s -X PATCH "${SUPABASE_URL}/rest/v1/${table}?${filter}" \
         -H "apikey: ${SUPABASE_SERVICE_KEY}" \
         -H "Authorization: Bearer ${SUPABASE_SERVICE_KEY}" \
@@ -131,76 +131,76 @@ import json
 
 class GeminiSupabaseClient:
     """Supabase client optimized for Gemini CLI operations"""
-    
+
     def __init__(self):
         self.url = "https://tmlrvecuwgppbaynesji.supabase.co"
         self.anon_key = os.environ.get("SUPABASE_ANON_KEY")
         self.service_key = os.environ.get("SUPABASE_SERVICE_KEY")
-        
+
         if not self.anon_key:
             raise ValueError("SUPABASE_ANON_KEY not set in environment")
-        
+
         self.headers = {
             "apikey": self.anon_key,
             "Authorization": f"Bearer {self.anon_key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation"
         }
-        
+
         self.admin_headers = {
             "apikey": self.service_key,
             "Authorization": f"Bearer {self.service_key}",
             "Content-Type": "application/json",
             "Prefer": "return=representation"
         }
-    
+
     def query(self, table: str, select: str = "*", filters: Dict = None, limit: int = None) -> List[Dict]:
         """Query data from a table"""
         url = f"{self.url}/rest/v1/{table}"
         params = {"select": select}
-        
+
         if filters:
             for key, value in filters.items():
                 params[key] = value
-        
+
         if limit:
             params["limit"] = limit
-        
+
         response = requests.get(url, headers=self.headers, params=params)
         response.raise_for_status()
         return response.json()
-    
+
     def insert(self, table: str, data: Dict, use_admin: bool = False) -> Dict:
         """Insert data into a table"""
         url = f"{self.url}/rest/v1/{table}"
         headers = self.admin_headers if use_admin else self.headers
-        
+
         response = requests.post(url, headers=headers, json=data)
         response.raise_for_status()
         return response.json()
-    
+
     def update(self, table: str, id: str, data: Dict, use_admin: bool = False) -> Dict:
         """Update a record by ID"""
         url = f"{self.url}/rest/v1/{table}?id=eq.{id}"
         headers = self.admin_headers if use_admin else self.headers
-        
+
         response = requests.patch(url, headers=headers, json=data)
         response.raise_for_status()
         return response.json()
-    
+
     def delete(self, table: str, id: str, use_admin: bool = True) -> bool:
         """Delete a record by ID"""
         url = f"{self.url}/rest/v1/{table}?id=eq.{id}"
         headers = self.admin_headers if use_admin else self.headers
-        
+
         response = requests.delete(url, headers=headers)
         response.raise_for_status()
         return response.status_code == 204
-    
+
     def rpc(self, function_name: str, params: Dict = None) -> any:
         """Call a database function"""
         url = f"{self.url}/rest/v1/rpc/{function_name}"
-        
+
         response = requests.post(url, headers=self.headers, json=params or {})
         response.raise_for_status()
         return response.json()
@@ -209,11 +209,11 @@ class GeminiSupabaseClient:
 if __name__ == "__main__":
     # Initialize client
     client = GeminiSupabaseClient()
-    
+
     # Query properties
     properties = client.query("properties", limit=5)
     print(f"Found {len(properties)} properties")
-    
+
     # Create a new property
     new_property = client.insert("properties", {
         "name": "Gemini Test Property",
@@ -248,21 +248,21 @@ if __name__ == "__main__":
 
 ### 1. Get Florida Properties
 ```sql
-SELECT * FROM properties 
-WHERE address->>'state' = 'FL' 
-ORDER BY created_at DESC 
+SELECT * FROM properties
+WHERE address->>'state' = 'FL'
+ORDER BY created_at DESC
 LIMIT 10;
 ```
 
 ### 2. Find Properties by ZIP Code
 ```sql
-SELECT * FROM properties 
+SELECT * FROM properties
 WHERE address->>'zip' = '33948';
 ```
 
 ### 3. Get Properties with Claims
 ```sql
-SELECT 
+SELECT
     p.*,
     COUNT(c.id) as claim_count
 FROM properties p
@@ -273,7 +273,7 @@ HAVING COUNT(c.id) > 0;
 
 ### 4. Search Properties by Insurance Carrier
 ```sql
-SELECT * FROM properties 
+SELECT * FROM properties
 WHERE details->>'insurance_carrier' ILIKE '%Citizens%';
 ```
 
@@ -359,7 +359,7 @@ async def batch_insert_properties(properties: List[Dict]):
         for prop in properties:
             task = insert_property_async(session, prop)
             tasks.append(task)
-        
+
         results = await asyncio.gather(*tasks)
         return results
 
@@ -370,7 +370,7 @@ async def insert_property_async(session, property_data):
         "Authorization": f"Bearer {SUPABASE_SERVICE_KEY}",
         "Content-Type": "application/json"
     }
-    
+
     async with session.post(url, headers=headers, json=property_data) as response:
         return await response.json()
 ```

@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Chrome,
   Linkedin,
   Building2,
@@ -42,7 +42,7 @@ import { cn } from '@/lib/utils'
 import { logger } from '@/lib/logger'
 import { createClient } from '@/lib/supabase/client'
 
-export type SocialProvider = 'google' | 'microsoft' | 'linkedin'
+export type SocialProvider = 'google' | 'azure' | 'linkedin'
 
 export interface SocialAccount {
   provider: SocialProvider
@@ -99,13 +99,13 @@ export function SocialLoginPanel({
     try {
       const supabase = createClient()
       const { data: { user } } = await supabase.auth.getUser()
-      
+
       if (!user) return
 
       // Get connected social accounts from user metadata
       const connectedProviders = user.app_metadata?.providers || []
       const identities = user.identities || []
-      
+
       const accounts: SocialAccount[] = identities
         .filter(identity => ['google', 'microsoft', 'linkedin'].includes(identity.provider))
         .map(identity => ({
@@ -130,7 +130,7 @@ export function SocialLoginPanel({
     try {
       const supabase = createClient()
       const redirectTo = `${window.location.origin}/auth/callback`
-      
+
       // Configure provider-specific options
       const options = {
         redirectTo,
@@ -148,10 +148,10 @@ export function SocialLoginPanel({
       }
 
       // Track social login attempt
-      logger.track('social_login_initiated', { 
-        provider, 
+      logger.track('social_login_initiated', {
+        provider,
         mode,
-        hasRedirect: !!data?.url 
+        hasRedirect: !!data?.url
       })
 
       // Success notification
@@ -167,13 +167,13 @@ export function SocialLoginPanel({
 
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Social login failed'
-      setState(prev => ({ 
-        ...prev, 
-        isLoading: false, 
+      setState(prev => ({
+        ...prev,
+        isLoading: false,
         loadingProvider: undefined,
-        error: errorMessage 
+        error: errorMessage
       }))
-      
+
       error('Social login failed', {
         subtitle: errorMessage,
         actions: [{
@@ -192,21 +192,21 @@ export function SocialLoginPanel({
 
     try {
       const supabase = createClient()
-      
+
       // Note: Supabase doesn't have direct unlink functionality
       // This would typically be handled by a server-side endpoint
       // For now, we'll show a warning about manual disconnect
-      
+
       info('Account disconnection', {
         subtitle: 'Social account disconnection requires contacting support for security reasons',
         actions: [{
           label: 'Contact Support',
-          onClick: () => window.open('mailto:support@claimguardianai.com?subject=Social Account Disconnect Request', '_blank')
+          onClick: () => { window.open('mailto:support@claimguardianai.com?subject=Social Account Disconnect Request', '_blank') }
         }]
       })
 
       logger.track('social_disconnect_requested', { provider })
-      
+
     } catch (err) {
       error('Failed to disconnect account')
       logger.error('Social disconnect failed', { provider }, err as Error)
@@ -218,7 +218,7 @@ export function SocialLoginPanel({
   const getProviderName = (provider: SocialProvider): string => {
     switch (provider) {
       case 'google': return 'Google'
-      case 'microsoft': return 'Microsoft'
+      case 'azure': return 'Microsoft'
       case 'linkedin': return 'LinkedIn'
     }
   }
@@ -226,15 +226,16 @@ export function SocialLoginPanel({
   const getProviderIcon = (provider: SocialProvider) => {
     switch (provider) {
       case 'google': return Chrome
-      case 'microsoft': return Building2
+      case 'azure': return Building2
       case 'linkedin': return Linkedin
+      default: return Building2  // Default fallback icon
     }
   }
 
   const getProviderColor = (provider: SocialProvider): string => {
     switch (provider) {
       case 'google': return 'bg-red-500 hover:bg-red-600'
-      case 'microsoft': return 'bg-blue-600 hover:bg-blue-700'
+      case 'azure': return 'bg-blue-600 hover:bg-blue-700'
       case 'linkedin': return 'bg-blue-700 hover:bg-blue-800'
     }
   }
@@ -242,19 +243,21 @@ export function SocialLoginPanel({
   const getProviderScopes = (provider: SocialProvider): string => {
     switch (provider) {
       case 'google': return 'openid email profile'
-      case 'microsoft': return 'openid email profile'
+      case 'azure': return 'email'  // Azure requires email scope specifically
       case 'linkedin': return 'openid email profile'
     }
   }
 
-  const getProviderParams = (provider: SocialProvider) => {
+  const getProviderParams = (provider: SocialProvider): { [key: string]: string } | undefined => {
     switch (provider) {
-      case 'google': 
+      case 'google':
         return { access_type: 'offline', prompt: 'consent' }
-      case 'microsoft':
+      case 'azure':
         return { prompt: 'select_account' }
       case 'linkedin':
         return { prompt: 'consent' }
+      default:
+        return undefined
     }
   }
 
@@ -268,7 +271,7 @@ export function SocialLoginPanel({
           {mode === 'connect' && 'Connect your account'}
         </h3>
 
-        {(['google', 'microsoft', 'linkedin'] as SocialProvider[]).map((provider) => (
+        {(['google', 'azure', 'linkedin'] as SocialProvider[]).map((provider) => (
           <SocialLoginButton
             key={provider}
             provider={provider}
@@ -434,24 +437,27 @@ function ConnectedAccountItem({
 function getProviderName(provider: SocialProvider): string {
   switch (provider) {
     case 'google': return 'Google'
-    case 'microsoft': return 'Microsoft'
+    case 'azure': return 'Microsoft'
     case 'linkedin': return 'LinkedIn'
+    default: return 'Unknown'
   }
 }
 
 function getProviderIcon(provider: SocialProvider) {
   switch (provider) {
     case 'google': return Chrome
-    case 'microsoft': return Building2
+    case 'azure': return Building2
     case 'linkedin': return Linkedin
+    default: return Building2
   }
 }
 
 function getProviderColor(provider: SocialProvider): string {
   switch (provider) {
     case 'google': return 'bg-red-500 hover:bg-red-600'
-    case 'microsoft': return 'bg-blue-600 hover:bg-blue-700'
+    case 'azure': return 'bg-blue-600 hover:bg-blue-700'
     case 'linkedin': return 'bg-blue-700 hover:bg-blue-800'
+    default: return 'bg-gray-600 hover:bg-gray-700'
   }
 }
 
@@ -476,7 +482,7 @@ export function AccountMergeModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onCancel} />
-      
+
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -492,7 +498,7 @@ export function AccountMergeModal({
               You already have an account with this email address. How would you like to proceed?
             </p>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             <div className="space-y-3">
               <div className="p-3 bg-blue-500/10 rounded-lg border border-blue-500/20">
@@ -502,7 +508,7 @@ export function AccountMergeModal({
                   Connected via {getProviderName(existingAccount.provider)}
                 </p>
               </div>
-              
+
               <div className="p-3 bg-green-500/10 rounded-lg border border-green-500/20">
                 <h4 className="font-medium text-green-300">New Connection</h4>
                 <p className="text-sm text-gray-400">{newAccount.email}</p>
@@ -523,8 +529,8 @@ export function AccountMergeModal({
               <Button variant="outline" onClick={onCancel} className="flex-1">
                 Cancel
               </Button>
-              <Button 
-                onClick={() => onMerge(true)} 
+              <Button
+                onClick={() => onMerge(true)}
                 className="flex-1 bg-blue-600 hover:bg-blue-700"
               >
                 <Link2 className="w-4 h-4 mr-2" />

@@ -115,7 +115,7 @@ echo "Imported $IMPORTED parcels for Baker County"
 
 # Check completeness
 echo "Checking data completeness..."
-PGPASSWORD='Hotdam2025a' psql -h db.tmlrvecuwgppbaynesji.supabase.co -p 5432 -U postgres -d postgres -c "SELECT 
+PGPASSWORD='Hotdam2025a' psql -h db.tmlrvecuwgppbaynesji.supabase.co -p 5432 -U postgres -d postgres -c "SELECT
     COUNT(*) as total_parcels,
     COUNT(DISTINCT parcel_id) as unique_parcels,
     COUNT(sale_prc1) as with_sale_price,

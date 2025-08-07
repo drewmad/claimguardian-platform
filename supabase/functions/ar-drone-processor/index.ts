@@ -34,7 +34,7 @@ serve(async (req: Request) => {
 
     // Process each image with AI analysis
     const imageAnalysisResults = []
-    
+
     for (const imageUrl of imageUrls) {
       // Mock image analysis
       const imageAnalysis = {
@@ -53,7 +53,7 @@ serve(async (req: Request) => {
         quality: { technical_quality: 0.9, coverage_completeness: 0.85 },
         confidence: 0.88
       }
-      
+
       // Store in ai_enhanced_imagery table
       const { error } = await supabase
         .from('ai_enhanced_imagery')
@@ -85,7 +85,7 @@ serve(async (req: Request) => {
   message: 'Error storing image analysis:', error
 }));
       }
-      
+
       imageAnalysisResults.push(imageAnalysis)
     }
 
@@ -101,7 +101,7 @@ serve(async (req: Request) => {
         dimensions: { length: 45, width: 32, height: 28 },
         confidence: 0.82
       }
-      
+
       // Store 3D model data
       await supabase
         .from('ai_3d_reconstructions')

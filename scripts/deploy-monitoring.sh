@@ -68,12 +68,12 @@ console.log('🔄 Initializing monitoring deployment...')
 
 try {
     await deployProductionMonitoring()
-    
+
     console.log('')
     console.log('📊 Final Status Check:')
     console.log('======================')
     getMonitoringStatus()
-    
+
     console.log('')
     console.log('🎉 Deployment Complete!')
     console.log('📱 Access monitoring dashboard at: /admin')
@@ -89,7 +89,7 @@ try {
     console.log('  1. Monitor dashboard for any initial alerts')
     console.log('  2. Test policy upload functionality')
     console.log('  3. Review learning patterns as they develop')
-    
+
 } catch (error) {
     console.error('❌ Deployment failed:', error.message)
     process.exit(1)

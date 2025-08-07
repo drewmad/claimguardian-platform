@@ -22,48 +22,48 @@ if (!supabaseUrl || !serviceRoleKey || !anonKey) {
 
 async function checkRLS() {
   console.log('🔍 Checking RLS policies for legal_documents table...\n')
-  
+
   // First test with service role (bypasses RLS)
   const adminClient = createClient(supabaseUrl, serviceRoleKey)
-  
+
   console.log('1️⃣ Testing with service role key (bypasses RLS)...')
   const { data: adminData, error: adminError } = await adminClient
     .from('legal_documents')
     .select('id, type, title')
     .eq('is_active', true)
-  
+
   if (adminError) {
     console.error('❌ Admin query failed:', adminError)
   } else {
     console.log(`✅ Admin can see ${adminData?.length || 0} documents`)
   }
-  
+
   // Now test with anon key (respects RLS)
   const anonClient = createClient(supabaseUrl, anonKey)
-  
+
   console.log('\n2️⃣ Testing with anon key (respects RLS)...')
   const { data: anonData, error: anonError } = await anonClient
     .from('legal_documents')
     .select('id, type, title')
     .eq('is_active', true)
-  
+
   if (anonError) {
     console.error('❌ Anon query failed:', anonError)
     console.log('\n🔧 Attempting to fix RLS policy...')
-    
+
     // Try to create/update the RLS policy
     const { error: policyError } = await adminClient.rpc('exec_sql', {
       sql: `
         -- Drop existing policy if any
         DROP POLICY IF EXISTS "Legal documents are viewable by everyone" ON legal_documents;
         DROP POLICY IF EXISTS "Anyone can view active legal documents" ON legal_documents;
-        
+
         -- Create new policy for public read access
-        CREATE POLICY "Anyone can view active legal documents" 
-        ON legal_documents 
-        FOR SELECT 
+        CREATE POLICY "Anyone can view active legal documents"
+        ON legal_documents
+        FOR SELECT
         USING (is_active = true);
-        
+
         -- Ensure RLS is enabled
         ALTER TABLE legal_documents ENABLE ROW LEVEL SECURITY;
       `
@@ -75,25 +75,25 @@ async function checkRLS() {
 DROP POLICY IF EXISTS "Legal documents are viewable by everyone" ON legal_documents;
 DROP POLICY IF EXISTS "Anyone can view active legal documents" ON legal_documents;
 
-CREATE POLICY "Anyone can view active legal documents" 
-ON legal_documents 
-FOR SELECT 
+CREATE POLICY "Anyone can view active legal documents"
+ON legal_documents
+FOR SELECT
 USING (is_active = true);
 
 ALTER TABLE legal_documents ENABLE ROW LEVEL SECURITY;
       `)
       return { error: 'Manual fix required' }
     })
-    
+
     if (!policyError) {
       console.log('✅ RLS policy updated, retesting...')
-      
+
       // Retest
       const { data: retestData, error: retestError } = await anonClient
         .from('legal_documents')
         .select('id, type, title')
         .eq('is_active', true)
-      
+
       if (retestError) {
         console.error('❌ Still failing after fix:', retestError)
       } else {
@@ -109,7 +109,7 @@ ALTER TABLE legal_documents ENABLE ROW LEVEL SECURITY;
       })
     }
   }
-  
+
   // Check for specific RLS policies
   console.log('\n3️⃣ Checking RLS policies in database...')
   const { data: policies } = await adminClient
@@ -117,7 +117,7 @@ ALTER TABLE legal_documents ENABLE ROW LEVEL SECURITY;
     .select('*')
     .eq('tablename', 'legal_documents')
     .catch(() => ({ data: null }))
-  
+
   if (policies) {
     console.log(`Found ${policies.length} policies:`)
     policies.forEach(p => {

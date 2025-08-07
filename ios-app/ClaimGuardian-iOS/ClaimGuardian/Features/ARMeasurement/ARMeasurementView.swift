@@ -7,7 +7,7 @@ struct ARMeasurementView: View {
     @State private var showingMeasurementsList = false
     @State private var showingInstructions = true
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         ZStack {
             // AR Scene View
@@ -16,28 +16,28 @@ struct ARMeasurementView: View {
                 .onTapGesture { location in
                     arController.addMeasurementPoint(at: location)
                 }
-            
+
             // Overlay UI
             VStack {
                 // Top Controls
                 topControlsView
-                
+
                 Spacer()
-                
+
                 // Bottom Controls
                 bottomControlsView
             }
-            
+
             // Instructions Overlay
             if showingInstructions {
                 instructionsOverlay
             }
-            
+
             // Error Message
             if let errorMessage = arController.errorMessage {
                 errorMessageView(errorMessage)
             }
-            
+
             // Session State Indicator
             sessionStateIndicator
         }
@@ -53,7 +53,7 @@ struct ARMeasurementView: View {
             }
         }
     }
-    
+
     // MARK: - Top Controls
     private var topControlsView: some View {
         HStack {
@@ -66,14 +66,14 @@ struct ARMeasurementView: View {
                     .background(Color.black.opacity(0.6))
                     .clipShape(Circle())
             }
-            
+
             Spacer()
-            
+
             // Session State
             sessionStatusView
-            
+
             Spacer()
-            
+
             // Instructions Toggle
             Button(action: { showingInstructions.toggle() }) {
                 Image(systemName: "questionmark.circle")
@@ -86,7 +86,7 @@ struct ARMeasurementView: View {
         }
         .padding()
     }
-    
+
     // MARK: - Bottom Controls
     private var bottomControlsView: some View {
         VStack(spacing: 16) {
@@ -106,7 +106,7 @@ struct ARMeasurementView: View {
                 }
             }
             .padding(.horizontal)
-            
+
             // Action Buttons
             HStack(spacing: 30) {
                 // Measurements List
@@ -122,20 +122,20 @@ struct ARMeasurementView: View {
                     .background(Color.blue.opacity(0.8))
                     .clipShape(Circle())
                 }
-                
+
                 // Main Action Button
                 Button(action: mainButtonAction) {
                     ZStack {
                         Circle()
                             .fill(buttonColor)
                             .frame(width: 80, height: 80)
-                        
+
                         Image(systemName: buttonIcon)
                             .font(.title)
                             .foregroundColor(.white)
                     }
                 }
-                
+
                 // Clear All
                 Button(action: { arController.clearAllMeasurements() }) {
                     VStack(spacing: 4) {
@@ -155,14 +155,14 @@ struct ARMeasurementView: View {
             .padding(.bottom, 30)
         }
     }
-    
+
     // MARK: - Session Status
     private var sessionStatusView: some View {
         HStack(spacing: 8) {
             Circle()
                 .fill(sessionStatusColor)
                 .frame(width: 8, height: 8)
-            
+
             Text(sessionStatusText)
                 .font(.caption)
                 .foregroundColor(.white)
@@ -172,7 +172,7 @@ struct ARMeasurementView: View {
         .background(Color.black.opacity(0.6))
         .clipShape(Capsule())
     }
-    
+
     // MARK: - Session State Indicator
     private var sessionStateIndicator: some View {
         Group {
@@ -188,22 +188,22 @@ struct ARMeasurementView: View {
                 .padding()
                 .background(Color.black.opacity(0.8))
                 .cornerRadius(12)
-                
+
             case .error(let message):
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.title)
                         .foregroundColor(.red)
-                    
+
                     Text("AR Error")
                         .font(.headline)
                         .foregroundColor(.white)
-                    
+
                     Text(message)
                         .font(.body)
                         .foregroundColor(.white)
                         .multilineTextAlignment(.center)
-                    
+
                     Button("Retry") {
                         arController.startSession()
                     }
@@ -213,13 +213,13 @@ struct ARMeasurementView: View {
                 .background(Color.black.opacity(0.9))
                 .cornerRadius(12)
                 .padding()
-                
+
             default:
                 EmptyView()
             }
         }
     }
-    
+
     // MARK: - Instructions Overlay
     private var instructionsOverlay: some View {
         VStack(spacing: 16) {
@@ -227,7 +227,7 @@ struct ARMeasurementView: View {
                 .font(.title2)
                 .fontWeight(.bold)
                 .foregroundColor(.white)
-            
+
             VStack(alignment: .leading, spacing: 12) {
                 instructionStep("1", "Move your device to scan the environment")
                 instructionStep("2", "Select measurement mode (Distance, Area, Volume, Angle)")
@@ -235,7 +235,7 @@ struct ARMeasurementView: View {
                 instructionStep("4", "Tap on surfaces to place measurement points")
                 instructionStep("5", "View results in the measurements list")
             }
-            
+
             Button("Got It") {
                 showingInstructions = false
             }
@@ -247,7 +247,7 @@ struct ARMeasurementView: View {
         .cornerRadius(16)
         .padding()
     }
-    
+
     private func instructionStep(_ number: String, _ text: String) -> some View {
         HStack(alignment: .top, spacing: 12) {
             Text(number)
@@ -255,22 +255,22 @@ struct ARMeasurementView: View {
                 .fontWeight(.bold)
                 .foregroundColor(.yellow)
                 .frame(width: 20, alignment: .leading)
-            
+
             Text(text)
                 .font(.body)
                 .foregroundColor(.white)
         }
     }
-    
+
     // MARK: - Error Message
     private func errorMessageView(_ message: String) -> some View {
         VStack {
             Spacer()
-            
+
             HStack {
                 Image(systemName: "exclamationmark.triangle")
                     .foregroundColor(.red)
-                
+
                 Text(message)
                     .foregroundColor(.white)
                     .font(.body)
@@ -281,7 +281,7 @@ struct ARMeasurementView: View {
             .padding()
         }
     }
-    
+
     // MARK: - Computed Properties
     private var mainButtonAction: () -> Void {
         if arController.isPlacingPoints {
@@ -290,7 +290,7 @@ struct ARMeasurementView: View {
             return { arController.startMeasurement() }
         }
     }
-    
+
     private var buttonIcon: String {
         if arController.isPlacingPoints {
             switch arController.measurementMode {
@@ -307,11 +307,11 @@ struct ARMeasurementView: View {
             return "play.circle"
         }
     }
-    
+
     private var buttonColor: Color {
         arController.isPlacingPoints ? .orange : .green
     }
-    
+
     private var sessionStatusColor: Color {
         switch arController.sessionState {
         case .running:
@@ -326,7 +326,7 @@ struct ARMeasurementView: View {
             return .red
         }
     }
-    
+
     private var sessionStatusText: String {
         switch arController.sessionState {
         case .running:
@@ -341,14 +341,14 @@ struct ARMeasurementView: View {
             return "Error"
         }
     }
-    
+
     // MARK: - Methods
     private func setupARSession() {
         guard ARMeasurementController.checkARAvailability() else {
             arController.errorMessage = "AR is not supported on this device"
             return
         }
-        
+
         arController.startSession()
     }
 }
@@ -356,23 +356,23 @@ struct ARMeasurementView: View {
 // MARK: - AR Scene View
 struct ARSceneView: UIViewRepresentable {
     let arController: ARMeasurementController
-    
+
     func makeUIView(context: Context) -> ARSCNView {
         let arView = ARSCNView()
         arController.setARView(arView)
-        
+
         // Configure the view
         arView.backgroundColor = UIColor.black
         arView.automaticallyUpdatesLighting = true
         arView.debugOptions = []
-        
+
         return arView
     }
-    
+
     func updateUIView(_ uiView: ARSCNView, context: Context) {
         // Updates handled by ARMeasurementController
     }
-    
+
     static func dismantleUIView(_ uiView: ARSCNView, coordinator: ()) {
         // Cleanup if needed
     }
@@ -383,7 +383,7 @@ struct MeasurementsListView: View {
     let measurements: [ARMeasurementModel]
     let onDelete: (Int) -> Void
     @Environment(\.dismiss) private var dismiss
-    
+
     var body: some View {
         NavigationView {
             List {
@@ -392,11 +392,11 @@ struct MeasurementsListView: View {
                         Image(systemName: "ruler")
                             .font(.title)
                             .foregroundColor(.secondary)
-                        
+
                         Text("No measurements yet")
                             .font(.headline)
                             .foregroundColor(.secondary)
-                        
+
                         Text("Use the AR measurement tools to create your first measurement")
                             .font(.body)
                             .foregroundColor(.secondary)
@@ -431,32 +431,32 @@ struct MeasurementsListView: View {
 // MARK: - Measurement Row View
 struct MeasurementRowView: View {
     let measurement: ARMeasurementModel
-    
+
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 Image(systemName: measurement.mode.systemImage)
                     .foregroundColor(.blue)
                     .frame(width: 24)
-                
+
                 Text(measurement.mode.displayName)
                     .font(.headline)
-                
+
                 Spacer()
-                
+
                 Text(measurement.formattedValue)
                     .font(.title3)
                     .fontWeight(.semibold)
                     .foregroundColor(.primary)
             }
-            
+
             HStack {
                 Text("Points: \(measurement.points.count)")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                
+
                 Spacer()
-                
+
                 Text(DateFormatter.measurementFormatter.string(from: measurement.timestamp))
                     .font(.caption)
                     .foregroundColor(.secondary)
@@ -492,11 +492,11 @@ class KeychainHelper {
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
-        
+
         SecItemDelete(query as CFDictionary)
         SecItemAdd(query as CFDictionary, nil)
     }
-    
+
     static func load(forKey key: String) -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
@@ -504,20 +504,20 @@ class KeychainHelper {
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
-        
+
         var result: AnyObject?
         SecItemCopyMatching(query as CFDictionary, &result)
-        
+
         guard let data = result as? Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
-    
+
     static func delete(forKey key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
-        
+
         SecItemDelete(query as CFDictionary)
     }
 }
@@ -528,17 +528,17 @@ import Network
 class NetworkMonitor: ObservableObject {
     private let monitor = NWPathMonitor()
     private let queue = DispatchQueue.global(qos: .background)
-    
+
     @Published var isConnected = true
     @Published var connectionType: ConnectionType = .unknown
-    
+
     enum ConnectionType {
         case wifi
         case cellular
         case ethernet
         case unknown
     }
-    
+
     func startMonitoring() {
         monitor.pathUpdateHandler = { [weak self] path in
             DispatchQueue.main.async {
@@ -548,11 +548,11 @@ class NetworkMonitor: ObservableObject {
         }
         monitor.start(queue: queue)
     }
-    
+
     func stopMonitoring() {
         monitor.cancel()
     }
-    
+
     private func getConnectionType(_ path: NWPath) {
         if path.usesInterfaceType(.wifi) {
             connectionType = .wifi
@@ -570,31 +570,31 @@ class NetworkMonitor: ObservableObject {
 class AuthenticationService: ObservableObject {
     @Published var isAuthenticated = false
     @Published var currentUser: AuthUser?
-    
+
     private let supabaseService = SupabaseService.shared
-    
+
     func initialize() {
         // Check for existing authentication
         isAuthenticated = supabaseService.isAuthenticated
         currentUser = supabaseService.currentUser
-        
+
         // Setup authentication state listener
         setupAuthStateListener()
     }
-    
+
     private func setupAuthStateListener() {
         // Monitor changes in authentication state
         supabaseService.$isAuthenticated
             .assign(to: &$isAuthenticated)
-        
+
         supabaseService.$currentUser
             .assign(to: &$currentUser)
     }
-    
+
     func signIn(email: String, password: String) async throws {
         try await supabaseService.signIn(email: email, password: password)
     }
-    
+
     func signOut() async throws {
         try await supabaseService.signOut()
     }
@@ -604,39 +604,39 @@ class AuthenticationService: ObservableObject {
 class SyncService: ObservableObject {
     @Published var syncStatus: SyncStatus = .idle
     @Published var lastSyncDate: Date?
-    
+
     private let supabaseService = SupabaseService.shared
     private let persistenceController = PersistenceController.shared
-    
+
     enum SyncStatus {
         case idle
         case syncing
         case success
         case failure(String)
     }
-    
+
     func initialize() {
         // Setup automatic sync when network is available
         setupAutoSync()
     }
-    
+
     private func setupAutoSync() {
         // Implement background sync logic
     }
-    
+
     func performManualSync() async {
         await performSync()
     }
-    
+
     private func performSync() async {
         DispatchQueue.main.async {
             self.syncStatus = .syncing
         }
-        
+
         do {
             // Implement sync logic here
             // This would sync Core Data with Supabase
-            
+
             DispatchQueue.main.async {
                 self.syncStatus = .success
                 self.lastSyncDate = Date()
@@ -654,9 +654,9 @@ import Intents
 
 class SiriShortcutService {
     static let shared = SiriShortcutService()
-    
+
     private init() {}
-    
+
     func setupDefaultShortcuts() {
         // Setup default Siri shortcuts for common actions
     }

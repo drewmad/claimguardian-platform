@@ -48,7 +48,7 @@ const LOCAL_STORAGE_KEY = 'claimguardian_onboarding'
 export function useOnboarding(): UseOnboardingReturn {
   const { user } = useAuth()
   const { supabase } = useSupabase()
-  
+
   const [state, setState] = useState<OnboardingState>({
     hasCompletedTour: false,
     hasAddedProperty: false,
@@ -81,7 +81,7 @@ export function useOnboarding(): UseOnboardingReturn {
           if (!error && data?.onboarding_state) {
             const dbState = data.onboarding_state as Partial<OnboardingState>
             setState(prev => ({ ...prev, ...dbState, isLoading: false }))
-            
+
             // Update localStorage with database state
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(dbState))
           } else if (error && error.code === 'PGRST116') {
@@ -130,7 +130,7 @@ export function useOnboarding(): UseOnboardingReturn {
     // Update local state
     setState(prev => {
       const updated = { ...prev, ...newState }
-      
+
       // Save to localStorage immediately
       const toSave = {
         hasCompletedTour: updated.hasCompletedTour,
@@ -140,7 +140,7 @@ export function useOnboarding(): UseOnboardingReturn {
         currentStep: updated.currentStep
       }
       localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(toSave))
-      
+
       return updated
     })
 
@@ -167,7 +167,7 @@ export function useOnboarding(): UseOnboardingReturn {
 
   const completeTour = useCallback(() => {
     logger.track('onboarding_tour_completed')
-    saveState({ 
+    saveState({
       hasCompletedTour: true,
       currentStep: 1
     })
@@ -175,7 +175,7 @@ export function useOnboarding(): UseOnboardingReturn {
 
   const skipTour = useCallback(() => {
     logger.track('onboarding_tour_skipped')
-    saveState({ 
+    saveState({
       hasCompletedTour: true,
       currentStep: ONBOARDING_STEPS.length
     })
@@ -183,7 +183,7 @@ export function useOnboarding(): UseOnboardingReturn {
 
   const markStepComplete = useCallback((step: string, data?: any) => {
     logger.track('onboarding_step_completed', { step, data })
-    
+
     const updates: Partial<OnboardingState> = {
       currentStep: state.currentStep + 1
     }

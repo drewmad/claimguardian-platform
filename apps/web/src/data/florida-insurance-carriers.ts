@@ -40,7 +40,7 @@ export const floridaInsuranceCarriers: InsuranceCarrier[] = [
     website: 'https://www.citizensfla.com',
     phone: '866-411-2742'
   },
-  
+
   // Major Private Carriers Operating in Florida
   {
     id: 'state-farm',
@@ -282,7 +282,7 @@ export const floridaInsuranceCarriers: InsuranceCarrier[] = [
     website: 'https://www.anchorpci.com',
     phone: '855-200-9992'
   },
-  
+
   // Surplus Lines Carriers
   {
     id: 'lloyds-london',
@@ -308,7 +308,7 @@ export const floridaInsuranceCarriers: InsuranceCarrier[] = [
     website: 'https://www.aig.com',
     phone: '877-344-6876'
   },
-  
+
   // Other/Self-Insured Option
   {
     id: 'self-insured',
@@ -329,18 +329,18 @@ export const sortedFloridaInsuranceCarriers = (() => {
   const stateCarriers = floridaInsuranceCarriers
     .filter(c => c.type === 'state')
     .sort((a, b) => a.name.localeCompare(b.name))
-  
+
   const privateCarriers = floridaInsuranceCarriers
     .filter(c => c.type === 'private' && c.id !== 'self-insured' && c.id !== 'other')
     .sort((a, b) => a.name.localeCompare(b.name))
-  
+
   const surplusCarriers = floridaInsuranceCarriers
     .filter(c => c.type === 'surplus')
     .sort((a, b) => a.name.localeCompare(b.name))
-  
+
   const specialOptions = floridaInsuranceCarriers
     .filter(c => c.id === 'self-insured' || c.id === 'other')
     .sort((a, b) => a.name.localeCompare(b.name))
-  
+
   return [...stateCarriers, ...privateCarriers, ...surplusCarriers, ...specialOptions]
 })()

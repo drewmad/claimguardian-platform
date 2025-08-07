@@ -12,7 +12,7 @@
 
 import { useState, useCallback, useRef, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Upload,
   File,
   Image,
@@ -89,7 +89,7 @@ export function FileUploadEnhanced({
   const [files, setFiles] = useState<EnhancedFile[]>([])
   const [isDragActive, setIsDragActive] = useState(false)
   const [isProcessing, setIsProcessing] = useState(false)
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
   const { success, error, info } = useToast()
   const { addNotification } = useNotifications()
@@ -108,12 +108,12 @@ export function FileUploadEnhanced({
     const units = ['B', 'KB', 'MB', 'GB']
     let size = bytes
     let unitIndex = 0
-    
+
     while (size >= 1024 && unitIndex < units.length - 1) {
       size /= 1024
       unitIndex++
     }
-    
+
     return `${size.toFixed(1)} ${units[unitIndex]}`
   }, [])
 
@@ -136,8 +136,8 @@ export function FileUploadEnhanced({
     if (!enableAI) return
 
     try {
-      setFiles(prev => prev.map(f => 
-        f.id === enhancedFile.id 
+      setFiles(prev => prev.map(f =>
+        f.id === enhancedFile.id
           ? { ...f, status: 'processing', processingProgress: 0 }
           : f
       ))
@@ -145,8 +145,8 @@ export function FileUploadEnhanced({
       // Simulate AI processing with progress updates
       for (let progress = 0; progress <= 100; progress += 10) {
         await new Promise(resolve => setTimeout(resolve, 200))
-        setFiles(prev => prev.map(f => 
-          f.id === enhancedFile.id 
+        setFiles(prev => prev.map(f =>
+          f.id === enhancedFile.id
             ? { ...f, processingProgress: progress }
             : f
         ))
@@ -154,14 +154,14 @@ export function FileUploadEnhanced({
 
       // Mock AI results based on processing type
       const mockResults = generateMockAIResults(enhancedFile.file, processingType)
-      
-      setFiles(prev => prev.map(f => 
-        f.id === enhancedFile.id 
-          ? { 
-              ...f, 
-              status: 'completed', 
-              processingProgress: 100, 
-              aiResults: mockResults 
+
+      setFiles(prev => prev.map(f =>
+        f.id === enhancedFile.id
+          ? {
+              ...f,
+              status: 'completed',
+              processingProgress: 100,
+              aiResults: mockResults
             }
           : f
       ))
@@ -182,12 +182,12 @@ export function FileUploadEnhanced({
       })
 
     } catch (err) {
-      setFiles(prev => prev.map(f => 
-        f.id === enhancedFile.id 
-          ? { 
-              ...f, 
-              status: 'error', 
-              error: 'AI processing failed. Please try again.' 
+      setFiles(prev => prev.map(f =>
+        f.id === enhancedFile.id
+          ? {
+              ...f,
+              status: 'error',
+              error: 'AI processing failed. Please try again.'
             }
           : f
       ))
@@ -210,7 +210,7 @@ export function FileUploadEnhanced({
   // Handle file uploads
   const handleFiles = useCallback(async (fileList: FileList | File[]) => {
     const newFiles = Array.from(fileList)
-    
+
     // Validate file count
     if (files.length + newFiles.length > maxFiles) {
       error('Too many files', {
@@ -221,7 +221,7 @@ export function FileUploadEnhanced({
 
     // Validate and process files
     const validFiles: EnhancedFile[] = []
-    
+
     for (const file of newFiles) {
       // Size validation
       if (file.size > maxSize) {
@@ -289,25 +289,25 @@ export function FileUploadEnhanced({
 
   // Simulate file upload
   const simulateUpload = useCallback(async (enhancedFile: EnhancedFile) => {
-    setFiles(prev => prev.map(f => 
+    setFiles(prev => prev.map(f =>
       f.id === enhancedFile.id ? { ...f, status: 'uploading' } : f
     ))
 
     // Simulate upload progress
     for (let progress = 0; progress <= 100; progress += Math.random() * 15) {
       await new Promise(resolve => setTimeout(resolve, 100))
-      setFiles(prev => prev.map(f => 
-        f.id === enhancedFile.id 
+      setFiles(prev => prev.map(f =>
+        f.id === enhancedFile.id
           ? { ...f, uploadProgress: Math.min(100, Math.round(progress)) }
           : f
       ))
     }
 
     // Mark upload complete
-    setFiles(prev => prev.map(f => 
-      f.id === enhancedFile.id 
-        ? { 
-            ...f, 
+    setFiles(prev => prev.map(f =>
+      f.id === enhancedFile.id
+        ? {
+            ...f,
             status: autoProcess && enableAI ? 'processing' : 'completed',
             uploadProgress: 100,
             uploadedUrl: `https://example.com/uploads/${enhancedFile.file.name}`
@@ -345,7 +345,7 @@ export function FileUploadEnhanced({
     e.preventDefault()
     e.stopPropagation()
     setIsDragActive(false)
-    
+
     const droppedFiles = e.dataTransfer.files
     if (droppedFiles.length > 0) {
       handleFiles(droppedFiles)
@@ -367,7 +367,7 @@ export function FileUploadEnhanced({
     const updatedFiles = files.filter(f => f.id !== fileId)
     setFiles(updatedFiles)
     onFilesChange(updatedFiles)
-    
+
     info('File removed')
   }, [files, onFilesChange, info])
 
@@ -409,7 +409,7 @@ export function FileUploadEnhanced({
           <h4 className="font-medium text-gray-900 dark:text-white">
             Uploaded Files ({files.length}/{maxFiles})
           </h4>
-          
+
           <AnimatePresence>
             {files.map((file) => (
               <FilePreview
@@ -445,7 +445,7 @@ function generateMockAIResults(file: File, processingType: ProcessingType) {
           'Check for mold growth'
         ]
       }
-    
+
     case 'document-extraction':
       return {
         documentType: 'Insurance Policy',
@@ -458,7 +458,7 @@ function generateMockAIResults(file: File, processingType: ProcessingType) {
         confidence: 92,
         keyFields: 4
       }
-    
+
     case 'inventory-scan':
       return {
         itemsDetected: 12,
@@ -471,7 +471,7 @@ function generateMockAIResults(file: File, processingType: ProcessingType) {
           { name: 'Sofa', value: '$1,500' }
         ]
       }
-    
+
     default:
       return {
         processed: true,
@@ -546,7 +546,7 @@ function FileUploadZone({
               <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400" />
             )}
           </div>
-          
+
           <div>
             <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
               {isDragActive ? 'Drop files here' : 'Upload Files'}
@@ -656,14 +656,14 @@ function FilePreview({ file, onRemove, onRetry, enableAI }: FilePreviewProps) {
                   Complete
                 </Badge>
               )}
-              
+
               {file.status === 'error' && (
                 <Badge variant="destructive">
                   <AlertTriangle className="w-3 h-3 mr-1" />
                   Error
                 </Badge>
               )}
-              
+
               {(file.status === 'uploading' || file.status === 'processing') && (
                 <Badge variant="secondary">
                   <Loader2 className="w-3 h-3 mr-1 animate-spin" />
@@ -700,7 +700,7 @@ function FilePreview({ file, onRemove, onRetry, enableAI }: FilePreviewProps) {
                 <span>{file.processingProgress}%</span>
               </div>
               <Progress value={file.processingProgress} className="h-2 bg-purple-200">
-                <div 
+                <div
                   className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all"
                   style={{ width: `${file.processingProgress}%` }}
                 />

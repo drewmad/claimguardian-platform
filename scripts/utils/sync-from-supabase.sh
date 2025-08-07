@@ -80,13 +80,13 @@ log_success "Production schema dumped to ${SCHEMA_FILE}"
 # Step 3: Archive local migrations if they exist
 if [ -n "$(ls -A supabase/migrations/*.sql 2>/dev/null)" ]; then
     log_info "Found local migrations. Archiving them..."
-    
+
     BACKUP_DIR="supabase/migrations.archive.$(date +%Y%m%d_%H%M%S)"
     mkdir -p ${BACKUP_DIR}
-    
+
     # Move migrations to archive
     mv supabase/migrations/*.sql ${BACKUP_DIR}/
-    
+
     # Update migrations README
     cat > supabase/migrations/README.md << EOF
 # Migrations Archived
@@ -99,7 +99,7 @@ The production database schema is the source of truth.
 
 See supabase/schema.sql for the current database schema.
 EOF
-    
+
     log_success "Local migrations archived to ${BACKUP_DIR}"
 fi
 

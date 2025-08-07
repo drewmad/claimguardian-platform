@@ -16,20 +16,20 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST() {
   try {
     const supabase = await createClient()
-    
+
     // Test data
     const testEmail = `test-${Date.now()}@claimguardian.test`
     const testPassword = 'TestPassword123!'
-    
+
     logger.info('Testing signup flow with:', testEmail)
-    
+
     // Step 1: Check if user already exists
     const { data: existingUser } = await supabase
       .from('auth.users')
       .select('id')
       .eq('email', testEmail)
       .single()
-    
+
     if (existingUser) {
       return NextResponse.json({
         success: false,
@@ -37,7 +37,7 @@ export async function POST() {
         email: testEmail
       })
     }
-    
+
     // Step 2: Test record_signup_consent
     const { data: consentResult, error: consentError } = await supabase.rpc('record_signup_consent', {
       p_email: testEmail,
@@ -54,7 +54,7 @@ export async function POST() {
       p_user_agent: 'Test Script',
       p_fingerprint: 'test-fingerprint'
     })
-    
+
     if (consentError || !consentResult?.[0]?.success) {
       return NextResponse.json({
         success: false,
@@ -63,16 +63,16 @@ export async function POST() {
         details: { consentResult, consentError }
       })
     }
-    
+
     const consentToken = consentResult[0].consent_token
     logger.info('Consent recorded with token:', consentToken)
-    
+
     // Step 3: Validate consent
     const { data: validateResult, error: validateError } = await supabase.rpc('validate_signup_consent', {
       p_email: testEmail,
       p_consent_token: consentToken
     })
-    
+
     if (validateError || !validateResult?.[0]?.success) {
       return NextResponse.json({
         success: false,
@@ -81,9 +81,9 @@ export async function POST() {
         details: { validateResult, validateError }
       })
     }
-    
+
     logger.info('Consent validated successfully')
-    
+
     // Step 4: Create user account
     const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
       email: testEmail,
@@ -95,7 +95,7 @@ export async function POST() {
         }
       }
     })
-    
+
     if (signUpError) {
       return NextResponse.json({
         success: false,
@@ -104,7 +104,7 @@ export async function POST() {
         details: signUpError
       })
     }
-    
+
     if (!signUpData.user) {
       return NextResponse.json({
         success: false,
@@ -112,33 +112,33 @@ export async function POST() {
         error: 'No user returned from signup'
       })
     }
-    
+
     logger.info('User created:', signUpData.user.id)
-    
+
     // Step 5: Link consent to user
     const { error: linkError } = await supabase.rpc('link_consent_to_user', {
       p_user_id: signUpData.user.id,
       p_email: testEmail,
       p_consent_token: consentToken
     })
-    
+
     if (linkError) {
       logger.error('Failed to link consent:', linkError)
       // Don't fail the whole flow if linking fails
     }
-    
+
     // Step 6: Check if email was sent
-    const emailStatus = signUpData.user.email_confirmed_at 
-      ? 'already_confirmed' 
+    const emailStatus = signUpData.user.email_confirmed_at
+      ? 'already_confirmed'
       : 'confirmation_email_sent'
-    
+
     // Step 7: Check if onboarding record exists
     const { data: userPref } = await supabase
       .from('user_preferences')
       .select('onboarding_completed')
       .eq('user_id', signUpData.user.id)
       .single()
-    
+
     return NextResponse.json({
       success: true,
       message: 'Signup flow completed successfully',
@@ -156,7 +156,7 @@ export async function POST() {
         ].filter(Boolean)
       }
     })
-    
+
   } catch (error) {
     logger.error('Test signup flow error:', error)
     return NextResponse.json({

@@ -18,24 +18,24 @@ export interface ClaudeErrorContext {
   taskType: 'code-generation' | 'file-modification' | 'debugging' | 'analysis' | 'planning' | 'other'
   taskDescription: string
   userIntent: string
-  
+
   // Code context
   filePath?: string
   fileType?: string
   codeLanguage?: string
   framework?: string
-  
+
   // Error context
   errorType: 'syntax' | 'logic' | 'type' | 'runtime' | 'build' | 'deployment' | 'integration' | 'assumption'
   toolsUsed: string[]
   previousAttempts?: number
-  
+
   // Learning context
   mistakeCategory: string
   rootCause?: string
   correctApproach?: string
   lessonLearned?: string
-  
+
   // Environment
   sessionId?: string
   timestamp: string
@@ -83,7 +83,7 @@ class ClaudeErrorLogger {
 
   constructor() {
     this.sessionId = `claude-session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+
     try {
       this.supabase = createClient<Database>(
         process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -104,7 +104,7 @@ class ClaudeErrorLogger {
     severity: ClaudeError['severity'] = 'medium'
   ): Promise<string | null> {
     const errorObj = typeof error === 'string' ? new Error(error) : error
-    
+
     // Create full context
     const fullContext: ClaudeErrorContext = {
       ...context,
@@ -216,7 +216,7 @@ class ClaudeErrorLogger {
 
     // Create cache key from context
     const cacheKey = this.createContextKey(context)
-    
+
     // Check cache first
     if (this.learningCache.has(cacheKey)) {
       return this.learningCache.get(cacheKey)!
@@ -237,11 +237,11 @@ class ClaudeErrorLogger {
       //   return []
       // }
 
-      // Cache the results  
+      // Cache the results
       // const typedLearnings = (learnings || []) as unknown as ClaudeLearning[]
       // this.learningCache.set(cacheKey, typedLearnings)
       // return typedLearnings
-      
+
       // Return empty for now
       return []
     } catch (error) {
@@ -277,7 +277,7 @@ class ClaudeErrorLogger {
       //   logger.error('Failed to fetch Claude error patterns', {}, error)
       //   return []
       // }
-      
+
       // Return empty patterns for now
       return []
     } catch (error) {
@@ -340,7 +340,7 @@ class ClaudeErrorLogger {
 
       // Clear cache to refresh learnings
       this.learningCache.clear()
-      
+
       logger.info('Claude learning recorded', { patternName, confidenceScore })
     } catch (error) {
       logger.error('Failed to record Claude learning', { patternName }, error instanceof Error ? error : new Error(String(error)))
@@ -373,10 +373,10 @@ class ClaudeErrorLogger {
     // Extract pattern from error
     const patternName = `${(error.context as any).taskType}-${(error.context as any).errorType}-${(error.context as any).mistakeCategory}`
     const mistakePattern = this.extractMistakePattern(error)
-    
+
     // Try to determine solution pattern from similar resolved errors
     const contextTags = this.extractContextTags(error.context as any)
-    
+
     // This would be enhanced with ML in the future
     if ((error.context as any).correctApproach) {
       await this.recordLearning(
@@ -401,16 +401,16 @@ class ClaudeErrorLogger {
    */
   private extractContextTags(context: Partial<ClaudeErrorContext>): string[] {
     const tags: string[] = []
-    
+
     if (context.taskType) tags.push(`task:${context.taskType}`)
     if (context.errorType) tags.push(`error:${context.errorType}`)
     if (context.mistakeCategory) tags.push(`mistake:${context.mistakeCategory}`)
     if (context.fileType) tags.push(`file:${context.fileType}`)
     if (context.codeLanguage) tags.push(`lang:${context.codeLanguage}`)
     if (context.framework) tags.push(`framework:${context.framework}`)
-    
+
     context.toolsUsed?.forEach(tool => tags.push(`tool:${tool}`))
-    
+
     return tags
   }
 
@@ -442,7 +442,7 @@ class ClaudeErrorLogger {
    */
   private analyzePatterns(errors: any[]): any[] {
     const patterns = new Map()
-    
+
     errors.forEach(error => {
       const key = `${error.taskType}-${error.errorType}-${error.mistakeCategory}`
       if (!patterns.has(key)) {
@@ -453,13 +453,13 @@ class ClaudeErrorLogger {
           severity: { low: 0, medium: 0, high: 0, critical: 0 }
         })
       }
-      
+
       const pattern = patterns.get(key)
       pattern.count++
       if (error.resolved) pattern.resolved++
       pattern.severity[error.severity]++
     })
-    
+
     return Array.from(patterns.values())
       .sort((a, b) => b.count - a.count)
   }
@@ -497,7 +497,7 @@ export const claudeErrorHelpers = {
       }, 'high')
   },
 
-  // File modification errors  
+  // File modification errors
   fileModification: {
     editError: (error: Error, filePath: string, description: string, toolsUsed: string[]) =>
       claudeErrorLogger.logError(error, {

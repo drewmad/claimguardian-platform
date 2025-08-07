@@ -83,7 +83,7 @@ export function PhotoReviewScreen() {
   const [annotations, setAnnotations] = useState<DamageAnnotation[]>([])
 
   // Redux selectors
-  const photo = useAppSelector(state => 
+  const photo = useAppSelector(state =>
     state.photos.photos.find(p => p.id === photoId)
   )
   const isOffline = useAppSelector(state => state.network.isOffline)
@@ -234,7 +234,7 @@ export function PhotoReviewScreen() {
           onPress: async () => {
             if (photo) {
               dispatch(deletePhoto(photo.id))
-              
+
               // Delete local file
               if (photo.localUri) {
                 try {
@@ -313,10 +313,10 @@ export function PhotoReviewScreen() {
             style={styles.headerButton}
             onPress={() => setShowAnnotations(!showAnnotations)}
           >
-            <Ionicons 
-              name={showAnnotations ? "eye" : "eye-off"} 
-              size={24} 
-              color={showAnnotations ? "#4CAF50" : "#fff"} 
+            <Ionicons
+              name={showAnnotations ? "eye" : "eye-off"}
+              size={24}
+              color={showAnnotations ? "#4CAF50" : "#fff"}
             />
           </TouchableOpacity>
 
@@ -566,7 +566,7 @@ export function PhotoReviewScreen() {
                 <Text style={styles.annotationTitle}>
                   {selectedAnnotation.damageType}
                 </Text>
-                
+
                 <View style={styles.annotationStats}>
                   <View style={styles.annotationStat}>
                     <Text style={styles.annotationLabel}>Severity</Text>
@@ -611,7 +611,7 @@ export function PhotoReviewScreen() {
 
 // Helper function to create annotated image
 async function createAnnotatedImage(
-  imageUri: string, 
+  imageUri: string,
   annotations: DamageAnnotation[]
 ): Promise<string> {
   // TODO: Implement image annotation overlay

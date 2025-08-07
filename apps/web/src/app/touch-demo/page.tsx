@@ -12,9 +12,9 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Smartphone, Hand, Zap, Heart, Share, Bookmark, 
-  Trash2, Edit, Archive, Star, MessageCircle, 
+import {
+  Smartphone, Hand, Zap, Heart, Share, Bookmark,
+  Trash2, Edit, Archive, Star, MessageCircle,
   ArrowLeft, CheckCircle, AlertCircle, Info
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -116,7 +116,7 @@ export default function TouchDemoPage() {
             Touch Interactions Demo
           </h1>
           <p className="text-lg text-gray-300 max-w-2xl mx-auto">
-            Experience enhanced touch interactions with haptic feedback, 
+            Experience enhanced touch interactions with haptic feedback,
             gesture recognition, and mobile-optimized components.
           </p>
         </motion.div>
@@ -169,8 +169,8 @@ export default function TouchDemoPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
-                <TouchButton 
-                  variant="default" 
+                <TouchButton
+                  variant="default"
                   size="touch"
                   onClick={() => {
                     setButtonPresses(prev => prev + 1)
@@ -179,24 +179,24 @@ export default function TouchDemoPage() {
                 >
                   Default
                 </TouchButton>
-                <TouchButton 
-                  variant="gradient" 
+                <TouchButton
+                  variant="gradient"
                   size="touch"
                   onLongPress={() => addToLog('Gradient button long pressed')}
                   longPressDelay={500}
                 >
                   Gradient
                 </TouchButton>
-                <TouchButton 
-                  variant="success" 
+                <TouchButton
+                  variant="success"
                   size="touch"
                   onDoubleClick={() => addToLog('Success button double clicked')}
                   hapticFeedback="medium"
                 >
                   Success
                 </TouchButton>
-                <TouchButton 
-                  variant="danger" 
+                <TouchButton
+                  variant="danger"
                   size="touch"
                   preventDoubleClick
                   hapticFeedback="heavy"
@@ -205,10 +205,10 @@ export default function TouchDemoPage() {
                   Danger
                 </TouchButton>
               </div>
-              
+
               <div className="text-center">
-                <TouchButton 
-                  variant="outline" 
+                <TouchButton
+                  variant="outline"
                   size="fab"
                   className="text-white border-white/30"
                   onClick={() => addToLog('FAB clicked')}
@@ -244,7 +244,7 @@ export default function TouchDemoPage() {
                 <p className="text-gray-400 text-sm text-center">
                   Tap, double-tap, long press, or swipe here
                 </p>
-                
+
                 <div className="mt-4 flex gap-4 text-sm">
                   <Badge variant="outline" className="text-blue-400 border-blue-400/30">
                     ← {swipeCount.left}
@@ -310,7 +310,7 @@ export default function TouchDemoPage() {
                 </TouchCard>
               ))}
             </div>
-            
+
             <div className="mt-4 text-center text-gray-300 text-sm">
               Selected cards: {selectedCards.size}
             </div>
@@ -379,10 +379,10 @@ export default function TouchDemoPage() {
                 <p className="text-gray-400 text-sm">Scale: {scale.toFixed(2)}x</p>
               </motion.div>
             </div>
-            
+
             <div className="text-center mt-4">
-              <TouchButton 
-                variant="outline" 
+              <TouchButton
+                variant="outline"
                 size="sm"
                 onClick={resetScale}
                 className="text-white border-white/30"

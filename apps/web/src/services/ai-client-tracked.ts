@@ -41,16 +41,16 @@ export interface TrackedAIResponse {
  * Tracked AI Client - automatically tracks all API calls
  */
 export class TrackedAIClient {
-  
+
   /**
    * Generate text completion with automatic cost tracking
    */
   async generateText(request: TrackedAIRequest): Promise<TrackedAIResponse> {
     const startTime = Date.now()
-    
+
     try {
       let response: TrackedAIResponse
-      
+
       if (request.provider === 'openai') {
         response = await this.generateOpenAIText(request)
       } else if (request.provider === 'gemini') {
@@ -61,7 +61,7 @@ export class TrackedAIClient {
 
       // Track successful usage
       await this.trackUsage(request, response, Date.now() - startTime, true)
-      
+
       return response
 
     } catch (error) {
@@ -82,7 +82,7 @@ export class TrackedAIClient {
    */
   async analyzeImage(request: TrackedAIRequest & { images: string[] }): Promise<TrackedAIResponse> {
     const startTime = Date.now()
-    
+
     try {
       let response: TrackedAIResponse
 
@@ -96,7 +96,7 @@ export class TrackedAIClient {
 
       // Track successful usage
       await this.trackUsage(request, response, Date.now() - startTime, true)
-      
+
       return response
 
     } catch (error) {
@@ -165,8 +165,8 @@ export class TrackedAIClient {
 
   private async generateGeminiText(request: TrackedAIRequest): Promise<TrackedAIResponse> {
     const model = genai.getGenerativeModel({ model: request.model })
-    
-    const prompt = request.messages 
+
+    const prompt = request.messages
       ? request.messages.map(m => m.content).join('\n')
       : (request.prompt || '')
 
@@ -231,7 +231,7 @@ export class TrackedAIClient {
 
   private async analyzeGeminiImage(request: TrackedAIRequest & { images: string[] }): Promise<TrackedAIResponse> {
     const model = genai.getGenerativeModel({ model: request.model })
-    
+
     // Convert base64 images to Gemini format
     const imageParts = request.images.map(image => {
       const base64Data = image.replace(/^data:image\/[a-z]+;base64,/, '')
@@ -271,7 +271,7 @@ export class TrackedAIClient {
     success: boolean,
     errorMessage?: string
   ) {
-    const inputText = request.messages 
+    const inputText = request.messages
       ? request.messages.map(m => m.content).join(' ')
       : (request.prompt || '')
 
@@ -307,7 +307,7 @@ export async function analyzeDamageWithTracking(
     3. Estimated repair complexity
     4. Safety concerns if any
     5. Recommended next steps
-    
+
     Format as a structured analysis with clear sections.
   `
 
@@ -340,7 +340,7 @@ export async function generatePolicyAdviceWithTracking(
   const prompt = `
     Based on the insurance policy documents provided, please answer the following question:
     ${question}
-    
+
     Provide a clear, accurate answer based on the policy terms and conditions. Include relevant section references where applicable.
   `
 
@@ -372,13 +372,13 @@ export async function generateInventoryItemsWithTracking(
   const prompt = `
     Analyze this image and identify all visible personal property items for insurance inventory purposes.
     ${roomType ? `This is a ${roomType}.` : ''}
-    
+
     For each item, provide:
     1. Item name and description
     2. Estimated value range
     3. Condition assessment
     4. Recommended documentation needs
-    
+
     Format as a structured list.
   `
 

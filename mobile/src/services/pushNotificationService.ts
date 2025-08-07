@@ -87,14 +87,14 @@ class PushNotificationService {
 
       // Register for push notifications
       const success = await this.registerForPushNotifications()
-      
+
       if (success) {
         // Set up notification listeners
         this.setupNotificationListeners()
-        
+
         // Subscribe to disaster alerts
         await this.subscribeToDisasterAlerts()
-        
+
         this.isInitialized = true
         console.log('Push notification service initialized successfully')
         return true
@@ -113,12 +113,12 @@ class PushNotificationService {
     Notifications.setNotificationHandler({
       handleNotification: async (notification) => {
         const data = notification.request.content.data as NotificationData
-        
+
         return {
           shouldShowAlert: true,
           shouldPlaySound: data.severity === 'critical' || data.severity === 'emergency',
           shouldSetBadge: true,
-          priority: data.severity === 'emergency' 
+          priority: data.severity === 'emergency'
             ? Notifications.AndroidNotificationPriority.MAX
             : data.severity === 'critical'
             ? Notifications.AndroidNotificationPriority.HIGH
@@ -217,10 +217,10 @@ class PushNotificationService {
       })
 
       this.pushToken = tokenData.data
-      
+
       // Save token locally
       await AsyncStorage.setItem('push_token', this.pushToken)
-      
+
       // Register token with server
       await this.registerTokenWithServer(this.pushToken)
 
@@ -294,7 +294,7 @@ class PushNotificationService {
 
   private handleNotificationReceived(notification: Notifications.Notification): void {
     const data = notification.request.content.data as NotificationData
-    
+
     console.log('Notification received:', {
       type: data.type,
       severity: data.severity,
@@ -354,7 +354,7 @@ class PushNotificationService {
   private handleDisasterAlert(data: NotificationData): void {
     // Store disaster alert for offline access
     this.storeDisasterAlert(data)
-    
+
     // If emergency level, show persistent alert
     if (data.severity === 'emergency') {
       this.showEmergencyAlert(data)
@@ -427,8 +427,8 @@ class PushNotificationService {
   }
 
   async sendAssessmentUpdate(
-    assessmentId: string, 
-    title: string, 
+    assessmentId: string,
+    title: string,
     message: string
   ): Promise<void> {
     try {
@@ -453,8 +453,8 @@ class PushNotificationService {
   }
 
   async sendSyncNotification(
-    success: boolean, 
-    itemCount: number, 
+    success: boolean,
+    itemCount: number,
     errors?: string[]
   ): Promise<void> {
     try {
@@ -462,7 +462,7 @@ class PushNotificationService {
         type: 'sync_complete',
         severity: success ? 'info' : 'warning',
         title: success ? 'Sync Complete' : 'Sync Issues',
-        body: success 
+        body: success
           ? `Successfully synced ${itemCount} items`
           : `Synced with ${errors?.length || 0} errors`,
         data: {
@@ -506,7 +506,7 @@ class PushNotificationService {
     try {
       // Get user's location for location-based alerts
       const location = await this.getCurrentLocation()
-      
+
       if (location && this.pushToken) {
         const subscription = {
           token: this.pushToken,
@@ -572,7 +572,7 @@ class PushNotificationService {
   }> {
     try {
       const { status, canAskAgain } = await Notifications.getPermissionsAsync()
-      
+
       return {
         granted: status === 'granted',
         status,
@@ -624,12 +624,12 @@ class PushNotificationService {
   private async getDeviceId(): Promise<string> {
     try {
       let deviceId = await AsyncStorage.getItem('device_id')
-      
+
       if (!deviceId) {
         deviceId = `${Platform.OS}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
         await AsyncStorage.setItem('device_id', deviceId)
       }
-      
+
       return deviceId
     } catch (error) {
       return `${Platform.OS}_${Date.now()}_fallback`
@@ -640,10 +640,10 @@ class PushNotificationService {
     try {
       const alerts = await this.getStoredAlerts()
       alerts.unshift(data)
-      
+
       // Keep only last 50 alerts
       const trimmedAlerts = alerts.slice(0, 50)
-      
+
       await AsyncStorage.setItem('disaster_alerts', JSON.stringify(trimmedAlerts))
     } catch (error) {
       console.error('Failed to store disaster alert:', error)
@@ -654,10 +654,10 @@ class PushNotificationService {
     try {
       const alerts = await this.getStoredWeatherAlerts()
       alerts.unshift(data)
-      
+
       // Keep only last 20 weather alerts
       const trimmedAlerts = alerts.slice(0, 20)
-      
+
       await AsyncStorage.setItem('weather_alerts', JSON.stringify(trimmedAlerts))
     } catch (error) {
       console.error('Failed to store weather alert:', error)

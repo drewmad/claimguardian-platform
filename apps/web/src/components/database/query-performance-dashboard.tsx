@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { 
+import {
   BarChart3,
   Activity,
   Clock,
@@ -72,7 +72,7 @@ export function QueryPerformanceDashboard({
   const fetchPerformanceData = async () => {
     try {
       const stats = await queryOptimizer.getDatabaseStats()
-      
+
       const snapshot: PerformanceSnapshot = {
         timestamp: new Date(),
         totalQueries: stats.queryStats.totalQueries,
@@ -118,7 +118,7 @@ export function QueryPerformanceDashboard({
     if (!performanceData) return []
 
     const insights = []
-    
+
     if (performanceData.cacheHitRate < 70) {
       insights.push({
         type: 'warning' as const,
@@ -271,7 +271,7 @@ export function QueryPerformanceDashboard({
         <MetricCard
           title="Total Queries"
           value={performanceData.totalQueries.toLocaleString()}
-          trend={historicalData.length > 1 ? 
+          trend={historicalData.length > 1 ?
             performanceData.totalQueries - historicalData[historicalData.length - 2].totalQueries : 0}
           icon={Database}
           color="text-blue-600"
@@ -280,7 +280,7 @@ export function QueryPerformanceDashboard({
         <MetricCard
           title="Avg Response Time"
           value={`${performanceData.averageExecutionTime.toFixed(0)}ms`}
-          trend={historicalData.length > 1 ? 
+          trend={historicalData.length > 1 ?
             performanceData.averageExecutionTime - historicalData[historicalData.length - 2].averageExecutionTime : 0}
           icon={Clock}
           color="text-purple-600"
@@ -290,7 +290,7 @@ export function QueryPerformanceDashboard({
         <MetricCard
           title="Cache Hit Rate"
           value={`${performanceData.cacheHitRate.toFixed(1)}%`}
-          trend={historicalData.length > 1 ? 
+          trend={historicalData.length > 1 ?
             performanceData.cacheHitRate - historicalData[historicalData.length - 2].cacheHitRate : 0}
           icon={Zap}
           color="text-green-600"
@@ -299,7 +299,7 @@ export function QueryPerformanceDashboard({
         <MetricCard
           title="Slow Queries"
           value={performanceData.slowQueries.toString()}
-          trend={historicalData.length > 1 ? 
+          trend={historicalData.length > 1 ?
             performanceData.slowQueries - historicalData[historicalData.length - 2].slowQueries : 0}
           icon={AlertTriangle}
           color="text-red-600"
@@ -373,7 +373,7 @@ export function QueryPerformanceDashboard({
                         {optimization.implementation}
                       </code>
                     </div>
-                    <Badge 
+                    <Badge
                       variant="outline"
                       className={cn(
                         optimization.priority === 'high' && 'border-red-200 text-red-600',
@@ -423,7 +423,7 @@ function MetricCard({ title, value, trend = 0, icon: Icon, color, trendInverted 
             <p className="text-2xl font-bold mt-2">
               {value}
             </p>
-            
+
             {trend !== 0 && (
               <div className={cn(
                 "flex items-center gap-1 mt-2 text-sm",
@@ -440,7 +440,7 @@ function MetricCard({ title, value, trend = 0, icon: Icon, color, trendInverted 
               </div>
             )}
           </div>
-          
+
           <div className={cn("w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center", color)}>
             <Icon className="w-6 h-6" />
           </div>
@@ -470,10 +470,10 @@ function PerformanceChart({ data }: PerformanceChartProps) {
     <div className="h-64 flex items-end justify-between gap-2">
       {data.map((snapshot, index) => (
         <div key={index} className="flex flex-col items-center flex-1">
-          <div 
+          <div
             className="bg-blue-500 rounded-t w-full min-h-[4px] transition-all"
-            style={{ 
-              height: `${(snapshot.averageExecutionTime / maxTime) * 200}px` 
+            style={{
+              height: `${(snapshot.averageExecutionTime / maxTime) * 200}px`
             }}
           />
           <span className="text-xs text-gray-500 mt-2">

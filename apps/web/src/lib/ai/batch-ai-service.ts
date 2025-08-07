@@ -47,7 +47,7 @@ class BatchAIService {
     const queueStatus = aiBatchProcessor.getQueueStatus()
     if (priority === 'high' && queueStatus.pending < 3) {
       const startTime = Date.now()
-      
+
       try {
         const response = await enhancedAIClient.enhancedChat({
           messages: request.messages,
@@ -124,7 +124,7 @@ class BatchAIService {
       // Direct processing for chat requests when optimal
       const chatRequest = request as BatchChatRequest
       const startTime = Date.now()
-      
+
       try {
         const response = await enhancedAIClient.enhancedChat({
           messages: chatRequest.messages,
@@ -256,7 +256,7 @@ class BatchAIService {
     // Process normal priority and image requests through batch system
     const normalResults = await this.processBulkChat(normalPriorityChat)
     const imageResults = await this.processBulkImageAnalysis(imageRequests)
-    
+
     results.push(...normalResults, ...imageResults)
 
     return results
@@ -267,7 +267,7 @@ class BatchAIService {
    */
   async emergencyProcess(request: BatchChatRequest): Promise<BatchResponse> {
     const startTime = Date.now()
-    
+
     try {
       const response = await enhancedAIClient.enhancedChat({
         messages: request.messages,

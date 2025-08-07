@@ -72,7 +72,7 @@ export interface ErrorResponse {
 
 export function createErrorResponse(error: Error): ErrorResponse {
   const isAppError = error instanceof AppError
-  
+
   return {
     error: {
       code: isAppError ? error.code : 'INTERNAL_ERROR',
@@ -90,7 +90,7 @@ export function handleApiError(error: unknown): Response {
     'INTERNAL_ERROR',
     500
   )
-  
+
   return Response.json(
     createErrorResponse(appError),
     { status: appError.statusCode }

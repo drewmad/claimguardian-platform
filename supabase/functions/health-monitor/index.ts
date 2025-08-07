@@ -37,7 +37,7 @@ interface HealthCheckResult {
 
 Deno.serve(async (req) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -91,7 +91,7 @@ Deno.serve(async (req) => {
             }
           }
         )
-        
+
         if (response.status === 200 || response.status === 204) {
           result.edgeFunctions.healthy++
         } else {
@@ -109,16 +109,16 @@ Deno.serve(async (req) => {
         .from('properties')
         .select('id')
         .limit(1)
-      
+
       result.database.connected = !error
-      
+
       // Count recent errors
       const { count } = await supabase
         .from('error_logs')
         .select('*', { count: 'exact', head: true })
         .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
         .is('resolved_at', null)
-      
+
       result.database.errorCount = count || 0
     } catch (error) {
       result.database.connected = false
@@ -133,7 +133,7 @@ Deno.serve(async (req) => {
       'XAI_API_KEY',
       'RESEND_API_KEY'
     ]
-    
+
     for (const key of apiKeys) {
       if (Deno.env.get(key)) {
         result.apiKeys.configured.push(key)
@@ -165,7 +165,7 @@ Deno.serve(async (req) => {
     // 6. Send alerts if critical
     if (result.overallHealth === 'critical') {
       console.log('CRITICAL: System health is critical, sending alert...')
-      
+
       // Try to send email alert if possible
       if (result.apiKeys.configured.includes('RESEND_API_KEY')) {
         try {
@@ -197,13 +197,13 @@ Deno.serve(async (req) => {
 
   } catch (error) {
     console.error('Health monitor error:', error)
-    
+
     return new Response(
       JSON.stringify({
         success: false,
         error: error instanceof Error ? error.message : String(error)
       }),
-      { 
+      {
         status: 500,
         headers: corsHeaders
       }

@@ -37,7 +37,7 @@ export async function validateSessionAction(): Promise<boolean> {
   try {
     const supabase = await createAuthClient()
     const { data: { user }, error } = await supabase.auth.getUser()
-    
+
     return !error && !!user
   } catch (error) {
     authLogger.error('Session validation failed', {}, error as Error)
@@ -53,12 +53,12 @@ export async function refreshSessionAction(): Promise<boolean> {
   try {
     const supabase = await createAuthClient()
     const { data: { session }, error } = await supabase.auth.refreshSession()
-    
+
     if (error || !session) {
       authLogger.error('Session refresh failed', {}, error || undefined)
       return false
     }
-    
+
     revalidatePath('/', 'layout')
     return true
   } catch (error) {
@@ -75,13 +75,13 @@ export async function getSessionExpiryAction(): Promise<number | null> {
   try {
     const supabase = await createAuthClient()
     const { data: { user }, error } = await supabase.auth.getUser()
-    
+
     if (error || !user) {
       return null
     }
-    
+
     const { data: { session } } = await supabase.auth.getSession()
-    
+
     return session?.expires_at || null
   } catch (error) {
     authLogger.error('Get session expiry failed', {}, error as Error)
@@ -100,7 +100,7 @@ export async function resendVerificationAction(email: string): Promise<{
 }> {
   try {
     authLogger.info('Resending verification email', { email })
-    
+
     const supabase = await createAuthClient()
     const { error } = await supabase.auth.resend({
       type: 'signup',
@@ -119,7 +119,7 @@ export async function resendVerificationAction(email: string): Promise<{
           error: 'Too many attempts. Please wait before requesting another email.'
         }
       }
-      
+
       authLogger.error('Failed to resend verification email', { email }, error)
       return {
         success: false,
@@ -150,11 +150,11 @@ export async function checkVerificationStatusAction(): Promise<{
   try {
     const supabase = await createAuthClient()
     const { data: { user }, error } = await supabase.auth.getUser()
-    
+
     if (error || !user) {
       return { isVerified: false }
     }
-    
+
     return {
       isVerified: !!user.email_confirmed_at,
       email: user.email,

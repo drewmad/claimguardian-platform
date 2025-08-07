@@ -42,7 +42,7 @@ serve(async (req) => {
     )
 
     let requestData: PipelineRequest = { action: 'pipeline_status' }
-    
+
     if (req.method === 'POST') {
       requestData = await req.json()
     } else {
@@ -76,25 +76,25 @@ serve(async (req) => {
 
     return new Response(
       JSON.stringify(result),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     )
 
   } catch (error) {
     console.error('Data pipeline error:', error)
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Internal server error',
-        details: error.message 
+        details: error.message
       }),
-      { 
-        status: 500, 
-        headers: { 
+      {
+        status: 500,
+        headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json' 
-        } 
+          'Content-Type': 'application/json'
+        }
       }
     )
   }
@@ -104,12 +104,12 @@ async function refreshData(supabase: any, request: PipelineRequest): Promise<Pip
   const { county_codes, data_sources, force_refresh = false, dry_run = false } = request
 
   const refreshResults: Record<string, any> = {}
-  
+
   if (dry_run) {
     refreshResults.message = 'Dry run mode - no actual data changes made'
     refreshResults.would_refresh_counties = county_codes || 'all'
     refreshResults.would_refresh_sources = data_sources || 'all'
-    
+
     return {
       success: true,
       action: 'refresh_data',
@@ -180,7 +180,7 @@ async function refreshCountyStats(supabase: any, county_codes?: number[]): Promi
 
       if (countyStats && countyStats.length > 0) {
         const stats = countyStats[0]
-        
+
         // Upsert county statistics
         await supabase
           .from('county_market_stats')
@@ -212,7 +212,7 @@ async function refreshCountyStats(supabase: any, county_codes?: number[]): Promi
 
 async function refreshMarketTrends(supabase: any): Promise<Record<string, any>> {
   const results: Record<string, any> = {}
-  
+
   // Calculate current period trends
   const currentDate = new Date()
   const thirtyDaysAgo = new Date(currentDate.getTime() - (30 * 24 * 60 * 60 * 1000))
@@ -303,7 +303,7 @@ async function updateDataQualityMetrics(supabase: any): Promise<Record<string, a
             completeness_rate: (completeRecords / totalRecords) * 100,
             missing_critical_fields: missingCriticalFields,
             invalid_geometries: invalidGeometries,
-            geometry_quality_score: tableName === 'florida_parcels' ? 
+            geometry_quality_score: tableName === 'florida_parcels' ?
               ((totalRecords - invalidGeometries) / totalRecords) : 1.0
           })
 
@@ -326,10 +326,10 @@ async function performQualityCheck(supabase: any, request: PipelineRequest): Pro
 
   // Check for data anomalies
   qualityResults.anomalies = await checkDataAnomalies(supabase)
-  
+
   // Check data freshness
   qualityResults.freshness = await checkDataFreshness(supabase)
-  
+
   // Check completeness
   qualityResults.completeness = await checkDataCompleteness(supabase)
 
@@ -358,7 +358,7 @@ async function performQualityCheck(supabase: any, request: PipelineRequest): Pro
 
 async function checkDataAnomalies(supabase: any): Promise<Record<string, any>> {
   const results: Record<string, any> = {}
-  
+
   // Check for extreme property values
   const { data: extremeValues } = await supabase
     .from('florida_parcels')
@@ -379,7 +379,7 @@ async function checkDataAnomalies(supabase: any): Promise<Record<string, any>> {
 
   const parcelIds = (duplicates || []).map((d: any) => d.parcel_id)
   const uniqueIds = new Set(parcelIds)
-  
+
   results.duplicates = {
     total_checked: parcelIds.length,
     unique_count: uniqueIds.size,
@@ -427,7 +427,7 @@ async function checkDataCompleteness(supabase: any): Promise<Record<string, any>
 
   if (parcels) {
     const total = parcels.length
-    const complete = parcels.filter((p: any) => 
+    const complete = parcels.filter((p: any) =>
       p.parcel_id && p.co_no && p.tot_val && p.situs_addr_1
     ).length
 
@@ -468,7 +468,7 @@ async function getPipelineStatus(supabase: any): Promise<PipelineResult> {
   status.health = {
     active_sources: (sources || []).filter((s: any) => s.status === 'ACTIVE').length,
     total_sources: (sources || []).length,
-    avg_quality_score: qualityMetrics ? 
+    avg_quality_score: qualityMetrics ?
       qualityMetrics.reduce((sum: number, m: any) => sum + (m.completeness_rate || 0), 0) / qualityMetrics.length : 0
   }
 
@@ -486,7 +486,7 @@ async function getPipelineStatus(supabase: any): Promise<PipelineResult> {
 async function scheduleDataRefresh(supabase: any, request: PipelineRequest): Promise<PipelineResult> {
   // This would integrate with a job scheduling system
   // For now, just log the schedule request
-  
+
   const scheduleResults: Record<string, any> = {
     message: 'Schedule refresh request received',
     county_codes: request.county_codes,
@@ -565,6 +565,6 @@ function getCountyName(countyCode: number): string {
     71: 'SUWANNEE', 72: 'TAYLOR', 73: 'UNION', 74: 'VOLUSIA', 75: 'WAKULLA',
     76: 'WALTON', 77: 'WASHINGTON'
   }
-  
+
   return countyNames[countyCode] || 'UNKNOWN'
 }

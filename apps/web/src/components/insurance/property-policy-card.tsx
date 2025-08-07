@@ -41,14 +41,14 @@ interface PropertyPolicyCardProps {
   onToggle: () => void
 }
 
-export function PropertyPolicyCard({ 
-  property, 
-  policies, 
-  isExpanded, 
-  onToggle 
+export function PropertyPolicyCard({
+  property,
+  policies,
+  isExpanded,
+  onToggle
 }: PropertyPolicyCardProps) {
   const router = useRouter()
-  
+
   const propertyPolicies = policies.filter(p => property.policies.includes(p.id))
 
   const formatCurrency = (amount: number) => {
@@ -62,7 +62,7 @@ export function PropertyPolicyCard({
 
   return (
     <Card variant="property" className="overflow-hidden">
-      <CardHeader 
+      <CardHeader
         className="cursor-pointer hover:bg-gray-700/20 transition-colors"
         onClick={onToggle}
       >
@@ -87,17 +87,17 @@ export function PropertyPolicyCard({
           )} />
         </div>
       </CardHeader>
-      
+
       {isExpanded && (
         <CardContent className="p-6 space-y-4 border-t border-gray-700/50">
           {propertyPolicies.map((policy) => (
-            <PolicyListItem 
-              key={policy.id} 
+            <PolicyListItem
+              key={policy.id}
               policy={policy}
               onClick={() => router.push(`/dashboard/insurance/policy/${policy.id}`)}
             />
           ))}
-          
+
           {propertyPolicies.length === 0 && (
             <div className="text-center py-8">
               <Shield className="w-12 h-12 text-gray-600 mx-auto mb-3" />
@@ -127,7 +127,7 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
   const windDeductible = isWindstorm ? `2% ($${(policy.coverage * 0.02 / 1000).toFixed(0)},000)` : null
 
   return (
-    <div 
+    <div
       className="bg-gray-700/30 border border-gray-600/50 rounded-lg p-4 hover:bg-gray-700/50 transition-colors cursor-pointer"
       onClick={onClick}
     >
@@ -141,7 +141,7 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
           <p className="text-sm text-gray-400">Dwelling Coverage</p>
         </div>
       </div>
-      
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
         <div>
           <p className="text-gray-400 mb-1">Deductible</p>
@@ -168,10 +168,10 @@ function PolicyListItem({ policy, onClick }: { policy: Policy; onClick: () => vo
         <div>
           <p className="text-gray-400 mb-1">Expires</p>
           <p className="text-white font-medium">
-            {new Date(policy.expirationDate).toLocaleDateString('en-US', { 
-              year: 'numeric', 
-              month: '2-digit', 
-              day: '2-digit' 
+            {new Date(policy.expirationDate).toLocaleDateString('en-US', {
+              year: 'numeric',
+              month: '2-digit',
+              day: '2-digit'
             })}
           </p>
         </div>

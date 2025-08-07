@@ -20,18 +20,18 @@ echo
 # Process first 10 batches as a test
 for i in $(seq 1 10); do
     BATCH_FILE="/tmp/charlotte_batch_$(printf "%04d" $i).sql"
-    
+
     if [ ! -f "$BATCH_FILE" ]; then
         echo "❌ Batch file not found: $BATCH_FILE"
         continue
     fi
-    
+
     echo -n "Processing batch $i/$TOTAL_BATCHES... "
-    
+
     # Execute SQL via mcp command
     # Note: This would normally use the mcp__supabase__execute_sql function
     # For now, we'll output the command that should be run
-    
+
     echo "✅"
     echo "  Command: mcp supabase execute-sql --project-id $PROJECT_ID --query @$BATCH_FILE"
 done

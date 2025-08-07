@@ -11,12 +11,12 @@
 'use client'
 
 import { motion } from 'framer-motion'
-import { 
-  Wifi, 
-  WifiOff, 
-  RefreshCw, 
-  Home, 
-  Shield, 
+import {
+  Wifi,
+  WifiOff,
+  RefreshCw,
+  Home,
+  Shield,
   Download,
   AlertTriangle,
   Lock,
@@ -32,25 +32,25 @@ import { cn } from '@/lib/utils'
 import { useState, useEffect } from 'react'
 
 // Chunk loading error (common with code splitting)
-export function ChunkErrorFallback({ 
-  onRetry, 
-  className 
-}: { 
+export function ChunkErrorFallback({
+  onRetry,
+  className
+}: {
   onRetry?: () => void
-  className?: string 
+  className?: string
 }) {
   const [isRetrying, setIsRetrying] = useState(false)
 
   const handleRetry = async () => {
     setIsRetrying(true)
-    
+
     try {
       // Clear module cache and reload
       if (typeof window !== 'undefined') {
         // Force reload to get fresh chunks
         window.location.reload()
       }
-      
+
       if (onRetry) {
         await onRetry()
       }
@@ -77,24 +77,24 @@ export function ChunkErrorFallback({
           >
             <Download className="w-6 h-6 text-orange-600 dark:text-orange-400" />
           </motion.div>
-          
+
           <CardTitle className="text-orange-800 dark:text-orange-200">
             Loading Issue
           </CardTitle>
-          
+
           <Badge variant="outline" className="w-fit mx-auto mt-2">
             Code Split Error
           </Badge>
         </CardHeader>
-        
+
         <CardContent className="space-y-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
             Failed to load the required code modules. This usually resolves with a refresh.
           </p>
-          
+
           <div className="space-y-2">
-            <Button 
-              onClick={handleRetry} 
+            <Button
+              onClick={handleRetry}
               disabled={isRetrying}
               className="bg-orange-600 hover:bg-orange-700"
             >
@@ -110,7 +110,7 @@ export function ChunkErrorFallback({
                 </>
               )}
             </Button>
-            
+
             <div className="text-xs text-gray-500 dark:text-gray-400">
               This will reload the page to fetch fresh code
             </div>
@@ -122,14 +122,14 @@ export function ChunkErrorFallback({
 }
 
 // Network connectivity error
-export function NetworkErrorFallback({ 
-  onRetry, 
+export function NetworkErrorFallback({
+  onRetry,
   isOnline = true,
-  className 
-}: { 
+  className
+}: {
   onRetry?: () => void
   isOnline?: boolean
-  className?: string 
+  className?: string
 }) {
   const [retryCount, setRetryCount] = useState(0)
   const [isRetrying, setIsRetrying] = useState(false)
@@ -137,11 +137,11 @@ export function NetworkErrorFallback({
   const handleRetry = async () => {
     setIsRetrying(true)
     setRetryCount(prev => prev + 1)
-    
+
     try {
       // Wait a moment for network to stabilize
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       if (onRetry) {
         await onRetry()
       }
@@ -167,59 +167,59 @@ export function NetworkErrorFallback({
       )}>
         <CardHeader className="text-center">
           <motion.div
-            animate={{ 
+            animate={{
               scale: isOnline ? [1, 1.1, 1] : 1,
               rotate: isOnline ? 0 : [-5, 5, -5, 5, 0]
             }}
-            transition={{ 
+            transition={{
               duration: isOnline ? 2 : 0.5,
               repeat: isOnline ? Infinity : 0
             }}
             className={cn(
               "mx-auto mb-4 w-12 h-12 rounded-full flex items-center justify-center",
-              isOnline 
-                ? "bg-blue-100 dark:bg-blue-900/30" 
+              isOnline
+                ? "bg-blue-100 dark:bg-blue-900/30"
                 : "bg-red-100 dark:bg-red-900/30"
             )}
           >
             <Icon className={cn(
               "w-6 h-6",
-              isOnline 
-                ? "text-blue-600 dark:text-blue-400" 
+              isOnline
+                ? "text-blue-600 dark:text-blue-400"
                 : "text-red-600 dark:text-red-400"
             )} />
           </motion.div>
-          
+
           <CardTitle className={cn(
-            isOnline 
-              ? "text-blue-800 dark:text-blue-200" 
+            isOnline
+              ? "text-blue-800 dark:text-blue-200"
               : "text-red-800 dark:text-red-200"
           )}>
             {isOnline ? 'Connection Slow' : 'No Internet Connection'}
           </CardTitle>
-          
+
           <Badge variant="outline" className="w-fit mx-auto mt-2">
             Network Issue
           </Badge>
         </CardHeader>
-        
+
         <CardContent className="space-y-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
-            {isOnline 
+            {isOnline
               ? 'Your connection seems slow. Some features may not work properly.'
               : 'Please check your internet connection and try again.'
             }
           </p>
-          
+
           {retryCount > 0 && (
             <div className="text-xs text-gray-500 dark:text-gray-400">
               Retry attempts: {retryCount}
             </div>
           )}
-          
+
           <div className="space-y-2">
-            <Button 
-              onClick={handleRetry} 
+            <Button
+              onClick={handleRetry}
               disabled={isRetrying}
               variant={isOnline ? 'default' : 'destructive'}
             >
@@ -235,9 +235,9 @@ export function NetworkErrorFallback({
                 </>
               )}
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => window.location.href = '/dashboard'}
             >
               <Home className="w-4 h-4 mr-2" />
@@ -251,16 +251,16 @@ export function NetworkErrorFallback({
 }
 
 // Authentication error
-export function AuthErrorFallback({ 
+export function AuthErrorFallback({
   error,
   onRetry,
   onLogin,
-  className 
-}: { 
+  className
+}: {
   error?: Error | null
   onRetry?: () => void
   onLogin?: () => void
-  className?: string 
+  className?: string
 }) {
   const isExpiredSession = error?.message.includes('expired') || error?.message.includes('invalid')
   const isPermissionDenied = error?.message.includes('permission') || error?.message.includes('unauthorized')
@@ -289,38 +289,38 @@ export function AuthErrorFallback({
           >
             <Lock className="w-6 h-6 text-purple-600 dark:text-purple-400" />
           </motion.div>
-          
+
           <CardTitle className="text-purple-800 dark:text-purple-200">
             {isExpiredSession ? 'Session Expired' : isPermissionDenied ? 'Access Denied' : 'Authentication Required'}
           </CardTitle>
-          
+
           <Badge variant="outline" className="w-fit mx-auto mt-2">
             Auth Error
           </Badge>
         </CardHeader>
-        
+
         <CardContent className="space-y-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
-            {isExpiredSession 
+            {isExpiredSession
               ? 'Your session has expired. Please log in again to continue.'
               : isPermissionDenied
               ? "You don't have permission to access this resource."
               : 'Please log in to access this feature.'
             }
           </p>
-          
+
           <div className="space-y-2">
-            <Button 
+            <Button
               onClick={handleLogin}
               className="bg-purple-600 hover:bg-purple-700 w-full"
             >
               <Shield className="w-4 h-4 mr-2" />
               {isExpiredSession ? 'Log In Again' : 'Log In'}
             </Button>
-            
+
             {onRetry && (
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 onClick={onRetry}
                 className="w-full"
               >
@@ -328,9 +328,9 @@ export function AuthErrorFallback({
                 Try Again
               </Button>
             )}
-            
-            <Button 
-              variant="ghost" 
+
+            <Button
+              variant="ghost"
               onClick={() => window.location.href = '/'}
               className="w-full"
             >
@@ -345,14 +345,14 @@ export function AuthErrorFallback({
 }
 
 // Database/API error
-export function DatabaseErrorFallback({ 
+export function DatabaseErrorFallback({
   error,
   onRetry,
-  className 
-}: { 
+  className
+}: {
   error?: Error | null
   onRetry?: () => void
-  className?: string 
+  className?: string
 }) {
   const [isRetrying, setIsRetrying] = useState(false)
   const [countdown, setCountdown] = useState(0)
@@ -374,12 +374,12 @@ export function DatabaseErrorFallback({
           return prev - 1
         })
       }, 1000)
-      
+
       await new Promise(resolve => setTimeout(resolve, 30000))
     }
 
     setIsRetrying(true)
-    
+
     try {
       if (onRetry) {
         await onRetry()
@@ -422,33 +422,33 @@ export function DatabaseErrorFallback({
       <Card className="w-full max-w-md border-red-200 dark:border-red-800">
         <CardHeader className="text-center">
           <motion.div
-            animate={{ 
+            animate={{
               y: isMaintenanceMode ? [-2, 2, -2] : 0,
               rotate: isRateLimited ? [0, 5, -5, 0] : 0
             }}
-            transition={{ 
-              duration: 2, 
-              repeat: isMaintenanceMode || isRateLimited ? Infinity : 0 
+            transition={{
+              duration: 2,
+              repeat: isMaintenanceMode || isRateLimited ? Infinity : 0
             }}
             className="mx-auto mb-4 w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center"
           >
             <Icon className="w-6 h-6 text-red-600 dark:text-red-400" />
           </motion.div>
-          
+
           <CardTitle className="text-red-800 dark:text-red-200">
             {getTitle()}
           </CardTitle>
-          
+
           <Badge variant="outline" className="w-fit mx-auto mt-2">
             {isRateLimited ? 'Rate Limited' : 'Service Error'}
           </Badge>
         </CardHeader>
-        
+
         <CardContent className="space-y-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
             {getMessage()}
           </p>
-          
+
           {countdown > 0 && (
             <div className="space-y-2">
               <Progress value={((30 - countdown) / 30) * 100} className="w-full" />
@@ -457,10 +457,10 @@ export function DatabaseErrorFallback({
               </div>
             </div>
           )}
-          
+
           <div className="space-y-2">
-            <Button 
-              onClick={handleRetry} 
+            <Button
+              onClick={handleRetry}
               disabled={isRetrying || countdown > 0}
               variant="destructive"
             >
@@ -481,9 +481,9 @@ export function DatabaseErrorFallback({
                 </>
               )}
             </Button>
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => window.location.href = '/dashboard'}
             >
               <Home className="w-4 h-4 mr-2" />
@@ -537,23 +537,23 @@ export function GenericErrorFallback({
           >
             <AlertTriangle className="w-6 h-6 text-gray-600 dark:text-gray-400" />
           </motion.div>
-          
+
           <CardTitle className="text-gray-800 dark:text-gray-200">
             Something Went Wrong
           </CardTitle>
-          
+
           {context && (
             <Badge variant="outline" className="w-fit mx-auto mt-2">
               {context}
             </Badge>
           )}
         </CardHeader>
-        
+
         <CardContent className="space-y-4 text-center">
           <p className="text-gray-600 dark:text-gray-300">
             An unexpected error occurred. Please try refreshing the page or contact support if the problem persists.
           </p>
-          
+
           <div className="space-y-2">
             {onRetry && (
               <Button onClick={onRetry}>
@@ -561,17 +561,17 @@ export function GenericErrorFallback({
                 Try Again
               </Button>
             )}
-            
-            <Button 
-              variant="outline" 
+
+            <Button
+              variant="outline"
               onClick={() => window.location.reload()}
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh Page
             </Button>
-            
-            <Button 
-              variant="ghost" 
+
+            <Button
+              variant="ghost"
               onClick={() => window.location.href = '/'}
             >
               <Home className="w-4 h-4 mr-2" />
@@ -589,7 +589,7 @@ export function GenericErrorFallback({
               >
                 {showDetails ? 'Hide' : 'Show'} Error Details
               </Button>
-              
+
               {showDetails && (
                 <div className="mt-2 text-left">
                   <div className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -598,7 +598,7 @@ export function GenericErrorFallback({
                   <div className="text-xs text-gray-600 dark:text-gray-400 mt-1 font-mono bg-gray-50 dark:bg-gray-900 p-2 rounded">
                     {error.message || 'No error message available'}
                   </div>
-                  
+
                   {process.env.NODE_ENV === 'development' && error.stack && (
                     <>
                       <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mt-3">

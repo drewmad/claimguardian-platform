@@ -86,7 +86,7 @@ export function PropertyImage({
 
   if (loading) {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gray-700 rounded-lg ${className}`}
         style={{ width, height }}
       >
@@ -101,7 +101,7 @@ export function PropertyImage({
 
   if (error || !imageUrl) {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-lg ${className}`}
         style={{ width, height }}
       >
@@ -149,7 +149,7 @@ export function PropertyAvatar({
 
   if (error || !imageUrl) {
     return (
-      <div 
+      <div
         className={`flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-cyan-600/20 rounded-lg ${className}`}
       >
         <span className="text-lg" role="img" aria-label="Property">

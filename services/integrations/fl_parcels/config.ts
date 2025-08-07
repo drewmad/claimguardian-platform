@@ -11,19 +11,19 @@
 
 // FGIO (Florida Geographic Information Office) - Quarterly updates
 export const FGIO_ITEM_ID = "efa909d6b1c841d298b0a649e7f71cf2";
-export const FGIO_REST = 
+export const FGIO_REST =
   `https://services.arcgis.com/KTcxiTD9dsQw4r7Z/ArcGIS/rest/services/Florida_Statewide_Parcels/FeatureServer/0`;
 
 // FDOT (Florida Department of Transportation) - Annual updates with weekly deltas
-export const FDOT_SERVICE = 
+export const FDOT_SERVICE =
   "https://gis.fdot.gov/arcgis/rest/services/Parcels/FeatureServer";
 
 // FGDL (Florida Geographic Data Library) - Yearly archives
-export const FGDL_ROOT = 
+export const FGDL_ROOT =
   "https://fgdl.org/metadataexplorer/explorer/zip/";
 
 // DOR (Department of Revenue) - Official tax roll shapes
-export const DOR_PORTAL = 
+export const DOR_PORTAL =
   "https://floridarevenue.com/property/Pages/Cofficial_GIS.aspx";
 
 // Florida county IDs (1-67)

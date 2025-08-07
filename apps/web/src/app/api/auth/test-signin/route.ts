@@ -14,29 +14,29 @@ import { createClient } from '@/lib/supabase/server'
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json()
-    
+
     if (!email || !password) {
       return NextResponse.json({
         success: false,
         error: 'Email and password are required'
       }, { status: 400 })
     }
-    
+
     const supabase = await createClient()
-    
+
     // Test sign in
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password
     })
-    
+
     if (error) {
       console.error('Sign in error:', {
         message: error.message,
         status: error.status,
         code: error.code
       })
-      
+
       return NextResponse.json({
         success: false,
         error: error.message,
@@ -44,7 +44,7 @@ export async function POST(request: Request) {
         errorStatus: error.status
       }, { status: 401 })
     }
-    
+
     return NextResponse.json({
       success: true,
       user: {

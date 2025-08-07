@@ -36,10 +36,10 @@ export class AIOrchestrator {
   private cache: CacheManager | SemanticCache;
   private costTracker?: CostTracker;
   private defaultProvider: string;
-  
+
   constructor(config: OrchestratorConfig) {
     this.providers = new Map(Object.entries(config.providers));
-    
+
     // Use semantic cache if requested
     if (config.useSemanticCache) {
       this.cache = new SemanticCache(
@@ -49,26 +49,26 @@ export class AIOrchestrator {
     } else {
       this.cache = config.cache || new CacheManager(process.env.REDIS_URL, false);
     }
-    
+
     this.costTracker = config.costTracker;
     this.defaultProvider = config.defaultProvider || 'gemini';
-    
+
     // Validate at least one provider exists
     if (this.providers.size === 0) {
       throw new Error('At least one AI provider must be configured');
     }
   }
-  
+
   async process(request: AIRequest): Promise<AIResponse> {
     const start = Date.now();
-    
+
     // 1. Check cache
     const cached = await this.checkCache(request);
     if (cached) {
       console.log(`[Orchestrator] Cache hit for ${request.feature}`);
       return cached;
     }
-    
+
     // 2. Select provider
     const provider = this.selectProvider(request);
     if (!provider) {
@@ -78,12 +78,12 @@ export class AIOrchestrator {
         'orchestrator'
       );
     }
-    
+
     // 3. Process request with fallback
     let response: AIResponse;
     let attempts = 0;
     const maxAttempts = 2;
-    
+
     while (attempts < maxAttempts) {
       try {
         console.log(`[Orchestrator] Processing with ${provider.constructor.name}`);
@@ -92,7 +92,7 @@ export class AIOrchestrator {
       } catch (error) {
         attempts++;
         console.error(`[Orchestrator] Provider failed (attempt ${attempts}):`, error);
-        
+
         if (attempts >= maxAttempts) {
           // Try fallback provider
           const fallback = this.getFallbackProvider(provider);
@@ -105,7 +105,7 @@ export class AIOrchestrator {
         }
       }
     }
-    
+
     // 4. Track costs
     if (this.costTracker && response!) {
       await this.costTracker.track(
@@ -119,10 +119,10 @@ export class AIOrchestrator {
         response.provider
       );
     }
-    
+
     // 5. Cache response
     await this.cacheResponse(request, response!);
-    
+
     // 6. Add orchestration metadata
     return {
       ...response!,
@@ -130,16 +130,16 @@ export class AIOrchestrator {
       totalLatency: Date.now() - start
     };
   }
-  
+
   async chat(request: ChatRequest): Promise<ChatResponse> {
     const start = Date.now();
-    
+
     // Check cache for chat (less likely to hit due to conversation context)
     const cached = await this.checkCache(request);
     if (cached) {
       return cached as ChatResponse;
     }
-    
+
     const provider = this.selectProvider(request);
     if (!provider) {
       throw new AIServiceError(
@@ -148,9 +148,9 @@ export class AIOrchestrator {
         'orchestrator'
       );
     }
-    
+
     const response = await provider.chat(request);
-    
+
     // Track costs
     if (this.costTracker) {
       await this.costTracker.track(
@@ -164,17 +164,17 @@ export class AIOrchestrator {
         response.provider
       );
     }
-    
+
     // Cache if appropriate (short TTL for conversations)
     await this.cacheResponse(request, response, 300); // 5 minutes
-    
+
     return {
       ...response,
       orchestrated: true,
       totalLatency: Date.now() - start
     };
   }
-  
+
   async analyzeImage(request: ImageAnalysisRequest): Promise<ImageAnalysisResponse> {
     const provider = this.selectProvider(request);
     if (!provider) {
@@ -184,9 +184,9 @@ export class AIOrchestrator {
         'orchestrator'
       );
     }
-    
+
     const response = await provider.analyzeImage(request);
-    
+
     // Track costs
     if (this.costTracker) {
       await this.costTracker.track(
@@ -200,10 +200,10 @@ export class AIOrchestrator {
         response.provider
       );
     }
-    
+
     return response;
   }
-  
+
   private async checkCache(request: AIRequest | ChatRequest): Promise<AIResponse | null> {
     if (this.cache instanceof SemanticCache && 'prompt' in request) {
       // Generate embedding for semantic search
@@ -213,7 +213,7 @@ export class AIOrchestrator {
       return await this.cache.get(request);
     }
   }
-  
+
   private async cacheResponse(
     request: AIRequest | ChatRequest,
     response: AIResponse,
@@ -226,15 +226,15 @@ export class AIOrchestrator {
       await this.cache.set(request, response, ttlOverride);
     }
   }
-  
+
   private selectProvider(request: AIRequest | ChatRequest | ImageAnalysisRequest): BaseAIProvider | null {
     // Enhanced provider selection with Gemini 2.0 optimization
     // 1. Check if Gemini is optimal for this task type
     // 2. Consider cost sensitivity
     // 3. Fall back to original logic if needed
-    
+
     const feature = 'feature' in request ? request.feature : 'generic';
-    
+
     // Map features to task types for Gemini strategy
     const featureToTaskType: Record<string, string> = {
       'damage-analyzer': 'damage-assessment',
@@ -251,13 +251,13 @@ export class AIOrchestrator {
       'max': 'policy-analysis',
       'sentinel': 'claim-summarization'
     };
-    
+
     const taskType = featureToTaskType[feature] || 'generic';
-    
+
     // Check if we should prefer Gemini for this task
     const costSensitive = process.env.COST_OPTIMIZE !== 'false';
     const requiresStability = feature === 'communication-helper' || feature === 'clara';
-    
+
     if (GeminiStrategy.shouldPreferGemini(taskType, costSensitive, requiresStability)) {
       const geminiProvider = this.providers.get('gemini');
       if (geminiProvider) {
@@ -267,7 +267,7 @@ export class AIOrchestrator {
         return geminiProvider;
       }
     }
-    
+
     // Original fallback logic for non-Gemini optimal tasks
     const preferredProviders: Record<string, string[]> = {
       'clara': ['claude', 'gemini', 'openai'],      // Claude best for empathy
@@ -278,9 +278,9 @@ export class AIOrchestrator {
       'document-extractor': ['gemini', 'openai'],   // Document processing
       'generic': ['gemini', 'openai', 'claude']     // Default order
     };
-    
+
     const preferred = preferredProviders[feature] || preferredProviders.generic;
-    
+
     // Try providers in preferred order
     for (const providerName of preferred) {
       const provider = this.providers.get(providerName);
@@ -288,11 +288,11 @@ export class AIOrchestrator {
         return provider;
       }
     }
-    
+
     // Return default provider if available
     return this.providers.get(this.defaultProvider) || this.providers.values().next().value || null;
   }
-  
+
   private getFallbackProvider(primary: BaseAIProvider): BaseAIProvider | null {
     // Find a different provider as fallback
     for (const provider of this.providers.values()) {
@@ -302,10 +302,10 @@ export class AIOrchestrator {
     }
     return null;
   }
-  
+
   async getProviderStatus(): Promise<Record<string, boolean>> {
     const status: Record<string, boolean> = {};
-    
+
     for (const [name, provider] of this.providers) {
       try {
         // Simple health check - try to get available models
@@ -315,18 +315,18 @@ export class AIOrchestrator {
         status[name] = false;
       }
     }
-    
+
     return status;
   }
-  
+
   async getCacheStats() {
     return await this.cache.getStats();
   }
-  
+
   async clearCache() {
     await this.cache.clear();
   }
-  
+
   /**
    * Analyze potential cost savings by using Gemini 2.0
    */
@@ -339,12 +339,12 @@ export class AIOrchestrator {
     let totalAlternativeCost = 0;
     const savingsBreakdown: Record<string, unknown> = {};
     const recommendations: string[] = [];
-    
+
     for (const [taskType, volume] of Object.entries(monthlyVolume)) {
       const analysis = GeminiCostAnalyzer.calculateSavings(taskType, volume);
       totalGeminiCost += analysis.geminiCost;
       totalAlternativeCost += analysis.openAICost;
-      
+
       savingsBreakdown[taskType] = {
         volume,
         geminiCost: analysis.geminiCost,
@@ -352,7 +352,7 @@ export class AIOrchestrator {
         savings: analysis.savings,
         savingsPercent: analysis.savingsPercent.toFixed(1) + '%'
       };
-      
+
       if (analysis.savingsPercent === 100) {
         recommendations.push(
           `🎯 Use Gemini 2.0 Flash for all ${taskType} tasks - it's completely FREE!`
@@ -363,22 +363,22 @@ export class AIOrchestrator {
         );
       }
     }
-    
+
     const totalSavings = totalAlternativeCost - totalGeminiCost;
-    
+
     if (totalSavings > 1000) {
       recommendations.unshift(
         `🚀 You could save $${totalSavings.toFixed(2)}/month by optimizing AI provider selection!`
       );
     }
-    
+
     return {
       totalSavings,
       savingsBreakdown,
       recommendations
     };
   }
-  
+
   /**
    * Get optimized batch processing configuration
    */
@@ -388,11 +388,11 @@ export class AIOrchestrator {
   } {
     const config = GeminiStrategy.getBatchConfiguration(items.length);
     const batches: unknown[][] = [];
-    
+
     for (let i = 0; i < items.length; i += config.batchSize) {
       batches.push(items.slice(i, i + config.batchSize));
     }
-    
+
     return { batches, config };
   }
 }

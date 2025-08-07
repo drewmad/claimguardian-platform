@@ -115,7 +115,7 @@ class ReflectionTriggers {
     complexity: TaskExecutionContext['complexity'] = 'medium'
   ): string {
     const taskId = `task-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+
     this.activeTask = {
       taskType,
       startTime: Date.now(),
@@ -125,7 +125,7 @@ class ReflectionTriggers {
       filesAccessed: 0,
       complexity
     }
-    
+
     logger.info('Task tracking started for reflection triggers', { taskId, taskType })
     return taskId
   }
@@ -135,7 +135,7 @@ class ReflectionTriggers {
    */
   logToolUsage(tool: string) {
     if (!this.activeTask) return
-    
+
     if (!this.activeTask.toolsUsed.includes(tool)) {
       this.activeTask.toolsUsed.push(tool)
     }
@@ -170,29 +170,29 @@ class ReflectionTriggers {
    */
   async completeTaskTracking(success: boolean): Promise<boolean> {
     if (!this.activeTask) return false
-    
+
     this.activeTask.endTime = Date.now()
     this.activeTask.success = success
-    
+
     // Check all enabled triggers
     const triggeredReflections = this.triggers
       .filter(trigger => trigger.enabled && trigger.condition(this.activeTask!))
       .sort((a, b) => this.getPriorityWeight(b.priority) - this.getPriorityWeight(a.priority))
-    
+
     if (triggeredReflections.length > 0) {
       logger.info('Reflection triggers activated', {
         triggers: triggeredReflections.map(t => t.name),
         taskContext: this.activeTask
       })
-      
+
       // Trigger reflection automatically
       await this.executeReflection(triggeredReflections[0])
-      
+
       // Clear active task
       this.activeTask = null
       return true
     }
-    
+
     // Clear active task
     this.activeTask = null
     return false
@@ -203,7 +203,7 @@ class ReflectionTriggers {
    */
   private async executeReflection(trigger: ReflectionTrigger): Promise<void> {
     if (!this.activeTask) return
-    
+
     const taskId = claudeSelfReflection.startReflection(
       this.activeTask.taskType,
       `Task triggered by: ${trigger.description}`,
@@ -212,17 +212,17 @@ class ReflectionTriggers {
       'Standard approach with monitoring',
       ['automated-reflection']
     )
-    
+
     // Log the steps and context we tracked
     this.activeTask.toolsUsed.forEach(tool => {
       claudeSelfReflection.logStep(`Used ${tool} tool`, 'Tool usage during task execution', tool)
     })
-    
+
     // Log errors if any
     for (let i = 0; i < this.activeTask.errorsCount; i++) {
       claudeSelfReflection.logError(`Error ${i + 1} during task execution`)
     }
-    
+
     // Complete reflection with the task outcome
     const quality = this.determineTaskQuality(this.activeTask)
     await claudeSelfReflection.completeReflection(
@@ -230,7 +230,7 @@ class ReflectionTriggers {
       quality,
       this.activeTask.success ? 'high' : 'low'
     )
-    
+
     logger.info('Automated reflection completed', {
       taskId,
       trigger: trigger.name,
@@ -243,11 +243,11 @@ class ReflectionTriggers {
    */
   private determineTaskQuality(context: TaskExecutionContext): 'excellent' | 'good' | 'acceptable' | 'poor' {
     if (!context.success) return 'poor'
-    
+
     const duration = context.endTime ? context.endTime - context.startTime : 0
     const isEfficient = duration < 2 * 60 * 1000 && context.toolsUsed.length <= 3 && context.errorsCount === 0
     const isGood = duration < 5 * 60 * 1000 && context.toolsUsed.length <= 5 && context.errorsCount <= 1
-    
+
     if (isEfficient) return 'excellent'
     if (isGood) return 'good'
     return 'acceptable'
@@ -322,12 +322,12 @@ export function autoReflect<T extends (...args: unknown[]) => Promise<any>>(
   return (async (...args: unknown[]) => {
     // Start tracking
     const taskId = reflectionTriggers.startTaskTracking(taskType, complexity)
-    
+
     // Monkey patch console methods to track steps
     const originalLog = console.log
     const originalError = console.error
     let stepCount = 0
-    
+
     console.log = (...logArgs: unknown[]) => {
       stepCount++
       if (stepCount % 5 === 0) { // Log every 5th console.log as a step
@@ -335,25 +335,25 @@ export function autoReflect<T extends (...args: unknown[]) => Promise<any>>(
       }
       return originalLog.apply(console, logArgs)
     }
-    
+
     console.error = (...errorArgs: unknown[]) => {
       reflectionTriggers.logError()
       return originalError.apply(console, errorArgs)
     }
-    
+
     try {
       const result = await fn(...args)
-      
+
       // Complete tracking with success
       await reflectionTriggers.completeTaskTracking(true)
-      
+
       return result
     } catch (error) {
       reflectionTriggers.logError()
-      
+
       // Complete tracking with failure
       await reflectionTriggers.completeTaskTracking(false)
-      
+
       throw error
     } finally {
       // Restore console methods
@@ -385,17 +385,17 @@ export async function triggerManualReflection(
     'Unknown approach - manual analysis',
     []
   )
-  
+
   // Log all the steps
   actualSteps.forEach((step, index) => {
     claudeSelfReflection.logStep(step, `Step ${index + 1} reasoning`, toolsUsed[index])
   })
-  
+
   // Log errors
   errorsEncountered.forEach(error => {
     claudeSelfReflection.logError(error)
   })
-  
+
   // Complete reflection
   await claudeSelfReflection.completeReflection(
     success,
@@ -403,7 +403,7 @@ export async function triggerManualReflection(
     success ? 'high' : 'low',
     alternativeApproaches
   )
-  
+
   logger.info('Manual reflection completed', { taskId, taskType })
 }
 
@@ -418,7 +418,7 @@ export function smartReflect<T extends (...args: unknown[]) => Promise<any>>(
   return (async (...args: unknown[]) => {
     // Determine complexity based on task type and description
     const complexity = determineTaskComplexity(taskType, taskDescription)
-    
+
     // Use appropriate reflection level
     if (complexity === 'complex') {
       return await autoReflect(taskType, complexity, fn)(...args)
@@ -442,17 +442,17 @@ function determineTaskComplexity(
 ): TaskExecutionContext['complexity'] {
   const complexKeywords = ['complex', 'multiple', 'integration', 'migration', 'refactor', 'architecture']
   const mediumKeywords = ['modify', 'update', 'fix', 'enhance', 'add']
-  
-  if (taskType === 'planning' || complexKeywords.some(keyword => 
+
+  if (taskType === 'planning' || complexKeywords.some(keyword =>
     description.toLowerCase().includes(keyword)
   )) {
     return 'complex'
   }
-  
+
   if (mediumKeywords.some(keyword => description.toLowerCase().includes(keyword))) {
     return 'medium'
   }
-  
+
   return 'simple'
 }
 
@@ -467,7 +467,7 @@ export function getReflectionSummary(): {
 } {
   const stats = reflectionTriggers.getTriggerStats()
   const reflectionStats = claudeSelfReflection.getReflectionStats()
-  
+
   return {
     triggersActive: stats.enabledTriggers,
     reflectionsToday: 0, // Would need to track daily counts

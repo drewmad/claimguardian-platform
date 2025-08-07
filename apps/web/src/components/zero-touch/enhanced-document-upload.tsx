@@ -6,13 +6,13 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Upload, 
-  FileText, 
-  Image, 
-  CheckCircle, 
-  AlertCircle, 
-  Brain, 
+import {
+  Upload,
+  FileText,
+  Image,
+  CheckCircle,
+  AlertCircle,
+  Brain,
   Sparkles,
   Clock,
   Tag,
@@ -37,10 +37,10 @@ interface UploadedDocument {
   }
 }
 
-export function EnhancedDocumentUpload({ 
-  propertyId, 
-  claimId, 
-  onDocumentProcessed 
+export function EnhancedDocumentUpload({
+  propertyId,
+  claimId,
+  onDocumentProcessed
 }: {
   propertyId?: string
   claimId?: string
@@ -52,10 +52,10 @@ export function EnhancedDocumentUpload({
 
   const onDrop = useCallback(async (acceptedFiles: File[]) => {
     setIsProcessing(true)
-    
+
     for (const file of acceptedFiles) {
       const docId = crypto.randomUUID()
-      
+
       // Add document to state immediately
       const newDoc: UploadedDocument = {
         id: docId,
@@ -65,20 +65,20 @@ export function EnhancedDocumentUpload({
         status: 'uploading',
         progress: 0
       }
-      
+
       setDocuments(prev => [...prev, newDoc])
-      
+
       try {
         // Mock AI processing for demo
-        setDocuments(prev => prev.map(d => 
-          d.id === docId 
+        setDocuments(prev => prev.map(d =>
+          d.id === docId
             ? { ...d, status: 'processing', progress: 25 }
             : d
         ))
-        
+
         // Simulate processing time
         await new Promise(resolve => setTimeout(resolve, 2000))
-        
+
         // Mock AI results
         const mockResult = {
           status: 'pending_review',
@@ -91,11 +91,11 @@ export function EnhancedDocumentUpload({
             'File Size': `${(file.size / 1024).toFixed(1)} KB`
           }
         }
-        
-        setDocuments(prev => prev.map(d => 
-          d.id === docId 
-            ? { 
-                ...d, 
+
+        setDocuments(prev => prev.map(d =>
+          d.id === docId
+            ? {
+                ...d,
                 status: mockResult.status === 'auto_confirmed' ? 'auto_confirmed' : 'pending_review',
                 progress: 100,
                 aiSuggestions: {
@@ -108,26 +108,26 @@ export function EnhancedDocumentUpload({
               }
             : d
         ))
-        
+
         toast.success(`Document processed: ${mockResult.suggested_name}`, {
           description: `Confidence: ${Math.round(mockResult.confidence * 100)}%`
         })
-        
+
         onDocumentProcessed?.(mockResult)
-        
+
       } catch (error) {
         console.error('Document processing error:', error)
-        
-        setDocuments(prev => prev.map(d => 
-          d.id === docId 
+
+        setDocuments(prev => prev.map(d =>
+          d.id === docId
             ? { ...d, status: 'failed', progress: 0 }
             : d
         ))
-        
+
         toast.error(`Failed to process ${file.name}`)
       }
     }
-    
+
     setIsProcessing(false)
   }, [propertyId, claimId, onDocumentProcessed])
 
@@ -198,23 +198,23 @@ export function EnhancedDocumentUpload({
             Upload any document - AI will automatically name it, extract metadata, and create smart tags
           </p>
         </CardHeader>
-        
+
         <CardContent>
           <div
             {...getRootProps()}
             className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
-              isDragActive 
-                ? 'border-purple-500 bg-purple-500/5' 
+              isDragActive
+                ? 'border-purple-500 bg-purple-500/5'
                 : 'border-gray-600 hover:border-gray-500'
             }`}
           >
             <input {...getInputProps()} />
-            
+
             <div className="flex flex-col items-center gap-4">
               <div className="p-3 bg-gray-700 rounded-full">
                 <Upload className="w-6 h-6 text-gray-400" />
               </div>
-              
+
               {isDragActive ? (
                 <div className="space-y-2">
                   <p className="text-purple-400 font-medium">
@@ -258,7 +258,7 @@ export function EnhancedDocumentUpload({
               )}
             </CardTitle>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             {documents.map((doc) => (
               <div key={doc.id} className="space-y-3">
@@ -272,7 +272,7 @@ export function EnhancedDocumentUpload({
                         <FileText className="w-4 h-4 text-gray-400" />
                       )}
                     </div>
-                    
+
                     <div>
                       <p className="text-white font-medium truncate max-w-xs">
                         {doc.fileName}
@@ -282,18 +282,18 @@ export function EnhancedDocumentUpload({
                       </p>
                     </div>
                   </div>
-                  
+
                   <Badge className={getStatusColor(doc.status)}>
                     {getStatusIcon(doc.status)}
                     {getStatusText(doc.status)}
                   </Badge>
                 </div>
-                
+
                 {/* Progress Bar */}
                 {doc.status !== 'failed' && doc.status !== 'auto_confirmed' && (
                   <Progress value={doc.progress} className="h-2" />
                 )}
-                
+
                 {/* AI Suggestions */}
                 {doc.aiSuggestions && (
                   <div className="bg-gray-900 rounded-lg p-4 space-y-3">
@@ -306,7 +306,7 @@ export function EnhancedDocumentUpload({
                         {Math.round(doc.aiSuggestions.confidence * 100)}% confident
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                       <div>
                         <span className="text-gray-400">Suggested Name:</span>
@@ -314,7 +314,7 @@ export function EnhancedDocumentUpload({
                           {doc.aiSuggestions.name}
                         </p>
                       </div>
-                      
+
                       <div>
                         <span className="text-gray-400">Category:</span>
                         <Badge className="mt-1 bg-blue-500/10 text-blue-500">
@@ -322,7 +322,7 @@ export function EnhancedDocumentUpload({
                         </Badge>
                       </div>
                     </div>
-                    
+
                     {/* Extracted Metadata */}
                     {doc.aiSuggestions.metadata && Object.keys(doc.aiSuggestions.metadata).length > 0 && (
                       <div>
@@ -332,7 +332,7 @@ export function EnhancedDocumentUpload({
                             .filter(([key, value]) => value && String(value).trim())
                             .slice(0, 6)
                             .map(([key, value]) => (
-                            <Badge 
+                            <Badge
                               key={key}
                               className="bg-gray-700 text-gray-300 text-xs"
                             >

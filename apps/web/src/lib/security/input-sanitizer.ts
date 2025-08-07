@@ -69,15 +69,15 @@ class InputSanitizer {
     // Allow safe tags and remove dangerous ones
     const allowedTags = ['p', 'br', 'strong', 'em', 'u', 'ol', 'ul', 'li', 'blockquote']
     let sanitized = input
-    
+
     // Remove dangerous script tags and event handlers
     sanitized = sanitized.replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
     sanitized = sanitized.replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
     sanitized = sanitized.replace(/javascript:/gi, '')
-    
+
     // Remove all tags except allowed ones
     sanitized = sanitized.replace(/<(?!\/?(?:p|br|strong|em|u|ol|ul|li|blockquote)\b)[^>]*>/gi, '')
-    
+
     return sanitized
   }
 
@@ -110,11 +110,11 @@ class InputSanitizer {
     if (!input || typeof input !== 'string') return ''
 
     const url = input.trim()
-    
+
     // Only allow HTTP/HTTPS URLs
-    if (validator.isURL(url, { 
+    if (validator.isURL(url, {
       protocols: ['http', 'https'],
-      require_protocol: true 
+      require_protocol: true
     })) {
       return url
     }
@@ -130,7 +130,7 @@ class InputSanitizer {
 
     // Remove all non-digit characters except +
     const phone = input.replace(/[^\d+]/g, '')
-    
+
     // Basic phone validation (10-15 digits, optional + prefix)
     if (/^\+?\d{10,15}$/.test(phone)) {
       return phone
@@ -183,7 +183,7 @@ class InputSanitizer {
    */
   private sanitizeObject(obj: unknown, key?: string): unknown {
     if (obj === null || obj === undefined) return obj
-    
+
     if (typeof obj === 'string') {
       // Apply appropriate sanitization based on context
       if (key && key.toLowerCase().includes('email')) {
@@ -197,15 +197,15 @@ class InputSanitizer {
         return this.sanitizeHtml(obj)
       }
     }
-    
+
     if (typeof obj === 'number' || typeof obj === 'boolean') {
       return obj
     }
-    
+
     if (Array.isArray(obj)) {
       return obj.map(item => this.sanitizeObject(item))
     }
-    
+
     if (typeof obj === 'object') {
       const sanitized: Record<string, unknown> = {}
       for (const [objKey, value] of Object.entries(obj)) {
@@ -217,7 +217,7 @@ class InputSanitizer {
       }
       return sanitized
     }
-    
+
     return obj
   }
 
@@ -229,7 +229,7 @@ class InputSanitizer {
 
     for (const [key, value] of Object.entries(data)) {
       const sanitizedKey = this.sanitizeText(key, 50)
-      
+
       if (!sanitizedKey) continue
 
       if (typeof value === 'string') {
@@ -276,17 +276,17 @@ class InputSanitizer {
       .replace(/\s+/g, ' ') // Normalize whitespace
       .slice(0, 100)
       .trim()
-    
+
     // If the result is empty or just whitespace, return empty string
     if (result.length === 0 || /^\s*$/.test(result)) {
       return ''
     }
-    
+
     // If result contains only table names or dangerous terms without context, return empty
     if (/^(users|passwords|table|evil|malicious|modify)$/i.test(result)) {
       return ''
     }
-    
+
     return result
   }
 }

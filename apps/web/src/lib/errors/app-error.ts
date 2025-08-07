@@ -9,7 +9,7 @@
  * @status stable
  */
 
-export type ErrorCode = 
+export type ErrorCode =
   // Authentication errors
   | 'AUTH_INVALID_CREDENTIALS'
   | 'AUTH_USER_EXISTS'
@@ -21,29 +21,29 @@ export type ErrorCode =
   | 'AUTH_CONSENT_REQUIRED'
   | 'AUTH_CONSENT_INVALID'
   | 'AUTH_AGE_REQUIRED'
-  
+
   // Validation errors
   | 'VALIDATION_ERROR'
   | 'INVALID_INPUT'
   | 'MISSING_REQUIRED_FIELD'
-  
+
   // API errors
   | 'API_ERROR'
   | 'NETWORK_ERROR'
   | 'TIMEOUT_ERROR'
   | 'RATE_LIMIT_ERROR'
-  
+
   // Database errors
   | 'DB_CONNECTION_ERROR'
   | 'DB_QUERY_ERROR'
   | 'DB_CONSTRAINT_ERROR'
-  
+
   // Business logic errors
   | 'BUSINESS_RULE_VIOLATION'
   | 'INSUFFICIENT_PERMISSIONS'
   | 'RESOURCE_NOT_FOUND'
   | 'RESOURCE_ALREADY_EXISTS'
-  
+
   // System errors
   | 'INTERNAL_SERVER_ERROR'
   | 'SERVICE_UNAVAILABLE'
@@ -71,7 +71,7 @@ export class AppError extends Error {
     isOperational = true
   ) {
     super(message)
-    
+
     this.name = 'AppError'
     this.code = code
     this.originalError = originalError

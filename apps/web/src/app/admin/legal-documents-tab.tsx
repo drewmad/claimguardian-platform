@@ -63,7 +63,7 @@ function UploadDocumentModal({ isOpen, onClose }: { isOpen: boolean, onClose: ()
     }
     const formData = new FormData(event.currentTarget)
     formData.set('file', selectedFile)
-    
+
     const result = await uploadLegalDocument(formData)
 
     if (result.error) {

@@ -36,11 +36,11 @@ async function convertCountyToCSV(countyCode, countyName) {
   return new Promise((resolve, reject) => {
     const gdbPath = '/Users/madengineering/ClaimGuardian/data/florida/Cadastral_Statewide.gdb';
     const csvPath = `/Users/madengineering/ClaimGuardian/data/florida/csv_by_county/county_${countyCode}_${countyName}.csv`;
-    
+
     console.log(`Converting ${countyName} County (${countyCode}) to CSV...`);
-    
+
     const cmd = `ogr2ogr -f CSV "${csvPath}" "${gdbPath}" CADASTRAL_DOR -where "CO_NO = ${countyCode}" -lco GEOMETRY=AS_WKT`;
-    
+
     exec(cmd, (error, stdout, stderr) => {
       if (error) {
         console.error(`Error converting county ${countyCode}:`, error);
@@ -56,10 +56,10 @@ async function convertCountyToCSV(countyCode, countyName) {
 // Import CSV to Supabase
 async function importCSVToSupabase(csvPath, countyCode, countyName) {
   console.log(`Importing ${countyName} County to Supabase...`);
-  
+
   const parcels = [];
   const batchSize = 1000;
-  
+
   return new Promise((resolve, reject) => {
     fs.createReadStream(csvPath)
       .pipe(csv())
@@ -76,7 +76,7 @@ async function importCSVToSupabase(csvPath, countyCode, countyName) {
           PHY_ZIPCD: row.PHY_ZIPCD,
           SHAPE_WKT: row.WKT || row.SHAPE || null
         });
-        
+
         // Insert in batches
         if (parcels.length >= batchSize) {
           const batch = parcels.splice(0, batchSize);
@@ -99,7 +99,7 @@ async function insertBatch(parcels) {
   const { data, error } = await supabase
     .from('florida_parcels')
     .insert(parcels);
-    
+
   if (error) {
     console.error('Insert error:', error);
   } else {
@@ -111,17 +111,17 @@ async function insertBatch(parcels) {
 async function main() {
   console.log('Florida Parcels Import via Supabase Client');
   console.log('==========================================\n');
-  
+
   // Create CSV directory
   const csvDir = '/Users/madengineering/ClaimGuardian/data/florida/csv_by_county';
   if (!fs.existsSync(csvDir)) {
     fs.mkdirSync(csvDir, { recursive: true });
   }
-  
+
   // Get county selection from command line
   const args = process.argv.slice(2);
   const mode = args[0] || 'single';
-  
+
   if (mode === 'all') {
     // Import all counties
     for (const [code, name] of Object.entries(COUNTIES)) {
@@ -153,7 +153,7 @@ async function main() {
     // Single county
     const countyCode = parseInt(args[0]) || 18; // Default to Charlotte
     const countyName = COUNTIES[countyCode];
-    
+
     if (countyName) {
       try {
         const csvPath = await convertCountyToCSV(countyCode, countyName);
@@ -165,14 +165,14 @@ async function main() {
       console.error(`Invalid county code: ${countyCode}`);
     }
   }
-  
+
   console.log('\nImport complete!');
-  
+
   // Show stats
   const { count } = await supabase
     .from('florida_parcels')
     .select('*', { count: 'exact', head: true });
-    
+
   console.log(`Total parcels in database: ${count}`);
 }
 

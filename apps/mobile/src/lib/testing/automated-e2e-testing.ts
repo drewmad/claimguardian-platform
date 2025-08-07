@@ -89,12 +89,12 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
       { action: 'expect', element: 'dashboard-screen', assertion: { type: 'visible' } },
       { action: 'tap', element: 'add-property-button' },
       { action: 'expect', element: 'property-wizard-screen', assertion: { type: 'visible' } },
-      
+
       // Step 1: Basic Information
       { action: 'type', element: 'property-name-input', text: 'Test Property' },
       { action: 'type', element: 'property-type-input', text: 'Single Family Home' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Step 2: Address Information
       { action: 'type', element: 'street-input', text: '123 Test Street' },
       { action: 'type', element: 'city-input', text: 'Miami' },
@@ -102,24 +102,24 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
       { action: 'tap', element: 'florida-option' },
       { action: 'type', element: 'zip-input', text: '33101' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Step 3: Property Details
       { action: 'type', element: 'year-built-input', text: '2010' },
       { action: 'type', element: 'square-feet-input', text: '2500' },
       { action: 'type', element: 'bedrooms-input', text: '3' },
       { action: 'type', element: 'bathrooms-input', text: '2' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Step 4: Property Value
       { action: 'type', element: 'purchase-price-input', text: '350000' },
       { action: 'type', element: 'current-value-input', text: '425000' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Step 5: Review and Submit
       { action: 'expect', element: 'review-screen', assertion: { type: 'visible' } },
       { action: 'scroll', element: 'review-scroll', direction: 'down' },
       { action: 'tap', element: 'create-property-button' },
-      
+
       // Verify success
       { action: 'wait', duration: 3000 },
       { action: 'expect', element: 'success-message', assertion: { type: 'visible' } },
@@ -144,14 +144,14 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
     steps: [
       { action: 'tap', element: 'new-assessment-button' },
       { action: 'expect', element: 'assessment-wizard', assertion: { type: 'visible' } },
-      
+
       // Assessment Basic Info
       { action: 'type', element: 'assessment-title-input', text: 'Roof Damage Assessment' },
       { action: 'tap', element: 'property-selector' },
       { action: 'tap', element: 'test-property-option' },
       { action: 'type', element: 'damage-description-input', text: 'Storm damage to shingles and gutters' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Photo Capture
       { action: 'expect', element: 'photo-capture-screen', assertion: { type: 'visible' } },
       { action: 'tap', element: 'camera-button' },
@@ -163,19 +163,19 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
       { action: 'tap', element: 'capture-button' },
       { action: 'tap', element: 'use-photo-button' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Damage Details
       { action: 'tap', element: 'damage-type-picker' },
       { action: 'tap', element: 'wind-damage-option' },
       { action: 'type', element: 'estimated-cost-input', text: '5000' },
       { action: 'tap', element: 'urgency-high-radio' },
       { action: 'tap', element: 'next-button' },
-      
+
       // Review and Submit
       { action: 'expect', element: 'assessment-review', assertion: { type: 'visible' } },
       { action: 'scroll', element: 'review-scroll', direction: 'down' },
       { action: 'tap', element: 'submit-assessment-button' },
-      
+
       // Verify Success
       { action: 'wait', duration: 3000 },
       { action: 'expect', element: 'assessment-success', assertion: { type: 'visible' } },
@@ -196,35 +196,35 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
     steps: [
       // Verify offline mode
       { action: 'expect', element: 'offline-indicator', assertion: { type: 'visible' } },
-      
+
       // Create property while offline
       { action: 'tap', element: 'properties-tab' },
       { action: 'tap', element: 'add-property-button' },
       { action: 'type', element: 'property-name-input', text: 'Offline Test Property' },
       { action: 'tap', element: 'save-offline-button' },
       { action: 'expect', element: 'offline-saved-indicator', assertion: { type: 'visible' } },
-      
+
       // Create assessment while offline
       { action: 'tap', element: 'assessments-tab' },
       { action: 'tap', element: 'new-assessment-button' },
       { action: 'type', element: 'assessment-title-input', text: 'Offline Assessment' },
       { action: 'tap', element: 'save-offline-button' },
       { action: 'expect', element: 'offline-queue-indicator', assertion: { type: 'visible' } },
-      
+
       // Check sync queue
       { action: 'tap', element: 'settings-tab' },
       { action: 'tap', element: 'sync-queue-button' },
       { action: 'expect', element: 'pending-sync-items', assertion: { type: 'visible' } },
-      
+
       // Go back online
       { action: 'tap', element: 'offline-mode-toggle' },
       { action: 'wait', duration: 2000 },
-      
+
       // Verify sync
       { action: 'expect', element: 'sync-in-progress', assertion: { type: 'visible' } },
       { action: 'wait', duration: 5000 },
       { action: 'expect', element: 'sync-complete', assertion: { type: 'visible' } },
-      
+
       // Verify synced data
       { action: 'tap', element: 'properties-tab' },
       { action: 'expect', element: 'offline-test-property', assertion: { type: 'visible' } },
@@ -241,35 +241,35 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
     steps: [
       { action: 'tap', element: 'photos-tab' },
       { action: 'expect', element: 'photo-gallery', assertion: { type: 'visible' } },
-      
+
       // Capture new photo
       { action: 'tap', element: 'camera-fab-button' },
       { action: 'expect', element: 'camera-screen', assertion: { type: 'visible' } },
       { action: 'tap', element: 'capture-button' },
       { action: 'wait', duration: 2000 },
-      
+
       // Add metadata
       { action: 'type', element: 'photo-title-input', text: 'Roof Damage Photo' },
       { action: 'type', element: 'photo-description-input', text: 'Missing shingles on east side' },
       { action: 'tap', element: 'property-selector' },
       { action: 'tap', element: 'test-property-option' },
       { action: 'tap', element: 'save-photo-button' },
-      
+
       // Trigger AI Analysis
       { action: 'tap', element: 'ai-analyze-button' },
       { action: 'expect', element: 'ai-analysis-loading', assertion: { type: 'visible' } },
       { action: 'wait', duration: 10000 },
       { action: 'expect', element: 'ai-analysis-results', assertion: { type: 'visible' } },
-      
+
       // Verify AI results
       { action: 'expect', element: 'damage-type-result', assertion: { type: 'visible' } },
       { action: 'expect', element: 'severity-rating', assertion: { type: 'visible' } },
       { action: 'expect', element: 'cost-estimate', assertion: { type: 'visible' } },
-      
+
       // Save analysis
       { action: 'tap', element: 'save-analysis-button' },
       { action: 'expect', element: 'analysis-saved-message', assertion: { type: 'visible' } },
-      
+
       // Verify in photo gallery
       { action: 'tap', element: 'back-button' },
       { action: 'expect', element: 'analyzed-photo-badge', assertion: { type: 'visible' } }
@@ -292,7 +292,7 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
       { action: 'tap', element: 'properties-tab' },
       { action: 'wait', duration: 1000 },
       { action: 'expect', element: 'property-list', assertion: { type: 'visible' } },
-      
+
       // Scroll performance test
       { action: 'scroll', element: 'property-list', direction: 'down' },
       { action: 'wait', duration: 500 },
@@ -300,27 +300,27 @@ export const claimGuardianE2ETests: E2ETestCase[] = [
       { action: 'wait', duration: 500 },
       { action: 'scroll', element: 'property-list', direction: 'up' },
       { action: 'wait', duration: 500 },
-      
+
       // Search performance test
       { action: 'tap', element: 'search-button' },
       { action: 'type', element: 'search-input', text: 'test' },
       { action: 'wait', duration: 2000 },
       { action: 'expect', element: 'search-results', assertion: { type: 'visible' } },
-      
+
       // Filter performance test
       { action: 'tap', element: 'filter-button' },
       { action: 'tap', element: 'property-type-filter' },
       { action: 'tap', element: 'single-family-option' },
       { action: 'tap', element: 'apply-filters-button' },
       { action: 'wait', duration: 2000 },
-      
+
       // Large photo gallery test
       { action: 'tap', element: 'photos-tab' },
       { action: 'wait', duration: 2000 },
       { action: 'scroll', element: 'photo-grid', direction: 'down' },
       { action: 'wait', duration: 1000 },
       { action: 'scroll', element: 'photo-grid', direction: 'down' },
-      
+
       // Memory intensive operations
       { action: 'tap', element: 'first-photo' },
       { action: 'wait', duration: 1000 },
@@ -343,10 +343,10 @@ export class E2ETestFramework {
 
   async runTestSuite(testCases?: E2ETestCase[]): Promise<E2ETestReport> {
     console.log(`🧪 Starting E2E Test Suite: ${this.config.testSuite}`)
-    
+
     const tests = testCases || claimGuardianE2ETests
     const startTime = Date.now()
-    
+
     this.results = []
 
     // Setup device and app
@@ -355,11 +355,11 @@ export class E2ETestFramework {
     for (let i = 0; i < tests.length; i++) {
       const testCase = tests[i]
       console.log(`📱 Running test ${i + 1}/${tests.length}: ${testCase.name}`)
-      
+
       try {
         const result = await this.runTestCase(testCase)
         this.results.push(result)
-        
+
         if (!result.passed && this.config.retryFailedTests > 0) {
           console.log(`🔄 Retrying failed test: ${testCase.name}`)
           for (let retry = 0; retry < this.config.retryFailedTests; retry++) {
@@ -399,19 +399,19 @@ export class E2ETestFramework {
 
   private async setupDevice(): Promise<void> {
     console.log(`📲 Setting up ${this.config.platform} ${this.config.device}`)
-    
+
     // Mock device setup - in real implementation would use Detox
     await new Promise(resolve => setTimeout(resolve, 2000))
-    
+
     console.log('✅ Device setup complete')
   }
 
   private async teardownDevice(): Promise<void> {
     console.log('📲 Tearing down device')
-    
+
     // Mock device teardown
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     console.log('✅ Device teardown complete')
   }
 
@@ -446,7 +446,7 @@ export class E2ETestFramework {
 
     } catch (error) {
       const duration = Date.now() - startTime
-      
+
       // Capture failure screenshot
       if (this.config.takeScreenshots) {
         const screenshot = await this.captureScreenshot(`${testCase.name}-failure`)
@@ -472,7 +472,7 @@ export class E2ETestFramework {
       try {
         await this.executeStep(step)
         const stepDuration = Date.now() - stepStartTime
-        
+
         stepResults.push({
           stepIndex: i,
           passed: true,
@@ -481,7 +481,7 @@ export class E2ETestFramework {
 
       } catch (error) {
         const stepDuration = Date.now() - stepStartTime
-        
+
         stepResults.push({
           stepIndex: i,
           passed: false,
@@ -501,37 +501,37 @@ export class E2ETestFramework {
         console.log(`👆 Tap: ${step.element}`)
         await new Promise(resolve => setTimeout(resolve, 200))
         break
-        
+
       case 'type':
         console.log(`⌨️  Type: "${step.text}" in ${step.element}`)
         await new Promise(resolve => setTimeout(resolve, 500))
         break
-        
+
       case 'swipe':
         console.log(`👋 Swipe: ${step.direction} on ${step.element}`)
         await new Promise(resolve => setTimeout(resolve, 300))
         break
-        
+
       case 'scroll':
         console.log(`📜 Scroll: ${step.direction} on ${step.element}`)
         await new Promise(resolve => setTimeout(resolve, 400))
         break
-        
+
       case 'wait':
         console.log(`⏰ Wait: ${step.duration}ms`)
         await new Promise(resolve => setTimeout(resolve, step.duration || 1000))
         break
-        
+
       case 'expect':
         console.log(`🔍 Expect: ${step.element} to be ${step.assertion?.type}`)
         await new Promise(resolve => setTimeout(resolve, 100))
-        
+
         // Mock assertion - would check actual UI state in real implementation
         if (Math.random() < 0.1) { // 10% chance of assertion failure for testing
           throw new Error(`Assertion failed: ${step.element} is not ${step.assertion?.type}`)
         }
         break
-        
+
       default:
         throw new Error(`Unknown action: ${step.action}`)
     }
@@ -539,17 +539,17 @@ export class E2ETestFramework {
 
   private async captureScreenshot(name: string): Promise<string> {
     console.log(`📷 Capturing screenshot: ${name}`)
-    
+
     // Mock screenshot capture
     const filename = `${name}-${Date.now()}.png`
     await new Promise(resolve => setTimeout(resolve, 100))
-    
+
     return filename
   }
 
   private async cleanupBetweenTests(): Promise<void> {
     console.log('🧹 Cleaning up between tests')
-    
+
     // Mock cleanup - would reset app state in real implementation
     await new Promise(resolve => setTimeout(resolve, 500))
   }
@@ -624,7 +624,7 @@ export class E2ETestFramework {
 </head>
 <body>
     <h1>🧪 ClaimGuardian E2E Test Report</h1>
-    
+
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Test Suite:</strong> ${report.config.testSuite}</p>
@@ -686,9 +686,9 @@ export async function runE2ETests(config?: Partial<E2ETestConfig>, testCases?: E
   }
 
   const finalConfig = { ...defaultConfig, ...config }
-  
+
   const framework = new E2ETestFramework(finalConfig)
-  
+
   return await framework.runTestSuite(testCases)
 }
 

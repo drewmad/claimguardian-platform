@@ -3,12 +3,12 @@ templates:
     id: "tmpl_001"
     purpose: "Standardized code review across all agents"
     variables: ["file_path", "pr_number", "author"]
-    
+
   feature_implementation:
     id: "tmpl_002"
     purpose: "Consistent feature development approach"
     variables: ["feature_name", "requirements", "constraints"]
-    
+
   bug_analysis:
     id: "tmpl_003"
     purpose: "Systematic bug investigation"

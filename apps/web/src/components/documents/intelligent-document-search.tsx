@@ -12,13 +12,13 @@
 'use client'
 
 import { useState, useCallback, useEffect, useMemo } from 'react'
-import { 
-  Search, 
-  Filter, 
-  FileText, 
-  Clock, 
-  Tag, 
-  Lightbulb, 
+import {
+  Search,
+  Filter,
+  FileText,
+  Clock,
+  Tag,
+  Lightbulb,
   Download,
   Eye,
   Sparkles,
@@ -36,11 +36,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Progress } from '@/components/ui/progress'
-import { 
-  documentSearch, 
-  DocumentSearchResult, 
-  SearchFilters, 
-  DocumentInsight 
+import {
+  documentSearch,
+  DocumentSearchResult,
+  SearchFilters,
+  DocumentInsight
 } from '@/lib/services/intelligent-document-search'
 import { logger } from '@/lib/logger'
 
@@ -97,9 +97,9 @@ export function IntelligentDocumentSearchComponent() {
   const handleSearch = useCallback(async () => {
     if (!searchState.query.trim()) return
 
-    setSearchState(prev => ({ 
-      ...prev, 
-      isSearching: true, 
+    setSearchState(prev => ({
+      ...prev,
+      isSearching: true,
       error: null,
       searchStats: null
     }))
@@ -120,8 +120,8 @@ export function IntelligentDocumentSearchComponent() {
       })
 
       const searchTime = Date.now() - startTime
-      const avgRelevanceScore = results.length > 0 
-        ? results.reduce((sum, r) => sum + r.relevanceScore, 0) / results.length 
+      const avgRelevanceScore = results.length > 0
+        ? results.reduce((sum, r) => sum + r.relevanceScore, 0) / results.length
         : 0
 
       setSearchState(prev => ({
@@ -349,14 +349,14 @@ export function IntelligentDocumentSearchComponent() {
       {searchState.results.length > 0 && (
         <div className="space-y-4">
           <h2 className="text-xl font-semibold text-white">Search Results</h2>
-          
+
           <div className="grid gap-4">
             {searchState.results.map(result => {
               const docType = DOCUMENT_TYPE_LABELS[result.documentType] || DOCUMENT_TYPE_LABELS.other
-              
+
               return (
-                <Card 
-                  key={result.id} 
+                <Card
+                  key={result.id}
                   className="bg-gray-800 border-gray-700 hover:bg-gray-750 transition-colors cursor-pointer"
                   onClick={() => setSelectedResult(result)}
                 >
@@ -370,13 +370,13 @@ export function IntelligentDocumentSearchComponent() {
                             {docType.label}
                           </Badge>
                         </div>
-                        
+
                         {/* Relevance Score */}
                         <div className="flex items-center gap-2 mb-3">
                           <span className="text-sm text-gray-400">Relevance:</span>
                           <div className="flex items-center gap-2">
-                            <Progress 
-                              value={result.relevanceScore * 100} 
+                            <Progress
+                              value={result.relevanceScore * 100}
                               className="w-20 h-2"
                             />
                             <span className={`text-sm px-2 py-1 rounded ${relevanceColor(result.relevanceScore)}`}>

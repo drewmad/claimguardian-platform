@@ -116,12 +116,12 @@ describe('Auth Server Actions', () => {
 
       // The redirect error should be caught and returned as error
       const result = await signIn(formData)
-      
+
       expect(mockSupabase.auth.signInWithPassword).toHaveBeenCalledWith({
         email: 'test@example.com',
         password: 'SecurePass123!'
       })
-      
+
       // Should catch redirect error
       expect(result.success).toBe(false)
       expect(result.error).toContain('NEXT_REDIRECT')
@@ -151,7 +151,7 @@ describe('Auth Server Actions', () => {
 
       // The redirect error should be caught and returned as error
       const result = await signOut()
-      
+
       expect(mockSupabase.auth.signOut).toHaveBeenCalled()
       expect(result.success).toBe(false)
       expect(result.error).toContain('NEXT_REDIRECT')

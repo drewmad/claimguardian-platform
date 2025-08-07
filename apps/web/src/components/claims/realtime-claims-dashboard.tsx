@@ -13,11 +13,11 @@ import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  realtimeClaimsProcessor, 
-  type ClaimsProcessingEvent, 
-  type ClaimsQueue, 
-  type ProcessingMetrics 
+import {
+  realtimeClaimsProcessor,
+  type ClaimsProcessingEvent,
+  type ClaimsQueue,
+  type ProcessingMetrics
 } from '@/lib/services/realtime-claims-processor'
 import {
   Activity,
@@ -66,10 +66,10 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
   useEffect(() => {
     if (isLiveMode) {
       const subscriptionId = 'dashboard-subscription'
-      
+
       realtimeClaimsProcessor.subscribe(subscriptionId, (event: ClaimsProcessingEvent) => {
         setRecentEvents(prev => [event, ...prev.slice(0, 19)]) // Keep last 20 events
-        
+
         // Reload queue and metrics when significant events occur
         if (['submitted', 'assigned', 'approved', 'denied'].includes(event.event_type)) {
           loadDashboardData()
@@ -87,13 +87,13 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
   const loadDashboardData = useCallback(async () => {
     try {
       setLoading(true)
-      
+
       // Load processing queue with filters
       const queueFilters = {
         ...(selectedFilters.status !== 'all' && { status: selectedFilters.status }),
         ...(selectedFilters.priority !== 'all' && { priority: selectedFilters.priority })
       }
-      
+
       const [queue, events, metricsData] = await Promise.all([
         realtimeClaimsProcessor.getProcessingQueue(queueFilters),
         realtimeClaimsProcessor.getEventHistory(),
@@ -112,10 +112,10 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
 
   useEffect(() => {
     loadDashboardData()
-    
+
     // Refresh data every 30 seconds when in live mode
     const interval = isLiveMode ? setInterval(loadDashboardData, 30000) : null
-    
+
     return () => {
       if (interval) clearInterval(interval)
     }
@@ -158,7 +158,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
     const now = new Date()
     const slaDeadline = new Date(deadline)
     const hoursRemaining = (slaDeadline.getTime() - now.getTime()) / (1000 * 60 * 60)
-    
+
     if (hoursRemaining < 0) return { status: 'overdue', color: 'text-red-500', icon: AlertTriangle }
     if (hoursRemaining < 2) return { status: 'critical', color: 'text-orange-500', icon: Clock }
     return { status: 'on_track', color: 'text-green-500', icon: CheckCircle }
@@ -183,13 +183,13 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
           <h2 className="text-2xl font-bold text-white">Real-Time Claims Processing</h2>
           <p className="text-gray-400">Live monitoring and queue management</p>
         </div>
-        
+
         <div className="flex items-center gap-3">
           <Badge variant="outline" className={isLiveMode ? "bg-green-500/10 text-green-400 border-green-500/20" : "bg-gray-500/10 text-gray-400 border-gray-500/20"}>
             <Activity className="h-3 w-3 mr-1" />
             {isLiveMode ? 'LIVE' : 'PAUSED'}
           </Badge>
-          
+
           <Button
             size="sm"
             variant="outline"
@@ -199,7 +199,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
             {isLiveMode ? <PauseCircle className="h-4 w-4 mr-1" /> : <PlayCircle className="h-4 w-4 mr-1" />}
             {isLiveMode ? 'Pause' : 'Resume'}
           </Button>
-          
+
           <Button
             size="sm"
             variant="outline"
@@ -311,7 +311,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
                 <option value="completed">Completed</option>
               </select>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <label className="text-sm font-medium text-gray-400">Priority:</label>
               <select
@@ -347,7 +347,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
               {processingQueue.map(item => {
                 const slaStatus = calculateSlaStatus(item.sla_deadline)
                 const SlaIcon = slaStatus.icon
-                
+
                 return (
                   <div key={item.id} className="border border-gray-700 rounded-lg p-4">
                     <div className="flex items-start justify-between">
@@ -361,7 +361,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
                             {item.status.replace('_', ' ').toUpperCase()}
                           </Badge>
                         </div>
-                        
+
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm text-gray-400">
                           <div>
                             <p className="font-medium">Complexity</p>
@@ -396,7 +396,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
                             </p>
                           </div>
                         </div>
-                        
+
                         {item.processing_metadata.required_expertise.length > 0 && (
                           <div className="mt-2">
                             <p className="text-xs font-medium text-gray-400 mb-1">Required Expertise:</p>
@@ -414,7 +414,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
                   </div>
                 )
               })}
-              
+
               {processingQueue.length === 0 && (
                 <div className="text-center py-8">
                   <CheckCircle2 className="mx-auto h-12 w-12 text-green-500 mb-4" />
@@ -468,7 +468,7 @@ export function RealtimeClaimsDashboard({ className }: RealtimeClaimsDashboardPr
                   </div>
                 </div>
               ))}
-              
+
               {recentEvents.length === 0 && (
                 <div className="text-center py-8">
                   <Activity className="mx-auto h-12 w-12 text-gray-500 mb-4" />

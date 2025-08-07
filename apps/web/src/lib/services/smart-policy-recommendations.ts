@@ -97,7 +97,7 @@ class SmartPolicyRecommendationsService {
   async generateRecommendations(userId: string, propertyId?: string): Promise<PolicyRecommendation[]> {
     try {
       const startTime = Date.now()
-      
+
       // Gather user data
       const userData = await this.getUserPolicyData(userId, propertyId)
       if (!userData) {
@@ -106,13 +106,13 @@ class SmartPolicyRecommendationsService {
 
       // Analyze coverage gaps
       const coverageGaps = await this.analyzeCoverageGaps(userData)
-      
+
       // Perform market analysis
       const marketAnalysis = await this.performMarketAnalysis(userData)
-      
+
       // Generate AI-powered recommendations
       const aiRecommendations = await this.generateAIRecommendations(userData, coverageGaps, marketAnalysis)
-      
+
       // Create structured recommendations
       const recommendations = await this.createRecommendations(
         userId,
@@ -182,16 +182,16 @@ class SmartPolicyRecommendationsService {
   private async analyzeCoverageGaps(userData: any): Promise<CoverageGap[]> {
     const prompt = `
     Analyze the following insurance policy data and identify coverage gaps:
-    
+
     Policies: ${JSON.stringify(userData.policies, null, 2)}
     Claims History: ${JSON.stringify(userData.claims, null, 2)}
-    
+
     For each policy, identify:
     1. Insufficient coverage limits relative to property value and risk
     2. Missing coverage types for the property location and characteristics
     3. Deductible optimization opportunities
     4. Risk exposure based on claims history and property details
-    
+
     Return a JSON array of coverage gaps with this structure:
     {
       "coverage_type": "string",
@@ -201,7 +201,7 @@ class SmartPolicyRecommendationsService {
       "risk_exposure": number,
       "priority": "critical|high|medium|low"
     }
-    
+
     Focus on Florida-specific risks: hurricanes, flooding, wind damage.
     `
 
@@ -243,7 +243,7 @@ class SmartPolicyRecommendationsService {
   private async performMarketAnalysis(userData: any): Promise<any> {
     // Mock market analysis - in production would integrate with rate comparison APIs
     const property = userData.policies[0]?.properties || {}
-    
+
     return {
       market_rates: {
         citizens: { premium: 3200, rating: 7.5 },
@@ -483,7 +483,7 @@ class SmartPolicyRecommendationsService {
    * Update recommendation status
    */
   async updateRecommendationStatus(
-    recommendationId: string, 
+    recommendationId: string,
     status: 'reviewing' | 'implemented' | 'dismissed',
     notes?: string
   ): Promise<boolean> {
@@ -522,7 +522,7 @@ class SmartPolicyRecommendationsService {
    */
   private getCompetitiveOptions(marketAnalysis: any): CarrierOption[] {
     const options: CarrierOption[] = []
-    
+
     for (const [carrier, data] of Object.entries(marketAnalysis.market_rates) as [string, any][]) {
       options.push({
         carrier,
@@ -602,13 +602,13 @@ class SmartPolicyRecommendationsService {
   private getFallbackRecommendations(userData: any, coverageGaps: CoverageGap[], marketAnalysis: any): string {
     return `
     Based on your policy analysis, here are our recommendations:
-    
+
     1. Coverage Adjustments: Consider increasing your dwelling coverage by 25% to account for recent construction cost increases.
-    
+
     2. Rate Shopping: You may be able to save up to $${marketAnalysis.savings_opportunity} annually by comparing rates from other carriers.
-    
+
     3. Deductible Optimization: Review your deductibles to balance premium costs with out-of-pocket exposure.
-    
+
     4. Florida-Specific Coverage: Ensure you have adequate wind and flood coverage for your location.
     `
   }

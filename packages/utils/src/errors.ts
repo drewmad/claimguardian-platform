@@ -12,7 +12,7 @@
 export abstract class BaseError extends Error {
   public readonly timestamp: Date
   public readonly context?: Record<string, unknown>
-  
+
   constructor(
     message: string,
     public readonly code: string,
@@ -23,13 +23,13 @@ export abstract class BaseError extends Error {
     this.name = this.constructor.name
     this.timestamp = new Date()
     this.context = context
-    
+
     // Maintains proper stack trace
     if (Error.captureStackTrace) {
       Error.captureStackTrace(this, this.constructor)
     }
   }
-  
+
   toJSON() {
     return {
       name: this.name,
@@ -70,7 +70,7 @@ export class ValidationError extends BaseError {
  */
 export class NotFoundError extends BaseError {
   constructor(resource: string, identifier?: string | number) {
-    const message = identifier 
+    const message = identifier
       ? `${resource} with identifier ${identifier} not found`
       : `${resource} not found`
     super(message, 'NOT_FOUND', 404, { resource, identifier })
@@ -182,7 +182,7 @@ export function errorResult<T = unknown>(
       }
     }
   }
-  
+
   if (error instanceof Error) {
     return {
       success: false,
@@ -193,7 +193,7 @@ export function errorResult<T = unknown>(
       }
     }
   }
-  
+
   return {
     success: false,
     error: {
@@ -235,7 +235,7 @@ export function serializeError(error: unknown): Record<string, unknown> {
   if (isBaseError(error)) {
     return error.toJSON()
   }
-  
+
   if (error instanceof Error) {
     return {
       name: error.name,
@@ -243,11 +243,11 @@ export function serializeError(error: unknown): Record<string, unknown> {
       stack: error.stack
     }
   }
-  
+
   if (typeof error === 'object' && error !== null) {
     return { ...error }
   }
-  
+
   return { error: String(error) }
 }
 
@@ -258,11 +258,11 @@ export function toError(error: unknown): Error {
   if (error instanceof Error) {
     return error
   }
-  
+
   if (typeof error === 'string') {
     return new Error(error)
   }
-  
+
   if (typeof error === 'object' && error !== null) {
     // Handle objects with message property
     if ('message' in error && typeof (error as any).message === 'string') {
@@ -277,11 +277,11 @@ export function toError(error: unknown): Error {
       }
       return err
     }
-    
+
     // Fallback: stringify the object
     return new Error(JSON.stringify(error))
   }
-  
+
   // Fallback for all other types
   return new Error(String(error))
 }

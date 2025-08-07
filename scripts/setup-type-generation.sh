@@ -99,7 +99,7 @@ if [[ -f "$TYPES_FILE" ]]; then
     echo -e "${GREEN}✅ Types file exists${NC}"
     echo "  Size: $(wc -c < "$TYPES_FILE") bytes"
     echo "  Lines: $(wc -l < "$TYPES_FILE")"
-    
+
     # Check if it contains expected content
     if grep -q "export type Database" "$TYPES_FILE"; then
         echo -e "${GREEN}✅ Types file contains valid TypeScript definitions${NC}"

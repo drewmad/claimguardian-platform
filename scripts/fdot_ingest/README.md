@@ -254,18 +254,18 @@ cat .fdot_resume
 
 ```sql
 -- Check import progress
-SELECT 
+SELECT
     COUNT(*) as total_parcels,
     COUNT(DISTINCT county) as counties,
     MAX(created_at) as latest_import
 FROM florida_parcels;
 
 -- Check county distribution
-SELECT 
+SELECT
     county,
     COUNT(*) as parcel_count
-FROM florida_parcels 
-GROUP BY county 
+FROM florida_parcels
+GROUP BY county
 ORDER BY parcel_count DESC;
 ```
 
@@ -357,7 +357,7 @@ python3 fetch_parcels.py
    ```bash
    # Ubuntu/Debian
    sudo apt-get install gdal-bin
-   
+
    # macOS
    brew install gdal
    ```

@@ -49,17 +49,17 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     clearError()
-    
+
     if (!validatePassword()) {
       return
     }
 
     await updatePassword(password)
-    
+
     if (!error) {
       setSuccess(true)
       logger.track('password_reset_success')
-      
+
       // Redirect to dashboard after 2 seconds
       setTimeout(() => {
         router.push('/dashboard')

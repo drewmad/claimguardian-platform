@@ -8,13 +8,13 @@
 
 import { createClient, SupabaseClient } from '@supabase/supabase-js'
 import * as SecureStore from 'expo-secure-store'
-import type { 
-  Property, 
-  DamageAssessment, 
-  DamageItem, 
-  Photo, 
+import type {
+  Property,
+  DamageAssessment,
+  DamageItem,
+  Photo,
   VoiceNote,
-  User 
+  User
 } from '../types'
 
 // Supabase configuration
@@ -96,7 +96,7 @@ class SupabaseService {
 
   async getCurrentUser(): Promise<User | null> {
     const { data: { user }, error } = await this.client.auth.getUser()
-    
+
     if (error || !user) {
       return null
     }
@@ -136,7 +136,7 @@ class SupabaseService {
       // Handle uploads (local changes to push to remote)
       for (const localProperty of toUpload) {
         const remoteProperty = remoteProperties?.find(r => r.id === localProperty.id)
-        
+
         if (!remoteProperty) {
           // New property - insert
           const { data, error } = await this.client
@@ -249,7 +249,7 @@ class SupabaseService {
 
       for (const localAssessment of toUpload) {
         const remoteAssessment = remoteAssessments?.find(r => r.id === localAssessment.id)
-        
+
         if (!remoteAssessment) {
           // New assessment - insert
           const { data, error } = await this.client
@@ -355,7 +355,7 @@ class SupabaseService {
 
       for (const localItem of toUpload) {
         const remoteItem = remoteItems?.find(r => r.id === localItem.id)
-        
+
         if (!remoteItem) {
           // New damage item - insert
           const { data, error } = await this.client
@@ -434,9 +434,9 @@ class SupabaseService {
       // Read file as base64
       const response = await fetch(fileUri)
       const blob = await response.blob()
-      
+
       const fileName = `${user.id}/${photo.assessment_id}/${photo.filename}`
-      
+
       // Upload file to Supabase Storage
       const { data: uploadData, error: uploadError } = await this.client.storage
         .from('damage-photos')
@@ -498,9 +498,9 @@ class SupabaseService {
 
       const response = await fetch(fileUri)
       const blob = await response.blob()
-      
+
       const fileName = `${user.id}/${voiceNote.assessment_id}/${voiceNote.filename}`
-      
+
       // Upload to voice-notes bucket
       const { data: uploadData, error: uploadError } = await this.client.storage
         .from('voice-notes')
@@ -631,7 +631,7 @@ class SupabaseService {
   // Health check method
   async healthCheck(): Promise<{ healthy: boolean; latency?: number }> {
     const startTime = Date.now()
-    
+
     try {
       const { data, error } = await this.client
         .from('properties')

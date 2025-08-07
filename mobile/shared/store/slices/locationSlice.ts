@@ -90,7 +90,7 @@ export const getCurrentLocation = createAsyncThunk<
     try {
       const state = getState() as any
       const settings = state.location.settings
-      
+
       // Implementation would use expo-location
       // For now return mock location data
       const mockLocation: LocationData = {
@@ -102,7 +102,7 @@ export const getCurrentLocation = createAsyncThunk<
         speed: Math.random() * 5, // 0-5 m/s walking speed
         timestamp: Date.now()
       }
-      
+
       return mockLocation
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to get location')
@@ -188,7 +188,7 @@ const locationSlice = createSlice({
     // Location data updates
     updateCurrentLocation: (state, action: PayloadAction<LocationData>) => {
       const newLocation = action.payload
-      
+
       // Update current location
       if (state.current) {
         state.lastKnownLocation = state.current

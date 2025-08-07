@@ -37,7 +37,7 @@ export interface SettlementAnalysisReport {
 }
 
 // Insurance Document Types
-export type PolicyDocumentCategory = 
+export type PolicyDocumentCategory =
   | 'Policy Lifecycle'
   | 'Claim-Related'
   | 'Regulatory, Legal, and Financial'
@@ -58,7 +58,7 @@ export type PolicyDocumentSubCategory =
   | 'Payments & Refunds'
   | 'General Communications'
   | 'Supplemental Coverage'
-  
+
 export interface PolicyDocument {
   id: string
   name: string
@@ -92,47 +92,47 @@ export interface InsurancePolicy {
   expirationDate: string
   premium: number
   paymentFrequency: 'Annual' | 'Semi-Annual' | 'Quarterly' | 'Monthly'
-  
+
   // Standard Coverages (Coverage A, B, C, D)
   coverageDwelling: number // Coverage A
   coverageOtherStructures?: number // Coverage B
   coveragePersonalProperty?: number // Coverage C
   coverageLossOfUse?: number // Coverage D
   lossAssessmentCoverage?: number // For HO-6
-  
+
   // Liability Coverages
   personalLiabilityCoverage?: number
   medicalPaymentsCoverage?: number
-  
+
   // Deductibles
   standardDeductible: number
   windDeductible?: string | number // Can be percentage or fixed amount
   floodDeductible?: number
-  
+
   // Additional Coverages
   additionalCoverages?: Coverage[]
   riders?: PolicyRider[]
   excludedPerils?: string[]
-  
+
   // Agent/Broker Information
   agentName?: string
   agentEmail?: string
   agentPhone?: string
   agencyName?: string
-  
+
   // Mortgagee Information
   mortgageeName?: string
   mortgageeLoanNumber?: string
   mortgageeAddress?: string
-  
+
   // Payment Information
   paymentMethod?: 'Escrow' | 'Direct Bill' | 'Auto-Pay' | 'Credit Card'
   escrowAccount?: string
   autoPayAccount?: string
-  
+
   // Documents
   documents?: PolicyDocument[]
-  
+
   // Metadata
   status: 'Active' | 'Expired' | 'Cancelled' | 'Non-Renewed'
   cancellationDate?: string

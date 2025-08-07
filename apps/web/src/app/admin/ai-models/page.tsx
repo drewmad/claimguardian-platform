@@ -335,7 +335,7 @@ export default function AIModelsAdminPage() {
     satisfaction_rate: 92,
     ratings_by_feature: {} as Record<string, { rating: number; count: number; latest_feedback: string }>
   })
-  
+
   // A/B Test Form State
   const [newABTest, setNewABTest] = useState({
     name: '',
@@ -344,14 +344,14 @@ export default function AIModelsAdminPage() {
     modelB: '',
     trafficSplit: 50
   })
-  
+
   // Custom Prompt Form State
   const [newPrompt, setNewPrompt] = useState({
     feature: '',
     name: '',
     systemPrompt: ''
   })
-  
+
   // Auto-Selection Recommendations
   const [aiRecommendations, setAIRecommendations] = useState<AIRecommendation[]>([])
 
@@ -430,7 +430,7 @@ export default function AIModelsAdminPage() {
 
       // Generate AI recommendations based on real performance data
       generateAIRecommendations()
-      
+
     } catch (error) {
       console.error('Failed to load advanced AI data:', error)
       toast.error('Failed to load AI operations data')
@@ -452,7 +452,7 @@ export default function AIModelsAdminPage() {
       },
       {
         type: 'prompt_optimization' as const,
-        priority: 'medium' as const, 
+        priority: 'medium' as const,
         feature: 'settlement-analyzer',
         current: 'Default system prompt',
         recommended: 'Florida-specific legal prompt',
@@ -477,11 +477,11 @@ export default function AIModelsAdminPage() {
       if (response.ok) {
         const data = await response.json() as Record<string, ModelUsageData>
         setPerformanceData(data)
-        
+
         // Calculate aggregate stats from real data
         const totalRequests = Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + model.requests, 0)
         const totalCost = Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + model.cost, 0)
-        const avgResponseTime = totalRequests > 0 
+        const avgResponseTime = totalRequests > 0
           ? Object.values(data).reduce((sum: number, model: ModelUsageData) => sum + (model.avgTime * model.requests), 0) / totalRequests
           : 0
         const avgSuccessRate = Object.keys(data).length > 0
@@ -506,21 +506,21 @@ export default function AIModelsAdminPage() {
     try {
       const response = await fetch('/api/ai/check-keys')
       const keyStatus = await response.json()
-      
+
       const updatedModels = models.map(model => {
         let available = false
         if (model.provider === 'openai' && keyStatus.hasOpenAIKey) available = true
         if (model.provider === 'gemini' && keyStatus.hasGeminiKey) available = true
         if (model.provider === 'claude' && keyStatus.hasClaudeKey) available = true
         if (model.provider === 'grok' && keyStatus.hasGrokKey) available = true
-        
+
         return {
           ...model,
           available,
           status: available ? 'active' : 'inactive' as 'active' | 'inactive' | 'error'
         }
       })
-      
+
       setModels(updatedModels)
     } catch (error) {
       toast.error('Failed to check model availability')
@@ -544,12 +544,12 @@ export default function AIModelsAdminPage() {
 
       if (response.ok) {
         toast.success(`${model?.name} test successful`)
-        setModels(prev => prev.map(m => 
+        setModels(prev => prev.map(m =>
           m.id === modelId ? { ...m, status: 'active' } : m
         ))
       } else {
         toast.error(`${model?.name} test failed`)
-        setModels(prev => prev.map(m => 
+        setModels(prev => prev.map(m =>
           m.id === modelId ? { ...m, status: 'error' } : m
         ))
       }
@@ -561,8 +561,8 @@ export default function AIModelsAdminPage() {
   }
 
   const updateFeatureModel = (featureId: string, field: 'currentModel' | 'fallbackModel', modelId: string) => {
-    setFeatureMappings(prev => prev.map(mapping => 
-      mapping.featureId === featureId 
+    setFeatureMappings(prev => prev.map(mapping =>
+      mapping.featureId === featureId
         ? { ...mapping, [field]: modelId }
         : mapping
     ))
@@ -590,7 +590,7 @@ export default function AIModelsAdminPage() {
       })
 
       const result = await response.json()
-      
+
       if (result.success && result.data) {
         // Convert API response to UI format and add to state
         const newTest: ABTestConfig = {
@@ -635,10 +635,10 @@ export default function AIModelsAdminPage() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
-        setABTests(prev => prev.map(test => 
-          test.id === id 
+        setABTests(prev => prev.map(test =>
+          test.id === id
             ? { ...test, status: newStatus }
             : test
         ))
@@ -670,7 +670,7 @@ export default function AIModelsAdminPage() {
       })
 
       const result = await response.json()
-      
+
       if (result.success && result.data) {
         // Convert API response to UI format and add to state
         const newPromptObj: CustomPrompt = {
@@ -709,9 +709,9 @@ export default function AIModelsAdminPage() {
       })
 
       const result = await response.json()
-      
+
       if (result.success) {
-        setCustomPrompts(prev => prev.map(p => 
+        setCustomPrompts(prev => prev.map(p =>
           p.id === id ? { ...p, isActive: newActiveStatus } : p
         ))
         toast.success('Prompt status updated')
@@ -728,9 +728,9 @@ export default function AIModelsAdminPage() {
     try {
       // Mock A/B test API call
       const testPrompt = 'Analyze this sample insurance claim for testing purposes.'
-      
+
       toast.loading('Running A/B comparison test...')
-      
+
       // Simulate API calls to both models
       const [resultA, resultB] = await Promise.all([
         fetch('/api/ai/test-model', {
@@ -739,7 +739,7 @@ export default function AIModelsAdminPage() {
           body: JSON.stringify({ model: modelA, prompt: testPrompt, feature })
         }),
         fetch('/api/ai/test-model', {
-          method: 'POST', 
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ model: modelB, prompt: testPrompt, feature })
         })
@@ -748,9 +748,9 @@ export default function AIModelsAdminPage() {
       // For demo purposes, simulate results
       const mockResultA = { responseTime: Math.random() * 3000 + 1000, quality: Math.random() * 2 + 3 }
       const mockResultB = { responseTime: Math.random() * 3000 + 1000, quality: Math.random() * 2 + 3 }
-      
+
       toast.success(`Test completed! Model A: ${mockResultA.responseTime.toFixed(0)}ms, Model B: ${mockResultB.responseTime.toFixed(0)}ms`)
-      
+
     } catch (error) {
       toast.error('A/B test failed')
     }
@@ -759,7 +759,7 @@ export default function AIModelsAdminPage() {
   const applyAIRecommendation = async (recommendation: AIRecommendation) => {
     if (recommendation.type === 'model_switch' && recommendation.recommended) {
       // Apply the recommended model switch
-      const updatedMappings = featureMappings.map(mapping => 
+      const updatedMappings = featureMappings.map(mapping =>
         mapping.featureId === recommendation.feature
           ? { ...mapping, currentModel: recommendation.recommended! }
           : mapping
@@ -960,9 +960,9 @@ export default function AIModelsAdminPage() {
                   <div className="space-y-4">
                     <div className="flex flex-wrap gap-2">
                       {model.capabilities.map((capability) => (
-                        <Badge 
+                        <Badge
                           key={capability}
-                          variant="outline" 
+                          variant="outline"
                           className="text-xs text-gray-400 border-gray-600"
                         >
                           {capability}
@@ -1019,11 +1019,11 @@ export default function AIModelsAdminPage() {
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="text-sm text-gray-400 mb-2 block">Primary Model</label>
-                        <select 
+                        <select
                           value={mapping.currentModel}
                           onChange={(e) => updateFeatureModel(mapping.featureId, 'currentModel', e.target.value)}
                           className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white"
@@ -1037,10 +1037,10 @@ export default function AIModelsAdminPage() {
                           ))}
                         </select>
                       </div>
-                      
+
                       <div>
                         <label className="text-sm text-gray-400 mb-2 block">Fallback Model</label>
-                        <select 
+                        <select
                           value={mapping.fallbackModel}
                           onChange={(e) => updateFeatureModel(mapping.featureId, 'fallbackModel', e.target.value)}
                           className="w-full bg-gray-700 border border-gray-600 rounded-md px-3 py-2 text-white"
@@ -1419,7 +1419,7 @@ export default function AIModelsAdminPage() {
                           <div>
                             <h4 className="font-semibold text-white">{prompt.name}</h4>
                             <p className="text-sm text-gray-400">
-                              {featureMappings.find(f => f.featureId === prompt.feature)?.featureName} • 
+                              {featureMappings.find(f => f.featureId === prompt.feature)?.featureName} •
                               Created {prompt.createdAt}
                             </p>
                           </div>
@@ -1437,11 +1437,11 @@ export default function AIModelsAdminPage() {
                             </Button>
                           </div>
                         </div>
-                        
+
                         <div className="bg-gray-800 p-3 rounded-lg mb-3">
                           <p className="text-sm text-gray-300 font-mono leading-relaxed">
-                            {prompt.systemPrompt.length > 200 
-                              ? `${prompt.systemPrompt.substring(0, 200)}...` 
+                            {prompt.systemPrompt.length > 200
+                              ? `${prompt.systemPrompt.substring(0, 200)}...`
                               : prompt.systemPrompt
                             }
                           </p>
@@ -1529,7 +1529,7 @@ export default function AIModelsAdminPage() {
                         count: 0,
                         latest_feedback: ''
                       }
-                      
+
                       return (
                         <div key={feature.featureId} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
                           <div className="flex items-center justify-between mb-2">
@@ -1583,7 +1583,7 @@ export default function AIModelsAdminPage() {
                       qualityScores.slice(0, 5).map((score, idx) => {
                         const featureName = featureMappings.find(f => f.featureId === score.feature_id)?.featureName || score.feature_id
                         const timeAgo = new Date(score.created_at).toLocaleString()
-                        
+
                         return (
                           <div key={idx} className="bg-gray-700 border border-gray-600 rounded-lg p-4">
                             <div className="flex items-start justify-between mb-2">

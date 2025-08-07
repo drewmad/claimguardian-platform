@@ -167,11 +167,11 @@ import { useFeatureAccess } from '@/hooks/use-feature-access'
 
 function AdvancedAnalytics() {
   const { hasAccess, subscriptionTier } = useFeatureAccess('advanced_analytics')
-  
+
   if (!hasAccess) {
     return <UpgradePrompt feature="advanced_analytics" currentTier={subscriptionTier} />
   }
-  
+
   return <AdvancedAnalyticsComponent />
 }
 ```
@@ -201,11 +201,11 @@ import { useOrganizationTheme } from '@/hooks/use-organization-theme'
 
 function ThemedComponent() {
   const { theme, logoUrl, customCss } = useOrganizationTheme()
-  
+
   return (
-    <div style={{ 
+    <div style={{
       '--primary-color': theme.primaryColor,
-      '--secondary-color': theme.secondaryColor 
+      '--secondary-color': theme.secondaryColor
     }}>
       {logoUrl && <img src={logoUrl} alt="Organization Logo" />}
       {customCss && <style dangerouslySetInnerHTML={{ __html: customCss }} />}
@@ -227,7 +227,7 @@ CREATE POLICY "Users can access own organization data" ON properties
   FOR ALL TO authenticated
   USING (
     organization_id IN (
-      SELECT organization_id FROM organization_users 
+      SELECT organization_id FROM organization_users
       WHERE user_id = auth.uid() AND status = 'active'
     )
   );
@@ -402,11 +402,11 @@ Per-tenant resource monitoring:
 
 ```sql
 -- Monitor tenant resource usage
-SELECT 
+SELECT
   schema_name,
   pg_size_pretty(sum(pg_total_relation_size(schemaname||'.'||tablename::text))) as size,
   count(*) as table_count
-FROM pg_tables 
+FROM pg_tables
 WHERE schemaname LIKE 'org_%'
 GROUP BY schema_name
 ORDER BY sum(pg_total_relation_size(schemaname||'.'||tablename::text)) DESC;
@@ -442,11 +442,11 @@ const alertRules = {
   // Usage approaching limits
   usageWarning: { threshold: 0.8, action: 'notify_admin' },
   usageCritical: { threshold: 0.95, action: 'notify_billing' },
-  
+
   // Performance degradation
   slowQueries: { threshold: '5s', action: 'notify_engineering' },
   highErrorRate: { threshold: 0.05, action: 'page_oncall' },
-  
+
   // Business metrics
   churnRisk: { threshold: 'no_activity_30d', action: 'notify_success' },
   paymentFailed: { action: 'suspend_after_7d' }
@@ -479,11 +479,11 @@ BEGIN
   LOOP
     -- Create tenant schema
     PERFORM create_organization_schema(org_record.org_code);
-    
+
     -- Migrate data
     EXECUTE format('INSERT INTO org_%s.properties SELECT * FROM properties WHERE organization_id = %L',
       org_record.org_code, org_record.id);
-      
+
     -- Update references
     -- ... migration logic
   END LOOP;
@@ -634,7 +634,7 @@ WHERE ou.user_id = 'user-id';
 #### 3. Schema Not Found
 ```sql
 -- Verify tenant schema exists
-SELECT schema_name FROM information_schema.schemata 
+SELECT schema_name FROM information_schema.schemata
 WHERE schema_name = 'org_demo';
 
 -- Create if missing

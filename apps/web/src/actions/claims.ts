@@ -30,9 +30,9 @@ export interface ClaimResult {
   }
 }
 
-export async function createClaim({ 
-  propertyId, 
-  claimType, 
+export async function createClaim({
+  propertyId,
+  claimType,
   description,
   incidentDate
 }: {
@@ -42,11 +42,11 @@ export async function createClaim({
   incidentDate?: string
 }): Promise<ClaimResult> {
   const operationStart = Date.now()
-  
+
   const result = await asyncErrorHandler.executeWithFullResilience(
     async () => {
       const supabase = await createClient()
-      
+
       // Get current user with retry logic
       const authResult = await withRetry(
         async () => {
@@ -101,7 +101,7 @@ export async function createClaim({
 
       // Invalidate user claims cache
       await cacheManager.delete(CachePatterns.userKey(user.id, 'claims'))
-      
+
       // Log successful claim creation for analytics
       logger.info('Claim created successfully', {
         userId: user.id,
@@ -150,16 +150,16 @@ export async function createClaim({
   }
 }
 
-export async function updateClaim({ 
-  claimId, 
-  updates 
+export async function updateClaim({
+  claimId,
+  updates
 }: {
   claimId: string
   updates: ClaimUpdate
 }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -203,7 +203,7 @@ export async function updateClaim({
 export async function deleteClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -242,7 +242,7 @@ export async function deleteClaim({ claimId }: { claimId: string }): Promise<Cla
 export async function getClaim({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -289,7 +289,7 @@ export async function getClaim({ claimId }: { claimId: string }): Promise<ClaimR
 export async function getUserClaims(): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -332,10 +332,10 @@ export async function getUserClaims(): Promise<ClaimResult> {
   }
 }
 
-export async function uploadClaimDocument({ 
-  claimId, 
-  file, 
-  documentType 
+export async function uploadClaimDocument({
+  claimId,
+  file,
+  documentType
 }: {
   claimId: string
   file: File
@@ -343,7 +343,7 @@ export async function uploadClaimDocument({
 }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -415,7 +415,7 @@ export async function uploadClaimDocument({
 export async function generateClaimReport({ claimId }: { claimId: string }): Promise<ClaimResult> {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {

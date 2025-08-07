@@ -24,12 +24,12 @@ echo ""
 # Function to check processing status
 check_status() {
     echo -e "${BLUE}Checking current processing status...${NC}"
-    
+
     RESPONSE=$(curl -s -X GET \
         "${MONITOR_URL}?view=dashboard" \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
         -H "Content-Type: application/json")
-    
+
     # Extract summary stats
     if command -v jq &> /dev/null; then
         echo "$RESPONSE" | jq -r '.summary // empty'
@@ -43,13 +43,13 @@ check_status() {
 start_processing() {
     local mode="$1"
     echo -e "${BLUE}Starting $mode processing...${NC}"
-    
+
     RESPONSE=$(curl -s -X POST \
         "${ORCHESTRATOR_URL}" \
         -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
         -H "Content-Type: application/json" \
         -d "{\"action\": \"start\", \"mode\": \"$mode\", \"batchSize\": 1000}")
-    
+
     echo "$RESPONSE"
     echo ""
 }
@@ -79,7 +79,7 @@ case $choice in
         echo "  5. Orange (58) - ~480k parcels"
         echo ""
         ;;
-    
+
     2)
         echo ""
         check_status
@@ -88,46 +88,46 @@ case $choice in
         echo "Processing all 67 counties in order..."
         echo ""
         ;;
-    
+
     3)
         echo ""
         read -p "Enter county codes separated by commas (e.g., 18,23,60): " counties
         check_status
-        
+
         # Convert comma-separated to JSON array
         json_counties=$(echo "$counties" | sed 's/,/","/g' | sed 's/^/["/' | sed 's/$/"]/')
-        
+
         RESPONSE=$(curl -s -X POST \
             "${ORCHESTRATOR_URL}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
             -H "Content-Type: application/json" \
             -d "{\"action\": \"start\", \"mode\": \"specific\", \"counties\": $json_counties}")
-        
+
         echo "$RESPONSE"
         echo -e "${GREEN}Specific county processing started!${NC}"
         echo ""
         ;;
-    
+
     4)
         echo ""
         check_status
         ;;
-    
+
     5)
         echo ""
         echo -e "${YELLOW}Stopping all processing...${NC}"
-        
+
         RESPONSE=$(curl -s -X POST \
             "${ORCHESTRATOR_URL}" \
             -H "Authorization: Bearer ${SUPABASE_ANON_KEY}" \
             -H "Content-Type: application/json" \
             -d "{\"action\": \"stop\"}")
-        
+
         echo "$RESPONSE"
         echo -e "${RED}Processing stopped.${NC}"
         echo ""
         ;;
-    
+
     *)
         echo -e "${RED}Invalid choice. Exiting.${NC}"
         exit 1

@@ -14,11 +14,11 @@ export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
     const { searchParams } = new URL(request.url)
-    
+
     const status = searchParams.get('status')
     const priority = searchParams.get('priority')
     const limit = parseInt(searchParams.get('limit') || '50')
-    
+
     let query = supabase
       .from('emergency_alerts')
       .select(`
@@ -40,22 +40,22 @@ export async function GET(request: NextRequest) {
       `)
       .order('created_at', { ascending: false })
       .limit(limit)
-    
+
     if (status) {
       query = query.eq('status', status)
     }
-    
+
     if (priority) {
       query = query.eq('priority', priority)
     }
-    
+
     const { data, error } = await query
-    
+
     if (error) {
       console.error('Failed to fetch alerts:', error)
       return NextResponse.json({ error: 'Failed to fetch alerts' }, { status: 500 })
     }
-    
+
     return NextResponse.json({
       alerts: data,
       total: data.length
@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Validate required fields
     if (!body.sender_id || !body.title || !body.message) {
       return NextResponse.json(
@@ -77,10 +77,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     // Create alert using emergency communication manager
     const alert = await emergencyCommunicationManager.createEmergencyAlert(body)
-    
+
     // Auto-distribute if requested
     if (body.auto_distribute) {
       try {
@@ -90,7 +90,7 @@ export async function POST(request: NextRequest) {
         // Don't fail alert creation if distribution fails
       }
     }
-    
+
     return NextResponse.json({
       alert,
       message: 'Emergency alert created successfully'

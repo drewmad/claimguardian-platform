@@ -44,14 +44,14 @@ check_supabase_cli() {
         echo "Install with: npm install -g supabase"
         exit 1
     fi
-    
+
     log "Supabase CLI found: $(supabase --version)"
 }
 
 # Function to verify database connection
 verify_connection() {
     log "Verifying database connection..."
-    
+
     if supabase db ping --project-ref "$PROJECT_ID" > /dev/null 2>&1; then
         success "Database connection verified"
     else
@@ -63,9 +63,9 @@ verify_connection() {
 # Function to create backup
 create_backup() {
     log "Creating database backup before migration..."
-    
+
     BACKUP_FILE="backup_pre_migration_$(date +%Y%m%d_%H%M%S).sql"
-    
+
     if supabase db dump --project-ref "$PROJECT_ID" --file "$BACKUP_FILE"; then
         success "Backup created: $BACKUP_FILE"
     else
@@ -78,14 +78,14 @@ create_backup() {
 apply_migration() {
     local migration_file="$1"
     local phase_name="$2"
-    
+
     log "Applying $phase_name migration: $migration_file"
-    
+
     if [ ! -f "$migration_file" ]; then
         error "Migration file not found: $migration_file"
         return 1
     fi
-    
+
     # Apply the migration using psql through Supabase
     if supabase db reset --project-ref "$PROJECT_ID" --file "$migration_file"; then
         success "$phase_name migration applied successfully"
@@ -99,9 +99,9 @@ apply_migration() {
 # Function to run verification
 run_verification() {
     local phase="$1"
-    
+
     log "Running Phase $phase verification..."
-    
+
     case $phase in
         1)
             supabase db exec --project-ref "$PROJECT_ID" --query "SELECT * FROM core.verify_phase1_migration();"
@@ -118,10 +118,10 @@ run_verification() {
 # Function to run ETL for Florida parcels
 run_parcel_etl() {
     log "Starting Florida parcels ETL process..."
-    
+
     # This will process the 9.5M records in batches
     supabase db exec --project-ref "$PROJECT_ID" --query "SELECT * FROM reference.etl_florida_parcels_to_reference();"
-    
+
     if [ $? -eq 0 ]; then
         success "Florida parcels ETL completed"
     else
@@ -132,9 +132,9 @@ run_parcel_etl() {
 # Function to update application references
 update_app_references() {
     log "Updating application foreign key references..."
-    
+
     supabase db exec --project-ref "$PROJECT_ID" --query "SELECT core.update_property_references();"
-    
+
     if [ $? -eq 0 ]; then
         success "Application references updated"
     else
@@ -146,12 +146,12 @@ update_app_references() {
 # Function to initialize default structures
 initialize_default_data() {
     log "Initializing default structures for existing properties..."
-    
+
     supabase db exec --project-ref "$PROJECT_ID" --query "SELECT core.create_default_structures();"
-    
+
     log "Refreshing materialized views..."
     supabase db exec --project-ref "$PROJECT_ID" --query "SELECT core.refresh_current_properties();"
-    
+
     success "Default data initialization completed"
 }
 
@@ -159,22 +159,22 @@ initialize_default_data() {
 main() {
     log "Starting ClaimGuardian Schema Migration"
     log "========================================="
-    
+
     # Pre-flight checks
     check_supabase_cli
     verify_connection
-    
+
     # Create backup
     create_backup
-    
+
     echo
     log "PHASE 1: Schema Unification & Cleanup"
     log "======================================"
-    
+
     if apply_migration "$MIGRATION_DIR/20250805_phase1_schema_unification.sql" "Phase 1"; then
         run_verification 1
         update_app_references
-        
+
         # Run ETL for Florida parcels (this may take a while)
         warning "Florida parcels ETL will process 9.5M records - this may take 30-60 minutes"
         read -p "Continue with ETL? (y/N): " -n 1 -r
@@ -188,22 +188,22 @@ main() {
         error "Phase 1 migration failed. Aborting."
         exit 1
     fi
-    
+
     echo
     log "PHASE 2: Temporal Data Enablement"
     log "================================="
-    
+
     if apply_migration "$MIGRATION_DIR/20250805_phase2_temporal_enablement.sql" "Phase 2"; then
         run_verification 2
     else
         error "Phase 2 migration failed. Database is in partial state."
         exit 1
     fi
-    
+
     echo
     log "PHASE 3: Digital Twin Schema Extension"
     log "====================================="
-    
+
     if apply_migration "$MIGRATION_DIR/20250805_phase3_digital_twin_schema.sql" "Phase 3"; then
         run_verification 3
         initialize_default_data
@@ -211,12 +211,12 @@ main() {
         error "Phase 3 migration failed. Database is in partial state."
         exit 1
     fi
-    
+
     echo
     success "========================================="
     success "MIGRATION COMPLETED SUCCESSFULLY!"
     success "========================================="
-    
+
     log "Migration summary:"
     log "- Created unified core.properties table"
     log "- Added temporal tracking (SCD Type 2)"
@@ -224,14 +224,14 @@ main() {
     log "- Updated all foreign key references"
     log "- Applied row-level security policies"
     log "- Created helper functions and views"
-    
+
     echo
     log "Next steps:"
     log "1. Update application code to use core.properties instead of public.properties"
     log "2. Test the temporal update functions"
     log "3. Begin AR scanning integration"
     log "4. Monitor the Florida parcels ETL if still running"
-    
+
     echo
     log "Migration log saved to: $LOG_FILE"
 }

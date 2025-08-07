@@ -33,7 +33,7 @@ export const POST = withBudgetCheck(
         async () => {
           try {
             const body = await request.json()
-            
+
             // Sanitize input data
             const sanitizedData = inputSanitizer.sanitizeFormData(body)
             const { messages, model = 'openai', sessionId, toolName = 'policy-advisor' } = sanitizedData
@@ -71,9 +71,9 @@ export const POST = withBudgetCheck(
             }
 
             // Additional validation for messages structure
-            const validMessages = messages.filter(msg => 
-              typeof msg === 'object' && 
-              msg !== null && 
+            const validMessages = messages.filter(msg =>
+              typeof msg === 'object' &&
+              msg !== null &&
               typeof msg.content === 'string' &&
               ['user', 'assistant', 'system'].includes(msg.role)
             ).map(msg => ({
@@ -103,7 +103,7 @@ export const POST = withBudgetCheck(
               }
             })
 
-            return NextResponse.json({ 
+            return NextResponse.json({
               response: response.content,
               usage: response.usage,
               model: response.model
@@ -113,7 +113,7 @@ export const POST = withBudgetCheck(
             if (process.env.NODE_ENV === 'development') {
               logger.error('AI Chat API error:', error)
             }
-            
+
             return NextResponse.json(
               { error: 'Internal server error' },
               { status: 500 }
@@ -135,6 +135,6 @@ function getToolDisplayName(toolName: string): string {
     'settlement-analyzer': 'Settlement Analyzer',
     'evidence-organizer': 'Evidence Organizer'
   }
-  
+
   return toolNames[toolName] || 'AI Assistant'
 }

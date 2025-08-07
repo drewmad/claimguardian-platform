@@ -13,7 +13,7 @@ serve(async (req) => {
 
   try {
     const { county, offset = 0, limit = 1000 } = await req.json()
-    
+
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!
     const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     const supabase = createClient(supabaseUrl, supabaseServiceKey)
@@ -22,7 +22,7 @@ serve(async (req) => {
 
     // Florida Statewide Parcels endpoint - Updated 2025
     const url = new URL('https://services.arcgis.com/V6ZHFr6zdgNZuVG0/arcgis/rest/services/Florida_Parcels_2023/FeatureServer/0/query')
-    
+
     // Build query parameters
     const params = {
       where: county ? `COUNTY = '${county.toUpperCase()}'` : '1=1',
@@ -46,7 +46,7 @@ serve(async (req) => {
 
     const data = await response.json()
     const features = data.features || []
-    
+
     console.log(`Fetched ${features.length} parcels`)
 
     let processed = 0
@@ -56,20 +56,20 @@ serve(async (req) => {
     // Process in batches
     for (let i = 0; i < features.length; i += batchSize) {
       const batch = features.slice(i, i + batchSize)
-      
+
       try {
         const records = batch.map((feature: any) => {
           const { attributes, geometry } = feature
-          
+
           // Convert geometry to WKT
           let wkt = null
           if (geometry && geometry.rings) {
-            const rings = geometry.rings.map((ring: number[][]) => 
+            const rings = geometry.rings.map((ring: number[][]) =>
               `(${ring.map(coord => `${coord[0]} ${coord[1]}`).join(',')})`
             ).join(',')
             wkt = `SRID=4326;MULTIPOLYGON((${rings}))`
           }
-          
+
           return {
             parcel_id: attributes.PARCEL_ID,
             county_fips: String(attributes.CO_NO).padStart(3, '0'),
@@ -100,7 +100,7 @@ serve(async (req) => {
             created_at: new Date().toISOString()
           }
         }).filter(r => r.geom && r.parcel_id) // Only include valid records
-        
+
         if (records.length > 0) {
           const { error } = await supabase
             .from('geospatial.parcels')
@@ -108,7 +108,7 @@ serve(async (req) => {
               onConflict: 'parcel_id',
               ignoreDuplicates: false
             })
-          
+
           if (error) throw error
           processed += records.length
         }
@@ -153,7 +153,7 @@ serve(async (req) => {
     console.error('Error in load-florida-parcels:', error)
     return new Response(
       JSON.stringify({ error: error instanceof Error ? error.message : String(error) }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

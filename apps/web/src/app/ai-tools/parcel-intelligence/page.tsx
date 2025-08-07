@@ -27,7 +27,7 @@ export default function ParcelIntelligencePage() {
             </span>
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            AI-powered property analysis using Florida's complete 9.6M parcel dataset. 
+            AI-powered property analysis using Florida's complete 9.6M parcel dataset.
             Get instant insights on property values, risk factors, and market intelligence.
           </p>
         </div>
@@ -99,7 +99,7 @@ export default function ParcelIntelligencePage() {
                 </ul>
               </div>
             </div>
-            
+
             <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-700">
               <Badge variant="secondary">Enterprise Security</Badge>
               <Badge variant="secondary">GDPR Compliant</Badge>

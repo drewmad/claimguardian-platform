@@ -47,18 +47,18 @@ export function RedisCacheDashboard() {
           redisAICacheService.getCacheInfo(),
           redisAICacheService.healthCheck()
         ])
-        
+
         setStats(currentStats)
         setCacheInfo(currentInfo)
         setHealthStatus(currentHealth)
-        
+
         // Add to historical data for charts
         setHistoricalData(prev => {
           const newData = {
-            time: new Date().toLocaleTimeString('en-US', { 
-              hour12: false, 
-              minute: '2-digit', 
-              second: '2-digit' 
+            time: new Date().toLocaleTimeString('en-US', {
+              hour12: false,
+              minute: '2-digit',
+              second: '2-digit'
             }),
             hitRate: parseFloat(currentStats.hitRate.toFixed(1)),
             totalSize: Math.round(currentInfo.totalSize / 1024), // KB
@@ -66,10 +66,10 @@ export function RedisCacheDashboard() {
             avgResponseTime: Math.round(currentStats.avgResponseTime),
             costSaved: parseFloat(currentStats.costSaved.toFixed(2))
           }
-          
+
           return [...prev, newData].slice(-30) // Keep last 30 data points
         })
-        
+
         setLoading(false)
       } catch (error) {
         console.error('Error updating Redis cache data:', error)
@@ -133,7 +133,7 @@ export function RedisCacheDashboard() {
     const seconds = Math.floor(ms / 1000)
     const minutes = Math.floor(seconds / 60)
     const hours = Math.floor(minutes / 60)
-    
+
     if (hours > 0) return `${hours}h ${minutes % 60}m`
     if (minutes > 0) return `${minutes}m ${seconds % 60}s`
     return `${seconds}s`
@@ -303,13 +303,13 @@ export function RedisCacheDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`${value}%`, 'Hit Rate']}
@@ -335,13 +335,13 @@ export function RedisCacheDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`${value} KB`, 'Cache Size']}
@@ -419,7 +419,7 @@ export function RedisCacheDashboard() {
                 <div className="flex justify-between">
                   <span className="text-gray-400">Oldest Entry:</span>
                   <span className="text-white font-medium">
-                    {cacheInfo?.oldestEntry 
+                    {cacheInfo?.oldestEntry
                       ? formatDuration(Date.now() - cacheInfo.oldestEntry) + ' ago'
                       : 'N/A'
                     }
@@ -428,7 +428,7 @@ export function RedisCacheDashboard() {
                 <div className="flex justify-between">
                   <span className="text-gray-400">Newest Entry:</span>
                   <span className="text-white font-medium">
-                    {cacheInfo?.newestEntry 
+                    {cacheInfo?.newestEntry
                       ? formatDuration(Date.now() - cacheInfo.newestEntry) + ' ago'
                       : 'N/A'
                     }
@@ -464,7 +464,7 @@ export function RedisCacheDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, value, percent }) => 
+                        label={({ name, value, percent }) =>
                           `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`
                         }
                         outerRadius={80}
@@ -475,7 +475,7 @@ export function RedisCacheDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       />
                     </PieChart>
@@ -539,13 +539,13 @@ export function RedisCacheDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`$${value.toFixed(2)}`, 'Cost Saved']}
@@ -571,13 +571,13 @@ export function RedisCacheDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`${value}ms`, 'Avg Response Time']}
@@ -613,7 +613,7 @@ export function RedisCacheDashboard() {
                   <Trash2 className="mr-2 h-4 w-4" />
                   Clear All Cache ({cacheInfo?.totalKeys || 0} entries)
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   onClick={handleExportData}
@@ -647,7 +647,7 @@ export function RedisCacheDashboard() {
                     {healthStatus?.status}
                   </Badge>
                 </div>
-                
+
                 <div className="flex justify-between">
                   <span className="text-gray-400">Connection Latency:</span>
                   <span className="text-white font-medium">{healthStatus?.latency || 0}ms</span>

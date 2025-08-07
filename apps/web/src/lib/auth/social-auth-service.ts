@@ -12,7 +12,7 @@
 import { createClient } from '@/lib/supabase/client'
 import { logger } from '@/lib/logger'
 
-export type SocialProvider = 'google' | 'microsoft' | 'linkedin'
+export type SocialProvider = 'google' | 'azure' | 'linkedin'
 
 export interface SocialAccount {
   provider: SocialProvider
@@ -48,7 +48,7 @@ class SocialAuthService {
   async signInWithProvider(options: SocialLoginOptions): Promise<SocialAuthResult> {
     try {
       const { provider, redirectTo, scopes, queryParams } = options
-      
+
       logger.track('social_login_initiated', { provider })
 
       const { data, error } = await this.supabase.auth.signInWithOAuth({
@@ -88,13 +88,13 @@ class SocialAuthService {
   async getConnectedAccounts(): Promise<SocialAccount[]> {
     try {
       const { data: { user } } = await this.supabase.auth.getUser()
-      
+
       if (!user?.identities) {
         return []
       }
 
       const socialProviders = user.identities.filter(
-        identity => ['google', 'microsoft', 'linkedin'].includes(identity.provider)
+        identity => ['google', 'azure', 'linkedin'].includes(identity.provider)
       )
 
       return socialProviders.map(identity => ({
@@ -133,8 +133,8 @@ class SocialAuthService {
   }> {
     const accounts = await this.getConnectedAccounts()
     const connectedCount = accounts.length
-    const totalProviders = 3 // google, microsoft, linkedin
-    
+    const totalProviders = 3 // google, azure, linkedin
+
     let securityLevel: 'basic' | 'good' | 'high' = 'basic'
     if (connectedCount >= 2) securityLevel = 'high'
     else if (connectedCount === 1) securityLevel = 'good'
@@ -159,11 +159,11 @@ class SocialAuthService {
         scopes: 'openid email profile',
         queryParams: { access_type: 'offline', prompt: 'consent' }
       },
-      microsoft: {
+      azure: {
         name: 'Microsoft',
         color: 'bg-blue-600 hover:bg-blue-700',
         icon: 'Building2',
-        scopes: 'openid email profile',
+        scopes: 'email',  // Azure requires email scope specifically
         queryParams: { prompt: 'select_account' }
       },
       linkedin: {
@@ -202,7 +202,7 @@ class SocialAuthService {
 
       const user = session.user
       const provider = this.extractProviderFromUser(user)
-      
+
       logger.track('social_login_completed', {
         provider,
         userId: user.id,
@@ -232,7 +232,7 @@ class SocialAuthService {
     try {
       // Check if user is already authenticated
       const { data: { user } } = await this.supabase.auth.getUser()
-      
+
       if (!user) {
         return {
           success: false,
@@ -277,12 +277,12 @@ class SocialAuthService {
   private extractProviderFromUser(user: any): string {
     const identities = user.identities || []
     const lastIdentity = identities[identities.length - 1]
-    
+
     if (lastIdentity?.provider) {
       const config = this.getProviderConfig(lastIdentity.provider as SocialProvider)
       return config?.name || lastIdentity.provider
     }
-    
+
     return 'Social Provider'
   }
 

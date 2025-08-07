@@ -73,28 +73,28 @@ echo ""
 deploy_function() {
     local func_name=$1
     echo -e "${BLUE}📦 Deploying ${func_name}...${NC}"
-    
+
     # Check if function directory exists
     if [[ ! -d "supabase/functions/${func_name}" ]]; then
         echo -e "${YELLOW}⚠️  Function ${func_name} directory not found, skipping${NC}"
         return
     fi
-    
+
     # Deploy the function
     if supabase functions deploy "${func_name}" --project-ref "${PROJECT_ID}"; then
         echo -e "${GREEN}✅ ${func_name} deployed successfully${NC}"
-        
+
         # Log deployment details
         echo "  - Deployment time: $(date)"
         echo "  - Security features: CORS, Input validation, Rate limiting"
-        
+
         # Add to success list
         DEPLOYED_FUNCTIONS+=("${func_name}")
     else
         echo -e "${RED}❌ Failed to deploy ${func_name}${NC}"
         FAILED_FUNCTIONS+=("${func_name}")
     fi
-    
+
     echo ""
 }
 
@@ -117,7 +117,7 @@ read -r DEPLOY_OTHERS
 if [[ "$DEPLOY_OTHERS" == "y" || "$DEPLOY_OTHERS" == "Y" ]]; then
     echo -e "${BLUE}📦 Deploying additional Edge Functions...${NC}"
     echo ""
-    
+
     for func in "${OTHER_FUNCTIONS[@]}"; do
         deploy_function "$func"
     done
@@ -159,7 +159,7 @@ ANON_KEY="${NEXT_PUBLIC_SUPABASE_ANON_KEY}"
 test_function() {
     local func_name=$1
     echo "Testing $func_name..."
-    
+
     # Send OPTIONS request to test CORS
     curl -s -X OPTIONS \
         "${SUPABASE_URL}/functions/v1/${func_name}" \

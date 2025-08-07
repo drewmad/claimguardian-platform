@@ -114,16 +114,16 @@ export class MobileDeviceTestFramework {
 
   async initialize(): Promise<void> {
     console.log('📱 Initializing Mobile Device Test Framework')
-    
+
     // Collect comprehensive device information
     this.deviceInfo = await this.collectDeviceInfo()
-    
+
     // Initialize performance monitoring
     await this.performanceMonitor.initialize()
-    
+
     // Setup screenshot capabilities
     await this.screenshotManager.initialize()
-    
+
     console.log('✅ Mobile test framework initialized')
     console.log('📊 Device Info:', JSON.stringify(this.deviceInfo, null, 2))
   }
@@ -131,7 +131,7 @@ export class MobileDeviceTestFramework {
   private async collectDeviceInfo(): Promise<DeviceInfo> {
     const screen = Dimensions.get('screen')
     const networkState = await NetInfo.fetch()
-    
+
     // Get device-specific information
     const deviceId = await DeviceInfo.getUniqueId()
     const deviceModel = await DeviceInfo.getModel()
@@ -188,7 +188,7 @@ export class MobileDeviceTestFramework {
     }
 
     const results: Record<string, string> = {}
-    
+
     for (const [key, permission] of Object.entries(permissionsToCheck)) {
       try {
         const result = await check(permission)
@@ -205,7 +205,7 @@ export class MobileDeviceTestFramework {
   async runTestSuite(config: DeviceTestConfig): Promise<TestReport> {
     console.log(`🧪 Starting test suite: ${config.testSuite}`)
     const startTime = Date.now()
-    
+
     if (!this.deviceInfo) {
       throw new Error('Device test framework not initialized. Call initialize() first.')
     }
@@ -263,10 +263,10 @@ export class MobileDeviceTestFramework {
     await this.runTest('App Launch', 'core', async () => {
       // Test app startup time and initial render
       const startTime = Date.now()
-      
+
       // Simulate app navigation and core operations
       await this.simulateAppLaunch()
-      
+
       const launchTime = Date.now() - startTime
       if (launchTime > 3000) {
         throw new Error(`App launch too slow: ${launchTime}ms`)
@@ -319,7 +319,7 @@ export class MobileDeviceTestFramework {
 
     await this.runTest('Scroll Performance', 'performance', async () => {
       const scrollMetrics = await this.performanceMonitor.measureScrollPerformance()
-      
+
       if (scrollMetrics.droppedFrames > 5) {
         throw new Error(`Poor scroll performance: ${scrollMetrics.droppedFrames} dropped frames`)
       }
@@ -409,7 +409,7 @@ export class MobileDeviceTestFramework {
   ): Promise<void> {
     console.log(`🔬 Running test: ${testName}`)
     const startTime = Date.now()
-    
+
     try {
       // Set up test timeout
       const timeoutPromise = new Promise<never>((_, reject) =>
@@ -418,9 +418,9 @@ export class MobileDeviceTestFramework {
 
       // Run test with timeout
       await Promise.race([testFunction(), timeoutPromise])
-      
+
       const duration = Date.now() - startTime
-      
+
       this.testResults.push({
         testName,
         suite,
@@ -433,7 +433,7 @@ export class MobileDeviceTestFramework {
     } catch (error) {
       const duration = Date.now() - startTime
       const errorMessage = error instanceof Error ? error.message : 'Unknown error'
-      
+
       // Take screenshot on failure if enabled
       let screenshots: string[] = []
       if (config.screenshotOnFailure) {
@@ -467,21 +467,21 @@ export class MobileDeviceTestFramework {
   private async testAsyncStorage(): Promise<void> {
     const testKey = 'device-test-key'
     const testData = { timestamp: Date.now(), test: true }
-    
+
     // Test write
     await AsyncStorage.setItem(testKey, JSON.stringify(testData))
-    
+
     // Test read
     const stored = await AsyncStorage.getItem(testKey)
     if (!stored) {
       throw new Error('Failed to retrieve stored data')
     }
-    
+
     const parsed = JSON.parse(stored)
     if (parsed.test !== true) {
       throw new Error('Data integrity check failed')
     }
-    
+
     // Cleanup
     await AsyncStorage.removeItem(testKey)
   }
@@ -571,7 +571,7 @@ export class MobileDeviceTestFramework {
       const response = await fetch('https://claimguardianai.com/api/health', {
         timeout: 5000
       })
-      
+
       if (!response.ok) {
         throw new Error(`API connectivity failed: ${response.status}`)
       }
@@ -605,7 +605,7 @@ export class MobileDeviceTestFramework {
     // Calculate performance metrics
     const memoryUsages = this.testResults.flatMap(r => r.performanceMetrics?.memoryUsage || [])
     const renderTimes = this.testResults.flatMap(r => r.performanceMetrics?.renderTimes || [])
-    const slowestTest = this.testResults.reduce((slowest, test) => 
+    const slowestTest = this.testResults.reduce((slowest, test) =>
       test.duration > slowest.duration ? test : slowest, this.testResults[0]
     )
 
@@ -646,7 +646,7 @@ export class MobileDeviceTestFramework {
     try {
       const keys = await AsyncStorage.getAllKeys()
       const reportKeys = keys.filter(key => key.startsWith('test-report-'))
-      
+
       const reports: TestReport[] = []
       for (const key of reportKeys) {
         const reportData = await AsyncStorage.getItem(key)
@@ -654,7 +654,7 @@ export class MobileDeviceTestFramework {
           reports.push(JSON.parse(reportData))
         }
       }
-      
+
       return reports.sort((a, b) => b.timestamp - a.timestamp)
     } catch (error) {
       console.error('Failed to retrieve stored reports:', error)
@@ -693,7 +693,7 @@ export class MobileDeviceTestFramework {
       test.duration,
       test.error || ''
     ])
-    
+
     return [headers.join(','), ...rows.map(row => row.join(','))].join('\n')
   }
 
@@ -716,7 +716,7 @@ export class MobileDeviceTestFramework {
 </head>
 <body>
     <h1>📱 ClaimGuardian Mobile Test Report</h1>
-    
+
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Device:</strong> ${report.deviceInfo.manufacturer} ${report.deviceInfo.model}</p>
@@ -771,7 +771,7 @@ class PerformanceMonitor {
 
   async measureMemoryUsage<T>(operation: () => Promise<T>): Promise<{ peak: number; average: number; samples: number[] }> {
     const samples: number[] = []
-    
+
     // Start memory sampling
     const interval = setInterval(async () => {
       try {
@@ -841,10 +841,10 @@ export async function runMobileDeviceTests(config?: Partial<DeviceTestConfig>): 
   }
 
   const finalConfig = { ...defaultConfig, ...config }
-  
+
   const framework = new MobileDeviceTestFramework()
   await framework.initialize()
-  
+
   return await framework.runTestSuite(finalConfig)
 }
 

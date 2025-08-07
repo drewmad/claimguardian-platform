@@ -12,22 +12,22 @@ import { createHash } from 'crypto';
 
 import Redis from 'ioredis';
 
-import { 
-  AIRequest, 
-  AIResponse, 
-  ChatRequest, 
+import {
+  AIRequest,
+  AIResponse,
+  ChatRequest,
   CacheStats,
-  CachedResponse 
+  CachedResponse
 } from '../types/index';
 
 export class CacheManager {
   protected redis: Redis | null = null;
   private defaultTTL: number = 3600; // 1 hour default
   private enabled: boolean = true;
-  
+
   constructor(redisUrl?: string, enabled: boolean = true) {
     this.enabled = enabled;
-    
+
     if (enabled && redisUrl) {
       try {
         this.redis = new Redis(redisUrl, {
@@ -37,12 +37,12 @@ export class CacheManager {
             return delay;
           }
         });
-        
+
         this.redis.on('error', (err) => {
           console.error('[CacheManager] Redis error:', err);
           // Don't disable cache on errors, just log them
         });
-        
+
         this.redis.on('connect', () => {
           console.log('[CacheManager] Connected to Redis');
         });
@@ -54,20 +54,20 @@ export class CacheManager {
       this.enabled = false;
     }
   }
-  
+
   async get(request: AIRequest | ChatRequest): Promise<AIResponse | null> {
     if (!this.enabled || !this.redis) return null;
-    
+
     try {
       const key = this.generateCacheKey(request);
       const cached = await this.redis.get(key);
-      
+
       if (cached) {
         // Track cache hit
         await this.incrementStat('hits');
-        
+
         const response = JSON.parse(cached) as CachedResponse;
-        
+
         // Check if cache is still valid
         if (new Date(response.expiresAt) > new Date()) {
           return {
@@ -79,7 +79,7 @@ export class CacheManager {
           await this.redis.del(key);
         }
       }
-      
+
       // Track cache miss
       await this.incrementStat('misses');
       return null;
@@ -88,42 +88,42 @@ export class CacheManager {
       return null;
     }
   }
-  
+
   async set(
-    request: AIRequest | ChatRequest, 
+    request: AIRequest | ChatRequest,
     response: AIResponse,
     ttlOverride?: number
   ): Promise<void> {
     if (!this.enabled || !this.redis) return;
-    
+
     try {
       const key = this.generateCacheKey(request);
       const ttl = ttlOverride || this.calculateTTL(request);
-      
+
       const cachedResponse: CachedResponse = {
         ...response,
         cachedAt: new Date(),
         expiresAt: new Date(Date.now() + ttl * 1000),
         cacheKey: key
       };
-      
+
       await this.redis.set(
         key,
         JSON.stringify(cachedResponse),
         'EX',
         ttl
       );
-      
+
       // Track cache set
       await this.incrementStat('sets');
     } catch (error) {
       console.error('[CacheManager] Error setting cache:', error);
     }
   }
-  
+
   async invalidate(pattern: string): Promise<number> {
     if (!this.enabled || !this.redis) return 0;
-    
+
     try {
       const keys = await this.redis.keys(`ai:cache:*${pattern}*`);
       if (keys.length > 0) {
@@ -135,31 +135,31 @@ export class CacheManager {
       return 0;
     }
   }
-  
+
   async getStats(): Promise<CacheStats> {
     if (!this.enabled || !this.redis) {
       return { hits: 0, misses: 0, sets: 0, hitRate: 0 };
     }
-    
+
     try {
       const stats = await this.redis.hgetall('cache:stats');
       const hits = parseInt(stats.hits || '0');
       const misses = parseInt(stats.misses || '0');
       const sets = parseInt(stats.sets || '0');
-      
+
       const total = hits + misses;
       const hitRate = total > 0 ? hits / total : 0;
-      
+
       return { hits, misses, sets, hitRate };
     } catch (error) {
       console.error('[CacheManager] Error getting stats:', error);
       return { hits: 0, misses: 0, sets: 0, hitRate: 0 };
     }
   }
-  
+
   async clear(): Promise<void> {
     if (!this.enabled || !this.redis) return;
-    
+
     try {
       const keys = await this.redis.keys('ai:cache:*');
       if (keys.length > 0) {
@@ -170,7 +170,7 @@ export class CacheManager {
       console.error('[CacheManager] Error clearing cache:', error);
     }
   }
-  
+
   protected generateCacheKey(request: AIRequest | ChatRequest): string {
     // Normalize request for consistent cache keys
     const normalized: Record<string, unknown> = {
@@ -178,7 +178,7 @@ export class CacheManager {
       temperature: Math.round((request.temperature || 0.7) * 10) / 10,
       maxTokens: request.maxTokens || 2048
     };
-    
+
     // Handle different request types
     if ('prompt' in request) {
       normalized.prompt = request.prompt.trim().toLowerCase();
@@ -192,16 +192,16 @@ export class CacheManager {
           content: m.content.trim().toLowerCase().substring(0, 100) // First 100 chars
         }));
     }
-    
+
     // Create deterministic hash
     const hash = createHash('sha256')
       .update(JSON.stringify(normalized))
       .digest('hex')
       .substring(0, 16); // Use first 16 chars of hash
-      
+
     return `ai:cache:${request.feature}:${hash}`;
   }
-  
+
   protected calculateTTL(request: AIRequest | ChatRequest): number {
     // Dynamic TTL based on feature and content type
     const ttlMap: Record<string, number> = {
@@ -213,23 +213,23 @@ export class CacheManager {
       'document-extractor': 7 * 24 * 60 * 60, // 7 days - documents don't change
       'damage-analyzer': 24 * 60 * 60  // 24 hours - analysis can be reused
     };
-    
+
     return ttlMap[request.feature] || ttlMap.generic;
   }
-  
+
   private async incrementStat(stat: 'hits' | 'misses' | 'sets'): Promise<void> {
     if (!this.redis) return;
-    
+
     try {
       await this.redis.hincrby('cache:stats', stat, 1);
     } catch {
       // Ignore stat tracking errors
     }
   }
-  
+
   async healthCheck(): Promise<boolean> {
     if (!this.enabled || !this.redis) return false;
-    
+
     try {
       await this.redis.ping();
       return true;
@@ -237,7 +237,7 @@ export class CacheManager {
       return false;
     }
   }
-  
+
   async close(): Promise<void> {
     if (this.redis) {
       await this.redis.quit();

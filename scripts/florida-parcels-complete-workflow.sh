@@ -41,7 +41,7 @@ log() {
 # Function to check prerequisites
 check_prerequisites() {
     log "Checking prerequisites..."
-    
+
     # Check for GDB file
     if [[ ! -d "$DATA_DIR/Cadastral_Statewide.gdb" ]]; then
         echo -e "${RED}ERROR: Cadastral_Statewide.gdb not found!${NC}"
@@ -52,20 +52,20 @@ check_prerequisites() {
         echo "  unzip Cadastral_Statewide.zip"
         exit 1
     fi
-    
+
     # Check for ogr2ogr
     if ! command -v ogr2ogr &> /dev/null; then
         echo -e "${RED}ERROR: ogr2ogr not found!${NC}"
         echo "Please install GDAL: brew install gdal"
         exit 1
     fi
-    
+
     # Check for curl
     if ! command -v curl &> /dev/null; then
         echo -e "${RED}ERROR: curl not found!${NC}"
         exit 1
     fi
-    
+
     log "Prerequisites check passed ✓"
 }
 

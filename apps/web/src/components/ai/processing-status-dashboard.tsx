@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Activity,
   BarChart3,
   Brain,
@@ -138,7 +138,7 @@ export function ProcessingStatusDashboard({
     // Search filter
     if (searchQuery.trim()) {
       const query = searchQuery.toLowerCase()
-      filtered = filtered.filter(job => 
+      filtered = filtered.filter(job =>
         job.name.toLowerCase().includes(query) ||
         job.type.toLowerCase().includes(query) ||
         job.id.toLowerCase().includes(query)
@@ -150,7 +150,7 @@ export function ProcessingStatusDashboard({
       const priorityOrder = { urgent: 4, high: 3, normal: 2, low: 1 }
       const priorityDiff = priorityOrder[b.priority] - priorityOrder[a.priority]
       if (priorityDiff !== 0) return priorityDiff
-      
+
       return (b.startTime?.getTime() || 0) - (a.startTime?.getTime() || 0)
     })
 
@@ -203,7 +203,7 @@ export function ProcessingStatusDashboard({
       // Simulate refresh delay
       await new Promise(resolve => setTimeout(resolve, 1000))
       setLastUpdate(new Date())
-      
+
       info('Data refreshed', {
         subtitle: 'Processing status updated'
       })
@@ -260,7 +260,7 @@ export function ProcessingStatusDashboard({
           <Badge variant="outline" className="text-xs">
             Last updated: {lastUpdate.toLocaleTimeString()}
           </Badge>
-          
+
           {showControls && (
             <Button
               variant="outline"
@@ -370,9 +370,9 @@ export function ProcessingStatusDashboard({
                     {Math.round((metrics.runningJobs / (metrics.runningJobs + metrics.queuedJobs)) * 100) || 0}%
                   </span>
                 </div>
-                <Progress 
-                  value={Math.round((metrics.runningJobs / (metrics.runningJobs + metrics.queuedJobs)) * 100) || 0} 
-                  className="h-2" 
+                <Progress
+                  value={Math.round((metrics.runningJobs / (metrics.runningJobs + metrics.queuedJobs)) * 100) || 0}
+                  className="h-2"
                 />
               </div>
             </div>
@@ -382,17 +382,17 @@ export function ProcessingStatusDashboard({
                 <p className="text-gray-600">Uptime</p>
                 <p className="font-medium">{Math.round(metrics.uptime / 3600)}h</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-gray-600">Completed</p>
                 <p className="font-medium">{metrics.completedJobs}</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-gray-600">Failed</p>
                 <p className="font-medium text-red-600">{metrics.failedJobs}</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-gray-600">Avg Time</p>
                 <p className="font-medium">{Math.round(metrics.averageProcessingTime)}s</p>
@@ -411,7 +411,7 @@ export function ProcessingStatusDashboard({
                 <Clock className="w-5 h-5" />
                 Processing Queue ({filteredJobs.length})
               </CardTitle>
-              
+
               <div className="flex items-center gap-2">
                 {/* Search */}
                 <div className="relative">
@@ -440,7 +440,7 @@ export function ProcessingStatusDashboard({
               </div>
             </div>
           </CardHeader>
-          
+
           <CardContent>
             {filteredJobs.length === 0 ? (
               <div className="text-center py-8 text-gray-500">
@@ -451,7 +451,7 @@ export function ProcessingStatusDashboard({
                 <AnimatePresence>
                   {filteredJobs.map((job) => {
                     const JobIcon = getJobIcon(job.type)
-                    
+
                     return (
                       <motion.div
                         key={job.id}
@@ -469,28 +469,28 @@ export function ProcessingStatusDashboard({
                             <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center shadow-sm">
                               <JobIcon className="w-5 h-5 text-gray-600" />
                             </div>
-                            
+
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-1">
                                 <h4 className="font-medium truncate">{job.name}</h4>
-                                
+
                                 <Badge className={cn("text-xs", getStatusColor(job.status))}>
                                   {job.status}
                                 </Badge>
-                                
+
                                 <Badge variant="outline" className="text-xs">
                                   {job.priority}
                                 </Badge>
-                                
+
                                 <Badge variant="outline" className="text-xs">
                                   {job.model}
                                 </Badge>
                               </div>
-                              
+
                               <p className="text-sm text-gray-600 mb-2 capitalize">
                                 {job.type.replace('-', ' ')} • {job.filesProcessed}/{job.totalFiles} files
                               </p>
-                              
+
                               {job.status === 'running' && (
                                 <div className="space-y-2 mb-2">
                                   <Progress value={job.progress} className="h-2" />
@@ -502,7 +502,7 @@ export function ProcessingStatusDashboard({
                                   </div>
                                 </div>
                               )}
-                              
+
                               {job.status === 'failed' && job.error && (
                                 <Alert variant="destructive" className="mt-2">
                                   <AlertTriangle className="w-4 h-4" />
@@ -511,23 +511,23 @@ export function ProcessingStatusDashboard({
                                   </AlertDescription>
                                 </Alert>
                               )}
-                              
+
                               <div className="flex items-center gap-4 text-xs text-gray-500 mt-2">
                                 {job.startTime && (
                                   <span>Started: {job.startTime.toLocaleTimeString()}</span>
                                 )}
-                                
+
                                 {job.duration && (
                                   <span>Duration: {Math.round(job.duration)}s</span>
                                 )}
-                                
+
                                 {job.queuePosition && (
                                   <span>Queue: #{job.queuePosition}</span>
                                 )}
                               </div>
                             </div>
                           </div>
-                          
+
                           {/* Job Controls */}
                           <div className="flex items-center gap-2">
                             {job.status === 'running' && (
@@ -539,7 +539,7 @@ export function ProcessingStatusDashboard({
                                 <Pause className="w-3 h-3" />
                               </Button>
                             )}
-                            
+
                             {job.status === 'paused' && (
                               <Button
                                 variant="outline"
@@ -549,7 +549,7 @@ export function ProcessingStatusDashboard({
                                 <Play className="w-3 h-3" />
                               </Button>
                             )}
-                            
+
                             {job.status === 'failed' && (
                               <Button
                                 variant="outline"
@@ -559,7 +559,7 @@ export function ProcessingStatusDashboard({
                                 <RefreshCw className="w-3 h-3" />
                               </Button>
                             )}
-                            
+
                             {(job.status === 'running' || job.status === 'queued' || job.status === 'paused') && (
                               <Button
                                 variant="outline"
@@ -569,7 +569,7 @@ export function ProcessingStatusDashboard({
                                 <XCircle className="w-3 h-3" />
                               </Button>
                             )}
-                            
+
                             <Button
                               variant="ghost"
                               size="sm"
@@ -579,7 +579,7 @@ export function ProcessingStatusDashboard({
                             </Button>
                           </div>
                         </div>
-                        
+
                         {/* Expanded Details */}
                         <AnimatePresence>
                           {selectedJob === job.id && (
@@ -594,23 +594,23 @@ export function ProcessingStatusDashboard({
                                   <p className="text-gray-600">Job ID</p>
                                   <p className="font-mono text-xs">{job.id}</p>
                                 </div>
-                                
+
                                 <div>
                                   <p className="text-gray-600">User</p>
                                   <p className="font-mono text-xs">{job.userId}</p>
                                 </div>
-                                
+
                                 <div>
                                   <p className="text-gray-600">Model</p>
                                   <p className="font-medium">{job.model}</p>
                                 </div>
-                                
+
                                 <div>
                                   <p className="text-gray-600">Priority</p>
                                   <p className="font-medium capitalize">{job.priority}</p>
                                 </div>
                               </div>
-                              
+
                               {job.metadata && (
                                 <div className="mt-3">
                                   <p className="text-gray-600 text-sm mb-2">Metadata</p>

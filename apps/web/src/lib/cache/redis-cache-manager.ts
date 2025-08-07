@@ -65,7 +65,7 @@ export class RedisCacheManager {
     totalOperations: 0,
     hitRate: 0
   }
-  
+
   private cleanupInterval: NodeJS.Timeout | null = null
   private isConnected = false
 
@@ -85,7 +85,7 @@ export class RedisCacheManager {
       if (typeof window === 'undefined') {
         // Server-side - use ioredis if available
         const Redis = await import('ioredis').catch(() => null)
-        
+
         if (Redis?.default) {
           const client = new Redis.default(process.env.REDIS_URL, {
             retryDelayOnFailover: 100,
@@ -199,18 +199,18 @@ export class RedisCacheManager {
   }
 
   private updateStats(operation: 'hit' | 'miss' | 'set' | 'delete' | 'error'): void {
-    this.stats[operation === 'hit' ? 'hits' : 
+    this.stats[operation === 'hit' ? 'hits' :
                   operation === 'miss' ? 'misses' :
                   operation === 'set' ? 'sets' :
                   operation === 'delete' ? 'deletes' : 'errors']++
-    
+
     this.stats.totalOperations++
     this.stats.hitRate = this.stats.hits / Math.max(1, this.stats.hits + this.stats.misses)
   }
 
   async get<T = unknown>(key: string): Promise<T | null> {
     const fullKey = this.generateKey(key)
-    
+
     try {
       // Try Redis first if available
       if (this.client && this.isConnected) {
@@ -257,7 +257,7 @@ export class RedisCacheManager {
     const fullKey = this.generateKey(key)
     const effectiveTTL = ttl || this.config.defaultTTL
     const serializedValue = this.serialize(value)
-    
+
     try {
       let redisSuccess = false
 
@@ -287,7 +287,7 @@ export class RedisCacheManager {
           createdAt: Date.now(),
           expiresAt: Date.now() + (effectiveTTL * 1000)
         })
-        
+
         if (!redisSuccess) {
           logger.debug(`Cache SET (Fallback): ${key}, TTL: ${effectiveTTL}s`)
         }
@@ -305,7 +305,7 @@ export class RedisCacheManager {
 
   async delete(key: string): Promise<boolean> {
     const fullKey = this.generateKey(key)
-    
+
     try {
       let redisSuccess = false
 
@@ -328,7 +328,7 @@ export class RedisCacheManager {
 
       // Remove from fallback cache
       const fallbackDeleted = this.fallbackCache.delete(fullKey)
-      
+
       if (!redisSuccess && fallbackDeleted) {
         logger.debug(`Cache DELETE (Fallback): ${key}`)
       }
@@ -358,13 +358,13 @@ export class RedisCacheManager {
         // Clear matching fallback cache items
         const regex = new RegExp(pattern.replace('*', '.*'))
         const keysToDelete: string[] = []
-        
+
         for (const key of this.fallbackCache.keys()) {
           if (regex.test(key)) {
             keysToDelete.push(key)
           }
         }
-        
+
         keysToDelete.forEach(key => this.fallbackCache.delete(key))
         logger.info(`Cleared ${keysToDelete.length} fallback cache keys matching pattern: ${pattern}`)
       } else {
@@ -386,7 +386,7 @@ export class RedisCacheManager {
 
   async exists(key: string): Promise<boolean> {
     const fullKey = this.generateKey(key)
-    
+
     try {
       // Check Redis first
       if (this.client && this.isConnected) {
@@ -406,7 +406,7 @@ export class RedisCacheManager {
 
   async ttl(key: string): Promise<number> {
     const fullKey = this.generateKey(key)
-    
+
     try {
       // Check Redis first
       if (this.client && this.isConnected) {
@@ -433,11 +433,11 @@ export class RedisCacheManager {
 
   async healthCheck(): Promise<{ healthy: boolean; details: Record<string, unknown> }> {
     try {
-      const redisHealthy = this.client && this.isConnected ? 
+      const redisHealthy = this.client && this.isConnected ?
         await this.client.ping().then(() => true).catch(() => false) : false
 
       const stats = this.getStats()
-      
+
       return {
         healthy: redisHealthy || this.config.enableFallback,
         details: {
@@ -465,7 +465,7 @@ export class RedisCacheManager {
 
   async shutdown(): Promise<void> {
     logger.info('Shutting down cache manager')
-    
+
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval)
       this.cleanupInterval = null
@@ -498,16 +498,16 @@ export class RedisCacheManager {
 
     // Fetch fresh data
     const fresh = await fetcher()
-    
+
     // Cache the result
     await this.set(key, fresh, ttl)
-    
+
     return fresh
   }
 
   async mget<T>(keys: string[]): Promise<Record<string, T | null>> {
     const results: Record<string, T | null> = {}
-    
+
     // Batch get operations for better performance
     const promises = keys.map(async (key) => ({
       key,
@@ -515,7 +515,7 @@ export class RedisCacheManager {
     }))
 
     const resolved = await Promise.allSettled(promises)
-    
+
     resolved.forEach((result, index) => {
       if (result.status === 'fulfilled') {
         results[keys[index]] = result.value.value
@@ -528,7 +528,7 @@ export class RedisCacheManager {
   }
 
   async mset<T>(items: Record<string, T>, ttl?: number): Promise<boolean> {
-    const promises = Object.entries(items).map(([key, value]) => 
+    const promises = Object.entries(items).map(([key, value]) =>
       this.set(key, value, ttl)
     )
 

@@ -6,7 +6,7 @@ process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-anon-key';
 
 describe('Edge Functions Integration Tests', () => {
   const supabase = createClient();
-  
+
   beforeEach(() => {
     jest.clearAllMocks();
   });
@@ -362,13 +362,13 @@ describe('Edge Functions Integration Tests', () => {
   describe('Edge Function Performance', () => {
     it('should complete within acceptable time limits', async () => {
       const startTime = Date.now();
-      
+
       const mockResponse = {
         data: { result: 'success' },
         error: null
       };
 
-      jest.spyOn(supabase.functions, 'invoke').mockImplementation(() => 
+      jest.spyOn(supabase.functions, 'invoke').mockImplementation(() =>
         new Promise(resolve => {
           setTimeout(() => resolve(mockResponse), 100); // Simulate 100ms response
         })

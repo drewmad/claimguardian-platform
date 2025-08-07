@@ -35,17 +35,17 @@ const FLORIDA_COUNTIES = [
 
 async function checkGDBLayers() {
   console.log('Checking GDB file structure...');
-  
+
   try {
     const { stdout } = await execAsync('ogrinfo -so Cadastral_Statewide.gdb');
     const layers = stdout.match(/Layer name: (.+)/g);
-    
+
     if (layers) {
       console.log('Found layers:');
       layers.forEach(layer => {
         console.log(`  - ${layer.replace('Layer name: ', '')}`);
       });
-      
+
       // Find the main parcels layer
       const parcelsLayer = layers.find(l => /parcel|cadastral/i.test(l));
       if (parcelsLayer) {
@@ -55,32 +55,32 @@ async function checkGDBLayers() {
   } catch (error) {
     console.error('Error reading GDB:', error.message);
   }
-  
+
   return null;
 }
 
 async function importCountyData(layerName, countyFips, offset = 0, limit = 1000) {
   console.log(`Importing county ${countyFips} (offset: ${offset})...`);
-  
+
   const tempFile = `/tmp/parcels_${countyFips}_${offset}.json`;
-  
+
   try {
     // Export subset to GeoJSON
     const exportCmd = `ogr2ogr -f GeoJSON ${tempFile} Cadastral_Statewide.gdb "${layerName}" ` +
       `-where "CO_NO = ${countyFips}" -skipfailures -t_srs EPSG:4326 ` +
       `-sql "SELECT * FROM \\"${layerName}\\" WHERE CO_NO = ${countyFips} LIMIT ${limit} OFFSET ${offset}"`;
-    
+
     await execAsync(exportCmd);
-    
+
     // Read and parse GeoJSON
     const fs = require('fs');
     const geoData = JSON.parse(fs.readFileSync(tempFile, 'utf8'));
-    
+
     if (!geoData.features || geoData.features.length === 0) {
       console.log(`No more data for county ${countyFips}`);
       return 0;
     }
-    
+
     // Transform features to database format
     const records = geoData.features.map(feature => {
       const props = feature.properties;
@@ -128,24 +128,24 @@ async function importCountyData(layerName, countyFips, offset = 0, limit = 1000)
         geom: feature.geometry
       };
     });
-    
+
     // Insert to database
     const { error } = await supabase
       .from('florida_parcels')
-      .upsert(records, { 
+      .upsert(records, {
         onConflict: 'parcel_id,co_no',
-        ignoreDuplicates: true 
+        ignoreDuplicates: true
       });
-    
+
     if (error) {
       console.error('Insert error:', error);
     } else {
       console.log(`Inserted ${records.length} parcels`);
     }
-    
+
     // Clean up temp file
     fs.unlinkSync(tempFile);
-    
+
     return records.length;
   } catch (error) {
     console.error(`Error processing batch:`, error.message);
@@ -156,13 +156,13 @@ async function importCountyData(layerName, countyFips, offset = 0, limit = 1000)
 async function importAllCounties(layerName) {
   for (const county of FLORIDA_COUNTIES) {
     console.log(`\nProcessing ${county.name} County (FIPS: ${county.fips})...`);
-    
+
     let offset = 0;
     let hasMore = true;
-    
+
     while (hasMore) {
       const imported = await importCountyData(layerName, county.fips, offset);
-      
+
       if (imported === 0) {
         hasMore = false;
       } else {
@@ -171,13 +171,13 @@ async function importAllCounties(layerName) {
         await new Promise(resolve => setTimeout(resolve, 1000));
       }
     }
-    
+
     // Get county summary
     const { data: summary } = await supabase
       .from('florida_parcels')
       .select('co_no', { count: 'exact', head: true })
       .eq('co_no', county.fips);
-    
+
     console.log(`${county.name} County complete. Total parcels: ${summary?.count || 0}`);
   }
 }
@@ -185,7 +185,7 @@ async function importAllCounties(layerName) {
 async function main() {
   console.log('Florida Parcels Batch Import Tool');
   console.log('=================================\n');
-  
+
   // Check if table exists
   const { data: tables } = await supabase
     .from('information_schema.tables')
@@ -193,41 +193,41 @@ async function main() {
     .eq('table_schema', 'public')
     .eq('table_name', 'florida_parcels')
     .single();
-  
+
   if (!tables) {
     console.error('Error: florida_parcels table does not exist');
     console.error('Please run: psql $DATABASE_URL -f create-florida-parcels-schema.sql');
     process.exit(1);
   }
-  
+
   // Find parcels layer
   const layerName = await checkGDBLayers();
-  
+
   if (!layerName) {
     console.error('Could not find parcels layer in GDB file');
     process.exit(1);
   }
-  
+
   console.log(`\nUsing layer: ${layerName}`);
   console.log('Starting import...\n');
-  
+
   // Import all counties
   await importAllCounties(layerName);
-  
+
   // Final summary
   const { data: totalSummary } = await supabase
     .from('florida_parcels')
     .select('co_no', { count: 'exact', head: true });
-  
+
   console.log(`\n\nImport complete!`);
   console.log(`Total parcels imported: ${totalSummary?.count || 0}`);
-  
+
   // Show county breakdown
   const { data: countyBreakdown } = await supabase
     .from('florida_parcels_summary')
     .select('*')
     .order('co_no');
-  
+
   if (countyBreakdown) {
     console.log('\nCounty breakdown:');
     countyBreakdown.forEach(county => {

@@ -64,12 +64,12 @@ watch -n 5 "psql -c 'SELECT COUNT(*) FROM florida_parcels WHERE CO_NO = 15'"
 
 ```sql
 -- Check import status
-SELECT * FROM florida_parcels_import_status 
-WHERE county_no = 15 
+SELECT * FROM florida_parcels_import_status
+WHERE county_no = 15
 ORDER BY created_at DESC;
 
 -- Verify data quality
-SELECT 
+SELECT
     COUNT(*) as total_parcels,
     COUNT(DISTINCT OWN_NAME) as unique_owners,
     COUNT(DISTINCT PHY_CITY) as cities,
@@ -142,8 +142,8 @@ CSV File → Split into chunks → Parallel Node.js workers → Supabase bulk in
 SELECT * FROM search_parcels_by_owner('John Smith', 15, 50);
 
 -- Exact match
-SELECT * FROM florida_parcels 
-WHERE UPPER(OWN_NAME) = 'JOHN SMITH' 
+SELECT * FROM florida_parcels
+WHERE UPPER(OWN_NAME) = 'JOHN SMITH'
 AND CO_NO = 15;
 ```
 

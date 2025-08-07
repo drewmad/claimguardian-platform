@@ -50,7 +50,7 @@ interface SystemMetrics {
 export async function GET(request: NextRequest) {
   try {
     const supabase = await createClient()
-    
+
     // Check database health
     const dbStart = Date.now()
     const { data: dbTest, error: dbError } = await supabase
@@ -127,7 +127,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     console.error('Performance monitoring error:', error)
     return NextResponse.json(
-      { 
+      {
         error: 'Failed to get performance metrics',
         timestamp: new Date().toISOString(),
         status: 'error'
@@ -146,7 +146,7 @@ export async function POST(request: NextRequest) {
     const { type } = body
 
     let result = ''
-    
+
     switch (type) {
       case 'all':
         await cacheManager.clear()
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
         )
     }
 
-    return NextResponse.json({ 
+    return NextResponse.json({
       success: true,
       message: result,
       timestamp: new Date().toISOString()

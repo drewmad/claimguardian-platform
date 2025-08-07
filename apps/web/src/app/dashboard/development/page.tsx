@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Code, Map, Building, TrendingUp, DollarSign,
   Layers, Activity, FileText, BarChart,
   Home, TreePine, Car, Users, Zap, Droplets,
@@ -22,7 +22,7 @@ import { DashboardLayout } from '@/components/dashboard/dashboard-layout'
 
 export default function DevelopmentPage() {
   const [selectedView, setSelectedView] = useState('overview')
-  
+
   const propertyData = {
     address: '9555 Mirror Fountain Cir',
     city: 'Frisco',
@@ -91,8 +91,8 @@ export default function DevelopmentPage() {
             <button
               onClick={() => setSelectedView('overview')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedView === 'overview' 
-                  ? 'bg-purple-600 text-white' 
+                selectedView === 'overview'
+                  ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -101,8 +101,8 @@ export default function DevelopmentPage() {
             <button
               onClick={() => setSelectedView('map')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedView === 'map' 
-                  ? 'bg-purple-600 text-white' 
+                selectedView === 'map'
+                  ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -111,8 +111,8 @@ export default function DevelopmentPage() {
             <button
               onClick={() => setSelectedView('analytics')}
               className={`px-4 py-2 rounded-lg transition-colors ${
-                selectedView === 'analytics' 
-                  ? 'bg-purple-600 text-white' 
+                selectedView === 'analytics'
+                  ? 'bg-purple-600 text-white'
                   : 'bg-gray-700 text-gray-400 hover:bg-gray-600'
               }`}
             >
@@ -132,7 +132,7 @@ export default function DevelopmentPage() {
                 View Full Report
               </button>
             </div>
-            
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
               <div>
                 <p className="text-sm text-gray-400">Parcel ID</p>
@@ -193,7 +193,7 @@ export default function DevelopmentPage() {
                   </div>
                   <Info className="w-4 h-4 text-gray-400" />
                 </div>
-                
+
                 <div className="flex justify-between items-center p-3 bg-gray-700/50 rounded-lg">
                   <div>
                     <p className="text-sm text-gray-400">Market Value</p>
@@ -232,7 +232,7 @@ export default function DevelopmentPage() {
                         </div>
                         <div className="flex items-center gap-2 mt-2">
                           <span className={`px-2 py-1 rounded-full text-xs ${
-                            dev.status === 'Under Construction' 
+                            dev.status === 'Under Construction'
                               ? 'bg-orange-500/20 text-orange-300'
                               : dev.status === 'Planning'
                               ? 'bg-blue-500/20 text-blue-300'
@@ -300,7 +300,7 @@ export default function DevelopmentPage() {
                 <p className="text-sm text-gray-400">Explore area developments</p>
               </div>
             </button>
-            
+
             <button className="p-4 bg-gray-800 border border-gray-700 hover:border-gray-600 rounded-lg transition-all flex items-center gap-3">
               <FileText className="w-5 h-5 text-cyan-400" />
               <div className="text-left">

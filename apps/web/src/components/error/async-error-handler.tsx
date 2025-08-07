@@ -12,11 +12,11 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  AlertCircle, 
-  RefreshCw, 
-  Wifi, 
-  WifiOff, 
+import {
+  AlertCircle,
+  RefreshCw,
+  Wifi,
+  WifiOff,
   Clock,
   CheckCircle2,
   X
@@ -89,7 +89,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
       retryCount: 0,
       retryDelay: 0
     }))
-    
+
     if (retryTimeoutRef.current) {
       clearTimeout(retryTimeoutRef.current)
     }
@@ -100,7 +100,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
       config.baseDelay * Math.pow(config.backoffFactor, attempt),
       config.maxDelay
     )
-    
+
     // Add jitter to prevent thundering herd
     const jitter = delay * 0.1 * Math.random()
     return Math.floor(delay + jitter)
@@ -111,7 +111,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
     context?: string
   ): Promise<T> => {
     operationRef.current = operation
-    
+
     const attempt = async (attemptCount: number): Promise<T> => {
       try {
         setState(prev => ({
@@ -121,26 +121,26 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
         }))
 
         const result = await operation()
-        
+
         // Success - clear any previous errors
         clearError()
-        
+
         if (attemptCount > 0) {
           toast.success('Operation completed successfully')
-          logger.info('Operation succeeded after retry', { 
-            context, 
+          logger.info('Operation succeeded after retry', {
+            context,
             attemptCount,
-            totalAttempts: attemptCount + 1 
+            totalAttempts: attemptCount + 1
           })
         }
-        
+
         return result
       } catch (error) {
-        const asyncError: AsyncError = error instanceof Error 
+        const asyncError: AsyncError = error instanceof Error
           ? Object.assign(error, { context })
           : new Error('Unknown async error')
 
-        const shouldRetry = 
+        const shouldRetry =
           attemptCount < config.maxAttempts &&
           (config.retryCondition?.(asyncError) ?? true)
 
@@ -154,7 +154,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
 
         if (shouldRetry) {
           const retryDelay = calculateRetryDelay(attemptCount)
-          
+
           setState(prev => ({
             ...prev,
             error: asyncError,
@@ -196,16 +196,16 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
       toast.success('Manual retry successful')
       return result
     } catch (error) {
-      const asyncError: AsyncError = error instanceof Error 
+      const asyncError: AsyncError = error instanceof Error
         ? error as AsyncError
         : new Error('Manual retry failed')
-      
+
       setState(prev => ({
         ...prev,
         error: asyncError,
         isRetrying: false
       }))
-      
+
       throw asyncError
     }
   }, [state.isRetrying, clearError])
@@ -259,7 +259,7 @@ export function AsyncErrorDisplay({
   useEffect(() => {
     if (isRetrying && retryDelay > 0) {
       setCountdown(Math.ceil(retryDelay / 1000))
-      
+
       const interval = setInterval(() => {
         setCountdown(prev => Math.max(0, prev - 1))
       }, 1000)
@@ -326,8 +326,8 @@ export function AsyncErrorDisplay({
               <div className="flex items-start space-x-3 flex-1">
                 <motion.div
                   animate={{ rotate: isRetrying ? 360 : 0 }}
-                  transition={{ 
-                    duration: isRetrying ? 1 : 0, 
+                  transition={{
+                    duration: isRetrying ? 1 : 0,
                     repeat: isRetrying ? Infinity : 0,
                     ease: "linear"
                   }}
@@ -341,7 +341,7 @@ export function AsyncErrorDisplay({
                     }
                   )} />
                 </motion.div>
-                
+
                 <div className="flex-1 min-w-0">
                   <p className={cn(
                     "text-sm font-medium",
@@ -353,13 +353,13 @@ export function AsyncErrorDisplay({
                   )}>
                     {message}
                   </p>
-                  
+
                   {retryCount > 0 && (
                     <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                       Attempt {retryCount + 1} of {DEFAULT_RETRY_CONFIG.maxAttempts}
                     </p>
                   )}
-                  
+
                   {error?.context && (
                     <Badge variant="outline" className="mt-2 text-xs">
                       {error.context}
@@ -380,7 +380,7 @@ export function AsyncErrorDisplay({
                     Retry
                   </Button>
                 )}
-                
+
                 <Button
                   size="sm"
                   variant="ghost"
@@ -395,7 +395,7 @@ export function AsyncErrorDisplay({
             {/* Progress bar for retry countdown */}
             {isRetrying && countdown > 0 && (
               <div className="mt-3">
-                <Progress 
+                <Progress
                   value={((retryDelay / 1000 - countdown) / (retryDelay / 1000)) * 100}
                   className="h-1"
                 />

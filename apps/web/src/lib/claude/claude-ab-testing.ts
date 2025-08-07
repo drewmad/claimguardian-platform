@@ -71,7 +71,7 @@ class ClaudeABTestingFramework {
 
     // Use production monitor for consistent group assignment
     const group = claudeProductionMonitor.assignABTestGroup(sessionId)
-    
+
     const session: ABTestSession = {
       sessionId,
       userId,
@@ -196,12 +196,12 @@ class ClaudeABTestingFramework {
         taskType,
         error
       })
-      
+
       session.errorCount++
       throw error
     } finally {
       const executionTime = Date.now() - startTime
-      
+
       // Update session metrics
       session.taskCount++
       session.totalExecutionTime += executionTime
@@ -310,7 +310,7 @@ class ClaudeABTestingFramework {
     const statisticalAnalysis = this.performStatisticalAnalysis(controlSessions, treatmentSessions)
 
     // Business metrics
-    const performanceImprovement = controlMetrics.avgExecutionTime > 0 
+    const performanceImprovement = controlMetrics.avgExecutionTime > 0
       ? ((controlMetrics.avgExecutionTime - treatmentMetrics.avgExecutionTime) / controlMetrics.avgExecutionTime) * 100
       : 0
 
@@ -325,7 +325,7 @@ class ClaudeABTestingFramework {
 
     // Generate recommendation
     let recommendation: 'rollout' | 'continue_testing' | 'rollback' | 'inconclusive' = 'inconclusive'
-    
+
     if (!statisticalAnalysis.sampleSizeSufficient) {
       recommendation = 'continue_testing'
     } else if (statisticalAnalysis.statisticalSignificance >= 0.95 && performanceImprovement > 10) {
@@ -391,10 +391,10 @@ class ClaudeABTestingFramework {
     // Simplified statistical analysis - in production would use proper statistical tests
     const controlMean = this.average(controlSessions.map(s => s.totalExecutionTime / Math.max(s.taskCount, 1)))
     const treatmentMean = this.average(treatmentSessions.map(s => s.totalExecutionTime / Math.max(s.taskCount, 1)))
-    
+
     const pooledStdDev = this.calculatePooledStdDev(controlSessions, treatmentSessions)
     const effectSize = pooledStdDev > 0 ? Math.abs(controlMean - treatmentMean) / pooledStdDev : 0
-    
+
     // Simplified significance calculation
     const statisticalSignificance = Math.min(0.99, Math.max(0, (effectSize * minSampleSize) / 100))
     const pValue = 1 - statisticalSignificance
@@ -418,10 +418,10 @@ class ClaudeABTestingFramework {
   private calculatePooledStdDev(controlSessions: ABTestSession[], treatmentSessions: ABTestSession[]): number {
     const controlTimes = controlSessions.map(s => s.totalExecutionTime / Math.max(s.taskCount, 1))
     const treatmentTimes = treatmentSessions.map(s => s.totalExecutionTime / Math.max(s.taskCount, 1))
-    
+
     const allTimes = [...controlTimes, ...treatmentTimes]
     const mean = this.average(allTimes)
-    
+
     const variance = allTimes.reduce((sum, time) => sum + Math.pow(time - mean, 2), 0) / (allTimes.length - 1)
     return Math.sqrt(variance)
   }

@@ -239,10 +239,10 @@ export class DisasterRecoveryManager {
     const result = await asyncErrorHandler.executeWithFullResilience(
       async () => {
         const supabase = await createClient()
-        
+
         // Get list of tables to backup
         const tables = await this.getBackupTables(supabase)
-        
+
         // Create backup metadata
         const backupMetadata = {
           id: backupId,
@@ -359,7 +359,7 @@ export class DisasterRecoveryManager {
 
     // Verify tables exist
     const existingTables: string[] = []
-    
+
     for (const table of criticalTables) {
       try {
         const { error } = await supabase.from(table).select('1').limit(1)
@@ -385,7 +385,7 @@ export class DisasterRecoveryManager {
     for (const table of tables) {
       try {
         const { data, error } = await supabase.from(table).select('*')
-        
+
         if (error) {
           logger.warn(`Failed to backup table ${table}`, error)
           continue
@@ -393,10 +393,10 @@ export class DisasterRecoveryManager {
 
         backupData[table] = data || []
         totalSize += JSON.stringify(data).length
-        
-        logger.debug(`Backed up table ${table}`, { 
+
+        logger.debug(`Backed up table ${table}`, {
           records: data?.length || 0,
-          size: JSON.stringify(data).length 
+          size: JSON.stringify(data).length
         })
 
       } catch (error) {
@@ -406,7 +406,7 @@ export class DisasterRecoveryManager {
 
     // Store backup data (in production, this would go to S3, Google Cloud Storage, etc.)
     const location = await this.storeBackupData(backupId, backupData, 'full')
-    
+
     return { size: totalSize, location }
   }
 
@@ -444,7 +444,7 @@ export class DisasterRecoveryManager {
         if (data && data.length > 0) {
           backupData[table] = data
           totalSize += JSON.stringify(data).length
-          
+
           logger.debug(`Incremental backup of table ${table}`, {
             records: data.length,
             since,
@@ -458,14 +458,14 @@ export class DisasterRecoveryManager {
     }
 
     const location = await this.storeBackupData(backupId, backupData, 'incremental')
-    
+
     return { size: totalSize, location }
   }
 
   private async getTableTimeField(supabase: any, table: string): Promise<string | null> {
     // Common timestamp field names to check
     const timeFields = ['updated_at', 'created_at', 'modified_at', 'timestamp']
-    
+
     for (const field of timeFields) {
       try {
         const { error } = await supabase.from(table).select(field).limit(1)
@@ -476,7 +476,7 @@ export class DisasterRecoveryManager {
         // Continue to next field
       }
     }
-    
+
     return null
   }
 
@@ -500,7 +500,7 @@ export class DisasterRecoveryManager {
     // In production, this would upload to cloud storage
     // For now, we'll simulate the storage location
     const location = `backup://storage/${backupId}/${type}_backup.json`
-    
+
     logger.info(`Backup data stored`, {
       backupId,
       location,
@@ -534,10 +534,10 @@ export class DisasterRecoveryManager {
     // For now, simulate verification
     try {
       logger.debug(`Verifying backup at ${location}`, { expectedChecksum })
-      
+
       // Simulate verification process
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
       return true // Assume verification passes
     } catch (error) {
       logger.error('Backup verification failed', error)
@@ -580,7 +580,7 @@ export class DisasterRecoveryManager {
 
     try {
       const now = new Date()
-      
+
       // Calculate cutoff dates
       const dailyCutoff = new Date(now.getTime() - this.config.retention.daily * 24 * 60 * 60 * 1000)
       const weeklyCutoff = new Date(now.getTime() - this.config.retention.weekly * 7 * 24 * 60 * 60 * 1000)
@@ -629,7 +629,7 @@ export class DisasterRecoveryManager {
   }> {
     const startTime = Date.now()
     const plan = this.recoveryPlans.find(p => p.id === planId)
-    
+
     if (!plan) {
       throw new Error(`Recovery plan ${planId} not found`)
     }
@@ -675,12 +675,12 @@ export class DisasterRecoveryManager {
         } catch (stepError) {
           failedStep = step.id
           error = stepError instanceof Error ? stepError.message : 'Unknown error'
-          
+
           logger.error(`Recovery step failed: ${step.name}`, stepError, {
             stepId: step.id,
             planId
           })
-          
+
           break
         }
       }
@@ -708,7 +708,7 @@ export class DisasterRecoveryManager {
     } catch (planError) {
       const duration = Date.now() - startTime
       error = planError instanceof Error ? planError.message : 'Unknown error'
-      
+
       logger.error(`Disaster recovery plan failed`, planError, { planId })
 
       return {
@@ -724,20 +724,20 @@ export class DisasterRecoveryManager {
   private async executeAutomatedStep(step: RecoveryStep, parameters?: Record<string, unknown>): Promise<void> {
     // Implementation would depend on the specific step
     // This is a framework for automated recovery steps
-    
+
     switch (step.id) {
       case 'detect-failure':
         await this.detectSystemFailure()
         break
-      
+
       case 'failover-replica':
         await this.failoverToReplica(parameters)
         break
-      
+
       case 'update-connections':
         await this.updateConnectionStrings(parameters)
         break
-      
+
       default:
         logger.warn(`No automation implemented for step: ${step.id}`)
         // Simulate step execution
@@ -787,7 +787,7 @@ export class DisasterRecoveryManager {
   async getBackupHistory(limit: number = 50): Promise<BackupResult[]> {
     try {
       const supabase = await createClient()
-      
+
       const { data, error } = await supabase
         .from('backup_records')
         .select('*')

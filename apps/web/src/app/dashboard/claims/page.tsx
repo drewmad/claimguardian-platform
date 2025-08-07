@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   FileText, Plus, Clock, CheckCircle, AlertCircle, XCircle,
   DollarSign, Phone, Mail, Download, Upload,
   MessageSquare, Camera, TrendingUp, ChevronRight,
@@ -64,7 +64,7 @@ interface ClaimActivity {
 
 function ClaimsDashboardContent() {
   const router = useRouter()
-  
+
   // Mock data
   const [claims] = useState<Claim[]>([
     {
@@ -201,7 +201,7 @@ function ClaimsDashboardContent() {
               <h1 className="text-3xl font-bold text-white mb-2">Insurance Claims</h1>
               <p className="text-gray-400">Track and manage your insurance claims</p>
             </div>
-            <button 
+            <button
               className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
               onClick={() => router.push('/dashboard/claims/new')}
             >
@@ -222,7 +222,7 @@ function ClaimsDashboardContent() {
                 <p className="text-sm text-gray-400">Claims Filed</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -233,7 +233,7 @@ function ClaimsDashboardContent() {
                 <p className="text-sm text-gray-400">In Progress</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -244,7 +244,7 @@ function ClaimsDashboardContent() {
                 <p className="text-sm text-gray-400">Total Claimed</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -263,7 +263,7 @@ function ClaimsDashboardContent() {
             <div className="space-y-4">
               {claims.map((claim) => {
                 const StatusIcon = getStatusIcon(claim.status)
-                
+
                 return (
                   <Card key={claim.id} className="bg-gray-800 border-gray-700">
                     <CardContent className="p-6">
@@ -345,14 +345,14 @@ function ClaimsDashboardContent() {
 
                       <div className="flex items-center justify-between">
                         <div className="flex gap-4">
-                          <button 
+                          <button
                             onClick={() => router.push(`/dashboard/claims/${claim.id}/evidence`)}
                             className="flex items-center gap-2 text-sm text-gray-400 hover:text-white"
                           >
                             <FileText className="w-4 h-4" />
                             {claim.documents} Documents
                           </button>
-                          <button 
+                          <button
                             onClick={() => toast.info('Messages feature coming soon! You\'ll be able to communicate with your adjuster directly.')}
                             className="flex items-center gap-2 text-sm text-gray-400 hover:text-white"
                           >
@@ -360,7 +360,7 @@ function ClaimsDashboardContent() {
                             {claim.messages} Messages
                           </button>
                         </div>
-                        <button 
+                        <button
                           onClick={() => router.push(`/dashboard/claims/${claim.id}`)}
                           className="flex items-center gap-1 text-blue-400 hover:text-blue-300"
                         >
@@ -383,7 +383,7 @@ function ClaimsDashboardContent() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
-                  <button 
+                  <button
                     onClick={() => router.push('/ai-tools/damage-analyzer')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >
@@ -397,7 +397,7 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => toast.info('Document upload feature coming soon! You can upload documents when viewing individual claims.')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >
@@ -411,7 +411,7 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => toast.info('Export feature coming soon! You\'ll be able to download your claims history in PDF and CSV formats.')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >
@@ -425,7 +425,7 @@ function ClaimsDashboardContent() {
                     <ChevronRight className="w-5 h-5 text-gray-400" />
                   </button>
 
-                  <button 
+                  <button
                     onClick={() => router.push('/dashboard/insurance')}
                     className="w-full text-left p-4 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between"
                   >

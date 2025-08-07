@@ -37,9 +37,9 @@ async function verifySchema() {
     {
       name: 'Property Tables',
       query: `
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'public' 
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
         AND table_name LIKE 'property%'
         ORDER BY table_name
       `,
@@ -48,8 +48,8 @@ async function verifySchema() {
     {
       name: 'Enum Types',
       query: `
-        SELECT typname 
-        FROM pg_type 
+        SELECT typname
+        FROM pg_type
         WHERE typname IN ('property_type', 'occupancy_status', 'damage_severity', 'claim_status')
         ORDER BY typname
       `,
@@ -58,9 +58,9 @@ async function verifySchema() {
     {
       name: 'RLS Enabled',
       query: `
-        SELECT tablename 
-        FROM pg_tables 
-        WHERE schemaname = 'public' 
+        SELECT tablename
+        FROM pg_tables
+        WHERE schemaname = 'public'
         AND tablename LIKE 'property%'
         AND rowsecurity = true
         ORDER BY tablename
@@ -70,9 +70,9 @@ async function verifySchema() {
     {
       name: 'History Tables',
       query: `
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'public' 
+        SELECT table_name
+        FROM information_schema.tables
+        WHERE table_schema = 'public'
         AND table_name LIKE 'property%_history'
         ORDER BY table_name
       `,
@@ -81,7 +81,7 @@ async function verifySchema() {
   ];
 
   console.log('Running verification checks...\n');
-  
+
   let allPassed = true;
 
   for (const check of checks) {
@@ -101,9 +101,9 @@ async function verifySchema() {
   try {
     const url = new URL(SUPABASE_URL);
     const checkUrl = `${SUPABASE_URL}/rest/v1/properties?select=count&limit=1`;
-    
+
     console.log('🔍 Quick check for properties table...');
-    
+
     const response = await new Promise((resolve, reject) => {
       https.get(checkUrl, {
         headers: {
@@ -138,20 +138,20 @@ async function verifySchema() {
   console.log('Core Tables (8):');
   console.log('  • properties');
   console.log('  • property_land');
-  console.log('  • property_structures'); 
+  console.log('  • property_structures');
   console.log('  • property_systems');
   console.log('  • property_insurance');
   console.log('  • property_claims');
   console.log('  • property_damage');
   console.log('  • property_contractors\n');
-  
+
   console.log('History Tables (5):');
   console.log('  • properties_history');
   console.log('  • property_land_history');
   console.log('  • property_structures_history');
   console.log('  • property_insurance_history');
   console.log('  • property_claims_history\n');
-  
+
   console.log('Enum Types (4):');
   console.log('  • property_type');
   console.log('  • occupancy_status');

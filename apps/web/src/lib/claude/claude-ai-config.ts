@@ -7,10 +7,10 @@
  * @description Central configuration for LLM synthesis, semantic search, and AI features
  */
 
-import { 
-  LLMSynthesisConfig, 
-  AIModelConfig, 
-  AIFeatureFlags 
+import {
+  LLMSynthesisConfig,
+  AIModelConfig,
+  AIFeatureFlags
 } from './claude-ai-interfaces'
 
 /**
@@ -199,7 +199,7 @@ Consider:
 - Process optimizations
 - Knowledge gaps to address`
   },
-  
+
   naturalLanguage: {
     simplify: `Rewrite this technical pattern in {style} style:
 {pattern}
@@ -218,7 +218,7 @@ Maintain:
 - Context appropriateness
 - Cultural sensitivity`
   },
-  
+
   bottleneck: {
     analyze: `Analyze system performance data for bottlenecks:
 {metrics}
@@ -335,7 +335,7 @@ export const AI_SECURITY_CONFIG = {
  * HELPER FUNCTIONS
  */
 export function getActiveModel(capability: string): AIModelConfig | null {
-  return Object.values(AI_MODELS).find(model => 
+  return Object.values(AI_MODELS).find(model =>
     model.capabilities.includes(capability)
   ) || null
 }

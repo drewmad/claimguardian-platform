@@ -29,10 +29,10 @@ export function useRealtime<T = any>(
   const [lastEvent, setLastEvent] = useState<RealtimeEvent<T> | null>(null)
   const [eventCount, setEventCount] = useState(0)
   const [error, setError] = useState<Error | null>(null)
-  
+
   const subscriptionIdRef = useRef<string | null>(null)
   const realtimeManager = useRef(getRealtimeManager())
-  
+
   const { enabled = true, filter, onEvent, onError } = options
 
   useEffect(() => {
@@ -59,10 +59,10 @@ export function useRealtime<T = any>(
             }
           }
         )
-        
+
         subscriptionIdRef.current = subscriptionId
         logger.debug('Realtime subscription created', { table, subscriptionId })
-        
+
       } catch (err) {
         const error = err as Error
         setError(error)
@@ -116,17 +116,17 @@ export function useRealtimeTable<T extends { id: string }>(
   const [data, setData] = useState<T[]>(initialData)
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  
+
   const { filter, enabled = true, sortBy, sortOrder = 'desc' } = options
 
   // Sort data helper
   const sortData = useCallback((items: T[]) => {
     if (!sortBy) return items
-    
+
     return [...items].sort((a, b) => {
       const aVal = a[sortBy]
       const bVal = b[sortBy]
-      
+
       if (aVal < bVal) return sortOrder === 'asc' ? -1 : 1
       if (aVal > bVal) return sortOrder === 'asc' ? 1 : -1
       return 0
@@ -137,7 +137,7 @@ export function useRealtimeTable<T extends { id: string }>(
   const handleEvent = useCallback((event: RealtimeEvent<T>) => {
     setData(currentData => {
       let updatedData = [...currentData]
-      
+
       switch (event.type) {
         case 'INSERT':
           if (event.new) {
@@ -148,7 +148,7 @@ export function useRealtimeTable<T extends { id: string }>(
             }
           }
           break
-          
+
         case 'UPDATE':
           if (event.new) {
             const index = updatedData.findIndex(item => item.id === event.new.id)
@@ -160,14 +160,14 @@ export function useRealtimeTable<T extends { id: string }>(
             }
           }
           break
-          
+
         case 'DELETE':
           if (event.old) {
             updatedData = updatedData.filter(item => item.id !== event.old.id)
           }
           break
       }
-      
+
       return sortData(updatedData)
     })
   }, [sortData])
@@ -201,8 +201,8 @@ export function useRealtimeTable<T extends { id: string }>(
   }, [sortData])
 
   const updateItem = useCallback((id: string, updates: Partial<T>) => {
-    setData(currentData => 
-      sortData(currentData.map(item => 
+    setData(currentData =>
+      sortData(currentData.map(item =>
         item.id === id ? { ...item, ...updates } : item
       ))
     )
@@ -216,12 +216,12 @@ export function useRealtimeTable<T extends { id: string }>(
     // This would typically fetch fresh data from the server
     setIsLoading(true)
     setError(null)
-    
+
     try {
       // Placeholder for actual data fetching
       // In real implementation, this would call your API
       await new Promise(resolve => setTimeout(resolve, 1000))
-      
+
     } catch (err) {
       setError(err as Error)
     } finally {
@@ -254,10 +254,10 @@ export function usePresence(
   const [users, setUsers] = useState<Map<string, PresenceState>>(new Map())
   const [isConnected, setIsConnected] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  
+
   const subscriptionIdRef = useRef<string | null>(null)
   const realtimeManager = useRef(getRealtimeManager())
-  
+
   const { enabled = true, trackSelf = true } = options
 
   useEffect(() => {
@@ -266,7 +266,7 @@ export function usePresence(
     const setupPresence = async () => {
       try {
         setError(null)
-        
+
         // Subscribe to presence updates
         const subscriptionId = await realtimeManager.current.subscribeToPresence(
           channel,
@@ -275,16 +275,16 @@ export function usePresence(
             setIsConnected(true)
           }
         )
-        
+
         subscriptionIdRef.current = subscriptionId
-        
+
         // Track our own presence if enabled
         if (trackSelf && presenceState) {
           await realtimeManager.current.updatePresence(channel, presenceState)
         }
-        
+
         logger.debug('Presence subscription created', { channel, subscriptionId })
-        
+
       } catch (err) {
         const error = err as Error
         setError(error)
@@ -334,10 +334,10 @@ export function useBroadcast(
   const [messages, setMessages] = useState<BroadcastMessage[]>([])
   const [isConnected, setIsConnected] = useState(false)
   const [error, setError] = useState<Error | null>(null)
-  
+
   const subscriptionIdRef = useRef<string | null>(null)
   const realtimeManager = useRef(getRealtimeManager())
-  
+
   const { enabled = true, onMessage } = options
 
   useEffect(() => {
@@ -346,7 +346,7 @@ export function useBroadcast(
     const setupBroadcast = async () => {
       try {
         setError(null)
-        
+
         const subscriptionId = await realtimeManager.current.subscribeToBroadcast(
           channel,
           eventType,
@@ -356,10 +356,10 @@ export function useBroadcast(
             onMessage?.(message)
           }
         )
-        
+
         subscriptionIdRef.current = subscriptionId
         logger.debug('Broadcast subscription created', { channel, eventType, subscriptionId })
-        
+
       } catch (err) {
         const error = err as Error
         setError(error)
@@ -413,7 +413,7 @@ export function useRealtimeQuery<T = any>(
   const [isFetching, setIsFetching] = useState(false)
   const [error, setError] = useState<Error | null>(null)
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null)
-  
+
   const cacheManager = useRef(getCacheManager())
   const {
     enabled = true,
@@ -444,20 +444,20 @@ export function useRealtimeQuery<T = any>(
       // Fetch fresh data
       setIsLoading(true)
       const result = await queryFn()
-      
+
       // Cache the result
       await cacheManager.current.set(queryKey, result, { ttl: cacheTime })
-      
+
       setData(result)
       setLastUpdated(new Date())
       return result
-      
+
     } catch (err) {
       const error = err as Error
       setError(error)
       logger.error('Query failed', { queryKey }, error)
       throw error
-      
+
     } finally {
       setIsLoading(false)
       setIsFetching(false)
@@ -468,10 +468,10 @@ export function useRealtimeQuery<T = any>(
   const handleRealtimeEvent = useCallback(async (event: RealtimeEvent) => {
     if (invalidateOn.includes(event.type) || invalidateOn.includes('*')) {
       logger.debug('Invalidating query due to realtime event', { queryKey, event: event.type })
-      
+
       // Invalidate cache
       await cacheManager.current.delete(queryKey)
-      
+
       // Refetch data
       await fetchData(false)
     }
@@ -536,7 +536,7 @@ export function useRealtimeStatus() {
   useEffect(() => {
     const updateStatus = () => {
       const info = realtimeManager.current.getSubscriptionInfo()
-      
+
       setStatus({
         isConnected: info.subscriptions.some(sub => sub.status === 'connected'),
         subscriptionCount: info.subscriptions.length,

@@ -42,7 +42,7 @@ echo ""
 if [[ "$OSTYPE" == "darwin"* ]]; then
     echo -e "${BLUE}Alternative for macOS (using launchd):${NC}"
     echo ""
-    
+
     # Create plist file
     cat > ~/Library/LaunchAgents/com.claimguardian.monitoring.plist << EOF
 <?xml version="1.0" encoding="UTF-8"?>

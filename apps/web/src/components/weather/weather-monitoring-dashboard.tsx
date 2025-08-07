@@ -99,7 +99,7 @@ export function WeatherMonitoringDashboard({ propertyId }: { propertyId: string 
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [selectedTab, setSelectedTab] = useState('overview');
-  
+
   const supabase = createClientComponentClient();
 
   useEffect(() => {
@@ -122,10 +122,10 @@ export function WeatherMonitoringDashboard({ propertyId }: { propertyId: string 
 
       // Load weather data
       await loadWeatherData(property.latitude, property.longitude);
-      
+
       // Load FEMA data
       await loadFEMAData(property.county_fips);
-      
+
       // Load sync status
       await loadSyncStatus();
     } catch (error) {
@@ -489,26 +489,26 @@ export function WeatherMonitoringDashboard({ propertyId }: { propertyId: string 
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={weatherData.historicalTrends}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="hour" 
+                  <XAxis
+                    dataKey="hour"
                     tickFormatter={(value) => format(parseISO(value), 'HH:mm')}
                   />
                   <YAxis />
-                  <Tooltip 
+                  <Tooltip
                     labelFormatter={(value) => format(parseISO(value as string), 'MMM d, HH:mm')}
                   />
                   <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="temperature" 
-                    stroke="#ef4444" 
+                  <Line
+                    type="monotone"
+                    dataKey="temperature"
+                    stroke="#ef4444"
                     name="Temperature (°F)"
                     strokeWidth={2}
                   />
-                  <Line 
-                    type="monotone" 
-                    dataKey="humidity" 
-                    stroke="#3b82f6" 
+                  <Line
+                    type="monotone"
+                    dataKey="humidity"
+                    stroke="#3b82f6"
                     name="Humidity (%)"
                     strokeWidth={2}
                   />
@@ -526,28 +526,28 @@ export function WeatherMonitoringDashboard({ propertyId }: { propertyId: string 
               <ResponsiveContainer width="100%" height={300}>
                 <AreaChart data={weatherData.forecast}>
                   <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis 
-                    dataKey="time" 
+                  <XAxis
+                    dataKey="time"
                     tickFormatter={(value) => format(parseISO(value), 'MMM d, HH:mm')}
                   />
                   <YAxis />
-                  <Tooltip 
+                  <Tooltip
                     labelFormatter={(value) => format(parseISO(value as string), 'MMM d, HH:mm')}
                   />
                   <Legend />
-                  <Area 
-                    type="monotone" 
-                    dataKey="temperature" 
-                    stroke="#ef4444" 
-                    fill="#ef4444" 
+                  <Area
+                    type="monotone"
+                    dataKey="temperature"
+                    stroke="#ef4444"
+                    fill="#ef4444"
                     fillOpacity={0.3}
                     name="Temperature (°F)"
                   />
-                  <Area 
-                    type="monotone" 
-                    dataKey="precipProbability" 
-                    stroke="#3b82f6" 
-                    fill="#3b82f6" 
+                  <Area
+                    type="monotone"
+                    dataKey="precipProbability"
+                    stroke="#3b82f6"
+                    fill="#3b82f6"
                     fillOpacity={0.3}
                     name="Precip Chance (%)"
                   />

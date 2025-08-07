@@ -48,9 +48,9 @@ async function applyPropertySchema() {
 
     for (let i = 0; i < statements.length; i += batchSize) {
       const batch = statements.slice(i, Math.min(i + batchSize, statements.length));
-      
+
       console.log(`Executing batch ${Math.floor(i / batchSize) + 1} of ${Math.ceil(statements.length / batchSize)}...`);
-      
+
       for (const statement of batch) {
         try {
           // Skip comments and empty statements

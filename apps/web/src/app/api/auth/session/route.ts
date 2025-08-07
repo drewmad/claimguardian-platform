@@ -14,7 +14,7 @@ import { getServerSession } from '@/lib/supabase/server-auth'
 export async function GET() {
   try {
     const session = await getServerSession()
-    
+
     if (!session) {
       return NextResponse.json({
         authenticated: false,
@@ -22,7 +22,7 @@ export async function GET() {
         session: null
       })
     }
-    
+
     // Return session info without sensitive data
     return NextResponse.json({
       authenticated: true,
@@ -40,7 +40,7 @@ export async function GET() {
     })
   } catch (error) {
     logger.error('Session check error:', error)
-    
+
     return NextResponse.json({
       authenticated: false,
       user: null,

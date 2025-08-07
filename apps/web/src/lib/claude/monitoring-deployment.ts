@@ -71,11 +71,11 @@ class MonitoringDeployment {
       if (this.config.enabledFeatures.databaseHealth) {
         productionErrorMonitor.startHealthMonitoring(this.config.healthCheckInterval)
         deployedFeatures.push('Database Health Monitoring')
-        
+
         // Perform initial health check
         const initialHealth = await productionErrorMonitor.performDatabaseHealthCheck()
         const missingObjects = initialHealth.filter(check => !check.exists)
-        
+
         if (missingObjects.length > 0) {
           logger.warn('Initial health check found missing objects', {
             missing: missingObjects.map(obj => `${obj.objectType}:${obj.objectName}`)
@@ -127,7 +127,7 @@ class MonitoringDeployment {
 
     } catch (error) {
       logger.error('Failed to deploy monitoring system', {}, error instanceof Error ? error : new Error(String(error)))
-      
+
       return {
         success: false,
         message: `Deployment failed: ${error instanceof Error ? error.message : String(error)}`,
@@ -145,9 +145,9 @@ class MonitoringDeployment {
       try {
         // Get recent error patterns
         const patterns = await claudeErrorLogger.getErrorPatterns('day')
-        
+
         // Check for concerning patterns
-        const criticalPatterns = patterns.filter(pattern => 
+        const criticalPatterns = patterns.filter(pattern =>
           pattern.count >= this.config.alertThresholds.criticalErrors
         )
 
@@ -233,17 +233,17 @@ class MonitoringDeployment {
     systemStatus: string
   }> {
     const timestamp = new Date()
-    
+
     // Check database health
     const databaseHealth = await productionErrorMonitor.performDatabaseHealthCheck()
-    
+
     // Get recent error patterns
     const errorPatterns = await claudeErrorLogger.getErrorPatterns('day')
-    
+
     // Determine system status
     const missingObjects = databaseHealth.filter(check => !check.exists).length
     const criticalErrors = errorPatterns.filter(pattern => pattern.severity?.high > 0 || pattern.severity?.critical > 0).length
-    
+
     let systemStatus = 'healthy'
     if (missingObjects > 0 || criticalErrors > this.config.alertThresholds.criticalErrors) {
       systemStatus = 'warning'
@@ -278,7 +278,7 @@ export const monitoringDeployment = new MonitoringDeployment()
  */
 export async function deployProductionMonitoring(): Promise<void> {
   const result = await monitoringDeployment.deploy()
-  
+
   if (result.success) {
     console.log(`✅ ${result.message}`)
     console.log('📊 Deployed Features:')
@@ -294,7 +294,7 @@ export async function deployProductionMonitoring(): Promise<void> {
  */
 export function getMonitoringStatus(): void {
   const status = monitoringDeployment.getStatus()
-  
+
   console.log('📊 Production Monitoring Status:')
   console.log(`  Status: ${status.deployed ? '✅ ACTIVE' : '❌ NOT DEPLOYED'}`)
   console.log(`  Uptime: ${status.uptime}`)

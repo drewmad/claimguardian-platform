@@ -92,17 +92,17 @@ class ClaudeEnhancedAutomation {
       if (rule.confidence >= 0.85 && rule.successRate >= 0.80) {
         appliedOptimizations.push(rule)
         this.activeOptimizations.add(rule.id)
-        
+
         // Update rule statistics
         rule.timesApplied++
         this.optimizationRules.set(rule.id, rule)
-        
-        logger.info('Auto-applied optimization rule', { 
-          ruleId: rule.id, 
+
+        logger.info('Auto-applied optimization rule', {
+          ruleId: rule.id,
           confidence: rule.confidence,
           successRate: rule.successRate
         })
-      } 
+      }
       // Suggest medium-confidence rules
       else if (rule.confidence >= 0.70 && rule.successRate >= 0.65) {
         suggestedOptimizations.push(rule)
@@ -124,8 +124,8 @@ class ClaudeEnhancedAutomation {
     // Load rules from learning system and create new ones based on patterns
     const existingRules = Array.from(this.optimizationRules.values())
     const newRules = await this.generateOptimizationRules(taskContext)
-    
-    return [...existingRules, ...newRules].filter(rule => 
+
+    return [...existingRules, ...newRules].filter(rule =>
       (taskContext.taskType && rule.applicableTaskTypes.includes(taskContext.taskType)) ||
       rule.applicableTaskTypes.includes('all')
     )
@@ -136,7 +136,7 @@ class ClaudeEnhancedAutomation {
 
     // Generate rules based on historical success patterns
     const historicalData = await completeLearningSystem.getLearningStats()
-    
+
     // Tool usage optimization rules
     if (taskContext.taskType === 'file-modification') {
       rules.push({
@@ -187,7 +187,7 @@ class ClaudeEnhancedAutomation {
     logger.info('Generating proactive suggestions', { taskContext })
 
     const suggestions: ProactiveSuggestion[] = []
-    
+
     // Get prediction model for the task
     const prediction = await claudeAdvancedAnalytics.predictTaskSuccess(
       taskContext.complexity,
@@ -218,7 +218,7 @@ class ClaudeEnhancedAutomation {
     }
 
     // Tool efficiency suggestions
-    const relevantBottlenecks = bottleneckAnalysis.bottlenecks.filter(b => 
+    const relevantBottlenecks = bottleneckAnalysis.bottlenecks.filter(b =>
       b.category === 'tool-usage' && b.priority === 'high'
     )
 
@@ -330,7 +330,7 @@ class ClaudeEnhancedAutomation {
 
   private selectOptimalTools(taskContext: TaskContext, prediction: PredictionModel): string[] {
     const baseTools = ['Read', 'Edit']
-    
+
     // Add tools based on task type
     switch (taskContext.taskType) {
       case 'code-generation':
@@ -350,31 +350,31 @@ class ClaudeEnhancedAutomation {
 
   private generateFallbackOptions(taskContext: TaskContext): string[] {
     const fallbacks = []
-    
+
     if (taskContext.complexity === 'complex') {
       fallbacks.push('Break into smaller subtasks')
       fallbacks.push('Use incremental approach with validation')
     }
-    
+
     if (taskContext.taskType === 'code-generation') {
       fallbacks.push('Start with minimal implementation and iterate')
       fallbacks.push('Use existing component patterns as template')
     }
-    
+
     fallbacks.push('Apply systematic debugging if issues arise')
     fallbacks.push('Request clarification if requirements are unclear')
-    
+
     return fallbacks
   }
 
   private identifyContextFactors(taskContext: TaskContext): string[] {
     const factors = []
-    
+
     if (taskContext.framework) factors.push(`Framework: ${taskContext.framework}`)
     if (taskContext.codeLanguage) factors.push(`Language: ${taskContext.codeLanguage}`)
     if (taskContext.filePath) factors.push(`File context available`)
     if (taskContext.constraints) factors.push(`Constraints: ${Object.keys(taskContext.constraints).join(', ')}`)
-    
+
     return factors
   }
 
@@ -390,19 +390,19 @@ class ClaudeEnhancedAutomation {
 
     const batchResults = []
     const accumulatedLearnings: string[] = []
-    
+
     // Process tasks with accumulated learning
     for (let i = 0; i < tasks.length; i++) {
       const task = tasks[i]
       const taskStart = Date.now()
-      
+
       // Apply learnings from previous tasks in batch
       const priorLearnings = accumulatedLearnings.slice()
-      
+
       try {
         // Simulate task execution with batch learning
         const result = await this.executeTaskWithBatchLearning(task, priorLearnings)
-        
+
         const executionTime = Date.now() - taskStart
         batchResults.push({
           id: task.id,
@@ -412,10 +412,10 @@ class ClaudeEnhancedAutomation {
           toolsUsed: result.toolsUsed,
           learningsExtracted: result.learningsExtracted
         })
-        
+
         // Accumulate learnings for next tasks
         accumulatedLearnings.push(...result.learningsExtracted)
-        
+
       } catch (error) {
         const executionTime = Date.now() - taskStart
         batchResults.push({
@@ -445,7 +445,7 @@ class ClaudeEnhancedAutomation {
     }
 
     this.batchSessions.set(sessionId, session)
-    
+
     // Update global learning patterns
     await this.updateGlobalLearningsFromBatch(session)
 
@@ -477,10 +477,10 @@ class ClaudeEnhancedAutomation {
 
   private consolidateBatchLearnings(batchResults: BatchLearningSession['tasks']): string[] {
     const allLearnings = batchResults.flatMap(task => task.learningsExtracted)
-    
+
     // Group similar learnings and identify common patterns
     const learningGroups = new Map<string, string[]>()
-    
+
     for (const learning of allLearnings) {
       const category = this.categorizeLearning(learning)
       if (!learningGroups.has(category)) {
@@ -512,7 +512,7 @@ class ClaudeEnhancedAutomation {
 
   private identifyBatchPatterns(batchResults: BatchLearningSession['tasks']): string[] {
     const patterns: string[] = []
-    
+
     // Analyze success/failure patterns
     const successRate = batchResults.filter(task => task.result === 'success').length / batchResults.length
     if (successRate > 0.8) {
@@ -536,7 +536,7 @@ class ClaudeEnhancedAutomation {
     const executionTimes = batchResults.map(task => task.executionTime)
     const avgTime = executionTimes.reduce((a, b) => a + b, 0) / executionTimes.length
     const isImproving = executionTimes.slice(-3).every((time, i, arr) => i === 0 || time <= arr[i - 1])
-    
+
     if (isImproving) {
       patterns.push(`Execution time improving throughout batch (avg: ${avgTime.toFixed(0)}ms)`)
     }
@@ -546,18 +546,18 @@ class ClaudeEnhancedAutomation {
 
   private findBatchOptimizations(batchResults: BatchLearningSession['tasks']): string[] {
     const optimizations: string[] = []
-    
+
     // Find tool sequence optimizations
     const toolSequences = batchResults.map(task => task.toolsUsed.join(' -> '))
     const sequenceFrequency = new Map<string, number>()
-    
+
     toolSequences.forEach(sequence => {
       sequenceFrequency.set(sequence, (sequenceFrequency.get(sequence) || 0) + 1)
     })
 
     const mostCommonSequence = Array.from(sequenceFrequency.entries())
       .sort((a, b) => b[1] - a[1])[0]
-    
+
     if (mostCommonSequence && mostCommonSequence[1] > 1) {
       optimizations.push(`Optimal tool sequence identified: ${mostCommonSequence[0]}`)
     }
@@ -602,7 +602,7 @@ class ClaudeEnhancedAutomation {
       }
     }
 
-    logger.info('Updated global learnings from batch session', { 
+    logger.info('Updated global learnings from batch session', {
       sessionId: session.id,
       newRules: session.optimizationsFound.length
     })

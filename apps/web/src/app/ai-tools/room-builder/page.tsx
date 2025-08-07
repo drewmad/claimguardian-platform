@@ -128,7 +128,7 @@ export default function RoomBuilderPage() {
     showGrid: true,
     unit: 'ft'
   })
-  
+
   const [selectedObject, setSelectedObject] = useState<RoomObject | null>(null)
   const [selectedTool, setSelectedTool] = useState<'select' | 'wall' | 'door' | 'window'>('select')
   const [isDragging, setIsDragging] = useState(false)
@@ -153,7 +153,7 @@ export default function RoomBuilderPage() {
   const drawRoom = () => {
     const canvas = canvasRef.current
     if (!canvas) return
-    
+
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
@@ -210,7 +210,7 @@ export default function RoomBuilderPage() {
     if (showDimensions) {
       ctx.fillStyle = '#9CA3AF'
       ctx.font = '12px sans-serif'
-      
+
       // Room dimensions
       ctx.fillText(
         `${currentRoom.width}${currentRoom.unit}`,
@@ -230,7 +230,7 @@ export default function RoomBuilderPage() {
 
   const drawObject = (ctx: CanvasRenderingContext2D, obj: RoomObject) => {
     ctx.save()
-    
+
     // Apply rotation
     if (obj.rotation) {
       ctx.translate(
@@ -250,7 +250,7 @@ export default function RoomBuilderPage() {
         ctx.fillStyle = '#4B5563'
         ctx.fillRect(toPixels(obj.x), toPixels(obj.y), toPixels(obj.width), toPixels(obj.height))
         break
-        
+
       case 'door':
         ctx.strokeStyle = '#A78BFA'
         ctx.lineWidth = 3
@@ -260,13 +260,13 @@ export default function RoomBuilderPage() {
         ctx.arc(toPixels(obj.x), toPixels(obj.y), toPixels(obj.width), 0, Math.PI / 2)
         ctx.stroke()
         break
-        
+
       case 'window':
         ctx.strokeStyle = '#60A5FA'
         ctx.lineWidth = 4
         ctx.strokeRect(toPixels(obj.x), toPixels(obj.y), toPixels(obj.width), toPixels(obj.height))
         break
-        
+
       case 'furniture':
       case 'fixture':
       case 'appliance':
@@ -275,7 +275,7 @@ export default function RoomBuilderPage() {
         ctx.strokeStyle = '#374151'
         ctx.lineWidth = 1
         ctx.strokeRect(toPixels(obj.x), toPixels(obj.y), toPixels(obj.width), toPixels(obj.height))
-        
+
         // Draw label
         if (obj.label) {
           ctx.fillStyle = '#E5E7EB'
@@ -290,7 +290,7 @@ export default function RoomBuilderPage() {
         }
         break
     }
-    
+
     ctx.restore()
   }
 
@@ -306,12 +306,12 @@ export default function RoomBuilderPage() {
       const clickedObject = currentRoom.objects
         .slice()
         .reverse()
-        .find(obj => 
+        .find(obj =>
           x >= obj.x && x <= obj.x + obj.width &&
           y >= obj.y && y <= obj.y + obj.height &&
           obj.visible !== false
         )
-      
+
       setSelectedObject(clickedObject || null)
     } else {
       // Add new object
@@ -327,7 +327,7 @@ export default function RoomBuilderPage() {
         zIndex: currentRoom.objects.length,
         visible: true
       }
-      
+
       setCurrentRoom({
         ...currentRoom,
         objects: [...currentRoom.objects, newObject]
@@ -356,13 +356,13 @@ export default function RoomBuilderPage() {
       if (rect) {
         const newX = snapToGrid(fromPixels(e.clientX - rect.left) - dragStart.x)
         const newY = snapToGrid(fromPixels(e.clientY - rect.top) - dragStart.y)
-        
+
         const updatedObjects = currentRoom.objects.map(obj =>
           obj.id === selectedObject.id
             ? { ...obj, x: newX, y: newY }
             : obj
         )
-        
+
         setCurrentRoom({ ...currentRoom, objects: updatedObjects })
         setSelectedObject({ ...selectedObject, x: newX, y: newY })
       }
@@ -388,7 +388,7 @@ export default function RoomBuilderPage() {
       zIndex: currentRoom.objects.length,
       visible: true
     }
-    
+
     setCurrentRoom({
       ...currentRoom,
       objects: [...currentRoom.objects, newObject]
@@ -398,7 +398,7 @@ export default function RoomBuilderPage() {
 
   const duplicateObject = () => {
     if (!selectedObject) return
-    
+
     const newObject: RoomObject = {
       ...selectedObject,
       id: Date.now().toString(),
@@ -406,7 +406,7 @@ export default function RoomBuilderPage() {
       y: selectedObject.y + 1,
       zIndex: currentRoom.objects.length
     }
-    
+
     setCurrentRoom({
       ...currentRoom,
       objects: [...currentRoom.objects, newObject]
@@ -416,7 +416,7 @@ export default function RoomBuilderPage() {
 
   const deleteObject = () => {
     if (!selectedObject) return
-    
+
     setCurrentRoom({
       ...currentRoom,
       objects: currentRoom.objects.filter(obj => obj.id !== selectedObject.id)
@@ -426,23 +426,23 @@ export default function RoomBuilderPage() {
 
   const moveLayer = (direction: 'up' | 'down') => {
     if (!selectedObject) return
-    
+
     const currentIndex = currentRoom.objects.findIndex(obj => obj.id === selectedObject.id)
     const newIndex = direction === 'up' ? currentIndex + 1 : currentIndex - 1
-    
+
     if (newIndex < 0 || newIndex >= currentRoom.objects.length) return
-    
+
     const updatedObjects = [...currentRoom.objects]
     const temp = updatedObjects[currentIndex].zIndex
     updatedObjects[currentIndex].zIndex = updatedObjects[newIndex].zIndex
     updatedObjects[newIndex].zIndex = temp
-    
+
     setCurrentRoom({ ...currentRoom, objects: updatedObjects })
   }
 
   const generateAISuggestions = () => {
     toast.success('AI is analyzing your room layout...')
-    
+
     // Simulate AI suggestions
     setTimeout(() => {
       const suggestions = [
@@ -451,7 +451,7 @@ export default function RoomBuilderPage() {
         'Add storage solutions near the entrance',
         'Window placement allows for good natural lighting'
       ]
-      
+
       suggestions.forEach((suggestion, index) => {
         setTimeout(() => {
           toast(suggestion, {
@@ -470,7 +470,7 @@ export default function RoomBuilderPage() {
     a.href = url
     a.download = `${currentRoom.name.toLowerCase().replace(/\s+/g, '-')}-${Date.now()}.json`
     a.click()
-    
+
     toast.success('Room design exported!')
   }
 
@@ -481,8 +481,8 @@ export default function RoomBuilderPage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -541,9 +541,9 @@ export default function RoomBuilderPage() {
                         >
                           <Grid3x3 className="h-4 w-4" />
                         </Button>
-                        
+
                         <div className="w-px h-6 bg-gray-600 mx-2" />
-                        
+
                         {selectedObject && (
                           <>
                             <Button
@@ -581,7 +581,7 @@ export default function RoomBuilderPage() {
                           </>
                         )}
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <Button
                           variant="outline"
@@ -635,7 +635,7 @@ export default function RoomBuilderPage() {
                       onMouseUp={handleMouseUp}
                       onMouseLeave={handleMouseUp}
                     />
-                    
+
                     {/* Zoom Control */}
                     <div className="mt-4 flex items-center gap-3">
                       <Label className="text-sm text-gray-400">Zoom:</Label>
@@ -729,15 +729,15 @@ export default function RoomBuilderPage() {
                           />
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-3 mt-3">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={() => {
                             const updatedObjects = currentRoom.objects.map(obj =>
-                              obj.id === selectedObject.id 
-                                ? { ...obj, rotation: (obj.rotation + 90) % 360 } 
+                              obj.id === selectedObject.id
+                                ? { ...obj, rotation: (obj.rotation + 90) % 360 }
                                 : obj
                             )
                             setCurrentRoom({ ...currentRoom, objects: updatedObjects })
@@ -753,8 +753,8 @@ export default function RoomBuilderPage() {
                           size="sm"
                           onClick={() => {
                             const updatedObjects = currentRoom.objects.map(obj =>
-                              obj.id === selectedObject.id 
-                                ? { ...obj, locked: !obj.locked } 
+                              obj.id === selectedObject.id
+                                ? { ...obj, locked: !obj.locked }
                                 : obj
                             )
                             setCurrentRoom({ ...currentRoom, objects: updatedObjects })
@@ -773,8 +773,8 @@ export default function RoomBuilderPage() {
                           size="sm"
                           onClick={() => {
                             const updatedObjects = currentRoom.objects.map(obj =>
-                              obj.id === selectedObject.id 
-                                ? { ...obj, visible: !obj.visible } 
+                              obj.id === selectedObject.id
+                                ? { ...obj, visible: !obj.visible }
                                 : obj
                             )
                             setCurrentRoom({ ...currentRoom, objects: updatedObjects })
@@ -926,7 +926,7 @@ export default function RoomBuilderPage() {
                           )
                         })}
                       </TabsList>
-                      
+
                       {FURNITURE_LIBRARY.map((category) => (
                         <TabsContent key={category.category} value={category.category} className="mt-3 space-y-1">
                           {category.items.map((item) => (

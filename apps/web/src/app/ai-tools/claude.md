@@ -19,7 +19,7 @@ ClaimGuardian's AI tools provide property owners with AI-powered assistance for 
 3. **Settlement Analyzer** (`/settlement-analyzer/`) - Offer analysis
 4. **Evidence Organizer** (`/evidence-organizer/`) - Auto-categorization
 
-### Advanced Tools  
+### Advanced Tools
 1. **AR Damage Documenter** (`/ar-damage-documenter/`) - AR-enhanced documentation
 2. **Guided Property Inspection** (`/guided-property-inspection/`) - Step-by-step inspection
 3. **Material Finish Analyzer** (`/material-finish-analyzer/`) - Surface analysis
@@ -57,8 +57,8 @@ interface EnhancedDamageAnalyzerProps {
 ```typescript
 const [selectedAIModel, setSelectedAIModel] = useState<'gpt4-vision' | 'gemini-vision'>('gpt4-vision')
 
-<Select 
-  value={selectedAIModel} 
+<Select
+  value={selectedAIModel}
   onValueChange={(value: 'gpt4-vision' | 'gemini-vision') => setSelectedAIModel(value)}
 >
   <SelectContent>
@@ -114,7 +114,7 @@ const handleCameraCapture = async (file: File) => {
 ### Import Fixes for Lucide React
 ```typescript
 // ✅ Always import from package root
-import { 
+import {
   Camera, Upload, Brain, Target,
   // ... other icons
 } from 'lucide-react'

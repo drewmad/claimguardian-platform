@@ -75,11 +75,11 @@ export default function MaterialFinishAnalyzerPage() {
   const [selectedAnalysis, setSelectedAnalysis] = useState<MaterialAnalysis | null>(null)
   const [selectedRoom, setSelectedRoom] = useState('all')
   const [selectedSurface, setSelectedSurface] = useState('all')
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   const rooms = [
-    'Kitchen', 'Bathroom', 'Living Room', 'Bedroom', 
+    'Kitchen', 'Bathroom', 'Living Room', 'Bedroom',
     'Dining Room', 'Office', 'Garage', 'Exterior'
   ]
 
@@ -94,14 +94,14 @@ export default function MaterialFinishAnalyzerPage() {
 
   const handleImageCapture = async (file: File) => {
     setIsAnalyzing(true)
-    
+
     // Convert file to data URL for preview
     const reader = new FileReader()
     reader.onload = (e) => {
       setCurrentImage(e.target?.result as string)
     }
     reader.readAsDataURL(file)
-    
+
     // Simulate AI analysis
     setTimeout(() => {
       const mockAnalysis: MaterialAnalysis = {
@@ -157,7 +157,7 @@ export default function MaterialFinishAnalyzerPage() {
           ]
         }
       }
-      
+
       setAnalyses([mockAnalysis, ...analyses])
       setSelectedAnalysis(mockAnalysis)
       setIsAnalyzing(false)
@@ -186,14 +186,14 @@ export default function MaterialFinishAnalyzerPage() {
         preventive: analyses.filter(a => a.condition.rating === 'good' || a.condition.rating === 'excellent').length
       }
     }
-    
+
     const blob = new Blob([JSON.stringify(report, null, 2)], { type: 'application/json' })
     const url = URL.createObjectURL(blob)
     const a = document.createElement('a')
     a.href = url
     a.download = `material-analysis-report-${Date.now()}.json`
     a.click()
-    
+
     toast.success('Report generated successfully!')
   }
 
@@ -204,8 +204,8 @@ export default function MaterialFinishAnalyzerPage() {
           <div className="max-w-7xl mx-auto space-y-6">
             {/* Header */}
             <div className="mb-8">
-              <Link 
-                href="/ai-tools" 
+              <Link
+                href="/ai-tools"
                 className="text-blue-400 hover:text-blue-300 text-sm mb-4 inline-block"
               >
                 ← Back to AI Tools
@@ -253,7 +253,7 @@ export default function MaterialFinishAnalyzerPage() {
                             <span className="text-xs text-gray-400">JPG, PNG up to 10MB</span>
                           </button>
                         </div>
-                        
+
                         <Alert className="bg-blue-900/20 border-blue-600/30">
                           <Info className="h-4 w-4 text-blue-400" />
                           <AlertDescription className="text-blue-200">
@@ -265,9 +265,9 @@ export default function MaterialFinishAnalyzerPage() {
                       <div className="space-y-4">
                         {isAnalyzing ? (
                           <div className="relative">
-                            <img 
-                              src={currentImage} 
-                              alt="Material" 
+                            <img
+                              src={currentImage}
+                              alt="Material"
                               className="w-full rounded-lg opacity-50"
                             />
                             <div className="absolute inset-0 flex flex-col items-center justify-center">
@@ -282,9 +282,9 @@ export default function MaterialFinishAnalyzerPage() {
                         ) : selectedAnalysis ? (
                           <div className="space-y-6">
                             <div className="relative">
-                              <img 
-                                src={currentImage} 
-                                alt="Material" 
+                              <img
+                                src={currentImage}
+                                alt="Material"
                                 className="w-full rounded-lg"
                               />
                               <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-sm rounded-lg px-3 py-1">
@@ -341,7 +341,7 @@ export default function MaterialFinishAnalyzerPage() {
                         ) : null}
                       </div>
                     )}
-                    
+
                     <input
                       ref={fileInputRef}
                       type="file"
@@ -358,8 +358,8 @@ export default function MaterialFinishAnalyzerPage() {
                     <CardHeader>
                       <div className="flex items-center justify-between">
                         <CardTitle className="text-white">Recent Analyses</CardTitle>
-                        <Button 
-                          variant="outline" 
+                        <Button
+                          variant="outline"
                           size="sm"
                           onClick={generateReport}
                           className="bg-gray-700 hover:bg-gray-600 border-gray-600"
@@ -380,8 +380,8 @@ export default function MaterialFinishAnalyzerPage() {
                             <div className="flex items-center justify-between">
                               <div className="flex items-center gap-4">
                                 <div className="w-16 h-16 bg-gray-600 rounded-lg overflow-hidden">
-                                  <img 
-                                    src={analysis.imageUrl} 
+                                  <img
+                                    src={analysis.imageUrl}
                                     alt={analysis.material.type}
                                     className="w-full h-full object-cover"
                                   />
@@ -427,7 +427,7 @@ export default function MaterialFinishAnalyzerPage() {
                         </div>
                         <Progress value={analyses.length * 10} className="h-2" />
                       </div>
-                      
+
                       <div className="pt-2 space-y-3">
                         <div className="flex items-center justify-between">
                           <span className="text-sm text-gray-400">Total Value</span>
@@ -501,7 +501,7 @@ export default function MaterialFinishAnalyzerPage() {
             </div>
           </div>
         </div>
-        
+
         {/* Camera Capture Modal */}
         {showCameraCapture && (
           <CameraCapture

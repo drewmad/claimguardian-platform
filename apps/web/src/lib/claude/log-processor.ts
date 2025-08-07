@@ -115,7 +115,7 @@ export async function processErrorLogs(logEntries: RawLogEntry[]): Promise<{
     }
 
     results.processed = logEntries.length
-    
+
     logger.info('Error log processing completed', results)
     return results
 
@@ -169,7 +169,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
     {
       event_message: "GET | 404 | 71.79.56.135",
       id: "82ebdb6b-daa8-44cd-b16a-15cdb3a2226d",
-      identifier: "tmlrvecuwgppbaynesji", 
+      identifier: "tmlrvecuwgppbaynesji",
       method: "GET",
       path: "/rest/v1/policy_documents_extended",
       search: "?select=*&user_id=eq.950dc54e-52a0-436a-a30b-15ebd2ecaeb3&extraction_status=eq.completed&order=created_at.desc",
@@ -180,7 +180,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
       event_message: "GET | 404 | 71.79.56.135",
       id: "4945905a-d3b7-435f-8ac1-159367028375",
       identifier: "tmlrvecuwgppbaynesji",
-      method: "GET", 
+      method: "GET",
       path: "/rest/v1/learnings",
       search: "?select=category_id%2Cseverity%2Ccreated_at&created_at=gte.2025-07-29T09%3A04%3A26.535Z",
       status_code: 404,
@@ -191,7 +191,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
       id: "9f083bdb-e062-4c1d-8b08-76f247948103",
       identifier: "tmlrvecuwgppbaynesji",
       method: "POST",
-      path: "/rest/v1/rpc/search_learnings", 
+      path: "/rest/v1/rpc/search_learnings",
       search: undefined,
       status_code: 404,
       timestamp: 1754384663684000
@@ -199,7 +199,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
   ]
 
   const results = await processErrorLogs(sampleLogs)
-  
+
   console.log('ClaimGuardian Error Log Processing Results:', {
     ...results,
     message: 'Error patterns have been integrated into Claude Learning System'
@@ -212,7 +212,7 @@ export async function processClaimGuardianErrorLogs(): Promise<void> {
 export function startErrorLogMonitoring(): void {
   // Start health monitoring every hour
   productionErrorMonitor.startHealthMonitoring(60)
-  
+
   logger.info('Error log monitoring started', {
     healthCheckInterval: '60 minutes',
     features: ['database-health', 'error-pattern-analysis', 'learning-integration']
@@ -220,7 +220,7 @@ export function startErrorLogMonitoring(): void {
 }
 
 /**
- * Stop automated error log monitoring  
+ * Stop automated error log monitoring
  */
 export function stopErrorLogMonitoring(): void {
   productionErrorMonitor.stopHealthMonitoring()

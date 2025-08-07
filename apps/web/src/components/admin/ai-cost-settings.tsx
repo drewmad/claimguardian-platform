@@ -15,10 +15,10 @@ import { Switch } from '@/components/ui/switch'
 import { Textarea } from '@/components/ui/textarea'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  DollarSign, 
-  Settings, 
-  Users, 
+import {
+  DollarSign,
+  Settings,
+  Users,
   Zap,
   AlertCircle,
   Save,
@@ -362,7 +362,7 @@ export function AICostSettings() {
                 </div>
               </div>
 
-              <Button 
+              <Button
                 onClick={createTool}
                 disabled={saving || !newTool.name || !newTool.displayName}
                 className="flex items-center gap-2"
@@ -420,7 +420,7 @@ export function AICostSettings() {
                           <Input
                             value={tool.displayName}
                             onChange={(e) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, displayName: e.target.value } : t
                               )
                               setTools(updated)
@@ -433,7 +433,7 @@ export function AICostSettings() {
                           <Input
                             value={tool.modelName}
                             onChange={(e) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, modelName: e.target.value } : t
                               )
                               setTools(updated)
@@ -451,7 +451,7 @@ export function AICostSettings() {
                             step="0.00000001"
                             value={tool.costPerInputToken}
                             onChange={(e) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, costPerInputToken: parseFloat(e.target.value) } : t
                               )
                               setTools(updated)
@@ -466,7 +466,7 @@ export function AICostSettings() {
                             step="0.00000001"
                             value={tool.costPerOutputToken}
                             onChange={(e) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, costPerOutputToken: parseFloat(e.target.value) } : t
                               )
                               setTools(updated)
@@ -481,7 +481,7 @@ export function AICostSettings() {
                           <Switch
                             checked={tool.isActive}
                             onCheckedChange={(checked) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, isActive: checked } : t
                               )
                               setTools(updated)
@@ -494,7 +494,7 @@ export function AICostSettings() {
                           <Switch
                             checked={tool.supportsImages}
                             onCheckedChange={(checked) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, supportsImages: checked } : t
                               )
                               setTools(updated)
@@ -507,7 +507,7 @@ export function AICostSettings() {
                           <Switch
                             checked={tool.supportsAudio}
                             onCheckedChange={(checked) => {
-                              const updated = tools.map(t => 
+                              const updated = tools.map(t =>
                                 t.id === tool.id ? { ...t, supportsAudio: checked } : t
                               )
                               setTools(updated)
@@ -517,7 +517,7 @@ export function AICostSettings() {
                         </div>
                       </div>
 
-                      <Button 
+                      <Button
                         onClick={() => saveTool(tool)}
                         disabled={saving}
                         className="flex items-center gap-2"

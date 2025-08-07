@@ -10,34 +10,34 @@
 		/* App Files */
 		1A2B3C4D5E6F7G8H9I0J1K2L /* ClaimGuardianApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3M /* ClaimGuardianApp.swift */; };
 		1A2B3C4D5E6F7G8H9I0J1K2M /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3N /* ContentView.swift */; };
-		
+
 		/* Core Data */
 		1A2B3C4D5E6F7G8H9I0J1K2N /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3O /* CoreDataStack.swift */; };
 		1A2B3C4D5E6F7G8H9I0J1K2O /* ClaimGuardian.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3P /* ClaimGuardian.xcdatamodeld */; };
-		
+
 		/* Network */
 		1A2B3C4D5E6F7G8H9I0J1K2P /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3Q /* SupabaseService.swift */; };
-		
+
 		/* Camera & AR */
 		1A2B3C4D5E6F7G8H9I0J1K2Q /* CameraController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3R /* CameraController.swift */; };
 		1A2B3C4D5E6F7G8H9I0J1K2R /* ARMeasurementController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3S /* ARMeasurementController.swift */; };
 		1A2B3C4D5E6F7G8H9I0J1K2S /* ARMeasurementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3T /* ARMeasurementView.swift */; };
-		
+
 		/* AI Services */
 		1A2B3C4D5E6F7G8H9I0J1K2T /* AIAnalysisService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3U /* AIAnalysisService.swift */; };
-		
+
 		/* Assets */
 		1A2B3C4D5E6F7G8H9I0J1K2U /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3V /* Assets.xcassets */; };
-		
+
 		/* CloudKit */
 		1A2B3C4D5E6F7G8H9I0J1K2V /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3W /* CloudKit.framework */; };
-		
+
 		/* ARKit */
 		1A2B3C4D5E6F7G8H9I0J1K2W /* ARKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3X /* ARKit.framework */; };
-		
+
 		/* Vision */
 		1A2B3C4D5E6F7G8H9I0J1K2X /* Vision.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B3C4D5E6F7G8H9I0J1K2L3Y /* Vision.framework */; };
-		
+
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */

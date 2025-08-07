@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Radio,
   Wifi,
   WifiOff,
@@ -126,7 +126,7 @@ export function RealtimeDashboard({
 
       // Subscribe to all major tables for monitoring
       const tablesToMonitor: RealtimeTable[] = ['properties', 'claims', 'user_profiles']
-      
+
       const subscribePromises = tablesToMonitor.map(async (table) => {
         const subscriptionId = await realtimeManager.current.subscribe(
           table,
@@ -157,7 +157,7 @@ export function RealtimeDashboard({
 
       setIsConnected(true)
       success('Real-time monitoring started')
-      
+
       // Update presence to show we're monitoring
       await realtimeManager.current.updatePresence('dashboard', {
         userId: 'system',
@@ -227,7 +227,7 @@ export function RealtimeDashboard({
 
   const updateMetrics = () => {
     const info = realtimeManager.current.getSubscriptionInfo()
-    
+
     const uptime = Date.now() - startTime.current.getTime()
     const eventsPerSecond = uptime > 0 ? (metrics.totalEvents / (uptime / 1000)) : 0
 
@@ -259,8 +259,8 @@ export function RealtimeDashboard({
   }
 
   // Filter events by table
-  const filteredEvents = selectedTable === 'all' 
-    ? liveEvents 
+  const filteredEvents = selectedTable === 'all'
+    ? liveEvents
     : liveEvents.filter(event => event.table === selectedTable)
 
   return (
@@ -390,7 +390,7 @@ export function RealtimeDashboard({
                   <Activity className="w-5 h-5" />
                   Live Event Stream
                 </CardTitle>
-                
+
                 <div className="flex items-center gap-2">
                   {/* Table Filter */}
                   <select
@@ -403,7 +403,7 @@ export function RealtimeDashboard({
                     <option value="claims">Claims</option>
                     <option value="user_profiles">User Profiles</option>
                   </select>
-                  
+
                   <Button variant="ghost" size="sm" onClick={clearEvents}>
                     <Minus className="w-4 h-4" />
                   </Button>
@@ -437,8 +437,8 @@ export function RealtimeDashboard({
                     <p className="font-medium text-sm">{presence.userInfo?.name || 'Unknown User'}</p>
                     <p className="text-xs text-gray-600">{presence.location?.page}</p>
                   </div>
-                  <Badge 
-                    variant="outline" 
+                  <Badge
+                    variant="outline"
                     className={cn(
                       presence.activity?.status === 'online' && 'border-green-200 text-green-600',
                       presence.activity?.status === 'away' && 'border-yellow-200 text-yellow-600'
@@ -493,7 +493,7 @@ function ConnectionStatusCard({ title, status, icon: Icon, color, description }:
               {description}
             </p>
           </div>
-          
+
           <div className={cn("w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center", color)}>
             <Icon className="w-6 h-6" />
           </div>
@@ -530,7 +530,7 @@ function MetricCard({ title, value, icon: Icon, color, description }: MetricCard
               </p>
             )}
           </div>
-          
+
           <div className={cn("w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center", color)}>
             <Icon className="w-6 h-6" />
           </div>
@@ -572,7 +572,7 @@ function SubscriptionCard({ subscription }: { subscription: any }) {
           {subscription.events.join(', ')} • {subscription.eventCount} events
         </p>
       </div>
-      
+
       <div className="flex items-center gap-2">
         <StatusIcon className={cn("w-4 h-4", getStatusColor(subscription.status))} />
         <Badge variant="outline" className="text-xs">
@@ -614,7 +614,7 @@ function EventStream({ events, maxHeight = '300px' }: EventStreamProps) {
               className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg border-l-4 border-l-blue-500"
             >
               {getEventTypeIcon(event.type)}
-              
+
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
                   <span className="font-medium text-sm capitalize">{event.table}</span>
@@ -627,7 +627,7 @@ function EventStream({ events, maxHeight = '300px' }: EventStreamProps) {
                   {event.latency && ` • ${event.latency}ms`}
                 </p>
               </div>
-              
+
               <div className="text-xs text-gray-500">
                 {event.timestamp.toLocaleTimeString()}
               </div>

@@ -12,14 +12,14 @@ import { authLogger } from '@/lib/logger'
 
 export async function handleAuthError(error: unknown, supabase: SupabaseClient) {
   const errorMessage = error instanceof Error ? error.message : String(error)
-  if (errorMessage.includes('refresh_token_not_found') || 
+  if (errorMessage.includes('refresh_token_not_found') ||
       errorMessage.includes('Invalid Refresh Token')) {
     authLogger.warn('Refresh token error detected, signing out user', { error: errorMessage })
-    
+
     try {
       // Sign out to clear invalid session
       await supabase.auth.signOut()
-      
+
       // Clear any remaining cookies
       if (typeof window !== 'undefined') {
         // Get all cookies that might contain auth data
@@ -31,7 +31,7 @@ export async function handleAuthError(error: unknown, supabase: SupabaseClient) 
           }
         })
       }
-      
+
       // Reload to clear any cached state
       if (typeof window !== 'undefined') {
         window.location.href = '/'
@@ -46,12 +46,12 @@ export async function validateSession(supabase: SupabaseClient) {
   try {
     // Validate with getUser to ensure token is still valid
     const { data: { user }, error: userError } = await supabase.auth.getUser()
-    
+
     if (userError) {
       await handleAuthError(userError, supabase)
       return null
     }
-    
+
     return user
   } catch (error) {
     authLogger.error('Session validation failed', {}, error as Error)

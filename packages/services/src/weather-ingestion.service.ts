@@ -149,7 +149,7 @@ export class WeatherIngestionService {
 
       // Process stations in parallel with rate limiting
       const results = await Promise.allSettled(
-        stations.map(station => 
+        stations.map(station =>
           this.limit(() => this.syncStationObservations(station))
         )
       );
@@ -171,7 +171,7 @@ export class WeatherIngestionService {
       );
 
       const obs = response.data.properties;
-      
+
       const observation = {
         station_id: station.station_id,
         observed_at: obs.timestamp,
@@ -227,7 +227,7 @@ export class WeatherIngestionService {
       logger.info(`Syncing forecasts for ${points.length} grid points`);
 
       const results = await Promise.allSettled(
-        points.map(point => 
+        points.map(point =>
           this.limit(() => this.syncGridForecast(point))
         )
       );
@@ -280,7 +280,7 @@ export class WeatherIngestionService {
 
     return data.properties.periods.map((period: any) => {
       const [startTime, endTime] = this.parseISOInterval(period.validTime);
-      
+
       return {
         grid_id: point.gridId,
         grid_x: point.x,
@@ -322,7 +322,7 @@ export class WeatherIngestionService {
 
       const alertData = alerts.map((feature: any) => {
         const props = feature.properties;
-        
+
         return {
           alert_id: props.id,
           alert_identifier: props.identifier,
@@ -349,7 +349,7 @@ export class WeatherIngestionService {
           geocodes: props.geocode,
           same_codes: props.parameters?.SAME,
           ugc_codes: props.parameters?.UGC,
-          geometry: feature.geometry ? 
+          geometry: feature.geometry ?
             `SRID=4326;${this.geometryToWKT(feature.geometry)}` : null,
           parameters: props.parameters,
           raw_cap_xml: props.rawMessage
@@ -428,11 +428,11 @@ export class WeatherIngestionService {
 
   private extractValue(data: any, targetUnit: string): number | null {
     if (!data || !data.value) return null;
-    
+
     if (data.unitCode?.includes(targetUnit)) {
       return data.value;
     }
-    
+
     // Add unit conversion logic here if needed
     return data.value;
   }
@@ -448,7 +448,7 @@ export class WeatherIngestionService {
         return `POINT(${geometry.coordinates[0]} ${geometry.coordinates[1]})`;
       case 'Polygon':
         const rings = geometry.coordinates
-          .map((ring: any) => 
+          .map((ring: any) =>
             '(' + ring.map((coord: any) => `${coord[0]} ${coord[1]}`).join(',') + ')'
           )
           .join(',');
@@ -457,7 +457,7 @@ export class WeatherIngestionService {
         const polygons = geometry.coordinates
           .map((polygon: any) => {
             const rings = polygon
-              .map((ring: any) => 
+              .map((ring: any) =>
                 '(' + ring.map((coord: any) => `${coord[0]} ${coord[1]}`).join(',') + ')'
               )
               .join(',');
@@ -482,7 +482,7 @@ export class WeatherIngestionService {
 
     const { data, error } = await query;
     if (error) throw error;
-    
+
     return data || [];
   }
 
@@ -506,9 +506,9 @@ export class WeatherIngestionService {
   }
 
   private async updateSyncStatus(
-    syncType: string, 
-    reference: string | null, 
-    status: string, 
+    syncType: string,
+    reference: string | null,
+    status: string,
     error?: any
   ): Promise<void> {
     const record: any = {

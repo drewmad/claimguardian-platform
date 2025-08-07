@@ -23,13 +23,13 @@ export function useAuthDebug(componentName: string) {
   useEffect(() => {
     // Only enable debug logging in development
     if (process.env.NODE_ENV !== 'development') return
-    
+
     const checkAuthState = async () => {
       const { logger } = await import('@/lib/logger')
-      
+
       // Check Supabase user directly
       const { data: { user: supabaseUser }, error: userError } = await supabase.auth.getUser()
-      
+
       logger.authDebug(componentName, {
         loading,
         hasUser: !!user,

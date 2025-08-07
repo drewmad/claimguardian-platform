@@ -126,7 +126,7 @@ describe('Mobile Device Testing Framework', () => {
     test('should check all required permissions', async () => {
       const { check } = require('react-native-permissions')
       await framework.initialize()
-      
+
       // Should check camera, location, storage, and microphone permissions
       expect(check).toHaveBeenCalledTimes(4)
     })
@@ -151,7 +151,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(report.summary.total).toBeGreaterThan(0)
       expect(report.summary.passRate).toBeGreaterThanOrEqual(0)
       expect(report.deviceInfo).toBeDefined()
@@ -172,7 +172,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(report.summary.total).toBeGreaterThan(4) // Core + Performance tests
       expect(report.performance).toBeDefined()
       expect(report.performance.avgMemoryUsage).toBeGreaterThanOrEqual(0)
@@ -192,7 +192,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(report.summary.total).toBeGreaterThan(4) // Core + Offline tests
       const offlineTests = report.tests.filter(t => t.suite === 'offline')
       expect(offlineTests.length).toBeGreaterThan(0)
@@ -221,11 +221,11 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(mockSetItem).toHaveBeenCalled()
       expect(mockGetItem).toHaveBeenCalled()
       expect(mockRemoveItem).toHaveBeenCalled()
-      
+
       const dataStorageTest = report.tests.find(t => t.testName === 'Data Storage')
       expect(dataStorageTest?.passed).toBe(true)
     })
@@ -257,26 +257,26 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(mockFetch).toHaveBeenCalledWith(
         'https://claimguardianai.com/api/health',
         { timeout: 5000 }
       )
-      
+
       const apiTest = report.tests.find(t => t.testName === 'API Connectivity')
       expect(apiTest?.passed).toBe(true)
     })
 
     test('should handle network errors gracefully', async () => {
       const mockFetch = global.fetch as jest.Mock
-      
+
       // First call succeeds (API connectivity test)
       mockFetch.mockResolvedValueOnce({
         ok: true,
         status: 200,
         statusText: 'OK'
       })
-      
+
       // Second call fails (network error handling test)
       mockFetch.mockRejectedValueOnce(new Error('Network error'))
 
@@ -293,7 +293,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       const errorHandlingTest = report.tests.find(t => t.testName === 'Network Error Handling')
       expect(errorHandlingTest?.passed).toBe(true) // Should pass because it's testing error handling
     })
@@ -318,7 +318,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       const gpsTest = report.tests.find(t => t.testName === 'GPS Access')
       expect(gpsTest?.passed).toBe(true)
     })
@@ -337,7 +337,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       const accuracyTest = report.tests.find(t => t.testName === 'Location Accuracy')
       expect(accuracyTest?.passed).toBe(true)
     })
@@ -363,7 +363,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await newFramework.runTestSuite(config)
-      
+
       // Should skip location tests due to denied permissions
       const locationTests = report.tests.filter(t => t.suite === 'location')
       expect(locationTests.length).toBe(0)
@@ -389,7 +389,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       expect(report).toHaveProperty('deviceInfo')
       expect(report).toHaveProperty('config')
       expect(report).toHaveProperty('timestamp')
@@ -397,7 +397,7 @@ describe('Mobile Device Testing Framework', () => {
       expect(report).toHaveProperty('tests')
       expect(report).toHaveProperty('summary')
       expect(report).toHaveProperty('performance')
-      
+
       expect(report.summary.total).toBeGreaterThan(0)
       expect(report.summary.passRate).toBeGreaterThanOrEqual(0)
       expect(report.summary.passRate).toBeLessThanOrEqual(100)
@@ -420,7 +420,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       await framework.runTestSuite(config)
-      
+
       expect(mockSetItem).toHaveBeenCalledWith(
         expect.stringMatching(/^test-report-\d+$/),
         expect.any(String)
@@ -441,16 +441,16 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       // Test JSON export
       const jsonReport = framework.exportReport(report, 'json')
       expect(jsonReport).toContain('"deviceInfo"')
       expect(() => JSON.parse(jsonReport)).not.toThrow()
-      
+
       // Test CSV export
       const csvReport = framework.exportReport(report, 'csv')
       expect(csvReport).toContain('Test Name,Suite,Passed,Duration (ms),Error')
-      
+
       // Test HTML export
       const htmlReport = framework.exportReport(report, 'html')
       expect(htmlReport).toContain('<!DOCTYPE html>')
@@ -477,7 +477,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       // Some tests might timeout, but framework should handle it gracefully
       expect(report.summary.total).toBeGreaterThan(0)
       expect(report.tests.some(t => t.error?.includes('timeout'))).toBe(false) // Our mock tests are fast enough
@@ -503,7 +503,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await framework.runTestSuite(config)
-      
+
       const dataStorageTest = report.tests.find(t => t.testName === 'Data Storage')
       expect(dataStorageTest?.passed).toBe(false)
       expect(dataStorageTest?.error).toContain('Storage')
@@ -513,7 +513,7 @@ describe('Mobile Device Testing Framework', () => {
   describe('Integration with runMobileDeviceTests', () => {
     test('should run mobile device tests with default configuration', async () => {
       const report = await runMobileDeviceTests()
-      
+
       expect(report).toBeDefined()
       expect(report.summary.total).toBeGreaterThan(0)
       expect(report.deviceInfo).toBeDefined()
@@ -529,7 +529,7 @@ describe('Mobile Device Testing Framework', () => {
       }
 
       const report = await runMobileDeviceTests(customConfig)
-      
+
       expect(report.config.testSuite).toBe('Custom Test Suite')
       expect(report.config.includePerformanceTests).toBe(false)
       expect(report.config.includeOfflineTests).toBe(true)
@@ -563,7 +563,7 @@ describe('Mobile Device Testing Framework', () => {
       })
 
       const reports = await framework.getStoredReports()
-      
+
       expect(reports).toHaveLength(2)
       expect(reports[0].timestamp).toBeGreaterThan(reports[1].timestamp) // Sorted by timestamp desc
     })
@@ -579,7 +579,7 @@ describe('Mobile Device Testing Framework', () => {
       ])
 
       await framework.clearStoredReports()
-      
+
       expect(mockMultiRemove).toHaveBeenCalledWith([
         'test-report-1234567890',
         'test-report-1234567891'

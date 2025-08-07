@@ -63,7 +63,7 @@ class LegalServiceServer {
     try {
       // Use service role client to bypass RLS for legal documents
       const supabase = createServiceRoleClient()
-      
+
       // For now, return all active documents that require acceptance
       // In the future, this should check user's acceptance history
       const { data, error } = await supabase
@@ -105,7 +105,7 @@ class LegalServiceServer {
       )
 
       const results = await Promise.all(acceptancePromises)
-      
+
       // Check for any errors
       const errors = results.filter(result => result.error)
       if (errors.length > 0) {
@@ -245,7 +245,7 @@ class LegalServiceServer {
       }
 
       const isValid = data.sha256_hash === expectedHash
-      
+
       if (!isValid) {
         logger.warn('Document hash validation failed', {
           documentId,
@@ -270,7 +270,7 @@ class LegalServiceServer {
   } {
     if (request) {
       // Server side - full info
-      const ip = request.headers.get('x-forwarded-for') || 
+      const ip = request.headers.get('x-forwarded-for') ||
                  request.headers.get('x-real-ip') ||
                  'unknown'
       const userAgent = request.headers.get('user-agent') || 'unknown'

@@ -61,7 +61,7 @@ serve(async (req) => {
     if (authorization) {
       const token = authorization.replace('Bearer ', '')
       const { data: { user } } = await supabaseClient.auth.getUser(token)
-      
+
       if (user) {
         // Log that user accessed community data (for transparency)
         await supabaseClient
@@ -97,15 +97,15 @@ serve(async (req) => {
     // Check minimum sample size for privacy
     if (!claims || claims.length < MIN_SAMPLE_SIZE) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Insufficient data for analysis',
           message: 'We need at least 100 similar claims to provide insights while protecting privacy',
           currentSampleSize: claims?.length || 0,
           requiredSampleSize: MIN_SAMPLE_SIZE
         }),
-        { 
+        {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-          status: 400 
+          status: 400
         }
       )
     }
@@ -115,7 +115,7 @@ serve(async (req) => {
 
     // Generate insights based on request type
     let insights: CommunityInsight
-    
+
     switch (requestType) {
       case 'settlement':
         insights = analyzeSettlements(privatizedClaims)
@@ -145,7 +145,7 @@ serve(async (req) => {
       })
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         insights,
         privacy: {
@@ -156,9 +156,9 @@ serve(async (req) => {
         },
         disclaimer: 'These insights are based on anonymized community data and should not be considered legal or financial advice'
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        status: 200 
+        status: 200
       }
     )
 
@@ -166,7 +166,7 @@ serve(async (req) => {
     console.error('Error in community intelligence:', error)
     return new Response(
       JSON.stringify({ error: error.message }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 400
       }
@@ -195,7 +195,7 @@ function addLaplacianNoise(value: number, scale: number): number {
 
 function analyzeSettlements(claims: AnonymizedClaim[]): CommunityInsight {
   const settlements = claims.map(c => c.settlementBracket).filter(s => s > 0)
-  
+
   // Calculate statistics with noise already applied
   const average = settlements.reduce((a, b) => a + b, 0) / settlements.length
   const sorted = settlements.sort((a, b) => a - b)
@@ -219,7 +219,7 @@ function analyzeSettlements(claims: AnonymizedClaim[]): CommunityInsight {
 
 function analyzeTimelines(claims: AnonymizedClaim[]): CommunityInsight {
   const timelines = claims.map(c => c.daysToSettle).filter(t => t > 0)
-  
+
   const average = timelines.reduce((a, b) => a + b, 0) / timelines.length
   const sorted = timelines.sort((a, b) => a - b)
   const median = sorted[Math.floor(sorted.length / 2)]
@@ -237,7 +237,7 @@ function analyzeTimelines(claims: AnonymizedClaim[]): CommunityInsight {
 
 function analyzeSuccessFactors(claims: AnonymizedClaim[]): CommunityInsight {
   const factorCounts: Record<string, number> = {}
-  
+
   claims.forEach(claim => {
     (claim.successFactors || []).forEach(factor => {
       factorCounts[factor] = (factorCounts[factor] || 0) + 1
@@ -266,17 +266,17 @@ function analyzeSuccessFactors(claims: AnonymizedClaim[]): CommunityInsight {
 function generateComprehensiveInsights(claims: AnonymizedClaim[]): CommunityInsight {
   const settlements = claims.map(c => c.settlementBracket).filter(s => s > 0)
   const timelines = claims.map(c => c.daysToSettle).filter(t => t > 0)
-  
+
   // Settlement analysis
   const avgSettlement = settlements.reduce((a, b) => a + b, 0) / settlements.length
   const sortedSettlements = settlements.sort((a, b) => a - b)
   const lowSettlement = sortedSettlements[Math.floor(sortedSettlements.length * 0.25)]
   const highSettlement = sortedSettlements[Math.floor(sortedSettlements.length * 0.75)]
-  
+
   // Timeline analysis
   const sortedTimelines = timelines.sort((a, b) => a - b)
   const medianTime = sortedTimelines[Math.floor(sortedTimelines.length / 2)]
-  
+
   // Success factors
   const factorCounts: Record<string, number> = {}
   claims.forEach(claim => {

@@ -36,7 +36,7 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   backoffFactor: 2,
   retryCondition: (error) => {
     // Retry on network errors, timeouts, and 5xx server errors
-    return error.message.includes('network') || 
+    return error.message.includes('network') ||
            error.message.includes('timeout') ||
            error.message.includes('fetch') ||
            error.message.includes('5')
@@ -67,7 +67,7 @@ export class RetryManager {
         return result
       } catch (error) {
         this.lastError = error as Error
-        
+
         if (this.retryCount >= this.config.maxRetries) {
           throw error
         }
@@ -127,35 +127,35 @@ export function useErrorRecovery(config: Partial<RetryConfig> = {}) {
 
     try {
       setRetryState(retryManager.getRetryState())
-      
+
       const result = await retryManager.executeWithRetry(
         operation,
         (attempt, error) => {
           setRetryState(retryManager.getRetryState())
-          
+
           if (showToasts) {
             toast.info(`Retrying... (${attempt}/${retryManager.config.maxRetries})`)
           }
-          
+
           onRetry?.(attempt, error)
         }
       )
 
       setRetryState(retryManager.getRetryState())
-      
+
       if (showToasts && retryState.retryCount > 0) {
         toast.success('Operation succeeded after retry')
       }
-      
+
       onSuccess?.(result)
       return result
     } catch (error) {
       setRetryState(retryManager.getRetryState())
-      
+
       if (showToasts) {
         toast.error(`Operation failed after ${retryManager.config.maxRetries} attempts`)
       }
-      
+
       onError?.(error as Error)
       return null
     }
@@ -188,11 +188,11 @@ export function withErrorBoundary<T>(
 ): Promise<T> {
   return operation().catch((error) => {
     logger.error('Error caught by boundary:', error)
-    
+
     if (errorMessage) {
       toast.error(errorMessage)
     }
-    
+
     return fallback
   })
 }

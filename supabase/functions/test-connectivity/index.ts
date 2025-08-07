@@ -18,14 +18,14 @@ const endpoints = [
 
 Deno.serve(async (req) => {
   const results = [];
-  
+
   for (const endpoint of endpoints) {
     console.log(JSON.stringify({
       level: "info",
       timestamp: new Date().toISOString(),
       message: `Testing ${endpoint.name}...`
     }));
-    
+
     try {
       const response = await fetch(endpoint.url, {
         method: 'GET',
@@ -34,9 +34,9 @@ Deno.serve(async (req) => {
           'User-Agent': 'Mozilla/5.0 (compatible; ClaimGuardian/1.0)',
         },
       });
-      
+
       const data = await response.json();
-      
+
       results.push({
         name: endpoint.name,
         url: endpoint.url,
@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
         } : null,
         error: null
       });
-      
+
     } catch (error) {
       results.push({
         name: endpoint.name,
@@ -61,7 +61,7 @@ Deno.serve(async (req) => {
       });
     }
   }
-  
+
   return new Response(JSON.stringify({
     timestamp: new Date().toISOString(),
     results

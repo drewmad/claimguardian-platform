@@ -49,23 +49,23 @@ export function FloridaDisclosuresModal({
   })
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const supabase = createBrowserSupabaseClient()
-  
-  const allConsentsAccepted = 
-    consents.publicAdjuster && 
-    consents.legalAdvice && 
+
+  const allConsentsAccepted =
+    consents.publicAdjuster &&
+    consents.legalAdvice &&
     consents.insuranceCooperation
-  
+
   const handleAccept = async () => {
     if (!allConsentsAccepted) {
       setError('Please acknowledge all disclosures to continue')
       return
     }
-    
+
     setIsLoading(true)
     setError(null)
-    
+
     try {
       // Link Florida-specific consents to user
       const { error: consentError } = await supabase.rpc('link_consent_to_user', {
@@ -78,11 +78,11 @@ export function FloridaDisclosuresModal({
         p_ip_address: null,
         p_user_agent: navigator.userAgent
       })
-      
+
       if (consentError) {
         throw consentError
       }
-      
+
       // Success - call parent callback
       onAccept()
     } catch (err) {
@@ -92,7 +92,7 @@ export function FloridaDisclosuresModal({
       setIsLoading(false)
     }
   }
-  
+
   return (
     <Dialog open={open} onOpenChange={(open) => !open && onCancel()}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
@@ -102,11 +102,11 @@ export function FloridaDisclosuresModal({
             Important Florida Insurance Disclosures
           </DialogTitle>
           <DialogDescription className="text-base mt-2">
-            Before we can assist with your insurance claim, Florida law requires us to provide 
+            Before we can assist with your insurance claim, Florida law requires us to provide
             these important disclosures. Please read and acknowledge each one.
           </DialogDescription>
         </DialogHeader>
-        
+
         <div className="space-y-6 my-6">
           {/* Public Adjuster Notice */}
           <div className="space-y-3">
@@ -116,10 +116,10 @@ export function FloridaDisclosuresModal({
                 <h3 className="font-semibold text-lg mb-2">Public Adjuster Notice</h3>
                 <Alert className="bg-yellow-50 border-yellow-200">
                   <AlertDescription className="text-sm text-gray-700">
-                    <strong>IMPORTANT:</strong> ClaimGuardian is NOT a licensed public adjuster. 
-                    Under Florida Statute 626.854, only licensed public adjusters can negotiate 
-                    with insurance companies on your behalf for a fee. Our AI tools provide 
-                    information and document organization assistance only. We do not negotiate 
+                    <strong>IMPORTANT:</strong> ClaimGuardian is NOT a licensed public adjuster.
+                    Under Florida Statute 626.854, only licensed public adjusters can negotiate
+                    with insurance companies on your behalf for a fee. Our AI tools provide
+                    information and document organization assistance only. We do not negotiate
                     settlements or represent you in dealings with your insurance company.
                   </AlertDescription>
                 </Alert>
@@ -129,7 +129,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="public-adjuster"
                 checked={consents.publicAdjuster}
-                onCheckedChange={(checked: boolean) => 
+                onCheckedChange={(checked: boolean) =>
                   setConsents({ ...consents, publicAdjuster: !!checked })
                 }
               />
@@ -138,7 +138,7 @@ export function FloridaDisclosuresModal({
               </Label>
             </div>
           </div>
-          
+
           {/* Legal Advice Disclaimer */}
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -147,10 +147,10 @@ export function FloridaDisclosuresModal({
                 <h3 className="font-semibold text-lg mb-2">Legal Advice Disclaimer</h3>
                 <Alert className="bg-yellow-50 border-yellow-200">
                   <AlertDescription className="text-sm text-gray-700">
-                    ClaimGuardian does not provide legal advice or legal representation. 
-                    The information and tools we provide are for educational and organizational 
-                    purposes only. For legal matters regarding your insurance claim, including 
-                    disputes or litigation, you should consult with a licensed Florida attorney 
+                    ClaimGuardian does not provide legal advice or legal representation.
+                    The information and tools we provide are for educational and organizational
+                    purposes only. For legal matters regarding your insurance claim, including
+                    disputes or litigation, you should consult with a licensed Florida attorney
                     who specializes in insurance law.
                   </AlertDescription>
                 </Alert>
@@ -160,7 +160,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="legal-advice"
                 checked={consents.legalAdvice}
-                onCheckedChange={(checked: boolean) => 
+                onCheckedChange={(checked: boolean) =>
                   setConsents({ ...consents, legalAdvice: !!checked })
                 }
               />
@@ -169,7 +169,7 @@ export function FloridaDisclosuresModal({
               </Label>
             </div>
           </div>
-          
+
           {/* Insurance Cooperation Notice */}
           <div className="space-y-3">
             <div className="flex items-start gap-3">
@@ -178,8 +178,8 @@ export function FloridaDisclosuresModal({
                 <h3 className="font-semibold text-lg mb-2">Insurance Policy Cooperation</h3>
                 <Alert className="bg-blue-50 border-blue-200">
                   <AlertDescription className="text-sm text-gray-700">
-                    Your insurance policy requires you to cooperate with your insurance company's 
-                    investigation of your claim. Using ClaimGuardian does not change or eliminate 
+                    Your insurance policy requires you to cooperate with your insurance company's
+                    investigation of your claim. Using ClaimGuardian does not change or eliminate
                     these obligations. You must continue to:
                     <ul className="list-disc ml-5 mt-2 space-y-1">
                       <li>Respond to your insurer's reasonable requests</li>
@@ -195,7 +195,7 @@ export function FloridaDisclosuresModal({
               <Checkbox
                 id="insurance-cooperation"
                 checked={consents.insuranceCooperation}
-                onCheckedChange={(checked: boolean) => 
+                onCheckedChange={(checked: boolean) =>
                   setConsents({ ...consents, insuranceCooperation: !!checked })
                 }
               />
@@ -205,13 +205,13 @@ export function FloridaDisclosuresModal({
             </div>
           </div>
         </div>
-        
+
         {error && (
           <Alert variant="destructive" className="mb-4">
             <AlertDescription>{error}</AlertDescription>
           </Alert>
         )}
-        
+
         <DialogFooter className="gap-2">
           <Button
             type="button"

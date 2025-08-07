@@ -37,27 +37,27 @@ while true; do
     echo -e "${BLUE}=============================================================================${NC}"
     echo -e "${CYAN}Time: $(date '+%Y-%m-%d %H:%M:%S')${NC}"
     echo
-    
+
     # Get database summary with detailed query
     echo -e "${GREEN}📊 DATABASE STATUS:${NC}"
     echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-    
+
     # Get total statistics
     STATS=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -A -c "
-        SELECT 
+        SELECT
             COUNT(*) as total,
             COUNT(DISTINCT co_no) as counties,
             MIN(co_no) as min_county,
             MAX(co_no) as max_county
         FROM florida_parcels;" 2>/dev/null)
-    
+
     if [ $? -eq 0 ]; then
         IFS='|' read -r TOTAL COUNTIES MIN_COUNTY MAX_COUNTY <<< "$STATS"
-        
+
         echo -e "  ${YELLOW}Total Parcels:${NC} $(format_number $TOTAL)"
         echo -e "  ${YELLOW}Counties Imported:${NC} $COUNTIES / 67"
         echo -e "  ${YELLOW}County Range:${NC} $MIN_COUNTY - $MAX_COUNTY"
-        
+
         # Progress bar
         PCT=$((COUNTIES * 100 / 67))
         echo -n -e "  ${YELLOW}Progress:${NC} ["
@@ -70,11 +70,11 @@ while true; do
         done
         echo -e "] ${GREEN}$PCT%${NC}"
         echo
-        
+
         # Detailed county breakdown
         echo -e "${GREEN}📍 COUNTY DETAILS (ALL IMPORTED):${NC}"
         echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-        
+
         # Get all counties with names mapping
         COUNTY_DATA=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -A -c "
             WITH county_names AS (
@@ -98,7 +98,7 @@ while true; do
                     (75, 'WAKULLA'), (76, 'WALTON'), (77, 'WASHINGTON')
                 ) AS t(code, name)
             )
-            SELECT 
+            SELECT
                 cn.code,
                 cn.name,
                 COALESCE(fp.count, 0) as count,
@@ -110,7 +110,7 @@ while true; do
                 GROUP BY co_no
             ) fp ON cn.code = fp.co_no
             ORDER BY cn.code;" 2>/dev/null)
-        
+
         # Display in columns
         echo "$COUNTY_DATA" | awk -F'|' '
         BEGIN { count = 0 }
@@ -121,24 +121,24 @@ while true; do
             count++
         }
         END { if (count % 3 != 0) printf "\n" }'
-        
+
         echo
-        
+
         # Summary statistics
         echo -e "${GREEN}📈 IMPORT STATISTICS:${NC}"
         echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-        
+
         ZERO_COUNT=$(echo "$COUNTY_DATA" | grep -c '|0|')
         NON_ZERO=$(echo "$COUNTY_DATA" | grep -c -v '|0|')
-        
+
         echo -e "  ${GREEN}✅ Successfully Imported:${NC} $NON_ZERO counties"
         echo -e "  ${RED}❌ Not Yet Imported:${NC} $ZERO_COUNT counties"
-        
+
         # Get largest counties
         echo
         echo -e "${GREEN}🏆 TOP 10 LARGEST COUNTIES:${NC}"
         echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-        
+
         TOP_COUNTIES=$(PGPASSWORD="$DB_PASSWORD" psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d postgres -t -A -c "
             WITH county_names AS (
                 SELECT * FROM (VALUES
@@ -161,7 +161,7 @@ while true; do
                     (75, 'WAKULLA'), (76, 'WALTON'), (77, 'WASHINGTON')
                 ) AS t(code, name)
             )
-            SELECT 
+            SELECT
                 fp.co_no,
                 cn.name,
                 COUNT(*) as count
@@ -170,19 +170,19 @@ while true; do
             GROUP BY fp.co_no, cn.name
             ORDER BY count DESC
             LIMIT 10;" 2>/dev/null)
-        
+
         echo "$TOP_COUNTIES" | awk -F'|' '{
             printf "  %2d. %-20s %10s parcels\n", NR, $2, $3
         }'
-        
+
     else
         echo -e "${RED}❌ Unable to connect to database${NC}"
     fi
-    
+
     echo
     echo -e "${YELLOW}🔄 ACTIVE PROCESSES:${NC}"
     echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-    
+
     # Check for active ogr2ogr processes
     ACTIVE_PROCS=$(ps aux | grep -E "ogr2ogr.*CADASTRAL_DOR.*CO_NO" | grep -v grep)
     if [ -z "$ACTIVE_PROCS" ]; then
@@ -198,15 +198,15 @@ while true; do
             fi
         done
     fi
-    
+
     # Check for active import processes
     IMPORT_PROCS=$(ps aux | grep -E "process_county|import.*county" | grep -v grep | wc -l)
     echo -e "  ${PURPLE}Total active import processes:${NC} $IMPORT_PROCS"
-    
+
     echo
     echo -e "${GREEN}📋 RECENT ACTIVITY (Last 15 minutes):${NC}"
     echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-    
+
     if [ -d "$LOG_DIR" ]; then
         # Find recent log entries
         find "$LOG_DIR" -name "*.log" -mmin -15 -exec grep -H "✅ Complete" {} \; 2>/dev/null | tail -10 | while IFS=: read file line; do
@@ -219,11 +219,11 @@ while true; do
             fi
         done
     fi
-    
+
     echo
     echo -e "${RED}⚠️  ISSUES & RECOMMENDATIONS:${NC}"
     echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
-    
+
     # Check for recent timeouts
     if [ -f "/tmp/florida_import_remaining.log" ]; then
         TIMEOUT_COUNT=$(grep -c "timeout\|canceling statement" /tmp/florida_import_remaining.log 2>/dev/null || echo 0)
@@ -233,7 +233,7 @@ while true; do
             echo -e "    ${CYAN}./scripts/import-large-county-batched.sh <code> <name>${NC}"
         fi
     fi
-    
+
     # Show counties that need attention
     PROBLEM_COUNTIES=$(echo "$COUNTY_DATA" | grep '|0|' | head -5)
     if [ ! -z "$PROBLEM_COUNTIES" ]; then
@@ -242,7 +242,7 @@ while true; do
             printf "    • County %2d (%s)\n", $1, $2
         }'
     fi
-    
+
     echo
     echo -e "${CYAN}───────────────────────────────────────────────────────────────────────${NC}"
     echo -e "Press ${RED}Ctrl+C${NC} to exit | Refreshing every 15 seconds..."

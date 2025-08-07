@@ -106,7 +106,7 @@ interface ClaimState {
   // Claims
   claims: Claim[]
   selectedClaimId: string | null
-  
+
   // Claim management
   getClaimById: (id: string) => Claim | undefined
   getClaimsByPropertyId: (propertyId: string) => Claim[]
@@ -115,41 +115,41 @@ interface ClaimState {
   addClaim: (claim: Omit<Claim, 'id' | 'createdAt' | 'updatedAt'>) => string
   updateClaim: (id: string, updates: Partial<Claim>) => void
   deleteClaim: (id: string) => void
-  
+
   // Evidence management
   addEvidence: (claimId: string, evidence: Omit<ClaimEvidence, 'id'>) => void
   updateEvidence: (claimId: string, evidenceId: string, updates: Partial<ClaimEvidence>) => void
   deleteEvidence: (claimId: string, evidenceId: string) => void
   bulkAddEvidence: (claimId: string, evidence: Omit<ClaimEvidence, 'id'>[]) => void
-  
+
   // Status management
   updateClaimStatus: (claimId: string, status: ClaimStatus, notes?: string) => void
   addStatusHistory: (claimId: string, history: Omit<ClaimStatusHistory, 'id'>) => void
-  
+
   // Contact management
   addContact: (claimId: string, contact: Omit<ClaimContact, 'id'>) => void
   updateContact: (claimId: string, contactId: string, updates: Partial<ClaimContact>) => void
   deleteContact: (claimId: string, contactId: string) => void
-  
+
   // Line items management
   addLineItem: (claimId: string, item: Omit<ClaimLineItem, 'id'>) => void
   updateLineItem: (claimId: string, itemId: string, updates: Partial<ClaimLineItem>) => void
   deleteLineItem: (claimId: string, itemId: string) => void
   bulkAddLineItems: (claimId: string, items: Omit<ClaimLineItem, 'id'>[]) => void
-  
+
   // Payment management
   addPayment: (claimId: string, payment: Omit<ClaimPayment, 'id'>) => void
   updatePayment: (claimId: string, paymentId: string, updates: Partial<ClaimPayment>) => void
   deletePayment: (claimId: string, paymentId: string) => void
-  
+
   // Settlement offers
   addSettlementOffer: (claimId: string, offer: Omit<SettlementOffer, 'id' | 'claimId'>) => void
   updateSettlementOffer: (claimId: string, offerId: string, updates: Partial<SettlementOffer>) => void
-  
+
   // Appeals
   addAppeal: (claimId: string) => void
   updateAppeal: (claimId: string, appealId: string, updates: Partial<ClaimAppeal>) => void
-  
+
   // Utility functions
   clearClaims: () => void
   calculateClaimTotals: (claimId: string) => {
@@ -167,17 +167,17 @@ export const useClaimStore = create<ClaimState>()(
     (set, get) => ({
       claims: [],
       selectedClaimId: null,
-      
+
       getClaimById: (id) => get().claims.find(c => c.id === id),
-      
+
       getClaimsByPropertyId: (propertyId) => get().claims.filter(c => c.property_id === propertyId),
-      
-      getActiveClaims: () => get().claims.filter(c => 
+
+      getActiveClaims: () => get().claims.filter(c =>
         !['closed', 'denied'].includes(c.status || '')
       ),
-      
+
       setSelectedClaim: (id) => set({ selectedClaimId: id }),
-      
+
       addClaim: (claimData) => {
         const id = generateId()
         const now = new Date().toISOString()
@@ -197,14 +197,14 @@ export const useClaimStore = create<ClaimState>()(
           contacts: [],
           payments: []
         }
-        
+
         set(state => ({
           claims: [...state.claims, newClaim]
         }))
-        
+
         return id
       },
-      
+
       updateClaim: (id, updates) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -212,14 +212,14 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       deleteClaim: (id) => {
         set(state => ({
           claims: state.claims.filter(c => c.id !== id),
           selectedClaimId: state.selectedClaimId === id ? null : state.selectedClaimId
         }))
       },
-      
+
       // Evidence management
       addEvidence: (claimId, evidence) => {
         const evidenceWithId = { ...evidence, id: generateId() }
@@ -231,7 +231,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updateEvidence: (claimId, evidenceId, updates) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -247,7 +247,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       deleteEvidence: (claimId, evidenceId) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -261,7 +261,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       bulkAddEvidence: (claimId, evidence) => {
         const evidenceWithIds = evidence.map(e => ({ ...e, id: generateId() }))
         set(state => ({
@@ -272,7 +272,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       // Status management
       updateClaimStatus: (claimId, status, notes) => {
         const now = new Date().toISOString()
@@ -282,7 +282,7 @@ export const useClaimStore = create<ClaimState>()(
           status,
           notes
         }
-        
+
         set(state => ({
           claims: state.claims.map(c =>
             c.id === claimId
@@ -297,7 +297,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       addStatusHistory: (claimId, history) => {
         const historyWithId = { ...history, id: generateId() }
         set(state => ({
@@ -308,7 +308,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       // Contact management
       addContact: (claimId, contact) => {
         const contactWithId = { ...contact, id: generateId() }
@@ -320,7 +320,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updateContact: (claimId, contactId, updates) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -336,7 +336,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       deleteContact: (claimId, contactId) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -350,7 +350,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       // Line items management
       addLineItem: (claimId, item) => {
         const itemWithId = { ...item, id: generateId() }
@@ -362,7 +362,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updateLineItem: (claimId, itemId, updates) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -378,7 +378,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       deleteLineItem: (claimId, itemId) => {
         set(state => ({
           claims: state.claims.map(c =>
@@ -392,7 +392,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       bulkAddLineItems: (claimId, items) => {
         const itemsWithIds = items.map(item => ({ ...item, id: generateId() }))
         set(state => ({
@@ -403,7 +403,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       // Payment management
       addPayment: (claimId, payment) => {
         const paymentWithId = { ...payment, id: generateId() }
@@ -420,7 +420,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updatePayment: (claimId, paymentId, updates) => {
         set(state => ({
           claims: state.claims.map(c => {
@@ -429,7 +429,7 @@ export const useClaimStore = create<ClaimState>()(
                 p.id === paymentId ? { ...p, ...updates } : p
               )
               const paidAmount = updatedPayments.reduce((sum, p) => sum + p.amount, 0)
-              
+
               return {
                 ...c,
                 payments: updatedPayments,
@@ -441,14 +441,14 @@ export const useClaimStore = create<ClaimState>()(
           })
         }))
       },
-      
+
       deletePayment: (claimId, paymentId) => {
         set(state => ({
           claims: state.claims.map(c => {
             if (c.id === claimId) {
               const updatedPayments = (c.payments || []).filter(p => p.id !== paymentId)
               const paidAmount = updatedPayments.reduce((sum, p) => sum + p.amount, 0)
-              
+
               return {
                 ...c,
                 payments: updatedPayments,
@@ -460,7 +460,7 @@ export const useClaimStore = create<ClaimState>()(
           })
         }))
       },
-      
+
       // Settlement offers
       addSettlementOffer: (claimId, offer) => {
         // Store settlement offers in a separate field if needed
@@ -472,7 +472,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updateSettlementOffer: (claimId) => {
         // Update settlement offer logic
         set(state => ({
@@ -483,7 +483,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       // Appeals
       addAppeal: (claimId) => {
         // Store appeals in a separate field if needed
@@ -495,7 +495,7 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       updateAppeal: (claimId) => {
         // Update appeal logic
         set(state => ({
@@ -506,13 +506,13 @@ export const useClaimStore = create<ClaimState>()(
           )
         }))
       },
-      
+
       clearClaims: () => set({ claims: [], selectedClaimId: null }),
-      
+
       calculateClaimTotals: (claimId) => {
         const claim = get().claims.find(c => c.id === claimId)
         if (!claim) return { estimatedLoss: 0, claimedAmount: 0, approvedAmount: 0, paidAmount: 0 }
-        
+
         const lineItems = claim.lineItems || []
         const estimatedLoss = claim.estimatedLoss || 0
         const claimedAmount = claim.claimedAmount || lineItems.reduce((sum, item) => sum + item.totalPrice, 0)
@@ -520,7 +520,7 @@ export const useClaimStore = create<ClaimState>()(
           .filter(item => item.status === 'approved' || item.status === 'partially_approved')
           .reduce((sum, item) => sum + (item.rcv || item.totalPrice), 0)
         const paidAmount = claim.paidAmount || 0
-        
+
         return { estimatedLoss, claimedAmount, approvedAmount, paidAmount }
       }
     }),

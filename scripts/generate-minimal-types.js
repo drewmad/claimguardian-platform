@@ -202,7 +202,7 @@ try {
 
 console.log('🎯 Minimal types include:')
 console.log('  - user_profiles (essential user data)')
-console.log('  - properties (core property management)')  
+console.log('  - properties (core property management)')
 console.log('  - claims (core claim tracking)')
 console.log('  - Convenience types and enums')
 console.log('')

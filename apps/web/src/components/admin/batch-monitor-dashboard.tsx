@@ -63,7 +63,7 @@ export function BatchMonitorDashboard() {
     isProcessing: false,
     estimatedWaitTime: 0
   })
-  
+
   const [queueStatus, setQueueStatus] = useState<any>({
     pending: 0,
     processing: 0,
@@ -71,7 +71,7 @@ export function BatchMonitorDashboard() {
     byFeature: {},
     oldestRequest: null
   })
-  
+
   const [config, setConfig] = useState({
     maxBatchSize: 10,
     maxWaitTime: 2000,
@@ -79,7 +79,7 @@ export function BatchMonitorDashboard() {
     enableCaching: true,
     costOptimization: true
   })
-  
+
   const [historicalData, setHistoricalData] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -89,28 +89,28 @@ export function BatchMonitorDashboard() {
         const currentMetrics = aiBatchProcessor.getMetrics()
         const currentQueueStatus = aiBatchProcessor.getQueueStatus()
         const currentConfig = aiBatchProcessor.getConfig()
-        
+
         setMetrics(currentMetrics)
         setQueueStatus(currentQueueStatus)
         setConfig(currentConfig)
-        
+
         // Add to historical data for charts
         setHistoricalData(prev => {
           const newData = {
-            time: new Date().toLocaleTimeString('en-US', { 
-              hour12: false, 
-              minute: '2-digit', 
-              second: '2-digit' 
+            time: new Date().toLocaleTimeString('en-US', {
+              hour12: false,
+              minute: '2-digit',
+              second: '2-digit'
             }),
             queueLength: currentMetrics.queueLength,
             avgProcessingTime: Math.round(currentMetrics.avgProcessingTime),
             avgBatchSize: parseFloat(currentMetrics.avgBatchSize.toFixed(1)),
             costSavings: parseFloat(currentMetrics.costSavings.toFixed(2))
           }
-          
+
           return [...prev, newData].slice(-30) // Keep last 30 data points
         })
-        
+
         setLoading(false)
       } catch (error) {
         console.error('Error updating batch monitor data:', error)
@@ -149,7 +149,7 @@ export function BatchMonitorDashboard() {
   }))
 
   const efficiencyScore = Math.round(
-    (metrics.avgBatchSize / Math.max(config.maxBatchSize, 1)) * 
+    (metrics.avgBatchSize / Math.max(config.maxBatchSize, 1)) *
     (1 - Math.min(metrics.avgProcessingTime / 5000, 1)) * 100
   )
 
@@ -224,9 +224,9 @@ export function BatchMonitorDashboard() {
               {queueStatus.processing} processing
             </p>
             {metrics.estimatedWaitTime > 0 && (
-              <Progress 
-                value={Math.max(0, 100 - (metrics.estimatedWaitTime / config.maxWaitTime) * 100)} 
-                className="h-2 mt-2" 
+              <Progress
+                value={Math.max(0, 100 - (metrics.estimatedWaitTime / config.maxWaitTime) * 100)}
+                className="h-2 mt-2"
               />
             )}
           </CardContent>
@@ -257,9 +257,9 @@ export function BatchMonitorDashboard() {
             <p className="text-xs text-gray-500 mt-1">
               Max: {config.maxBatchSize}
             </p>
-            <Progress 
-              value={(metrics.avgBatchSize / config.maxBatchSize) * 100} 
-              className="h-2 mt-2" 
+            <Progress
+              value={(metrics.avgBatchSize / config.maxBatchSize) * 100}
+              className="h-2 mt-2"
             />
           </CardContent>
         </Card>
@@ -299,13 +299,13 @@ export function BatchMonitorDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -330,13 +330,13 @@ export function BatchMonitorDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`${value}ms`, 'Processing Time']}
@@ -428,7 +428,7 @@ export function BatchMonitorDashboard() {
                 <div className="flex justify-between">
                   <span className="text-gray-400">Oldest Request:</span>
                   <span className="text-white font-medium">
-                    {queueStatus.oldestRequest 
+                    {queueStatus.oldestRequest
                       ? `${Math.round(queueStatus.oldestRequest / 1000)}s ago`
                       : 'None'
                     }
@@ -456,7 +456,7 @@ export function BatchMonitorDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, value, percent }) => 
+                        label={({ name, value, percent }) =>
                           `${name}: ${value} (${((percent || 0) * 100).toFixed(0)}%)`
                         }
                         outerRadius={80}
@@ -467,7 +467,7 @@ export function BatchMonitorDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       />
                     </PieChart>
@@ -493,7 +493,7 @@ export function BatchMonitorDashboard() {
                   <ResponsiveContainer width="100%" height={250}>
                     <BarChart data={featureData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
+                      <XAxis
                         dataKey="name"
                         stroke="#9CA3AF"
                         tick={{ fontSize: 11 }}
@@ -502,7 +502,7 @@ export function BatchMonitorDashboard() {
                         height={80}
                       />
                       <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       />
                       <Bar dataKey="value">
@@ -537,13 +537,13 @@ export function BatchMonitorDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
@@ -568,13 +568,13 @@ export function BatchMonitorDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={historicalData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="time" 
+                    <XAxis
+                      dataKey="time"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                       formatter={(value: number) => [`$${value.toFixed(2)}`, 'Cost Saved']}

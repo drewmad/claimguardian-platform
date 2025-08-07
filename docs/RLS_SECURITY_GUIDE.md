@@ -58,8 +58,8 @@ CREATE POLICY "Users can delete own records" ON table_name
 CREATE POLICY "Users can view related records" ON child_table
     FOR SELECT USING (
         EXISTS (
-            SELECT 1 FROM parent_table 
-            WHERE parent_table.id = child_table.parent_id 
+            SELECT 1 FROM parent_table
+            WHERE parent_table.id = child_table.parent_id
             AND parent_table.user_id = auth.uid()
         )
     );
@@ -102,7 +102,7 @@ CREATE POLICY "Owner write access" ON public_table
 
 ```sql
 -- Check tables with RLS but no policies
-SELECT 
+SELECT
     t.tablename,
     c.relrowsecurity as rls_enabled,
     COUNT(p.policyname) as policy_count
@@ -110,15 +110,15 @@ FROM pg_tables t
 JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON c.relnamespace = n.oid AND n.nspname = 'public'
 LEFT JOIN pg_policies p ON p.tablename = t.tablename AND p.schemaname = 'public'
-WHERE t.schemaname = 'public' 
+WHERE t.schemaname = 'public'
     AND c.relrowsecurity = true
 GROUP BY t.tablename, c.relrowsecurity
 HAVING COUNT(p.policyname) = 0;
 
 -- Check views for SECURITY DEFINER
-SELECT viewname, definition 
-FROM pg_views 
-WHERE schemaname = 'public' 
+SELECT viewname, definition
+FROM pg_views
+WHERE schemaname = 'public'
     AND definition LIKE '%SECURITY DEFINER%';
 ```
 
@@ -217,7 +217,7 @@ RESET SESSION AUTHORIZATION;
 
 ```sql
 -- Monitor RLS violations
-SELECT 
+SELECT
     datname,
     usename,
     application_name,
@@ -230,7 +230,7 @@ FROM pg_stat_activity
 WHERE query LIKE '%row-level security%';
 
 -- Check policy usage
-SELECT 
+SELECT
     schemaname,
     tablename,
     policyname,

@@ -28,16 +28,16 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     const matchingShortcut = shortcuts.find(shortcut => {
       if (shortcut.disabled) return false
-      
+
       const keyMatches = event.key.toLowerCase() === shortcut.key.toLowerCase()
       const ctrlMatches = !!event.ctrlKey === !!shortcut.ctrlKey
       const altMatches = !!event.altKey === !!shortcut.altKey
       const shiftMatches = !!event.shiftKey === !!shortcut.shiftKey
       const metaMatches = !!event.metaKey === !!shortcut.metaKey
-      
+
       return keyMatches && ctrlMatches && altMatches && shiftMatches && metaMatches
     })
-    
+
     if (matchingShortcut) {
       event.preventDefault()
       matchingShortcut.action()
@@ -58,12 +58,12 @@ export function useKeyboardShortcuts(shortcuts: KeyboardShortcut[]) {
         if (s.altKey) modifiers.push('Alt')
         if (s.shiftKey) modifiers.push('Shift')
         if (s.metaKey) modifiers.push('⌘')
-        
+
         const keyCombo = [...modifiers, s.key.toUpperCase()].join('+')
         return `${keyCombo}: ${s.description}`
       })
       .join('\n')
-    
+
     toast.info('Keyboard Shortcuts', {
       description: helpText,
       duration: 5000,

@@ -77,7 +77,7 @@ export async function getComplianceDashboardData(): Promise<{
     // Get recent signups (last 7 days)
     const sevenDaysAgo = new Date()
     sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
-    
+
     const { count: recentSignups } = await supabase
       .from('signup_consents')
       .select('*', { count: 'exact', head: true })

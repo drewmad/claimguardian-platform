@@ -12,9 +12,9 @@ import { SupabaseClient } from '@supabase/supabase-js'
 import { useEffect, useState, useCallback, useRef } from 'react'
 
 import { RealtimeClient } from './client'
-import type { 
-  RealtimeEvent, 
-  PresenceState, 
+import type {
+  RealtimeEvent,
+  PresenceState,
   ClaimUpdate,
   DocumentUpdate,
   NotificationEvent,
@@ -232,7 +232,7 @@ export function useNotifications(
       },
       onUpdate: ({ old: oldNotif, new: newNotif }) => {
         if (newNotif.user_id === userId) {
-          setNotifications(prev => 
+          setNotifications(prev =>
             prev.map(n => n.id === newNotif.id ? newNotif : n)
           )
           if (!oldNotif.read && newNotif.read) {
@@ -253,7 +253,7 @@ export function useNotifications(
 
   const markAllAsRead = useCallback(async () => {
     if (!userId) return
-    
+
     await supabase
       .from('notifications')
       .update({ read: true })
@@ -380,7 +380,7 @@ export function useTypingIndicator(
           const updated = new Map(prev)
           if (indicator.is_typing) {
             updated.set(indicator.user_id, indicator)
-            
+
             // Auto-remove after 3 seconds
             setTimeout(() => {
               setTypingUsers(p => {

@@ -59,7 +59,7 @@ export class WebSocketMonitor extends EventEmitter {
 
   constructor(alertThresholds?: Partial<WebSocketMonitor['alertThresholds']>) {
     super()
-    
+
     this.alertThresholds = {
       maxConnections: 1000,
       errorRateThreshold: 10, // 10 errors per minute
@@ -173,7 +173,7 @@ export class WebSocketMonitor extends EventEmitter {
 
     metrics.reconnectCount++
     metrics.lastActivity = Date.now()
-    
+
     this.emit('reconnection_tracked', { connectionId, metrics })
   }
 
@@ -193,24 +193,24 @@ export class WebSocketMonitor extends EventEmitter {
   private calculateServiceMetrics(): void {
     const now = Date.now()
     const connections = Array.from(this.connections.values())
-    
+
     // Connection metrics
     this.serviceMetrics.activeConnections = connections.filter(c => c.status === 'connected').length
-    
+
     // Calculate rates (over last minute)
     const oneMinuteAgo = now - 60000
     const recentConnections = connections.filter(c => c.connectedAt > oneMinuteAgo)
-    const recentDisconnections = connections.filter(c => 
+    const recentDisconnections = connections.filter(c =>
       c.status === 'disconnected' && c.lastActivity > oneMinuteAgo
     )
-    
+
     this.serviceMetrics.connectionRate = recentConnections.length / 60 // per second
     this.serviceMetrics.disconnectionRate = recentDisconnections.length / 60 // per second
 
     // Message and error rates
     const totalMessages = connections.reduce((sum, c) => sum + c.messagesSent + c.messagesReceived, 0)
     const totalErrors = connections.reduce((sum, c) => sum + c.errors, 0)
-    
+
     this.serviceMetrics.messageRate = totalMessages / (now - this.serviceMetrics.uptime) * 1000 // per second
     this.serviceMetrics.errorRate = totalErrors / ((now - this.serviceMetrics.uptime) / 60000) // per minute
 
@@ -360,7 +360,7 @@ export class WebSocketMonitor extends EventEmitter {
 
   private emitAlert(alert: WebSocketAlert): void {
     this.emit('alert', alert)
-    
+
     // Log alert
     console.log(`🚨 WebSocket Alert [${alert.severity.toUpperCase()}]: ${alert.message}`)
   }
@@ -407,7 +407,7 @@ export class WebSocketMonitor extends EventEmitter {
 
   getMetricsHistory(duration?: number): Array<{ timestamp: number; metrics: WebSocketServiceMetrics }> {
     if (!duration) return [...this.metricsHistory]
-    
+
     const cutoff = Date.now() - duration
     return this.metricsHistory.filter(h => h.timestamp > cutoff)
   }
@@ -526,23 +526,23 @@ export function createWebSocketMonitoringMiddleware() {
     onConnection: (connectionId: string, userId: string | undefined, endpoint: string) => {
       webSocketMonitor.trackConnection(connectionId, userId, endpoint)
     },
-    
+
     onStatusChange: (connectionId: string, status: WebSocketMetrics['status']) => {
       webSocketMonitor.updateConnectionStatus(connectionId, status)
     },
-    
+
     onMessage: (connectionId: string, direction: 'sent' | 'received', size: number, latency?: number) => {
       webSocketMonitor.trackMessage(connectionId, direction, size, latency)
     },
-    
+
     onError: (connectionId: string, error: string, type: string) => {
       webSocketMonitor.trackError(connectionId, error, type)
     },
-    
+
     onReconnect: (connectionId: string) => {
       webSocketMonitor.trackReconnection(connectionId)
     },
-    
+
     onDisconnect: (connectionId: string) => {
       webSocketMonitor.removeConnection(connectionId)
     }

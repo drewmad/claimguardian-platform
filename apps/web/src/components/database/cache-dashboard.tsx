@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Zap,
   Database,
   Monitor,
@@ -85,7 +85,7 @@ export function CacheDashboard({
         cacheManager.getMetrics(),
         cacheManager.getCacheInfo()
       ])
-      
+
       setMetrics(metricsData)
       setCacheInfo(infoData)
       setAlerts(generateAlerts(metricsData, infoData))
@@ -388,8 +388,8 @@ export function CacheDashboard({
                 const isActive = cacheInfo.levels[level as CacheLevel]?.active || false
                 if (!isActive && stats.hits === 0 && stats.misses === 0) return null
 
-                const hitRate = stats.hits + stats.misses > 0 
-                  ? (stats.hits / (stats.hits + stats.misses)) * 100 
+                const hitRate = stats.hits + stats.misses > 0
+                  ? (stats.hits / (stats.hits + stats.misses)) * 100
                   : 0
 
                 return (
@@ -582,7 +582,7 @@ function CacheMetricsCard({
               <Progress value={progress} className="mt-3 h-2" />
             )}
           </div>
-          
+
           <div className={cn("w-12 h-12 bg-gray-100 dark:bg-gray-800 rounded-lg flex items-center justify-center ml-4", color)}>
             <Icon className="w-6 h-6" />
           </div>
@@ -640,7 +640,7 @@ function CacheLevelMonitor({
         <div className={cn("w-10 h-10 rounded-lg flex items-center justify-center bg-white dark:bg-gray-700", getLevelColor(level))}>
           <Icon className="w-5 h-5" />
         </div>
-        
+
         <div>
           <h4 className="font-medium capitalize">{level} Cache</h4>
           <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -655,7 +655,7 @@ function CacheLevelMonitor({
         <Badge variant={isActive ? 'default' : 'outline'}>
           {isActive ? 'Active' : 'Inactive'}
         </Badge>
-        
+
         {hitRate > 0 && (
           <div className="flex items-center gap-1 text-sm">
             {hitRate > 75 ? (

@@ -20,13 +20,13 @@ jobs:
     steps:
       - name: Checkout PR branch
         uses: actions/checkout@v4
-        
+
       - name: Checkout base branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.base.ref }}
           path: base
-          
+
       - name: Setup PostgreSQL
         uses: harmon758/postgresql-action@v1
         with:
@@ -34,19 +34,19 @@ jobs:
           postgresql db: 'test_db'
           postgresql user: 'postgres'
           postgresql password: 'postgres'
-      
+
       - name: Analyze schema changes
         id: analyze
         run: |
           echo "## 📊 Database Schema Analysis" > report.md
           echo "" >> report.md
-          
+
           # Generate diff
           echo "### Schema Diff" >> report.md
           echo '```diff' >> report.md
           diff -u base/supabase/schema.sql supabase/schema.sql >> report.md || true
           echo '```' >> report.md
-          
+
           # Count changes
           TABLES_ADDED=$(grep -c "^+CREATE TABLE" supabase/schema.sql || true)
           TABLES_DROPPED=$(grep -c "^+DROP TABLE" supabase/schema.sql || true)
@@ -54,7 +54,7 @@ jobs:
           COLUMNS_DROPPED=$(grep -c "^+.*DROP COLUMN" supabase/schema.sql || true)
           INDEXES_ADDED=$(grep -c "^+CREATE.*INDEX" supabase/schema.sql || true)
           RLS_ADDED=$(grep -c "^+CREATE POLICY" supabase/schema.sql || true)
-          
+
           echo "" >> report.md
           echo "### Change Summary" >> report.md
           echo "- Tables added: $TABLES_ADDED" >> report.md
@@ -63,19 +63,19 @@ jobs:
           echo "- Columns dropped: $COLUMNS_DROPPED" >> report.md
           echo "- Indexes added: $INDEXES_ADDED" >> report.md
           echo "- RLS policies added: $RLS_ADDED" >> report.md
-          
+
           # Set outputs for later steps
           echo "has_drops=$((TABLES_DROPPED + COLUMNS_DROPPED))" >> $GITHUB_OUTPUT
           echo "has_changes=$((TABLES_ADDED + TABLES_DROPPED + COLUMNS_ADDED + COLUMNS_DROPPED + INDEXES_ADDED + RLS_ADDED))" >> $GITHUB_OUTPUT
-      
+
       - name: Test schema application
         run: |
           echo "" >> report.md
           echo "### Schema Validation" >> report.md
-          
+
           # Test applying the schema to a fresh database
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_db < supabase/schema.sql 2>&1 | tee schema-apply.log
-          
+
           if [ ${PIPESTATUS[0]} -eq 0 ]; then
             echo "✅ Schema applies successfully" >> report.md
           else
@@ -85,24 +85,24 @@ jobs:
             echo '```' >> report.md
             exit 1
           fi
-      
+
       - name: Validate schema best practices
         run: |
           echo "" >> report.md
           echo "### Best Practices Check" >> report.md
-          
+
           # Check for tables without RLS
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_db << EOF > rls-check.txt
-          SELECT tablename 
-          FROM pg_tables 
-          WHERE schemaname = 'public' 
+          SELECT tablename
+          FROM pg_tables
+          WHERE schemaname = 'public'
           AND tablename NOT IN (
-            SELECT DISTINCT tablename 
+            SELECT DISTINCT tablename
             FROM pg_policies
           )
           AND tablename NOT LIKE '%_view';
           EOF
-          
+
           if [ -s rls-check.txt ]; then
             echo "⚠️ **Warning**: The following tables lack RLS policies:" >> report.md
             echo '```' >> report.md
@@ -111,24 +111,24 @@ jobs:
           else
             echo "✅ All tables have RLS policies" >> report.md
           fi
-          
+
           # Check for missing indexes on foreign keys
           PGPASSWORD=postgres psql -h localhost -U postgres -d test_db << EOF > index-check.txt
-          SELECT 
-            tc.table_name, 
+          SELECT
+            tc.table_name,
             kcu.column_name
           FROM information_schema.table_constraints tc
-          JOIN information_schema.key_column_usage kcu 
+          JOIN information_schema.key_column_usage kcu
             ON tc.constraint_name = kcu.constraint_name
           WHERE tc.constraint_type = 'FOREIGN KEY'
           AND NOT EXISTS (
-            SELECT 1 
-            FROM pg_indexes 
-            WHERE tablename = tc.table_name 
+            SELECT 1
+            FROM pg_indexes
+            WHERE tablename = tc.table_name
             AND indexdef LIKE '%' || kcu.column_name || '%'
           );
           EOF
-          
+
           if [ -s index-check.txt ]; then
             echo "" >> report.md
             echo "⚠️ **Performance**: Foreign keys without indexes:" >> report.md
@@ -136,7 +136,7 @@ jobs:
             cat index-check.txt >> report.md
             echo '```' >> report.md
           fi
-      
+
       - name: Check for breaking changes
         if: steps.analyze.outputs.has_drops > 0
         run: |
@@ -147,7 +147,7 @@ jobs:
           echo "1. Data migration scripts are provided" >> report.md
           echo "2. Deployment plan includes proper sequencing" >> report.md
           echo "3. Backups are taken before deployment" >> report.md
-      
+
       - name: Generate migration guide
         if: steps.analyze.outputs.has_changes > 0
         run: |
@@ -168,27 +168,27 @@ jobs:
           echo "# 4. Generate new TypeScript types" >> report.md
           echo "pnpm db:generate-types" >> report.md
           echo '```' >> report.md
-      
+
       - name: Comment PR
         uses: actions/github-script@v7
         with:
           script: |
             const fs = require('fs');
             const report = fs.readFileSync('report.md', 'utf8');
-            
+
             const { data: comments } = await github.rest.issues.listComments({
               owner: context.repo.owner,
               repo: context.repo.repo,
               issue_number: context.issue.number,
             });
-            
-            const botComment = comments.find(comment => 
-              comment.user.type === 'Bot' && 
+
+            const botComment = comments.find(comment =>
+              comment.user.type === 'Bot' &&
               comment.body.includes('## 📊 Database Schema Analysis')
             );
-            
+
             const body = report;
-            
+
             if (botComment) {
               await github.rest.issues.updateComment({
                 owner: context.repo.owner,
@@ -204,13 +204,13 @@ jobs:
                 body
               });
             }
-      
+
       - name: Status check
         run: |
           if [ "${{ steps.analyze.outputs.has_drops }}" -gt 0 ]; then
             echo "❌ Breaking changes detected. PR requires database admin approval."
             echo "Add the 'database-migration-approved' label to proceed."
-            
+
             # Check if approved label exists
             if ! gh pr view ${{ github.event.pull_request.number }} --json labels | jq -r '.labels[].name' | grep -q "database-migration-approved"; then
               exit 1
@@ -220,7 +220,7 @@ jobs:
           fi
         env:
           GH_TOKEN: ${{ github.token }}
-      
+
       - name: Add auto-approval label
         if: steps.analyze.outputs.has_drops == 0
         run: |
@@ -237,17 +237,17 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
+
       - name: Setup Supabase CLI
         uses: supabase/setup-cli@v1
         with:
           version: latest
-          
+
       - name: Deploy to staging
         run: |
           # Apply schema to staging environment
           supabase db push --db-url "${{ secrets.STAGING_DATABASE_URL }}" < supabase/schema.sql
-          
+
           # Run post-deployment validations
           ./scripts/db.sh validate --env staging
         env:

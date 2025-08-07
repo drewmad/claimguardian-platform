@@ -37,7 +37,7 @@ export async function signUp(formData: FormData): Promise<AuthResult> {
     }
 
     const supabase = await createClient()
-    
+
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -80,7 +80,7 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
     }
 
     const supabase = await createClient()
-    
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password
@@ -106,7 +106,7 @@ export async function signIn(formData: FormData): Promise<AuthResult> {
 export async function signOut(): Promise<AuthResult> {
   try {
     const supabase = await createClient()
-    
+
     const { error } = await supabase.auth.signOut()
 
     if (error) {
@@ -140,7 +140,7 @@ export async function resetPassword(formData: FormData): Promise<AuthResult> {
     const supabase = await createClient()
     const headersList = await headers()
     const origin = headersList.get('origin')
-    
+
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${origin}/auth/reset-password`
     })
@@ -184,7 +184,7 @@ export async function updatePassword(formData: FormData): Promise<AuthResult> {
     }
 
     const supabase = await createClient()
-    
+
     const { error } = await supabase.auth.updateUser({
       password
     })

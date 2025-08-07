@@ -50,11 +50,11 @@ export function Skeleton({
       <motion.div
         className={baseClasses}
         style={skeletonStyle}
-        animate={{ 
-          opacity: [0.6, 1, 0.6] 
+        animate={{
+          opacity: [0.6, 1, 0.6]
         }}
-        transition={{ 
-          duration: 1.5, 
+        transition={{
+          duration: 1.5,
           repeat: Infinity,
           ease: "easeInOut"
         }}
@@ -65,7 +65,7 @@ export function Skeleton({
 
   if (animation === 'wave') {
     return (
-      <div 
+      <div
         className={cn(baseClasses, "relative overflow-hidden")}
         style={skeletonStyle}
         {...props}
@@ -84,7 +84,7 @@ export function Skeleton({
   }
 
   return (
-    <div 
+    <div
       className={baseClasses}
       style={skeletonStyle}
       {...props}
@@ -98,8 +98,8 @@ export interface SkeletonTextProps {
   width?: 'full' | 'short' | 'medium' | 'long'
 }
 
-export function SkeletonText({ 
-  lines = 1, 
+export function SkeletonText({
+  lines = 1,
   className,
   width = 'full'
 }: SkeletonTextProps) {
@@ -115,7 +115,7 @@ export function SkeletonText({
       {Array.from({ length: lines }).map((_, index) => {
         const isLastLine = index === lines - 1
         const lineWidth = isLastLine && lines > 1 ? 'w-2/3' : widthClasses[width]
-        
+
         return (
           <Skeleton
             key={index}
@@ -156,8 +156,8 @@ export function SkeletonCard({
 
       {/* Featured image */}
       {showImage && (
-        <Skeleton 
-          variant="rounded" 
+        <Skeleton
+          variant="rounded"
           className="w-full h-48"
           animation="wave"
         />
@@ -205,14 +205,14 @@ export function SkeletonTable({
       {/* Table rows */}
       <div className="space-y-2">
         {Array.from({ length: rows }).map((_, rowIndex) => (
-          <div 
+          <div
             key={`row-${rowIndex}`}
-            className="grid gap-4 p-2" 
+            className="grid gap-4 p-2"
             style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}
           >
             {Array.from({ length: columns }).map((_, colIndex) => (
-              <Skeleton 
-                key={`cell-${rowIndex}-${colIndex}`} 
+              <Skeleton
+                key={`cell-${rowIndex}-${colIndex}`}
                 className="h-4"
                 animation="wave"
               />
@@ -226,7 +226,7 @@ export function SkeletonTable({
 
 // Pre-built skeletons for common use cases
 export const PropertyCardSkeleton = () => (
-  <SkeletonCard 
+  <SkeletonCard
     showImage={true}
     showAvatar={false}
     textLines={2}

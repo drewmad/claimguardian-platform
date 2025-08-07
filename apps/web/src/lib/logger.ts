@@ -64,7 +64,7 @@ class Logger {
     // Console output
     const formattedMessage = this.formatMessage(entry)
     const contextStr = context ? JSON.stringify(context, null, 2) : ''
-    
+
     switch (level) {
       case LogLevel.DEBUG:
         if (this.isDevelopment) {
@@ -137,10 +137,10 @@ class Logger {
 
   // Track events (for analytics)
   track(eventName: string, properties?: Record<string, unknown>) {
-    this.log(LogLevel.INFO, `Event: ${eventName}`, { 
-      ...properties, 
+    this.log(LogLevel.INFO, `Event: ${eventName}`, {
+      ...properties,
       eventType: 'track',
-      eventName 
+      eventName
     })
   }
 
@@ -172,32 +172,32 @@ export const logger = new Logger()
 
 // Convenience functions for common modules
 export const authLogger = {
-  debug: (message: string, context?: Omit<LogContext, 'module'>) => 
+  debug: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.debug(message, { ...context, module: 'auth' }),
-  info: (message: string, context?: Omit<LogContext, 'module'>) => 
+  info: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.info(message, { ...context, module: 'auth' }),
-  warn: (message: string, context?: Omit<LogContext, 'module'>) => 
+  warn: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.warn(message, { ...context, module: 'auth' }),
-  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) => 
+  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) =>
     logger.error(message, { ...context, module: 'auth' }, error),
 }
 
 export const apiLogger = {
-  info: (message: string, context?: Omit<LogContext, 'module'>) => 
+  info: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.info(message, { ...context, module: 'api' }),
-  warn: (message: string, context?: Omit<LogContext, 'module'>) => 
+  warn: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.warn(message, { ...context, module: 'api' }),
-  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) => 
+  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) =>
     logger.error(message, { ...context, module: 'api' }, error),
 }
 
 export const cameraLogger = {
-  debug: (message: string, context?: Omit<LogContext, 'module'>) => 
+  debug: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.debug(message, { ...context, module: 'camera' }),
-  info: (message: string, context?: Omit<LogContext, 'module'>) => 
+  info: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.info(message, { ...context, module: 'camera' }),
-  warn: (message: string, context?: Omit<LogContext, 'module'>) => 
+  warn: (message: string, context?: Omit<LogContext, 'module'>) =>
     logger.warn(message, { ...context, module: 'camera' }),
-  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) => 
+  error: (message: string, context?: Omit<LogContext, 'module'>, error?: Error) =>
     logger.error(message, { ...context, module: 'camera' }, error),
 }

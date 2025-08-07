@@ -139,13 +139,13 @@ function PolicyChatContent() {
         variant: Math.random() > 0.5 ? 'A' as const : 'B' as const,
         modelUsed: Math.random() > 0.5 ? 'gpt-4-turbo' : 'gemini-1.5-pro'
       }
-      
+
       setLastAbTestInfo(mockAbTestInfo)
-      
+
       // Reset feedback state for new conversation
       setQualityFeedback({ helpful: null, accuracy: null, comment: '' })
       setFeedbackSubmitted(false)
-      
+
       return response
 
     } catch (error) {
@@ -183,7 +183,7 @@ function PolicyChatContent() {
         resource_type: 'ai_interaction',
         metadata: feedbackData
       })
-      
+
       // Mock API call - in production, would call actual endpoint
       // await fetch('/api/admin/quality-feedback', {
       //   method: 'POST',
@@ -210,7 +210,7 @@ function PolicyChatContent() {
             <Badge variant="outline" className="ml-2 text-gray-400 border-gray-600">Beta</Badge>
           </div>
           <p className="text-gray-400 max-w-3xl">
-            Get instant answers about your insurance policy, coverage details, and claim procedures. 
+            Get instant answers about your insurance policy, coverage details, and claim procedures.
             Our AI specializes in Florida property insurance and hurricane-related coverage.
           </p>
         </div>
@@ -281,19 +281,19 @@ function PolicyChatContent() {
             <AIChatInterface
               systemPrompt={AI_PROMPTS.POLICY_CHAT.SYSTEM}
               placeholder="Ask about your insurance policy, coverage, deductibles, or claim procedures..."
-              welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${ 
-                uploadedDocuments.length > 0 
-                  ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}` 
+              welcomeMessage={`Hello! I'm your AI policy advisor. I can help you understand your Florida property insurance policy, including hurricane and flood coverage, deductibles, claim procedures, and more.${
+                uploadedDocuments.length > 0
+                  ? `\n\nI see you've uploaded ${uploadedDocuments.length} document${uploadedDocuments.length > 1 ? 's' : ''}: ${uploadedDocuments.map(d => `"${d.name}"`).join(', ')}. ${compareMode ? "I'm in comparison mode and will highlight differences between your policies." : "I'll use these documents to provide specific answers about your policy."}`
                   : '\nYou can upload policy documents for specific answers or compare multiple policies.'
               } What would you like to know?`}
               onSendMessage={handleSendMessage}
               className="h-[600px]"
             />
 
-            {/* A/B Testing Information and Quality Feedback */} 
+            {/* A/B Testing Information and Quality Feedback */}
             {lastAbTestInfo && (
               <div className="mt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* A/B Testing Information */} 
+                {/* A/B Testing Information */}
                 <Card className="bg-blue-900/20 border-blue-600/30">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
@@ -320,7 +320,7 @@ function PolicyChatContent() {
                   </CardContent>
                 </Card>
 
-                {/* Quality Feedback */} 
+                {/* Quality Feedback */}
                 <Card className="bg-gray-800 border-gray-700">
                   <CardContent className="p-4">
                     <div className="flex items-center gap-3 mb-3">
@@ -328,7 +328,7 @@ function PolicyChatContent() {
                       <h3 className="text-white font-semibold text-sm">Quality Feedback</h3>
                     </div>
                     <div className="space-y-3">
-                      {/* Helpfulness */} 
+                      {/* Helpfulness */}
                       <div>
                         <p className="text-xs text-gray-400 mb-1">Was this response helpful?</p>
                         <div className="flex gap-1">
@@ -355,7 +355,7 @@ function PolicyChatContent() {
                         </div>
                       </div>
 
-                      {/* Accuracy Rating */} 
+                      {/* Accuracy Rating */}
                       <div>
                         <p className="text-xs text-gray-400 mb-1">Rate accuracy (1-5 stars):</p>
                         <div className="flex gap-1">
@@ -368,8 +368,8 @@ function PolicyChatContent() {
                               disabled={feedbackSubmitted}
                               className="p-0 h-6 w-6"
                             >
-                              <Star 
-                                className={`w-3 h-3 ${ 
+                              <Star
+                                className={`w-3 h-3 ${
                                   qualityFeedback.accuracy && rating <= qualityFeedback.accuracy
                                     ? 'text-yellow-400 fill-yellow-400'
                                     : 'text-gray-400'
@@ -380,7 +380,7 @@ function PolicyChatContent() {
                         </div>
                       </div>
 
-                      {/* Submit Button */} 
+                      {/* Submit Button */}
                       <Button
                         onClick={submitQualityFeedback}
                         disabled={feedbackSubmitted || (!qualityFeedback.helpful && !qualityFeedback.accuracy)}
@@ -411,8 +411,8 @@ function PolicyChatContent() {
                 <div className="text-sm text-amber-200">
                   <p className="font-semibold mb-1">Important Disclaimer</p>
                   <p>
-                    This AI assistant provides general information about insurance policies. 
-                    Always consult your actual policy documents and insurance agent for specific 
+                    This AI assistant provides general information about insurance policies.
+                    Always consult your actual policy documents and insurance agent for specific
                     coverage details and binding information.
                   </p>
                 </div>

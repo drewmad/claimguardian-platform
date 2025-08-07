@@ -40,7 +40,7 @@
 // As User 1 - Create a property
 const { data: property1 } = await supabase
   .from('properties')
-  .insert({ 
+  .insert({
     address: '123 Test St',
     user_id: user1.id // Should match auth.uid()
   })
@@ -49,7 +49,7 @@ const { data: property1 } = await supabase
 const { data: properties, error } = await supabase
   .from('properties')
   .select('*')
-  
+
 // ✅ PASS: Should return empty array (no access to User 1's data)
 // ❌ FAIL: If User 2 can see User 1's property
 ```
@@ -59,7 +59,7 @@ const { data: properties, error } = await supabase
 // As User 1 - Create a claim
 const { data: claim1 } = await supabase
   .from('claims')
-  .insert({ 
+  .insert({
     claim_number: 'TEST-001',
     property_id: property1.id,
     user_id: user1.id
@@ -69,7 +69,7 @@ const { data: claim1 } = await supabase
 const { data: claims, error } = await supabase
   .from('claims')
   .select('*')
-  
+
 // ✅ PASS: Should return empty array
 // ❌ FAIL: If User 2 can see User 1's claims
 ```
@@ -81,7 +81,7 @@ const { error } = await supabase
   .from('properties')
   .update({ address: 'Hacked!' })
   .eq('id', property1.id)
-  
+
 // ✅ PASS: Should get RLS policy violation error
 // ❌ FAIL: If update succeeds
 ```
@@ -97,7 +97,7 @@ const adminSupabase = createClient(url, serviceRoleKey)
 const { data: allProperties } = await adminSupabase
   .from('properties')
   .select('*')
-  
+
 // ✅ PASS: Returns all properties across all users
 // ❌ FAIL: If limited to single user
 ```
@@ -113,7 +113,7 @@ const { data: allProperties } = await adminSupabase
 #### Check Error Logs
 ```sql
 -- Look for RLS violations
-SELECT 
+SELECT
     created_at,
     error_code,
     error_message,
@@ -129,7 +129,7 @@ LIMIT 50;
 #### Check Audit Logs
 ```sql
 -- Look for unauthorized access attempts
-SELECT 
+SELECT
     created_at,
     user_id,
     action,
@@ -147,7 +147,7 @@ LIMIT 50;
 ```sql
 -- Create monitoring view
 CREATE OR REPLACE VIEW v_rls_violations AS
-SELECT 
+SELECT
     DATE_TRUNC('hour', created_at) as hour,
     COUNT(*) as violation_count,
     COUNT(DISTINCT user_id) as unique_users,
@@ -164,12 +164,12 @@ HAVING COUNT(*) > 5;  -- Alert threshold
 #### Verify PostGIS Tables
 ```sql
 -- Check RLS status
-SELECT 
+SELECT
     tablename,
     relrowsecurity as rls_enabled,
     policy_count
 FROM (
-    SELECT 
+    SELECT
         t.tablename,
         c.relrowsecurity,
         COUNT(p.policyname) as policy_count
@@ -188,7 +188,7 @@ const { data: spatialRef } = await supabase
   .from('spatial_ref_sys')
   .select('*')
   .limit(1)
-  
+
 // ✅ PASS: Returns coordinate system data
 // ❌ FAIL: If access denied
 ```
@@ -210,7 +210,7 @@ RETURNS TABLE (
 )
 LANGUAGE sql
 AS $$
-    SELECT 
+    SELECT
         DATE_TRUNC('hour', created_at) as time_bucket,
         COUNT(*)::INTEGER as violations,
         COUNT(DISTINCT user_id)::INTEGER as unique_users,
@@ -289,6 +289,6 @@ If RLS blocks critical operations:
 
 ---
 
-**Last Updated**: [Date]  
-**Verified By**: [Name]  
+**Last Updated**: [Date]
+**Verified By**: [Name]
 **Next Review**: [Date + 30 days]

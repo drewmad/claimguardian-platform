@@ -12,17 +12,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
-import { 
-  Users, 
-  Activity, 
-  Clock, 
+import {
+  Users,
+  Activity,
+  Clock,
   Target,
   TrendingUp,
   TrendingDown,
@@ -114,7 +114,7 @@ interface ChurnRisk {
 
 const FEATURE_COLORS = {
   'Dashboard': '#3B82F6',
-  'AI Tools': '#10B981', 
+  'AI Tools': '#10B981',
   'Properties': '#F59E0B',
   'Claims': '#EF4444',
   'Documents': '#8B5CF6',
@@ -123,7 +123,7 @@ const FEATURE_COLORS = {
 
 const RISK_COLORS = {
   low: '#10B981',
-  medium: '#F59E0B', 
+  medium: '#F59E0B',
   high: '#EF4444',
   critical: '#DC2626'
 }
@@ -148,7 +148,7 @@ export function UserBehaviorAnalytics() {
   const loadBehaviorData = async () => {
     try {
       setLoading(true)
-      
+
       // Load all analytics data in parallel
       const [
         retentionData,
@@ -179,12 +179,12 @@ export function UserBehaviorAnalytics() {
       setPatterns(patternsData.data || [])
       setSegments(segmentsData.data || [])
       setChurnRisk(churnData.data || [])
-      
+
       setError(null)
     } catch (err) {
       console.error('Error loading behavior data:', err)
       setError('Failed to load analytics data')
-      
+
       // Mock data for development
       const mockRetention = [
         { cohort_month: '2024-10', period: 0, users: 234, retained_users: 234, retention_rate: 100 },
@@ -228,7 +228,7 @@ export function UserBehaviorAnalytics() {
           const baseActivity = day === 'Saturday' || day === 'Sunday' ? 0.6 : 1.0
           const hourMultiplier = hour >= 9 && hour <= 17 ? 1.5 : hour >= 18 && hour <= 22 ? 1.2 : 0.3
           const activeUsers = Math.round(200 * baseActivity * hourMultiplier * (0.8 + Math.random() * 0.4))
-          
+
           mockPatterns.push({
             hour,
             day_of_week: day,
@@ -411,7 +411,7 @@ export function UserBehaviorAnalytics() {
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                     <XAxis dataKey="period" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} domain={[0, 100]} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       formatter={(value: number) => `${value.toFixed(1)}%`}
                     />
@@ -486,9 +486,9 @@ export function UserBehaviorAnalytics() {
                       <tr key={idx} className="border-b border-gray-700/50">
                         <td className="py-3 text-gray-300 font-medium">{feature.feature_name}</td>
                         <td className="text-right py-3">
-                          <Badge 
-                            variant="outline" 
-                            style={{ 
+                          <Badge
+                            variant="outline"
+                            style={{
                               borderColor: FEATURE_COLORS[feature.category as keyof typeof FEATURE_COLORS],
                               color: FEATURE_COLORS[feature.category as keyof typeof FEATURE_COLORS]
                             }}
@@ -536,8 +536,8 @@ export function UserBehaviorAnalytics() {
                         </div>
                       </div>
                       <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${(step.users / journey[0].users) * 100}%` }}
                         />
                       </div>

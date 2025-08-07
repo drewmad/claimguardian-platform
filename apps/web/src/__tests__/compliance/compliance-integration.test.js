@@ -23,15 +23,15 @@ const mockSupabaseClient = {
     }))
   })),
   auth: {
-    getUser: jest.fn(() => Promise.resolve({ 
-      data: { user: { id: 'test-user-id' } }, 
-      error: null 
+    getUser: jest.fn(() => Promise.resolve({
+      data: { user: { id: 'test-user-id' } },
+      error: null
     }))
   },
   storage: {
     from: jest.fn(() => ({
       upload: jest.fn(() => Promise.resolve({ error: null })),
-      getPublicUrl: jest.fn(() => ({ 
+      getPublicUrl: jest.fn(() => ({
         data: { publicUrl: 'https://test.com/test.pdf' }
       }))
     }))
@@ -142,7 +142,7 @@ const mockUserProfile = {
 describe('Compliance System Integration Tests', () => {
   beforeEach(() => {
     jest.clearAllMocks()
-    
+
     // Set up mock return values
     mockFloridaComplianceManager.checkInsuranceCodeCompliance.mockResolvedValue({
       compliant: true,
@@ -252,7 +252,7 @@ describe('Compliance System Integration Tests', () => {
       expect(result).toHaveProperty('violations')
       expect(result).toHaveProperty('recommendations')
       expect(result).toHaveProperty('riskLevel')
-      
+
       expect(Array.isArray(result.violations)).toBe(true)
       expect(Array.isArray(result.recommendations)).toBe(true)
       expect(['low', 'medium', 'high', 'critical']).toContain(result.riskLevel)
@@ -278,7 +278,7 @@ describe('Compliance System Integration Tests', () => {
       expect(result.timeline).toHaveProperty('decisionDeadline')
       expect(result.timeline).toHaveProperty('paymentDeadline')
       expect(result.timeline).toHaveProperty('daysRemaining')
-      
+
       expect(typeof result.timeline.daysRemaining).toBe('number')
     })
 
@@ -569,7 +569,7 @@ describe('Compliance System Integration Tests', () => {
       ]
 
       const results = await Promise.all(promises)
-      
+
       expect(results).toHaveLength(3)
       results.forEach(result => {
         expect(result).toHaveProperty('compliant')

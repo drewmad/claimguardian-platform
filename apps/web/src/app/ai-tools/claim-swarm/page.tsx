@@ -22,11 +22,11 @@ export default function ClaimSwarmPage() {
             Multiple perspectives improve accuracy and provide consensus-based assessments.
           </p>
         </div>
-        
+
         <div className="bg-gray-800 border-gray-700 rounded-lg p-6">
           <p className="text-gray-400">Feature temporarily disabled for deployment.</p>
         </div>
-        
+
         <div className="mt-8 bg-gray-900 rounded-lg p-6">
           <h2 className="text-xl font-semibold text-white mb-4">How It Works</h2>
           <div className="grid md:grid-cols-3 gap-6">

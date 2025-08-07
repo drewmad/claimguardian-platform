@@ -139,7 +139,7 @@ interface PolicyCardProps {
 export function PolicyCard({ policy, onUpdate, onDelete }: PolicyCardProps) {
   // Component-specific state
   const [isEditing, setIsEditing] = useState(false)
-  
+
   // Component-specific logic
   const handleSave = async (updatedPolicy: Policy) => {
     try {
@@ -154,13 +154,13 @@ export function PolicyCard({ policy, onUpdate, onDelete }: PolicyCardProps) {
   return (
     <CardVariants variant="insurance" className="p-6">
       {isEditing ? (
-        <PolicyEditForm 
-          policy={policy} 
+        <PolicyEditForm
+          policy={policy}
           onSave={handleSave}
           onCancel={() => setIsEditing(false)}
         />
       ) : (
-        <PolicyDisplay 
+        <PolicyDisplay
           policy={policy}
           onEdit={() => setIsEditing(true)}
           onDelete={() => onDelete(policy.id)}
@@ -184,25 +184,25 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   rightIcon?: React.ReactNode
 }
 
-export function Button({ 
-  variant = 'primary', 
-  size = 'md', 
+export function Button({
+  variant = 'primary',
+  size = 'md',
   loading = false,
   leftIcon,
   rightIcon,
   children,
   disabled,
-  ...props 
+  ...props
 }: ButtonProps) {
   const baseClasses = 'inline-flex items-center justify-center rounded-lg font-medium transition-colors'
-  
+
   const variantClasses = {
     primary: 'bg-green-600 hover:bg-green-700 text-white',
     secondary: 'bg-gray-600 hover:bg-gray-700 text-white',
     ghost: 'hover:bg-gray-800 text-gray-300',
     danger: 'bg-red-600 hover:bg-red-700 text-white'
   }
-  
+
   const sizeClasses = {
     sm: 'px-3 py-2 text-sm',
     md: 'px-4 py-2 text-base',
@@ -250,7 +250,7 @@ const TabsContext = createContext<TabsContextType | null>(null)
 
 export function Tabs({ children, defaultTab }: { children: React.ReactNode, defaultTab: string }) {
   const [activeTab, setActiveTab] = useState(defaultTab)
-  
+
   return (
     <TabsContext.Provider value={{ activeTab, setActiveTab }}>
       <div className="tabs-container">
@@ -271,10 +271,10 @@ export function TabsList({ children }: { children: React.ReactNode }) {
 export function Tab({ value, children }: { value: string, children: React.ReactNode }) {
   const context = useContext(TabsContext)
   if (!context) throw new Error('Tab must be used within Tabs')
-  
+
   const { activeTab, setActiveTab } = context
   const isActive = activeTab === value
-  
+
   return (
     <button
       className={cn(
@@ -291,10 +291,10 @@ export function Tab({ value, children }: { value: string, children: React.ReactN
 export function TabContent({ value, children }: { value: string, children: React.ReactNode }) {
   const context = useContext(TabsContext)
   if (!context) return null
-  
+
   const { activeTab } = context
   if (activeTab !== value) return null
-  
+
   return <div className="mt-4">{children}</div>
 }
 
@@ -371,11 +371,11 @@ export function withLoading<P extends object>(
 ) {
   return function WithLoadingComponent(props: P & { loading?: boolean }) {
     const { loading, ...componentProps } = props
-    
+
     if (loading) {
       return <LoadingSpinner />
     }
-    
+
     return <Component {...(componentProps as P)} />
   }
 }
@@ -403,7 +403,7 @@ export function useAsync<T>(
   useEffect(() => {
     setLoading(true)
     setError(null)
-    
+
     asyncFunction()
       .then(setData)
       .catch(setError)
@@ -424,7 +424,7 @@ export function usePolicies() {
       method: 'POST',
       body: JSON.stringify(policy)
     }).then(res => res.json())
-    
+
     refetch() // Refresh the list
     return newPolicy
   }, [refetch])
@@ -465,7 +465,7 @@ export function PolicyForm({ policy, onSave }: PolicyFormProps) {
   const handleChange = (field: keyof Policy, value: any) => {
     setFormData(prev => ({ ...prev, [field]: value }))
     setIsDirty(true)
-    
+
     // Clear field error when user starts typing
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: undefined }))
@@ -474,7 +474,7 @@ export function PolicyForm({ policy, onSave }: PolicyFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     const validationErrors = validatePolicy(formData)
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors)
@@ -515,7 +515,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [properties, setProperties] = useState<Property[]>([])
 
   const updateProperty = useCallback((updatedProperty: Property) => {
-    setProperties(prev => 
+    setProperties(prev =>
       prev.map(p => p.id === updatedProperty.id ? updatedProperty : p)
     )
   }, [])
@@ -569,42 +569,42 @@ function policyReducer(state: PolicyState, action: PolicyAction): PolicyState {
   switch (action.type) {
     case 'FETCH_START':
       return { ...state, loading: true, error: null }
-    
+
     case 'FETCH_SUCCESS':
       return { ...state, loading: false, policies: action.payload }
-    
+
     case 'FETCH_ERROR':
       return { ...state, loading: false, error: action.payload }
-    
+
     case 'SELECT_POLICY':
       return { ...state, selectedPolicy: action.payload }
-    
+
     case 'UPDATE_FILTERS':
       return { ...state, filters: { ...state.filters, ...action.payload } }
-    
+
     case 'ADD_POLICY':
       return { ...state, policies: [...state.policies, action.payload] }
-    
+
     case 'UPDATE_POLICY':
       return {
         ...state,
-        policies: state.policies.map(p => 
+        policies: state.policies.map(p =>
           p.id === action.payload.id ? action.payload : p
         ),
-        selectedPolicy: state.selectedPolicy?.id === action.payload.id 
-          ? action.payload 
+        selectedPolicy: state.selectedPolicy?.id === action.payload.id
+          ? action.payload
           : state.selectedPolicy
       }
-    
+
     case 'DELETE_POLICY':
       return {
         ...state,
         policies: state.policies.filter(p => p.id !== action.payload),
-        selectedPolicy: state.selectedPolicy?.id === action.payload 
-          ? null 
+        selectedPolicy: state.selectedPolicy?.id === action.payload
+          ? null
           : state.selectedPolicy
       }
-    
+
     default:
       return state
   }
@@ -722,9 +722,9 @@ export function usePolicies() {
 
 export function useCreatePolicy() {
   const queryClient = useQueryClient()
-  
+
   return useMutation({
-    mutationFn: (policy: CreatePolicyInput) => 
+    mutationFn: (policy: CreatePolicyInput) =>
       fetch('/api/policies', {
         method: 'POST',
         body: JSON.stringify(policy)
@@ -754,7 +754,7 @@ export function PoliciesPage() {
   return (
     <div>
       <PolicyList policies={policies} />
-      <CreatePolicyButton 
+      <CreatePolicyButton
         onCreate={handleCreate}
         isLoading={createPolicyMutation.isPending}
       />
@@ -793,7 +793,7 @@ export class ErrorBoundary extends React.Component<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     this.setState({ errorInfo })
-    
+
     // Log error to monitoring service
     console.error('Error Boundary caught an error:', error, errorInfo)
   }
@@ -834,7 +834,7 @@ For handling async operations.
 // Async Error Hook
 export function useAsyncError() {
   const [, setError] = useState()
-  
+
   return useCallback((error: Error) => {
     setError(() => {
       throw error
@@ -909,9 +909,9 @@ export function ExpensiveComponent({ data }: { data: any[] }) {
     <div>
       <p>Total: {expensiveValue}</p>
       {filteredData.map(item => (
-        <ItemComponent 
-          key={item.id} 
-          item={item} 
+        <ItemComponent
+          key={item.id}
+          item={item}
           onClick={handleClick}
         />
       ))}
@@ -936,7 +936,7 @@ export function PolicyManagement() {
       <button onClick={() => setShowEditor(true)}>
         Edit Policy
       </button>
-      
+
       {showEditor && (
         <Suspense fallback={<LoadingSpinner />}>
           <LazyPolicyEditor />
@@ -1067,21 +1067,21 @@ describe('PolicyCard', () => {
 
   it('renders policy information', () => {
     render(<PolicyCard {...defaultProps} />)
-    
+
     expect(screen.getByText(mockPolicy.name)).toBeInTheDocument()
     expect(screen.getByText(mockPolicy.carrier)).toBeInTheDocument()
   })
 
   it('calls onUpdate when edit button is clicked', async () => {
     render(<PolicyCard {...defaultProps} />)
-    
+
     const editButton = screen.getByRole('button', { name: /edit/i })
     fireEvent.click(editButton)
-    
+
     // Assume edit form appears
     const saveButton = screen.getByRole('button', { name: /save/i })
     fireEvent.click(saveButton)
-    
+
     await waitFor(() => {
       expect(defaultProps.onUpdate).toHaveBeenCalledWith(mockPolicy)
     })
@@ -1089,10 +1089,10 @@ describe('PolicyCard', () => {
 
   it('shows confirmation before deleting', () => {
     render(<PolicyCard {...defaultProps} />)
-    
+
     const deleteButton = screen.getByRole('button', { name: /delete/i })
     fireEvent.click(deleteButton)
-    
+
     expect(screen.getByText(/are you sure/i)).toBeInTheDocument()
   })
 })

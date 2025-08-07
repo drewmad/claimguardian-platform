@@ -36,21 +36,21 @@ export function DocumentConfirmationUI() {
     try {
       const supabase = createClient()
       const { data: user } = await supabase.auth.getUser()
-      
+
       if (!user.user) {
         toast.error('Please log in to view documents')
         return
       }
-      
+
       const { data: pendingDocs, error } = await supabase
-        .rpc('get_documents_pending_review', { 
-          user_uuid: user.user.id 
+        .rpc('get_documents_pending_review', {
+          user_uuid: user.user.id
         })
-      
+
       if (error) {
         throw error
       }
-      
+
       setDocuments(pendingDocs || [])
     } catch (error) {
       console.error('Error loading pending documents:', error)
@@ -64,33 +64,33 @@ export function DocumentConfirmationUI() {
     try {
       const supabase = createClient()
       const { data: user } = await supabase.auth.getUser()
-      
+
       if (!user.user) {
         toast.error('Please log in')
         return
       }
-      
+
       const { data: result, error } = await supabase
         .rpc('confirm_document_processing', {
           doc_id: docId,
           user_uuid: user.user.id,
           action: 'confirm'
         })
-      
+
       if (error) {
         throw error
       }
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
-      
+
       toast.success('Document confirmed and filed', {
         description: `Saved as: ${result.final_name}`
       })
-      
+
       setDocuments(docs => docs.filter(d => d.id !== docId))
-      
+
     } catch (error) {
       console.error('Error confirming document:', error)
       toast.error('Failed to confirm document')
@@ -102,12 +102,12 @@ export function DocumentConfirmationUI() {
       const supabase = createClient()
       const { data: user } = await supabase.auth.getUser()
       const edits = editedValues[docId]
-      
+
       if (!user.user) {
         toast.error('Please log in')
         return
       }
-      
+
       const { data: result, error } = await supabase
         .rpc('confirm_document_processing', {
           doc_id: docId,
@@ -117,22 +117,22 @@ export function DocumentConfirmationUI() {
           corrected_category: edits?.category,
           user_notes: edits?.notes
         })
-      
+
       if (error) {
         throw error
       }
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
-      
+
       toast.success('Document updated and filed', {
         description: `Saved as: ${result.final_name}`
       })
-      
+
       setDocuments(docs => docs.filter(d => d.id !== docId))
       setEditingDoc(null)
-      
+
     } catch (error) {
       console.error('Error saving document edits:', error)
       toast.error('Failed to save changes')
@@ -233,7 +233,7 @@ export function DocumentConfirmationUI() {
               )}
             </div>
           </CardHeader>
-          
+
           <CardContent className="space-y-4">
             {/* AI Reasoning Section */}
             <div className="bg-gray-900 rounded-lg p-4">
@@ -264,7 +264,7 @@ export function DocumentConfirmationUI() {
                       className="bg-gray-900 border-gray-700 text-white"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="text-sm text-gray-400 mb-1 block">
                       Category
@@ -307,7 +307,7 @@ export function DocumentConfirmationUI() {
                       {doc.ai_suggested_name}
                     </span>
                   </div>
-                  
+
                   {/* Auto-Generated Tags */}
                   {doc.tags && doc.tags.length > 0 && (
                     <div>
@@ -327,7 +327,7 @@ export function DocumentConfirmationUI() {
                       </div>
                     </div>
                   )}
-                  
+
                   {/* Extracted Metadata */}
                   {doc.ai_extracted_metadata && Object.keys(doc.ai_extracted_metadata).length > 0 && (
                     <div>

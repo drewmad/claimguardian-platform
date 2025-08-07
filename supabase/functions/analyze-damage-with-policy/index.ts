@@ -19,7 +19,7 @@ interface DamageAnalysisRequest {
 
 Deno.serve(async (req) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
     if (!authHeader) {
       return new Response(
         JSON.stringify({ error: 'No authorization header' }),
-        { 
+        {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -59,23 +59,23 @@ Deno.serve(async (req) => {
 
     const token = authHeader.replace('Bearer ', '')
     const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
-    
+
     if (authError || !user) {
       return new Response(
         JSON.stringify({ error: 'Invalid token' }),
-        { 
+        {
           status: 401,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
       )
     }
 
-    const { 
-      propertyId, 
-      damageDescription, 
-      damageType, 
-      images, 
-      estimatedValue = 0 
+    const {
+      propertyId,
+      damageDescription,
+      damageType,
+      images,
+      estimatedValue = 0
     }: DamageAnalysisRequest = await req.json()
 
     // Verify property ownership
@@ -88,10 +88,10 @@ Deno.serve(async (req) => {
 
     if (propertyError || !property) {
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           error: 'Property not found or access denied'
         }),
-        { 
+        {
           status: 404,
           headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         }
@@ -111,7 +111,7 @@ Deno.serve(async (req) => {
     if (!policies || policies.length === 0) {
       // Return analysis without policy context
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           success: true,
           analysis: {
             damageType,
@@ -127,7 +127,7 @@ Deno.serve(async (req) => {
             ]
           }
         }),
-        { 
+        {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200
         }
@@ -141,7 +141,7 @@ Deno.serve(async (req) => {
     if (!apiKey) {
       // Fallback response without AI
       return new Response(
-        JSON.stringify({ 
+        JSON.stringify({
           success: true,
           analysis: {
             damageType,
@@ -153,7 +153,7 @@ Deno.serve(async (req) => {
             message: 'AI analysis unavailable. Manual review recommended.'
           }
         }),
-        { 
+        {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 200
         }
@@ -168,12 +168,12 @@ Deno.serve(async (req) => {
     Type: ${damageType}
     Description: ${damageDescription}
     Estimated Value: $${estimatedValue}
-    
+
     Provide a brief analysis including:
     1. Whether this type of damage is typically covered
     2. Common exclusions to watch for
     3. Recommended next steps
-    
+
     Format as JSON with: {isCovered: boolean, explanation: string, nextSteps: string[], warnings: string[]}`
 
     const result = await model.generateContent(prompt)
@@ -194,7 +194,7 @@ Deno.serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: true,
         analysis: {
           ...aiAnalysis,
@@ -206,7 +206,7 @@ Deno.serve(async (req) => {
           carrier: activePolicy.carrier_name
         }
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 200
       }
@@ -219,13 +219,13 @@ Deno.serve(async (req) => {
       message: 'Error in analyze-damage-with-policy',
       error: error instanceof Error ? error.message : String(error)
     }));
-    
+
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: error instanceof Error ? error.message : String(error),
         details: error.toString()
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

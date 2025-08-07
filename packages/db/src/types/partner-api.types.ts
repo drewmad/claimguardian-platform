@@ -77,12 +77,12 @@ export interface PartnerOrganization {
   companyCode: string // Unique identifier for white-labeling
   domain: string
   additionalDomains: string[]
-  
+
   // Subscription & Billing
   subscriptionTier: 'starter' | 'professional' | 'enterprise' | 'custom'
   billingCycle: 'monthly' | 'quarterly' | 'annual'
   subscriptionStatus: 'trial' | 'active' | 'suspended' | 'cancelled'
-  
+
   // Usage Limits
   limits: {
     maxUsers: number
@@ -92,7 +92,7 @@ export interface PartnerOrganization {
     webhookCallsPerMonth: number
     apiRequestsPerMonth: number
   }
-  
+
   // Current Usage
   currentUsage: {
     users: number
@@ -102,18 +102,18 @@ export interface PartnerOrganization {
     webhookCalls: number
     apiRequests: number
   }
-  
+
   // White-label Configuration
   branding: PartnerBranding
   configuration: PartnerConfiguration
-  
+
   // Contact Information
   primaryContactEmail: string
   technicalContactEmail: string
   billingContactEmail: string
   supportContactEmail: string
   phone: string
-  
+
   // Compliance & Security
   allowedStates: string[] // Geographic restrictions
   dataRegion: 'us-east' | 'us-west' | 'eu-central' | 'ap-southeast'
@@ -121,7 +121,7 @@ export interface PartnerOrganization {
   ssoEnabled: boolean
   mfaRequired: boolean
   ipWhitelist: string[]
-  
+
   // Metadata
   createdAt: string
   updatedAt: string
@@ -322,9 +322,9 @@ export interface PartnerWebhook {
   updatedAt: string
 }
 
-export type PartnerWebhookEvent = 
+export type PartnerWebhookEvent =
   | 'claim.created'
-  | 'claim.updated' 
+  | 'claim.updated'
   | 'claim.approved'
   | 'claim.denied'
   | 'claim.settled'
@@ -443,31 +443,31 @@ export enum PartnerApiErrorCode {
   INVALID_API_KEY = 'invalid_api_key',
   EXPIRED_API_KEY = 'expired_api_key',
   INSUFFICIENT_PERMISSIONS = 'insufficient_permissions',
-  
+
   // Rate Limiting
   RATE_LIMIT_EXCEEDED = 'rate_limit_exceeded',
   QUOTA_EXCEEDED = 'quota_exceeded',
-  
+
   // Validation
   INVALID_REQUEST = 'invalid_request',
   MISSING_REQUIRED_FIELD = 'missing_required_field',
   INVALID_FIELD_VALUE = 'invalid_field_value',
-  
+
   // Resource Management
   RESOURCE_NOT_FOUND = 'resource_not_found',
   RESOURCE_ALREADY_EXISTS = 'resource_already_exists',
   RESOURCE_LIMIT_EXCEEDED = 'resource_limit_exceeded',
-  
+
   // Processing
   PROCESSING_FAILED = 'processing_failed',
   EXTERNAL_SERVICE_ERROR = 'external_service_error',
-  
+
   // Business Logic
   CLAIM_ALREADY_SUBMITTED = 'claim_already_submitted',
   INVALID_CLAIM_STATUS = 'invalid_claim_status',
   DOCUMENT_TOO_LARGE = 'document_too_large',
   UNSUPPORTED_FILE_TYPE = 'unsupported_file_type',
-  
+
   // System
   INTERNAL_ERROR = 'internal_error',
   SERVICE_UNAVAILABLE = 'service_unavailable'

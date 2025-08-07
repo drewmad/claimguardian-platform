@@ -70,7 +70,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         l.id,
         l.task_type,
         l.task_description,
@@ -85,7 +85,7 @@ BEGIN
             ELSE 0
         END::numeric AS relevance_score
     FROM learnings l
-    WHERE 
+    WHERE
         (p_task_type IS NULL OR l.task_type = p_task_type)
         OR (p_error_type IS NULL OR l.error_type = p_error_type)
         OR (p_code_language IS NULL OR l.code_language = p_code_language)
@@ -96,44 +96,44 @@ END;
 $$;
 
 -- 5. Add missing columns to user_profiles
-DO $$ 
+DO $$
 BEGIN
     -- Add first_name if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = 'public' 
-                   AND table_name = 'user_profiles' 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public'
+                   AND table_name = 'user_profiles'
                    AND column_name = 'first_name') THEN
         ALTER TABLE public.user_profiles ADD COLUMN first_name text;
     END IF;
 
     -- Add last_name if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = 'public' 
-                   AND table_name = 'user_profiles' 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public'
+                   AND table_name = 'user_profiles'
                    AND column_name = 'last_name') THEN
         ALTER TABLE public.user_profiles ADD COLUMN last_name text;
     END IF;
 
     -- Add email if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = 'public' 
-                   AND table_name = 'user_profiles' 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public'
+                   AND table_name = 'user_profiles'
                    AND column_name = 'email') THEN
         ALTER TABLE public.user_profiles ADD COLUMN email text;
     END IF;
 
     -- Add x_handle if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = 'public' 
-                   AND table_name = 'user_profiles' 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public'
+                   AND table_name = 'user_profiles'
                    AND column_name = 'x_handle') THEN
         ALTER TABLE public.user_profiles ADD COLUMN x_handle text;
     END IF;
 
     -- Add is_x_connected if it doesn't exist
-    IF NOT EXISTS (SELECT 1 FROM information_schema.columns 
-                   WHERE table_schema = 'public' 
-                   AND table_name = 'user_profiles' 
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns
+                   WHERE table_schema = 'public'
+                   AND table_name = 'user_profiles'
                    AND column_name = 'is_x_connected') THEN
         ALTER TABLE public.user_profiles ADD COLUMN is_x_connected boolean DEFAULT false;
     END IF;
@@ -141,7 +141,7 @@ END $$;
 
 -- 6. Create policy_documents_extended view
 CREATE OR REPLACE VIEW public.policy_documents_extended AS
-SELECT 
+SELECT
     pd.*,
     p.address as property_address,
     u.email as user_email
@@ -151,7 +151,7 @@ LEFT JOIN auth.users u ON pd.user_id = u.id;
 
 -- 7. Create recent_login_activity view
 CREATE OR REPLACE VIEW public.recent_login_activity AS
-SELECT 
+SELECT
     la.id,
     la.user_id,
     la.ip_address,
@@ -212,16 +212,16 @@ CREATE POLICY "Users can insert own profile" ON public.user_profiles
     FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- 13. Create storage bucket policies (if bucket exists)
-DO $$ 
+DO $$
 BEGIN
     -- Insert storage policies only if the bucket exists
     IF EXISTS (SELECT 1 FROM storage.buckets WHERE id = 'policy-documents') THEN
         -- Delete existing policies to avoid conflicts
         DELETE FROM storage.objects WHERE bucket_id = 'policy-documents' AND name = '.emptyFolderPlaceholder';
-        
+
         -- Create storage policies
         INSERT INTO storage.objects (bucket_id, name, owner, created_at, updated_at, version, metadata)
-        VALUES 
+        VALUES
             ('policy-documents', 'authenticated/', NULL, now(), now(), '1', '{"mimetype": "application/octet-stream", "size": 0}'),
             ('policy-documents', 'authenticated/.emptyFolderPlaceholder', NULL, now(), now(), '1', '{"mimetype": "application/octet-stream", "size": 0}')
         ON CONFLICT DO NOTHING;
@@ -239,14 +239,14 @@ DECLARE
 BEGIN
     -- Check if profile already exists
     SELECT EXISTS (
-        SELECT 1 FROM public.user_profiles 
+        SELECT 1 FROM public.user_profiles
         WHERE user_id = NEW.id
     ) INTO profile_exists;
 
     IF NOT profile_exists THEN
         BEGIN
             INSERT INTO public.user_profiles (
-                user_id, 
+                user_id,
                 first_name,
                 last_name,
                 email,
@@ -265,7 +265,7 @@ BEGIN
             RAISE WARNING 'Failed to create user profile for user %: %', NEW.id, SQLERRM;
         END;
     END IF;
-    
+
     RETURN NEW;
 END;
 $$;

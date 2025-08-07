@@ -83,7 +83,7 @@ export const testConnectionSpeed = createAsyncThunk<
       await new Promise(resolve => setTimeout(resolve, 500))
       const endTime = Date.now()
       const responseTime = endTime - startTime
-      
+
       let quality: NetworkState['connectionQuality'] = 'unknown'
       if (responseTime < 200) quality = 'excellent'
       else if (responseTime < 500) quality = 'good'
@@ -108,7 +108,7 @@ const networkSlice = createSlice({
     setNetworkState: (state, action: PayloadAction<NetworkInfo>) => {
       const wasConnected = state.isConnected
       const now = new Date().toISOString()
-      
+
       state.isConnected = action.payload.isConnected
       state.isInternetReachable = action.payload.isInternetReachable
       state.type = action.payload.type
@@ -116,7 +116,7 @@ const networkSlice = createSlice({
       // Track connection changes
       if (wasConnected !== action.payload.isConnected) {
         state.stats.connectionChanges += 1
-        
+
         // Add to history
         state.connectionHistory.unshift({
           timestamp: now,
@@ -181,7 +181,7 @@ const networkSlice = createSlice({
         for (let i = 0; i < state.connectionHistory.length - 1; i++) {
           const current = state.connectionHistory[i]
           const next = state.connectionHistory[i + 1]
-          
+
           if (current.isConnected === next.isConnected) continue
 
           const duration = new Date(current.timestamp).getTime() - new Date(next.timestamp).getTime()
@@ -218,7 +218,7 @@ const networkSlice = createSlice({
       details?: string
     }>) => {
       const now = new Date().toISOString()
-      
+
       state.connectionHistory.unshift({
         timestamp: now,
         isConnected: action.payload.event === 'connected',

@@ -32,9 +32,9 @@ async function runMigration() {
 
   // For now, let's test with a simple query
   const testQuery = `
-    SELECT table_name 
-    FROM information_schema.tables 
-    WHERE table_schema = 'public' 
+    SELECT table_name
+    FROM information_schema.tables
+    WHERE table_schema = 'public'
     AND table_name = 'properties'
   `;
 
@@ -53,19 +53,19 @@ async function runMigration() {
 
     if (response.ok) {
       console.log('✅ Connection successful');
-      
+
       // Since we can't execute complex SQL via REST API,
       // let's create a pgpass file and use psql
       const pgpassPath = path.join(process.env.HOME, '.pgpass');
       const pgpassLine = `db.tmlrvecuwgppbaynesji.supabase.co:5432:postgres:postgres:${process.env.SUPABASE_DB_PASSWORD || 'your-password'}`;
-      
+
       console.log('\n📝 To run migration with psql:');
       console.log('1. Set up pgpass file:');
       console.log(`   echo "${pgpassLine}" >> ~/.pgpass`);
       console.log('   chmod 600 ~/.pgpass');
       console.log('\n2. Run migration:');
       console.log(`   psql -h db.tmlrvecuwgppbaynesji.supabase.co -U postgres -d postgres -f ${migrationPath}`);
-      
+
     } else {
       console.error('❌ Connection failed:', response.status, response.statusText);
     }

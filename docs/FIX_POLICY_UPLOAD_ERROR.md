@@ -12,7 +12,7 @@
    - Impact: AI document processing now operational
 
 2. **recent_login_activity** table → ✅ **EXISTS**
-   - Previously: `GET /rest/v1/recent_login_activity` → 404  
+   - Previously: `GET /rest/v1/recent_login_activity` → 404
    - Current: Table exists for security monitoring
    - Impact: User activity tracking restored
 
@@ -81,7 +81,7 @@ CREATE POLICY "Users can upload their own policy documents"
 ON storage.objects FOR INSERT
 TO authenticated
 WITH CHECK (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -89,7 +89,7 @@ CREATE POLICY "Users can view their own policy documents"
 ON storage.objects FOR SELECT
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -97,7 +97,7 @@ CREATE POLICY "Users can delete their own policy documents"
 ON storage.objects FOR DELETE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 
@@ -105,7 +105,7 @@ CREATE POLICY "Users can update their own policy documents"
 ON storage.objects FOR UPDATE
 TO authenticated
 USING (
-  bucket_id = 'policy-documents' 
+  bucket_id = 'policy-documents'
   AND (auth.uid())::text = (storage.foldername(name))[1]
 );
 ```
@@ -190,8 +190,8 @@ SELECT auth.uid(), auth.role();
 ### 1. Investigate User Profile RLS Policies
 ```sql
 -- Check RLS policies on user_profiles table
-SELECT schemaname, tablename, policyname, cmd, roles, qual 
-FROM pg_policies 
+SELECT schemaname, tablename, policyname, cmd, roles, qual
+FROM pg_policies
 WHERE tablename = 'user_profiles';
 
 -- Test user profile access for specific user
@@ -205,7 +205,7 @@ SELECT id FROM user_profiles WHERE id = '950dc54e-52a0-436a-a30b-15ebd2ecaeb3';
 
 ## Updated Priority Actions
 1. **HIGH**: Investigate user profile RLS policy issues (only remaining 400 errors)
-2. **MEDIUM**: Implement proactive monitoring for user profile access patterns  
+2. **MEDIUM**: Implement proactive monitoring for user profile access patterns
 3. **LOW**: Continue monitoring for any new error patterns
 
 ## Need More Help?

@@ -20,27 +20,27 @@ export interface ReflectionContext {
   taskDescription: string
   userIntent: string
   originalRequest: string
-  
+
   // Execution metrics
   startTime: number
   endTime: number
   toolsUsed: string[]
   filesAccessed: string[]
   commandsExecuted: string[]
-  
+
   // Approach tracking
   initialApproach: string
   actualSteps: string[]
   alternativeApproaches?: string[]
   decisionsReasoning: string[]
-  
+
   // Outcomes
   success: boolean
   completionQuality: 'excellent' | 'good' | 'acceptable' | 'poor'
   userSatisfaction?: 'high' | 'medium' | 'low'
   errorOccurred: boolean
   errorsEncountered: string[]
-  
+
   // Context
   codebase: {
     framework?: string
@@ -65,23 +65,23 @@ export interface ApproachAnalysis {
   // Efficiency assessment
   metrics: EfficiencyMetrics
   overallEfficiencyScore: number // 0-100
-  
+
   // Improvement opportunities
   inefficiencies: string[]
   betterApproaches: string[]
   missedOpportunities: string[]
   wastedSteps: string[]
-  
+
   // Learning insights
   newLearnings: string[]
   confirmedPatterns: string[]
   challengedAssumptions: string[]
-  
+
   // Recommendations for future
   approachImprovements: string[]
   toolUsageOptimizations: string[]
   processRefinements: string[]
-  
+
   // Meta insights
   strengthsObserved: string[]
   weaknessesIdentified: string[]
@@ -118,7 +118,7 @@ class ClaudeSelfReflection {
     constraints: string[] = []
   ): string {
     const taskId = `reflection-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-    
+
     this.activeReflection = {
       taskId,
       taskType,
@@ -142,7 +142,7 @@ class ClaudeSelfReflection {
       },
       constraints
     }
-    
+
     logger.info('Claude self-reflection started', { taskId, taskType, taskDescription })
     return taskId
   }
@@ -152,14 +152,14 @@ class ClaudeSelfReflection {
    */
   logStep(step: string, reasoning: string, toolUsed?: string, fileAccessed?: string) {
     if (!this.activeReflection) return
-    
+
     this.activeReflection.actualSteps.push(step)
     this.activeReflection.decisionsReasoning.push(reasoning)
-    
+
     if (toolUsed && !this.activeReflection.toolsUsed.includes(toolUsed)) {
       this.activeReflection.toolsUsed.push(toolUsed)
     }
-    
+
     if (fileAccessed && !this.activeReflection.filesAccessed.includes(fileAccessed)) {
       this.activeReflection.filesAccessed.push(fileAccessed)
     }
@@ -170,7 +170,7 @@ class ClaudeSelfReflection {
    */
   logError(error: string) {
     if (!this.activeReflection) return
-    
+
     this.activeReflection.errorOccurred = true
     this.activeReflection.errorsEncountered.push(error)
   }
@@ -197,27 +197,27 @@ class ClaudeSelfReflection {
 
     // Analyze the approach
     const analysis = await this.analyzeApproach(this.activeReflection)
-    
+
     // Generate improvement insights
     const insights = await this.generateImprovementInsights(this.activeReflection, analysis)
-    
+
     // Save insights to learning system
     await this.saveInsightsToLearningSystem(insights)
-    
+
     // Store reflection history
     this.reflectionHistory.push({ ...this.activeReflection })
     if (this.reflectionHistory.length > 100) {
       this.reflectionHistory.shift() // Keep last 100 reflections
     }
-    
+
     // Clear active reflection
     this.activeReflection = null
-    
-    logger.info('Claude self-reflection completed', { 
+
+    logger.info('Claude self-reflection completed', {
       overallScore: analysis.overallEfficiencyScore,
-      improvementsFound: insights.length 
+      improvementsFound: insights.length
     })
-    
+
     return analysis
   }
 
@@ -228,23 +228,23 @@ class ClaudeSelfReflection {
     // Calculate efficiency metrics
     const metrics = this.calculateEfficiencyMetrics(context)
     const overallScore = this.calculateOverallEfficiencyScore(metrics)
-    
+
     // Identify inefficiencies
     const inefficiencies = this.identifyInefficiencies(context, metrics)
     const betterApproaches = await this.identifyBetterApproaches(context)
     const missedOpportunities = this.identifyMissedOpportunities(context)
     const wastedSteps = this.identifyWastedSteps(context)
-    
+
     // Extract learning insights
     const newLearnings = this.extractNewLearnings(context)
     const confirmedPatterns = this.identifyConfirmedPatterns(context)
     const challengedAssumptions = this.identifyChallengedAssumptions(context)
-    
+
     // Generate recommendations
     const approachImprovements = this.generateApproachImprovements(context, inefficiencies)
     const toolUsageOptimizations = this.generateToolOptimizations(context, metrics)
     const processRefinements = this.generateProcessRefinements(context)
-    
+
     // Meta analysis
     const strengthsObserved = this.identifyStrengths(context, metrics)
     const weaknessesIdentified = this.identifyWeaknesses(context, metrics)
@@ -274,20 +274,20 @@ class ClaudeSelfReflection {
    */
   private calculateEfficiencyMetrics(context: ReflectionContext): EfficiencyMetrics {
     const executionTime = context.endTime - context.startTime
-    
+
     // Tool efficiency: fewer tools for same result = higher efficiency
     const toolEfficiency = Math.max(0, 1 - (context.toolsUsed.length - 1) * 0.1)
-    
+
     // Approach directness: fewer steps and context switches = more direct
     const contextSwitching = this.countContextSwitches(context.actualSteps)
     const approachDirectness = Math.max(0, 1 - contextSwitching * 0.15)
-    
+
     // Error rate: errors per 100 steps
     const errorRate = (context.errorsEncountered.length / Math.max(context.actualSteps.length, 1)) * 100
-    
+
     // Resource utilization: balanced file access and searches
     const resourceUtilization = this.calculateResourceUtilization(context)
-    
+
     // Learning application: check if previous learnings were applied
     const learningApplication = this.calculateLearningApplication(context)
 
@@ -313,9 +313,9 @@ class ClaudeSelfReflection {
       resourceUtilization: 0.15,
       learningApplication: 0.2
     }
-    
+
     const errorRateScore = Math.max(0, 1 - metrics.errorRate / 100)
-    
+
     const weightedScore = (
       metrics.toolEfficiency * weights.toolEfficiency +
       metrics.approachDirectness * weights.approachDirectness +
@@ -323,7 +323,7 @@ class ClaudeSelfReflection {
       metrics.resourceUtilization * weights.resourceUtilization +
       metrics.learningApplication * weights.learningApplication
     )
-    
+
     return Math.round(weightedScore * 100)
   }
 
@@ -332,33 +332,33 @@ class ClaudeSelfReflection {
    */
   private identifyInefficiencies(context: ReflectionContext, metrics: EfficiencyMetrics): string[] {
     const inefficiencies: string[] = []
-    
+
     if (metrics.toolEfficiency < 0.7) {
       inefficiencies.push(`Used ${context.toolsUsed.length} tools - could potentially be reduced`)
     }
-    
+
     if (metrics.contextSwitching > 3) {
       inefficiencies.push(`Too many context switches (${metrics.contextSwitching}) - approach lacked focus`)
     }
-    
+
     if (metrics.errorRate > 20) {
       inefficiencies.push(`High error rate (${metrics.errorRate.toFixed(1)}%) - better preparation needed`)
     }
-    
+
     if (context.filesAccessed.length > 10) {
       inefficiencies.push(`Accessed ${context.filesAccessed.length} files - could be more targeted`)
     }
-    
+
     if (metrics.learningApplication < 0.5) {
       inefficiencies.push('Did not effectively apply previous learnings')
     }
-    
+
     // Check for redundant steps
     const redundantSteps = this.findRedundantSteps(context.actualSteps)
     if (redundantSteps.length > 0) {
       inefficiencies.push(`${redundantSteps.length} redundant steps detected`)
     }
-    
+
     return inefficiencies
   }
 
@@ -367,24 +367,24 @@ class ClaudeSelfReflection {
    */
   private async identifyBetterApproaches(context: ReflectionContext): Promise<string[]> {
     const betterApproaches: string[] = []
-    
+
     // Check if Read tool should have been used before Edit
     if (context.toolsUsed.includes('Edit') && !context.toolsUsed.includes('Read')) {
       betterApproaches.push('Should have used Read tool before Edit to understand file structure')
     }
-    
+
     // Check if Glob could have been used instead of multiple Read calls
     const readCount = context.actualSteps.filter(step => step.includes('Read')).length
     if (readCount > 3 && !context.toolsUsed.includes('Glob')) {
       betterApproaches.push('Could have used Glob tool to find files more efficiently')
     }
-    
+
     // Check if Task tool could have been used for complex searches
     const grepCount = context.actualSteps.filter(step => step.includes('Grep')).length
     if (grepCount > 5 && !context.toolsUsed.includes('Task')) {
       betterApproaches.push('Could have used Task tool for complex search operations')
     }
-    
+
     // Query learning system for similar tasks
     try {
       const learnings = await claudeErrorLogger.getRelevantLearnings({
@@ -392,7 +392,7 @@ class ClaudeSelfReflection {
         codeLanguage: context.codebase.language,
         framework: context.codebase.framework
       })
-      
+
       learnings.forEach(learning => {
         if (learning.success_rate > 0.8 && learning.solution_pattern !== context.initialApproach) {
           betterApproaches.push(`Previous learning suggests: ${learning.solution_pattern}`)
@@ -401,7 +401,7 @@ class ClaudeSelfReflection {
     } catch (error) {
       logger.warn('Could not fetch learnings for approach analysis', { error: error instanceof Error ? error.message : String(error) })
     }
-    
+
     return betterApproaches
   }
 
@@ -409,11 +409,11 @@ class ClaudeSelfReflection {
    * Generate improvement insights that can be saved to learning system
    */
   private async generateImprovementInsights(
-    context: ReflectionContext, 
+    context: ReflectionContext,
     analysis: ApproachAnalysis
   ): Promise<SelfImprovementInsight[]> {
     const insights: SelfImprovementInsight[] = []
-    
+
     // Efficiency improvements
     if (analysis.overallEfficiencyScore < 70) {
       insights.push({
@@ -429,7 +429,7 @@ class ClaudeSelfReflection {
         created_at: new Date()
       })
     }
-    
+
     // Tool usage improvements
     if (analysis.metrics.toolEfficiency < 0.7) {
       insights.push({
@@ -445,7 +445,7 @@ class ClaudeSelfReflection {
         created_at: new Date()
       })
     }
-    
+
     // Error prevention improvements
     if (context.errorOccurred) {
       insights.push({
@@ -461,7 +461,7 @@ class ClaudeSelfReflection {
         created_at: new Date()
       })
     }
-    
+
     return insights
   }
 
@@ -478,7 +478,7 @@ class ClaudeSelfReflection {
           insight.applicableContexts.map(ctx => `context:${ctx}`),
           insight.confidenceLevel
         )
-        
+
         logger.info('Self-improvement insight saved to learning system', {
           category: insight.category,
           priority: insight.priority
@@ -506,20 +506,20 @@ class ClaudeSelfReflection {
         improvementTrends: []
       }
     }
-    
+
     // Calculate average efficiency from completed analyses
     const recentReflections = this.reflectionHistory.slice(-20) // Last 20
-    
+
     const categoryCount = new Map<string, number>()
     this.improvementInsights.forEach(insight => {
       categoryCount.set(insight.category, (categoryCount.get(insight.category) || 0) + 1)
     })
-    
+
     const topCategories = Array.from(categoryCount.entries())
       .sort((a, b) => b[1] - a[1])
       .slice(0, 3)
       .map(([category]) => category)
-    
+
     return {
       totalReflections: this.reflectionHistory.length,
       averageEfficiency: 75, // Placeholder - would need to store efficiency scores
@@ -536,7 +536,7 @@ class ClaudeSelfReflection {
   private countContextSwitches(steps: string[]): number {
     let switches = 0
     let currentContext = ''
-    
+
     steps.forEach(step => {
       const context = this.extractContextFromStep(step)
       if (context !== currentContext) {
@@ -544,7 +544,7 @@ class ClaudeSelfReflection {
         currentContext = context
       }
     })
-    
+
     return switches
   }
 
@@ -577,7 +577,7 @@ class ClaudeSelfReflection {
       const normalizedStep = step.toLowerCase().trim()
       stepCounts.set(normalizedStep, (stepCounts.get(normalizedStep) || 0) + 1)
     })
-    
+
     return Array.from(stepCounts.entries())
       .filter(([_, count]) => count > 1)
       .map(([step]) => step)
@@ -585,7 +585,7 @@ class ClaudeSelfReflection {
 
   private identifyMissedOpportunities(context: ReflectionContext): string[] {
     const opportunities: string[] = []
-    
+
     // Check for missed caching opportunities
     if (context.filesAccessed.length > 5) {
       const duplicateAccess = this.findDuplicateFileAccess(context.filesAccessed)
@@ -593,7 +593,7 @@ class ClaudeSelfReflection {
         opportunities.push('Could have cached file contents to avoid re-reading')
       }
     }
-    
+
     return opportunities
   }
 
@@ -602,7 +602,7 @@ class ClaudeSelfReflection {
     files.forEach(file => {
       fileCounts.set(file, (fileCounts.get(file) || 0) + 1)
     })
-    
+
     return Array.from(fileCounts.entries())
       .filter(([_, count]) => count > 1)
       .map(([file]) => file)
@@ -611,57 +611,57 @@ class ClaudeSelfReflection {
   private identifyWastedSteps(context: ReflectionContext): string[] {
     // Identify steps that didn't contribute to the solution
     const wastedSteps: string[] = []
-    
+
     // If task failed, later steps might have been wasted
     if (!context.success && context.actualSteps.length > 5) {
       const lastSteps = context.actualSteps.slice(-3)
       wastedSteps.push(...lastSteps.map(step => `Potentially wasted: ${step}`))
     }
-    
+
     return wastedSteps
   }
 
   private extractNewLearnings(context: ReflectionContext): string[] {
     const learnings: string[] = []
-    
+
     if (context.success && context.completionQuality === 'excellent') {
       learnings.push(`Successful approach for ${context.taskType}: ${context.initialApproach}`)
     }
-    
+
     if (context.errorOccurred) {
       context.errorsEncountered.forEach(error => {
         learnings.push(`Error pattern to avoid: ${error}`)
       })
     }
-    
+
     return learnings
   }
 
   private identifyConfirmedPatterns(context: ReflectionContext): string[] {
     // Patterns that worked as expected
     const patterns: string[] = []
-    
+
     if (context.toolsUsed.includes('Read') && context.toolsUsed.includes('Edit') && context.success) {
       patterns.push('Read-before-Edit pattern confirmed effective')
     }
-    
+
     return patterns
   }
 
   private identifyChallengedAssumptions(context: ReflectionContext): string[] {
     // Assumptions that were proven wrong
     const challenged: string[] = []
-    
+
     if (context.alternativeApproaches && context.alternativeApproaches.length > 0) {
       challenged.push('Initial approach assumption was not optimal')
     }
-    
+
     return challenged
   }
 
   private generateApproachImprovements(context: ReflectionContext, inefficiencies: string[]): string[] {
     const improvements: string[] = []
-    
+
     inefficiencies.forEach(inefficiency => {
       if (inefficiency.includes('tools')) {
         improvements.push('Plan tool usage more carefully before starting')
@@ -673,89 +673,89 @@ class ClaudeSelfReflection {
         improvements.push('Add validation steps before execution')
       }
     })
-    
+
     return improvements
   }
 
   private generateToolOptimizations(context: ReflectionContext, metrics: EfficiencyMetrics): string[] {
     const optimizations: string[] = []
-    
+
     if (metrics.toolEfficiency < 0.7) {
       optimizations.push('Reduce tool switching by planning sequence upfront')
     }
-    
+
     if (context.toolsUsed.includes('Grep') && context.toolsUsed.includes('Read')) {
       optimizations.push('Consider using Grep with content output instead of separate Read calls')
     }
-    
+
     return optimizations
   }
 
   private generateProcessRefinements(context: ReflectionContext): string[] {
     const refinements: string[] = []
-    
+
     if (context.actualSteps.length > 15) {
       refinements.push('Break complex tasks into smaller, focused sub-tasks')
     }
-    
+
     if (context.decisionsReasoning.length < context.actualSteps.length * 0.5) {
       refinements.push('Document reasoning for each step more thoroughly')
     }
-    
+
     return refinements
   }
 
   private identifyStrengths(context: ReflectionContext, metrics: EfficiencyMetrics): string[] {
     const strengths: string[] = []
-    
+
     if (metrics.errorRate < 10) {
       strengths.push('Low error rate - good preparation and execution')
     }
-    
+
     if (metrics.approachDirectness > 0.8) {
       strengths.push('Direct, focused approach to problem solving')
     }
-    
+
     if (context.success && context.completionQuality === 'excellent') {
       strengths.push('High quality task completion')
     }
-    
+
     return strengths
   }
 
   private identifyWeaknesses(context: ReflectionContext, metrics: EfficiencyMetrics): string[] {
     const weaknesses: string[] = []
-    
+
     if (metrics.contextSwitching > 5) {
       weaknesses.push('Tendency to switch approaches too frequently')
     }
-    
+
     if (metrics.toolEfficiency < 0.5) {
       weaknesses.push('Inefficient tool usage patterns')
     }
-    
+
     if (context.errorsEncountered.length > 3) {
       weaknesses.push('High error rate indicates preparation issues')
     }
-    
+
     return weaknesses
   }
 
   private identifyKnowledgeGaps(context: ReflectionContext): string[] {
     const gaps: string[] = []
-    
+
     if (context.errorsEncountered.some(error => error.includes('type'))) {
       gaps.push('TypeScript type system understanding')
     }
-    
+
     if (context.errorsEncountered.some(error => error.includes('syntax'))) {
       gaps.push('Language syntax knowledge')
     }
-    
+
     if (context.taskType === 'debugging' && !context.success) {
       gaps.push('Debugging methodology and systematic approaches')
     }
-    
+
     return gaps
   }
 }
@@ -780,28 +780,28 @@ export function withSelfReflection<T extends (...args: unknown[]) => Promise<any
       originalRequest,
       initialApproach
     )
-    
+
     try {
       const result = await fn(...args)
-      
+
       // Complete reflection with success
       await claudeSelfReflection.completeReflection(
         true,
         'excellent',
         'high'
       )
-      
+
       return result
     } catch (error) {
       claudeSelfReflection.logError(error instanceof Error ? error.message : String(error))
-      
+
       // Complete reflection with failure
       await claudeSelfReflection.completeReflection(
         false,
         'poor',
         'low'
       )
-      
+
       throw error
     }
   }) as T

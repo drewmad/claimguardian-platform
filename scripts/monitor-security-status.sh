@@ -30,10 +30,10 @@ echo "   Checking critical tables..."
 
 # Create SQL query
 cat > /tmp/check-rls.sql << 'EOF'
-SELECT 
+SELECT
   tablename,
   CASE WHEN c.relrowsecurity THEN '✅' ELSE '❌' END as rls,
-  CASE 
+  CASE
     WHEN tablename LIKE '%user%' OR tablename LIKE '%consent%' THEN 'CRITICAL'
     WHEN tablename LIKE '%claim%' OR tablename LIKE '%polic%' THEN 'HIGH'
     ELSE 'MEDIUM'
@@ -72,15 +72,15 @@ FUNCTIONS=(
 
 for func in "${FUNCTIONS[@]}"; do
   url="https://$PROJECT_ID.supabase.co/functions/v1/$func"
-  
+
   # Test OPTIONS request for CORS
   response=$(curl -s -X OPTIONS "$url" \
     -H "Origin: https://claimguardianai.com" \
     -H "Access-Control-Request-Method: POST" \
     -w "\n%{http_code}" 2>/dev/null || echo "000")
-  
+
   http_code=$(echo "$response" | tail -n1)
-  
+
   if [ "$http_code" = "204" ] || [ "$http_code" = "200" ]; then
     echo -e "   ${GREEN}✅ $func - CORS configured${NC}"
   else

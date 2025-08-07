@@ -11,15 +11,15 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  const response = NextResponse.json({ 
+  const response = NextResponse.json({
     message: 'All authentication cookies cleared',
     timestamp: new Date().toISOString()
   })
-  
+
   // Get all cookies and clear any auth-related ones
   const cookies = request.cookies.getAll()
   cookies.forEach(cookie => {
-    if (cookie.name.includes('sb-') || 
+    if (cookie.name.includes('sb-') ||
         cookie.name.includes('auth') ||
         cookie.name.includes('supabase')) {
       response.cookies.set(cookie.name, '', {
@@ -32,7 +32,7 @@ export async function GET(request: NextRequest) {
       })
     }
   })
-  
+
   // Also clear with different path combinations just to be sure
   const authCookieNames = [
     'sb-auth-token',
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
     'sb-access-token',
     'supabase-auth-token'
   ]
-  
+
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
   if (supabaseUrl) {
     const projectRef = supabaseUrl.split('//')[1]?.split('.')[0]
@@ -49,7 +49,7 @@ export async function GET(request: NextRequest) {
       authCookieNames.push(`sb-${projectRef}-auth-token-code-verifier`)
     }
   }
-  
+
   authCookieNames.forEach(cookieName => {
     response.cookies.set(cookieName, '', {
       path: '/',
@@ -60,6 +60,6 @@ export async function GET(request: NextRequest) {
       httpOnly: true
     })
   })
-  
+
   return response
 }

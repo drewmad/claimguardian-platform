@@ -76,7 +76,7 @@ class TranscriptionService {
       } catch (error) {
         console.error(`Transcription attempt ${attempt} failed:`, error)
         lastError = error as Error
-        
+
         if (attempt < maxRetries) {
           // Exponential backoff
           const delay = Math.min(1000 * Math.pow(2, attempt - 1), 10000)
@@ -91,7 +91,7 @@ class TranscriptionService {
   private async validateAudioFile(audioUri: string): Promise<void> {
     try {
       const fileInfo = await FileSystem.getInfoAsync(audioUri)
-      
+
       if (!fileInfo.exists) {
         throw new Error('Audio file does not exist')
       }
@@ -146,13 +146,13 @@ class TranscriptionService {
     try {
       // Prepare form data
       const formData = new FormData()
-      
+
       // Read audio file as blob
       const audioBlob = await this.uriToBlob(options.audioUri)
       formData.append('file', audioBlob, 'audio.m4a')
       formData.append('model', 'whisper-1')
       formData.append('language', options.language.split('-')[0]) // OpenAI uses 2-letter codes
-      
+
       if (options.includeTimestamps) {
         formData.append('response_format', 'verbose_json')
         formData.append('timestamp_granularities[]', 'segment')
@@ -264,7 +264,7 @@ class TranscriptionService {
     try {
       // Azure Speech Service integration would go here
       // This is a placeholder implementation
-      
+
       const audioBlob = await this.uriToBlob(options.audioUri)
       const formData = new FormData()
       formData.append('audio', audioBlob)
@@ -309,7 +309,7 @@ class TranscriptionService {
     try {
       // Local transcription using device capabilities
       // This would use speech recognition APIs available on the device
-      
+
       // Placeholder implementation - in reality this would use:
       // - iOS: Speech framework
       // - Android: SpeechRecognizer
@@ -396,12 +396,12 @@ class TranscriptionService {
 
   private calculateOverallConfidence(segments: any[]): number {
     if (!segments.length) return 0
-    
+
     const totalConfidence = segments.reduce((sum, segment) => {
       const confidence = segment.avg_logprob ? Math.exp(segment.avg_logprob) : 0.9
       return sum + confidence
     }, 0)
-    
+
     return totalConfidence / segments.length
   }
 
@@ -415,7 +415,7 @@ class TranscriptionService {
     options: Omit<TranscriptionOptions, 'audioUri'>
   ): Promise<TranscriptionResult[]> {
     const results: TranscriptionResult[] = []
-    
+
     for (const audioUri of audioUris) {
       try {
         const result = await this.transcribeAudio({ ...options, audioUri })
@@ -432,7 +432,7 @@ class TranscriptionService {
         })
       }
     }
-    
+
     return results
   }
 
@@ -473,7 +473,7 @@ class TranscriptionService {
       try {
         // Get audio duration (this would need to be implemented)
         const duration = await this.getAudioDuration(audioUri)
-        
+
         const costPerMinute: Record<string, number> = {
           openai: 0.006,  // $0.006 per minute
           google: 0.004,  // $0.004 per minute
@@ -482,7 +482,7 @@ class TranscriptionService {
         }
 
         const cost = (duration / 60) * (costPerMinute[provider] || 0)
-        
+
         resolve({
           estimatedCost: cost,
           currency: 'USD',
@@ -501,14 +501,14 @@ class TranscriptionService {
       const { sound } = await Audio.Sound.createAsync({ uri: audioUri })
       const status = await sound.getStatusAsync()
       await sound.unloadAsync()
-      
+
       if (status.isLoaded && status.durationMillis) {
         return status.durationMillis / 1000 // Convert to seconds
       }
     } catch (error) {
       console.warn('Could not determine audio duration:', error)
     }
-    
+
     return 30 // Default estimate
   }
 }

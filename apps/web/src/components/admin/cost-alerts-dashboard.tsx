@@ -20,9 +20,9 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { 
+import {
   DollarSign,
-  AlertTriangle, 
+  AlertTriangle,
   TrendingUp,
   TrendingDown,
   Bell,
@@ -72,7 +72,7 @@ export function CostAlertsDashboard() {
     costPerFeature: {},
     costTrend: 'stable'
   })
-  
+
   const [loading, setLoading] = useState(true)
   const [showCreateBudget, setShowCreateBudget] = useState(false)
   const [editingBudget, setEditingBudget] = useState<CostBudget | null>(null)
@@ -96,7 +96,7 @@ export function CostAlertsDashboard() {
         const currentBudgets = aiCostMonitor.getBudgets()
         const currentAlerts = aiCostMonitor.getAlerts()
         const currentMetrics = aiCostMonitor.getCostMetrics()
-        
+
         setBudgets(currentBudgets)
         setAlerts(currentAlerts)
         setMetrics(currentMetrics)
@@ -484,7 +484,7 @@ export function CostAlertsDashboard() {
                   <ResponsiveContainer width="100%" height={300}>
                     <BarChart data={budgetChartData}>
                       <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis 
+                      <XAxis
                         dataKey="name"
                         stroke="#9CA3AF"
                         tick={{ fontSize: 12 }}
@@ -493,7 +493,7 @@ export function CostAlertsDashboard() {
                         height={80}
                       />
                       <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                         formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
                       />
@@ -526,13 +526,13 @@ export function CostAlertsDashboard() {
                 <ResponsiveContainer width="100%" height={250}>
                   <LineChart data={trendData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="day" 
+                    <XAxis
+                      dataKey="day"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       formatter={(value: number) => [`$${value.toFixed(2)}`, '']}
                     />
@@ -572,7 +572,7 @@ export function CostAlertsDashboard() {
                         cx="50%"
                         cy="50%"
                         labelLine={false}
-                        label={({ name, percent }) => 
+                        label={({ name, percent }) =>
                           `${name} ${((percent || 0) * 100).toFixed(1)}%`
                         }
                         outerRadius={80}
@@ -583,7 +583,7 @@ export function CostAlertsDashboard() {
                           <Cell key={`cell-${index}`} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip 
+                      <Tooltip
                         contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                         formatter={(value: number) => [`$${value.toFixed(2)}`, 'Spent']}
                       />
@@ -614,8 +614,8 @@ export function CostAlertsDashboard() {
                   <div
                     key={alert.id}
                     className={`p-4 rounded-lg border ${
-                      alert.isResolved 
-                        ? 'bg-slate-700/30 border-slate-600 opacity-60' 
+                      alert.isResolved
+                        ? 'bg-slate-700/30 border-slate-600 opacity-60'
                         : ALERT_COLORS[alert.level]
                     }`}
                   >
@@ -816,11 +816,11 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={newBudget.alertThresholds.warning}
-                    onChange={(e) => setNewBudget(prev => ({ 
-                      ...prev, 
-                      alertThresholds: { 
-                        ...prev.alertThresholds, 
-                        warning: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setNewBudget(prev => ({
+                      ...prev,
+                      alertThresholds: {
+                        ...prev.alertThresholds,
+                        warning: parseFloat(e.target.value) || 0
                       }
                     }))}
                     className="bg-slate-700 border-slate-600"
@@ -831,11 +831,11 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={newBudget.alertThresholds.critical}
-                    onChange={(e) => setNewBudget(prev => ({ 
-                      ...prev, 
-                      alertThresholds: { 
-                        ...prev.alertThresholds, 
-                        critical: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setNewBudget(prev => ({
+                      ...prev,
+                      alertThresholds: {
+                        ...prev.alertThresholds,
+                        critical: parseFloat(e.target.value) || 0
                       }
                     }))}
                     className="bg-slate-700 border-slate-600"
@@ -847,8 +847,8 @@ export function CostAlertsDashboard() {
                 <Button onClick={handleCreateBudget} className="flex-1">
                   Create Budget
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setShowCreateBudget(false)}
                   className="flex-1"
                 >
@@ -893,11 +893,11 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={editingBudget.alertThresholds.warning}
-                    onChange={(e) => setEditingBudget(prev => prev ? ({ 
-                      ...prev, 
-                      alertThresholds: { 
-                        ...prev.alertThresholds, 
-                        warning: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setEditingBudget(prev => prev ? ({
+                      ...prev,
+                      alertThresholds: {
+                        ...prev.alertThresholds,
+                        warning: parseFloat(e.target.value) || 0
                       }
                     }) : null)}
                     className="bg-slate-700 border-slate-600"
@@ -908,11 +908,11 @@ export function CostAlertsDashboard() {
                   <Input
                     type="number"
                     value={editingBudget.alertThresholds.critical}
-                    onChange={(e) => setEditingBudget(prev => prev ? ({ 
-                      ...prev, 
-                      alertThresholds: { 
-                        ...prev.alertThresholds, 
-                        critical: parseFloat(e.target.value) || 0 
+                    onChange={(e) => setEditingBudget(prev => prev ? ({
+                      ...prev,
+                      alertThresholds: {
+                        ...prev.alertThresholds,
+                        critical: parseFloat(e.target.value) || 0
                       }
                     }) : null)}
                     className="bg-slate-700 border-slate-600"
@@ -940,8 +940,8 @@ export function CostAlertsDashboard() {
                 <Button onClick={handleUpdateBudget} className="flex-1">
                   Update Budget
                 </Button>
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   onClick={() => setEditingBudget(null)}
                   className="flex-1"
                 >

@@ -45,11 +45,11 @@ update_env_file() {
     local key_name=$1
     local new_value=$2
     local env_file=$3
-    
+
     if [ -f "$env_file" ]; then
         # Create backup
         cp "$env_file" "$env_file.backup-$TIMESTAMP"
-        
+
         # Update or add key
         if grep -q "^$key_name=" "$env_file"; then
             # Key exists, update it

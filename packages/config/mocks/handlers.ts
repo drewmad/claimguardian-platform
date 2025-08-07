@@ -60,7 +60,7 @@ export const handlers = [
   // AI endpoints
   http.post(`${SUPABASE_URL}/functions/v1/ai-document-extraction`, async ({ request }) => {
     const body = await request.json()
-    
+
     return HttpResponse.json({
       success: true,
       data: {

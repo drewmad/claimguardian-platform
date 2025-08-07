@@ -22,7 +22,7 @@ Deno.serve(async (req) => {
 
     // The query provided in the prompt.
     const query = `
-      SELECT 
+      SELECT
         current_setting('request.jwt.claims', true)::jsonb->>'role' AS jwt_role,
         current_user                                       AS db_user,
         has_table_privilege(current_user,'auth.users','insert') AS can_insert_auth_users,

@@ -12,7 +12,7 @@
 
 import { useState, useEffect, useMemo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   CheckCircle,
   XCircle,
   AlertTriangle,
@@ -111,7 +111,7 @@ export function ProgressEnhanced({
   } = config
 
   const currentStep = steps[currentStepIndex]
-  
+
   // Calculate time estimates
   const timeEstimates = useMemo(() => {
     if (!showTimeEstimates) return null
@@ -169,7 +169,7 @@ export function ProgressEnhanced({
                 </div>
                 <span className="font-medium">{currentStep?.name || 'Processing'}</span>
               </div>
-              
+
               {showPercentages && (
                 <Badge variant="outline">
                   {Math.round(overallProgress)}%
@@ -215,14 +215,14 @@ export function ProgressEnhanced({
                     Pause
                   </Button>
                 )}
-                
+
                 {status === 'paused' && onResume && (
                   <Button variant="outline" size="sm" onClick={onResume}>
                     <Play className="w-4 h-4 mr-1" />
                     Resume
                   </Button>
                 )}
-                
+
                 {onCancel && status !== 'completed' && (
                   <Button variant="outline" size="sm" onClick={onCancel}>
                     Cancel
@@ -242,7 +242,7 @@ export function ProgressEnhanced({
                 </span>
               )}
             </div>
-            
+
             <Progress value={overallProgress} className="h-3" />
           </div>
 
@@ -256,7 +256,7 @@ export function ProgressEnhanced({
                   <p className="font-medium">{Math.ceil(timeEstimates.totalElapsed / 60)} min</p>
                 </div>
               </div>
-              
+
               <div className="flex items-center gap-2">
                 <Clock className="w-4 h-4 text-gray-400" />
                 <div>
@@ -266,7 +266,7 @@ export function ProgressEnhanced({
                   </p>
                 </div>
               </div>
-              
+
               {showThroughput && (
                 <div className="flex items-center gap-2">
                   <Activity className="w-4 h-4 text-gray-400" />
@@ -285,12 +285,12 @@ export function ProgressEnhanced({
           {showStepDetails && (
             <div className="space-y-3">
               <h4 className="font-medium text-sm">Processing Steps</h4>
-              
+
               <div className="space-y-2">
                 {steps.map((step, index) => {
                   const Icon = getStatusIcon(step.status)
                   const isActive = index === currentStepIndex
-                  
+
                   return (
                     <motion.div
                       key={step.id}
@@ -299,8 +299,8 @@ export function ProgressEnhanced({
                       transition={{ delay: index * 0.1 }}
                       className={cn(
                         "flex items-center gap-3 p-3 rounded-lg border",
-                        isActive 
-                          ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800" 
+                        isActive
+                          ? "bg-blue-50 dark:bg-blue-950/20 border-blue-200 dark:border-blue-800"
                           : "bg-gray-50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700"
                       )}
                     >
@@ -310,26 +310,26 @@ export function ProgressEnhanced({
                           step.status === 'running' && "animate-spin"
                         )} />
                       </div>
-                      
+
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
                           <p className="font-medium text-sm truncate">{step.name}</p>
-                          
+
                           {showPercentages && step.status === 'running' && (
                             <Badge variant="outline" className="ml-2">
                               {Math.round(step.progress)}%
                             </Badge>
                           )}
                         </div>
-                        
+
                         <p className="text-xs text-gray-600 dark:text-gray-400 mt-1">
                           {step.description}
                         </p>
-                        
+
                         {step.status === 'running' && (
                           <Progress value={step.progress} className="h-1 mt-2" />
                         )}
-                        
+
                         {step.status === 'error' && showErrorDetails && step.error && (
                           <Alert variant="destructive" className="mt-2">
                             <AlertTriangle className="w-4 h-4" />
@@ -348,7 +348,7 @@ export function ProgressEnhanced({
                             </AlertDescription>
                           </Alert>
                         )}
-                        
+
                         {step.duration && step.status === 'completed' && (
                           <p className="text-xs text-gray-500 mt-1">
                             Completed in {Math.ceil(step.duration)} seconds
@@ -396,16 +396,16 @@ export function MultiStageProgress({
               const isActive = index === currentStage
               const isCompleted = index < currentStage
               const isCurrent = index === currentStage
-              
+
               return (
                 <div key={index} className="flex items-center">
                   <div
                     className={cn(
                       "w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all",
-                      isCompleted 
-                        ? "bg-green-500 border-green-500 text-white" 
-                        : isCurrent 
-                        ? "bg-blue-500 border-blue-500 text-white" 
+                      isCompleted
+                        ? "bg-green-500 border-green-500 text-white"
+                        : isCurrent
+                        ? "bg-blue-500 border-blue-500 text-white"
                         : "bg-gray-200 border-gray-300 text-gray-500"
                     )}
                   >
@@ -415,12 +415,12 @@ export function MultiStageProgress({
                       <Icon className={cn("w-5 h-5", isCurrent && status === 'running' && "animate-pulse")} />
                     )}
                   </div>
-                  
+
                   {index < stages.length - 1 && (
                     <div className={cn(
                       "w-8 sm:w-16 h-px mx-2",
                       isCompleted || (isCurrent && stageProgress > 50)
-                        ? "bg-green-500" 
+                        ? "bg-green-500"
                         : "bg-gray-300"
                     )} />
                   )}
@@ -435,10 +435,10 @@ export function MultiStageProgress({
               <div key={index} className="text-center max-w-[100px]">
                 <p className={cn(
                   "text-xs font-medium",
-                  index === currentStage 
-                    ? "text-blue-600" 
-                    : index < currentStage 
-                    ? "text-green-600" 
+                  index === currentStage
+                    ? "text-blue-600"
+                    : index < currentStage
+                    ? "text-green-600"
                     : "text-gray-500"
                 )}>
                   {stage.name}
@@ -454,7 +454,7 @@ export function MultiStageProgress({
               <p className="text-sm text-gray-600 dark:text-gray-400">
                 {stages[currentStage].description}
               </p>
-              
+
               <div className="space-y-2">
                 <Progress value={stageProgress} className="h-2" />
                 <p className="text-xs text-gray-500">
@@ -538,7 +538,7 @@ export function AIProcessingProgress({
               <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                 <ProcessingIcon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
               </div>
-              
+
               <div>
                 <h3 className="font-semibold">{getProcessingName()}</h3>
                 <p className="text-sm text-gray-600 dark:text-gray-400">{stage}</p>
@@ -551,7 +551,7 @@ export function AIProcessingProgress({
                   <Pause className="w-4 h-4" />
                 </Button>
               )}
-              
+
               {onCancel && (
                 <Button variant="outline" size="sm" onClick={onCancel}>
                   Cancel
@@ -575,9 +575,9 @@ export function AIProcessingProgress({
                 </span>
               </div>
             </div>
-            
+
             <Progress value={progress} className="h-3">
-              <div 
+              <div
                 className="h-full bg-gradient-to-r from-blue-500 to-purple-500 transition-all"
                 style={{ width: `${progress}%` }}
               />
@@ -591,12 +591,12 @@ export function AIProcessingProgress({
                 <p className="text-gray-600">Processed</p>
                 <p className="font-medium">{throughput.processed}</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-gray-600">Total</p>
                 <p className="font-medium">{throughput.total}</p>
               </div>
-              
+
               <div className="text-center">
                 <p className="text-gray-600">Rate</p>
                 <p className="font-medium">{throughput.rate}/min</p>
@@ -613,7 +613,7 @@ export function AIProcessingProgress({
                   Live Analysis Insights
                 </h4>
               </div>
-              
+
               <div className="space-y-2">
                 <AnimatePresence>
                   {insights.map((insight, index) => (
@@ -637,7 +637,7 @@ export function AIProcessingProgress({
           <div className="flex items-center justify-center">
             <div className={cn(
               "flex items-center gap-2 px-3 py-2 rounded-full text-sm",
-              status === 'running' 
+              status === 'running'
                 ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300"
                 : status === 'completed'
                 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300"
@@ -649,7 +649,7 @@ export function AIProcessingProgress({
               {status === 'completed' && <CheckCircle className="w-4 h-4" />}
               {status === 'error' && <XCircle className="w-4 h-4" />}
               {status === 'paused' && <Pause className="w-4 h-4" />}
-              
+
               <span className="capitalize">{status}</span>
             </div>
           </div>
@@ -696,7 +696,7 @@ export function ProgressRing({
           fill="transparent"
           className="text-gray-200 dark:text-gray-700"
         />
-        
+
         {/* Progress circle */}
         <circle
           cx={size / 2}
@@ -711,7 +711,7 @@ export function ProgressRing({
           strokeLinecap="round"
         />
       </svg>
-      
+
       {/* Center content */}
       <div className="absolute inset-0 flex items-center justify-center">
         {children || (

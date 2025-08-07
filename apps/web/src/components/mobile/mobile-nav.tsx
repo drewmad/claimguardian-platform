@@ -43,9 +43,9 @@ const moreNavItems: NavItem[] = [
 export function MobileNav() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
-  
+
   useEffect(() => {
-    
+
   }, [pathname])
 
   return (
@@ -56,7 +56,7 @@ export function MobileNav() {
           {mainNavItems.map((item) => {
             const Icon = item.icon
             const isActive = pathname.startsWith(item.href)
-            
+
             return (
               <Link
                 key={item.href}
@@ -92,16 +92,16 @@ export function MobileNav() {
               </Link>
             )
           })}
-          
+
           {/* More Menu */}
-          <button 
+          <button
             className="flex flex-col items-center justify-center text-gray-400"
             onClick={() => setIsOpen(true)}
           >
             <Menu className="w-5 h-5" />
             <span className="text-xs mt-1">More</span>
           </button>
-          
+
           <Modal
             isOpen={isOpen}
             onClose={() => setIsOpen(false)}
@@ -113,7 +113,7 @@ export function MobileNav() {
                 {moreNavItems.map((item) => {
                   const Icon = item.icon
                   const isActive = pathname.startsWith(item.href)
-                  
+
                   return (
                     <Link
                       key={item.href}
@@ -122,8 +122,8 @@ export function MobileNav() {
                       className={cn(
                         "flex items-center justify-between p-4 rounded-lg",
                         "transition-all duration-200 active:scale-95",
-                        isActive 
-                          ? "bg-blue-500/10 text-blue-500" 
+                        isActive
+                          ? "bg-blue-500/10 text-blue-500"
                           : "text-gray-300 active:bg-gray-800"
                       )}
                     >
@@ -165,9 +165,9 @@ export function MobileHeader({ title, showBack = false }: { title: string; showB
         ) : (
           <div className="w-10" />
         )}
-        
+
         <h1 className="text-lg font-semibold text-white">{title}</h1>
-        
+
         <div className="w-10" />
       </div>
     </header>

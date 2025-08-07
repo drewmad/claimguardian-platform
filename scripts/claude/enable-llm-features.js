@@ -43,16 +43,16 @@ async function enableLLMFeatures() {
 
     // Verify Opus access (mock for now)
     console.log(`${colors.yellow}⚠${colors.reset} Verifying Opus model access...`)
-    
+
     // In real implementation, this would make an API call to verify
     // For now, we'll simulate the check
     await new Promise(resolve => setTimeout(resolve, 1000))
-    
+
     console.log(`${colors.green}✓${colors.reset} Opus model access confirmed`)
 
     // Update configuration
     console.log(`\n${colors.bright}Updating configuration...${colors.reset}`)
-    
+
     const configUpdates = [
       { name: 'LLM Synthesis', key: 'ENABLE_LLM_SYNTHESIS', value: 'true' },
       { name: 'Semantic Matching', key: 'ENABLE_SEMANTIC_MATCHING', value: 'true' },
@@ -67,7 +67,7 @@ async function enableLLMFeatures() {
 
     // Run initial synthesis
     console.log(`\n${colors.bright}Running initial synthesis...${colors.reset}`)
-    
+
     // Mock synthesis results
     const synthesisResults = {
       patternsFound: 15,
@@ -81,7 +81,7 @@ async function enableLLMFeatures() {
 
     // Generate initial embeddings
     console.log(`\n${colors.bright}Generating embeddings cache...${colors.reset}`)
-    
+
     const embeddingStats = {
       learnings: 247,
       patterns: 52,
@@ -95,7 +95,7 @@ async function enableLLMFeatures() {
 
     // Set up monitoring
     console.log(`\n${colors.bright}Setting up monitoring...${colors.reset}`)
-    
+
     const monitoringEndpoints = [
       '/api/claude/llm/health',
       '/api/claude/llm/metrics',
@@ -156,7 +156,7 @@ async function enableLLMFeatures() {
 // Cost estimation
 async function estimateMonthlyCosts() {
   console.log(`\n${colors.bright}Estimated Monthly Costs:${colors.reset}`)
-  
+
   const estimates = {
     synthesis: { calls: 1000, tokensPerCall: 4096, cost: 0.015 },
     similarity: { calls: 5000, tokensPerCall: 2048, cost: 0.015 },

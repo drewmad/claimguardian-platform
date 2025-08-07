@@ -41,7 +41,7 @@ class AIModelConfigService {
     try {
       const config = await this.getConfig()
       const mapping = config.featureMappings.find(m => m.featureId === featureId)
-      
+
       if (!mapping) {
         console.warn(`No model configuration found for feature: ${featureId}`)
         return null
@@ -79,7 +79,7 @@ class AIModelConfigService {
       }
 
       const result = await response.json()
-      
+
       if (!result.success || !result.data?.feature_mappings) {
         throw new Error('Invalid response format from AI operations API')
       }
@@ -89,7 +89,7 @@ class AIModelConfigService {
         featureMappings: result.data.feature_mappings,
         lastUpdated: new Date().toISOString()
       }
-      
+
       // Cache the config
       this.configCache = config
       this.cacheExpiry = Date.now() + this.CACHE_DURATION
@@ -97,7 +97,7 @@ class AIModelConfigService {
       return this.configCache
     } catch (error) {
       console.error('Failed to fetch model configuration:', error)
-      
+
       // Return default configuration if API fails
       return this.getDefaultConfig()
     }
@@ -163,7 +163,7 @@ class AIModelConfigService {
   async getPerformanceData(timeRange: 'day' | 'week' | 'month' = 'week'): Promise<Record<string, ModelPerformanceData>> {
     try {
       const response = await fetch(`/api/admin/ai-models/performance?range=${timeRange}`)
-      
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
       }

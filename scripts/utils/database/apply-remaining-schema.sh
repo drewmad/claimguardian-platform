@@ -12,14 +12,14 @@ echo ""
 execute_sql() {
     local query="$1"
     local description="$2"
-    
+
     echo "📝 $description"
-    
+
     response=$(curl -s -X POST "$API_URL" \
         -H "Authorization: Bearer $AUTH_TOKEN" \
         -H "Content-Type: application/json" \
         -d "{\"query\": $(echo "$query" | jq -Rs .)}")
-    
+
     if echo "$response" | jq -e '.error' > /dev/null 2>&1; then
         echo "❌ Error: $(echo "$response" | jq -r '.error')"
         return 1
@@ -171,10 +171,10 @@ CREATE TABLE IF NOT EXISTS property_contractors (
 # Update claims table to ensure it references new properties
 echo -e "\n🔗 Updating claims table foreign key..."
 execute_sql "
-ALTER TABLE claims 
+ALTER TABLE claims
     DROP CONSTRAINT IF EXISTS claims_property_id_fkey;
-ALTER TABLE claims 
-    ADD CONSTRAINT claims_property_id_fkey 
+ALTER TABLE claims
+    ADD CONSTRAINT claims_property_id_fkey
     FOREIGN KEY (property_id) REFERENCES properties(id) ON DELETE CASCADE;
 " "Updating claims foreign key"
 
@@ -224,12 +224,12 @@ CREATE TRIGGER update_property_structures_updated_at BEFORE UPDATE ON property_s
 # Final verification
 echo -e "\n✅ Verifying complete schema..."
 execute_sql "
-SELECT 
+SELECT
     table_name,
     (SELECT COUNT(*) FROM pg_indexes WHERE tablename = table_name) as index_count,
     (SELECT rowsecurity FROM pg_tables WHERE tablename = table_name) as rls_enabled
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name LIKE 'property%'
 ORDER BY table_name;
 " "Schema verification"

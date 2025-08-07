@@ -79,33 +79,33 @@ export function SystemMonitoringDashboard() {
   ];
 
   const edgeFunctions: EdgeFunctionStatus[] = [
-    { 
-      name: 'smart-notification-engine', 
-      status: 'active', 
+    {
+      name: 'smart-notification-engine',
+      status: 'active',
       lastRun: '2 min ago',
       executions: 15420,
       avgResponseTime: 89,
       errorRate: 0.01
     },
-    { 
-      name: 'community-intelligence', 
-      status: 'active', 
+    {
+      name: 'community-intelligence',
+      status: 'active',
       lastRun: '5 min ago',
       executions: 8234,
       avgResponseTime: 234,
       errorRate: 0.02
     },
-    { 
-      name: 'damage-doc-copilot', 
-      status: 'active', 
+    {
+      name: 'damage-doc-copilot',
+      status: 'active',
       lastRun: '12 min ago',
       executions: 5621,
       avgResponseTime: 456,
       errorRate: 0.03
     },
-    { 
-      name: 'policy-chat', 
-      status: 'active', 
+    {
+      name: 'policy-chat',
+      status: 'active',
       lastRun: '18 min ago',
       executions: 3412,
       avgResponseTime: 312,
@@ -134,7 +134,7 @@ export function SystemMonitoringDashboard() {
 
   useEffect(() => {
     loadMonitoringData();
-    
+
     if (autoRefresh) {
       const interval = setInterval(loadMonitoringData, refreshInterval);
       return () => clearInterval(interval);
@@ -322,7 +322,7 @@ export function SystemMonitoringDashboard() {
                       </div>
                       {getStatusBadge(func.status)}
                     </div>
-                    
+
                     <div className="grid grid-cols-3 gap-4 text-sm">
                       <div>
                         <p className="text-gray-500">Executions</p>
@@ -363,7 +363,7 @@ export function SystemMonitoringDashboard() {
                   </div>
                   <Progress value={(databaseMetrics.connections / databaseMetrics.maxConnections) * 100} />
                 </div>
-                
+
                 <div>
                   <div className="flex justify-between mb-2">
                     <span className="text-sm font-medium">Storage Used</span>
@@ -374,7 +374,7 @@ export function SystemMonitoringDashboard() {
                   <Progress value={(databaseMetrics.storageUsed / databaseMetrics.storageLimit) * 100} />
                 </div>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-6">
                 <div className="border rounded-lg p-4">
                   <div className="flex items-center justify-between">
@@ -385,7 +385,7 @@ export function SystemMonitoringDashboard() {
                     <span className="text-xl font-bold">{databaseMetrics.queryTime}ms</span>
                   </div>
                 </div>
-                
+
                 <div className="border rounded-lg p-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
@@ -420,7 +420,7 @@ export function SystemMonitoringDashboard() {
                     <p className="text-xs text-yellow-600 mt-1">2 hours ago</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3 p-3 bg-green-50 border border-green-200 rounded-lg">
                   <CheckCircle className="h-5 w-5 text-green-600 mt-0.5" />
                   <div className="flex-1">
@@ -431,7 +431,7 @@ export function SystemMonitoringDashboard() {
                     <p className="text-xs text-green-600 mt-1">6 hours ago</p>
                   </div>
                 </div>
-                
+
                 <div className="flex items-start space-x-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                   <Globe className="h-5 w-5 text-blue-600 mt-0.5" />
                   <div className="flex-1">

@@ -8,33 +8,33 @@ echo "======================================"
 # SQL queries to verify deployment
 QUERIES=(
   "-- Check property tables exist
-SELECT COUNT(*) as table_count 
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+SELECT COUNT(*) as table_count
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name LIKE 'property%';"
 
   "-- Check enum types exist
 SELECT COUNT(*) as type_count
-FROM pg_type 
+FROM pg_type
 WHERE typname IN ('property_type', 'occupancy_status', 'damage_severity', 'claim_status');"
 
   "-- Check RLS is enabled
 SELECT COUNT(*) as rls_enabled_count
-FROM pg_tables 
-WHERE schemaname = 'public' 
+FROM pg_tables
+WHERE schemaname = 'public'
 AND tablename LIKE 'property%'
 AND rowsecurity = true;"
 
   "-- Check history tables exist
 SELECT COUNT(*) as history_table_count
-FROM information_schema.tables 
-WHERE table_schema = 'public' 
+FROM information_schema.tables
+WHERE table_schema = 'public'
 AND table_name LIKE 'property%_history';"
 
   "-- Check indexes exist
 SELECT COUNT(*) as index_count
-FROM pg_indexes 
-WHERE schemaname = 'public' 
+FROM pg_indexes
+WHERE schemaname = 'public'
 AND tablename LIKE 'property%';"
 )
 

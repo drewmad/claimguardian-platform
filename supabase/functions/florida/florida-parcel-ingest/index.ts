@@ -99,7 +99,7 @@ serve(async (req: Request) => {
 
       // Get data (from file_data or download from source_url)
       let rawData: any[]
-      
+
       if (file_data) {
         rawData = file_data
       } else if (source_url) {
@@ -118,7 +118,7 @@ serve(async (req: Request) => {
       // Update batch with total records
       await supabase
         .from('parcel_import_batches')
-        .update({ 
+        .update({
           total_records: rawData.length,
           status: 'transforming'
         })
@@ -126,15 +126,15 @@ serve(async (req: Request) => {
 
       // Process data in chunks
       const chunks = chunkArray(rawData, batch_size)
-      
+
       for (const chunk of chunks) {
         const chunkResults = await processChunk(
-          chunk, 
-          data_source, 
-          batchId, 
+          chunk,
+          data_source,
+          batchId,
           generate_embeddings
         )
-        
+
         processedRecords += chunkResults.processed
         validRecords += chunkResults.valid
         invalidRecords += chunkResults.invalid
@@ -217,7 +217,7 @@ serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: 'Parcel ingest error:', error
 }));
-    
+
     return new Response(JSON.stringify({
       success: false,
       error: error instanceof Error ? error.message : String(error),
@@ -240,14 +240,14 @@ async function downloadAndProcessFile(sourceUrl: string, dataSource: string): Pr
     timestamp: new Date().toISOString(),
     message: `Downloading file from: ${sourceUrl}`
   }));
-  
+
   const response = await fetch(sourceUrl)
   if (!response.ok) {
     throw new Error(`Failed to download file: ${response.statusText}`)
   }
 
   const contentType = response.headers.get('content-type') || ''
-  
+
   if (contentType.includes('application/json')) {
     const data = await response.json()
     return Array.isArray(data) ? data : data.features || [data]
@@ -264,21 +264,21 @@ async function downloadAndProcessFile(sourceUrl: string, dataSource: string): Pr
 function parseCSV(csvText: string): any[] {
   const lines = csvText.trim().split('\n')
   if (lines.length < 2) return []
-  
+
   const headers = lines[0].split(',').map(h => h.trim().replace(/"/g, ''))
   const records = []
-  
+
   for (let i = 1; i < lines.length; i++) {
     const values = lines[i].split(',').map(v => v.trim().replace(/"/g, ''))
     const record: any = {}
-    
+
     headers.forEach((header, index) => {
       record[header] = values[index] || null
     })
-    
+
     records.push(record)
   }
-  
+
   return records
 }
 
@@ -291,9 +291,9 @@ function chunkArray<T>(array: T[], chunkSize: number): T[][] {
 }
 
 async function processChunk(
-  chunk: any[], 
-  dataSource: string, 
-  batchId: string, 
+  chunk: any[],
+  dataSource: string,
+  batchId: string,
   generateEmbeddings: boolean
 ): Promise<{
   processed: number
@@ -311,10 +311,10 @@ async function processChunk(
   for (const rawRecord of chunk) {
     try {
       processed++
-      
+
       // Transform raw record to property format
       const propertyRecord = await transformRecord(rawRecord, dataSource, batchId)
-      
+
       // Validate record
       const { data: validationResult } = await supabase
         .rpc('validate_property_data', { property_data: propertyRecord })
@@ -412,11 +412,11 @@ function generateEmbeddingContent(propertyRecord: any): string {
     `Property type: ${propertyRecord.property_type || 'unknown'}`,
     `Value: $${propertyRecord.property_value || 0}`
   ]
-  
+
   if (propertyRecord.area_acres) {
     parts.push(`Area: ${propertyRecord.area_acres} acres`)
   }
-  
+
   return parts.join('. ') + '.'
 }
 

@@ -12,10 +12,10 @@
 
 import { useState } from 'react'
 import { motion } from 'framer-motion'
-import { 
-  Mail, 
-  CheckCircle, 
-  Settings, 
+import {
+  Mail,
+  CheckCircle,
+  Settings,
   Eye,
   Zap,
   Shield,
@@ -27,13 +27,13 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { 
+import {
   EmailVerificationWizard,
   VerificationStatusCard
 } from '@/components/auth/email-verification-enhanced'
-import { 
-  VerificationBanner, 
-  VerificationSuccessBanner 
+import {
+  VerificationBanner,
+  VerificationSuccessBanner
 } from '@/components/auth/verification-banner'
 import { useToast } from '@/components/notifications/toast-system'
 
@@ -70,14 +70,14 @@ export default function VerificationDemoPage() {
       color: 'bg-blue-600',
       demo: (
         <div className="space-y-4">
-          <Button 
+          <Button
             onClick={() => setDemoState(prev => ({ ...prev, showWizard: true }))}
             disabled={demoState.showWizard}
           >
             <Mail className="w-4 h-4 mr-2" />
             Show Verification Wizard
           </Button>
-          
+
           {demoState.showWizard && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -105,38 +105,38 @@ export default function VerificationDemoPage() {
       demo: (
         <div className="space-y-4">
           <div className="flex gap-2">
-            <Button 
+            <Button
               size="sm"
               variant={demoState.bannerVariant === 'default' ? 'default' : 'outline'}
-              onClick={() => setDemoState(prev => ({ 
-                ...prev, 
+              onClick={() => setDemoState(prev => ({
+                ...prev,
                 bannerVariant: 'default',
                 showBanner: true,
-                userVerified: false 
+                userVerified: false
               }))}
             >
               Default
             </Button>
-            <Button 
+            <Button
               size="sm"
               variant={demoState.bannerVariant === 'compact' ? 'default' : 'outline'}
-              onClick={() => setDemoState(prev => ({ 
-                ...prev, 
+              onClick={() => setDemoState(prev => ({
+                ...prev,
                 bannerVariant: 'compact',
                 showBanner: true,
-                userVerified: false 
+                userVerified: false
               }))}
             >
               Compact
             </Button>
-            <Button 
+            <Button
               size="sm"
               variant={demoState.bannerVariant === 'inline' ? 'default' : 'outline'}
-              onClick={() => setDemoState(prev => ({ 
-                ...prev, 
+              onClick={() => setDemoState(prev => ({
+                ...prev,
                 bannerVariant: 'inline',
                 showBanner: true,
-                userVerified: false 
+                userVerified: false
               }))}
             >
               Inline
@@ -164,13 +164,13 @@ export default function VerificationDemoPage() {
       demo: (
         <div className="space-y-4">
           <div className="flex gap-2">
-            <Button 
+            <Button
               size="sm"
               onClick={() => setDemoState(prev => ({ ...prev, userVerified: false }))}
             >
               Unverified User
             </Button>
-            <Button 
+            <Button
               size="sm"
               onClick={() => setDemoState(prev => ({ ...prev, userVerified: true }))}
             >
@@ -199,13 +199,13 @@ export default function VerificationDemoPage() {
       color: 'bg-emerald-600',
       demo: (
         <div className="space-y-4">
-          <Button 
+          <Button
             onClick={() => setDemoState(prev => ({ ...prev, showSuccess: !prev.showSuccess }))}
           >
             <CheckCircle className="w-4 h-4 mr-2" />
             Toggle Success Banner
           </Button>
-          
+
           {demoState.showSuccess && (
             <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
               <VerificationSuccessBanner
@@ -231,10 +231,10 @@ export default function VerificationDemoPage() {
             Enhanced Email Verification Demo
           </h1>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Comprehensive demonstration of ClaimGuardian's enhanced email verification system 
+            Comprehensive demonstration of ClaimGuardian's enhanced email verification system
             with improved UX, toast notifications, and better error handling.
           </p>
-          
+
           <div className="flex justify-center mt-6">
             <Badge variant="outline" className="bg-white/10 text-white border-white/20 px-4 py-2">
               Task 13: Auth Flow - Email Verification Enhancement
@@ -266,7 +266,7 @@ export default function VerificationDemoPage() {
                     Integrated with toast system for better user feedback
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Clock className="w-6 h-6 text-green-400" />
@@ -276,7 +276,7 @@ export default function VerificationDemoPage() {
                     Rate limiting with visual countdown and progress bars
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="w-12 h-12 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Settings className="w-6 h-6 text-purple-400" />
@@ -286,7 +286,7 @@ export default function VerificationDemoPage() {
                     Automatic status checking for seamless verification
                   </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="w-12 h-12 bg-orange-500/20 rounded-full flex items-center justify-center mx-auto mb-3">
                     <Eye className="w-6 h-6 text-orange-400" />
@@ -326,7 +326,7 @@ export default function VerificationDemoPage() {
                     </TabsTrigger>
                   ))}
                 </TabsList>
-                
+
                 {demoComponents.map((component) => (
                   <TabsContent key={component.id} value={component.id}>
                     <Card>
@@ -376,7 +376,7 @@ export default function VerificationDemoPage() {
                     <li>• <code className="bg-gray-800 px-2 py-1 rounded">VerificationStatusCard</code> - Status display component</li>
                   </ul>
                 </div>
-                
+
                 <div>
                   <h3 className="text-white font-medium mb-4">Integration Features</h3>
                   <ul className="space-y-2 text-gray-300 text-sm">

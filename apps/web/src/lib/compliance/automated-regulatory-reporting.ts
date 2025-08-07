@@ -22,48 +22,48 @@ import { floridaComplianceManager } from './florida-regulatory-framework'
 
 export interface RegulatoryReport {
   id: string
-  reportType: 'oir_claim_report' | 'hurricane_loss_report' | 'compliance_certification' | 
+  reportType: 'oir_claim_report' | 'hurricane_loss_report' | 'compliance_certification' |
              'financial_examination' | 'market_conduct_report' | 'consumer_complaint_report'
   reportPeriod: {
     startDate: Date
     endDate: Date
     periodType: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually'
   }
-  
+
   // Regulatory details
   regulatoryBody: 'florida_oir' | 'federal_treasury' | 'sec' | 'finra' | 'fema'
   filingRequirement: string
   regulationReference: string[]
   dueDate: Date
-  
+
   // Report content
   reportData: Record<string, unknown>
   attachments: ReportAttachment[]
   summary: ReportSummary
-  
+
   // Status and tracking
   status: 'draft' | 'ready_for_review' | 'approved' | 'submitted' | 'accepted' | 'rejected'
   submissionMethod: 'electronic' | 'paper' | 'api' | 'portal'
   submissionId?: string
   submittedAt?: Date
   acknowledgmentReceived?: Date
-  
+
   // Validation and compliance
   validationResults: ValidationResult[]
   complianceChecks: ComplianceCheck[]
-  
+
   // Audit and approval
   preparedBy: string
   reviewedBy?: string
   approvedBy?: string
   reviewDate?: Date
   approvalDate?: Date
-  
+
   // Error handling
   submissionAttempts: number
   lastError?: string
   retryScheduled?: Date
-  
+
   metadata: Record<string, unknown>
 }
 
@@ -109,7 +109,7 @@ export interface OIRClaimReport {
     quarter?: number
     month?: number
   }
-  
+
   // Company information
   companyName: string
   naicCode: string
@@ -120,7 +120,7 @@ export interface OIRClaimReport {
     phone: string
     email: string
   }
-  
+
   // Claim statistics
   claimStatistics: {
     totalClaimsReceived: number
@@ -128,7 +128,7 @@ export interface OIRClaimReport {
     totalPaymentsIssued: number
     totalAmountPaid: number
     averageProcessingTime: number
-    
+
     // By claim type
     byClaimType: {
       [key: string]: {
@@ -138,7 +138,7 @@ export interface OIRClaimReport {
         amount: number
       }
     }
-    
+
     // By disaster event
     hurricaneRelated: {
       event: string
@@ -149,7 +149,7 @@ export interface OIRClaimReport {
       amount: number
     }[]
   }
-  
+
   // Compliance metrics
   complianceMetrics: {
     promptPaymentCompliance: {
@@ -158,14 +158,14 @@ export interface OIRClaimReport {
       violations: number
       averageDaysToPayment: number
     }
-    
+
     badFaithClaims: {
       totalAllegations: number
       substantiatedCases: number
       settledCases: number
       totalSettlementAmount: number
     }
-    
+
     consumerComplaints: {
       totalComplaints: number
       resolvedComplaints: number
@@ -173,7 +173,7 @@ export interface OIRClaimReport {
       averageResolutionTime: number
     }
   }
-  
+
   // Special reporting
   materialEvents: {
     eventDate: Date
@@ -190,21 +190,21 @@ export interface ReportingSchedule {
   frequency: 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually'
   dueDay: number // Day of month/quarter/year
   advanceNotificationDays: number
-  
+
   // Automation settings
   autoGenerate: boolean
   autoSubmit: boolean
   requireApproval: boolean
-  
+
   // Recipients and approvers
   preparedBy: string
   reviewers: string[]
   approvers: string[]
-  
+
   // Next execution
   nextDueDate: Date
   lastGenerated?: Date
-  
+
   active: boolean
   metadata: Record<string, unknown>
 }
@@ -240,7 +240,7 @@ export class RegulatoryReportingManager {
   }): Promise<RegulatoryReport> {
     try {
       const reportId = crypto.randomUUID()
-      
+
       let reportData: Record<string, unknown> = {}
       let attachments: ReportAttachment[] = []
       let validationResults: ValidationResult[] = []
@@ -254,15 +254,15 @@ export class RegulatoryReportingManager {
           validationResults = await this.validateOIRReport(oirReport)
           complianceChecks = await this.runOIRComplianceChecks(oirReport)
           break
-        
+
         case 'hurricane_loss_report':
           reportData = await this.generateHurricaneLossReport(request.periodStart, request.periodEnd)
           break
-        
+
         case 'compliance_certification':
           reportData = await this.generateComplianceCertification(request.periodStart, request.periodEnd)
           break
-        
+
         default:
           throw new Error(`Unsupported report type: ${request.reportType}`)
       }
@@ -382,7 +382,7 @@ export class RegulatoryReportingManager {
 
       // Submit to regulatory body
       const submissionResult = await this.performSubmission(report)
-      
+
       // Update report status
       await this.supabase
         .from('compliance.regulatory_reports')
@@ -473,7 +473,7 @@ export class RegulatoryReportingManager {
       for (const claim of claims || []) {
         const eventId = claim.florida_compliance?.[0]?.catastrophic_event_id || 'Unknown'
         const paidAmount = claim.paid_amount || 0
-        const processingTime = claim.closed_date ? 
+        const processingTime = claim.closed_date ?
           Math.ceil((new Date(claim.closed_date).getTime() - new Date(claim.created_at).getTime()) / (1000 * 60 * 60 * 24)) : 0
 
         if (!hurricaneEvents.has(eventId)) {
@@ -546,7 +546,7 @@ export class RegulatoryReportingManager {
 
       return {
         reportingPeriod: { startDate, endDate },
-        certificationStatement: overallCompliant ? 
+        certificationStatement: overallCompliant ?
           'ClaimGuardian certifies full compliance with all applicable Florida insurance regulations during the reporting period.' :
           'ClaimGuardian reports the following compliance issues that have been identified and are being addressed.',
         complianceAreas: complianceResults,
@@ -618,7 +618,7 @@ export class RegulatoryReportingManager {
 
     // Compliance metric validations
     const promptPayment = report.complianceMetrics.promptPaymentCompliance
-    const complianceRate = promptPayment.totalClaims > 0 ? 
+    const complianceRate = promptPayment.totalClaims > 0 ?
       promptPayment.compliantClaims / promptPayment.totalClaims : 1
 
     if (complianceRate < 0.95) {
@@ -724,7 +724,7 @@ export class RegulatoryReportingManager {
 
       // For now, simulate successful submission
       const submissionId = `SUB-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
-      
+
       logger.info('Simulating regulatory report submission', {
         reportId: report.id,
         reportType: report.reportType,
@@ -840,7 +840,7 @@ export class RegulatoryReportingManager {
           references: ['Florida Insurance Code 624.424', 'Rule 69O-170.020'],
           dueDate: nextQuarter
         }
-      
+
       case 'hurricane_loss_report':
         const hurricaneDeadline = new Date(now)
         hurricaneDeadline.setDate(hurricaneDeadline.getDate() + 30)
@@ -850,7 +850,7 @@ export class RegulatoryReportingManager {
           references: ['Florida Statute 627.70132'],
           dueDate: hurricaneDeadline
         }
-      
+
       default:
         return {
           body: 'florida_oir',
@@ -866,7 +866,7 @@ export class RegulatoryReportingManager {
    */
   private determinePeriodType(startDate: Date, endDate: Date): 'daily' | 'weekly' | 'monthly' | 'quarterly' | 'annually' {
     const daysDiff = Math.ceil((endDate.getTime() - startDate.getTime()) / (1000 * 60 * 60 * 24))
-    
+
     if (daysDiff <= 1) return 'daily'
     if (daysDiff <= 7) return 'weekly'
     if (daysDiff <= 31) return 'monthly'
@@ -959,10 +959,10 @@ export class OIRReportGenerator {
 
     for (const claim of claims) {
       totalReceived++
-      
+
       if (claim.status === 'closed' || claim.status === 'settled') {
         totalClosed++
-        
+
         if (claim.closed_date) {
           const processingDays = Math.ceil(
             (new Date(claim.closed_date).getTime() - new Date(claim.created_at).getTime()) / (1000 * 60 * 60 * 24)
@@ -994,7 +994,7 @@ export class OIRReportGenerator {
       if (claim.florida_compliance?.[0]?.hurricane_claim) {
         const eventId = claim.florida_compliance[0].catastrophic_event_id || 'Unknown Hurricane'
         let hurricaneEvent = hurricaneRelated.find(h => h.event === eventId)
-        
+
         if (!hurricaneEvent) {
           hurricaneEvent = {
             event: eventId,
@@ -1046,7 +1046,7 @@ export class OIRReportGenerator {
         // Check if payment was within 90 days (simplified check)
         const reportedDate = new Date(claim.reported_date || claim.created_at)
         const paymentDate = compliance.payment_completed_at ? new Date(compliance.payment_completed_at) : null
-        
+
         if (paymentDate) {
           const daysToPay = Math.ceil((paymentDate.getTime() - reportedDate.getTime()) / (1000 * 60 * 60 * 24))
           totalPaymentDays += daysToPay
@@ -1160,19 +1160,19 @@ export class ComplianceReportScheduler {
         nextDue.setMonth(now.getMonth() + 1)
         nextDue.setDate(dueDay)
         break
-      
+
       case 'quarterly':
         const nextQuarter = Math.floor(now.getMonth() / 3) + 1
         nextDue.setMonth(nextQuarter * 3)
         nextDue.setDate(dueDay)
         break
-      
+
       case 'annually':
         nextDue.setFullYear(now.getFullYear() + 1)
         nextDue.setMonth(0) // January
         nextDue.setDate(dueDay)
         break
-      
+
       default:
         nextDue.setDate(now.getDate() + 1)
     }

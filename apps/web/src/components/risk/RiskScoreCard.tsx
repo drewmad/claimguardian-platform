@@ -13,10 +13,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Progress } from '@/components/ui/progress'
 import { cn } from '@/lib/utils'
-import { 
-  Droplets, 
-  Flame, 
-  Wind, 
+import {
+  Droplets,
+  Flame,
+  Wind,
   Waves,
   AlertTriangle,
   Shield,
@@ -31,12 +31,12 @@ interface RiskScoreCardProps {
   className?: string
 }
 
-export function RiskScoreCard({ 
-  title, 
-  score, 
-  category, 
+export function RiskScoreCard({
+  title,
+  score,
+  category,
   description,
-  className 
+  className
 }: RiskScoreCardProps) {
   const getRiskLevel = (score: number) => {
     if (score >= 0.7) return { level: 'High', color: 'text-red-500', bgColor: 'bg-red-500' }
@@ -55,8 +55,8 @@ export function RiskScoreCard({
       case 'surge':
         return <Waves className="h-5 w-5" />
       case 'composite':
-        return score >= 0.7 ? <ShieldAlert className="h-5 w-5" /> : 
-               score >= 0.3 ? <AlertTriangle className="h-5 w-5" /> : 
+        return score >= 0.7 ? <ShieldAlert className="h-5 w-5" /> :
+               score >= 0.3 ? <AlertTriangle className="h-5 w-5" /> :
                <Shield className="h-5 w-5" />
     }
   }
@@ -83,12 +83,12 @@ export function RiskScoreCard({
             <span className="text-gray-400">Risk Score</span>
             <span className="text-white font-medium">{percentage}%</span>
           </div>
-          
-          <Progress 
-            value={percentage} 
+
+          <Progress
+            value={percentage}
             className={cn("h-2 bg-gray-700", bgColor)}
           />
-          
+
           {description && (
             <p className="text-xs text-gray-400 mt-2">{description}</p>
           )}

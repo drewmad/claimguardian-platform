@@ -36,7 +36,7 @@ describe('Logger', () => {
   describe('Basic Logging', () => {
     it('should log info messages', () => {
       logger.info('Test info message')
-      
+
       expect(console.info).toHaveBeenCalledWith(
         expect.stringContaining('[INFO]'),
         expect.any(String)
@@ -46,7 +46,7 @@ describe('Logger', () => {
 
     it('should log warning messages', () => {
       logger.warn('Test warning message')
-      
+
       expect(console.warn).toHaveBeenCalledWith(
         expect.stringContaining('[WARN]'),
         expect.any(String)
@@ -56,7 +56,7 @@ describe('Logger', () => {
 
     it('should log error messages', () => {
       logger.error('Test error message')
-      
+
       expect(console.error).toHaveBeenCalledWith(
         expect.stringContaining('[ERROR]'),
         expect.any(String),
@@ -72,12 +72,12 @@ describe('Logger', () => {
         enumerable: true,
         configurable: true
       })
-      
+
       // Clear the module cache to force a fresh import
       jest.resetModules()
       const { logger: devLogger } = require('@/lib/logger')
       devLogger.debug('Test debug message')
-      
+
       expect(console.debug).toHaveBeenCalledWith(
         expect.stringContaining('[DEBUG]'),
         expect.any(String)
@@ -91,12 +91,12 @@ describe('Logger', () => {
         enumerable: true,
         configurable: true
       })
-      
+
       // Clear the module cache to force a fresh import
       jest.resetModules()
       const { logger: prodLogger } = require('@/lib/logger')
       prodLogger.debug('Test debug message')
-      
+
       expect(console.debug).not.toHaveBeenCalled()
     })
   })
@@ -184,7 +184,7 @@ describe('Logger', () => {
         expect.stringContaining('Event: UserAction'),
         expect.stringContaining('eventType')
       )
-      
+
       const logCall = console.info.mock.calls[0][1]
       expect(logCall).toContain('UserAction')
       expect(logCall).toContain('track')

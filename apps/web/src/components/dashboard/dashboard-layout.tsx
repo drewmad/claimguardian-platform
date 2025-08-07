@@ -10,9 +10,9 @@
  */
 'use client'
 
-import { 
-  Home, Building, Package, Shield, FileText, 
-  HardHat, Users, Cog, 
+import {
+  Home, Building, Package, Shield, FileText,
+  HardHat, Users, Cog,
   Bell, Search, Menu, LogOut, User,
   Bot, Camera, FileSearch, Sparkles,
   ShieldCheck, Code, Siren, DollarSign, Wrench,
@@ -106,9 +106,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Menu className="w-5 h-5" />
             </button>
             <Link href="/dashboard" className="flex items-center gap-2">
-              <OptimizedImage 
-                src="/ClaimGuardian.png" 
-                alt="ClaimGuardian Logo" 
+              <OptimizedImage
+                src="/ClaimGuardian.png"
+                alt="ClaimGuardian Logo"
                 width={40}
                 height={40}
                 priority={true}
@@ -119,7 +119,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </span>
             </Link>
           </div>
-          
+
           <div className="flex items-center gap-1 sm:gap-3">
             <button className="p-2 hover:bg-gray-700 rounded-lg transition-colors active:scale-95 hidden sm:block">
               <Search className="w-5 h-5 text-gray-400" />
@@ -164,7 +164,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               {navigationItems.map((item) => {
                 const Icon = item.icon
                 const isActive = pathname === item.href
-                
+
                 return (
                   <Link
                     key={item.id}
@@ -207,12 +207,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Sparkles className="w-4 h-4" />
                   <span>All AI Tools</span>
                 </Link>
-                
+
                 {/* Individual AI Features */}
                 {aiFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = pathname === feature.href
-                  
+
                   return (
                     <Link
                       key={feature.id}
@@ -256,11 +256,11 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <DollarSign className="w-4 h-4" />
                   <span>AI Cost Tracking</span>
                 </Link>
-                
+
                 {adminFeatures.map((feature) => {
                   const Icon = feature.icon
                   const isActive = pathname.startsWith(feature.href)
-                  
+
                   return (
                     <Link
                       key={feature.id}
@@ -282,7 +282,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               </div>
             </div>
           </div>
-          
+
           {/* Bottom Section */}
           <div className="p-4 border-t border-gray-700">
             {/* Settings Button */}
@@ -296,7 +296,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <Cog className="w-5 h-5" />
               <span className="font-medium">Settings</span>
             </button>
-            
+
             {/* AI Toolkit Label */}
             <div className="px-4 py-2">
               <p className="text-xs text-gray-500 text-center">AI Toolkit</p>
@@ -317,7 +317,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           {navigationItems.slice(0, 4).map((item) => {
             const Icon = item.icon
             const isActive = pathname === item.href
-            
+
             return (
               <Link
                 key={item.id}
@@ -333,12 +333,12 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           })}
         </nav>
       )}
-      
+
       {/* Settings Modal */}
-      <SettingsModal isOpen={isOpen} onClose={closeSettings} />
-      
+      <SettingsModal />
+
       {/* Ask Guardian AI Chat */}
-      <AskGuardianChat 
+      <AskGuardianChat
         isOpen={isAskGuardianOpen}
         onClose={() => setIsAskGuardianOpen(false)}
         context={{
@@ -347,7 +347,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
           claimId: pathname.includes('/claim/') ? pathname.split('/').pop() : undefined
         }}
       />
-      
+
       {/* Ask Guardian Button */}
       {!isAskGuardianOpen && (
         <AskGuardianButton onClick={() => setIsAskGuardianOpen(true)} />

@@ -33,7 +33,7 @@ Deno.serve(async (req: Request) => {
 
   try {
     const { fileUrl, fileName, options, extractionSchema } = await req.json() as ExtractionRequest
-    
+
     console.log('Enhanced document extraction started', { fileName, provider: options.apiProvider })
 
     // Initialize Supabase client
@@ -52,7 +52,7 @@ Deno.serve(async (req: Request) => {
     if (provider === 'auto') {
       // Try providers in order of preference
       const providers = ['gemini', 'openai', 'claude']
-      
+
       for (const p of providers) {
         try {
           const result = await extractWithProvider(p as any, fileUrl, fileName, options, extractionSchema)
@@ -61,7 +61,7 @@ Deno.serve(async (req: Request) => {
             confidence = result.confidence
             modelUsed = result.modelUsed
             provider = p as any
-            
+
             // If we get high confidence, stop trying other providers
             if (confidence >= 0.9) break
           }
@@ -150,7 +150,7 @@ async function extractWithGemini(fileUrl: string, fileName: string, options: any
   if (!apiKey) throw new Error('Gemini API key not configured')
 
   const genAI = new GoogleGenerativeAI(apiKey)
-  const model = genAI.getGenerativeModel({ 
+  const model = genAI.getGenerativeModel({
     model: "gemini-1.5-pro",
     generationConfig: {
       temperature: 0.1,
@@ -198,7 +198,7 @@ Add a missingCriticalFields array for important fields that could not be found.`
 
   const response = result.response
   const extractedData = JSON.parse(response.text())
-  
+
   return {
     success: true,
     data: extractedData,
@@ -215,7 +215,7 @@ async function extractWithOpenAI(fileUrl: string, fileName: string, options: any
 
   // For OpenAI, we'll use GPT-4 Vision for images or GPT-4 with text extraction for PDFs
   const isImage = /\.(jpg|jpeg|png)$/i.test(fileName)
-  
+
   if (isImage) {
     // Use GPT-4 Vision for images
     const response = await openai.chat.completions.create({
@@ -248,7 +248,7 @@ async function extractWithOpenAI(fileUrl: string, fileName: string, options: any
     })
 
     const extractedData = JSON.parse(response.choices[0].message.content || '{}')
-    
+
     return {
       success: true,
       data: extractedData,
@@ -308,7 +308,7 @@ Requirements:
   })
 
   const extractedData = JSON.parse(response.content[0].text)
-  
+
   return {
     success: true,
     data: extractedData,
@@ -320,14 +320,14 @@ Requirements:
 async function postProcessExtraction(data: any, options: any, supabase: any) {
   // Add extraction metadata
   data.extractionMethod = options.useOCR ? 'combined' : 'vision'
-  data.extractedFields = Object.keys(data).filter(key => 
+  data.extractedFields = Object.keys(data).filter(key =>
     data[key] !== null && data[key] !== undefined && key !== 'extractedFields'
   )
-  
+
   // Identify missing critical fields
   const criticalFields = ['policyNumber', 'carrierName', 'effectiveDate', 'expirationDate', 'dwellingCoverage']
   data.missingCriticalFields = criticalFields.filter(field => !data[field])
-  
+
   // Validate and normalize dates
   const dateFields = ['effectiveDate', 'expirationDate', 'issueDate']
   for (const field of dateFields) {
@@ -340,7 +340,7 @@ async function postProcessExtraction(data: any, options: any, supabase: any) {
       }
     }
   }
-  
+
   // Parse currency values
   const currencyFields = [
     'dwellingCoverage', 'personalPropertyCoverage', 'liabilityCoverage',
@@ -352,7 +352,7 @@ async function postProcessExtraction(data: any, options: any, supabase: any) {
       data[field] = parseFloat(data[field].replace(/[$,]/g, ''))
     }
   }
-  
+
   // Normalize state abbreviations
   if (data.propertyAddress?.state) {
     const stateMap: Record<string, string> = {
@@ -362,7 +362,7 @@ async function postProcessExtraction(data: any, options: any, supabase: any) {
     }
     data.propertyAddress.state = stateMap[data.propertyAddress.state] || data.propertyAddress.state
   }
-  
+
   return data
 }
 

@@ -81,23 +81,23 @@ const createProgressBar = (current, total, width = PROGRESS_BAR_WIDTH) => {
   const percentage = total > 0 ? current / total : 0;
   const filled = Math.round(width * percentage);
   const empty = width - filled;
-  
+
   const bar = '█'.repeat(filled) + '░'.repeat(empty);
   const percentStr = (percentage * 100).toFixed(1).padStart(5);
-  
+
   return `[${bar}] ${percentStr}%`;
 };
 
 // Update progress display
 const updateProgress = () => {
   clearLine();
-  
+
   const { currentFile } = stats;
   const progress = createProgressBar(currentFile.processedRecords, currentFile.totalRecords);
   const elapsed = (Date.now() - currentFile.startTime) / 1000;
   const rate = currentFile.processedRecords / elapsed || 0;
   const eta = rate > 0 ? (currentFile.totalRecords - currentFile.processedRecords) / rate : 0;
-  
+
   const status = [
     `${colors.bright}${progress}${colors.reset}`,
     `Records: ${currentFile.processedRecords.toLocaleString()}/${currentFile.totalRecords.toLocaleString()}`,
@@ -107,7 +107,7 @@ const updateProgress = () => {
     `${rate.toFixed(0)}/s`,
     `ETA: ${eta > 0 ? Math.ceil(eta) + 's' : '---'}`
   ].filter(Boolean).join(' | ');
-  
+
   process.stdout.write(status);
 };
 
@@ -119,10 +119,10 @@ function parseCSVLine(line) {
   const result = [];
   let current = '';
   let inQuotes = false;
-  
+
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    
+
     if (char === '"') {
       if (inQuotes && line[i + 1] === '"') {
         current += '"';
@@ -137,7 +137,7 @@ function parseCSVLine(line) {
       current += char;
     }
   }
-  
+
   result.push(current.trim());
   return result;
 }
@@ -146,10 +146,10 @@ function parseCSVLine(line) {
 async function importBatch(records, batchNumber, retryCount = 0) {
   stats.currentFile.retryingBatches = retryCount > 0 ? 1 : 0;
   updateProgress();
-  
+
   try {
     await sleep(BATCH_DELAY); // Always delay before request
-    
+
     const { error } = await supabase
       .from('florida_parcels_csv_import')
       .insert(records);
@@ -157,26 +157,26 @@ async function importBatch(records, batchNumber, retryCount = 0) {
     if (error) {
       throw new Error(error.message);
     }
-    
+
     stats.currentFile.successfulBatches++;
     stats.currentFile.retryingBatches = 0;
     stats.global.successfulRecords += records.length;
     return true;
-    
+
   } catch (error) {
     if (retryCount < MAX_RETRIES) {
       const delay = RETRY_DELAY * Math.pow(2, retryCount);
-      
+
       clearLine();
       console.log(`\n${colors.yellow}⚠️  Batch ${batchNumber} failed: ${error.message}${colors.reset}`);
       console.log(`${colors.gray}   Retrying in ${delay / 1000}s... (attempt ${retryCount + 1}/${MAX_RETRIES})${colors.reset}`);
-      
+
       await sleep(delay);
       return importBatch(records, batchNumber, retryCount + 1);
     } else {
       stats.currentFile.failedBatches++;
       stats.currentFile.retryingBatches = 0;
-      
+
       clearLine();
       console.log(`\n${colors.red}❌ Batch ${batchNumber} failed permanently after ${MAX_RETRIES} retries${colors.reset}`);
       console.log(`${colors.gray}   Error: ${error.message}${colors.reset}`);
@@ -191,7 +191,7 @@ async function countFileLines(filePath) {
     let lineCount = 0;
     const stream = fs.createReadStream(filePath);
     const rl = readline.createInterface({ input: stream });
-    
+
     rl.on('line', () => lineCount++);
     rl.on('close', () => resolve(lineCount - 1)); // Subtract header line
   });
@@ -201,14 +201,14 @@ async function countFileLines(filePath) {
 async function processCSVFile(filePath, fileIndex) {
   const fileName = path.basename(filePath);
   const fileSize = fs.statSync(filePath).size;
-  
+
   console.log(`\n${colors.bright}[${fileIndex}/${stats.global.totalFiles}] ${fileName}${colors.reset} (${(fileSize / 1024 / 1024).toFixed(1)} MB)`);
   console.log(`${colors.gray}${'─'.repeat(60)}${colors.reset}`);
-  
+
   // Count total records first
   console.log(`${colors.cyan}📊 Counting records...${colors.reset}`);
   const totalRecords = await countFileLines(filePath);
-  
+
   // Reset current file stats
   stats.currentFile = {
     name: fileName,
@@ -219,9 +219,9 @@ async function processCSVFile(filePath, fileIndex) {
     retryingBatches: 0,
     startTime: Date.now()
   };
-  
+
   console.log(`${colors.cyan}📦 Processing ${totalRecords.toLocaleString()} records in batches of ${BATCH_SIZE}${colors.reset}\n`);
-  
+
   return new Promise((resolve) => {
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({
@@ -238,25 +238,25 @@ async function processCSVFile(filePath, fileIndex) {
     // Process lines sequentially
     let lineQueue = [];
     let processing = false;
-    
+
     const processNextBatch = async () => {
       if (processing || lineQueue.length === 0) return;
-      
+
       processing = true;
       const currentBatch = lineQueue.shift();
-      
+
       batchNumber++;
       const success = await importBatch(currentBatch.records, batchNumber);
-      
+
       if (!success) {
         hasErrors = true;
       }
-      
+
       stats.currentFile.processedRecords += currentBatch.records.length;
       updateProgress();
-      
+
       processing = false;
-      
+
       // Process next batch if available
       if (lineQueue.length > 0) {
         await processNextBatch();
@@ -265,19 +265,19 @@ async function processCSVFile(filePath, fileIndex) {
         finishFile();
       }
     };
-    
+
     const finishFile = async () => {
       clearLine();
       const duration = (Date.now() - stats.currentFile.startTime) / 1000;
-      
+
       console.log(`\n${colors.bright}📋 File Summary:${colors.reset}`);
       console.log(`   ${colors.green}✓ Successful batches: ${stats.currentFile.successfulBatches}${colors.reset}`);
       console.log(`   ${colors.red}✗ Failed batches: ${stats.currentFile.failedBatches}${colors.reset}`);
       console.log(`   ⏱️  Duration: ${duration.toFixed(1)}s (${(stats.currentFile.processedRecords / duration).toFixed(0)} records/s)`);
-      
+
       if (!hasErrors) {
         console.log(`\n${colors.cyan}🔄 Transferring to main table...${colors.reset}`);
-        
+
         try {
           await supabase.rpc('transfer_florida_parcels_staging');
           console.log(`${colors.green}✅ Transfer successful${colors.reset}`);
@@ -287,15 +287,15 @@ async function processCSVFile(filePath, fileIndex) {
           hasErrors = true;
         }
       }
-      
+
       resolve({ success: !hasErrors, recordCount: stats.currentFile.processedRecords });
     };
 
     rl.on('line', (line) => {
       lineNumber++;
-      
+
       if (!line.trim()) return;
-      
+
       if (lineNumber === 1) {
         headers = parseCSVLine(line).map(h => h.toLowerCase().trim());
         return;
@@ -316,9 +316,9 @@ async function processCSVFile(filePath, fileIndex) {
       batch.push(record);
 
       if (batch.length >= BATCH_SIZE) {
-        lineQueue.push({ 
-          records: [...batch], 
-          isLast: false 
+        lineQueue.push({
+          records: [...batch],
+          isLast: false
         });
         batch = [];
         processNextBatch();
@@ -328,9 +328,9 @@ async function processCSVFile(filePath, fileIndex) {
     rl.on('close', () => {
       // Queue final batch
       if (batch.length > 0) {
-        lineQueue.push({ 
-          records: batch, 
-          isLast: true 
+        lineQueue.push({
+          records: batch,
+          isLast: true
         });
         processNextBatch();
       } else if (lineQueue.length === 0) {
@@ -350,7 +350,7 @@ async function main() {
   console.clear();
   console.log(`${colors.bright}${colors.cyan}🚀 Florida Parcels Sequential Import${colors.reset}`);
   console.log(`${'═'.repeat(60)}\n`);
-  
+
   console.log(`📁 Source: ${CLEANED_SPLIT_DIR}`);
   console.log(`📦 Batch size: ${BATCH_SIZE} records`);
   console.log(`🔄 Retries: ${MAX_RETRIES} attempts`);
@@ -366,25 +366,25 @@ async function main() {
 
   console.log(`${colors.yellow}⚠️  Files will be moved after successful import${colors.reset}`);
   console.log(`${colors.gray}Press Ctrl+C to cancel, starting in 3 seconds...${colors.reset}\n`);
-  
+
   await sleep(3000);
 
   // Process each file sequentially
   for (let i = 0; i < csvFiles.length; i++) {
     const csvFile = csvFiles[i];
     stats.global.processedFiles++;
-    
+
     const result = await processCSVFile(csvFile, i + 1);
-    
+
     if (result.success) {
       // Move file
       const fileName = path.basename(csvFile);
       const backupDir = path.join(process.cwd(), 'CleanedSplit_imported');
-      
+
       if (!fs.existsSync(backupDir)) {
         fs.mkdirSync(backupDir);
       }
-      
+
       try {
         fs.renameSync(csvFile, path.join(backupDir, fileName));
         console.log(`${colors.green}📦 Moved to CleanedSplit_imported/${colors.reset}\n`);
@@ -394,13 +394,13 @@ async function main() {
     } else {
       console.log(`${colors.red}❌ File kept due to errors${colors.reset}\n`);
     }
-    
+
     stats.global.totalRecords += result.recordCount;
   }
 
   // Final summary
   const totalDuration = (Date.now() - stats.global.startTime) / 1000;
-  
+
   console.log(`\n${'═'.repeat(60)}`);
   console.log(`${colors.bright}📊 IMPORT COMPLETE${colors.reset}`);
   console.log(`${'═'.repeat(60)}`);
@@ -408,7 +408,7 @@ async function main() {
   console.log(`📈 Total records: ${stats.global.totalRecords.toLocaleString()}`);
   console.log(`⏱️  Duration: ${(totalDuration / 60).toFixed(2)} minutes`);
   console.log(`⚡ Average: ${(stats.global.totalRecords / totalDuration).toFixed(0)} records/second`);
-  
+
   console.log(`\n${colors.green}✨ Done!${colors.reset}`);
 }
 

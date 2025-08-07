@@ -13,7 +13,7 @@ import { nimsResourceManager, ResourceCategory, ResourceStatus } from '@/lib/nim
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    
+
     const type = searchParams.get('type')
     const category = searchParams.get('category') as ResourceCategory
     const status = searchParams.get('status') as ResourceStatus
@@ -21,9 +21,9 @@ export async function GET(request: NextRequest) {
     const lng = searchParams.get('lng')
     const radius = searchParams.get('radius')
     const capabilities = searchParams.get('capabilities')?.split(',')
-    
+
     const criteria: any = {}
-    
+
     if (type) criteria.type = type
     if (category) criteria.category = category
     if (status) criteria.status = status
@@ -35,9 +35,9 @@ export async function GET(request: NextRequest) {
         radius: parseFloat(radius)
       }
     }
-    
+
     const resources = await nimsResourceManager.searchResources(criteria)
-    
+
     return NextResponse.json({
       resources,
       total: resources.length
@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
-    
+
     // Validate required fields
     if (!body.name || !body.type || !body.category) {
       return NextResponse.json(
@@ -59,9 +59,9 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       )
     }
-    
+
     const resource = await nimsResourceManager.registerResource(body)
-    
+
     return NextResponse.json({
       resource,
       message: 'Resource registered successfully'

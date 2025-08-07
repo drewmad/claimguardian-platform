@@ -25,7 +25,7 @@ import { useProperties } from '@/hooks/queries/use-properties'
 function PropertyOverviewContent() {
   const router = useRouter()
   const [showWizard, setShowWizard] = useState(false)
-  
+
   // Use React Query hook
   const { data: properties = [], isLoading, error } = useProperties()
 
@@ -95,7 +95,7 @@ function PropertyOverviewContent() {
           </button>
         </div>
         <p className="text-gray-400 max-w-3xl">
-          Manage your property portfolio and maintain digital records for insurance claims. 
+          Manage your property portfolio and maintain digital records for insurance claims.
           Keep important documents, photos, and maintenance records all in one secure place.
         </p>
       </div>
@@ -104,8 +104,8 @@ function PropertyOverviewContent() {
       {displayProperties.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {displayProperties.map((property) => (
-            <Card 
-              key={property.id} 
+            <Card
+              key={property.id}
               className="bg-gray-800 border-gray-700 hover:border-gray-600 transition-colors cursor-pointer overflow-hidden"
               onClick={() => router.push(`/dashboard/property/${property.id}`)}
             >
@@ -126,7 +126,7 @@ function PropertyOverviewContent() {
                       {property.address}
                     </p>
                   </div>
-                  <PropertyAvatar 
+                  <PropertyAvatar
                     propertyType={property.type}
                     className="w-12 h-12"
                   />
@@ -147,15 +147,15 @@ function PropertyOverviewContent() {
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-gray-400">Insurability Score</span>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 bg-gray-700 rounded-full h-2 w-24">
-                        <div 
+                        <div
                           className={`h-2 rounded-full ${
-                            property.insurabilityScore >= 80 ? 'bg-green-500' : 
+                            property.insurabilityScore >= 80 ? 'bg-green-500' :
                             property.insurabilityScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                           }`}
                           style={{ width: `${property.insurabilityScore}%` }}
@@ -164,7 +164,7 @@ function PropertyOverviewContent() {
                       <span className="text-white font-medium">{property.insurabilityScore}%</span>
                     </div>
                   </div>
-                  
+
                   <div className="pt-3 flex items-center justify-between">
                     <div className="flex items-center gap-2 text-xs text-gray-400">
                       <span>{property.bedrooms} bed</span>

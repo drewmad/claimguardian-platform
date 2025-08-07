@@ -9,18 +9,18 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Shield, ChevronRight, Save, Loader2, Check, X, 
+import {
+  Shield, ChevronRight, Save, Loader2, Check, X,
   Home, Brain, FileText, File, ChartBar, Settings,
   Plus, Trash2, Edit2, AlertCircle
 } from 'lucide-react'
 import { toast } from 'sonner'
-import { 
-  getAllPermissions, 
-  getAllTiers, 
-  getTierPermissions, 
+import {
+  getAllPermissions,
+  getAllTiers,
+  getTierPermissions,
   updateTierPermissions,
-  updateTier 
+  updateTier
 } from '@/actions/permissions'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -78,7 +78,7 @@ export default function PermissionsManagementPage() {
           }
         })
         setTierPrices(prices)
-        
+
         // Select first tier by default
         if (tiersResult.data.length > 0) {
           setSelectedTier(tiersResult.data[0].id)
@@ -96,18 +96,18 @@ export default function PermissionsManagementPage() {
   const loadTierPermissions = async (tierId: string) => {
     try {
       const result = await getTierPermissions(tierId)
-      
+
       if (result.data) {
         const permissionsMap: Record<string, boolean> = {}
         const limitsMap: Record<string, number | null> = {}
-        
+
         result.data.forEach((tp: any) => {
           if (tp.permission) {
             permissionsMap[tp.permission.id] = true
             limitsMap[tp.permission.id] = tp.limit_value
           }
         })
-        
+
         setTierPermissions(permissionsMap)
         setPermissionLimits(limitsMap)
       }
@@ -150,7 +150,7 @@ export default function PermissionsManagementPage() {
         }))
 
       const result = await updateTierPermissions(selectedTier, permissionsToSave)
-      
+
       if (result.error) {
         throw new Error(result.error)
       }
@@ -337,7 +337,7 @@ export default function PermissionsManagementPage() {
                 <CardContent className="space-y-6">
                   {Object.entries(permissionsByCategory).map(([category, categoryPermissions]) => {
                     const Icon = CATEGORY_ICONS[category] || Shield
-                    
+
                     return (
                       <div key={category} className="space-y-3">
                         <div className="flex items-center gap-2 mb-3">
@@ -346,7 +346,7 @@ export default function PermissionsManagementPage() {
                             {category.replace('_', ' ')}
                           </h3>
                         </div>
-                        
+
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                           {categoryPermissions.map(permission => (
                             <div
@@ -369,11 +369,11 @@ export default function PermissionsManagementPage() {
                                   )}
                                 </div>
                               </div>
-                              
+
                               {/* Limit input for certain permissions */}
-                              {tierPermissions[permission.id] && 
-                               (permission.name.includes('properties') || 
-                                permission.name.includes('claims')) && 
+                              {tierPermissions[permission.id] &&
+                               (permission.name.includes('properties') ||
+                                permission.name.includes('claims')) &&
                                permission.action === 'create' && (
                                 <div className="flex items-center gap-2 ml-3">
                                   <Label className="text-xs text-gray-400">Limit:</Label>

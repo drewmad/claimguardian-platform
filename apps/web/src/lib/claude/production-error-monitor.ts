@@ -33,7 +33,7 @@ export interface DatabaseHealthCheck {
 class ProductionErrorMonitor {
   private supabase: ReturnType<typeof createClient> | null = null
   private healthCheckInterval: NodeJS.Timeout | null = null
-  
+
   constructor() {
     try {
       this.supabase = createClient(
@@ -195,7 +195,7 @@ class ProductionErrorMonitor {
             .eq('table_schema', 'public')
             .eq('table_name', obj.name)
             .single()
-          
+
           exists = !!data
         } else if (obj.type === 'view') {
           const { data } = await this.supabase
@@ -204,7 +204,7 @@ class ProductionErrorMonitor {
             .eq('table_schema', 'public')
             .eq('table_name', obj.name)
             .single()
-          
+
           exists = !!data
         } else if (obj.type === 'function') {
           const { data } = await this.supabase
@@ -213,7 +213,7 @@ class ProductionErrorMonitor {
             .eq('routine_schema', 'public')
             .eq('routine_name', obj.name)
             .single()
-          
+
           exists = !!data
         }
 
@@ -259,7 +259,7 @@ class ProductionErrorMonitor {
     for (const entry of logEntries) {
       const typedEntry = entry as any
       const key = `${typedEntry.method}_${typedEntry.path}_${typedEntry.status_code}`
-      
+
       if (!patterns.has(key)) {
         patterns.set(key, {
           pattern: key,
@@ -274,7 +274,7 @@ class ProductionErrorMonitor {
 
       const pattern = patterns.get(key)!
       pattern.frequency++
-      
+
       // Extract user ID from path or headers if available
       if (typedEntry.path.includes('user_id=eq.')) {
         const userId = typedEntry.path.match(/user_id=eq\.([^&]+)/)?.[1]
@@ -322,7 +322,7 @@ class ProductionErrorMonitor {
       try {
         const healthChecks = await this.performDatabaseHealthCheck()
         const missingObjects = healthChecks.filter(check => !check.exists)
-        
+
         if (missingObjects.length > 0) {
           logger.warn(`Health Check Alert: ${missingObjects.length} database objects missing`, {
             missing: missingObjects.map(obj => `${obj.objectType}:${obj.objectName}`)
@@ -376,7 +376,7 @@ export const productionErrorMonitor = new ProductionErrorMonitor()
  */
 export const logProductionErrorBatch = async (errorLogEntries: unknown[]) => {
   const patterns = await productionErrorMonitor.analyzeProductionErrorPatterns(errorLogEntries)
-  
+
   // Log critical patterns to Claude Learning System
   for (const pattern of patterns.filter(p => p.severity === 'critical' || p.frequency > 5)) {
     if (pattern.statusCode === 404 && pattern.rootCause) {

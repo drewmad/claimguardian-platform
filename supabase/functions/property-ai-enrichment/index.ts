@@ -15,7 +15,7 @@ interface EnrichmentRequest {
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -25,7 +25,7 @@ Deno.serve(async (req: Request) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -125,8 +125,8 @@ Deno.serve(async (req: Request) => {
   } catch (error) {
     console.error('Property enrichment error:', error)
     return new Response(
-      JSON.stringify({ 
-        error: error instanceof Error ? error.message : String(error) || 'Internal server error' 
+      JSON.stringify({
+        error: error instanceof Error ? error.message : String(error) || 'Internal server error'
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

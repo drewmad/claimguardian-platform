@@ -86,14 +86,14 @@ export class LoadTestFramework {
 
     while (performance.now() < endTime) {
       // Increase concurrency during ramp-up
-      if (currentConcurrency < config.concurrent && 
+      if (currentConcurrency < config.concurrent &&
           performance.now() - lastRampUp > rampUpInterval) {
         currentConcurrency++
         lastRampUp = performance.now()
       }
 
       // Maintain target concurrency
-      while (this.activeRequests.size < currentConcurrency && 
+      while (this.activeRequests.size < currentConcurrency &&
              performance.now() < endTime) {
         const requestPromise = this.makeRequest(config)
         this.activeRequests.add(requestPromise)
@@ -132,7 +132,7 @@ export class LoadTestFramework {
 
     const actualEndTime = performance.now()
     const testResult = this.calculateMetrics(config, startTime, actualEndTime, results, errors)
-    
+
     this.results.push(testResult)
     this.logResults(testResult)
 
@@ -141,7 +141,7 @@ export class LoadTestFramework {
 
   private async makeRequest(config: LoadTestConfig): Promise<RequestResult> {
     const startTime = performance.now()
-    
+
     try {
       const requestOptions: RequestInit = {
         method: config.method,
@@ -261,7 +261,7 @@ export class LoadTestFramework {
 
   private logResults(result: LoadTestResult): void {
     const { metrics, thresholdResults } = result
-    
+
     console.log(`\n📊 Load Test Results: ${result.config.name}`)
     console.log('=' .repeat(50))
     console.log(`Total Requests: ${result.totalRequests}`)
@@ -303,23 +303,23 @@ export class LoadTestFramework {
 
   async runMultipleTests(configs: LoadTestConfig[]): Promise<LoadTestResult[]> {
     console.log(`🧪 Running ${configs.length} load tests sequentially...`)
-    
+
     const results: LoadTestResult[] = []
-    
+
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i]
       console.log(`\n--- Test ${i + 1}/${configs.length} ---`)
-      
+
       const result = await this.runLoadTest(config)
       results.push(result)
-      
+
       // Cool-down period between tests
       if (i < configs.length - 1) {
         console.log(`⏳ Cool-down period (5s)...`)
         await new Promise(resolve => setTimeout(resolve, 5000))
       }
     }
-    
+
     this.generateSummaryReport(results)
     return results
   }
@@ -327,8 +327,8 @@ export class LoadTestFramework {
   private generateSummaryReport(results: LoadTestResult[]): void {
     console.log(`\n📈 Summary Report`)
     console.log('=' .repeat(60))
-    
-    const totalPassed = results.filter(r => 
+
+    const totalPassed = results.filter(r =>
       Object.values(r.thresholdResults).every(t => t.passed)
     ).length
 
@@ -419,7 +419,7 @@ export class LoadTestFramework {
 </head>
 <body>
     <h1>ClaimGuardian AI Load Test Results</h1>
-    
+
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Tests Run:</strong> ${this.results.length}</p>
@@ -574,20 +574,20 @@ export const aiEndpointLoadTests: LoadTestConfig[] = [
 // Export main testing function
 export async function runAILoadTests(): Promise<LoadTestResult[]> {
   console.log('🔥 Starting AI Endpoints Load Testing Suite')
-  
+
   const loadTestFramework = new LoadTestFramework()
-  
+
   try {
     const results = await loadTestFramework.runMultipleTests(aiEndpointLoadTests)
-    
+
     console.log('\n📊 Generating detailed report...')
     const htmlReport = loadTestFramework.exportResults('html')
-    
+
     // In a real implementation, you might save this to a file
     console.log('HTML report generated (would be saved to file)')
-    
+
     return results
-    
+
   } catch (error) {
     console.error('❌ Load testing failed:', error)
     throw error

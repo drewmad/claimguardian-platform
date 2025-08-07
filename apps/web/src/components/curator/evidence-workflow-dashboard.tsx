@@ -18,10 +18,10 @@ import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { 
-  FileText, 
-  Upload, 
-  Eye, 
+import {
+  FileText,
+  Upload,
+  Eye,
   AlertTriangle,
   CheckCircle,
   Clock,
@@ -47,10 +47,10 @@ import {
   Plus
 } from 'lucide-react'
 import { format } from 'date-fns'
-import { 
+import {
   evidenceCuratorService,
   type EvidenceItem,
-  type EvidenceWorkflow, 
+  type EvidenceWorkflow,
   type EvidenceGap,
   type EvidenceAnalytics,
   type EvidenceCategory
@@ -73,7 +73,7 @@ export function EvidenceWorkflowDashboard() {
   const [selectedCategory, setSelectedCategory] = useState<EvidenceCategory | 'all'>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [fileUploads, setFileUploads] = useState<FileUpload[]>([])
-  
+
   // Mock claim ID - replace with actual claim context
   const claimId = 'claim-2024-001'
 
@@ -116,9 +116,9 @@ export function EvidenceWorkflowDashboard() {
       const upload = newUploads[i]
       try {
         const evidenceItem = await evidenceCuratorService.analyzeEvidence(upload.file, claimId)
-        
-        setFileUploads(prev => prev.map(u => 
-          u.file === upload.file 
+
+        setFileUploads(prev => prev.map(u =>
+          u.file === upload.file
             ? { ...u, uploading: false, analyzed: true }
             : u
         ))
@@ -131,8 +131,8 @@ export function EvidenceWorkflowDashboard() {
         }
       } catch (error) {
         console.error('Error uploading file:', error)
-        setFileUploads(prev => prev.map(u => 
-          u.file === upload.file 
+        setFileUploads(prev => prev.map(u =>
+          u.file === upload.file
             ? { ...u, uploading: false, analyzed: false }
             : u
         ))
@@ -183,7 +183,7 @@ export function EvidenceWorkflowDashboard() {
 
   const filteredEvidence = evidence.filter(item => {
     const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory
-    const matchesSearch = searchQuery === '' || 
+    const matchesSearch = searchQuery === '' ||
       item.file_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.ai_description.toLowerCase().includes(searchQuery.toLowerCase())
     return matchesCategory && matchesSearch
@@ -195,8 +195,8 @@ export function EvidenceWorkflowDashboard() {
   }, {} as Record<EvidenceCategory, number>)
 
   const criticalGaps = gaps.filter(g => g.severity === 'critical').length
-  const completionPercentage = workflows.length > 0 
-    ? workflows[0].completion_percentage 
+  const completionPercentage = workflows.length > 0
+    ? workflows[0].completion_percentage
     : evidence.length > 0 ? 65 : 0
 
   if (loading) {
@@ -221,13 +221,13 @@ export function EvidenceWorkflowDashboard() {
             <p className="text-gray-400">AI-powered evidence management with automated gap detection</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Badge className="bg-emerald-600/20 text-emerald-400 border-emerald-600/30">
             <Brain className="h-3 w-3 mr-1" />
             AI-Powered
           </Badge>
-          <Button 
+          <Button
             onClick={() => createWorkflow()}
             className="bg-emerald-600 hover:bg-emerald-700"
           >
@@ -299,7 +299,7 @@ export function EvidenceWorkflowDashboard() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <div 
+          <div
             className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center hover:border-emerald-500 transition-colors"
             onDrop={(e) => {
               e.preventDefault()
@@ -381,7 +381,7 @@ export function EvidenceWorkflowDashboard() {
                 <option value="expert_reports">Expert Reports</option>
               </select>
             </div>
-            
+
             <div className="text-sm text-gray-400">
               {filteredEvidence.length} of {evidence.length} items
             </div>
@@ -403,7 +403,7 @@ export function EvidenceWorkflowDashboard() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-xs text-gray-400 mb-3 line-clamp-2">{item.ai_description}</p>
-                  
+
                   <div className="space-y-2 mb-3">
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-gray-400">Quality</span>
@@ -442,7 +442,7 @@ export function EvidenceWorkflowDashboard() {
                 <FolderOpen className="h-16 w-16 text-gray-500 mx-auto mb-4" />
                 <h3 className="text-lg font-medium text-white mb-2">No Evidence Found</h3>
                 <p className="text-gray-400 mb-4">
-                  {evidence.length === 0 
+                  {evidence.length === 0
                     ? 'Upload your first evidence files to get started with AI analysis'
                     : 'No evidence matches your current filters'
                   }
@@ -488,7 +488,7 @@ export function EvidenceWorkflowDashboard() {
                     {workflow.steps.map((step, index) => (
                       <div key={step.id} className="flex items-center gap-3 p-3 bg-gray-700/30 rounded-lg">
                         <div className={`p-1 rounded-full ${
-                          step.status === 'completed' ? 'bg-green-600' : 
+                          step.status === 'completed' ? 'bg-green-600' :
                           step.status === 'in_progress' ? 'bg-blue-600' : 'bg-gray-600'
                         }`}>
                           {step.status === 'completed' ? (
@@ -521,7 +521,7 @@ export function EvidenceWorkflowDashboard() {
                 <p className="text-gray-400 mb-4">
                   Create an evidence workflow to get AI-guided step-by-step assistance
                 </p>
-                <Button 
+                <Button
                   onClick={() => createWorkflow()}
                   className="bg-emerald-600 hover:bg-emerald-700"
                 >
@@ -554,7 +554,7 @@ export function EvidenceWorkflowDashboard() {
                   </CardHeader>
                   <CardContent>
                     <p className="text-gray-300 mb-4">{gap.description}</p>
-                    
+
                     <div className="bg-red-900/10 border border-red-800/20 rounded-lg p-3 mb-4">
                       <p className="text-sm text-red-400 font-medium mb-2">Impact on Claim:</p>
                       <p className="text-sm text-red-300">{gap.impact_on_claim}</p>
@@ -627,28 +627,28 @@ export function EvidenceWorkflowDashboard() {
                         {Math.round(analytics.ai_accuracy_rate * 100)}%
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Workflow Completion</span>
                       <span className="text-blue-400 font-medium">
                         {Math.round(analytics.workflow_completion_rate * 100)}%
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Avg Processing Time</span>
                       <span className="text-purple-400 font-medium">
                         {analytics.processing_time_avg.toFixed(1)}m
                       </span>
                     </div>
-                    
+
                     <div className="flex items-center justify-between">
                       <span className="text-gray-400">Critical Gaps</span>
                       <span className="text-red-400 font-medium">
                         {analytics.critical_gaps}
                       </span>
                     </div>
-                    
+
                     <div className="pt-4 border-t border-gray-700">
                       <div className="text-center">
                         <p className="text-2xl font-bold text-emerald-400 mb-1">A-</p>

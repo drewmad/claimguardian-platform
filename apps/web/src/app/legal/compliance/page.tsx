@@ -28,7 +28,7 @@ export default function CompliancePage() {
                 & Regulatory Information
               </span>
             </h1>
-            
+
             <p className="text-xl text-gray-300 max-w-2xl mx-auto">
               Understanding regulatory compliance for property intelligence and insurance documentation in Florida.
             </p>
@@ -39,8 +39,8 @@ export default function CompliancePage() {
             <div className="bg-yellow-400/10 border border-yellow-400/30 rounded-xl p-6">
               <h2 className="text-xl font-semibold text-yellow-400 mb-3">Important Notice</h2>
               <p className="text-gray-300">
-                ClaimGuardian is a property documentation and organization platform. We are not licensed insurance 
-                adjusters, attorneys, or financial advisors. Our platform provides tools and information to help 
+                ClaimGuardian is a property documentation and organization platform. We are not licensed insurance
+                adjusters, attorneys, or financial advisors. Our platform provides tools and information to help
                 you manage your property data, but does not constitute professional advice.
               </p>
             </div>
@@ -48,9 +48,9 @@ export default function CompliancePage() {
             {/* Coming Soon Content */}
             <div className="bg-gray-800/50 rounded-xl p-8 border border-gray-700">
               <h2 className="text-2xl font-semibold mb-6">Compliance Framework Under Development</h2>
-              
+
               <p className="text-gray-300 mb-6">
-                As a Florida-based family business, we're committed to full compliance with all applicable 
+                As a Florida-based family business, we're committed to full compliance with all applicable
                 regulations. Our compliance documentation is currently being developed and will include:
               </p>
 
@@ -101,11 +101,11 @@ export default function CompliancePage() {
             <div className="bg-gray-800/30 rounded-xl p-6 border border-gray-700">
               <h3 className="text-lg font-semibold mb-3">Compliance Questions</h3>
               <p className="text-gray-400 mb-4">
-                If you have specific compliance questions or need clarification on our regulatory approach, 
+                If you have specific compliance questions or need clarification on our regulatory approach,
                 please contact our team.
               </p>
-              <a 
-                href="mailto:support@claimguardianai.com?subject=Compliance%20Question" 
+              <a
+                href="mailto:support@claimguardianai.com?subject=Compliance%20Question"
                 className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg transition-colors"
               >
                 Contact Compliance Team
@@ -114,24 +114,24 @@ export default function CompliancePage() {
 
             {/* Quick Links */}
             <div className="grid md:grid-cols-3 gap-4">
-              <a 
-                href="/legal/privacy-policy" 
+              <a
+                href="/legal/privacy-policy"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
                 <h4 className="font-semibold text-green-400 mb-2">Privacy Policy</h4>
                 <p className="text-sm text-gray-400">How we protect your data</p>
               </a>
-              
-              <a 
-                href="/legal/terms-of-service" 
+
+              <a
+                href="/legal/terms-of-service"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
                 <h4 className="font-semibold text-blue-400 mb-2">Terms of Service</h4>
                 <p className="text-sm text-gray-400">Platform usage terms</p>
               </a>
-              
-              <a 
-                href="/contact" 
+
+              <a
+                href="/contact"
                 className="bg-gray-800/50 rounded-lg p-4 border border-gray-700 hover:border-gray-600 transition-colors"
               >
                 <h4 className="font-semibold text-purple-400 mb-2">Contact Support</h4>

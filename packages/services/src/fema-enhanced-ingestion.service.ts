@@ -41,7 +41,7 @@ export class FEMAEnhancedIngestionService {
   private readonly limit = pLimit(5);
   private readonly BATCH_SIZE = 1000;
   private readonly MAX_RECORDS_PER_REQUEST = 10000;
-  
+
   // Dataset configurations
   private readonly DATASETS: Record<string, FEMADataset> = {
     DISASTER_DECLARATIONS_V2: {
@@ -158,9 +158,9 @@ export class FEMAEnhancedIngestionService {
   ): Promise<SyncResult[]> {
     const startTime = Date.now();
     const results: SyncResult[] = [];
-    
+
     const datasetsToSync = options.datasets || Object.keys(this.DATASETS);
-    
+
     logger.info('Starting comprehensive FEMA sync', {
       datasets: datasetsToSync,
       state: options.state,
@@ -220,7 +220,7 @@ export class FEMAEnhancedIngestionService {
   ): Promise<SyncResult> {
     const startTime = Date.now();
     const dataset = this.DATASETS[datasetKey];
-    
+
     if (!dataset) {
       throw new Error(`Unknown dataset: ${datasetKey}`);
     }
@@ -230,7 +230,7 @@ export class FEMAEnhancedIngestionService {
     try {
       // Build filter based on options and dataset configuration
       const filter = this.buildFilter(dataset, options);
-      
+
       // Fetch data with pagination
       const records = await this.fetchAllRecords(
         dataset.endpoint,
@@ -242,7 +242,7 @@ export class FEMAEnhancedIngestionService {
 
       // Process based on dataset type
       let processor: BatchProcessor<any>;
-      
+
       switch (datasetKey) {
         case 'DISASTER_DECLARATIONS_V2':
           processor = new DisasterDeclarationsProcessor(this.supabase);
@@ -266,19 +266,19 @@ export class FEMAEnhancedIngestionService {
       // Process in batches
       let inserted = 0;
       let updated = 0;
-      
+
       for (let i = 0; i < records.length; i += this.BATCH_SIZE) {
         const batch = records.slice(i, i + this.BATCH_SIZE);
         await processor.process(batch);
-        
+
         // Track metrics (simplified - actual implementation would track properly)
         inserted += batch.length;
-        
+
         logger.info(`Processed batch ${Math.floor(i / this.BATCH_SIZE) + 1} of ${Math.ceil(records.length / this.BATCH_SIZE)}`);
       }
 
       const duration = Date.now() - startTime;
-      
+
       return {
         dataset: dataset.name,
         recordsProcessed: records.length,
@@ -290,7 +290,7 @@ export class FEMAEnhancedIngestionService {
 
     } catch (error: any) {
       logger.error(`Failed to sync ${dataset.name}`, error);
-      
+
       return {
         dataset: dataset.name,
         recordsProcessed: 0,
@@ -347,7 +347,7 @@ export class FEMAEnhancedIngestionService {
           if (possibleArrays.length > 0) {
             records = possibleArrays[0] as any[];
           }
-          
+
           // Get total count if available
           if (data.metadata?.count) {
             totalCount = data.metadata.count;
@@ -355,10 +355,10 @@ export class FEMAEnhancedIngestionService {
         }
 
         allRecords.push(...records);
-        
+
         // Check if there are more records
         hasMore = records.length === this.MAX_RECORDS_PER_REQUEST;
-        
+
         // Use total count to optimize
         if (totalCount > 0 && allRecords.length >= totalCount) {
           hasMore = false;
@@ -400,7 +400,7 @@ export class FEMAEnhancedIngestionService {
     // Date range filter
     if (!options.fullSync) {
       const timeField = dataset.timeField;
-      
+
       if (options.startDate) {
         filters.push(`${timeField} ge '${options.startDate.toISOString()}'`);
       } else {
@@ -488,13 +488,13 @@ export class FEMAEnhancedIngestionService {
 
     // Daily syncs
     const dailyDatasets = ['DISASTER_DECLARATIONS_V2', 'IPAWS_ALERTS_V1', 'MISSION_ASSIGNMENTS_V1'];
-    
+
     // Weekly syncs (on Sunday)
-    const weeklyDatasets = dayOfWeek === 0 ? 
+    const weeklyDatasets = dayOfWeek === 0 ?
       ['PA_PROJECTS_V1', 'IA_HOUSING_V2', 'FMAG_V1', 'FIREFIGHTER_GRANTS_V1'] : [];
-    
+
     // Monthly syncs (on the 1st)
-    const monthlyDatasets = dayOfMonth === 1 ? 
+    const monthlyDatasets = dayOfMonth === 1 ?
       ['HMA_PROJECTS_V3', 'EMPG_V2', 'HM_PLANS_V1'] : [];
 
     const datasetsToSync = [...dailyDatasets, ...weeklyDatasets, ...monthlyDatasets];
@@ -642,7 +642,7 @@ class IAHousingProcessor implements BatchProcessor<any> {
     const chunkSize = 500;
     for (let i = 0; i < data.length; i += chunkSize) {
       const chunk = data.slice(i, i + chunkSize);
-      
+
       const { error } = await this.supabase
         .from('fema.ia_housing_v2')
         .upsert(chunk, {
@@ -786,7 +786,7 @@ class GenericProcessor implements BatchProcessor<any> {
   async process(records: any[]): Promise<void> {
     // Generic processing for other datasets
     logger.info(`Processing ${records.length} records for ${this.datasetKey}`);
-    
+
     // Map to appropriate table based on dataset key
     let tableName: string;
     let data: any[];

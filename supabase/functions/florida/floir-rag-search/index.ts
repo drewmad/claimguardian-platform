@@ -46,12 +46,12 @@ serve(async (req: Request) => {
 
   try {
     const startTime = Date.now()
-    const { 
-      query, 
-      data_types = null, 
-      limit = 10, 
+    const {
+      query,
+      data_types = null,
+      limit = 10,
       threshold = 0.5,
-      include_context = true 
+      include_context = true
     } = await req.json() as SearchRequest
 
     if (!query?.trim()) {
@@ -104,7 +104,7 @@ serve(async (req: Request) => {
 
     // Create context for RAG
     const context = createRAGContext(results)
-    
+
     let answer: string | undefined = undefined
 
     // Generate AI answer if context is requested
@@ -118,7 +118,7 @@ serve(async (req: Request) => {
               content: `You are an expert assistant for Florida insurance regulation data. Use the provided FLOIR data to answer questions about:
 - Insurance regulation and compliance
 - Catastrophe losses and claims
-- Rate filings and company information  
+- Rate filings and company information
 - Professional liability tracking
 - Industry reports and trends
 - Receivership and financial oversight
@@ -170,7 +170,7 @@ Please provide a comprehensive answer based on the Florida insurance regulation 
   timestamp: new Date().toISOString(),
   message: 'FLOIR RAG search error:', error
 }));
-    
+
     return new Response(JSON.stringify({
       error: error instanceof Error ? error.message : String(error),
       query: '',
@@ -187,36 +187,36 @@ Please provide a comprehensive answer based on the Florida insurance regulation 
 
 function createContentSnippet(dataType: string, normalizedData: any): string {
   const snippetLength = 150
-  
+
   switch (dataType) {
     case 'catastrophe':
       return `Event: ${normalizedData.Event || 'N/A'} | Claims: ${normalizedData.Claims || 'N/A'} | Losses: ${normalizedData.Losses || 'N/A'}`
-    
+
     case 'rate_filings':
       return `Company: ${normalizedData.CompanyName || normalizedData.Company || 'N/A'} | Status: ${normalizedData.FilingStatus || normalizedData.Status || 'N/A'} | Filed: ${normalizedData.ReceivedDate || 'N/A'}`
-    
+
     case 'professional_liability':
       return `Case: ${normalizedData.CaseNo || 'N/A'} | Paid: ${normalizedData.Paid || 'N/A'} | Closed: ${normalizedData.CloseDate || 'N/A'}`
-    
+
     case 'news_bulletins':
       return `${normalizedData.Title || 'N/A'} | ${normalizedData.Summary || 'N/A'}`.substring(0, snippetLength) + '...'
-    
+
     case 'receivership':
       return `Company: ${normalizedData.CompanyName || 'N/A'} | Status: ${normalizedData.Status || 'N/A'} | Date: ${normalizedData.DateReceived || 'N/A'}`
-    
+
     case 'industry_reports':
       return `Year: ${normalizedData.Year || 'N/A'} | Report: ${normalizedData.Title || 'N/A'}`
-    
+
     case 'financial_reports':
       return `NAIC: ${normalizedData.NAICCode || 'N/A'} | Company: ${normalizedData.CompanyName || 'N/A'}`
-    
+
     default:
       // Generic snippet for other types
       const text = Object.entries(normalizedData)
         .filter(([key, value]) => !key.startsWith('_') && typeof value === 'string')
         .map(([key, value]) => `${key}: ${value}`)
         .join(' | ')
-      
+
       return text.substring(0, snippetLength) + (text.length > snippetLength ? '...' : '')
   }
 }
@@ -228,7 +228,7 @@ function createRAGContext(results: SearchResult[]): string {
 
   const contextParts = results.map((result, index) => {
     const dataTypeFormatted = result.data_type.replace(/_/g, ' ').toUpperCase()
-    
+
     return `
 [${index + 1}] ${dataTypeFormatted} (Similarity: ${(result.similarity * 100).toFixed(1)}%)
 Source: ${result.source_url || 'N/A'}

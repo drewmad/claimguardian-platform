@@ -126,14 +126,14 @@ const syncSlice = createSlice({
         created_at: new Date().toISOString(),
         ...action.payload
       }
-      
+
       // Check for duplicate operations
       const existingIndex = state.queue.findIndex(
         item => item.entity_type === queueItem.entity_type &&
                 item.entity_id === queueItem.entity_id &&
                 item.operation === queueItem.operation
       )
-      
+
       if (existingIndex !== -1) {
         // Update existing item with newer data
         state.queue[existingIndex] = queueItem
@@ -188,9 +188,9 @@ const syncSlice = createSlice({
         timestamp: new Date().toISOString(),
         ...action.payload
       }
-      
+
       state.recentEvents.unshift(event)
-      
+
       // Keep only last 50 events
       if (state.recentEvents.length > 50) {
         state.recentEvents = state.recentEvents.slice(0, 50)
@@ -212,7 +212,7 @@ const syncSlice = createSlice({
       state.stats.syncSuccessRate = 100
     },
   },
-  
+
   extraReducers: (builder) => {
     // Full sync
     builder
@@ -230,7 +230,7 @@ const syncSlice = createSlice({
         state.lastSyncTime = new Date().toISOString()
         state.stats.totalSyncedToday += action.payload.synced_count
         state.stats.totalFailedToday += action.payload.failed_count
-        
+
         // Update success rate
         const total = state.stats.totalSyncedToday + state.stats.totalFailedToday
         if (total > 0) {

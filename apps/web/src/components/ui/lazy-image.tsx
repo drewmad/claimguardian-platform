@@ -71,7 +71,7 @@ export function LazyImage({
     if (!isInView) return
 
     const img = new Image()
-    
+
     img.onload = () => {
       setImageSrc(src)
       setIsLoading(false)

@@ -38,13 +38,13 @@ interface PropertyData {
   squareFootage: string
   bedrooms: string
   bathrooms: string
-  
+
   // Location
   street: string
   city: string
   state: string
   zipCode: string
-  
+
   // Value & Insurance
   estimatedValue: string
   purchasePrice: string
@@ -52,7 +52,7 @@ interface PropertyData {
   insuranceCarrier: string
   policyNumber: string
   coverageAmount: string
-  
+
   // Documents
   photos: File[]
   documents: File[]
@@ -118,7 +118,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<Record<string, string>>({})
   const [touched, setTouched] = useState<Record<string, boolean>>({})
-  
+
   const [propertyData, setPropertyData] = useState<PropertyData>({
     propertyType: '',
     propertyName: '',
@@ -157,7 +157,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
       }
 
       const value = propertyData[field as keyof PropertyData]
-      
+
       // Required field validation
       if (!value || value.toString().trim() === '') {
         if (field !== 'propertyName') { // Property name is optional
@@ -217,7 +217,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
 
   const handleFieldChange = (field: string, value: any) => {
     setPropertyData(prev => ({ ...prev, [field]: value }))
-    
+
     // Clear error when user starts typing
     if (errors[field]) {
       setErrors(prev => {
@@ -309,9 +309,9 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
 
       logger.track('property_wizard_completed', { propertyId: property.id })
       toast.success('Property added successfully!')
-      
+
       onComplete?.(propertyData)
-      
+
       // Navigate to property page
       router.push(`/dashboard/property/${property.id}`)
     } catch (error) {
@@ -496,7 +496,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
                 <div>
                   <p className="text-sm text-blue-300 font-medium">Florida Properties Only</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    ClaimGuardian currently serves Florida property owners. 
+                    ClaimGuardian currently serves Florida property owners.
                     We'll be expanding to other states soon!
                   </p>
                 </div>
@@ -671,7 +671,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
                   </div>
                 </label>
               </div>
-              
+
               {propertyData.photos.length > 0 && (
                 <div className="mt-3 space-y-2">
                   {propertyData.photos.map((file, index) => (
@@ -710,7 +710,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
                   </div>
                 </label>
               </div>
-              
+
               {propertyData.documents.length > 0 && (
                 <div className="mt-3 space-y-2">
                   {propertyData.documents.map((file, index) => (
@@ -734,7 +734,7 @@ export function PropertySetupWizard({ onComplete, onSkip, isModal = true }: Prop
                 <div>
                   <p className="text-sm text-blue-300 font-medium">Optional but Recommended</p>
                   <p className="text-xs text-gray-400 mt-1">
-                    Upload photos to document your property's condition and insurance policies 
+                    Upload photos to document your property's condition and insurance policies
                     for quick reference during claims.
                   </p>
                 </div>

@@ -14,7 +14,7 @@ jobs:
   validate-legal-docs:
     runs-on: ubuntu-latest
     name: Validate Legal Documents
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -60,7 +60,7 @@ jobs:
     name: Process and Deploy Legal Documents
     needs: validate-legal-docs
     if: github.ref == 'refs/heads/main'
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -88,18 +88,18 @@ jobs:
         run: |
           # Create output directory
           mkdir -p dist/legal
-          
+
           # Process each markdown file
           for md_file in legal/*.md; do
             if [ -f "$md_file" ]; then
               filename=$(basename "$md_file" .md)
-              
+
               echo "Processing $filename..."
-              
+
               # Convert MD to HTML
               html_file="dist/legal/${filename}.html"
               markdown-it "$md_file" > "$html_file"
-              
+
               # Minify HTML
               html-minifier-terser \
                 --collapse-whitespace \
@@ -108,47 +108,47 @@ jobs:
                 --use-short-doctype \
                 --input "$html_file" \
                 --output "$html_file"
-              
+
               # Generate SHA256 hash
               if command -v sha256sum >/dev/null 2>&1; then
                 HASH=$(sha256sum "$html_file" | awk '{print $1}')
               else
                 HASH=$(shasum -a 256 "$html_file" | awk '{print $1}')
               fi
-              
+
               echo "Generated hash for $filename: $HASH"
-              
+
               # Rename file with hash
               hashed_file="dist/legal/${HASH}.html"
               mv "$html_file" "$hashed_file"
-              
+
               # Extract metadata from markdown frontmatter
               VERSION=$(grep -m1 '^version:' "$md_file" | sed 's/version: *//g' | tr -d '"' || echo "1.0.0")
               TITLE=$(grep -m1 '^title:' "$md_file" | sed 's/title: *//g' | tr -d '"' || echo "$filename")
               EFFECTIVE_DATE=$(grep -m1 '^effective_date:' "$md_file" | sed 's/effective_date: *//g' | tr -d '"' || date +%Y-%m-%d)
-              
+
               echo "Metadata: $filename, $TITLE, $VERSION, $EFFECTIVE_DATE"
-              
+
               # Upload to Supabase Storage
               echo "Uploading to Supabase Storage..."
               supabase storage cp "$hashed_file" "legal/${HASH}.html" \
                 --project-ref="$SUPABASE_PROJECT_REF"
-              
+
               # Get public URL
               STORAGE_URL="https://$SUPABASE_PROJECT_REF.supabase.co/storage/v1/object/public/legal/${HASH}.html"
-              
+
               # Insert into database
               echo "Inserting into database..."
               PGPASSWORD="$SUPABASE_DB_PASSWORD" psql \
                 "postgresql://postgres@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres" \
-                -c "INSERT INTO legal_documents (slug, title, version, effective_date, sha256_hash, storage_url) 
+                -c "INSERT INTO legal_documents (slug, title, version, effective_date, sha256_hash, storage_url)
                     VALUES ('$filename', '$TITLE', '$VERSION', '$EFFECTIVE_DATE', '$HASH', '$STORAGE_URL')
                     ON CONFLICT (slug, version) DO UPDATE SET
                       effective_date = EXCLUDED.effective_date,
                       sha256_hash = EXCLUDED.sha256_hash,
                       storage_url = EXCLUDED.storage_url,
                       updated_at = NOW();"
-              
+
               echo "✓ Processed $filename successfully"
             fi
           done
@@ -162,14 +162,14 @@ jobs:
           PGPASSWORD="$SUPABASE_DB_PASSWORD" psql \
             "postgresql://postgres@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres" \
             -c "UPDATE legal_documents SET is_active = false;"
-          
+
           # Set latest version of each slug as active
           PGPASSWORD="$SUPABASE_DB_PASSWORD" psql \
             "postgresql://postgres@db.$SUPABASE_PROJECT_REF.supabase.co:5432/postgres" \
-            -c "UPDATE legal_documents SET is_active = true 
+            -c "UPDATE legal_documents SET is_active = true
                 WHERE id IN (
-                  SELECT DISTINCT ON (slug) id 
-                  FROM legal_documents 
+                  SELECT DISTINCT ON (slug) id
+                  FROM legal_documents
                   ORDER BY slug, effective_date DESC
                 );"
 

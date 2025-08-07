@@ -80,11 +80,11 @@ export interface ButtonProps
   rightIcon?: React.ReactNode
 }
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>( 
-  ({ 
-    className, 
-    variant, 
-    size, 
+const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
+  ({
+    className,
+    variant,
+    size,
     children,
     loading = false,
     loadingText,
@@ -93,23 +93,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     disabled,
     onClick,
     type = 'button',
-    ...props 
+    ...props
   }, ref) => {
     const [isProcessing, setIsProcessing] = React.useState(false)
-    
+
     const isDisabled = disabled || loading || isProcessing
-    
+
     const handleClick = React.useCallback((e: React.MouseEvent<HTMLButtonElement>) => {
       if (isProcessing || loading) return
-      
+
       // Allow default behavior for reset and submit buttons if no custom onClick
       if ((type === 'reset' || type === 'submit') && !onClick) {
         return // Let the browser handle the default behavior
       }
-      
+
       setIsProcessing(true)
       onClick?.(e)
-      
+
       // Reset processing state after a short delay to prevent double-clicks
       setTimeout(() => setIsProcessing(false), 300)
     }, [onClick, isProcessing, loading, type])
@@ -131,9 +131,9 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
             {leftIcon}
           </span>
         )}
-        
+
         {loading ? (loadingText || null) : children}
-        
+
         {!loading && rightIcon && (
           <span className="ml-2">
             {rightIcon}

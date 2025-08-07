@@ -48,47 +48,47 @@ export function MultiStepSignupForm() {
   const [currentStep, setCurrentStep] = useState<Step>('welcome')
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  
+
   const [formData, setFormData] = useState({
     // Personal Info
     firstName: '',
     lastName: '',
     email: '',
     phone: '',
-    
+
     // Account Security
     password: '',
     confirmPassword: '',
-    
+
     // Legal
     over18: false,
     legalAgreements: false,
-    
+
     // AI Disclaimer
     aiDisclaimerAccepted: false,
-    
+
     // Residency
     residencyType: '' as '' | 'renter' | 'homeowner' | 'landlord' | 'real_estate_pro',
   })
-  
+
   const supabase = useMemo(() => createBrowserSupabaseClient(), [])
-  
+
   const formatPhone = useCallback((value: string) => {
     const digits = value.replace(/\D/g, '')
     if (digits.length <= 3) return digits
     if (digits.length <= 6) return `(${digits.slice(0, 3)}) ${digits.slice(3)}`
     return `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6, 10)}`
   }, [])
-  
+
   const validateEmail = useCallback((email: string) => {
     return EMAIL_REGEX.test(email)
   }, [])
-  
+
   const validatePhone = useCallback((phone: string) => {
     const digits = phone.replace(/\D/g, '')
     return PHONE_DIGITS_REGEX.test(digits)
   }, [])
-  
+
   const getPasswordStrength = useCallback((password: string) => {
     if (passwordStrengthCache.has(password)) {
       return passwordStrengthCache.get(password)!
@@ -96,42 +96,42 @@ export function MultiStepSignupForm() {
 
     let score = 0
     const feedback = []
-    
+
     if (password.length >= 8) score += 1
     else feedback.push('At least 8 characters')
-    
+
     if (/[a-z]/.test(password)) score += 1
     else feedback.push('A lowercase letter')
-    
+
     if (/[A-Z]/.test(password)) score += 1
     else feedback.push('An uppercase letter')
-    
+
     if (/\d/.test(password)) score += 1
     else feedback.push('A number')
-    
+
     if (/[^a-zA-Z0-9]/.test(password)) score += 1
     else feedback.push('A special character')
-    
+
     const strength = score <= 2 ? 'weak' : score <= 3 ? 'medium' : score <= 4 ? 'strong' : 'very-strong'
     const color = {
       weak: 'text-red-400',
-      medium: 'text-yellow-400', 
+      medium: 'text-yellow-400',
       strong: 'text-blue-400',
       'very-strong': 'text-green-400'
     }[strength]
-    
+
     const result = { score, strength, feedback, color }
-    
+
     // Cache result but limit cache size
     if (passwordStrengthCache.size > 100) {
       const firstKey = passwordStrengthCache.keys().next().value
       if (firstKey) passwordStrengthCache.delete(firstKey)
     }
     passwordStrengthCache.set(password, result)
-    
+
     return result
   }, [])
-  
+
   const stepProgress = useMemo(() => {
     const currentIndex = STEPS.indexOf(currentStep)
     return {
@@ -169,7 +169,7 @@ export function MultiStepSignupForm() {
         return false
     }
   }, [currentStep, formData, validateEmail, validatePhone])
-  
+
   const handleNext = useCallback(() => {
     const currentIndex = STEPS.indexOf(currentStep)
     if (currentIndex < STEPS.length - 1) {
@@ -177,7 +177,7 @@ export function MultiStepSignupForm() {
       setError(null)
     }
   }, [currentStep])
-  
+
   const handleBack = useCallback(() => {
     const currentIndex = STEPS.indexOf(currentStep)
     if (currentIndex > 0) {
@@ -185,7 +185,7 @@ export function MultiStepSignupForm() {
       setError(null)
     }
   }, [currentStep])
-  
+
   const handleSubmit = useCallback(async () => {
     logger.info('🔵 handleSubmit called - starting signup process')
     logger.info('📱 User agent:', navigator.userAgent)
@@ -199,18 +199,18 @@ export function MultiStepSignupForm() {
         aiDisclaimerAccepted: formData.aiDisclaimerAccepted
       }
     })
-    
+
     // Double-check all validations before proceeding
     if (!isStepValid) {
       logger.info('⚠️ Step validation failed, aborting submission')
       setError('Please complete all required fields before continuing.')
       return
     }
-    
+
     setIsLoading(true)
     setError(null)
     logger.info('🔄 Loading state set to true, error cleared')
-    
+
     try {
       logger.info('🔐 Attempting signup with Supabase...')
       logger.info('🔗 Supabase client initialized:', !!supabase)
@@ -225,7 +225,7 @@ export function MultiStepSignupForm() {
           }
         }
       })
-      
+
       // Sign up the user
       const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
         email: formData.email,
@@ -239,20 +239,20 @@ export function MultiStepSignupForm() {
           }
         }
       })
-      
+
       logger.info('📨 Supabase signup response:', { signUpData, signUpError })
       logger.info('👤 User data received:', signUpData?.user ? 'YES' : 'NO')
       logger.info('🔑 Session data received:', signUpData?.session ? 'YES' : 'NO')
-      
+
       if (signUpError) throw signUpError
-      
+
       if (signUpData?.user) {
         logger.info('✅ User created successfully:', signUpData.user.id)
-        
+
         // Check if email confirmation is required
         if (!signUpData.session && signUpData.user && !signUpData.user.email_confirmed_at) {
           logger.info('📧 Email confirmation required - showing success page')
-          
+
           // Log consent data for audit trail
           console.log('User consents recorded:', {
             terms_accepted: formData.legalAgreements,
@@ -264,13 +264,13 @@ export function MultiStepSignupForm() {
             signup_referrer: document.referrer || null,
             signup_landing_page: window.location.href
           })
-          
+
           // Show success message for email verification
           setCurrentStep('success')
         } else {
           // Profile will be automatically created by database trigger
           logger.info('User profile will be created automatically by database trigger')
-          
+
           // Log consent data for audit trail
           console.log('User consents recorded:', {
             terms_accepted: formData.legalAgreements,
@@ -282,7 +282,7 @@ export function MultiStepSignupForm() {
             signup_referrer: document.referrer || null,
             signup_landing_page: window.location.href
           })
-          
+
           logger.info('🚀 Redirecting to onboarding...')
           // Redirect to property setup
           router.push('/onboarding/property-setup')
@@ -299,7 +299,7 @@ export function MultiStepSignupForm() {
       setIsLoading(false)
     }
   }, [isStepValid, supabase, formData, router, currentStep])
-  
+
   // Optimized form data updater - uses functional update to avoid recreation
   const updateFormData = useCallback(<K extends keyof typeof formData>(
     key: K,
@@ -324,20 +324,20 @@ export function MultiStepSignupForm() {
               <h1 className="text-3xl font-bold text-white mb-2">Welcome to ClaimGuardian</h1>
               <p className="text-gray-400">Your Digital Guardian</p>
             </div>
-            
+
             {/* Visual Divider */}
             <div className="border-t border-slate-700/50"></div>
-            
+
             {/* Compliance Message - Simplified */}
             <div className="text-center">
               <p className="text-sm text-gray-400">
                 We follow Florida law and safeguard your data with advanced security standards.
               </p>
             </div>
-            
+
             {/* Visual Divider */}
             <div className="border-t border-slate-700/50"></div>
-            
+
             {/* What to Expect - Enhanced with emoji and bullets */}
             <Alert className="bg-blue-950/50 border-blue-800">
               <AlertCircle className="h-4 w-4 text-blue-400" />
@@ -353,7 +353,7 @@ export function MultiStepSignupForm() {
             </Alert>
           </div>
         )
-        
+
       case 'account':
         return (
           <div className="space-y-6">
@@ -380,7 +380,7 @@ export function MultiStepSignupForm() {
                 <span className="bg-slate-900/50 px-2 text-slate-400">Or sign up with email</span>
               </div>
             </div>
-            
+
             {/* Personal Info */}
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -394,7 +394,7 @@ export function MultiStepSignupForm() {
                     placeholder="Enter your first name"
                   />
                 </div>
-                
+
                 <div>
                   <Label htmlFor="lastName">Last Name *</Label>
                   <Input
@@ -406,7 +406,7 @@ export function MultiStepSignupForm() {
                   />
                 </div>
               </div>
-              
+
               <div>
                 <Label htmlFor="email">Email *</Label>
                 <Input
@@ -424,7 +424,7 @@ export function MultiStepSignupForm() {
                   <p className="text-xs text-red-500 mt-1">Please enter a valid email</p>
                 )}
               </div>
-              
+
               <div>
                 <Label htmlFor="phone">Phone Number *</Label>
                 <Input
@@ -446,11 +446,11 @@ export function MultiStepSignupForm() {
                 )}
               </div>
             </div>
-            
+
             {/* Account Security */}
             <div className="border-t border-slate-700 pt-4 space-y-4">
               <h3 className="font-medium text-white">Account Security</h3>
-              
+
               <div>
                 <Label htmlFor="password">Password *</Label>
                 <Input
@@ -499,7 +499,7 @@ export function MultiStepSignupForm() {
                 )}
                 <p className="text-xs text-gray-500 mt-1">Must be at least 8 characters</p>
               </div>
-              
+
               <div>
                 <Label htmlFor="confirmPassword">Confirm Password *</Label>
                 <Input
@@ -518,7 +518,7 @@ export function MultiStepSignupForm() {
                 )}
               </div>
             </div>
-            
+
             {/* Residency Type */}
             <div className="border-t border-slate-700 pt-4">
               <Label className="text-base font-medium mb-3 block">I am a... *</Label>
@@ -575,7 +575,7 @@ export function MultiStepSignupForm() {
             </div>
           </div>
         )
-        
+
       case 'legal':
         return (
           <div className="space-y-6">
@@ -583,7 +583,7 @@ export function MultiStepSignupForm() {
               <h2 className="text-2xl font-bold text-white">Legal Agreements</h2>
               <p className="text-gray-400 mt-1">Please review and accept our policies</p>
             </div>
-            
+
             {/* Age Verification */}
             <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
               <h3 className="font-medium text-white">Age Verification</h3>
@@ -599,7 +599,7 @@ export function MultiStepSignupForm() {
                 </Label>
               </div>
             </div>
-            
+
             {/* Legal Agreements */}
             <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
               <h3 className="font-medium text-white">Terms & Privacy</h3>
@@ -627,7 +627,7 @@ export function MultiStepSignupForm() {
             </div>
           </div>
         )
-        
+
       case 'ai-disclaimer':
         return (
           <div className="space-y-6">
@@ -635,14 +635,14 @@ export function MultiStepSignupForm() {
               <h2 className="text-2xl font-bold text-white">AI Disclaimer</h2>
               <p className="text-gray-400 mt-1">Important information about our AI tools</p>
             </div>
-            
+
             <div className="bg-slate-800/50 rounded-lg p-6 space-y-4">
               <div className="bg-amber-950/30 border border-amber-800/50 rounded-lg p-4 mb-4">
                 <p className="text-sm text-amber-200">
                   ClaimGuardian uses artificial intelligence to help analyze documents, provide suggestions, and guide you through the claims process. While our AI is designed to be helpful and accurate, it's important to understand its limitations.
                 </p>
               </div>
-              
+
               <ul className="space-y-2 text-sm text-gray-300">
                 <li className="flex items-start gap-2">
                   <span className="text-blue-400 mt-0.5">•</span>
@@ -661,7 +661,7 @@ export function MultiStepSignupForm() {
                   Final decisions about your claim should be made by you
                 </li>
               </ul>
-              
+
               <div className="flex items-start space-x-3 pt-4 border-t border-slate-700">
                 <Checkbox
                   id="ai-disclaimer"
@@ -676,7 +676,7 @@ export function MultiStepSignupForm() {
             </div>
           </div>
         )
-        
+
       case 'success':
         return (
           <div className="space-y-6 text-center">
@@ -689,7 +689,7 @@ export function MultiStepSignupForm() {
                 We've sent a verification email to <strong className="text-white">{formData.email}</strong>
               </p>
             </div>
-            
+
             <div className="bg-slate-800 border border-slate-700 rounded-lg p-6 space-y-4">
               <h3 className="font-semibold text-white">Next Steps:</h3>
               <div className="space-y-3 text-left">
@@ -716,18 +716,18 @@ export function MultiStepSignupForm() {
                 </div>
               </div>
             </div>
-            
+
             <div className="text-sm text-gray-500">
               <p>Didn't receive an email? Check your spam folder or contact support.</p>
             </div>
           </div>
         )
-        
+
       default:
         return null
     }
   }, [currentStep, formData, getPasswordStrength, updateFormData, formatPhone])
-  
+
   return (
     <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
       <div className="w-full max-w-lg">
@@ -738,7 +738,7 @@ export function MultiStepSignupForm() {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-          
+
           {/* Progress Indicator */}
           <div className="mb-6">
             <div className="flex items-center justify-between text-sm text-gray-400 mb-2">
@@ -746,7 +746,7 @@ export function MultiStepSignupForm() {
               <span>{Math.round(stepProgress.percentage)}% complete</span>
             </div>
             <div className="w-full bg-slate-800 rounded-full h-2">
-              <div 
+              <div
                 className="bg-blue-600 h-2 rounded-full transition-all duration-300 ease-out"
                 style={{ width: `${stepProgress.percentage}%` }}
               />
@@ -755,14 +755,14 @@ export function MultiStepSignupForm() {
               {['Welcome', 'Account', 'Legal', 'AI Terms', 'Success'].map((stepName, index) => {
                 const isCompleted = index < stepProgress.currentStep - 1
                 const isCurrent = index === stepProgress.currentStep - 1
-                
+
                 return (
                   <div key={stepName} className="flex flex-col items-center">
                     <div className={`w-3 h-3 rounded-full border-2 transition-colors ${
-                      isCompleted 
-                        ? 'bg-blue-600 border-blue-600' 
-                        : isCurrent 
-                        ? 'border-blue-600 bg-slate-900' 
+                      isCompleted
+                        ? 'bg-blue-600 border-blue-600'
+                        : isCurrent
+                        ? 'border-blue-600 bg-slate-900'
                         : 'border-slate-600 bg-slate-800'
                     }`}>
                       {isCompleted && (
@@ -779,9 +779,9 @@ export function MultiStepSignupForm() {
               })}
             </div>
           </div>
-          
+
           {renderStepContent}
-          
+
           {/* Navigation */}
           {currentStep !== 'success' && (
             <div className="flex items-center justify-between mt-8 pt-6 border-t border-slate-800">
@@ -813,7 +813,7 @@ export function MultiStepSignupForm() {
                   <ArrowLeft className="mr-2 h-4 w-4" />
                   Previous
                 </Button>
-                
+
                 {currentStep === 'ai-disclaimer' ? (
                   <Button
                     type="button"
@@ -826,10 +826,10 @@ export function MultiStepSignupForm() {
                     }}
                     disabled={!isStepValid || isLoading}
                     className="bg-blue-600 hover:bg-blue-700 a11y-touch-target w-full"
-                    style={{ 
+                    style={{
                       touchAction: 'manipulation',
                       WebkitTapHighlightColor: 'transparent',
-                      userSelect: 'none' 
+                      userSelect: 'none'
                     }}
                   >
                     {isLoading ? (
@@ -858,13 +858,13 @@ export function MultiStepSignupForm() {
             )}
           </div>
           )}
-          
+
           {/* Footer Links */}
           {currentStep !== 'welcome' && (
             <div className="text-center mt-6">
               <p className="text-sm text-gray-400">
                 Already have an account?{' '}
-                <button 
+                <button
                   onClick={() => openModal('login')}
                   className="text-blue-400 hover:text-blue-300"
                 >

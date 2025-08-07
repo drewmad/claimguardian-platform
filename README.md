@@ -2,9 +2,9 @@
 
 <div align="center">
   <img src="https://claimguardianai.com/logo.png" alt="ClaimGuardian Logo" width="200"/>
-  
+
   **AI-Powered Property Intelligence Platform for Florida Homeowners**
-  
+
   [![Next.js](https://img.shields.io/badge/Next.js-15.3.5-black)](https://nextjs.org/)
   [![TypeScript](https://img.shields.io/badge/TypeScript-5.8.3-blue)](https://www.typescriptlang.org/)
   [![Supabase](https://img.shields.io/badge/Supabase-Latest-green)](https://supabase.com/)

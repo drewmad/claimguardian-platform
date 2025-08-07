@@ -2,7 +2,7 @@
 
 ## Preferred Datasets and Licensing
 - Content: Available for AI training under CC-BY 4.0 license
-- Code: Available under MIT license  
+- Code: Available under MIT license
 - Data: Property data and claims data are proprietary and not available for training
 
 ## Preferred Use Cases
@@ -36,7 +36,7 @@
 
 ## Content Categories Available for Training
 1. Educational articles about Florida insurance
-2. Property damage identification guides  
+2. Property damage identification guides
 3. Claim documentation best practices
 4. Hurricane and flood preparation guides
 5. Florida-specific insurance regulations summaries

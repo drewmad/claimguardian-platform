@@ -144,10 +144,10 @@ describe('ErrorBoundary', () => {
       expect(screen.getByText('Something went wrong')).toBeInTheDocument()
 
       const retryButton = screen.getByRole('button', { name: /try again/i })
-      
+
       // Before clicking, the button should be enabled
       expect(retryButton).not.toBeDisabled()
-      
+
       // Click the retry button
       retryButton.click()
 
@@ -161,7 +161,7 @@ describe('ErrorBoundary', () => {
     it('should navigate home when home button is clicked', () => {
       // Store the original href
       const originalHref = window.location.href
-      
+
       const error = new Error('Test error')
       render(
         <ErrorBoundary>
@@ -173,9 +173,9 @@ describe('ErrorBoundary', () => {
       homeButton.click()
 
       // The ErrorBoundary sets window.location.href = '/'
-      // In jsdom, this becomes 'http://localhost/' 
+      // In jsdom, this becomes 'http://localhost/'
       expect(window.location.href).toBe('http://localhost/')
-      
+
       // Restore original href for other tests
       window.location.href = originalHref
     })
@@ -229,7 +229,7 @@ describe('ErrorBoundary', () => {
     it('should not log low-severity errors in production', async () => {
       const originalEnv = process.env.NODE_ENV
       Object.defineProperty(process.env, 'NODE_ENV', {
-        value: 'production',  
+        value: 'production',
         writable: true,
         enumerable: true,
         configurable: true
@@ -280,7 +280,7 @@ describe('ErrorBoundary', () => {
   describe('Error Prevention', () => {
     it('should not crash when error info is missing', () => {
       const testError = new Error('Test error')
-      
+
       // Simulate error boundary with minimal error info
       render(
         <ErrorBoundary>

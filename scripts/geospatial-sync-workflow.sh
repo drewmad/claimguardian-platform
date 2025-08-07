@@ -81,7 +81,7 @@ check_service_health "python" || error_exit "Python environment is not ready"
 run_data_acquisition() {
     local source=$1
     log "Running data acquisition for: $source"
-    
+
     cd "$SCRIPT_DIR"
     if python3 florida-geospatial-data-acquisition.py "$source" >> "$LOG_FILE" 2>&1; then
         log "✅ Data acquisition completed for $source"
@@ -96,7 +96,7 @@ run_data_acquisition() {
 run_etl_pipeline() {
     local operation=$1
     log "Running ETL pipeline: $operation"
-    
+
     cd "$SCRIPT_DIR"
     if python3 geospatial-etl-pipeline.py "$operation" >> "$LOG_FILE" 2>&1; then
         log "✅ ETL pipeline completed: $operation"
@@ -111,14 +111,14 @@ run_etl_pipeline() {
 send_notification() {
     local status=$1
     local message=$2
-    
+
     # In production, integrate with notification service
     log "NOTIFICATION [$status]: $message"
-    
+
     # Log to database
     psql "$DATABASE_URL" -c "
         INSERT INTO public.system_logs (level, message, context, created_at)
-        VALUES ('$status', 'Geospatial Sync: $message', 
+        VALUES ('$status', 'Geospatial Sync: $message',
                 '{\"workflow\": \"geospatial-sync\", \"timestamp\": \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\"}',
                 CURRENT_TIMESTAMP)
     " > /dev/null 2>&1 || true
@@ -129,64 +129,64 @@ case "${1:-daily}" in
     "realtime")
         # Real-time sync for active events (every 15 minutes)
         log "Starting real-time sync..."
-        
+
         # Update active wildfire data
         run_data_acquisition "active_wildfires" || send_notification "error" "Failed to update wildfire data"
-        
+
         # Check for property impacts
         run_etl_pipeline "events" || send_notification "error" "Failed to process active events"
-        
+
         log "Real-time sync completed"
         ;;
-        
+
     "daily")
         # Daily sync for semi-static data
         log "Starting daily sync..."
-        
+
         # Update hazard zones if available
         for source in "fema_flood_zones" "storm_surge_zones"; do
             run_data_acquisition "$source" || log "Skipping $source - may not have updates"
         done
-        
+
         # Run full risk assessment update
         run_etl_pipeline "risk" || send_notification "error" "Failed to update risk assessments"
-        
+
         # Generate statistics
         run_etl_pipeline "stats" || send_notification "error" "Failed to generate statistics"
-        
+
         send_notification "info" "Daily sync completed successfully"
         log "Daily sync completed"
         ;;
-        
+
     "weekly")
         # Weekly sync for infrastructure data
         log "Starting weekly sync..."
-        
+
         # Update infrastructure data
         run_data_acquisition "fire_stations" || log "Skipping fire stations - may not have updates"
-        
+
         # Run full pipeline
         run_etl_pipeline "run" || send_notification "error" "Failed to run full pipeline"
-        
+
         # Cleanup old data
         log "Cleaning up old data..."
         psql "$DATABASE_URL" -c "
-            DELETE FROM geospatial.active_events 
-            WHERE status != 'active' 
+            DELETE FROM geospatial.active_events
+            WHERE status != 'active'
             AND updated_at < CURRENT_TIMESTAMP - INTERVAL '30 days'
         " >> "$LOG_FILE" 2>&1
-        
+
         send_notification "info" "Weekly sync completed successfully"
         log "Weekly sync completed"
         ;;
-        
+
     "monthly")
         # Monthly sync for parcel data
         log "Starting monthly sync..."
-        
+
         # This would typically run a more comprehensive parcel update
         # For now, we'll just verify data integrity
-        
+
         log "Verifying data integrity..."
         INTEGRITY_CHECK=$(psql "$DATABASE_URL" -t -c "
             SELECT json_build_object(
@@ -196,23 +196,23 @@ case "${1:-daily}" in
                 'linked_properties', COUNT(*) FROM public.properties WHERE parcel_id IS NOT NULL
             )
         ")
-        
+
         log "Data integrity check: $INTEGRITY_CHECK"
         send_notification "info" "Monthly sync completed: $INTEGRITY_CHECK"
         log "Monthly sync completed"
         ;;
-        
+
     "test")
         # Test mode - run minimal sync
         log "Starting test sync..."
-        
+
         # Just check connections and run statistics
         check_service_health "database"
         run_etl_pipeline "stats"
-        
+
         log "Test sync completed"
         ;;
-        
+
     *)
         log "Unknown sync type: $1"
         echo "Usage: $0 [realtime|daily|weekly|monthly|test]"

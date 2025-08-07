@@ -73,7 +73,7 @@ function PropertyCard({ property, viewMode, onPress }: PropertyCardProps) {
         activeOpacity={0.7}
       >
         <View style={[styles.syncIndicator, { backgroundColor: property.synced ? '#10B981' : '#F59E0B' }]} />
-        
+
         <View style={styles.cardHeader}>
           <View style={styles.propertyIcon}>
             <MaterialCommunityIcons
@@ -118,7 +118,7 @@ function PropertyCard({ property, viewMode, onPress }: PropertyCardProps) {
       activeOpacity={0.7}
     >
       <View style={[styles.listSyncIndicator, { backgroundColor: property.synced ? '#10B981' : '#F59E0B' }]} />
-      
+
       <View style={styles.listIcon}>
         <MaterialCommunityIcons
           name={getPropertyTypeIcon(property.type)}
@@ -136,14 +136,14 @@ function PropertyCard({ property, viewMode, onPress }: PropertyCardProps) {
             {formatPropertyType(property.type)}
           </Text>
         </View>
-        
+
         <Text style={styles.listPropertyAddress} numberOfLines={1}>
           {property.street1}{property.street2 ? `, ${property.street2}` : ''}
         </Text>
         <Text style={styles.listCityState}>
           {property.city}, {property.state} {property.zip}
         </Text>
-        
+
         <Text style={styles.listLastUpdated}>
           Updated: {new Date(property.updated_at).toLocaleDateString()}
         </Text>
@@ -267,7 +267,7 @@ export default function PropertiesScreen() {
               {sortedProperties.length} of {properties.items.length} properties
             </Text>
           </View>
-          
+
           <View style={styles.headerActions}>
             <TouchableOpacity
               style={styles.headerButton}
@@ -279,7 +279,7 @@ export default function PropertiesScreen() {
                 color="#9CA3AF"
               />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={styles.headerButton}
               onPress={() => setShowFilters(!showFilters)}
@@ -290,7 +290,7 @@ export default function PropertiesScreen() {
                 color={showFilters ? '#3B82F6' : '#9CA3AF'}
               />
             </TouchableOpacity>
-            
+
             <TouchableOpacity
               style={styles.addButton}
               onPress={handleAddProperty}

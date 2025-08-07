@@ -287,4 +287,3 @@ class OCRService {
 }
 
 export const ocrService = new OCRService()
-

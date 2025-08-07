@@ -88,14 +88,14 @@ interface PropertyData {
     };
     isAddressValidated: boolean;
     basicInfo: { propertyType: string };
-    propertyDetails: { 
+    propertyDetails: {
         bedrooms: number;
         bathrooms: number;
         numberOfFloors: number;
         roomsPerFloor: number[];
         features: string[];
     };
-    insuranceInfo: { 
+    insuranceInfo: {
         hasHomeownersRenters: string;
         hasFlood: string;
         hasOther: string;
@@ -106,7 +106,7 @@ interface PropertyData {
     isLoading: boolean;
 }
 
-type WizardAction = 
+type WizardAction =
     | { type: 'SET_ID'; payload: string }
     | { type: 'UPDATE_FIELD'; payload: { section?: string; field: string; value: unknown } }
     | { type: 'SET_ADDRESS'; payload: PropertyData['address'] }
@@ -149,10 +149,10 @@ const initialState: PropertyData = {
     },
     isAddressValidated: false,
     basicInfo: { propertyType: '' },
-    propertyDetails: { 
+    propertyDetails: {
         bedrooms: 1, bathrooms: 1, numberOfFloors: 1, roomsPerFloor: [0], features: [],
     },
-    insuranceInfo: { 
+    insuranceInfo: {
         hasHomeownersRenters: '', hasFlood: '', hasOther: '',
     },
     financialInfo: { hasMortgage: '' },
@@ -239,7 +239,7 @@ const useFormValidation = (state: PropertyData) => {
             else if (['hasHomeownersRenters', 'hasFlood'].includes(field)) value = state.insuranceInfo[field as keyof typeof state.insuranceInfo];
             else if (field === 'hasMortgage') value = state.financialInfo.hasMortgage;
             else value = state[field as keyof PropertyData];
-            
+
             if (value === '' || value === undefined || value === null) {
                 errors[field] = 'This field is required.';
             }
@@ -354,7 +354,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
     };
 
     const handleBack = () => dispatch({ type: 'PREV_STEP' });
-    
+
     const handleSubmit = async () => {
         dispatch({ type: 'SET_LOADING', payload: true });
         try {
@@ -379,9 +379,9 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                     }
                 }
             });
-            
+
             if (propertyError) throw propertyError;
-            
+
             toast.success('Property created successfully!');
             onComplete?.(createdProperty?.id || '');
             localStorage.removeItem('propertyWizardState');
@@ -394,7 +394,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
             dispatch({ type: 'SET_LOADING', payload: false });
         }
     };
-    
+
     if (!open) return null;
     if (state.isLoading) return <SkeletonLoader />;
 
@@ -444,7 +444,7 @@ export function PropertyWizard({ open, onClose, onComplete }: PropertyWizardProp
                                 <ChevronLeft size={18} /> Back
                             </button>
                         ) : <div className="w-24"></div>}
-                        
+
                         {state.step < STEPS.length ? (
                             <button onClick={handleNext} disabled={isNextDisabled} className={`flex items-center gap-2 px-6 py-2.5 ${COLORS.accent} text-white font-semibold rounded-lg hover:bg-indigo-500 border ${COLORS.accentBorder} shadow-lg shadow-indigo-600/30 disabled:bg-slate-600 disabled:cursor-not-allowed disabled:shadow-none`}>
                                 Next <ChevronRight size={18} />
@@ -486,19 +486,19 @@ interface NumericStepperProps {
     step?: number;
 }
 
-const NumericStepper = ({ label, value, onChange, min = 0, max = 10, step = 1 }: NumericStepperProps) => { 
-    const increment = () => onChange(Math.min(max, value + step)); 
-    const decrement = () => onChange(Math.max(min, value - step)); 
-    return ( 
-        <div> 
-            <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>{label}</label> 
-            <div className="flex items-center gap-4"> 
-                <button onClick={decrement} className={`p-3 rounded-full bg-slate-700/50 hover:bg-slate-600/50 border ${COLORS.border}`}><Minus size={16} /></button> 
-                <span className="text-2xl font-bold w-12 text-center">{value}</span> 
-                <button onClick={increment} className={`p-3 rounded-full bg-slate-700/50 hover:bg-slate-600/50 border ${COLORS.border}`}><Plus size={16} /></button> 
-            </div> 
-        </div> 
-    ); 
+const NumericStepper = ({ label, value, onChange, min = 0, max = 10, step = 1 }: NumericStepperProps) => {
+    const increment = () => onChange(Math.min(max, value + step));
+    const decrement = () => onChange(Math.max(min, value - step));
+    return (
+        <div>
+            <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>{label}</label>
+            <div className="flex items-center gap-4">
+                <button onClick={decrement} className={`p-3 rounded-full bg-slate-700/50 hover:bg-slate-600/50 border ${COLORS.border}`}><Minus size={16} /></button>
+                <span className="text-2xl font-bold w-12 text-center">{value}</span>
+                <button onClick={increment} className={`p-3 rounded-full bg-slate-700/50 hover:bg-slate-600/50 border ${COLORS.border}`}><Plus size={16} /></button>
+            </div>
+        </div>
+    );
 };
 
 interface CheckboxGridProps {
@@ -507,20 +507,20 @@ interface CheckboxGridProps {
     onToggle: (option: string) => void;
 }
 
-const CheckboxGrid = ({ options, selectedOptions, onToggle }: CheckboxGridProps) => ( 
-    <div> 
-        <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Select applicable features (select all that apply)</label> 
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3"> 
-            {options.map(option => { 
-                const isSelected = selectedOptions.includes(option); 
-                return ( 
-                    <button key={option} onClick={() => onToggle(option)} className={`p-3 rounded-lg border-2 text-left font-semibold text-sm transition-all duration-200 ${isSelected ? `bg-indigo-500/20 border-indigo-500 ${COLORS.textPrimary}` : `bg-slate-900/50 ${COLORS.border} ${COLORS.textSecondary} hover:border-slate-500`}`}> 
-                        {option} 
-                    </button> 
-                ); 
-            })} 
-        </div> 
-    </div> 
+const CheckboxGrid = ({ options, selectedOptions, onToggle }: CheckboxGridProps) => (
+    <div>
+        <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Select applicable features (select all that apply)</label>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+            {options.map(option => {
+                const isSelected = selectedOptions.includes(option);
+                return (
+                    <button key={option} onClick={() => onToggle(option)} className={`p-3 rounded-lg border-2 text-left font-semibold text-sm transition-all duration-200 ${isSelected ? `bg-indigo-500/20 border-indigo-500 ${COLORS.textPrimary}` : `bg-slate-900/50 ${COLORS.border} ${COLORS.textSecondary} hover:border-slate-500`}`}>
+                        {option}
+                    </button>
+                );
+            })}
+        </div>
+    </div>
 );
 
 interface ButtonGroupProps {
@@ -530,14 +530,14 @@ interface ButtonGroupProps {
     columns?: number;
 }
 
-const ButtonGroup = ({ options, selectedValue, onChange, columns = 3 }: ButtonGroupProps) => ( 
-    <div className={`grid grid-cols-1 sm:grid-cols-${columns} gap-4`}> 
-        {options.map(option => ( 
-            <button key={option.value} onClick={() => onChange(option.value)} className={`p-4 rounded-lg border-2 text-center font-semibold transition-all duration-200 ${selectedValue === option.value ? `bg-indigo-500/20 border-indigo-500 ${COLORS.textPrimary}` : `bg-slate-900/50 ${COLORS.border} ${COLORS.textSecondary} hover:border-slate-500`}`}> 
-                {option.label} 
-            </button> 
-        ))} 
-    </div> 
+const ButtonGroup = ({ options, selectedValue, onChange, columns = 3 }: ButtonGroupProps) => (
+    <div className={`grid grid-cols-1 sm:grid-cols-${columns} gap-4`}>
+        {options.map(option => (
+            <button key={option.value} onClick={() => onChange(option.value)} className={`p-4 rounded-lg border-2 text-center font-semibold transition-all duration-200 ${selectedValue === option.value ? `bg-indigo-500/20 border-indigo-500 ${COLORS.textPrimary}` : `bg-slate-900/50 ${COLORS.border} ${COLORS.textSecondary} hover:border-slate-500`}`}>
+                {option.label}
+            </button>
+        ))}
+    </div>
 );
 
 interface AddressInputProps {
@@ -596,12 +596,12 @@ const Step1 = ({ state, dispatch }: StepProps) => {
     <div className="space-y-8">
         <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>First, do you own or rent the property?</h2>
         <ButtonGroup options={[{label: 'I Own It', value: 'own'}, {label: 'I Rent It', value: 'rent'}]} columns={2} selectedValue={state.ownershipStatus} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { field: 'ownershipStatus', value } })} />
-        
+
         {state.ownershipStatus && (
             <div className="space-y-8 animate-fade-in">
                  <h3 className={`text-xl font-bold ${COLORS.textPrimary}`}>And where is it located?</h3>
                 <AddressInput address={state.address} dispatch={dispatch} />
-                
+
                 {state.address.street1 && (
                     <div className="animate-fade-in">
                         <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Property Type</label>
@@ -631,7 +631,7 @@ const Step2 = ({ state, dispatch }: StepProps) => {
     return (
     <div className="space-y-8">
         <h2 className={`text-2xl font-bold ${COLORS.textPrimary}`}>Tell us a bit more about the property.</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <NumericStepper label="Bedrooms" value={state.propertyDetails.bedrooms} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { section: 'propertyDetails', field: 'bedrooms', value } })} />
             {visibleQuestions.baths && <div className="animate-fade-in"><NumericStepper label="Bathrooms" value={state.propertyDetails.bathrooms} step={0.5} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { section: 'propertyDetails', field: 'bathrooms', value } })} /></div>}
@@ -664,14 +664,14 @@ const Step3 = ({ state, dispatch }: StepProps) => (
             <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>{state.ownershipStatus === 'rent' ? 'Do you have Renters Insurance?' : 'Do you have Homeowners Insurance?'}</label>
             <ButtonGroup options={[{label: 'Yes', value: 'yes'}, {label: 'No', value: 'no'}]} columns={2} selectedValue={state.insuranceInfo.hasHomeownersRenters} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { section: 'insuranceInfo', field: 'hasHomeownersRenters', value }})} />
         </div>
-        
+
         {state.ownershipStatus === 'own' && (
             <div>
                 <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Does this policy include Flood Insurance?</label>
                 <ButtonGroup options={[{label: 'Yes', value: 'yes'}, {label: 'No', value: 'no'}]} columns={2} selectedValue={state.insuranceInfo.hasFlood} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { section: 'insuranceInfo', field: 'hasFlood', value }})} />
             </div>
         )}
-        
+
         <div>
             <label className={`block text-sm font-medium mb-2 ${COLORS.textSecondary}`}>Do you have any other insurance policies for this property?</label>
             <ButtonGroup options={[{label: 'Yes', value: 'yes'}, {label: 'No', value: 'no'}]} columns={2} selectedValue={state.insuranceInfo.hasOther} onChange={(value) => dispatch({ type: 'UPDATE_FIELD', payload: { section: 'insuranceInfo', field: 'hasOther', value }})} />
@@ -740,7 +740,7 @@ const Step5 = ({ state }: Step5Props) => (
                 <ReviewItem label="Property Type" value={state.basicInfo.propertyType.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())} />
             </ReviewSection>
 
-            {state.basicInfo.propertyType !== 'land' && 
+            {state.basicInfo.propertyType !== 'land' &&
                 <ReviewSection title="Structural Details" icon={<Building size={20} />}>
                     <ReviewItem label="Bed / Bath" value={`${state.propertyDetails.bedrooms || '?'} bed / ${state.propertyDetails.bathrooms || '?'} bath`} />
                     <ReviewItem label="Floors" value={String(state.propertyDetails.numberOfFloors)} />

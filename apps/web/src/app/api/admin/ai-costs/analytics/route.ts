@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
 
     // Get admin analytics
     const analytics = await costTrackingService.getAdminCostAnalytics(startDate, endDate)
-    
+
     return NextResponse.json(analytics)
 
   } catch (error) {

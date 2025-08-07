@@ -41,20 +41,20 @@ export { DocumentCategorizerService } from './features/categorizer/document-cate
 
 // Export Gemini 2.0 optimizations
 export { GeminiStrategy, GeminiCostAnalyzer } from './strategies/gemini-strategy';
-export { 
-  GeminiInsuranceService, 
+export {
+  GeminiInsuranceService,
   createFloridaInsuranceAI,
   type FloridaClaimAnalysis,
-  type PolicyExtractionResult 
+  type PolicyExtractionResult
 } from './services/gemini-insurance.service';
 
 // Export model manager
-export { 
-  aiModelManager, 
-  AIProvider as ModelAIProvider, 
-  AIModel as ModelAIModel, 
+export {
+  aiModelManager,
+  AIProvider as ModelAIProvider,
+  AIModel as ModelAIModel,
   getAvailableAIProviders,
   generateAIText,
   analyzeAIImage,
-  getBestAIModel 
+  getBestAIModel
 } from './model-manager';

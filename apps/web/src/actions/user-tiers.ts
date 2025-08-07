@@ -317,7 +317,7 @@ export async function performBulkUserOperation({
             // Update subscription status to suspended
             await supabase
               .from('user_subscriptions')
-              .update({ 
+              .update({
                 status: 'suspended',
                 updated_at: new Date().toISOString()
               })
@@ -339,7 +339,7 @@ export async function performBulkUserOperation({
             // Reactivate suspended subscription
             await supabase
               .from('user_subscriptions')
-              .update({ 
+              .update({
                 status: 'active',
                 updated_at: new Date().toISOString()
               })
@@ -622,21 +622,21 @@ export async function createTierCheckoutSession({
     // Price ID mapping for each tier
     const tierPriceIds: Record<UserTier, { monthly: string; yearly: string }> = {
       free: { monthly: '', yearly: '' }, // Free tier doesn't have price IDs
-      renter: { 
-        monthly: 'price_renter_monthly', 
-        yearly: 'price_renter_yearly' 
+      renter: {
+        monthly: 'price_renter_monthly',
+        yearly: 'price_renter_yearly'
       },
-      essential: { 
-        monthly: 'price_essential_monthly', 
-        yearly: 'price_essential_yearly' 
+      essential: {
+        monthly: 'price_essential_monthly',
+        yearly: 'price_essential_yearly'
       },
-      plus: { 
-        monthly: 'price_plus_monthly', 
-        yearly: 'price_plus_yearly' 
+      plus: {
+        monthly: 'price_plus_monthly',
+        yearly: 'price_plus_yearly'
       },
-      pro: { 
-        monthly: 'price_pro_monthly', 
-        yearly: 'price_pro_yearly' 
+      pro: {
+        monthly: 'price_pro_monthly',
+        yearly: 'price_pro_yearly'
       }
     }
 
@@ -651,7 +651,7 @@ export async function createTierCheckoutSession({
 
     // This would create a Stripe checkout session
     // For now, return a mock URL
-    return { 
+    return {
       sessionId: 'mock-session-id',
       url: `${successUrl}?session_id=mock-session-id&tier=${tier}&billing=${billingInterval}`
     }

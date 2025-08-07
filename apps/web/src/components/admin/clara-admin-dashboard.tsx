@@ -18,12 +18,12 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
-import { 
-  Heart, 
-  AlertTriangle, 
-  MessageCircle, 
-  Users, 
-  TrendingUp, 
+import {
+  Heart,
+  AlertTriangle,
+  MessageCircle,
+  Users,
+  TrendingUp,
   Clock,
   Shield,
   Brain,
@@ -40,11 +40,11 @@ import {
   Calendar
 } from 'lucide-react'
 import { format, differenceInMinutes } from 'date-fns'
-import { 
-  claraAICompanionService, 
-  type ClaraSession, 
+import {
+  claraAICompanionService,
+  type ClaraSession,
   type ClaraMessage,
-  type CrisisAlert 
+  type CrisisAlert
 } from '@/lib/services/clara-ai-companion'
 import { toast } from 'sonner'
 
@@ -157,7 +157,7 @@ export function ClaraAdminDashboard() {
   const endSession = async (sessionId: string) => {
     try {
       const success = await claraAICompanionService.endSession(sessionId, adminId, 'Session ended by admin')
-      
+
       if (success) {
         toast.success('Session ended')
         await loadSessions()
@@ -198,7 +198,7 @@ export function ClaraAdminDashboard() {
 
   const activeSessions = sessions.filter(s => !s.ended_at)
   const crisisSessions = sessions.filter(s => s.crisis_level >= 3)
-  const todaySessions = sessions.filter(s => 
+  const todaySessions = sessions.filter(s =>
     new Date(s.created_at).toDateString() === new Date().toDateString()
   )
 
@@ -224,7 +224,7 @@ export function ClaraAdminDashboard() {
             <p className="text-gray-400">24/7 Emotional Support & Crisis Intervention (Admin Only)</p>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Badge className="bg-pink-600/20 text-pink-400 border-pink-600/30">
             <Brain className="h-3 w-3 mr-1" />
@@ -366,7 +366,7 @@ export function ClaraAdminDashboard() {
             <CardContent>
               <div className="space-y-3">
                 {sessions.map(session => {
-                  const duration = session.ended_at 
+                  const duration = session.ended_at
                     ? differenceInMinutes(new Date(session.ended_at), new Date(session.created_at))
                     : differenceInMinutes(new Date(), new Date(session.created_at))
 
@@ -397,7 +397,7 @@ export function ClaraAdminDashboard() {
                           </p>
                         </div>
                       </div>
-                      
+
                       <div className="flex items-center gap-2">
                         <Button
                           size="sm"
@@ -517,7 +517,7 @@ export function ClaraAdminDashboard() {
                         onKeyPress={(e) => e.key === 'Enter' && continueConversation()}
                         className="bg-gray-700 border-gray-600 text-white"
                       />
-                      <Button 
+                      <Button
                         onClick={continueConversation}
                         disabled={!newMessage}
                         className="bg-blue-600 hover:bg-blue-700"
@@ -570,8 +570,8 @@ export function ClaraAdminDashboard() {
                   />
                 </div>
               </div>
-              
-              <Button 
+
+              <Button
                 onClick={startTestSession}
                 disabled={!testUserId || !testMessage}
                 className="bg-pink-600 hover:bg-pink-700"

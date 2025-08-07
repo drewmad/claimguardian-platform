@@ -16,10 +16,10 @@ import { OptimizedImage } from '@/components/ui/optimized-image'
 import { COLORS } from '@/lib/constants'
 
 const HeaderLogoIcon = () => (
-  <OptimizedImage 
-    src="/ClaimGuardian.png" 
-    alt="ClaimGuardian Logo" 
-    width={32} 
+  <OptimizedImage
+    src="/ClaimGuardian.png"
+    alt="ClaimGuardian Logo"
+    width={32}
     height={32}
     priority={true}
     className="object-contain"
@@ -40,18 +40,18 @@ export function Header() {
         <span className="text-gray-300/30">|</span>
         <Link href="/auth/signin" className="text-gray-300 hover:text-primary transition-colors">Sign In</Link>
         <span className="text-gray-300/30">|</span>
-        <Link 
-          href="/auth/signup" 
-          className="py-2 px-4 rounded-full transition-colors hover:opacity-90" 
+        <Link
+          href="/auth/signup"
+          className="py-2 px-4 rounded-full transition-colors hover:opacity-90"
           style={{ backgroundColor: COLORS.primary, color: 'white' }}
         >
           Join the Community
         </Link>
       </nav>
       <div className="md:hidden">
-        <Link 
-          href="/auth/signup" 
-          className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block" 
+        <Link
+          href="/auth/signup"
+          className="font-semibold text-sm py-2 px-4 rounded-full transition-colors hover:opacity-90 inline-block"
           style={{ backgroundColor: COLORS.primary, color: 'white' }}
         >
           Join Community

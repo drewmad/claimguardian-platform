@@ -148,7 +148,7 @@ export interface Bottleneck {
   status: 'active' | 'resolved' | 'mitigated'
 }
 
-export type BottleneckType = 
+export type BottleneckType =
   | 'performance'
   | 'error_rate'
   | 'development_speed'

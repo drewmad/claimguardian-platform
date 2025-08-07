@@ -54,7 +54,7 @@ confirm "This will test the security fixes on your LOCAL database. Make sure Sup
 if [ -f "scripts/security-remediation.sql" ]; then
     echo "Applying security fixes to local database..."
     psql "postgresql://postgres:postgres@localhost:54322/postgres" < scripts/security-remediation.sql
-    
+
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}✓ Local test successful${NC}"
     else

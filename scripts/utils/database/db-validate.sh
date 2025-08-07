@@ -30,13 +30,13 @@ if [ -d "$MIGRATION_DIR" ]; then
   # Check for duplicate timestamps
   timestamps=$(ls -1 $MIGRATION_DIR/*.sql 2>/dev/null | sed 's/.*\///' | cut -d'_' -f1 | sort)
   duplicates=$(echo "$timestamps" | uniq -d)
-  
+
   if [ -n "$duplicates" ]; then
     echo "❌ Duplicate migration timestamps found:"
     echo "$duplicates"
     exit 1
   fi
-  
+
   # Check for migration file naming
   for file in $MIGRATION_DIR/*.sql; do
     filename=$(basename "$file")

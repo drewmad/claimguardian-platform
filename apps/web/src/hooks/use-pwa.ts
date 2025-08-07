@@ -67,7 +67,7 @@ export function usePWA() {
     if (typeof window === 'undefined') return
 
     const checkPWAStatus = () => {
-      const isStandalone = 
+      const isStandalone =
         window.matchMedia('(display-mode: standalone)').matches ||
         (window.navigator as any).standalone ||
         document.referrer.includes('android-app://')
@@ -131,13 +131,13 @@ export function useInstallPrompt() {
     const handleBeforeInstallPrompt = (e: Event) => {
       e.preventDefault()
       const event = e as BeforeInstallPromptEvent
-      
+
       setState(prev => ({
         ...prev,
         event,
         isVisible: !prev.hasBeenDismissed && !promptShown.current
       }))
-      
+
       logger.track('install_prompt_available')
     }
 
@@ -147,7 +147,7 @@ export function useInstallPrompt() {
         isVisible: false,
         installStatus: 'installed'
       }))
-      
+
       localStorage.setItem('pwa-installed', 'true')
       logger.track('pwa_installed_via_prompt')
     }
@@ -166,12 +166,12 @@ export function useInstallPrompt() {
 
     try {
       setState(prev => ({ ...prev, installStatus: 'installing' }))
-      
+
       await state.event.prompt()
       const choiceResult = await state.event.userChoice
-      
+
       promptShown.current = true
-      
+
       if (choiceResult.outcome === 'accepted') {
         logger.track('install_prompt_accepted', { platform: choiceResult.platform })
         setState(prev => ({
@@ -299,7 +299,7 @@ export function useServiceWorker() {
         // Check for updates
         registration.addEventListener('updatefound', () => {
           const newWorker = registration.installing
-          
+
           setState(prev => ({ ...prev, isUpdating: true }))
 
           newWorker?.addEventListener('statechange', () => {
@@ -344,22 +344,22 @@ export function useServiceWorker() {
 // Helper functions
 function getPlatform(): PWAStatus['platform'] {
   if (typeof window === 'undefined') return 'unknown'
-  
+
   const userAgent = navigator.userAgent.toLowerCase()
-  
+
   if (/iphone|ipad|ipod/.test(userAgent)) return 'ios'
   if (/android/.test(userAgent)) return 'android'
   if (/win|mac|linux/.test(userAgent)) return 'desktop'
-  
+
   return 'unknown'
 }
 
 function getInstallSource(): PWAStatus['installSource'] {
   if (typeof window === 'undefined') return 'unknown'
-  
+
   if (document.referrer.includes('android-app://')) return 'homescreen'
   if (window.matchMedia('(display-mode: standalone)').matches) return 'homescreen'
-  
+
   return 'browser'
 }
 

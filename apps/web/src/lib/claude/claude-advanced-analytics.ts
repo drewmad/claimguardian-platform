@@ -89,7 +89,7 @@ class ClaudeAdvancedAnalytics {
 
     // Generate mock trend data (in production, this would query actual database)
     const trends = await this.generateTrendData(timeframe)
-    
+
     // Analyze trends for insights
     const insights = this.analyzeTrends(trends)
     const predictions = this.generateTrendPredictions(trends)
@@ -106,22 +106,22 @@ class ClaudeAdvancedAnalytics {
   private async generateTrendData(timeframe: string): Promise<TrendDataPoint[]> {
     const now = new Date()
     const dataPoints: TrendDataPoint[] = []
-    
+
     // Generate realistic trend data with learning improvements over time
     const days = timeframe === 'day' ? 1 : timeframe === 'week' ? 7 : timeframe === 'month' ? 30 : 90
     const intervals = timeframe === 'day' ? 24 : days // hourly for day, daily for others
-    
+
     for (let i = intervals; i >= 0; i--) {
       const timestamp = new Date(now.getTime() - i * (timeframe === 'day' ? 60 * 60 * 1000 : 24 * 60 * 60 * 1000))
-      
+
       // Simulate learning improvements over time
       const learningProgress = Math.max(0, 1 - i / intervals) * 0.4 // Up to 40% improvement
       const baseEfficiency = 60 + learningProgress * 100 // Start at 60%, improve to ~84%
       const baseSuccessRate = 75 + learningProgress * 100 // Start at 75%, improve to ~90%
-      
+
       // Add realistic variability
       const variability = (Math.random() - 0.5) * 10
-      
+
       dataPoints.push({
         timestamp,
         efficiency: Math.max(0, Math.min(100, baseEfficiency + variability)),
@@ -132,18 +132,18 @@ class ClaudeAdvancedAnalytics {
         successRate: Math.max(0, Math.min(100, baseSuccessRate + variability))
       })
     }
-    
+
     return dataPoints
   }
 
   private analyzeTrends(trends: TrendDataPoint[]): string[] {
     const insights: string[] = []
-    
+
     if (trends.length < 2) return insights
 
     const first = trends[0]
     const last = trends[trends.length - 1]
-    
+
     // Efficiency trend
     const efficiencyChange = last.efficiency - first.efficiency
     if (efficiencyChange > 10) {
@@ -175,7 +175,7 @@ class ClaudeAdvancedAnalytics {
 
   private generateTrendPredictions(trends: TrendDataPoint[]): string[] {
     const predictions: string[] = []
-    
+
     if (trends.length < 3) return predictions
 
     // Calculate velocity of improvement
@@ -198,9 +198,9 @@ class ClaudeAdvancedAnalytics {
 
   private generateTrendRecommendations(trends: TrendDataPoint[], insights: string[]): string[] {
     const recommendations: string[] = []
-    
+
     const latestTrend = trends[trends.length - 1]
-    
+
     if (latestTrend.efficiency < 70) {
       recommendations.push('Focus on increasing reflection sensitivity to capture more learnings')
     }
@@ -231,22 +231,22 @@ class ClaudeAdvancedAnalytics {
 
     // Get historical data for similar tasks
     const historicalData = await this.getHistoricalTaskData(safeTaskType, complexity, context)
-    
+
     // Calculate base success probability
     let successProbability = this.calculateBaseSuccessRate(safeTaskType, complexity)
-    
+
     // Adjust based on context factors
     successProbability = this.adjustForContext(successProbability, context, historicalData)
-    
+
     // Estimate execution time
     const estimatedTime = this.estimateExecutionTime(safeTaskType, complexity, context)
-    
+
     // Identify risk factors
     const riskFactors = this.identifyRiskFactors(safeTaskType, complexity, context, historicalData)
-    
+
     // Recommend approach
     const recommendedApproach = this.recommendApproach(safeTaskType, complexity, context, historicalData)
-    
+
     // Calculate confidence level
     const confidenceLevel = this.calculateConfidenceLevel(historicalData.sampleSize, context)
 
@@ -441,8 +441,8 @@ class ClaudeAdvancedAnalytics {
     const totalImpact = allBottlenecks.reduce((sum, b) => sum + b.impactScore, 0)
 
     // Identify quick wins (high impact, low effort)
-    const quickWins = allBottlenecks.filter(b => 
-      b.impactScore > 15 && 
+    const quickWins = allBottlenecks.filter(b =>
+      b.impactScore > 15 &&
       (b.category === 'tool-usage' || b.category === 'process')
     ).slice(0, 3)
 
@@ -559,7 +559,7 @@ class ClaudeAdvancedAnalytics {
 
   private generateBottleneckRecommendations(bottlenecks: BottleneckAnalysis[]): string[] {
     const recommendations: string[] = []
-    
+
     const criticalBottlenecks = bottlenecks.filter(b => b.priority === 'critical')
     if (criticalBottlenecks.length > 0) {
       recommendations.push(`Address ${criticalBottlenecks.length} critical bottleneck(s) immediately`)

@@ -11,9 +11,9 @@
 import { SupabaseClient, RealtimeChannel, REALTIME_POSTGRES_CHANGES_LISTEN_EVENT } from '@supabase/supabase-js'
 import { EventEmitter } from 'eventemitter3'
 
-import type { 
-  RealtimeEvent, 
-  ChannelConfig, 
+import type {
+  RealtimeEvent,
+  ChannelConfig,
   RealtimeSubscription,
   PresenceState,
   BroadcastMessage,
@@ -44,7 +44,7 @@ export class RealtimeClient extends EventEmitter {
     config?: Partial<ChannelConfig>
   ): RealtimeSubscription {
     const channelName = config?.name || `table-${table}`
-    
+
     // Check if already subscribed
     if (this.subscriptions.has(channelName)) {
       console.warn(`Already subscribed to ${channelName}`)
@@ -122,7 +122,7 @@ export class RealtimeClient extends EventEmitter {
     config?: Partial<ChannelConfig>
   ): RealtimeSubscription {
     const channelName = config?.name || `record-${table}-${id}`
-    
+
     if (this.subscriptions.has(channelName)) {
       return this.subscriptions.get(channelName)!
     }
@@ -131,9 +131,9 @@ export class RealtimeClient extends EventEmitter {
       .channel(channelName)
       .on(
         'postgres_changes',
-        { 
-          event: '*' as REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL, 
-          schema: 'public', 
+        {
+          event: '*' as REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
+          schema: 'public',
           table,
           filter: `id=eq.${id}`
         },
@@ -240,7 +240,7 @@ export class RealtimeClient extends EventEmitter {
     payload: unknown
   ): Promise<void> {
     const channel = this.channels.get(`broadcast:${channelName}`)
-    
+
     if (!channel) {
       throw new Error(`Broadcast channel ${channelName} not found`)
     }
@@ -260,7 +260,7 @@ export class RealtimeClient extends EventEmitter {
     state: Record<string, unknown>
   ): Promise<void> {
     const channel = this.channels.get(`presence:${channelName}`)
-    
+
     if (!channel) {
       throw new Error(`Presence channel ${channelName} not found`)
     }
@@ -273,7 +273,7 @@ export class RealtimeClient extends EventEmitter {
    */
   getPresenceState(channelName: string): PresenceState {
     const channel = this.channels.get(`presence:${channelName}`)
-    
+
     if (!channel) {
       return {}
     }
@@ -285,10 +285,10 @@ export class RealtimeClient extends EventEmitter {
    * Unsubscribe from a channel
    */
   unsubscribe(channelName: string): void {
-    const channel = this.channels.get(channelName) || 
+    const channel = this.channels.get(channelName) ||
                   this.channels.get(`presence:${channelName}`) ||
                   this.channels.get(`broadcast:${channelName}`)
-    
+
     if (channel) {
       channel.unsubscribe()
       this.channels.delete(channelName)
@@ -305,7 +305,7 @@ export class RealtimeClient extends EventEmitter {
     this.channels.forEach((channel) => {
       channel.unsubscribe()
     })
-    
+
     this.channels.clear()
     this.subscriptions.clear()
     this.removeAllListeners()
@@ -322,7 +322,7 @@ export class RealtimeClient extends EventEmitter {
    * Check if subscribed to a channel
    */
   isSubscribed(channelName: string): boolean {
-    return this.channels.has(channelName) || 
+    return this.channels.has(channelName) ||
            this.channels.has(`presence:${channelName}`) ||
            this.channels.has(`broadcast:${channelName}`)
   }

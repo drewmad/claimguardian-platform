@@ -130,7 +130,7 @@ export default function CommunicationHelperPage() {
 
     setIsGenerating(true)
     const startTime = Date.now()
-    
+
     try {
       const prompt = `Write a ${tone} email for the following situation:
 
@@ -172,7 +172,7 @@ Format as a complete email ready to send.`
           'claude-3-sonnet': 0.003,
           'grok-beta': 0.002
         }
-        
+
         const tokens = Math.ceil(responseLength / 4) // Rough token estimate
         const cost = (tokens / 1000) * (costPer1K[model] || 0.01)
         return parseFloat(cost.toFixed(6))
@@ -203,7 +203,7 @@ Format as a complete email ready to send.`
       } catch (primaryError) {
         // Try fallback model
         const fallbackProvider = getProviderFromModel(fallbackModel)
-        
+
         try {
           const response = await aiClient.chat([
             { role: 'system', content: 'You are an expert insurance communication specialist who helps policyholders communicate effectively with insurance companies.' },
@@ -263,10 +263,10 @@ Format as a complete email ready to send.`
             <div className="mb-8 relative">
               {/* Premium Background Orb */}
               <div className="absolute -top-10 left-1/2 transform -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-pink-400/25 via-rose-500/20 to-purple-600/25 rounded-full blur-3xl animate-pulse opacity-40" />
-              
+
               <div className="relative">
-                <Link 
-                  href="/ai-tools" 
+                <Link
+                  href="/ai-tools"
                   className="text-pink-400 hover:text-pink-300 text-sm mb-6 inline-flex items-center gap-2 backdrop-blur-md bg-gray-800/50 px-3 py-2 rounded-lg border border-pink-400/20 shadow-[0_8px_32px_rgba(236,72,153,0.15)] hover:shadow-[0_8px_32px_rgba(236,72,153,0.25)] transition-all duration-300"
                 >
                   ← Back to AI Tools
@@ -500,7 +500,7 @@ Format as a complete email ready to send.`
                           {generatedMessage}
                         </pre>
                       </div>
-                      
+
                       {/* Premium AI Analysis */}
                       <div className="mt-4 p-4 bg-gradient-to-br from-blue-900/30 to-cyan-900/20 border border-blue-600/30 rounded-lg backdrop-blur-md shadow-[0_8px_32px_rgba(59,130,246,0.2)]">
                         <div className="flex items-start gap-3">
@@ -510,7 +510,7 @@ Format as a complete email ready to send.`
                           <div>
                             <h4 className="font-semibold text-cyan-300 mb-1">AI Analysis</h4>
                             <p className="text-sm text-gray-300">
-                              This message uses a {tone} tone and includes all key points. 
+                              This message uses a {tone} tone and includes all key points.
                               Remember to review and personalize before sending.
                             </p>
                           </div>

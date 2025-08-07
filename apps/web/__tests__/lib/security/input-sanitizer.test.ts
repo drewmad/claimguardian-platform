@@ -15,7 +15,7 @@ describe('InputSanitizer', () => {
     it('should remove dangerous script tags', () => {
       const maliciousInput = '<script>alert("XSS")</script><p>Safe content</p>'
       const result = inputSanitizer.sanitizeHtml(maliciousInput)
-      
+
       expect(result).not.toContain('<script>')
       expect(result).not.toContain('alert("XSS")')
       expect(result).toContain('Safe content')
@@ -24,7 +24,7 @@ describe('InputSanitizer', () => {
     it('should remove dangerous event handlers', () => {
       const maliciousInput = '<div onclick="alert(\'XSS\')">Click me</div>'
       const result = inputSanitizer.sanitizeHtml(maliciousInput)
-      
+
       expect(result).not.toContain('onclick')
       expect(result).not.toContain('alert')
       expect(result).toContain('Click me')
@@ -33,7 +33,7 @@ describe('InputSanitizer', () => {
     it('should allow safe HTML tags', () => {
       const safeInput = '<p>Hello <strong>world</strong>!</p><br><em>Safe content</em>'
       const result = inputSanitizer.sanitizeHtml(safeInput)
-      
+
       expect(result).toContain('<p>')
       expect(result).toContain('<strong>')
       expect(result).toContain('<br>')
@@ -46,7 +46,7 @@ describe('InputSanitizer', () => {
     it('should strip all tags when stripTags is true', () => {
       const input = '<p>Hello <strong>world</strong>!</p>'
       const result = inputSanitizer.sanitizeHtml(input, { stripTags: true })
-      
+
       expect(result).toBe('Hello world!')
       expect(result).not.toContain('<')
       expect(result).not.toContain('>')
@@ -55,7 +55,7 @@ describe('InputSanitizer', () => {
     it('should truncate long content', () => {
       const longInput = 'a'.repeat(15000)
       const result = inputSanitizer.sanitizeHtml(longInput, { maxLength: 100 })
-      
+
       expect(result.length).toBe(100)
     })
 
@@ -70,21 +70,21 @@ describe('InputSanitizer', () => {
     it('should remove control characters', () => {
       const input = 'Hello\x00\x1F\x7F\x9FWorld'
       const result = inputSanitizer.sanitizeText(input)
-      
+
       expect(result).toBe('HelloWorld')
     })
 
     it('should trim whitespace', () => {
       const input = '   Hello World   '
       const result = inputSanitizer.sanitizeText(input)
-      
+
       expect(result).toBe('Hello World')
     })
 
     it('should respect max length', () => {
       const input = 'a'.repeat(2000)
       const result = inputSanitizer.sanitizeText(input, 100)
-      
+
       expect(result.length).toBe(100)
     })
 
@@ -165,7 +165,7 @@ describe('InputSanitizer', () => {
     it('should respect length limits', () => {
       const longName = 'a'.repeat(300) + '.txt'
       const result = inputSanitizer.sanitizeFileName(longName)
-      
+
       expect(result.length).toBeLessThanOrEqual(255)
     })
 
@@ -189,7 +189,7 @@ describe('InputSanitizer', () => {
     it('should respect length limits', () => {
       const longQuery = 'a'.repeat(200)
       const result = inputSanitizer.sanitizeSearchQuery(longQuery)
-      
+
       expect(result.length).toBe(100)
     })
   })
@@ -290,7 +290,7 @@ describe('InputSanitizer', () => {
     it('should respect length limits', () => {
       const longQuery = 'a'.repeat(200)
       const result = inputSanitizer.sanitizeSqlSearchTerm(longQuery)
-      
+
       expect(result.length).toBe(100)
     })
   })

@@ -50,12 +50,12 @@ serve(async (req) => {
     if (error) {
       console.error('Database error:', error)
       return new Response(
-        JSON.stringify({ 
-          success: false, 
+        JSON.stringify({
+          success: false,
           error: error.message,
           details: error
         }),
-        { 
+        {
           headers: { ...corsHeaders, 'Content-Type': 'application/json' },
           status: 400
         }
@@ -63,8 +63,8 @@ serve(async (req) => {
     }
 
     return new Response(
-      JSON.stringify({ 
-        success: true, 
+      JSON.stringify({
+        success: true,
         message: 'Test parcel inserted successfully',
         data
       }),
@@ -74,11 +74,11 @@ serve(async (req) => {
   } catch (error) {
     console.error('Error in test-parcel-insert:', error)
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         success: false,
-        error: error instanceof Error ? error.message : String(error) 
+        error: error instanceof Error ? error.message : String(error)
       }),
-      { 
+      {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
         status: 500
       }

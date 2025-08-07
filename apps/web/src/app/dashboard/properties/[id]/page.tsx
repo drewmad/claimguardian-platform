@@ -14,10 +14,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { PropertyLocationMap } from '@/components/maps'
-import { 
-  MapPin, 
-  Home, 
-  Edit, 
+import {
+  MapPin,
+  Home,
+  Edit,
   Calendar,
   DollarSign,
   Ruler,
@@ -72,17 +72,17 @@ interface Property {
 export default function PropertyDetailPage() {
   const params = useParams()
   const propertyId = params.id as string
-  
+
   const [property, setProperty] = useState<Property | null>(null)
   const [loading, setLoading] = useState(true)
   const [isEditingLocation, setIsEditingLocation] = useState(false)
   const [saving, setSaving] = useState(false)
-  
+
   const supabase = createClient()
 
   const fetchProperty = useCallback(async () => {
     if (!propertyId) return
-    
+
     try {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
@@ -134,7 +134,7 @@ export default function PropertyDetailPage() {
 
   const handleLocationConfirm = async (coordinates: [number, number]) => {
     if (!property) return
-    
+
     setSaving(true)
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -162,7 +162,7 @@ export default function PropertyDetailPage() {
 
       setIsEditingLocation(false)
       toast.success('Property location confirmed successfully')
-      
+
     } catch (error) {
       logger.error('Error updating location:', error)
       toast.error('Failed to update property location')
@@ -266,9 +266,9 @@ export default function PropertyDetailPage() {
               Property Location
             </div>
             {!isEditingLocation && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={handleLocationEdit}
                 disabled={saving}
               >
@@ -277,9 +277,9 @@ export default function PropertyDetailPage() {
               </Button>
             )}
             {isEditingLocation && (
-              <Button 
-                variant="outline" 
-                size="sm" 
+              <Button
+                variant="outline"
+                size="sm"
                 onClick={() => setIsEditingLocation(false)}
               >
                 <X className="mr-2 h-4 w-4" />
@@ -327,52 +327,52 @@ export default function PropertyDetailPage() {
                   {property.property_type.replace(/_/g, ' ')}
                 </span>
               </div>
-              
+
               {property.year_built && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Year Built:</span>
                   <span className="font-medium">{property.year_built}</span>
                 </div>
               )}
-              
+
               {property.square_footage && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Square Footage:</span>
                   <span className="font-medium">{property.square_footage.toLocaleString()} sq ft</span>
                 </div>
               )}
-              
+
               {property.lot_size_acres && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Lot Size:</span>
                   <span className="font-medium">{property.lot_size_acres} acres</span>
                 </div>
               )}
-              
+
               {property.bedrooms && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bedrooms:</span>
                   <span className="font-medium">{property.bedrooms}</span>
                 </div>
               )}
-              
+
               {property.bathrooms && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bathrooms:</span>
                   <span className="font-medium">{property.bathrooms}</span>
                 </div>
               )}
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Stories:</span>
                 <span className="font-medium">{property.stories}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Garage Spaces:</span>
                 <span className="font-medium">{property.garage_spaces}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Pool:</span>
                 <span className="font-medium">{property.pool ? 'Yes' : 'No'}</span>
@@ -397,14 +397,14 @@ export default function PropertyDetailPage() {
                   <span className="font-medium">${property.current_value.toLocaleString()}</span>
                 </div>
               )}
-              
+
               {property.purchase_price && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Purchase Price:</span>
                   <span className="font-medium">${property.purchase_price.toLocaleString()}</span>
                 </div>
               )}
-              
+
               {property.purchase_date && (
                 <div className="flex justify-between">
                   <span className="text-gray-600">Purchase Date:</span>
@@ -413,14 +413,14 @@ export default function PropertyDetailPage() {
                   </span>
                 </div>
               )}
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Added to ClaimGuardian:</span>
                 <span className="font-medium">
                   {new Date(property.created_at).toLocaleDateString()}
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-gray-600">Last Updated:</span>
                 <span className="font-medium">
@@ -448,14 +448,14 @@ export default function PropertyDetailPage() {
                     <div className="font-medium">{property.enrichment.flood_zone}</div>
                   </div>
                 )}
-                
+
                 {property.enrichment.elevation_meters && (
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Elevation</div>
                     <div className="font-medium">{property.enrichment.elevation_meters}m</div>
                   </div>
                 )}
-                
+
                 {property.enrichment.hurricane_evacuation_zone && (
                   <div>
                     <div className="text-sm text-gray-600 mb-1">Hurricane Zone</div>
@@ -463,7 +463,7 @@ export default function PropertyDetailPage() {
                   </div>
                 )}
               </div>
-              
+
               {property.enrichment.enriched_at && (
                 <div className="mt-4 pt-4 border-t border-gray-200">
                   <div className="text-sm text-gray-600">

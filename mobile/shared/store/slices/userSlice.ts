@@ -168,7 +168,7 @@ export const updateProfile = createAsyncThunk<
     try {
       const state = getState() as any
       const currentUser = state.user.current
-      
+
       if (!currentUser) {
         throw new Error('No user logged in')
       }

@@ -187,7 +187,7 @@ export function SentimentAnalysisDashboard() {
     setAnalyzing(true);
     try {
       const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
-        body: { 
+        body: {
           message: testMessage,
           type: 'real-time'
         }
@@ -434,11 +434,11 @@ export function SentimentAnalysisDashboard() {
                           <span className="capitalize">{emotion}</span>
                           <span className="font-medium">{value}%</span>
                         </div>
-                        <Progress 
-                          value={value} 
+                        <Progress
+                          value={value}
                           className="h-2"
-                          style={{ 
-                            '--progress-background': COLORS[emotion as keyof typeof COLORS] 
+                          style={{
+                            '--progress-background': COLORS[emotion as keyof typeof COLORS]
                           } as React.CSSProperties}
                         />
                       </div>
@@ -449,11 +449,11 @@ export function SentimentAnalysisDashboard() {
                 <div>
                   <h4 className="font-medium mb-4">Emotion Radar</h4>
                   <ResponsiveContainer width="100%" height={300}>
-                    <RadialBarChart 
-                      cx="50%" 
-                      cy="50%" 
-                      innerRadius="10%" 
-                      outerRadius="90%" 
+                    <RadialBarChart
+                      cx="50%"
+                      cy="50%"
+                      innerRadius="10%"
+                      outerRadius="90%"
                       data={Object.entries(emotionalProfile).map(([key, value], index) => ({
                         name: key,
                         value,
@@ -589,7 +589,7 @@ export function SentimentAnalysisDashboard() {
                             </Badge>
                           ))}
                         </div>
-                        
+
                         <div className="flex items-center space-x-2 text-xs text-gray-500">
                           <span>Confidence: {Math.round(comm.sentiment.confidence)}%</span>
                         </div>

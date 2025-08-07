@@ -10,10 +10,10 @@
 
 import { Card } from '@claimguardian/ui'
 import { Button } from '@claimguardian/ui'
-import { 
-  BarChart3, 
-  CheckCircle2, 
-  AlertCircle, 
+import {
+  BarChart3,
+  CheckCircle2,
+  AlertCircle,
   XCircle,
   RefreshCw,
   Download,
@@ -114,7 +114,7 @@ export function EnrichmentMonitor() {
     a.download = `enrichment-report-${new Date().toISOString().split('T')[0]}.json`
     a.click()
     window.URL.revokeObjectURL(url)
-    
+
     toast.success('Report exported')
   }
 
@@ -263,7 +263,7 @@ export function EnrichmentMonitor() {
                 <h4 className="font-medium mb-3">Properties Requiring Attention</h4>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {healthData.issues.map((issue, index) => (
-                    <div 
+                    <div
                       key={index}
                       className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
                     >
@@ -280,10 +280,10 @@ export function EnrichmentMonitor() {
                           </p>
                         </div>
                       </div>
-                      <Badge 
+                      <Badge
                         variant={
-                          issue.issue === 'missing' ? 'destructive' : 
-                          issue.issue === 'expired' ? 'outline' : 
+                          issue.issue === 'missing' ? 'destructive' :
+                          issue.issue === 'expired' ? 'outline' :
                           'secondary'
                         }
                       >

@@ -13,10 +13,10 @@
 
 import { revalidatePath } from 'next/cache'
 import { logger } from '@/lib/logger'
-import { 
-  enhancedDocumentExtractor, 
+import {
+  enhancedDocumentExtractor,
   ExtractedPolicyDataEnhanced,
-  EnhancedExtractionResult 
+  EnhancedExtractionResult
 } from '@/lib/services/enhanced-document-extraction'
 import { createClient } from '@/lib/supabase/server'
 
@@ -61,7 +61,7 @@ export interface EnhancedExtractionRecord {
 export async function processEnhancedExtraction(params: ProcessEnhancedExtractionParams) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -78,10 +78,10 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
       .single()
 
     if (docError || !document) {
-      logger.error('Document not found or access denied', { 
-        documentId: params.documentId, 
+      logger.error('Document not found or access denied', {
+        documentId: params.documentId,
         userId: user.id,
-        error: docError 
+        error: docError
       })
       return { data: null, error: 'Document not found or access denied' }
     }
@@ -136,20 +136,20 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
       .createSignedUrl(document.file_path, 3600) // 1 hour expiry
 
     if (urlError) {
-      logger.error('Failed to create signed URL for document', { 
+      logger.error('Failed to create signed URL for document', {
         error: urlError,
-        filePath: document.file_path 
+        filePath: document.file_path
       })
-      
+
       // Update extraction status to failed
       await supabase
         .from('document_extractions_enhanced')
-        .update({ 
+        .update({
           processing_status: 'failed',
           error_message: 'Failed to access document for processing'
         })
         .eq('id', extraction.id)
-      
+
       return { data: null, error: 'Failed to access document for processing' }
     }
 
@@ -176,7 +176,7 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
 
     // Determine processing status based on confidence and validation
     let processingStatus: 'completed' | 'failed' | 'review_required' = 'completed'
-    
+
     if (!extractionResult.success) {
       processingStatus = 'failed'
     } else if (extractionResult.confidence && extractionResult.confidence < 0.7) {
@@ -230,7 +230,7 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
     })
 
     // If high confidence and no errors, it will auto-apply via database trigger
-    
+
     // Revalidate relevant pages
     revalidatePath('/dashboard')
     revalidatePath(`/dashboard/property/${params.propertyId}`)
@@ -238,12 +238,12 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
 
     return { data: updatedExtraction, error: null }
   } catch (error) {
-    logger.error('Unexpected error during enhanced document extraction', { 
+    logger.error('Unexpected error during enhanced document extraction', {
       error,
-      documentId: params.documentId 
+      documentId: params.documentId
     })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -255,7 +255,7 @@ export async function processEnhancedExtraction(params: ProcessEnhancedExtractio
 export async function getEnhancedExtractionResults(documentId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -293,8 +293,8 @@ export async function getEnhancedExtractionResults(documentId: string) {
     return { data: extraction, error: null }
   } catch (error) {
     logger.error('Unexpected error fetching enhanced extraction results', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -304,12 +304,12 @@ export async function getEnhancedExtractionResults(documentId: string) {
  * Approve and apply extraction to property/policy
  */
 export async function approveExtraction(
-  extractionId: string, 
+  extractionId: string,
   editedData?: ExtractedPolicyDataEnhanced
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -362,7 +362,7 @@ export async function approveExtraction(
     }
 
     // The database trigger will auto-apply to policy if confidence is high enough
-    
+
     logger.info('Extraction approved', {
       extractionId,
       approvedBy: user.id,
@@ -377,8 +377,8 @@ export async function approveExtraction(
     return { data: approvedExtraction, error: null }
   } catch (error) {
     logger.error('Unexpected error approving extraction', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -390,7 +390,7 @@ export async function approveExtraction(
 export async function getExtractionQueue() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -411,8 +411,8 @@ export async function getExtractionQueue() {
     return { data: queue, error: null }
   } catch (error) {
     logger.error('Unexpected error fetching extraction queue', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -424,7 +424,7 @@ export async function getExtractionQueue() {
 export async function getExtractionStatistics(days: number = 30) {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: userError } = await supabase.auth.getUser()
     if (userError || !user) {
@@ -447,8 +447,8 @@ export async function getExtractionStatistics(days: number = 30) {
     return { data: stats, error: null }
   } catch (error) {
     logger.error('Unexpected error fetching extraction statistics', { error })
-    return { 
-      data: null, 
+    return {
+      data: null,
       error: error instanceof Error ? error.message : 'Unknown error'
     }
   }
@@ -459,37 +459,37 @@ export async function getExtractionStatistics(days: number = 30) {
  */
 function generateExtractionSuggestions(result: EnhancedExtractionResult): string[] {
   const suggestions: string[] = []
-  
+
   if (!result.data) return suggestions
 
   // Check for missing critical fields
   if (!result.data.policyNumber) {
     suggestions.push('Policy number not found - check the declarations page')
   }
-  
+
   if (!result.data.dwellingCoverage) {
     suggestions.push('Dwelling coverage amount missing - verify Coverage A section')
   }
-  
+
   // Check for Florida-specific requirements
   if (!result.data.hurricaneDeductible && !result.data.windHailDeductible) {
     suggestions.push('Hurricane/wind deductible not found - required for Florida policies')
   }
-  
+
   // Check dates
   if (result.data.expirationDate) {
     const expDate = new Date(result.data.expirationDate)
     const daysUntilExpiry = Math.floor((expDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-    
+
     if (daysUntilExpiry < 30) {
       suggestions.push(`Policy expires in ${daysUntilExpiry} days - consider renewal`)
     }
   }
-  
+
   // Check coverage adequacy
   if (result.data.dwellingCoverage && result.data.dwellingCoverage < 200000) {
     suggestions.push('Dwelling coverage seems low for Florida property - verify adequacy')
   }
-  
+
   return suggestions
 }

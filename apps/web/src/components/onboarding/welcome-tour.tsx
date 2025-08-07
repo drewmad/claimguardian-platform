@@ -12,8 +12,8 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  X, ChevronRight, ChevronLeft, Home, Package, Shield, 
+import {
+  X, ChevronRight, ChevronLeft, Home, Package, Shield,
   FileText, Wrench, AlertCircle, CheckCircle, Sparkles,
   ArrowRight, Info, Target, MousePointer, Zap
 } from 'lucide-react'
@@ -203,7 +203,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
 
       if (element) {
         setTargetElement(element)
-        
+
         if (currentTourStep.highlight && selector !== 'body') {
           const rect = element.getBoundingClientRect()
           setHighlightPosition(rect)
@@ -213,7 +213,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
 
         const position = calculatePosition(element, currentTourStep.position)
         setTooltipPosition(position)
-        
+
         // Scroll element into view if needed
         if (selector !== 'body') {
           element.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -227,7 +227,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
 
     // Wait for DOM to settle
     const timer = setTimeout(updatePosition, 100)
-    
+
     // Update on scroll/resize
     const handleUpdate = () => {
       if (animationFrame.current) {
@@ -284,10 +284,10 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
   const handleComplete = () => {
     logger.track('onboarding_tour_completed')
     setIsVisible(false)
-    
+
     // Save completion to localStorage
     localStorage.setItem('onboardingTourCompleted', 'true')
-    
+
     onComplete?.()
   }
 
@@ -306,7 +306,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
         >
           {/* Semi-transparent overlay */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-          
+
           {/* Highlight cutout */}
           {highlightPosition && (
             <motion.div
@@ -343,7 +343,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
         >
           <div className="bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl shadow-2xl border border-slate-700 overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 to-purple-600/10 pointer-events-none" />
-            
+
             {/* Header */}
             <div className="relative p-4 border-b border-slate-700">
               <div className="flex items-start justify-between">
@@ -375,7 +375,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
               <p className="text-sm text-gray-300 leading-relaxed">
                 {currentTourStep.content}
               </p>
-              
+
               {/* Progress dots */}
               <div className="flex items-center justify-center gap-1.5 mt-4">
                 {TOUR_STEPS.map((_, index) => (
@@ -403,7 +403,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
               >
                 Skip Tour
               </button>
-              
+
               <div className="flex items-center gap-2">
                 {currentStep > 0 && (
                   <button

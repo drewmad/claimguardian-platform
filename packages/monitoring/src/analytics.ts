@@ -55,7 +55,7 @@ class Analytics {
 
   constructor() {
     this.sessionId = this.generateSessionId()
-    
+
     if (typeof window !== 'undefined') {
       this.setupPageTracking()
     }
@@ -206,7 +206,7 @@ class Analytics {
 
   getSessionAnalytics() {
     const sessionEvents = this.events.filter(e => e.sessionId === this.sessionId)
-    const sessionPageViews = this.pageViews.filter(pv => 
+    const sessionPageViews = this.pageViews.filter(pv =>
       pv.timestamp && pv.timestamp > parseInt(this.sessionId.split('_')[1])
     )
 

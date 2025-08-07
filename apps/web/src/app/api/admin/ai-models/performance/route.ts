@@ -16,13 +16,13 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const timeRange = searchParams.get('range') || 'week'
-    
+
     const supabase = await createClient()
-    
+
     // Calculate date range
     const now = new Date()
     let startDate: Date
-    
+
     switch (timeRange) {
       case 'day':
         startDate = new Date(now.getTime() - 24 * 60 * 60 * 1000)
@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
 
     usageData?.forEach(record => {
       const model = record.model_name
-      
+
       if (!modelStats[model]) {
         modelStats[model] = {
           requests: 0,
@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       stats.cost += record.cost_usd || 0
       stats.totalTime += record.response_time_ms
       if (record.success) stats.successCount += 1
-      
+
       // Update last used if this record is more recent
       if (new Date(record.created_at) > new Date(stats.lastUsed)) {
         stats.lastUsed = record.created_at
@@ -89,7 +89,7 @@ export async function GET(request: NextRequest) {
     Object.values(modelStats).forEach(stats => {
       stats.avgTime = stats.requests > 0 ? stats.totalTime / stats.requests / 1000 : 0 // Convert to seconds
       stats.successRate = stats.requests > 0 ? (stats.successCount / stats.requests) * 100 : 0
-      
+
       // Remove intermediate calculation fields
       delete (stats as Record<string, unknown>).totalTime
       delete (stats as Record<string, unknown>).successCount
@@ -127,13 +127,13 @@ export async function GET(request: NextRequest) {
           lastUsed: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
         }
       }
-      
+
       logger.info('Returning mock performance data - no real usage data found')
       return NextResponse.json(mockStats)
     }
 
-    logger.info('Performance data retrieved', { 
-      timeRange, 
+    logger.info('Performance data retrieved', {
+      timeRange,
       modelCount: Object.keys(modelStats).length,
       totalRecords: usageData?.length || 0
     })

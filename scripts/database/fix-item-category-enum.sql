@@ -5,7 +5,7 @@
 -- Step 1: Create new enum with consistent lowercase naming
 CREATE TYPE item_category_new AS ENUM (
   'electronics',
-  'furniture', 
+  'furniture',
   'appliances',
   'jewelry',
   'clothing',
@@ -22,8 +22,8 @@ CREATE TYPE item_category_new AS ENUM (
 ALTER TABLE personal_property ALTER COLUMN category DROP DEFAULT;
 
 -- Step 3: Update column to use new enum with value mapping
-ALTER TABLE personal_property 
-ALTER COLUMN category TYPE item_category_new 
+ALTER TABLE personal_property
+ALTER COLUMN category TYPE item_category_new
 USING CASE category::text
   WHEN 'ELECTRONICS' THEN 'electronics'::item_category_new
   WHEN 'FURNITURE' THEN 'furniture'::item_category_new
@@ -46,11 +46,11 @@ DROP TYPE item_category;
 ALTER TYPE item_category_new RENAME TO item_category;
 
 -- Verification: Check final enum values
-SELECT 
+SELECT
   t.typname as enum_name,
   array_agg(e.enumlabel ORDER BY e.enumsortorder) as values
-FROM pg_type t 
-JOIN pg_enum e ON t.oid = e.enumtypid  
+FROM pg_type t
+JOIN pg_enum e ON t.oid = e.enumtypid
 JOIN pg_catalog.pg_namespace n ON n.oid = t.typnamespace
 WHERE n.nspname = 'public' AND t.typname = 'item_category'
 GROUP BY t.typname;

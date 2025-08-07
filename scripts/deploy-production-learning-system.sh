@@ -36,7 +36,7 @@ error() {
 
 validate_environment() {
     info "Validating environment for Claude Learning System deployment..."
-    
+
     # Check required environment variables
     local required_vars=(
         "NEXT_PUBLIC_SUPABASE_URL"
@@ -44,34 +44,34 @@ validate_environment() {
         "OPENAI_API_KEY"
         "GEMINI_API_KEY"
     )
-    
+
     for var in "${required_vars[@]}"; do
         if [[ -z "${!var:-}" ]]; then
             error "Required environment variable missing: $var"
         fi
     done
-    
+
     # Check Supabase connection
     if ! supabase status >/dev/null 2>&1; then
         error "Cannot connect to Supabase. Check configuration."
     fi
-    
+
     success "Environment validation passed"
 }
 
 setup_database_schema() {
     info "Setting up production metrics database schema..."
-    
+
     # Deploy the setup function
     supabase functions deploy setup-production-metrics --no-verify-jwt
-    
+
     # Call the function to create schema
     local response
     response=$(curl -s -X POST \
         "${NEXT_PUBLIC_SUPABASE_URL}/functions/v1/setup-production-metrics" \
         -H "Authorization: Bearer ${SUPABASE_SERVICE_ROLE_KEY}" \
         -H "Content-Type: application/json")
-    
+
     if [[ $(echo "$response" | jq -r '.success') == "true" ]]; then
         success "Database schema setup completed"
     else
@@ -81,7 +81,7 @@ setup_database_schema() {
 
 deploy_edge_functions() {
     info "Deploying Claude Learning System Edge Functions..."
-    
+
     # List of learning system functions to deploy
     local functions=(
         "ai-document-extraction"
@@ -92,7 +92,7 @@ deploy_edge_functions() {
         "federated-learning"
         "setup-production-metrics"
     )
-    
+
     for func in "${functions[@]}"; do
         if [[ -d "supabase/functions/$func" ]]; then
             info "Deploying function: $func"
@@ -106,7 +106,7 @@ deploy_edge_functions() {
 
 configure_production_settings() {
     info "Configuring production settings..."
-    
+
     # Create production configuration
     cat > ".env.production.local" << EOF
 # Claude Learning System Production Configuration
@@ -127,17 +127,17 @@ EOF
 
 run_health_checks() {
     info "Running health checks..."
-    
+
     # Test database connection
     if ! pnpm db:generate-types >/dev/null 2>&1; then
         warning "Database type generation failed - may need manual verification"
     fi
-    
+
     # Test build
     if ! pnpm build >/dev/null 2>&1; then
         error "Production build failed"
     fi
-    
+
     # Test learning system components
     info "Testing learning system components..."
     node -e "
@@ -152,13 +152,13 @@ run_health_checks() {
             process.exit(1);
         });
     " || error "Learning system health check failed"
-    
+
     success "Health checks passed"
 }
 
 setup_monitoring() {
     info "Setting up production monitoring..."
-    
+
     # Create monitoring dashboard configuration
     cat > "monitoring-config.json" << EOF
 {
@@ -178,7 +178,7 @@ setup_monitoring() {
         },
         {
           "title": "Average Execution Time",
-          "type": "stat", 
+          "type": "stat",
           "query": "SELECT AVG(execution_time) FROM claude_production_metrics WHERE timestamp > NOW() - INTERVAL '24 hours'"
         },
         {
@@ -197,7 +197,7 @@ EOF
 
 create_deployment_summary() {
     info "Creating deployment summary..."
-    
+
     cat > "DEPLOYMENT_SUMMARY.md" << EOF
 # Claude Learning System - Production Deployment Summary
 
@@ -278,10 +278,10 @@ main() {
     echo -e "${GREEN}🚀 Claude Learning System - Production Deployment${NC}"
     echo "=================================================="
     echo
-    
+
     info "Starting deployment to $DEPLOYMENT_ENV environment..."
     echo
-    
+
     # Execute deployment steps
     validate_environment
     setup_database_schema
@@ -290,7 +290,7 @@ main() {
     run_health_checks
     setup_monitoring
     create_deployment_summary
-    
+
     echo
     success "🎉 Claude Learning System successfully deployed to production!"
     echo

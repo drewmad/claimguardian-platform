@@ -346,11 +346,11 @@ export default function PropertyDetailScreen() {
               color="#3B82F6"
             />
           </View>
-          
+
           <View style={styles.propertyInfo}>
             <Text style={styles.propertyName}>{property.name}</Text>
             <Text style={styles.propertyType}>{formatPropertyType(property.type)}</Text>
-            
+
             <View style={styles.syncStatus}>
               <View style={[
                 styles.syncIndicator,
@@ -378,7 +378,7 @@ export default function PropertyDetailScreen() {
             <MaterialCommunityIcons name="map-marker" size={20} color="#9CA3AF" />
             <Text style={styles.sectionTitle}>Address</Text>
           </View>
-          
+
           <Text style={styles.addressText}>
             {property.street1}
             {property.street2 && `, ${property.street2}`}
@@ -437,11 +437,11 @@ export default function PropertyDetailScreen() {
                       </Text>
                     </View>
                   </View>
-                  
+
                   <Text style={styles.assessmentCondition}>
                     Condition: {assessment.overall_condition.replace(/_/g, ' ')}
                   </Text>
-                  
+
                   {assessment.estimated_total_damage > 0 && (
                     <Text style={styles.assessmentDamage}>
                       Estimated Damage: ${assessment.estimated_total_damage.toLocaleString()}
@@ -516,21 +516,21 @@ export default function PropertyDetailScreen() {
                 {new Date(property.created_at).toLocaleDateString()}
               </Text>
             </View>
-            
+
             <View style={styles.metadataItem}>
               <Text style={styles.metadataLabel}>Last Updated</Text>
               <Text style={styles.metadataValue}>
                 {new Date(property.updated_at).toLocaleDateString()}
               </Text>
             </View>
-            
+
             <View style={styles.metadataItem}>
               <Text style={styles.metadataLabel}>Property ID</Text>
               <Text style={styles.metadataValue} numberOfLines={1}>
                 {property.id}
               </Text>
             </View>
-            
+
             <View style={styles.metadataItem}>
               <Text style={styles.metadataLabel}>Sync Status</Text>
               <Text style={[

@@ -31,7 +31,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33955', city: 'Punta Gorda', county: 'Charlotte County' },
   { zip: '33982', city: 'Punta Gorda', county: 'Charlotte County' },
   { zip: '33947', city: 'Rotonda West', county: 'Charlotte County' },
-  
+
   // Miami-Dade County
   { zip: '33101', city: 'Miami', county: 'Miami-Dade County' },
   { zip: '33125', city: 'Miami', county: 'Miami-Dade County' },
@@ -51,7 +51,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33139', city: 'Miami Beach', county: 'Miami-Dade County' },
   { zip: '33140', city: 'Miami Beach', county: 'Miami-Dade County' },
   { zip: '33141', city: 'Miami Beach', county: 'Miami-Dade County' },
-  
+
   // Broward County
   { zip: '33301', city: 'Fort Lauderdale', county: 'Broward County' },
   { zip: '33304', city: 'Fort Lauderdale', county: 'Broward County' },
@@ -67,7 +67,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33316', city: 'Fort Lauderdale', county: 'Broward County' },
   { zip: '33317', city: 'Fort Lauderdale', county: 'Broward County' },
   { zip: '33319', city: 'Fort Lauderdale', county: 'Broward County' },
-  
+
   // Palm Beach County
   { zip: '33401', city: 'West Palm Beach', county: 'Palm Beach County' },
   { zip: '33403', city: 'West Palm Beach', county: 'Palm Beach County' },
@@ -82,7 +82,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33413', city: 'West Palm Beach', county: 'Palm Beach County' },
   { zip: '33414', city: 'Wellington', county: 'Palm Beach County' },
   { zip: '33415', city: 'West Palm Beach', county: 'Palm Beach County' },
-  
+
   // Lee County
   { zip: '33901', city: 'Fort Myers', county: 'Lee County' },
   { zip: '33903', city: 'Fort Myers', county: 'Lee County' },
@@ -112,7 +112,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33990', city: 'Cape Coral', county: 'Lee County' },
   { zip: '33991', city: 'Cape Coral', county: 'Lee County' },
   { zip: '33993', city: 'Cape Coral', county: 'Lee County' },
-  
+
   // Hillsborough County
   { zip: '33510', city: 'Brandon', county: 'Hillsborough County' },
   { zip: '33511', city: 'Brandon', county: 'Hillsborough County' },
@@ -167,7 +167,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33635', city: 'Tampa', county: 'Hillsborough County' },
   { zip: '33637', city: 'Tampa', county: 'Hillsborough County' },
   { zip: '33647', city: 'Tampa', county: 'Hillsborough County' },
-  
+
   // Orange County
   { zip: '32801', city: 'Orlando', county: 'Orange County' },
   { zip: '32803', city: 'Orlando', county: 'Orange County' },
@@ -201,7 +201,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '32836', city: 'Orlando', county: 'Orange County' },
   { zip: '32837', city: 'Orlando', county: 'Orange County' },
   { zip: '32839', city: 'Orlando', county: 'Orange County' },
-  
+
   // Pinellas County
   { zip: '33701', city: 'St. Petersburg', county: 'Pinellas County' },
   { zip: '33702', city: 'St. Petersburg', county: 'Pinellas County' },
@@ -240,7 +240,7 @@ export const floridaZipCodes: ZipCodeInfo[] = [
   { zip: '33782', city: 'Pinellas Park', county: 'Pinellas County' },
   { zip: '33785', city: 'Indian Rocks Beach', county: 'Pinellas County' },
   { zip: '33786', city: 'Belleair Beach', county: 'Pinellas County' },
-  
+
   // Duval County
   { zip: '32202', city: 'Jacksonville', county: 'Duval County' },
   { zip: '32204', city: 'Jacksonville', county: 'Duval County' },

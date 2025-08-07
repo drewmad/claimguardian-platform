@@ -40,7 +40,7 @@ interface ExtractionRequest {
 
 const buildExtractionPrompt = (): string => {
   return `
-You are an AI assistant specialized in extracting structured data from insurance policy documents. 
+You are an AI assistant specialized in extracting structured data from insurance policy documents.
 
 Please analyze this insurance policy document and extract the following information in JSON format:
 
@@ -85,7 +85,7 @@ async function extractWithGemini(fileUrl: string): Promise<ExtractedPolicyData> 
   const base64 = btoa(String.fromCharCode(...new Uint8Array(arrayBuffer)))
 
   const prompt = buildExtractionPrompt()
-  
+
   const result = await model.generateContent({
     contents: [{
       role: "user",
@@ -102,7 +102,7 @@ async function extractWithGemini(fileUrl: string): Promise<ExtractedPolicyData> 
   })
 
   const text = result.response.text()
-  
+
   // Extract JSON from the response
   const jsonMatch = text.match(/\{[\s\S]*\}/)
   if (!jsonMatch) {
@@ -164,7 +164,7 @@ async function extractWithOpenAI(fileUrl: string): Promise<ExtractedPolicyData> 
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -174,7 +174,7 @@ Deno.serve(async (req: Request) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -252,9 +252,9 @@ Deno.serve(async (req: Request) => {
 
       // Check confidence threshold
       if (extractedData.confidence && extractedData.confidence < confidenceThreshold) {
-        console.log(JSON.stringify({ 
-          level: "warn", 
-          timestamp: new Date().toISOString(), 
+        console.log(JSON.stringify({
+          level: "warn",
+          timestamp: new Date().toISOString(),
           message: 'Extraction confidence below threshold',
           confidence: extractedData.confidence,
           threshold: confidenceThreshold,
@@ -278,7 +278,7 @@ Deno.serve(async (req: Request) => {
         message: 'Extraction failed',
         error: extractionError instanceof Error ? extractionError.message : String(extractionError)
       }));
-      
+
       // Log failed AI usage
       await costTracker.logUsage({
         userId: user.id,
@@ -291,7 +291,7 @@ Deno.serve(async (req: Request) => {
         errorMessage: extractionError instanceof Error ? extractionError.message : 'Extraction failed',
         metadata: { fileName }
       })
-      
+
       return new Response(
         JSON.stringify({
           success: false,
@@ -308,7 +308,7 @@ Deno.serve(async (req: Request) => {
       message: 'Edge function error',
       error: error instanceof Error ? error.message : String(error)
     }));
-    
+
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : String(error) || 'Internal server error'

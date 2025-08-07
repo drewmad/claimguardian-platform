@@ -29,10 +29,10 @@ export async function GET(request: NextRequest) {
   if (code) {
     try {
       const supabase = await createClient()
-      
+
       // Exchange the code for a session
       const { error } = await supabase.auth.exchangeCodeForSession(code)
-      
+
       if (error) {
         logger.error('Failed to exchange code for session', { error: error.message })
         return NextResponse.redirect(

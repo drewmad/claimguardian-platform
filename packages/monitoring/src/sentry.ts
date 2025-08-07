@@ -38,15 +38,15 @@ export function initializeSentry(config: SentryConfig) {
       }),
       ...(config.integrations || [])
     ],
-    
+
     // Set up performance monitoring
     profilesSampleRate: 1.0,
-    
+
     // Custom error filtering
     beforeSend: config.beforeSend || ((event: Event, _hint: EventHint): any | null => {
-      // Filter out non-error logs  
+      // Filter out non-error logs
       if ((event as any)?.level === 'log') return null
-      
+
       // Add custom context
       if (typeof window !== 'undefined') {
         (event as any).contexts = {
@@ -59,16 +59,16 @@ export function initializeSentry(config: SentryConfig) {
           }
         }
       }
-      
+
       // Record error metric
       recordMetric('error-count', 1, {
         errorType: event.exception?.values?.[0]?.type || 'unknown',
         errorMessage: event.exception?.values?.[0]?.value || 'unknown'
       })
-      
+
       return event
     }),
-    
+
     // Capture console errors
     beforeBreadcrumb: (breadcrumb) => {
       if (breadcrumb.category === 'console' && breadcrumb.level === 'error') {
@@ -93,11 +93,11 @@ export function withErrorBoundary<P extends object>(
 
 // Default error fallback component
 const ErrorFallback: FallbackRender = ({ error, resetError }) => {
-  // Return empty element for server-side compatibility  
+  // Return empty element for server-side compatibility
   if (typeof window === 'undefined') {
     return React.createElement('div', {}, '')
   }
-  
+
   // Client-side React component
   return React.createElement('div', {
     className: 'min-h-screen flex items-center justify-center p-4'
@@ -136,7 +136,7 @@ export function captureError(error: Error, context?: Record<string, unknown>) {
       action: String(context?.action || 'unknown')
     }
   })
-  
+
   // Also record in metrics
   recordMetric('error-captured', 1, {
     errorName: error.name,
@@ -152,18 +152,18 @@ export async function withTransaction<T>(
   callback: () => Promise<T>
 ): Promise<T> {
   const startTime = Date.now()
-  
+
   try {
     // Use modern Sentry span API
     const result = await Sentry.startSpan({ name, op: operation }, async () => {
       return await callback()
     })
-    
+
     recordMetric('transaction-success', Date.now() - startTime, {
       name,
       operation
     })
-    
+
     return result
   } catch (error) {
     recordMetric('transaction-error', Date.now() - startTime, {
@@ -171,7 +171,7 @@ export async function withTransaction<T>(
       operation,
       errorName: error instanceof Error ? error.name : 'unknown'
     })
-    
+
     Sentry.captureException(error)
     throw error
   }

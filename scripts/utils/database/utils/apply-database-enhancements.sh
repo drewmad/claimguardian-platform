@@ -20,9 +20,9 @@ echo "=================================================="
 execute_sql() {
     local sql=$1
     local description=$2
-    
+
     echo -e "\n${YELLOW}Executing: ${description}${NC}"
-    
+
     # For now, we'll output the SQL that needs to be run
     echo -e "${GREEN}SQL to execute in Supabase Dashboard:${NC}"
     echo "----------------------------------------"

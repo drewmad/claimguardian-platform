@@ -50,7 +50,7 @@ class ProfileService {
   async getProfile(userId: string): Promise<UserProfile | null> {
     try {
       const { data: user, error: userError } = await this.supabase.auth.getUser()
-      
+
       if (userError || !user) {
         const logError = userError ? new Error(userError.message) : undefined;
         logger.error('Failed to get auth user', {}, logError)
@@ -95,18 +95,18 @@ class ProfileService {
     try {
       // Verify the current user matches the profile being updated
       const { data: { user }, error: authError } = await this.supabase.auth.getUser()
-      
+
       if (authError || !user) {
         const logError = authError ? new Error(authError.message) : undefined;
         logger.error('Failed to get authenticated user', {}, logError)
         return false
       }
-      
+
       if (user.id !== userId) {
         logger.error('User ID mismatch', { authenticatedUserId: user.id, requestedUserId: userId })
         return false
       }
-      
+
       const updateData: Record<string, unknown> = {
         updated_at: new Date().toISOString()
       }
@@ -119,7 +119,7 @@ class ProfileService {
       if (data.isXConnected !== undefined) updateData.is_x_connected = data.isXConnected
 
       logger.info('Attempting profile update', { userId, updateData })
-      
+
       const { data: updatedProfile, error } = await this.supabase
         .from('user_profiles')
         .update(updateData)
@@ -128,8 +128,8 @@ class ProfileService {
         .single()
 
       if (error) {
-        logger.error('Failed to update profile', { 
-          userId, 
+        logger.error('Failed to update profile', {
+          userId,
           updateData,
           errorCode: error.code,
           errorMessage: error.message,
@@ -159,7 +159,7 @@ class ProfileService {
     try {
       // First, verify the user's password
       const { data: user, error: userError } = await this.supabase.auth.getUser()
-      
+
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
@@ -182,11 +182,11 @@ class ProfileService {
       if (updateError) {
         const logError = updateError ? new Error(updateError.message) : undefined;
         logger.error('Failed to update email', {}, logError)
-        
+
         if (updateError.message.includes('already registered')) {
           return { success: false, error: 'This email is already in use' }
         }
-        
+
         return { success: false, error: 'Failed to update email' }
       }
 
@@ -208,7 +208,7 @@ class ProfileService {
     try {
       // First, verify current password
       const { data: user, error: userError } = await this.supabase.auth.getUser()
-      
+
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
@@ -290,7 +290,7 @@ class ProfileService {
     try {
       // Verify password first
       const { data: user, error: userError } = await this.supabase.auth.getUser()
-      
+
       if (userError || !user) {
         return { success: false, error: 'User not authenticated' }
       }
@@ -309,10 +309,10 @@ class ProfileService {
       // Note: In production, this would trigger a server-side function
       // to properly clean up all user data
       logger.warn('Account deletion requested', { userId })
-      
+
       // For now, we'll just sign out
       await authService.signOut()
-      
+
       return { success: true }
     } catch (err) {
       logger.error('Error deleting account', { userId }, err instanceof Error ? err : new Error(String(err)))

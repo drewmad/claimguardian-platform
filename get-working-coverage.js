@@ -26,7 +26,7 @@ let totalPassing = 0
 
 workingPackages.forEach(pkg => {
   console.log(`📦 Testing ${pkg.name}...`)
-  
+
   try {
     if (pkg.name === 'utils') {
       // Run utils package test
@@ -43,7 +43,7 @@ workingPackages.forEach(pkg => {
         totalPassing += pkg.tests
       }
     }
-    
+
     totalTests += pkg.tests
   } catch (error) {
     console.log(`❌ ${pkg.name}: Failed`)

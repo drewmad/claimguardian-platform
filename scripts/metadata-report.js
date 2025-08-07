@@ -10,7 +10,7 @@ const ignorePatterns = ['**/node_modules/**', '**/dist/**', '**/build/**', '**/.
 
 async function generateReport() {
   console.log('📊 Generating metadata coverage report...\n');
-  
+
   const filesToScan = await glob(`{${directoriesToScan.join(',')}}/**/*.{js,jsx,ts,tsx}`, {
     ignore: ignorePatterns,
   });
@@ -32,27 +32,27 @@ async function generateReport() {
     if (!fileExtensions.includes(path.extname(file))) {
       continue;
     }
-    
+
     stats.totalFiles++;
-    
+
     const content = await readFile(file, 'utf-8');
     const directory = path.dirname(file);
-    
+
     // Initialize directory stats
     if (!stats.filesByDirectory[directory]) {
       stats.filesByDirectory[directory] = { total: 0, withMetadata: 0, coverage: 0 };
     }
     stats.filesByDirectory[directory].total++;
-    
+
     if (content.includes('@fileMetadata')) {
       stats.filesWithMetadata++;
       stats.filesByDirectory[directory].withMetadata++;
-      
+
       // Extract metadata details
       const metadataMatch = content.match(/\/\*\*[\s\S]*?@fileMetadata[\s\S]*?\*\//);
       if (metadataMatch) {
         const metadata = metadataMatch[0];
-        
+
         // Extract tag values
         const extractTag = (tag) => {
           const match = metadata.match(new RegExp(`${tag.replace('@', '\\@')}\\s+(.+)`));
@@ -63,13 +63,13 @@ async function generateReport() {
         const status = extractTag('@status');
         const aiIntegration = extractTag('@ai-integration');
         const insuranceContext = extractTag('@insurance-context');
-        
+
         // Count by categories
         stats.filesByOwner[owner] = (stats.filesByOwner[owner] || 0) + 1;
         stats.filesByStatus[status] = (stats.filesByStatus[status] || 0) + 1;
         stats.filesByAiIntegration[aiIntegration] = (stats.filesByAiIntegration[aiIntegration] || 0) + 1;
         stats.filesByInsuranceContext[insuranceContext] = (stats.filesByInsuranceContext[insuranceContext] || 0) + 1;
-        
+
         // Count tag usage
         const tags = metadata.match(/@\w+/g) || [];
         for (const tag of tags) {
@@ -77,7 +77,7 @@ async function generateReport() {
             stats.tagUsage[tag] = (stats.tagUsage[tag] || 0) + 1;
           }
         }
-        
+
         detailedReport.push({
           file,
           owner,
@@ -111,9 +111,9 @@ async function generateReport() {
   console.log('-'.repeat(50));
   const sortedDirs = Object.entries(stats.filesByDirectory)
     .sort(([,a], [,b]) => b.coverage - a.coverage);
-  
+
   for (const [dir, dirStats] of sortedDirs) {
-    const coverageBar = '█'.repeat(Math.floor(dirStats.coverage / 5)) + 
+    const coverageBar = '█'.repeat(Math.floor(dirStats.coverage / 5)) +
                        '░'.repeat(20 - Math.floor(dirStats.coverage / 5));
     console.log(`${dir}`);
     console.log(`  ${coverageBar} ${dirStats.coverage}% (${dirStats.withMetadata}/${dirStats.total})`);
@@ -181,14 +181,14 @@ async function generateReport() {
   // Write JSON report
   const reportPath = 'metadata-coverage-report.json';
   await writeFile(reportPath, JSON.stringify(reportData, null, 2));
-  
+
   console.log(`💾 Detailed report saved to: ${reportPath}`);
   console.log('');
 
   // Recommendations
   console.log('💡 RECOMMENDATIONS:');
   console.log('-'.repeat(30));
-  
+
   if (overallCoverage < 50) {
     console.log('❗ Low coverage detected. Run `pnpm metadata:generate` to add headers');
   } else if (overallCoverage < 80) {

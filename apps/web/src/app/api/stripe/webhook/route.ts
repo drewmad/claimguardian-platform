@@ -108,16 +108,16 @@ export async function POST(request: Request) {
 //     // Homeowner Essentials ($19/mo, $190/yr)
 //     'price_1RsjF7Qw4bp7RvuAXhAixl2J': 'essential',
 //     'price_1RsjFJQw4bp7RvuAOeQ2Clc8': 'essential',
-    
+
 //     // Landlord Pro ($49/mo, $490/yr)
 //     'price_1RsjFgQw4bp7RvuAav7rp1sw': 'plus',
 //     'price_1RsjFoQw4bp7RvuApt5jgbup': 'plus',
-    
+
 //     // Enterprise ($199/mo, $1,990/yr)
 //     'price_1RsjGSQw4bp7RvuANR3wjS1Z': 'pro',
 //     'price_1RsjHIQw4bp7RvuAqLyhtami': 'pro'
 //   }
-  
+
 //   return priceIdToTierMap[priceId] || 'free'
 // }
 
@@ -125,7 +125,7 @@ export async function POST(request: Request) {
 //   if (session.mode !== 'subscription') return
 
 //   const userId = session.metadata?.user_id
-  
+
 //   if (!userId) {
 //     console.error('Missing user_id in checkout session metadata')
 //     return
@@ -286,7 +286,7 @@ export async function POST(request: Request) {
 //   const subscriptionId = typeof (invoice as any).subscription === 'string' ? (invoice as any).subscription : (invoice as any).subscription?.id
 //   if (!subscriptionId) return
 
-//   // Get subscription details to find user  
+//   // Get subscription details to find user
 //   const subscription = await stripe.subscriptions.retrieve(subscriptionId)
 //   const userId = subscription.metadata?.user_id
 
@@ -322,7 +322,7 @@ export async function POST(request: Request) {
 //       })
 
 //     console.log(`❌ Payment failed for user ${userId}, amount: ${invoice.amount_due} ${invoice.currency}`)
-    
+
 //     // TODO: Send email notification about failed payment
 //     // TODO: Consider downgrading user access after multiple failures
 //   }

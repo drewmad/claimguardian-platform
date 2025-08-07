@@ -25,12 +25,12 @@ export interface ExtractedPolicyDataEnhanced {
   carrierPhone?: string
   carrierEmail?: string
   carrierAddress?: string
-  
+
   // Policy Classification
   policyType?: 'HO1' | 'HO2' | 'HO3' | 'HO4' | 'HO5' | 'HO6' | 'HO8' | 'DP1' | 'DP2' | 'DP3' | 'COMMERCIAL' | 'FLOOD' | 'WIND' | 'UMBRELLA'
   policyForm?: string // Specific form number (e.g., "HO 00 03 05 11")
   policyVersion?: string
-  
+
   // ===== INSURED INFORMATION =====
   primaryInsuredName?: string
   additionalInsuredNames?: string[]
@@ -42,7 +42,7 @@ export interface ExtractedPolicyDataEnhanced {
     address?: string
     loanNumber?: string
   }>
-  
+
   // ===== PROPERTY DETAILS =====
   propertyAddress?: {
     street1: string
@@ -61,7 +61,7 @@ export interface ExtractedPolicyDataEnhanced {
   constructionType?: string
   roofType?: string
   roofAge?: number
-  
+
   // ===== COVERAGE AMOUNTS =====
   dwellingCoverage?: number // Coverage A
   otherStructuresCoverage?: number // Coverage B
@@ -69,7 +69,7 @@ export interface ExtractedPolicyDataEnhanced {
   lossOfUseCoverage?: number // Coverage D
   personalLiabilityCoverage?: number // Coverage E
   medicalPaymentsCoverage?: number // Coverage F
-  
+
   // Additional Coverages
   replacementCostCoverage?: boolean
   extendedReplacementCost?: number // Percentage over dwelling
@@ -78,7 +78,7 @@ export interface ExtractedPolicyDataEnhanced {
   identityTheftCoverage?: number
   waterBackupCoverage?: number
   serviceLineCoverage?: number
-  
+
   // ===== DEDUCTIBLES =====
   allPerilsDeductible?: number
   windHailDeductible?: number | string // Can be percentage or dollar amount
@@ -87,7 +87,7 @@ export interface ExtractedPolicyDataEnhanced {
   floodDeductible?: number
   earthquakeDeductible?: number | string
   sinkholeCatastrophicGroundCoverCollapse?: number
-  
+
   // ===== FLORIDA-SPECIFIC COVERAGES =====
   hurricaneCoverage?: boolean
   floodZone?: string
@@ -98,7 +98,7 @@ export interface ExtractedPolicyDataEnhanced {
   sinkholeCoverage?: boolean
   screenedEnclosureCoverage?: number
   poolCoverage?: boolean
-  
+
   // ===== DATES =====
   effectiveDate?: string
   expirationDate?: string
@@ -107,13 +107,13 @@ export interface ExtractedPolicyDataEnhanced {
   reinstateDate?: string
   lastPaymentDate?: string
   nextPaymentDue?: string
-  
+
   // ===== PREMIUM INFORMATION =====
   annualPremium?: number
   monthlyPremium?: number
   totalPremium?: number
   basePremium?: number
-  
+
   // Premium Breakdown
   premiumBreakdown?: {
     dwelling?: number
@@ -126,7 +126,7 @@ export interface ExtractedPolicyDataEnhanced {
     surcharges?: number
     discounts?: number
   }
-  
+
   // ===== DISCOUNTS & CREDITS =====
   discounts?: Array<{
     type: string
@@ -134,7 +134,7 @@ export interface ExtractedPolicyDataEnhanced {
     amount: number
     percentage?: number
   }>
-  
+
   // ===== ENDORSEMENTS & RIDERS =====
   endorsements?: Array<{
     code: string
@@ -142,7 +142,7 @@ export interface ExtractedPolicyDataEnhanced {
     premium?: number
     effectiveDate?: string
   }>
-  
+
   // ===== EXCLUSIONS & LIMITATIONS =====
   exclusions?: string[]
   specialLimitations?: Array<{
@@ -150,7 +150,7 @@ export interface ExtractedPolicyDataEnhanced {
     limit: number
     description?: string
   }>
-  
+
   // ===== AGENT INFORMATION =====
   agentName?: string
   agentPhone?: string
@@ -158,7 +158,7 @@ export interface ExtractedPolicyDataEnhanced {
   agentLicenseNumber?: string
   agencyName?: string
   agencyAddress?: string
-  
+
   // ===== CLAIMS HISTORY =====
   priorClaims?: Array<{
     date: string
@@ -166,7 +166,7 @@ export interface ExtractedPolicyDataEnhanced {
     amount: number
     status: string
   }>
-  
+
   // ===== EXTRACTION METADATA =====
   confidence?: number
   extractedFields?: string[]
@@ -177,7 +177,7 @@ export interface ExtractedPolicyDataEnhanced {
   pageCount?: number
   documentQuality?: 'high' | 'medium' | 'low'
   warnings?: string[]
-  
+
   // ===== RAW EXTRACTED DATA =====
   rawText?: string // Full OCR text for reference
   extractedPages?: Array<{
@@ -244,10 +244,10 @@ export class EnhancedDocumentExtractor {
     try {
       // Convert file to base64
       const base64Content = await this.fileToBase64(file)
-      
+
       // Use enhanced AI client for real-time analysis
       const prompt = this.getRealTimeAnalysisPrompt(documentType)
-      
+
       const response = await enhancedAIClient.enhancedImageAnalysis({
         image: base64Content,
         prompt,
@@ -256,7 +256,7 @@ export class EnhancedDocumentExtractor {
 
       // Parse AI response
       const analysis = JSON.parse(response)
-      
+
       return {
         success: true,
         analysis: {
@@ -271,7 +271,7 @@ export class EnhancedDocumentExtractor {
     } catch (error) {
       const err = toError(error)
       logger.error('Real-time document analysis failed', { error: err, fileName: file.name })
-      
+
       return {
         success: false,
         error: err.message
@@ -296,7 +296,7 @@ export class EnhancedDocumentExtractor {
     const results = await Promise.allSettled(
       files.map(async (file) => {
         const analysis = await this.analyzeDocumentRealTime(file, 'auto')
-        
+
         if (!analysis.success || !analysis.analysis) {
           return {
             fileName: file.name,
@@ -490,10 +490,10 @@ export class EnhancedDocumentExtractor {
             2. Priority for claim processing (high/medium/low)
             3. Quality score (0-100) based on clarity, completeness, and relevance
             4. Suggestions for improvement
-            
+
             Return JSON: {
               "category": "string",
-              "priority": "high|medium|low", 
+              "priority": "high|medium|low",
               "qualityScore": number,
               "suggestions": ["array of strings"]
             }`
@@ -561,7 +561,7 @@ export class EnhancedDocumentExtractor {
   private extractMatchedContent(query: string, content: string): string {
     const words = query.toLowerCase().split(' ')
     const sentences = content.split(/[.!?]+/)
-    
+
     // Find sentences that contain query terms
     const matchedSentences = sentences.filter(sentence => {
       const lowerSentence = sentence.toLowerCase()
@@ -604,30 +604,30 @@ export class EnhancedDocumentExtractor {
       if (error) {
         logger.error('Failed to save evidence analyses', { error, claimId })
       } else {
-        logger.info('Evidence analyses saved successfully', { 
-          claimId, 
-          count: analyses.length 
+        logger.info('Evidence analyses saved successfully', {
+          claimId,
+          count: analyses.length
         })
       }
     } catch (error) {
       logger.error('Error saving evidence analyses', { error: toError(error), claimId })
     }
   }
-  
+
   /**
    * Extract comprehensive policy data from a document using multi-provider AI
    */
   async extractPolicyData(
-    fileUrl: string, 
+    fileUrl: string,
     fileName: string,
     options: EnhancedExtractionOptions = DEFAULT_OPTIONS
   ): Promise<EnhancedExtractionResult> {
     const startTime = Date.now()
-    
+
     try {
-      logger.info('Starting enhanced policy document extraction', { 
-        fileName, 
-        options 
+      logger.info('Starting enhanced policy document extraction', {
+        fileName,
+        options
       })
 
       // Determine file type
@@ -663,11 +663,11 @@ export class EnhancedDocumentExtractor {
       if (extractionResult.success && extractionResult.data) {
         const validation = this.validateExtractedData(extractionResult.data)
         extractionResult.validationErrors = validation.errors
-        
+
         if (options.enrichWithPublicData) {
           extractionResult.data = await this.enrichExtractedData(extractionResult.data)
         }
-        
+
         // Calculate overall confidence based on field completeness
         extractionResult.confidence = this.calculateConfidence(extractionResult.data)
       }
@@ -685,11 +685,11 @@ export class EnhancedDocumentExtractor {
 
       return extractionResult
     } catch (error) {
-      logger.error('Unexpected error during enhanced document extraction', { 
-        error, 
-        fileName 
+      logger.error('Unexpected error during enhanced document extraction', {
+        error,
+        fileName
       })
-      
+
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown extraction error',
@@ -735,7 +735,7 @@ export class EnhancedDocumentExtractor {
   validateExtractedData(data: ExtractedPolicyDataEnhanced): { valid: boolean; errors: string[] } {
     const errors: string[] = []
     const criticalFields = ['policyNumber', 'carrierName', 'effectiveDate', 'expirationDate']
-    
+
     // Check critical fields
     for (const field of criticalFields) {
       if (!data[field as keyof ExtractedPolicyDataEnhanced]) {
@@ -752,11 +752,11 @@ export class EnhancedDocumentExtractor {
     if (data.effectiveDate && data.expirationDate) {
       const effective = new Date(data.effectiveDate)
       const expiration = new Date(data.expirationDate)
-      
+
       if (expiration <= effective) {
         errors.push('Expiration date must be after effective date')
       }
-      
+
       // Check for reasonable policy period (typically 6 months or 1 year)
       const daysDiff = (expiration.getTime() - effective.getTime()) / (1000 * 60 * 60 * 24)
       if (daysDiff < 150 || daysDiff > 400) {
@@ -793,15 +793,15 @@ export class EnhancedDocumentExtractor {
       'policyNumber', 'carrierName', 'effectiveDate', 'expirationDate',
       'dwellingCoverage', 'annualPremium', 'propertyAddress'
     ]
-    
+
     const importantFields = [
       'primaryInsuredName', 'policyType', 'allPerilsDeductible',
       'hurricaneDeductible', 'personalPropertyCoverage', 'liabilityCoverage'
     ]
-    
+
     let score = 0
     let maxScore = 0
-    
+
     // Critical fields worth 2 points each
     for (const field of criticalFields) {
       maxScore += 2
@@ -809,7 +809,7 @@ export class EnhancedDocumentExtractor {
         score += 2
       }
     }
-    
+
     // Important fields worth 1 point each
     for (const field of importantFields) {
       maxScore += 1
@@ -817,7 +817,7 @@ export class EnhancedDocumentExtractor {
         score += 1
       }
     }
-    
+
     return Math.min(score / maxScore, 1)
   }
 
@@ -834,7 +834,7 @@ export class EnhancedDocumentExtractor {
           .ilike('company_name', `%${data.carrierName}%`)
           .limit(1)
           .single()
-        
+
         if (carrier) {
           data.carrierNAIC = carrier.naic_code
           data.carrierPhone = data.carrierPhone || carrier.phone
@@ -846,14 +846,14 @@ export class EnhancedDocumentExtractor {
       // Look up property parcel information if we have an address
       if (data.propertyAddress) {
         const addressString = `${data.propertyAddress.street1} ${data.propertyAddress.city}`
-        
+
         const { data: parcel } = await this.supabase
           .from('florida_parcels')
           .select('PARCEL_ID, CO_NO, ACT_YR_BLT, TOT_LVG_AREA, LAND_VAL, BLDG_VAL')
           .textSearch('SITUS_ADDR', addressString)
           .limit(1)
           .single()
-        
+
         if (parcel) {
           data.parcelId = data.parcelId || parcel.PARCEL_ID
           data.yearBuilt = data.yearBuilt || parcel.ACT_YR_BLT
@@ -929,7 +929,7 @@ export class EnhancedDocumentExtractor {
         policy_type: data.policyType,
         effective_date: data.effectiveDate,
         expiration_date: data.expirationDate,
-        
+
         // Coverage amounts
         coverage_limits: {
           dwelling: data.dwellingCoverage,
@@ -939,20 +939,20 @@ export class EnhancedDocumentExtractor {
           liability: data.personalLiabilityCoverage,
           medical_payments: data.medicalPaymentsCoverage
         },
-        
+
         // Deductibles
         deductible_amount: data.allPerilsDeductible,
         wind_deductible: data.windHailDeductible,
         hurricane_deductible: data.hurricaneDeductible,
-        
+
         // Premium
         premium_amount: data.annualPremium,
         premium_breakdown: data.premiumBreakdown,
-        
+
         // Additional data
         endorsements: data.endorsements,
         discounts: data.discounts,
-        
+
         // Metadata
         ai_extracted: true,
         extraction_id: extractionId,
@@ -971,10 +971,10 @@ export class EnhancedDocumentExtractor {
 
       if (error) throw error
 
-      logger.info('Auto-created policy from extraction', { 
-        policyId: policy.id, 
+      logger.info('Auto-created policy from extraction', {
+        policyId: policy.id,
         extractionId,
-        confidence: data.confidence 
+        confidence: data.confidence
       })
 
       return policy

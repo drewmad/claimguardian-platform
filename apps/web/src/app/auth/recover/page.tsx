@@ -53,7 +53,7 @@ export default function RecoverAccountPage() {
 
       // Check if user has security questions
       const hasQuestions = await securityQuestionsService.hasSecurityQuestions(userData.id)
-      
+
       if (!hasQuestions) {
         setError('This account does not have security questions set up. Please use password reset instead.')
         return
@@ -61,7 +61,7 @@ export default function RecoverAccountPage() {
 
       // Get user's security questions
       const questions = await securityQuestionsService.getUserQuestions(userData.id)
-      
+
       if (questions.length === 0) {
         setError('Unable to load security questions. Please try again.')
         return
@@ -91,7 +91,7 @@ export default function RecoverAccountPage() {
       }))
 
       const isValid = await securityQuestionsService.verifyAnswers(userId, answersArray)
-      
+
       if (!isValid) {
         setError('Incorrect answers. Please try again.')
         logger.track('account_recovery_failed', { userId, reason: 'incorrect_answers' })

@@ -44,10 +44,10 @@ export function CookieConsentBanner() {
     try {
       localStorage.setItem('cookie-consent', 'accepted')
       localStorage.setItem('cookie-consent-date', new Date().toISOString())
-      
+
       logger.track('cookie_consent_accepted')
       initializeAnalytics()
-      
+
       setIsVisible(false)
     } catch (error) {
       logger.error('Failed to save cookie consent:', undefined, toError(error))
@@ -61,9 +61,9 @@ export function CookieConsentBanner() {
     try {
       localStorage.setItem('cookie-consent', 'rejected')
       localStorage.setItem('cookie-consent-date', new Date().toISOString())
-      
+
       logger.track('cookie_consent_rejected')
-      
+
       setIsVisible(false)
     } catch (error) {
       logger.error('Failed to save cookie rejection:', undefined, toError(error))
@@ -76,14 +76,14 @@ export function CookieConsentBanner() {
     localStorage.setItem('cookie-consent', 'custom')
     localStorage.setItem('cookie-preferences', JSON.stringify(preferences))
     localStorage.setItem('cookie-consent-date', new Date().toISOString())
-    
+
     logger.track('cookie_preferences_saved', { ...preferences })
-    
+
     // Initialize analytics based on preferences
     if (preferences.analytics) {
       initializeAnalytics()
     }
-    
+
     setIsVisible(false)
   }
 
@@ -101,19 +101,19 @@ export function CookieConsentBanner() {
                   <Cookie className="w-6 h-6 text-blue-500" />
                 </div>
               </div>
-              
+
               <div className="flex-1 space-y-2">
                 <h3 className="text-lg font-semibold text-white">
                   We use cookies
                 </h3>
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  We use cookies and similar technologies to help personalize content, 
-                  tailor and measure ads, and provide a better experience. By clicking 
+                  We use cookies and similar technologies to help personalize content,
+                  tailor and measure ads, and provide a better experience. By clicking
                   accept, you agree to this use.
                 </p>
                 <p className="text-xs text-slate-400">
-                  <a 
-                    href="/legal/privacy-policy" 
+                  <a
+                    href="/legal/privacy-policy"
                     className="text-blue-400 hover:text-blue-300 underline"
                     target="_blank"
                   >

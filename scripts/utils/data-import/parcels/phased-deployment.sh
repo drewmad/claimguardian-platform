@@ -40,7 +40,7 @@ error() {
 phase1_foundation() {
     log "🏗️  PHASE 1: Foundation + Sample Data"
     echo "======================================"
-    
+
     # 1. Database schema setup
     log "Setting up database schema..."
     if command -v psql >/dev/null 2>&1; then
@@ -51,13 +51,13 @@ phase1_foundation() {
     else
         warn "psql not found - apply schema manually via Supabase dashboard"
     fi
-    
+
     # 2. Sample counties (Charlotte County for testing)
     local sample_counties=("12015")  # Charlotte County - ideal size for testing
-    
+
     for county in "${sample_counties[@]}"; do
         log "Processing sample county: $county"
-        
+
         if [ -d "data/county_$county" ]; then
             node "$SCRIPT_DIR/geo-data-transformer.js" "$county" "data/county_$county" || {
                 warn "County $county processing failed - continuing..."
@@ -67,18 +67,18 @@ phase1_foundation() {
             warn "Data directory for county $county not found - skipping"
         fi
     done
-    
+
     # 3. Test AI features on sample
     log "Testing AI features on sample data..."
     node "$SCRIPT_DIR/ai-embeddings.js" generate --limit 5000 || {
         warn "Sample AI processing failed - check OpenAI API key"
     }
-    
+
     # 4. Basic spatial analysis
     log "Running basic spatial analysis..."
     node "$SCRIPT_DIR/spatial-analyzer.js" functions
     node "$SCRIPT_DIR/spatial-analyzer.js" analyze --limit 5000
-    
+
     log "✅ Phase 1 completed successfully"
     log "📊 Review sample data before proceeding to Phase 2"
 }
@@ -89,7 +89,7 @@ phase1_foundation() {
 phase2_bulk_load() {
     log "📦 PHASE 2: Bulk Data Load (No AI)"
     echo "==================================="
-    
+
     # Confirm continuation
     read -p "Continue with full Florida data load? (y/N): " -n 1 -r
     echo
@@ -97,13 +97,13 @@ phase2_bulk_load() {
         log "Phase 2 cancelled by user"
         return 0
     fi
-    
+
     # 1. Full state load without AI processing
     log "Starting full Florida parcel data load..."
-    
+
     export SKIP_EMBEDDINGS=true
     export SKIP_SPATIAL_ANALYSIS=true
-    
+
     # Use existing optimized import
     if [ -f "$SCRIPT_DIR/run-parallel-import.sh" ]; then
         "$SCRIPT_DIR/run-parallel-import.sh" || {
@@ -117,7 +117,7 @@ phase2_bulk_load() {
             return 1
         }
     fi
-    
+
     # 2. Data integrity verification
     log "Verifying data integrity..."
     if [ -f "$SCRIPT_DIR/verify-import-complete.js" ]; then
@@ -125,11 +125,11 @@ phase2_bulk_load() {
             warn "Data verification had issues - check logs"
         }
     fi
-    
+
     # 3. Create essential spatial functions
     log "Creating spatial analysis functions..."
     node "$SCRIPT_DIR/spatial-analyzer.js" functions
-    
+
     # 4. Generate summary statistics
     log "Generating import summary..."
     cat << EOF > "$LOG_DIR/phase2_summary.txt"
@@ -144,7 +144,7 @@ Next Steps:
 - Plan AI processing strategy for Phase 3
 - Consider geographic priorities for embeddings
 EOF
-    
+
     log "✅ Phase 2 completed successfully"
     log "📋 Summary saved to: $LOG_DIR/phase2_summary.txt"
 }
@@ -155,23 +155,23 @@ EOF
 phase3_ai_optimization() {
     log "🤖 PHASE 3: AI Optimization"
     echo "==========================="
-    
+
     # Cost estimation
     local total_properties
     total_properties=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM properties WHERE feature_vector IS NULL;" 2>/dev/null || echo "0")
     local estimated_cost
     estimated_cost=$(echo "scale=2; $total_properties * 0.00001" | bc 2>/dev/null || echo "50-200")
-    
+
     log "📊 Properties needing embeddings: $total_properties"
     log "💰 Estimated OpenAI cost: \$${estimated_cost}"
-    
+
     read -p "Proceed with AI optimization? (y/N): " -n 1 -r
     echo
     if [[ ! $REPLY =~ ^[Yy]$ ]]; then
         log "Phase 3 cancelled by user"
         return 0
     fi
-    
+
     # 1. High-value properties first
     log "Processing high-value properties first..."
     node "$SCRIPT_DIR/ai-embeddings.js" generate \
@@ -179,7 +179,7 @@ phase3_ai_optimization() {
         --batch-size 100 || {
         warn "High-value property processing had issues"
     }
-    
+
     # 2. Major metropolitan areas
     log "Processing major metropolitan areas..."
     local metro_counties=("12086" "12095" "12103" "12057" "12031")
@@ -192,28 +192,28 @@ phase3_ai_optimization() {
             warn "County $county AI processing had issues"
         }
     done
-    
+
     # 3. Spatial relationship analysis
     log "Computing spatial relationships..."
     node "$SCRIPT_DIR/spatial-analyzer.js" analyze || {
         warn "Spatial analysis had issues"
     }
-    
+
     # 4. Create AI search indexes
     log "Creating AI similarity search indexes..."
     node "$SCRIPT_DIR/ai-embeddings.js" index
-    
+
     # 5. Background processing for remaining properties
     log "Starting background processing for remaining properties..."
     nohup node "$SCRIPT_DIR/ai-embeddings.js" generate \
         --batch-size 25 \
         --delay 2000 \
         --continue true > "$LOG_DIR/background_ai.log" 2>&1 &
-    
+
     local bg_pid=$!
     log "🔄 Background AI processing started (PID: $bg_pid)"
     log "📋 Monitor progress: tail -f $LOG_DIR/background_ai.log"
-    
+
     log "✅ Phase 3 initiated successfully"
 }
 
@@ -222,48 +222,48 @@ phase3_ai_optimization() {
 ##############################################################################
 check_prerequisites() {
     log "🔍 Checking prerequisites..."
-    
+
     # Check Node.js
     if ! command -v node >/dev/null 2>&1; then
         error "Node.js not found"
         return 1
     fi
-    
+
     # Check environment variables
     if [ -z "${SUPABASE_URL:-}" ] || [ -z "${SUPABASE_SERVICE_KEY:-}" ]; then
         error "Missing Supabase environment variables"
         return 1
     fi
-    
+
     # Check OpenAI API key (for Phase 3)
     if [ -z "${OPENAI_API_KEY:-}" ]; then
         warn "OpenAI API key not set - Phase 3 will be limited"
     fi
-    
+
     # Check data directory
     if [ ! -d "data" ]; then
         warn "Data directory not found - ensure you have parcel data downloaded"
     fi
-    
+
     log "✅ Prerequisites checked"
 }
 
 show_status() {
     log "📊 Current Deployment Status"
     echo "============================"
-    
+
     # Database stats
     if command -v psql >/dev/null 2>&1; then
         log "Database Status:"
         psql "$DATABASE_URL" -c "
-            SELECT 
+            SELECT
                 'Properties' as table_name,
                 COUNT(*) as record_count,
                 COUNT(*) FILTER (WHERE feature_vector IS NOT NULL) as with_embeddings,
                 pg_size_pretty(pg_total_relation_size('properties')) as size
             FROM properties
             UNION ALL
-            SELECT 
+            SELECT
                 'Spatial Relationships' as table_name,
                 COUNT(*) as record_count,
                 NULL as with_embeddings,
@@ -271,7 +271,7 @@ show_status() {
             FROM spatial_relationships;
         " 2>/dev/null || warn "Could not fetch database status"
     fi
-    
+
     # Recent logs
     if [ -f "$LOG_DIR/deployment.log" ]; then
         log "Recent Activity:"
@@ -289,7 +289,7 @@ main() {
     echo "║                      Phased Approach Strategy                    ║"
     echo "╚══════════════════════════════════════════════════════════════════╝"
     echo -e "${NC}"
-    
+
     case "${1:-}" in
         "1"|"phase1"|"foundation")
             check_prerequisites && phase1_foundation

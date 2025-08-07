@@ -39,7 +39,7 @@ interface EmailRequest {
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -49,7 +49,7 @@ Deno.serve(async (req: Request) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
@@ -62,7 +62,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const RESEND_FROM_EMAIL = Deno.env.get('RESEND_FROM_EMAIL') || 'noreply@claimguardianai.com'
-    
+
     const emailRequest = await req.json() as EmailRequest
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
@@ -113,7 +113,7 @@ Deno.serve(async (req: Request) => {
     }
 
     const result = await response.json()
-    
+
     return new Response(
       JSON.stringify({ success: true, messageId: result.id }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -151,7 +151,7 @@ interface SpatialAPIRequest {
 
 Deno.serve(async (req: Request) => {
   const origin = req.headers.get('origin')
-  
+
   const corsHeaders = {
     'Access-Control-Allow-Origin': origin && ALLOWED_ORIGINS.includes(origin) ? origin : '',
     'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -161,16 +161,16 @@ Deno.serve(async (req: Request) => {
     'X-XSS-Protection': '1; mode=block',
     'Strict-Transport-Security': 'max-age=31536000; includeSubDomains'
   }
-  
+
   // Handle CORS
   if (req.method === 'OPTIONS') {
     return new Response('ok', { headers: corsHeaders })
   }
 
   if (req.method !== 'POST') {
-    return new Response('Method not allowed', { 
+    return new Response('Method not allowed', {
       status: 405,
-      headers: corsHeaders 
+      headers: corsHeaders
     })
   }
 
@@ -184,7 +184,7 @@ Deno.serve(async (req: Request) => {
     switch (action) {
       case 'analyze_property': {
         const { propertyId, imageUrls, gisData } = data
-        
+
         // For now, return mock data until we integrate the actual services
         const analysisResult = {
           imageAnalysis: {
@@ -222,7 +222,7 @@ Deno.serve(async (req: Request) => {
           { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-      
+
       default:
         return new Response(
           JSON.stringify({ error: 'Unknown action' }),

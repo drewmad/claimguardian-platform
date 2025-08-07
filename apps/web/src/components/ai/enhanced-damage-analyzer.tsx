@@ -73,8 +73,8 @@ interface EnhancedDamageAnalyzerProps {
   policyData?: Record<string, unknown>
 }
 
-export function EnhancedDamageAnalyzer({ 
-  onAnalysisComplete 
+export function EnhancedDamageAnalyzer({
+  onAnalysisComplete
 }: EnhancedDamageAnalyzerProps) {
   // State management
   const [images, setImages] = useState<AnalysisImage[]>([])
@@ -86,7 +86,7 @@ export function EnhancedDamageAnalyzer({
   const [selectedImageType, setSelectedImageType] = useState<'before' | 'after' | 'current'>('current')
   const [customPrompt, setCustomPrompt] = useState('')
   const [selectedAIModel, setSelectedAIModel] = useState<'gpt4-vision' | 'gemini-vision'>('gpt4-vision')
-  
+
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Image handling
@@ -210,7 +210,7 @@ export function EnhancedDamageAnalyzer({
       setAnalysisResult(mockResult)
       setCurrentStep('results')
       onAnalysisComplete?.(mockResult)
-      
+
     } catch (error) {
       logger.error('Analysis error:', error)
       toast.error('Analysis failed. Please try again.')
@@ -327,7 +327,7 @@ export function EnhancedDamageAnalyzer({
                         alt={`${image.type} damage photo`}
                         className="w-full h-32 object-cover rounded border"
                       />
-                      <Badge 
+                      <Badge
                         className={`absolute top-2 left-2 ${
                           image.type === 'before' ? 'bg-blue-600/80' :
                           image.type === 'after' ? 'bg-green-600/80' :
@@ -451,7 +451,7 @@ export function EnhancedDamageAnalyzer({
                     />
                   </div>
                 </div>
-                
+
                 <div className="space-y-4">
                   <div className="flex items-center gap-2">
                     <Badge className={`${
@@ -463,7 +463,7 @@ export function EnhancedDamageAnalyzer({
                     </Badge>
                     <span className="text-gray-400">{analysisResult.beforeAfterAnalysis.timelineEstimate}</span>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-white font-medium mb-2">Detected Changes</h4>
                     <ul className="space-y-1">
@@ -500,7 +500,7 @@ export function EnhancedDamageAnalyzer({
                         <p className="text-sm text-gray-400">Damage Type</p>
                         <p className="text-lg font-semibold text-white">{analysisResult.damageAssessment.type}</p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-400">Severity</p>
                         <Badge className={`${
@@ -512,7 +512,7 @@ export function EnhancedDamageAnalyzer({
                           {analysisResult.damageAssessment.severity}
                         </Badge>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-400">AI Confidence</p>
                         <div className="flex items-center gap-2">
@@ -521,13 +521,13 @@ export function EnhancedDamageAnalyzer({
                         </div>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-4">
                       <div>
                         <p className="text-sm text-gray-400">Affected Area</p>
                         <p className="text-lg font-semibold text-white">{analysisResult.damageAssessment.affectedArea} sq ft</p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-400">Likely Causes</p>
                         <ul className="space-y-1">
@@ -538,7 +538,7 @@ export function EnhancedDamageAnalyzer({
                       </div>
                     </div>
                   </div>
-                  
+
                   <div>
                     <p className="text-sm text-gray-400 mb-2">Description</p>
                     <p className="text-white">{analysisResult.damageAssessment.description}</p>
@@ -568,33 +568,33 @@ export function EnhancedDamageAnalyzer({
                       {analysisResult.policyComparison.isCovered ? 'Damage is Covered' : 'Damage Not Covered'}
                     </span>
                   </div>
-                  
+
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm text-gray-400">Coverage Type</p>
                         <p className="text-white font-medium">{analysisResult.policyComparison.coverageType}</p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-400">Policy Clause</p>
                         <p className="text-white font-medium">{analysisResult.policyComparison.policyClause}</p>
                       </div>
                     </div>
-                    
+
                     <div className="space-y-3">
                       <div>
                         <p className="text-sm text-gray-400">Deductible</p>
                         <p className="text-white font-medium">${analysisResult.policyComparison.deductible.toLocaleString()}</p>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-400">Estimated Payout</p>
                         <p className="text-2xl font-bold text-cyan-400">${analysisResult.policyComparison.estimatedPayout.toLocaleString()}</p>
                       </div>
                     </div>
                   </div>
-                  
+
                   <div className="bg-gray-700/50 p-4 rounded">
                     <p className="text-white">{analysisResult.policyComparison.explanation}</p>
                   </div>
@@ -625,7 +625,7 @@ export function EnhancedDamageAnalyzer({
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-yellow-400 font-medium mb-3">Short-term Actions (This week)</h4>
                     <ul className="space-y-2">
@@ -637,7 +637,7 @@ export function EnhancedDamageAnalyzer({
                       ))}
                     </ul>
                   </div>
-                  
+
                   <div>
                     <h4 className="text-green-400 font-medium mb-3">Long-term Actions (Next month)</h4>
                     <ul className="space-y-2">
@@ -669,21 +669,21 @@ export function EnhancedDamageAnalyzer({
                         <span>Download PDF Report</span>
                       </div>
                     </Button>
-                    
+
                     <Button variant="outline" className="h-16 bg-gray-700 hover:bg-gray-600">
                       <div className="text-center">
                         <Share className="h-6 w-6 mx-auto mb-1" />
                         <span>Share with Insurance</span>
                       </div>
                     </Button>
-                    
+
                     <Button variant="outline" className="h-16 bg-gray-700 hover:bg-gray-600">
                       <div className="text-center">
                         <Download className="h-6 w-6 mx-auto mb-1" />
                         <span>Export All Images</span>
                       </div>
                     </Button>
-                    
+
                     <Button variant="outline" className="h-16 bg-gray-700 hover:bg-gray-600">
                       <div className="text-center">
                         <FileText className="h-6 w-6 mx-auto mb-1" />
@@ -691,7 +691,7 @@ export function EnhancedDamageAnalyzer({
                       </div>
                     </Button>
                   </div>
-                  
+
                   <div className="bg-gray-700/50 p-4 rounded">
                     <h4 className="text-white font-medium mb-2">Analysis Summary</h4>
                     <div className="text-sm text-gray-300 space-y-1">

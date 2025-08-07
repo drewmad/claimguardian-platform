@@ -26,7 +26,7 @@ interface DeviceData {
 export async function trackUserDevice(data: DeviceData) {
   try {
     const supabase = await await createClient()
-    
+
     // Use security definer function to track device
     const { error } = await supabase.rpc('track_user_device', {
       p_user_id: data.userId,
@@ -51,7 +51,7 @@ export async function trackUserDevice(data: DeviceData) {
     return { success: true }
   } catch (error) {
     logger.error('Failed to track device', { userId: data.userId }, error as Error)
-    
+
     // Return success to avoid breaking user flow
     return { success: true, warning: 'Device tracking failed but operation continued' }
   }

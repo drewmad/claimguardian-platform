@@ -237,7 +237,7 @@ export function FraudDetectionDashboard() {
       if (fraudAlerts) {
         // Process and set real alerts
       }
-      
+
       // For demo, use mock data
       setAlerts(recentAlerts);
     } catch (error) {
@@ -250,7 +250,7 @@ export function FraudDetectionDashboard() {
   const analyzeClaim = async (claimId: string) => {
     setAnalyzing(true);
     setSelectedClaim(claimId);
-    
+
     try {
       // Call fraud detection Edge Function
       const response = await fetch('/api/fraud-detection', {
@@ -258,7 +258,7 @@ export function FraudDetectionDashboard() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ claimId })
       });
-      
+
       if (response.ok) {
         const result = await response.json();
         toast.success('Fraud analysis complete');

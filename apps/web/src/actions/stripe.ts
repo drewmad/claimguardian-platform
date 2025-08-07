@@ -33,7 +33,7 @@ export async function createCheckoutSession(input: z.infer<typeof CreateCheckout
   try {
     const validated = CreateCheckoutSessionSchema.parse(input)
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -49,8 +49,8 @@ export async function createCheckoutSession(input: z.infer<typeof CreateCheckout
 
     // Get the price ID for the selected plan
     const plan = PRICING_PLANS[validated.planId]
-    const priceId = validated.billingInterval === 'monthly' 
-      ? plan.stripePriceId.monthly 
+    const priceId = validated.billingInterval === 'monthly'
+      ? plan.stripePriceId.monthly
       : plan.stripePriceId.annually
 
     if (!priceId) {
@@ -116,7 +116,7 @@ export async function createPortalSession(input: z.infer<typeof CreatePortalSess
   try {
     const validated = CreatePortalSessionSchema.parse(input)
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -150,7 +150,7 @@ export async function createPortalSession(input: z.infer<typeof CreatePortalSess
 export async function getSubscriptionDetails() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -165,7 +165,7 @@ export async function getSubscriptionDetails() {
       .single()
 
     if (!profile?.stripe_subscription_id) {
-      return { 
+      return {
         subscription: null,
         plan: 'free'
       }
@@ -211,7 +211,7 @@ export async function getSubscriptionDetails() {
 export async function cancelSubscription() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -237,7 +237,7 @@ export async function cancelSubscription() {
       }
     )
 
-    return { 
+    return {
       success: true,
       cancelAt: new Date(subscription.cancel_at! * 1000)
     }
@@ -250,7 +250,7 @@ export async function cancelSubscription() {
 export async function resumeSubscription() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -276,7 +276,7 @@ export async function resumeSubscription() {
       }
     )
 
-    return { 
+    return {
       success: true,
       status: subscription.status
     }
@@ -289,7 +289,7 @@ export async function resumeSubscription() {
 export async function getPaymentMethods() {
   try {
     const supabase = await createClient()
-    
+
     // Get current user
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {

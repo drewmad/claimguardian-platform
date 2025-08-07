@@ -13,7 +13,7 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { 
+import {
   Link2,
   ArrowLeft,
   Shield,
@@ -40,7 +40,7 @@ export default function SocialConnectPage() {
   const { user, loading: authLoading } = useAuth()
   const [isLoading, setIsLoading] = useState(true)
   const [connectedCount, setConnectedCount] = useState(0)
-  
+
   const { success, info } = useToast()
 
   useEffect(() => {
@@ -59,10 +59,10 @@ export default function SocialConnectPage() {
     try {
       const supabase = createClient()
       const { data: { user: currentUser } } = await supabase.auth.getUser()
-      
+
       if (currentUser?.identities) {
         const socialProviders = currentUser.identities.filter(
-          identity => ['google', 'microsoft', 'linkedin'].includes(identity.provider)
+          identity => ['google', 'azure', 'linkedin'].includes(identity.provider)
         )
         setConnectedCount(socialProviders.length)
       }
@@ -81,10 +81,10 @@ export default function SocialConnectPage() {
         onClick: () => router.push('/dashboard')
       }]
     })
-    
+
     // Reload stats
     loadAccountStats()
-    
+
     logger.track('social_account_connected', { provider })
   }
 
@@ -286,7 +286,7 @@ export default function SocialConnectPage() {
             <Alert>
               <Shield className="w-4 h-4" />
               <AlertDescription>
-                <strong>Privacy & Security:</strong> ClaimGuardian never stores your social media passwords. 
+                <strong>Privacy & Security:</strong> ClaimGuardian never stores your social media passwords.
                 All connections use secure OAuth 2.0 tokens that can be revoked at any time.
               </AlertDescription>
             </Alert>
@@ -301,27 +301,27 @@ export default function SocialConnectPage() {
             <Card className="bg-white/5 border-white/10 backdrop-blur-sm">
               <CardContent className="p-4">
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-sm">
-                  <Link 
+                  <Link
                     href="/dashboard"
                     className="flex items-center text-white hover:text-gray-300 transition-colors"
                   >
                     <Home className="w-4 h-4 mr-2" />
                     Back to Dashboard
                   </Link>
-                  
+
                   <div className="hidden sm:block w-px h-4 bg-white/20" />
-                  
-                  <Link 
+
+                  <Link
                     href="/dashboard/settings"
                     className="flex items-center text-white hover:text-gray-300 transition-colors"
                   >
                     <Settings className="w-4 h-4 mr-2" />
                     Account Settings
                   </Link>
-                  
+
                   <div className="hidden sm:block w-px h-4 bg-white/20" />
-                  
-                  <button 
+
+                  <button
                     onClick={() => window.open('https://docs.claimguardianai.com/auth/social-login', '_blank')}
                     className="flex items-center text-white hover:text-gray-300 transition-colors"
                   >

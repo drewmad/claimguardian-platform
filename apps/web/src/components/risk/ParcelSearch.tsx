@@ -17,9 +17,9 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { searchParcels, linkPropertyToParcel, ParcelData } from '@/actions/geospatial'
-import { 
-  Search, 
-  Link2, 
+import {
+  Search,
+  Link2,
   MapPin,
   User,
   Home,
@@ -34,10 +34,10 @@ interface ParcelSearchProps {
   onParcelLinked?: (parcelId: string) => void
 }
 
-export function ParcelSearch({ 
-  propertyId, 
+export function ParcelSearch({
+  propertyId,
   currentParcelId,
-  onParcelLinked 
+  onParcelLinked
 }: ParcelSearchProps) {
   const [searchQuery, setSearchQuery] = useState('')
   const [searching, setSearching] = useState(false)
@@ -54,9 +54,9 @@ export function ParcelSearch({
     setSuccess(null)
 
     try {
-      const result = await searchParcels({ 
+      const result = await searchParcels({
         query: searchQuery,
-        limit: 10 
+        limit: 10
       })
 
       if (result.error) {
@@ -212,7 +212,7 @@ export function ParcelSearch({
                       {parcel.parcelId === currentParcelId ? 'Linked' : 'Link'}
                     </Button>
                   </div>
-                  
+
                   {parcel.assessedValue && (
                     <div className="pt-2 border-t border-gray-800 grid grid-cols-3 gap-2 text-xs">
                       <div>

@@ -29,7 +29,7 @@ export function ContentModal() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50" onClick={closeModal} />
-      
+
       <div className="relative bg-slate-800 rounded-lg w-full max-w-2xl max-h-[80vh] overflow-hidden shadow-xl">
         <div className="sticky top-0 bg-slate-800 border-b border-slate-700 p-6 flex items-center justify-between">
           <h2 className="text-2xl font-bold">{title}</h2>
@@ -45,7 +45,7 @@ export function ContentModal() {
           {content?.description && (
             <p className="text-slate-300 mb-4">{content.description}</p>
           )}
-          
+
           {content?.benefits && (
             <div className="space-y-4">
               <h3 className="text-lg font-semibold">Benefits</h3>
@@ -59,7 +59,7 @@ export function ContentModal() {
               </ul>
             </div>
           )}
-          
+
           {/* Add more content types as needed */}
           {content?.sections && content.sections.map((section: Section, index: number) => (
             <div key={index} className="mt-6">

@@ -23,7 +23,7 @@ export interface DocumentClassification {
   auto_routing: AutoRouting[]
 }
 
-export type DocumentCategory = 
+export type DocumentCategory =
   | 'damage_assessment'
   | 'property_inspection'
   | 'maintenance_log'
@@ -58,7 +58,7 @@ export interface DamageAnalysis {
   timeline_estimate: TimelineEstimate
 }
 
-export type DamageType = 
+export type DamageType =
   | 'water_damage'
   | 'fire_damage'
   | 'smoke_damage'
@@ -139,7 +139,7 @@ export interface InventoryClassification {
   replacement_recommendations: ReplacementRecommendation[]
 }
 
-export type ItemCategory = 
+export type ItemCategory =
   | 'electronics'
   | 'appliances'
   | 'furniture'
@@ -205,7 +205,7 @@ export class SmartCategorizationEngine {
   ): Promise<DocumentClassification> {
     try {
       const supabase = await createClient()
-      
+
       // Analyze document content using ML
       const category = await this.determineCategory(content, metadata)
       const subcategory = await this.determineSubcategory(content, category)
@@ -214,7 +214,7 @@ export class SmartCategorizationEngine {
       const actions = await this.suggestActions(category, entities)
       const priority = this.assessPriority(category, entities, content)
       const routing = this.determineAutoRouting(category, entities, priority)
-      
+
       const classification: DocumentClassification = {
         id: crypto.randomUUID(),
         document_id: documentId,
@@ -277,7 +277,7 @@ export class SmartCategorizationEngine {
   ): Promise<DamageAnalysis> {
     try {
       const supabase = await createClient()
-      
+
       // Computer vision analysis (mock implementation - in production, use AI service)
       const damageTypes = await this.identifyDamageTypes(imageUrl)
       const severity = await this.assessSeverity(imageUrl, damageTypes)
@@ -352,7 +352,7 @@ export class SmartCategorizationEngine {
   ): Promise<InventoryClassification> {
     try {
       const supabase = await createClient()
-      
+
       // Analyze item details
       const category = await this.determineItemCategory(itemName, description, imageUrl)
       const subcategory = await this.determineItemSubcategory(category, itemName, description)
@@ -407,17 +407,17 @@ export class SmartCategorizationEngine {
       const entities = await this.extractEntities(content)
       const contextualTags = await this.generateContextualTags(content)
       const entityTags = entities.map(entity => entity.value.toLowerCase())
-      
+
       // Combine and deduplicate tags
       const allTags = [...existingTags, ...contextualTags, ...entityTags]
       const uniqueTags = [...new Set(allTags)]
-      
+
       // Score and filter tags
       const scoredTags = uniqueTags.map(tag => ({
         tag,
         score: this.calculateTagRelevance(tag, content)
       }))
-      
+
       // Return top 10 most relevant tags
       return scoredTags
         .sort((a, b) => b.score - a.score)
@@ -473,7 +473,7 @@ export class SmartCategorizationEngine {
 
     const categorySubcategories = (subcategories as any)[category] || ['general']
     const contentLower = content.toLowerCase()
-    
+
     // Simple keyword matching for subcategory
     for (const subcategory of categorySubcategories) {
       if (contentLower.includes(subcategory.replace('_', ' '))) {
@@ -486,7 +486,7 @@ export class SmartCategorizationEngine {
 
   private async extractEntities(content: string): Promise<ExtractedEntity[]> {
     const entities: ExtractedEntity[] = []
-    
+
     // Cost extraction
     const costRegex = /\$[\d,]+\.?\d*/g
     const costMatches = content.match(costRegex) || []
@@ -535,7 +535,7 @@ export class SmartCategorizationEngine {
 
   private async generateTags(content: string, entities: ExtractedEntity[]): Promise<string[]> {
     const tags: string[] = []
-    
+
     // Entity-based tags
     entities.forEach(entity => {
       if (entity.type === 'damage_type' || entity.type === 'system') {
@@ -561,7 +561,7 @@ export class SmartCategorizationEngine {
 
   private async suggestActions(category: DocumentCategory, entities: ExtractedEntity[]): Promise<string[]> {
     const actions: string[] = []
-    
+
     switch (category) {
       case 'damage_assessment':
         actions.push('Contact insurance company', 'Get repair estimates', 'Document additional damage')
@@ -588,17 +588,17 @@ export class SmartCategorizationEngine {
   private assessPriority(category: DocumentCategory, entities: ExtractedEntity[], content: string): 'low' | 'medium' | 'high' | 'urgent' {
     const urgentKeywords = ['emergency', 'urgent', 'immediate', 'danger', 'hazard', 'flood', 'fire']
     const highKeywords = ['significant', 'major', 'substantial', 'important', 'critical']
-    
+
     const contentLower = content.toLowerCase()
-    
+
     if (urgentKeywords.some(keyword => contentLower.includes(keyword))) {
       return 'urgent'
     }
-    
+
     if (highKeywords.some(keyword => contentLower.includes(keyword))) {
       return 'high'
     }
-    
+
     // Cost-based priority
     const costEntity = entities.find(e => e.type === 'cost')
     if (costEntity) {
@@ -606,17 +606,17 @@ export class SmartCategorizationEngine {
       if (cost > 10000) return 'high'
       if (cost > 2000) return 'medium'
     }
-    
+
     // Category-based priority
     if (category === 'damage_assessment') return 'high'
     if (category === 'legal_notice') return 'high'
-    
+
     return 'medium'
   }
 
   private determineAutoRouting(category: DocumentCategory, entities: ExtractedEntity[], priority: string): AutoRouting[] {
     const routing: AutoRouting[] = []
-    
+
     switch (category) {
       case 'damage_assessment':
         routing.push({
@@ -640,7 +640,7 @@ export class SmartCategorizationEngine {
         })
         break
     }
-    
+
     return routing
   }
 
@@ -649,7 +649,7 @@ export class SmartCategorizationEngine {
     const baseConfidence = 70
     const lengthBonus = Math.min(content.length / 100, 20)
     const keywordBonus = Math.random() * 10 // Mock keyword analysis
-    
+
     return Math.min(Math.round(baseConfidence + lengthBonus + keywordBonus), 95)
   }
 
@@ -663,7 +663,7 @@ export class SmartCategorizationEngine {
   private async assessSeverity(imageUrl: string, damageTypes: DamageType[]): Promise<SeverityAssessment> {
     const severities = ['minor', 'moderate', 'major', 'severe'] as const
     const urgencies = ['low', 'medium', 'high', 'immediate'] as const
-    
+
     return {
       overall_severity: severities[Math.floor(Math.random() * severities.length)],
       urgency_level: urgencies[Math.floor(Math.random() * urgencies.length)],
@@ -684,10 +684,10 @@ export class SmartCategorizationEngine {
   }
 
   private async estimateDamageCost(damageTypes: DamageType[], severity: SeverityAssessment, systems: AffectedSystem[]): Promise<CostRange> {
-    const baseCost = severity.overall_severity === 'severe' ? 25000 : 
+    const baseCost = severity.overall_severity === 'severe' ? 25000 :
                    severity.overall_severity === 'major' ? 15000 :
                    severity.overall_severity === 'moderate' ? 8000 : 3000
-    
+
     return {
       minimum: baseCost * 0.7,
       maximum: baseCost * 1.5,
@@ -726,7 +726,7 @@ export class SmartCategorizationEngine {
 
   private async identifySafetyConcerns(damageTypes: DamageType[], severity: SeverityAssessment): Promise<SafetyConcern[]> {
     const concerns: SafetyConcern[] = []
-    
+
     if (severity.structural_integrity_risk) {
       concerns.push({
         concern_type: 'structural',
@@ -736,7 +736,7 @@ export class SmartCategorizationEngine {
         mitigation_steps: ['Evacuate area', 'Contact structural engineer', 'Install temporary supports']
       })
     }
-    
+
     if (damageTypes.includes('electrical_damage')) {
       concerns.push({
         concern_type: 'electrical',
@@ -746,15 +746,15 @@ export class SmartCategorizationEngine {
         mitigation_steps: ['Turn off power', 'Contact licensed electrician', 'Keep area dry']
       })
     }
-    
+
     return concerns
   }
 
   private async estimateRepairTimeline(recommendations: RepairRecommendation[], severity: SeverityAssessment): Promise<TimelineEstimate> {
-    const baseTimeline = severity.overall_severity === 'severe' ? 60 : 
+    const baseTimeline = severity.overall_severity === 'severe' ? 60 :
                         severity.overall_severity === 'major' ? 30 :
                         severity.overall_severity === 'moderate' ? 14 : 7
-    
+
     return {
       assessment_phase: 2,
       permit_phase: 5,
@@ -778,15 +778,15 @@ export class SmartCategorizationEngine {
       clothing: ['shirt', 'pants', 'dress', 'shoes', 'jacket', 'coat'],
       documents: ['certificate', 'deed', 'contract', 'passport', 'license']
     }
-    
+
     const text = (name + ' ' + description).toLowerCase()
-    
+
     for (const [category, keywords] of Object.entries(categoryKeywords)) {
       if (keywords.some(keyword => text.includes(keyword))) {
         return category as ItemCategory
       }
     }
-    
+
     return 'other'
   }
 
@@ -797,7 +797,7 @@ export class SmartCategorizationEngine {
       appliances: ['kitchen', 'laundry', 'climate', 'small'],
       furniture: ['seating', 'storage', 'sleeping', 'work']
     }
-    
+
     return (subcategories as any)[category]?.[0] || 'general'
   }
 
@@ -814,17 +814,17 @@ export class SmartCategorizationEngine {
       clothing: 100,
       documents: 0
     }
-    
+
     const baseValue = (baseValues as any)[category] || 200
     const randomVariation = 0.5 + Math.random() // 0.5x to 1.5x variation
-    
+
     return Math.round(baseValue * randomVariation)
   }
 
   private async assessItemCondition(description: string, imageUrl?: string, metadata?: Record<string, unknown>): Promise<ConditionAssessment> {
     // Mock condition assessment
     const conditions = ['excellent', 'good', 'fair', 'poor'] as const
-    
+
     return {
       overall_condition: conditions[Math.floor(Math.random() * conditions.length)],
       wear_indicators: ['normal wear', 'minor scratches'],
@@ -851,7 +851,7 @@ export class SmartCategorizationEngine {
       furniture: 'annually',
       tools: 'monthly'
     } as const
-    
+
     return {
       last_maintenance: null,
       next_maintenance: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000), // 1 year from now
@@ -865,7 +865,7 @@ export class SmartCategorizationEngine {
     if (condition.overall_condition === 'excellent' || condition.overall_condition === 'good') {
       return []
     }
-    
+
     return [
       {
         reason: `Item condition is ${condition.overall_condition}`,
@@ -880,7 +880,7 @@ export class SmartCategorizationEngine {
   private async generateContextualTags(content: string): Promise<string[]> {
     const contextTags: string[] = []
     const contentLower = content.toLowerCase()
-    
+
     // Location-based tags
     const rooms = ['kitchen', 'bathroom', 'bedroom', 'living room', 'basement', 'attic', 'garage']
     rooms.forEach(room => {
@@ -888,7 +888,7 @@ export class SmartCategorizationEngine {
         contextTags.push(room.replace(' ', '_'))
       }
     })
-    
+
     // Condition tags
     const conditions = ['new', 'used', 'damaged', 'broken', 'repaired', 'replaced']
     conditions.forEach(condition => {
@@ -896,21 +896,21 @@ export class SmartCategorizationEngine {
         contextTags.push(condition)
       }
     })
-    
+
     return contextTags
   }
 
   private calculateTagRelevance(tag: string, content: string): number {
     const contentLower = content.toLowerCase()
     const tagLower = tag.toLowerCase()
-    
+
     // Count occurrences
     const occurrences = (contentLower.match(new RegExp(tagLower, 'g')) || []).length
-    
+
     // Weight by position (earlier = more relevant)
     const firstOccurrence = contentLower.indexOf(tagLower)
     const positionWeight = firstOccurrence === -1 ? 0 : (content.length - firstOccurrence) / content.length
-    
+
     return occurrences * 10 + positionWeight * 5
   }
 }

@@ -243,21 +243,21 @@ const AdminDashboard = () => {
         refreshInterval={5000}
         format="number"
       />
-      
+
       <MetricCard
         title="Error Rate"
         metric="error-rate"
         threshold={{ warning: 0.05, critical: 0.1 }}
         format="percentage"
       />
-      
+
       <MetricCard
         title="AI Processing Queue"
         metric="ai-queue-length"
         refreshInterval={1000}
         format="number"
       />
-      
+
       <MetricCard
         title="Database Response Time"
         metric="db-response-time"
@@ -440,7 +440,7 @@ const mockMonitoring = createMockMonitoring()
 // Verify events are tracked
 test('should track claim submission', () => {
   submitClaim(claimData)
-  
+
   expect(mockMonitoring.events).toContainEqual({
     name: 'claim_submitted',
     properties: expect.objectContaining({

@@ -76,7 +76,7 @@ if [ ! -f "$CLEAN_CSV" ]; then
             gsub(/^"/, "", $i)
             gsub(/"$/, "", $i)
             gsub(/^[ \t]+|[ \t]+$/, "", $i)
-            
+
             # Fix numeric fields
             if ((i >= 11 && i <= 22) || (i >= 33 && i <= 38) || (i >= 43 && i <= 45)) {
                 if ($i == "" || $i == " " || $i == "  " || $i == "NULL") {
@@ -106,11 +106,11 @@ TOTAL_IMPORTED=0
 
 for batch_file in "$WORK_DIR/${COUNTY_NAME}_batch_"*; do
     echo "Processing batch $BATCH_NUM..."
-    
+
     # Add header to batch
     BATCH_WITH_HEADER="$batch_file.csv"
     cat "$WORK_DIR/header.csv" "$batch_file" > "$BATCH_WITH_HEADER"
-    
+
     # Import batch
     echo "Importing batch $BATCH_NUM ($(wc -l < "$BATCH_WITH_HEADER") rows)..."
     PGPASSWORD="$DB_PASSWORD" psql \
@@ -119,10 +119,10 @@ for batch_file in "$WORK_DIR/${COUNTY_NAME}_batch_"*; do
         -U "$DB_USER" \
         -d "$DB_NAME" \
         -c "\COPY florida_parcels(co_no,parcel_id,file_t,asmnt_yr,bas_strt,atv_strt,grp_no,dor_uc,pa_uc,spass_cd,jv,jv_chng,jv_chng_cd,av_sd,av_nsd,tv_sd,tv_nsd,jv_hmstd,av_hmstd,jv_non_hms,lnd_val,imp_val,own_name,own_addr1,own_addr2,own_city,own_state,own_zipcd,phy_addr1,phy_addr2,phy_city,phy_zipcd,lnd_sqfoot,tot_lvg_ar,no_buldng,sale_prc1,sale_yr1,sale_mo1,or_book1,or_page1,clerk_no1,qual_cd1,sale_prc2,sale_yr2,sale_mo2,or_book2,or_page2,clerk_no2,qual_cd2,s_legal,twn,rng,sec) FROM '$BATCH_WITH_HEADER' WITH (FORMAT csv, HEADER true);"
-    
+
     # Clean up batch files
     rm -f "$batch_file" "$BATCH_WITH_HEADER"
-    
+
     ((BATCH_NUM++))
 done
 

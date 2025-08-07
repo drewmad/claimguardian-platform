@@ -14,9 +14,9 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
-import { 
-  Database, 
-  Zap, 
+import {
+  Database,
+  Zap,
   HardDrive,
   Activity,
   RefreshCw,
@@ -57,7 +57,7 @@ export default function PerformanceDashboard() {
   const loadPerformanceData = async () => {
     try {
       setLoading(true)
-      
+
       // Fetch performance stats
       const { data: perfStats, error: statsError } = await supabase
         .from('v_performance_dashboard')
@@ -90,9 +90,9 @@ export default function PerformanceDashboard() {
     try {
       setRefreshing(true)
       const { error } = await supabase.rpc('refresh_all_materialized_views')
-      
+
       if (error) throw error
-      
+
       toast.success('Materialized views refreshed successfully')
       await loadPerformanceData()
     } catch (err) {
@@ -209,7 +209,7 @@ export default function PerformanceDashboard() {
                 </div>
                 <Badge className="bg-green-600 text-white">Active</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
@@ -217,7 +217,7 @@ export default function PerformanceDashboard() {
                 </div>
                 <Badge className="bg-green-600 text-white">3 Views</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-5 h-5 text-green-500" />
@@ -225,7 +225,7 @@ export default function PerformanceDashboard() {
                 </div>
                 <Badge className="bg-green-600 text-white">Monitoring</Badge>
               </div>
-              
+
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   {deadRowRatio > 10 ? (

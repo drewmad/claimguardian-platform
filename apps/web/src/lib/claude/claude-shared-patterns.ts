@@ -30,7 +30,7 @@ export interface SharedPattern {
   derivedFrom?: string[] // IDs of original learnings this pattern was derived from
 }
 
-export type PatternCategory = 
+export type PatternCategory =
   | 'performance_optimization'
   | 'error_handling'
   | 'code_structure'
@@ -189,7 +189,7 @@ const [file1, file2, file3] = await Promise.all([
   if (!data?.email || !isValidEmail(data.email)) {
     throw new Error('Invalid email')
   }
-  
+
   const user = await db.getUser(userId)
   const processed = await processData(data)
   return await db.updateUser(userId, processed)
@@ -245,7 +245,7 @@ class DataService {
     }
     return this.getFromLegacyDB(id)
   }
-  
+
   // Gradually increase traffic:
   // Week 1: 5% -> Week 2: 25% -> Week 3: 50% -> Week 4: 100%
 }`,
@@ -392,7 +392,7 @@ const testUser2 = new UserBuilder()
    */
   addPattern(pattern: SharedPattern): void {
     this.patterns.set(pattern.id, pattern)
-    
+
     // Update indices
     if (!this.categoryIndex.has(pattern.category)) {
       this.categoryIndex.set(pattern.category, new Set())
@@ -434,7 +434,7 @@ const testUser2 = new UserBuilder()
 
       // Analyze common elements
       const commonality = this.analyzeCommonality(validLearnings)
-      
+
       if (commonality.confidence < 0.7) {
         logger.info('Insufficient commonality for pattern derivation', {
           learningCount: validLearnings.length,
@@ -527,7 +527,7 @@ const testUser2 = new UserBuilder()
   private categorizelearning(learning: any): PatternCategory {
     // Simple categorization logic
     const taskDescription = (learning?.task || learning?.description || '').toLowerCase()
-    
+
     if (taskDescription.includes('performance') || taskDescription.includes('speed')) {
       return 'performance_optimization'
     } else if (taskDescription.includes('error') || taskDescription.includes('exception')) {
@@ -546,17 +546,17 @@ const testUser2 = new UserBuilder()
     items.forEach(item => {
       counts.set(item, (counts.get(item) || 0) + 1)
     })
-    
+
     let maxCount = 0
     let mostCommon = items[0]
-    
+
     counts.forEach((count, item) => {
       if (count > maxCount) {
         maxCount = count
         mostCommon = item
       }
     })
-    
+
     return mostCommon
   }
 
@@ -579,7 +579,7 @@ const testUser2 = new UserBuilder()
     }
 
     if (query.tags && query.tags.length > 0) {
-      results = results.filter(p => 
+      results = results.filter(p =>
         query.tags!.some(tag => p.tags.includes(tag))
       )
     }
@@ -589,13 +589,13 @@ const testUser2 = new UserBuilder()
     }
 
     if (query.minImpact) {
-      const impactScore = (p: SharedPattern) => 
+      const impactScore = (p: SharedPattern) =>
         (p.impact.timeReduction + p.impact.errorReduction) / 2
       results = results.filter(p => impactScore(p) >= query.minImpact!)
     }
 
     if (query.applicableLanguage) {
-      results = results.filter(p => 
+      results = results.filter(p =>
         p.applicability.languages.includes(query.applicableLanguage!) ||
         p.applicability.languages.includes('any')
       )
@@ -603,7 +603,7 @@ const testUser2 = new UserBuilder()
 
     if (query.searchText) {
       const searchLower = query.searchText.toLowerCase()
-      results = results.filter(p => 
+      results = results.filter(p =>
         p.name.toLowerCase().includes(searchLower) ||
         p.description.toLowerCase().includes(searchLower) ||
         p.problem.toLowerCase().includes(searchLower) ||
@@ -638,26 +638,26 @@ const testUser2 = new UserBuilder()
     // Update metrics
     pattern.metrics.timesApplied++
     pattern.metrics.lastApplied = new Date()
-    
+
     if (context.success) {
-      pattern.metrics.successRate = 
-        (pattern.metrics.successRate * (pattern.metrics.timesApplied - 1) + 1) / 
+      pattern.metrics.successRate =
+        (pattern.metrics.successRate * (pattern.metrics.timesApplied - 1) + 1) /
         pattern.metrics.timesApplied
     } else {
-      pattern.metrics.successRate = 
-        (pattern.metrics.successRate * (pattern.metrics.timesApplied - 1)) / 
+      pattern.metrics.successRate =
+        (pattern.metrics.successRate * (pattern.metrics.timesApplied - 1)) /
         pattern.metrics.timesApplied
     }
 
     if (context.timeSaved) {
-      pattern.metrics.averageTimeSaved = 
-        (pattern.metrics.averageTimeSaved * (pattern.metrics.timesApplied - 1) + context.timeSaved) / 
+      pattern.metrics.averageTimeSaved =
+        (pattern.metrics.averageTimeSaved * (pattern.metrics.timesApplied - 1) + context.timeSaved) /
         pattern.metrics.timesApplied
     }
 
     if (context.feedback) {
-      pattern.metrics.feedbackScore = 
-        (pattern.metrics.feedbackScore * (pattern.metrics.timesApplied - 1) + context.feedback) / 
+      pattern.metrics.feedbackScore =
+        (pattern.metrics.feedbackScore * (pattern.metrics.timesApplied - 1) + context.feedback) /
         pattern.metrics.timesApplied
     }
 
@@ -705,7 +705,7 @@ const testUser2 = new UserBuilder()
   }): SharedPattern[] {
     // Simple recommendation logic
     const keywords = context.taskDescription.toLowerCase().split(' ')
-    
+
     let recommendations = this.searchPatterns({
       searchText: keywords.join(' '),
       applicableLanguage: context.language,
@@ -730,7 +730,7 @@ const testUser2 = new UserBuilder()
    * EXPORT PATTERNS FOR SHARING
    */
   exportPatterns(patternIds?: string[]): string {
-    const patternsToExport = patternIds 
+    const patternsToExport = patternIds
       ? patternIds.map(id => this.patterns.get(id)).filter(p => p)
       : Array.from(this.patterns.values())
 
@@ -764,7 +764,7 @@ const testUser2 = new UserBuilder()
 
     try {
       const data = JSON.parse(exportData)
-      
+
       if (!data.patterns || !Array.isArray(data.patterns)) {
         result.errors.push('Invalid export format')
         return result
@@ -820,14 +820,14 @@ const testUser2 = new UserBuilder()
     recentlyUpdated: SharedPattern[]
   } {
     const patterns = Array.from(this.patterns.values())
-    
+
     const byCategory: Record<string, number> = {}
     patterns.forEach(p => {
       byCategory[p.category] = (byCategory[p.category] || 0) + 1
     })
 
     const avgConfidence = patterns.reduce((sum, p) => sum + p.confidence, 0) / patterns.length
-    const avgImpact = patterns.reduce((sum, p) => 
+    const avgImpact = patterns.reduce((sum, p) =>
       sum + (p.impact.timeReduction + p.impact.errorReduction) / 2, 0
     ) / patterns.length
 

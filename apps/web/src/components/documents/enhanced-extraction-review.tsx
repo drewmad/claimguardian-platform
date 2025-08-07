@@ -7,8 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Progress } from '@/components/ui/progress'
-import { 
-  CheckCircle, XCircle, AlertCircle, FileText, DollarSign, 
+import {
+  CheckCircle, XCircle, AlertCircle, FileText, DollarSign,
   Calendar, Shield, Home, User, Building, AlertTriangle,
   Edit, Save, X, ChevronDown, ChevronUp, Sparkles
 } from 'lucide-react'
@@ -197,28 +197,28 @@ export function EnhancedExtractionReview({
                     Policy Information
                   </h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Policy Number" 
+                    <DataField
+                      label="Policy Number"
                       value={editedData.policyNumber}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('policyNumber', v)}
                       required
                     />
-                    <DataField 
-                      label="Carrier Name" 
+                    <DataField
+                      label="Carrier Name"
                       value={editedData.carrierName}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('carrierName', v)}
                       required
                     />
-                    <DataField 
-                      label="Policy Type" 
+                    <DataField
+                      label="Policy Type"
                       value={editedData.policyType}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('policyType', v)}
                     />
-                    <DataField 
-                      label="NAIC Code" 
+                    <DataField
+                      label="NAIC Code"
                       value={editedData.carrierNAIC}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('carrierNAIC', v)}
@@ -232,14 +232,14 @@ export function EnhancedExtractionReview({
                     Insured Information
                   </h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Primary Insured" 
+                    <DataField
+                      label="Primary Insured"
                       value={editedData.primaryInsuredName}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('primaryInsuredName', v)}
                     />
-                    <DataField 
-                      label="Mortgage Company" 
+                    <DataField
+                      label="Mortgage Company"
                       value={editedData.mortgageCompany}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('mortgageCompany', v)}
@@ -255,16 +255,16 @@ export function EnhancedExtractionReview({
                     Important Dates
                   </h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Effective Date" 
+                    <DataField
+                      label="Effective Date"
                       value={editedData.effectiveDate}
                       type="date"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('effectiveDate', v)}
                       required
                     />
-                    <DataField 
-                      label="Expiration Date" 
+                    <DataField
+                      label="Expiration Date"
                       value={editedData.expirationDate}
                       type="date"
                       isEditing={isEditing}
@@ -280,15 +280,15 @@ export function EnhancedExtractionReview({
                     Premium Summary
                   </h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Annual Premium" 
+                    <DataField
+                      label="Annual Premium"
                       value={editedData.annualPremium}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('annualPremium', v)}
                     />
-                    <DataField 
-                      label="Monthly Premium" 
+                    <DataField
+                      label="Monthly Premium"
                       value={editedData.monthlyPremium}
                       type="currency"
                       isEditing={isEditing}
@@ -305,30 +305,30 @@ export function EnhancedExtractionReview({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Primary Coverages</h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Dwelling (Coverage A)" 
+                    <DataField
+                      label="Dwelling (Coverage A)"
                       value={editedData.dwellingCoverage}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('dwellingCoverage', v)}
                       required
                     />
-                    <DataField 
-                      label="Other Structures (Coverage B)" 
+                    <DataField
+                      label="Other Structures (Coverage B)"
                       value={editedData.otherStructuresCoverage}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('otherStructuresCoverage', v)}
                     />
-                    <DataField 
-                      label="Personal Property (Coverage C)" 
+                    <DataField
+                      label="Personal Property (Coverage C)"
                       value={editedData.personalPropertyCoverage}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('personalPropertyCoverage', v)}
                     />
-                    <DataField 
-                      label="Loss of Use (Coverage D)" 
+                    <DataField
+                      label="Loss of Use (Coverage D)"
                       value={editedData.lossOfUseCoverage}
                       type="currency"
                       isEditing={isEditing}
@@ -340,15 +340,15 @@ export function EnhancedExtractionReview({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Liability Coverages</h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Personal Liability (Coverage E)" 
+                    <DataField
+                      label="Personal Liability (Coverage E)"
                       value={editedData.personalLiabilityCoverage}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('personalLiabilityCoverage', v)}
                     />
-                    <DataField 
-                      label="Medical Payments (Coverage F)" 
+                    <DataField
+                      label="Medical Payments (Coverage F)"
                       value={editedData.medicalPaymentsCoverage}
                       type="currency"
                       isEditing={isEditing}
@@ -387,15 +387,15 @@ export function EnhancedExtractionReview({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Standard Deductibles</h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="All Perils Deductible" 
+                    <DataField
+                      label="All Perils Deductible"
                       value={editedData.allPerilsDeductible}
                       type="currency"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('allPerilsDeductible', v)}
                     />
-                    <DataField 
-                      label="Flood Deductible" 
+                    <DataField
+                      label="Flood Deductible"
                       value={editedData.floodDeductible}
                       type="currency"
                       isEditing={isEditing}
@@ -407,20 +407,20 @@ export function EnhancedExtractionReview({
                 <div>
                   <h3 className="text-lg font-semibold text-white mb-3">Wind/Storm Deductibles</h3>
                   <div className="space-y-2">
-                    <DataField 
-                      label="Hurricane Deductible" 
+                    <DataField
+                      label="Hurricane Deductible"
                       value={editedData.hurricaneDeductible}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('hurricaneDeductible', v)}
                     />
-                    <DataField 
-                      label="Wind/Hail Deductible" 
+                    <DataField
+                      label="Wind/Hail Deductible"
                       value={editedData.windHailDeductible}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('windHailDeductible', v)}
                     />
-                    <DataField 
-                      label="Named Storm Deductible" 
+                    <DataField
+                      label="Named Storm Deductible"
                       value={editedData.namedStormDeductible}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('namedStormDeductible', v)}
@@ -480,26 +480,26 @@ export function EnhancedExtractionReview({
                   <div className="space-y-2">
                     {editedData.propertyAddress && (
                       <>
-                        <DataField 
-                          label="Street Address" 
+                        <DataField
+                          label="Street Address"
                           value={editedData.propertyAddress.street1}
                           isEditing={isEditing}
                           onEdit={(v) => handleFieldEdit('propertyAddress.street1', v)}
                         />
-                        <DataField 
-                          label="City" 
+                        <DataField
+                          label="City"
                           value={editedData.propertyAddress.city}
                           isEditing={isEditing}
                           onEdit={(v) => handleFieldEdit('propertyAddress.city', v)}
                         />
-                        <DataField 
-                          label="State" 
+                        <DataField
+                          label="State"
                           value={editedData.propertyAddress.state}
                           isEditing={isEditing}
                           onEdit={(v) => handleFieldEdit('propertyAddress.state', v)}
                         />
-                        <DataField 
-                          label="ZIP Code" 
+                        <DataField
+                          label="ZIP Code"
                           value={editedData.propertyAddress.zipCode}
                           isEditing={isEditing}
                           onEdit={(v) => handleFieldEdit('propertyAddress.zipCode', v)}
@@ -507,30 +507,30 @@ export function EnhancedExtractionReview({
                       </>
                     )}
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <DataField 
-                      label="Year Built" 
+                    <DataField
+                      label="Year Built"
                       value={editedData.yearBuilt}
                       type="number"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('yearBuilt', v)}
                     />
-                    <DataField 
-                      label="Square Footage" 
+                    <DataField
+                      label="Square Footage"
                       value={editedData.squareFootage}
                       type="number"
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('squareFootage', v)}
                     />
-                    <DataField 
-                      label="Construction Type" 
+                    <DataField
+                      label="Construction Type"
                       value={editedData.constructionType}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('constructionType', v)}
                     />
-                    <DataField 
-                      label="Roof Type" 
+                    <DataField
+                      label="Roof Type"
                       value={editedData.roofType}
                       isEditing={isEditing}
                       onEdit={(v) => handleFieldEdit('roofType', v)}
@@ -619,13 +619,13 @@ export function EnhancedExtractionReview({
 }
 
 // Helper component for data fields
-function DataField({ 
-  label, 
-  value, 
-  type = 'text', 
-  isEditing, 
-  onEdit, 
-  required = false 
+function DataField({
+  label,
+  value,
+  type = 'text',
+  isEditing,
+  onEdit,
+  required = false
 }: {
   label: string
   value: any
@@ -636,7 +636,7 @@ function DataField({
 }) {
   const formatValue = () => {
     if (!value) return <span className="text-gray-500">Not extracted</span>
-    
+
     switch (type) {
       case 'currency':
         return formatCurrency(value)

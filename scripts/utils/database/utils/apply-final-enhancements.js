@@ -14,7 +14,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -25,7 +25,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       if (result.rows && result.rows.length > 0) {
@@ -47,10 +47,10 @@ async function executeSQL(sql, description) {
 async function applyFinalEnhancements() {
   console.log('🎯 Applying Final Florida Parcels Enhancements');
   console.log('=' .repeat(50));
-  
+
   // Apply the fixes and analysis functions
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/028_fix_validation_function_and_analyze.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -58,16 +58,16 @@ async function applyFinalEnhancements() {
 
   const migrationSQL = fs.readFileSync(migrationPath, 'utf8');
   await executeSQL(migrationSQL, 'Applying validation and analysis functions');
-  
+
   // Now run comprehensive analysis
   console.log('\n📊 Running Comprehensive Column Analysis...');
-  
+
   // Get column statistics
   const statsResult = await executeSQL(
     'SELECT * FROM get_parcels_column_stats()',
     'Getting column statistics'
   );
-  
+
   if (statsResult.success && statsResult.data) {
     console.log('\n📈 Column Categories:');
     statsResult.data.forEach(row => {
@@ -77,13 +77,13 @@ async function applyFinalEnhancements() {
       }
     });
   }
-  
+
   // Get type optimization suggestions
   const optimResult = await executeSQL(
     'SELECT * FROM suggest_type_optimizations()',
     'Getting type optimization suggestions'
   );
-  
+
   if (optimResult.success && optimResult.data && optimResult.data.length > 0) {
     console.log('\n🔧 Type Optimization Suggestions:');
     optimResult.data.forEach(row => {
@@ -94,10 +94,10 @@ async function applyFinalEnhancements() {
   } else {
     console.log('\n✅ All column types are optimized!');
   }
-  
+
   // Check constraints
   const constraintResult = await executeSQL(`
-    SELECT 
+    SELECT
       con.conname as constraint_name,
       con.contype as constraint_type,
       pg_get_constraintdef(con.oid) as definition
@@ -107,7 +107,7 @@ async function applyFinalEnhancements() {
     AND con.contype = 'c'
     ORDER BY con.conname
   `, 'Checking active constraints');
-  
+
   if (constraintResult.success && constraintResult.data) {
     console.log(`\n🔒 Active Constraints: ${constraintResult.data.length}`);
     console.log('  Examples:');
@@ -115,31 +115,31 @@ async function applyFinalEnhancements() {
       console.log(`  • ${con.constraint_name}: ${con.definition}`);
     });
   }
-  
+
   // Final summary
   console.log('\n' + '=' .repeat(50));
   console.log('✅ FLORIDA PARCELS TABLE ENHANCEMENT COMPLETE!');
   console.log('=' .repeat(50));
-  
+
   console.log('\n📋 What\'s Been Added:');
   console.log('  ✓ Detailed descriptions for all 138 columns');
   console.log('  ✓ 21 data validation constraints');
   console.log('  ✓ 4 additional performance indexes');
   console.log('  ✓ validate_parcel_data() function');
   console.log('  ✓ Column analysis view and functions');
-  
+
   console.log('\n🎯 Table Features:');
   console.log('  • UPPERCASE column names for CSV compatibility');
   console.log('  • Automatic county_fips derivation from CO_NO');
   console.log('  • Data quality constraints on years, amounts, codes');
   console.log('  • Comprehensive column documentation');
-  
+
   console.log('\n🚀 Ready for Production Use:');
   console.log('  • Import CSVs with confidence');
   console.log('  • Data validation prevents bad entries');
   console.log('  • Column descriptions visible in Supabase');
   console.log('  • Use validate_parcel_data(parcel_id) to check quality');
-  
+
   console.log('\n📊 Column Summary by Category:');
   console.log('  • Financial: Just values, assessed values, land values');
   console.log('  • Owner: Owner names, addresses, fiduciary info');

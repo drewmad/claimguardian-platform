@@ -20,7 +20,7 @@ export function useToast() {
     // In production, this would integrate with a proper toast library like Sonner
     const message = `${variant === 'destructive' ? '❌' : '✅'} ${title}${description ? ': ' + description : ''}`
     console.log(message)
-    
+
     // You could also use window.alert for immediate feedback during development
     if (typeof window !== 'undefined') {
       // Simple notification using browser API if available

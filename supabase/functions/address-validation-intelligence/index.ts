@@ -65,7 +65,7 @@ const GOOGLE_MAPS_API_KEY = Deno.env.get('NEXT_PUBLIC_GOOGLE_MAPS_API_KEY') || D
 async function validateAddressWithGoogle(address: string | object): Promise<any> {
   try {
     const url = `https://addressvalidation.googleapis.com/v1:validateAddress?key=${GOOGLE_MAPS_API_KEY}`
-    
+
     const requestBody = {
       address: typeof address === 'string' ? {
         addressLines: [address]
@@ -103,10 +103,10 @@ async function validateAddressWithGoogle(address: string | object): Promise<any>
 }
 
 function generateMockValidationData(address: string | object): any {
-  const addressString = typeof address === 'string' ? address : 
+  const addressString = typeof address === 'string' ? address :
     `${address.addressLines?.[0] || ''} ${address.locality || ''} ${address.administrativeArea || ''} ${address.postalCode || ''}`
 
-  const isFloridaAddress = addressString.toLowerCase().includes('fl') || 
+  const isFloridaAddress = addressString.toLowerCase().includes('fl') ||
                           addressString.toLowerCase().includes('florida')
 
   return {
@@ -121,8 +121,8 @@ function generateMockValidationData(address: string | object): any {
         hasReplacedComponents: false
       },
       address: {
-        formattedAddress: isFloridaAddress ? 
-          "123 Main St, Miami, FL 33101, USA" : 
+        formattedAddress: isFloridaAddress ?
+          "123 Main St, Miami, FL 33101, USA" :
           "123 Main St, City, ST 12345, USA",
         postalAddress: {
           revision: 0,
@@ -196,7 +196,7 @@ function generateMockValidationData(address: string | object): any {
           cityStateZipAddressLine: isFloridaAddress ? "MIAMI FL 33101-1234" : "CITY ST 12345-1234"
         },
         deliveryPointCode: "23",
-        deliveryPointCheckDigit: "4", 
+        deliveryPointCheckDigit: "4",
         dpvConfirmation: "Y",
         dpvFootnote: "AABB",
         cmra: "N",
@@ -209,7 +209,7 @@ function generateMockValidationData(address: string | object): any {
 
 function analyzeValidationIntelligence(validationData: any): any {
   const result = validationData.result
-  
+
   if (!result) {
     return {
       isValid: false,
@@ -222,7 +222,7 @@ function analyzeValidationIntelligence(validationData: any): any {
 
   const verdict = result.verdict
   const isValid = verdict?.addressComplete && !verdict?.hasUnconfirmedComponents
-  
+
   let confidence = 0
   if (verdict?.validationGranularity === 'PREMISE') confidence = 95
   else if (verdict?.validationGranularity === 'SUB_PREMISE') confidence = 90
@@ -250,7 +250,7 @@ function analyzeValidationIntelligence(validationData: any): any {
 
 function extractStandardizedAddress(validationData: any): any {
   const result = validationData.result
-  
+
   if (!result?.address) {
     return null
   }
@@ -265,7 +265,7 @@ function extractStandardizedAddress(validationData: any): any {
 
 function extractGeocoding(validationData: any): any {
   const geocode = validationData.result?.geocode
-  
+
   if (!geocode?.location) {
     return null
   }
@@ -276,13 +276,13 @@ function extractGeocoding(validationData: any): any {
       lng: geocode.location.longitude
     },
     viewport: geocode.bounds ? {
-      northeast: { 
-        lat: geocode.bounds.high.latitude, 
-        lng: geocode.bounds.high.longitude 
+      northeast: {
+        lat: geocode.bounds.high.latitude,
+        lng: geocode.bounds.high.longitude
       },
-      southwest: { 
-        lat: geocode.bounds.low.latitude, 
-        lng: geocode.bounds.low.longitude 
+      southwest: {
+        lat: geocode.bounds.low.latitude,
+        lng: geocode.bounds.low.longitude
       }
     } : undefined,
     locationType: geocode.featureSizeMeters < 50 ? 'ROOFTOP' : 'APPROXIMATE',
@@ -303,7 +303,7 @@ function assessPropertyRisk(geocoding: any, address: string): any {
 
   const lat = geocoding.location.lat
   const lng = geocoding.location.lng
-  const isFloridaAddress = address.toLowerCase().includes('fl') || 
+  const isFloridaAddress = address.toLowerCase().includes('fl') ||
                           address.toLowerCase().includes('florida')
 
   // Florida-specific risk assessment
@@ -369,7 +369,7 @@ function generatePropertyIntelligence(geocoding: any, address: string): any {
     }
   }
 
-  const isFloridaAddress = address.toLowerCase().includes('fl') || 
+  const isFloridaAddress = address.toLowerCase().includes('fl') ||
                           address.toLowerCase().includes('florida')
   const lat = geocoding.location.lat
   const lng = geocoding.location.lng
@@ -459,7 +459,7 @@ Deno.serve(async (req: Request) => {
 
     // Get validation data from Google
     const validationData = await validateAddressWithGoogle(address)
-    
+
     // Always include validation analysis
     intelligence.validation = analyzeValidationIntelligence(validationData)
     intelligence.standardizedAddress = extractStandardizedAddress(validationData)
@@ -471,14 +471,14 @@ Deno.serve(async (req: Request) => {
 
     // Include risk assessment if requested
     if (options.includeRiskAssessment || options.validateForInsurance) {
-      const addressString = typeof address === 'string' ? address : 
+      const addressString = typeof address === 'string' ? address :
         `${address.addressLines?.[0] || ''} ${address.locality || ''} ${address.administrativeArea || ''}`
       intelligence.riskAssessment = assessPropertyRisk(intelligence.geocoding, addressString)
     }
 
     // Include property intelligence if requested
     if (options.includePropertyIntelligence) {
-      const addressString = typeof address === 'string' ? address : 
+      const addressString = typeof address === 'string' ? address :
         `${address.addressLines?.[0] || ''} ${address.locality || ''} ${address.administrativeArea || ''}`
       intelligence.propertyIntelligence = generatePropertyIntelligence(intelligence.geocoding, addressString)
     }
@@ -504,7 +504,7 @@ Deno.serve(async (req: Request) => {
   timestamp: new Date().toISOString(),
   message: '[Address Validation] Error:', error
 }));
-    
+
     const errorResponse = {
       success: false,
       error: error instanceof Error ? error.message : String(error) || 'Unknown error',

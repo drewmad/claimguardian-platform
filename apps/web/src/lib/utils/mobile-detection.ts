@@ -91,7 +91,7 @@ export class MobileDetectionService {
     }
 
     // PWA detection
-    const isPWA = window.matchMedia('(display-mode: standalone)').matches || 
+    const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
                   (window.navigator as IOSNavigator).standalone === true
 
     // Capability detection
@@ -162,7 +162,7 @@ export class MobileDetectionService {
    */
   static async redirectToMobileApp(currentPath: string) {
     const device = await this.detectDevice()
-    
+
     if (device.isMobile && !currentPath.startsWith('/mobile/')) {
       // Only redirect certain paths to mobile versions
       const mobileCompatiblePaths = [
@@ -206,7 +206,7 @@ export class MobileDetectionService {
       })
       permissions.camera = true
       permissions.microphone = true
-      
+
       // Stop the stream immediately
       mediaStream.getTracks().forEach(track => track.stop())
     } catch (error) {
@@ -247,7 +247,7 @@ export class MobileDetectionService {
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault()
       deferredPrompt = e
-      
+
       // Show custom install button
       this.showPWAInstallBanner(deferredPrompt)
     })
@@ -314,11 +314,11 @@ export class MobileDetectionService {
 
     if (device.isMobile) {
       recommendations.push('Use landscape mode for better photo composition')
-      
+
       if (device.platform === 'ios') {
         recommendations.push('Add to Home Screen for app-like experience')
       }
-      
+
       if (device.platform === 'android') {
         recommendations.push('Install the web app for offline functionality')
       }
@@ -353,8 +353,8 @@ export class MobileDetectionService {
     downlink: number
     rtt: number
   } {
-    const connection = (navigator as NavigatorWithConnection).connection || 
-                      (navigator as NavigatorWithConnection).mozConnection || 
+    const connection = (navigator as NavigatorWithConnection).connection ||
+                      (navigator as NavigatorWithConnection).mozConnection ||
                       (navigator as NavigatorWithConnection).webkitConnection
 
     return {

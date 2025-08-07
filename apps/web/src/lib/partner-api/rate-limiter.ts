@@ -40,7 +40,7 @@ class PartnerRateLimiter {
   private cache = new Map<string, RateLimitWindow>()
   private readonly CLEANUP_INTERVAL = 60 * 1000 // 1 minute
   private readonly MAX_CACHE_SIZE = 10000
-  
+
   constructor() {
     // Periodic cleanup of expired entries
     setInterval(() => {
@@ -65,7 +65,7 @@ class PartnerRateLimiter {
 
       // Get rate limit configuration for this partner/API key
       const rateLimitConfig = await this.getRateLimitConfig(request.partnerId, request.apiKeyId)
-      
+
       if (!rateLimitConfig) {
         // Default rate limits if not found
         const defaultLimit = 100
@@ -87,7 +87,7 @@ class PartnerRateLimiter {
 
       // Find the most restrictive limit
       const failedCheck = checks.find(check => !check.allowed)
-      
+
       if (failedCheck) {
         logger.warn('Rate limit exceeded', {
           partnerId: request.partnerId,
@@ -97,7 +97,7 @@ class PartnerRateLimiter {
           limit: failedCheck.limit,
           current: failedCheck.current
         })
-        
+
         return failedCheck
       }
 
@@ -144,7 +144,7 @@ class PartnerRateLimiter {
     const windowStart = now - (windowSeconds * 1000)
 
     let window = this.cache.get(key)
-    
+
     if (!window) {
       window = {
         count: 0,
@@ -162,7 +162,7 @@ class PartnerRateLimiter {
     if (window.count >= limit) {
       const oldestRequest = Math.min(...window.requests)
       const resetTime = Math.floor((oldestRequest + (windowSeconds * 1000)) / 1000)
-      
+
       return {
         allowed: false,
         limit,
@@ -194,7 +194,7 @@ class PartnerRateLimiter {
     const windowStart = now - (windowSeconds * 1000)
 
     let window = this.cache.get(key)
-    
+
     if (!window) {
       window = {
         count: 0,
@@ -232,17 +232,17 @@ class PartnerRateLimiter {
    */
   private async incrementCounters(request: RateLimitRequest): Promise<void> {
     const now = Date.now()
-    
+
     // Increment all relevant windows
     const windows = [60, 3600, 86400, 10] // minute, hour, day, burst
-    
+
     for (const windowSeconds of windows) {
-      const key = windowSeconds === 10 ? 
+      const key = windowSeconds === 10 ?
         this.getCacheKey(request, `burst_${windowSeconds}`) :
         this.getCacheKey(request, windowSeconds)
-      
+
       let window = this.cache.get(key)
-      
+
       if (!window) {
         window = {
           count: 0,
@@ -251,7 +251,7 @@ class PartnerRateLimiter {
         }
         this.cache.set(key, window)
       }
-      
+
       window.requests.push(now)
       window.count = window.requests.length
     }
@@ -263,10 +263,10 @@ class PartnerRateLimiter {
   private async getRateLimitConfig(partnerId: string, apiKeyId: string): Promise<PartnerRateLimit | null> {
     // In production, this would query the database or Redis cache
     // For now, return default configuration
-    
+
     // This would be cached and refreshed periodically
     const cacheKey = `ratelimit:${partnerId}:${apiKeyId}`
-    
+
     // Simulate database lookup
     return {
       requestsPerMinute: 1000,
@@ -289,14 +289,14 @@ class PartnerRateLimiter {
   private cleanupExpiredEntries(): void {
     const now = Date.now()
     const maxAge = 24 * 60 * 60 * 1000 // 24 hours
-    
+
     for (const [key, window] of this.cache.entries()) {
       // Remove entries older than max age
       if (now - window.windowStart > maxAge) {
         this.cache.delete(key)
         continue
       }
-      
+
       // Clean up old requests within the window
       const oneHourAgo = now - (60 * 60 * 1000)
       window.requests = window.requests.filter(timestamp => timestamp > oneHourAgo)
@@ -307,7 +307,7 @@ class PartnerRateLimiter {
     if (this.cache.size > this.MAX_CACHE_SIZE) {
       const entries = Array.from(this.cache.entries())
       entries.sort(([, a], [, b]) => a.windowStart - b.windowStart)
-      
+
       // Remove oldest 10% of entries
       const toRemove = Math.floor(entries.length * 0.1)
       for (let i = 0; i < toRemove; i++) {
@@ -340,7 +340,7 @@ class PartnerRateLimiter {
 
     try {
       const baseKey = apiKeyId ? `rl:${partnerId}:${apiKeyId}` : `rl:${partnerId}`
-      
+
       // Check each window
       const windows = [
         { key: `${baseKey}:60`, type: 'minute', seconds: 60 },
@@ -351,11 +351,11 @@ class PartnerRateLimiter {
 
       for (const window of windows) {
         const cached = this.cache.get(window.key)
-        
+
         if (cached) {
           const windowStart = now - (window.seconds * 1000)
           const validRequests = cached.requests.filter(timestamp => timestamp > windowStart)
-          
+
           stats[window.type as keyof typeof stats].current = validRequests.length
         }
       }
@@ -373,10 +373,10 @@ class PartnerRateLimiter {
   async resetLimits(partnerId: string, apiKeyId?: string): Promise<{ success: boolean; error?: string }> {
     try {
       const pattern = apiKeyId ? `rl:${partnerId}:${apiKeyId}:` : `rl:${partnerId}:`
-      
+
       // Remove all matching cache entries
       const keysToDelete = Array.from(this.cache.keys()).filter(key => key.startsWith(pattern))
-      
+
       for (const key of keysToDelete) {
         this.cache.delete(key)
       }
@@ -405,12 +405,12 @@ class PartnerRateLimiter {
     try {
       // In production, this would update the database
       // For now, we'll just clear the cache to force a refresh
-      
+
       const cacheKey = `ratelimit:${partnerId}:${apiKeyId}`
-      
+
       // Clear existing windows to apply new limits
       await this.resetLimits(partnerId, apiKeyId)
-      
+
       logger.info('Rate limits updated', { partnerId, apiKeyId, newLimits })
 
       return { success: true }

@@ -32,16 +32,16 @@ cat > /tmp/performance-analysis.sql << 'EOF'
 -- Performance Analysis Report
 
 \echo '=== TABLE SIZES AND RLS STATUS ==='
-SELECT 
+SELECT
     t.tablename,
     pg_size_pretty(pg_total_relation_size('public.'||t.tablename)) as table_size,
-    CASE 
+    CASE
         WHEN c.relrowsecurity THEN 'Enabled'
         ELSE 'Disabled'
     END as rls_status,
     COUNT(DISTINCT pol.policyname) as policy_count
 FROM pg_tables t
-JOIN pg_class c ON c.relname = t.tablename 
+JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
 LEFT JOIN pg_policies pol ON pol.tablename = t.tablename AND pol.schemaname = 'public'
 WHERE t.schemaname = 'public'
@@ -51,17 +51,17 @@ LIMIT 20;
 
 \echo ''
 \echo '=== TABLES WITH RLS BUT NO POLICIES ==='
-SELECT 
+SELECT
     t.tablename,
     'RLS Enabled but NO POLICIES' as issue
 FROM pg_tables t
-JOIN pg_class c ON c.relname = t.tablename 
+JOIN pg_class c ON c.relname = t.tablename
 JOIN pg_namespace n ON n.oid = c.relnamespace AND n.nspname = 'public'
-WHERE t.schemaname = 'public' 
+WHERE t.schemaname = 'public'
     AND c.relrowsecurity = true
     AND NOT EXISTS (
-        SELECT 1 FROM pg_policies p 
-        WHERE p.tablename = t.tablename 
+        SELECT 1 FROM pg_policies p
+        WHERE p.tablename = t.tablename
         AND p.schemaname = 'public'
     );
 
@@ -86,7 +86,7 @@ LIMIT 20;
 
 \echo ''
 \echo '=== POLICY COMPLEXITY ANALYSIS ==='
-SELECT 
+SELECT
     schemaname,
     tablename,
     policyname,
@@ -95,7 +95,7 @@ SELECT
     cmd,
     LENGTH(qual::text) as qual_length,
     LENGTH(with_check::text) as check_length,
-    CASE 
+    CASE
         WHEN LENGTH(qual::text) > 500 THEN 'Complex - May impact performance'
         WHEN LENGTH(qual::text) > 200 THEN 'Moderate complexity'
         ELSE 'Simple'
@@ -107,7 +107,7 @@ LIMIT 15;
 
 \echo ''
 \echo '=== SLOW QUERY INDICATORS ==='
-SELECT 
+SELECT
     schemaname,
     tablename,
     n_tup_ins + n_tup_upd + n_tup_del as total_writes,
@@ -116,10 +116,10 @@ SELECT
     n_tup_del as deletes,
     n_live_tup as live_rows,
     n_dead_tup as dead_rows,
-    CASE 
-        WHEN n_live_tup > 0 
-        THEN ROUND(100.0 * n_dead_tup / n_live_tup, 2) 
-        ELSE 0 
+    CASE
+        WHEN n_live_tup > 0
+        THEN ROUND(100.0 * n_dead_tup / n_live_tup, 2)
+        ELSE 0
     END as dead_row_percent
 FROM pg_stat_user_tables
 WHERE schemaname = 'public'

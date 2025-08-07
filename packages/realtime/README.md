@@ -27,7 +27,7 @@ import { createClient } from '@claimguardian/db'
 
 function ClaimsList() {
   const supabase = createClient()
-  
+
   const { events, isConnected } = useRealtimeTable(supabase, 'claims', {
     onInsert: (claim) => {
       console.log('New claim created:', claim)
@@ -94,11 +94,11 @@ function NotificationBell({ userId }: { userId: string }) {
           </span>
         )}
       </button>
-      
+
       <div className="absolute right-0 mt-2 w-80 bg-white shadow-lg rounded-lg">
         {notifications.map(notif => (
-          <div 
-            key={notif.id} 
+          <div
+            key={notif.id}
             className={`p-4 ${notif.read ? '' : 'bg-blue-50'}`}
             onClick={() => markAsRead(notif.id)}
           >
@@ -119,7 +119,7 @@ import { usePresence, useTypingIndicator } from '@claimguardian/realtime'
 
 function CollaborativeClaimEditor({ claimId, userId, userEmail }: Props) {
   const supabase = createClient()
-  
+
   // Track who's viewing/editing
   const { activeUsers, updateStatus } = usePresence(
     supabase,
@@ -142,7 +142,7 @@ function CollaborativeClaimEditor({ claimId, userId, userEmail }: Props) {
   }
 
   useEffect(() => {
-    updateStatus({ 
+    updateStatus({
       action: 'editing',
       lastActive: new Date().toISOString()
     })
@@ -162,12 +162,12 @@ function CollaborativeClaimEditor({ claimId, userId, userEmail }: Props) {
 
       {typingUsers.length > 0 && (
         <div className="text-sm text-gray-500">
-          {typingUsers.map(u => u.user_name).join(', ')} 
+          {typingUsers.map(u => u.user_name).join(', ')}
           {typingUsers.length === 1 ? ' is' : ' are'} typing...
         </div>
       )}
 
-      <input 
+      <input
         onChange={() => handleInputChange('description')}
         onBlur={() => setTyping(false)}
       />
@@ -204,8 +204,8 @@ function ClaimChat({ claimId }: { claimId: string }) {
             <div key={i}>{msg.payload.text}</div>
           ))}
       </div>
-      
-      <input 
+
+      <input
         value={input}
         onChange={(e) => setInput(e.target.value)}
         onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
@@ -230,7 +230,7 @@ function DocumentStatus({ documentId }: { documentId: string }) {
         {processingStatus === 'processing' && <Spinner />}
         <span>Status: {processingStatus}</span>
       </div>
-      
+
       {extractedData && (
         <div className="mt-4">
           <h3>Extracted Information:</h3>
@@ -285,10 +285,10 @@ const orgPresence = channels.orgPresence('org-789')
 All hooks and functions are fully typed. Import types as needed:
 
 ```typescript
-import type { 
+import type {
   RealtimeEvent,
   ClaimUpdate,
   NotificationEvent,
-  PresenceState 
+  PresenceState
 } from '@claimguardian/realtime'
 ```

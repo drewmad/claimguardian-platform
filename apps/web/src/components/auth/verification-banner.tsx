@@ -12,10 +12,10 @@
 
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Mail, 
-  CheckCircle, 
-  X, 
+import {
+  Mail,
+  CheckCircle,
+  X,
   AlertTriangle,
   RefreshCw,
   Clock,
@@ -35,7 +35,7 @@ interface VerificationBannerProps {
   onVerified?: () => void
 }
 
-export function VerificationBanner({ 
+export function VerificationBanner({
   variant = 'default',
   showDismiss = true,
   className,
@@ -43,7 +43,7 @@ export function VerificationBanner({
 }: VerificationBannerProps) {
   const [isDismissed, setIsDismissed] = useState(false)
   const [isResending, setIsResending] = useState(false)
-  
+
   const {
     isVerified,
     email,
@@ -63,7 +63,7 @@ export function VerificationBanner({
 
   const handleResend = async () => {
     if (!canResend) return
-    
+
     setIsResending(true)
     try {
       const success = await resendEmail()
@@ -131,7 +131,7 @@ export function VerificationBanner({
                 </p>
               </div>
             </div>
-            
+
             <div className="flex items-center space-x-2">
               <Button
                 size="sm"
@@ -148,7 +148,7 @@ export function VerificationBanner({
                   'Resend'
                 )}
               </Button>
-              
+
               {showDismiss && (
                 <Button
                   size="sm"
@@ -177,7 +177,7 @@ export function VerificationBanner({
       >
         <Alert className="border-orange-200 bg-orange-50 dark:bg-orange-900/20 dark:border-orange-800">
           <AlertTriangle className="w-4 h-4 text-orange-600" />
-          
+
           <div className="flex-1 min-w-0">
             <AlertDescription>
               <div className="flex items-start justify-between">
@@ -192,10 +192,10 @@ export function VerificationBanner({
                       </span>
                     )}
                   </div>
-                  
+
                   <p className="text-orange-700 dark:text-orange-300 text-sm mb-3">
                     We sent a verification email to{' '}
-                    <span className="font-medium">{email}</span>. 
+                    <span className="font-medium">{email}</span>.
                     Please check your inbox and spam folder.
                   </p>
 
@@ -213,9 +213,9 @@ export function VerificationBanner({
                         <Clock className="w-4 h-4" />
                         <span>You can resend in {cooldownSeconds} seconds</span>
                       </div>
-                      <Progress 
-                        value={((30 - cooldownSeconds) / 30) * 100} 
-                        className="h-1 mt-1 bg-orange-100 dark:bg-orange-900/40" 
+                      <Progress
+                        value={((30 - cooldownSeconds) / 30) * 100}
+                        className="h-1 mt-1 bg-orange-100 dark:bg-orange-900/40"
                       />
                     </div>
                   )}
@@ -288,12 +288,12 @@ export function VerificationBanner({
 }
 
 // Success banner when verification completes
-export function VerificationSuccessBanner({ 
+export function VerificationSuccessBanner({
   onDismiss,
-  className 
-}: { 
+  className
+}: {
   onDismiss?: () => void
-  className?: string 
+  className?: string
 }) {
   return (
     <motion.div
@@ -305,7 +305,7 @@ export function VerificationSuccessBanner({
     >
       <Alert className="border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800">
         <CheckCircle className="w-4 h-4 text-green-600" />
-        
+
         <AlertDescription>
           <div className="flex items-center justify-between">
             <div>
@@ -316,7 +316,7 @@ export function VerificationSuccessBanner({
                 Your account is now fully activated and you have access to all features.
               </p>
             </div>
-            
+
             {onDismiss && (
               <Button
                 size="sm"

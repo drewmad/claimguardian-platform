@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Download,
   FileText,
   Image,
@@ -216,7 +216,7 @@ export function ResultsExportWizard({
 
   // Toggle result selection
   const toggleResultSelection = useCallback((resultId: string) => {
-    setSelectedResults(prev => 
+    setSelectedResults(prev =>
       prev.includes(resultId)
         ? prev.filter(id => id !== resultId)
         : [...prev, resultId]
@@ -297,7 +297,7 @@ export function ResultsExportWizard({
                 Export your AI analysis results in multiple formats with customization options
               </p>
             </div>
-            
+
             {onCancel && (
               <Button variant="outline" onClick={onCancel}>
                 Cancel
@@ -310,15 +310,15 @@ export function ResultsExportWizard({
             {steps.map((step, index) => {
               const isActive = currentStep === index
               const isCompleted = currentStep > index
-              
+
               return (
                 <div key={step} className="flex items-center">
                   <div
                     className={cn(
                       "w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all cursor-pointer",
-                      isActive 
-                        ? "bg-blue-500 text-white" 
-                        : isCompleted 
+                      isActive
+                        ? "bg-blue-500 text-white"
+                        : isCompleted
                         ? "bg-green-500 text-white"
                         : "bg-gray-200 text-gray-600 hover:bg-gray-300"
                     )}
@@ -332,7 +332,7 @@ export function ResultsExportWizard({
                   )}>
                     {step}
                   </span>
-                  
+
                   {index < steps.length - 1 && (
                     <div className={cn(
                       "w-8 sm:w-16 h-px mx-2",
@@ -475,7 +475,7 @@ function ResultSelectionStep({
             Choose which analysis results to include in your export
           </p>
         </div>
-        
+
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={onSelectAll}>
             Select All ({results.length})
@@ -568,7 +568,7 @@ function FormatSelectionStep({
         {EXPORT_FORMATS.map((format) => {
           const Icon = format.icon
           const isSelected = selectedFormat === format.id
-          
+
           return (
             <Card
               key={format.id}
@@ -585,7 +585,7 @@ function FormatSelectionStep({
                   <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex items-center justify-center">
                     <Icon className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  
+
                   <div className="flex-1">
                     <h4 className="font-medium text-gray-900 dark:text-white mb-1">
                       {format.name}
@@ -593,7 +593,7 @@ function FormatSelectionStep({
                     <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
                       {format.description}
                     </p>
-                    
+
                     <div className="space-y-1">
                       {format.features.map((feature, index) => (
                         <div key={index} className="flex items-center gap-2">
@@ -868,7 +868,7 @@ function PreviewExportStep({
               <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center mx-auto">
                 <Download className="w-8 h-8 text-blue-600 dark:text-blue-400 animate-pulse" />
               </div>
-              
+
               <div>
                 <h4 className="font-medium text-blue-800 dark:text-blue-300">
                   Generating Export...

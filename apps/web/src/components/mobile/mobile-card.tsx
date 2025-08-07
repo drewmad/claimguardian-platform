@@ -20,11 +20,11 @@ interface MobileCardProps {
   interactive?: boolean
 }
 
-export function MobileCard({ 
-  children, 
-  className, 
-  onClick, 
-  interactive = false 
+export function MobileCard({
+  children,
+  className,
+  onClick,
+  interactive = false
 }: MobileCardProps) {
   const isClickable = interactive || !!onClick
 
@@ -51,11 +51,11 @@ interface MobileCardHeaderProps {
   icon?: ReactNode
 }
 
-export function MobileCardHeader({ 
-  title, 
-  subtitle, 
-  action, 
-  icon 
+export function MobileCardHeader({
+  title,
+  subtitle,
+  action,
+  icon
 }: MobileCardHeaderProps) {
   return (
     <div className="p-4 border-b border-gray-700">
@@ -83,12 +83,12 @@ export function MobileCardHeader({
   )
 }
 
-export function MobileCardContent({ 
-  children, 
-  className 
-}: { 
+export function MobileCardContent({
+  children,
+  className
+}: {
   children: ReactNode
-  className?: string 
+  className?: string
 }) {
   return (
     <div className={cn("p-4", className)}>
@@ -121,7 +121,7 @@ export function SwipeableCard({
       dragElastic={0.2}
       onDragEnd={(e, { offset, velocity }) => {
         const swipe = offset.x * velocity.x
-        
+
         if (swipe < -10000 && onSwipeLeft) {
           onSwipeLeft()
         } else if (swipe > 10000 && onSwipeRight) {
@@ -141,7 +141,7 @@ export function SwipeableCard({
           {rightAction}
         </div>
       )}
-      
+
       {/* Main card */}
       <MobileCard className={className} {...props}>
         {children}

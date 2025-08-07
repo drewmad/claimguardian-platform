@@ -52,13 +52,13 @@ class ClaudeLearningContext {
     try {
       // Get relevant learnings
       const learnings = await this.getRelevantLearnings(context)
-      
+
       // Generate recommendations
       const recommendations = this.generateRecommendations(learnings, context)
-      
+
       // Assess risk level
       const riskLevel = this.assessRiskLevel(learnings, context)
-      
+
       // Extract insights
       const warnings = this.extractWarnings(learnings, context)
       const bestPractices = this.extractBestPractices(learnings)
@@ -93,7 +93,7 @@ class ClaudeLearningContext {
       return analysis
     } catch (error) {
       logger.error('Failed to analyze task context', { taskContext: context }, error instanceof Error ? error : new Error(String(error)))
-      
+
       // Return safe default analysis
       return {
         riskLevel: 'medium',
@@ -112,7 +112,7 @@ class ClaudeLearningContext {
    */
   private async getRelevantLearnings(context: TaskContext): Promise<ClaudeLearning[]> {
     const cacheKey = this.generateCacheKey(context)
-    
+
     // Check cache first
     if (this.learningCache.has(cacheKey)) {
       return this.learningCache.get(cacheKey)!
@@ -127,7 +127,7 @@ class ClaudeLearningContext {
 
     // Cache the results
     this.learningCache.set(cacheKey, learnings)
-    
+
     // Clear cache after 5 minutes
     setTimeout(() => {
       this.learningCache.delete(cacheKey)
@@ -165,8 +165,8 @@ class ClaudeLearningContext {
   private assessRiskLevel(learnings: ClaudeLearning[], context: TaskContext): 'low' | 'medium' | 'high' {
     if (learnings.length === 0) return 'medium'
 
-    const highRiskPatterns = learnings.filter(l => 
-      l.success_rate < 0.6 || 
+    const highRiskPatterns = learnings.filter(l =>
+      l.success_rate < 0.6 ||
       l.confidence_score < 0.5 ||
       l.pattern_name.includes('critical') ||
       l.pattern_name.includes('breaking')
@@ -234,7 +234,7 @@ class ClaudeLearningContext {
    */
   private generateSuggestedApproach(learnings: ClaudeLearning[], context: TaskContext): string {
     const highConfidenceLearnings = learnings.filter(l => l.confidence_score > 0.8)
-    
+
     if (highConfidenceLearnings.length === 0) {
       return 'Proceed with standard approach, following established patterns and testing changes incrementally.'
     }
@@ -265,7 +265,7 @@ class ClaudeLearningContext {
 
     // Adjust based on context factors
     let adjustment = 0
-    
+
     if (context.previousAttempts && context.previousAttempts > 2) adjustment -= 0.2
     if (context.tools.includes('Read')) adjustment += 0.1
     if (context.framework && learnings.some(l => l.context_tags.includes(`framework:${context.framework}`))) adjustment += 0.1
@@ -281,15 +281,15 @@ class ClaudeLearningContext {
 
     // Task type match
     if (learning.context_tags.includes(`task:${context.taskType}`)) score += 0.4
-    
+
     // Language match
     if (context.codeLanguage && learning.context_tags.includes(`lang:${context.codeLanguage}`)) score += 0.3
-    
+
     // Framework match
     if (context.framework && learning.context_tags.includes(`framework:${context.framework}`)) score += 0.2
-    
+
     // Tool match
-    const toolMatches = context.tools.filter(tool => 
+    const toolMatches = context.tools.filter(tool =>
       learning.context_tags.includes(`tool:${tool}`)
     ).length
     score += (toolMatches / context.tools.length) * 0.1
@@ -311,7 +311,7 @@ class ClaudeLearningContext {
    */
   private isActionable(learning: ClaudeLearning, context: TaskContext): boolean {
     // Learning is actionable if it provides specific steps
-    const hasSpecificSteps = learning.solution_pattern.includes('Use ') || 
+    const hasSpecificSteps = learning.solution_pattern.includes('Use ') ||
                             learning.solution_pattern.includes('Always ') ||
                             learning.solution_pattern.includes('First ')
 
@@ -327,7 +327,7 @@ class ClaudeLearningContext {
   private generateRecommendationSummary(learning: ClaudeLearning, context: TaskContext): string {
     const confidence = (learning.confidence_score * 100).toFixed(0)
     const successRate = (learning.success_rate * 100).toFixed(0)
-    
+
     return `${learning.solution_pattern} (${confidence}% confidence, ${successRate}% success rate, used ${learning.usage_count}x)`
   }
 
@@ -417,12 +417,12 @@ export function withLearningContext<T extends (...args: unknown[]) => Promise<an
   return (async (...args: unknown[]) => {
     // Analyze context before execution
     const analysis = await claudeLearningContext.analyzeTask(taskContext)
-    
+
     // Log the recommendations
     console.log(`🧠 Claude Learning Context Analysis for ${taskContext.taskType}:`)
     console.log(`Risk Level: ${analysis.riskLevel}`)
     console.log(`Success Rate Estimate: ${(analysis.estimatedSuccessRate * 100).toFixed(1)}%`)
-    
+
     if (analysis.recommendations.length > 0) {
       console.log('📋 Recommendations:')
       analysis.recommendations.slice(0, 3).forEach(rec => {
@@ -438,13 +438,13 @@ export function withLearningContext<T extends (...args: unknown[]) => Promise<an
     // Execute the original function
     try {
       const result = await fn(...args)
-      
+
       // Record successful application
       await claudeLearningContext.recordSuccessfulApplication(
         taskContext,
         analysis.recommendations.filter(r => r.actionable).map(r => r.learning.id)
       )
-      
+
       return result
     } catch (error) {
       // Log the error with context for future learning
@@ -463,7 +463,7 @@ export function withLearningContext<T extends (...args: unknown[]) => Promise<an
           previousAttempts: taskContext.previousAttempts
         }
       )
-      
+
       throw error
     }
   }) as T

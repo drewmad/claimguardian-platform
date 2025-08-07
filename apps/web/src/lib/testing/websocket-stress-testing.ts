@@ -120,7 +120,7 @@ export class WebSocketStressTestFramework {
 
     const actualEndTime = performance.now()
     const result = this.calculateResults(config, startTime, actualEndTime, errors)
-    
+
     this.results.push(result)
     this.logResults(result)
 
@@ -128,7 +128,7 @@ export class WebSocketStressTestFramework {
   }
 
   private async initializeConnections(
-    config: WebSocketStressConfig, 
+    config: WebSocketStressConfig,
     errors: WebSocketStressResult['errors']
   ): Promise<void> {
     console.log(`📡 Establishing ${config.concurrent} WebSocket connections...`)
@@ -164,7 +164,7 @@ export class WebSocketStressTestFramework {
 
     const successfulConnections = Array.from(this.connections.values())
       .filter(conn => conn.connected).length
-    
+
     console.log(`✅ ${successfulConnections}/${config.concurrent} connections established`)
   }
 
@@ -176,7 +176,7 @@ export class WebSocketStressTestFramework {
     return new Promise((resolve) => {
       try {
         const connectStart = performance.now()
-        
+
         // Create WebSocket connection
         const ws = new WebSocket(config.url, config.protocols)
         connection.ws = ws
@@ -220,7 +220,7 @@ export class WebSocketStressTestFramework {
         ws.onclose = (event) => {
           connection.connected = false
           connection.disconnectTime = performance.now()
-          
+
           if (!event.wasClean) {
             errors.push({
               timestamp: performance.now(),
@@ -230,7 +230,7 @@ export class WebSocketStressTestFramework {
             })
 
             // Attempt reconnection if enabled
-            if (config.reconnectOnFailure && 
+            if (config.reconnectOnFailure &&
                 connection.reconnectAttempts < config.maxReconnectAttempts) {
               connection.reconnectAttempts++
               setTimeout(() => {
@@ -263,7 +263,7 @@ export class WebSocketStressTestFramework {
   ): void {
     try {
       const data = JSON.parse(event.data)
-      
+
       // Calculate latency if it's a response to our message
       if (data.messageId && this.messageLatencies.has(data.messageId)) {
         const sentTime = this.messageLatencies.get(data.messageId)!
@@ -321,7 +321,7 @@ export class WebSocketStressTestFramework {
     errors: WebSocketStressResult['errors']
   ): void {
     const interval = 1000 / config.messageRate // ms between messages
-    
+
     const sendMessage = () => {
       if (performance.now() >= endTime || !connection.connected) {
         return
@@ -371,7 +371,7 @@ export class WebSocketStressTestFramework {
   private monitorConnections(errors: WebSocketStressResult['errors']): void {
     const activeConnections = Array.from(this.connections.values())
       .filter(conn => conn.connected).length
-    
+
     // Log connection status periodically
     if (Math.random() < 0.1) { // 10% chance each second
       console.log(`📊 Active connections: ${activeConnections}/${this.connections.size}`)
@@ -397,7 +397,7 @@ export class WebSocketStressTestFramework {
 
   private cleanup(): void {
     console.log(`🧹 Cleaning up ${this.connections.size} connections...`)
-    
+
     this.connections.forEach(connection => {
       if (connection.ws && connection.connected) {
         connection.ws.close(1000, 'Test completed')
@@ -514,10 +514,10 @@ export class WebSocketStressTestFramework {
 
   private logResults(result: WebSocketStressResult): void {
     const { connections, messages, metrics, thresholdResults } = result
-    
+
     console.log(`\n🔥 WebSocket Stress Test Results: ${result.config.name}`)
     console.log('=' .repeat(60))
-    
+
     console.log(`\nConnections:`)
     console.log(`  Attempted: ${connections.attempted}`)
     console.log(`  Successful: ${connections.successful}`)
@@ -568,23 +568,23 @@ export class WebSocketStressTestFramework {
 
   async runMultipleTests(configs: WebSocketStressConfig[]): Promise<WebSocketStressResult[]> {
     console.log(`🧪 Running ${configs.length} WebSocket stress tests...`)
-    
+
     const results: WebSocketStressResult[] = []
-    
+
     for (let i = 0; i < configs.length; i++) {
       const config = configs[i]
       console.log(`\n--- WebSocket Test ${i + 1}/${configs.length} ---`)
-      
+
       const result = await this.runStressTest(config)
       results.push(result)
-      
+
       // Cool-down period between tests
       if (i < configs.length - 1) {
         console.log(`⏳ Cool-down period (10s)...`)
         await new Promise(resolve => setTimeout(resolve, 10000))
       }
     }
-    
+
     this.generateSummaryReport(results)
     return results
   }
@@ -592,8 +592,8 @@ export class WebSocketStressTestFramework {
   private generateSummaryReport(results: WebSocketStressResult[]): void {
     console.log(`\n📈 WebSocket Stress Test Summary`)
     console.log('=' .repeat(70))
-    
-    const totalPassed = results.filter(r => 
+
+    const totalPassed = results.filter(r =>
       Object.values(r.thresholdResults).every(t => t.passed)
     ).length
 
@@ -690,7 +690,7 @@ export class WebSocketStressTestFramework {
 </head>
 <body>
     <h1>ClaimGuardian WebSocket Stress Test Results</h1>
-    
+
     <div class="summary">
         <h2>Summary</h2>
         <p><strong>Tests Run:</strong> ${this.results.length}</p>
@@ -810,20 +810,20 @@ export const webSocketStressTests: WebSocketStressConfig[] = [
 // Export main testing function
 export async function runWebSocketStressTests(): Promise<WebSocketStressResult[]> {
   console.log('⚡ Starting WebSocket Stress Testing Suite')
-  
+
   const stressTestFramework = new WebSocketStressTestFramework()
-  
+
   try {
     const results = await stressTestFramework.runMultipleTests(webSocketStressTests)
-    
+
     console.log('\n📊 Generating detailed report...')
     const htmlReport = stressTestFramework.exportResults('html')
-    
+
     // In a real implementation, you might save this to a file
     console.log('HTML report generated (would be saved to file)')
-    
+
     return results
-    
+
   } catch (error) {
     console.error('❌ WebSocket stress testing failed:', error)
     throw error

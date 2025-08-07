@@ -15,8 +15,8 @@ import { AlertTriangle, Users, Shield, Zap, Phone, Radio, Navigation } from 'luc
 import { FloridaPropertyMap } from './florida-property-map'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import type { 
-  ThreatAssessment, 
+import type {
+  ThreatAssessment,
   CommunityIncident
 } from '@/types/situation-room'
 import { ThreatLevel } from '@/types/situation-room'
@@ -189,20 +189,20 @@ export function SituationRoomMap({
 
   // Helper function to calculate distance between coordinates
   function calculateDistance(
-    coord1: [number, number], 
+    coord1: [number, number],
     coord2: [number, number]
   ): number {
     const [lon1, lat1] = coord1
     const [lon2, lat2] = coord2
-    
+
     const R = 6371 // Earth's radius in kilometers
     const dLat = (lat2 - lat1) * Math.PI / 180
     const dLon = (lon2 - lon1) * Math.PI / 180
-    
+
     const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
               Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
               Math.sin(dLon/2) * Math.sin(dLon/2)
-    
+
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
     return R * c
   }
@@ -221,7 +221,7 @@ export function SituationRoomMap({
               </Badge>
             )}
           </div>
-          
+
           <div className="space-y-2">
             <div className="flex items-center gap-2">
               <input
@@ -235,7 +235,7 @@ export function SituationRoomMap({
                 Properties ({enhancedProperties.length})
               </label>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -248,7 +248,7 @@ export function SituationRoomMap({
                 Threats ({threatMarkers.length})
               </label>
             </div>
-            
+
             <div className="flex items-center gap-2">
               <input
                 type="checkbox"
@@ -345,8 +345,8 @@ export function SituationRoomMap({
               <div className="flex justify-between">
                 <span className="text-xs text-gray-400">Threat Level:</span>
                 <Badge variant={
-                  selectedProperty.threatLevel === ThreatLevel.EMERGENCY || selectedProperty.threatLevel === ThreatLevel.CRITICAL 
-                    ? 'destructive' 
+                  selectedProperty.threatLevel === ThreatLevel.EMERGENCY || selectedProperty.threatLevel === ThreatLevel.CRITICAL
+                    ? 'destructive'
                     : selectedProperty.threatLevel === ThreatLevel.HIGH || selectedProperty.threatLevel === ThreatLevel.MEDIUM
                     ? 'secondary'
                     : 'outline'
@@ -354,14 +354,14 @@ export function SituationRoomMap({
                   {selectedProperty.threatLevel}
                 </Badge>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-xs text-gray-400">Systems Status:</span>
                 <span className="text-xs text-white">
                   {selectedProperty.systemsOnline}/{selectedProperty.totalSystems} Online
                 </span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-xs text-gray-400">Insurance:</span>
                 <Badge variant={selectedProperty.insuranceStatus === 'active' ? 'outline' : 'destructive'} className="text-xs">
@@ -412,12 +412,12 @@ export function SituationRoomMap({
                   {selectedThreat.severity}
                 </Badge>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-xs text-red-200">Timeline:</span>
                 <span className="text-xs text-white">{selectedThreat.timeline}</span>
               </div>
-              
+
               <div className="flex justify-between">
                 <span className="text-xs text-red-200">Confidence:</span>
                 <span className="text-xs text-white">{selectedThreat.confidence}%</span>

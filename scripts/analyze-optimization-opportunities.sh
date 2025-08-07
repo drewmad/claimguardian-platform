@@ -21,7 +21,7 @@ cat > OPTIMIZATION_OPPORTUNITIES.md << 'EOF'
 ### Authentication Forms (5 variants)
 **Location**: `apps/web/src/app/auth/signup/`
 - `basic-signup-form.tsx`
-- `multi-step-signup-form.tsx` 
+- `multi-step-signup-form.tsx`
 - `optimized-multi-step-form.tsx`
 - `simple-signup-form.tsx`
 - `page.tsx`
@@ -61,7 +61,7 @@ cat >> OPTIMIZATION_OPPORTUNITIES.md << 'EOF'
 ```bash
 # Keep only the optimized version, remove others
 rm apps/web/src/app/auth/signup/basic-signup-form.tsx
-rm apps/web/src/app/auth/signup/multi-step-signup-form.tsx  
+rm apps/web/src/app/auth/signup/multi-step-signup-form.tsx
 rm apps/web/src/app/auth/signup/simple-signup-form.tsx
 ```
 
@@ -87,7 +87,7 @@ pnpm audit
 ### 5. Edge Function Optimization
 **Pattern Found**: Many functions have similar structure for:
 - Error handling
-- Supabase client setup  
+- Supabase client setup
 - AI provider integration
 - Response formatting
 
@@ -103,7 +103,7 @@ total_functions=$(find supabase/functions -maxdepth 1 -type d | wc -l)
 
 cat >> OPTIMIZATION_OPPORTUNITIES.md << EOF
 - **Total source files**: $total_source
-- **React components**: $total_components  
+- **React components**: $total_components
 - **Edge Functions**: $((total_functions - 1))
 - **Packages**: $(find packages/ -maxdepth 1 -type d | wc -l) packages
 

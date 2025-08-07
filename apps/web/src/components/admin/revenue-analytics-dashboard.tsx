@@ -11,19 +11,19 @@ import { useEffect, useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
-import { 
-  DollarSign, 
-  TrendingUp, 
-  TrendingDown, 
-  Users, 
-  Target, 
+import {
+  DollarSign,
+  TrendingUp,
+  TrendingDown,
+  Users,
+  Target,
   ArrowUpRight,
   ArrowDownRight,
   RefreshCw,
@@ -103,7 +103,7 @@ interface CustomerSegment {
 
 const TIER_COLORS = {
   free: '#6B7280',
-  renter: '#3B82F6', 
+  renter: '#3B82F6',
   essential: '#10B981',
   plus: '#8B5CF6',
   pro: '#F59E0B'
@@ -128,7 +128,7 @@ export function RevenueAnalyticsDashboard() {
   const loadRevenueData = async () => {
     try {
       setLoading(true)
-      
+
       // Load all revenue data in parallel
       const [
         metricsData,
@@ -155,12 +155,12 @@ export function RevenueAnalyticsDashboard() {
       setConversions(conversionsData.data || [])
       setTimeSeries(timeSeriesData.data || [])
       setSegments(segmentsData.data || [])
-      
+
       setError(null)
     } catch (err) {
       console.error('Error loading revenue data:', err)
       setError('Failed to load revenue data')
-      
+
       // Mock data for development
       setMetrics({
         mrr: 12450.00,
@@ -179,7 +179,7 @@ export function RevenueAnalyticsDashboard() {
         { tier: 'plus', display_name: 'Plus', price_monthly: 49, subscribers: 234, revenue: 11466, growth_rate: 18.7, churn_rate: 6.2, conversion_rate: 15.8 },
         { tier: 'pro', display_name: 'Pro', price_monthly: 199, subscribers: 90, revenue: 17910, growth_rate: 45.2, churn_rate: 3.1, conversion_rate: 22.1 }
       ])
-      
+
       setConversions([
         { from_tier: 'free', to_tier: 'essential', conversions: 142, conversion_rate: 6.1, revenue_impact: 4118, month: '2025-01' },
         { from_tier: 'essential', to_tier: 'plus', conversions: 37, conversion_rate: 6.5, revenue_impact: 740, month: '2025-01' },
@@ -355,14 +355,14 @@ export function RevenueAnalyticsDashboard() {
             <ResponsiveContainer width="100%" height={300}>
               <ComposedChart data={timeSeries}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                <XAxis 
-                  dataKey="date" 
+                <XAxis
+                  dataKey="date"
                   stroke="#9CA3AF"
                   tick={{ fontSize: 12 }}
                   tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 />
                 <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   labelStyle={{ color: '#9CA3AF' }}
                   formatter={(value: number) => formatCurrency(value)}
@@ -409,7 +409,7 @@ export function RevenueAnalyticsDashboard() {
                     <Cell key={`cell-${index}`} fill={entry.color} />
                   ))}
                 </Pie>
-                <Tooltip 
+                <Tooltip
                   contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                   formatter={(value: number, name, props) => [
                     `${formatCurrency(value)} (${props.payload.count} subscribers)`,
@@ -446,8 +446,8 @@ export function RevenueAnalyticsDashboard() {
                   <tr key={tier.tier} className="border-b border-gray-700/50">
                     <td className="py-3">
                       <div className="flex items-center gap-2">
-                        <div 
-                          className="w-3 h-3 rounded-full" 
+                        <div
+                          className="w-3 h-3 rounded-full"
                           style={{ backgroundColor: TIER_COLORS[tier.tier as keyof typeof TIER_COLORS] }}
                         />
                         <span className="text-gray-300 font-medium">{tier.display_name}</span>

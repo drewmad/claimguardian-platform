@@ -93,10 +93,10 @@ export const createAssessment = createAsyncThunk<
         updated_at: new Date().toISOString(),
         synced: false
       }
-      
+
       // Save to SQLite and add to sync queue
       // Implementation would save to database
-      
+
       return assessment
     } catch (error) {
       return rejectWithValue(error instanceof Error ? error.message : 'Failed to create assessment')
@@ -285,8 +285,8 @@ const assessmentsSlice = createSlice({
       state.stats = {
         totalAssessments: state.items.length,
         pendingSync: state.items.filter(a => !a.synced).length,
-        avgDamageAmount: state.items.length > 0 
-          ? state.items.reduce((sum, a) => sum + a.estimated_total_damage, 0) / state.items.length 
+        avgDamageAmount: state.items.length > 0
+          ? state.items.reduce((sum, a) => sum + a.estimated_total_damage, 0) / state.items.length
           : 0,
         highPriorityCount: state.items.filter(a => a.priority_level === 'high' || a.priority_level === 'critical').length
       }

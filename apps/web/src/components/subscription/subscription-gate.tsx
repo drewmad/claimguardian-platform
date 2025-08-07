@@ -23,11 +23,11 @@ interface SubscriptionGateProps {
   fallback?: ReactNode
 }
 
-export function SubscriptionGate({ 
-  requiredPlan, 
-  feature, 
-  children, 
-  fallback 
+export function SubscriptionGate({
+  requiredPlan,
+  feature,
+  children,
+  fallback
 }: SubscriptionGateProps) {
   const subscription = useSubscription()
 
@@ -40,10 +40,10 @@ export function SubscriptionGate({
     const planHierarchy = ['free', 'homeowner', 'landlord', 'enterprise']
     const currentIndex = planHierarchy.indexOf(subscription.plan)
     const requiredIndex = planHierarchy.indexOf(requiredPlan)
-    
+
     if (currentIndex < requiredIndex) {
       const targetPlan = PRICING_PLANS[requiredPlan]
-      
+
       return fallback || (
         <Card className="text-center">
           <CardHeader>
@@ -71,7 +71,7 @@ export function SubscriptionGate({
   // Check if user has hit usage limit
   if (feature) {
     const access = subscription.checkFeatureAccess(feature, 0)
-    
+
     if (!access.allowed) {
       return fallback || (
         <Card className="text-center">
@@ -104,15 +104,15 @@ export function SubscriptionGate({
 }
 
 // Example usage component for quick limit checks
-export function FeatureLimitBadge({ 
+export function FeatureLimitBadge({
   feature,
-  className 
-}: { 
+  className
+}: {
   feature: keyof ReturnType<typeof useSubscription>['limits']
-  className?: string 
+  className?: string
 }) {
   const subscription = useSubscription()
-  
+
   if (subscription.loading || subscription.limits[feature] === -1) {
     return null
   }

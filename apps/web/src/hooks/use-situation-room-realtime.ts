@@ -23,12 +23,12 @@ import { useEffect, useRef, useCallback, useState } from 'react'
 import { logger } from "@/lib/logger/production-logger"
 
 import { useSituationRoom } from '@/lib/stores/situation-room-store'
-import { 
+import {
   EventType,
   ThreatLevel,
   ActionPriority
 } from '@/types/situation-room'
-import type { 
+import type {
   ThreatAssessment,
   IntelligenceFeed,
   AIRecommendation,
@@ -92,7 +92,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
       }
     }
   }, [])
-  
+
   const {
     addThreat,
     addIntelligenceFeed,
@@ -108,7 +108,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     connectionStateRef.current = state
     setConnectionStatus(state)
     configRef.current?.onConnectionStateChange?.(state)
-    
+
     if (state === 'connected') {
       reconnectAttemptsRef.current = 0
       heartbeatRef.current = new Date()
@@ -138,14 +138,14 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const handleThreatUpdate = useCallback((payload: SupabasePayload<ThreatAssessment>) => {
     logger.info('Threat update received:', payload)
-    
+
     if (payload.new && payload.eventType === 'INSERT') {
       const threat: ThreatAssessment = payload.new
       addThreat(threat)
-      
+
       const event = createRealtimeEvent(EventType.THREAT_UPDATE, { threat }, 'ai-assessment')
       addRealtimeEvent(event)
-      
+
       // Auto-activate emergency mode for critical threats
       if (threat.severity === ThreatLevel.CRITICAL || threat.severity === ThreatLevel.EMERGENCY) {
         const emergencyEvent = createRealtimeEvent(
@@ -160,11 +160,11 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const handleIntelligenceUpdate = useCallback((payload: SupabasePayload<IntelligenceFeed>) => {
     logger.info('Intelligence feed received:', payload)
-    
+
     if (payload.new && payload.eventType === 'INSERT') {
       const feed: IntelligenceFeed = payload.new
       addIntelligenceFeed(feed)
-      
+
       const event = createRealtimeEvent(EventType.INTELLIGENCE_FEED, { feed }, 'intelligence-network')
       addRealtimeEvent(event)
     }
@@ -172,10 +172,10 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const handlePropertySystemUpdate = useCallback((payload: SupabasePayload) => {
     logger.info('Property system update:', payload)
-    
+
     // Refresh property status when systems change
     refreshPropertyStatus()
-    
+
     const event = createRealtimeEvent(
       EventType.PROPERTY_ALERT,
       { systemUpdate: payload.new },
@@ -200,11 +200,11 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const handleAIRecommendation = useCallback((payload: SupabasePayload<AIRecommendation>) => {
     logger.info('AI recommendation received:', payload)
-    
+
     if (payload.new && payload.eventType === 'INSERT') {
       const recommendation: AIRecommendation = payload.new
       addRecommendation(recommendation)
-      
+
       const event = createRealtimeEvent(
         EventType.AI_RECOMMENDATION,
         { recommendation },
@@ -233,7 +233,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     }
 
     const { propertyId, enabledEventTypes = Object.values(EventType) } = config
-    
+
     // Clear existing channels
     channelsRef.current.forEach(channel => {
       supabase.removeChannel(channel)
@@ -339,7 +339,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     if (enabledEventTypes.includes(EventType.COMMUNITY_UPDATE)) {
       // Get neighborhood ID from property
       const neighborhoodId = `neighborhood-${propertyId}` // This would be dynamic
-      
+
       const communityChannel = supabase
         .channel(`community:${neighborhoodId}`)
         .on('broadcast', { event: 'community_update' }, handleCommunityUpdate)
@@ -456,7 +456,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const unsubscribe = useCallback(() => {
     const supabase = supabaseRef.current
-    
+
     // Clear reconnection timeout
     if (reconnectTimeoutRef.current) {
       clearTimeout(reconnectTimeoutRef.current)
@@ -494,7 +494,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
     const healthCheckInterval = setInterval(() => {
       const lastHeartbeat = heartbeatRef.current
       const now = new Date()
-      
+
       if (lastHeartbeat && (now.getTime() - lastHeartbeat.getTime()) > 30000) {
         // No heartbeat for 30 seconds, attempt reconnect
         logger.warn('Connection appears stale, attempting reconnect')
@@ -596,7 +596,7 @@ function requiresUserAttention(eventType: EventType, data: RealtimeEventData): b
     case EventType.EMERGENCY_BROADCAST:
       return true
     case EventType.THREAT_UPDATE:
-      return data.threat?.severity === ThreatLevel.HIGH || 
+      return data.threat?.severity === ThreatLevel.HIGH ||
              data.threat?.severity === ThreatLevel.CRITICAL ||
              data.threat?.severity === ThreatLevel.EMERGENCY
     case EventType.PROPERTY_ALERT:

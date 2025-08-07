@@ -8,7 +8,7 @@ struct ClaimGuardianApp: App {
     @StateObject private var networkMonitor = NetworkMonitor()
     @StateObject private var authenticationService = AuthenticationService()
     @StateObject private var syncService = SyncService()
-    
+
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -22,21 +22,21 @@ struct ClaimGuardianApp: App {
                 }
         }
     }
-    
+
     private func setupApp() {
         configureNetworkMonitoring()
         setupSiriShortcuts()
         initializeServices()
     }
-    
+
     private func configureNetworkMonitoring() {
         networkMonitor.startMonitoring()
     }
-    
+
     private func setupSiriShortcuts() {
         SiriShortcutService.shared.setupDefaultShortcuts()
     }
-    
+
     private func initializeServices() {
         authenticationService.initialize()
         syncService.initialize()
@@ -46,7 +46,7 @@ struct ClaimGuardianApp: App {
 // MARK: - Content View
 struct ContentView: View {
     @EnvironmentObject var authService: AuthenticationService
-    
+
     var body: some View {
         Group {
             if authService.isAuthenticated {
@@ -62,7 +62,7 @@ struct ContentView: View {
 // MARK: - Main Tab View
 struct MainTabView: View {
     @State private var selectedTab = 0
-    
+
     var body: some View {
         TabView(selection: $selectedTab) {
             DashboardView()
@@ -71,28 +71,28 @@ struct MainTabView: View {
                     Text("Dashboard")
                 }
                 .tag(0)
-            
+
             AssessmentListView()
                 .tabItem {
                     Image(systemName: "doc.text.magnifyingglass")
                     Text("Assessments")
                 }
                 .tag(1)
-            
+
             CameraView()
                 .tabItem {
                     Image(systemName: "camera.fill")
                     Text("Camera")
                 }
                 .tag(2)
-            
+
             ARMeasurementView()
                 .tabItem {
                     Image(systemName: "ruler.fill")
                     Text("Measure")
                 }
                 .tag(3)
-            
+
             SettingsView()
                 .tabItem {
                     Image(systemName: "gearshape.fill")
@@ -110,7 +110,7 @@ class AppState: ObservableObject {
     @Published var selectedProperty: Property?
     @Published var currentAssessment: Assessment?
     @Published var isOfflineMode = false
-    
+
     func updateOfflineStatus(_ isOffline: Bool) {
         DispatchQueue.main.async {
             self.isOfflineMode = isOffline

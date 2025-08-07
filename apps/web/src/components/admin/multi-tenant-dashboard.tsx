@@ -80,7 +80,7 @@ export function MultiTenantDashboard({ currentUser }: MultiTenantDashboardProps)
         tenantManager.getOrganizationUsers(orgId),
         tenantManager.getOrganizationUsage(orgId)
       ])
-      
+
       setOrgUsers(users)
       setOrgUsage(usage as unknown as OrganizationUsage)
     } catch (error) {

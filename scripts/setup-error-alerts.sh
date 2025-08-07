@@ -55,9 +55,9 @@ Deno.serve(async (req) => {
     const supabaseUrl = Deno.env.get('SUPABASE_URL') ?? ''
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     const resendApiKey = Deno.env.get('RESEND_API_KEY') ?? ''
-    
+
     const supabase = createClient(supabaseUrl, supabaseKey)
-    
+
     // Check for recent critical errors
     const { data: errors, error: fetchError } = await supabase
       .from('error_logs')
@@ -65,9 +65,9 @@ Deno.serve(async (req) => {
       .gte('created_at', new Date(Date.now() - 5 * 60 * 1000).toISOString()) // Last 5 minutes
       .in('severity', ['critical', 'high'])
       .order('created_at', { ascending: false })
-    
+
     if (fetchError) throw fetchError
-    
+
     if (errors && errors.length > 0) {
       // Group errors by type
       const errorGroups = errors.reduce((acc, error) => {
@@ -76,11 +76,11 @@ Deno.serve(async (req) => {
         acc[key].push(error)
         return acc
       }, {} as Record<string, any[]>)
-      
+
       // Send alert email
       if (resendApiKey) {
         const emailHtml = generateErrorAlertEmail(errorGroups, errors.length)
-        
+
         const emailResponse = await fetch('https://api.resend.com/emails', {
           method: 'POST',
           headers: {
@@ -94,12 +94,12 @@ Deno.serve(async (req) => {
             html: emailHtml,
           }),
         })
-        
+
         if (!emailResponse.ok) {
           console.error('Failed to send alert email:', await emailResponse.text())
         }
       }
-      
+
       // Log to monitoring table
       await supabase
         .from('monitoring_alerts')
@@ -110,7 +110,7 @@ Deno.serve(async (req) => {
           metadata: { error_groups: errorGroups },
         })
     }
-    
+
     return new Response(
       JSON.stringify({
         success: true,
@@ -144,12 +144,12 @@ function generateErrorAlertEmail(errorGroups: Record<string, any[]>, totalCount:
       </tr>
     `)
     .join('')
-  
+
   return `
     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
       <h2 style="color: #dc2626;">🚨 Critical Error Alert</h2>
       <p>ClaimGuardian has detected ${totalCount} critical errors in the last 5 minutes.</p>
-      
+
       <h3>Error Summary</h3>
       <table style="width: 100%; border-collapse: collapse;">
         <thead>
@@ -163,14 +163,14 @@ function generateErrorAlertEmail(errorGroups: Record<string, any[]>, totalCount:
           ${groupsHtml}
         </tbody>
       </table>
-      
+
       <p style="margin-top: 20px;">
-        <a href="https://claimguardianai.com/admin/errors" 
+        <a href="https://claimguardianai.com/admin/errors"
            style="background-color: #dc2626; color: white; padding: 10px 20px; text-decoration: none; border-radius: 5px;">
           View Error Dashboard
         </a>
       </p>
-      
+
       <p style="margin-top: 20px; color: #6b7280; font-size: 12px;">
         This is an automated alert from ClaimGuardian monitoring.
       </p>
@@ -273,7 +273,7 @@ BEGIN
         auth.uid(),
         p_metadata
     ) RETURNING id INTO v_error_id;
-    
+
     RETURN v_error_id;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -289,7 +289,7 @@ CREATE OR REPLACE FUNCTION public.get_error_statistics(
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT 
+    SELECT
         el.error_type,
         el.severity,
         COUNT(*) as count,
@@ -485,7 +485,7 @@ on:
 jobs:
   check-errors:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Check for critical errors
         run: |
@@ -493,16 +493,16 @@ jobs:
             "https://tmlrvecuwgppbaynesji.supabase.co/functions/v1/error-monitor" \
             -H "Authorization: Bearer ${{ secrets.SUPABASE_ANON_KEY }}" \
             -H "Content-Type: application/json")
-          
+
           errors_found=$(echo $response | jq -r '.errors_found // 0')
-          
+
           if [ "$errors_found" -gt 0 ]; then
             echo "🚨 Found $errors_found critical errors!"
             echo "ERROR_COUNT=$errors_found" >> $GITHUB_OUTPUT
           else
             echo "✅ No critical errors found"
           fi
-      
+
       - name: Create issue if errors found
         if: steps.check-errors.outputs.ERROR_COUNT > 0
         uses: actions/create-issue@v2
@@ -510,9 +510,9 @@ jobs:
           title: '🚨 Critical Errors Detected'
           body: |
             The error monitoring system has detected ${{ steps.check-errors.outputs.ERROR_COUNT }} critical errors.
-            
+
             Please check the [error dashboard](https://claimguardianai.com/admin/errors) for details.
-            
+
             This issue was automatically created by the error monitoring workflow.
           labels: 'bug,critical,monitoring'
 EOF

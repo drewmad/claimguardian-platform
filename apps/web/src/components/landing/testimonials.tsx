@@ -46,8 +46,8 @@ const AnimatedSection: React.FC<{ children: React.ReactNode; className?: string;
   const [ref, isInView] = useInView({ threshold: 0.1 })
 
   return (
-    <div 
-      ref={ref} 
+    <div
+      ref={ref}
       className={`${className} transition-all duration-1000 ${isInView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}
       style={{ transitionDelay: `${delay}ms` }}
     >
@@ -72,18 +72,18 @@ export function Testimonials() {
           <span className="text-white">Real Stories.</span>
           <span className="text-green-400"> Real Results.</span>
         </h2>
-        
+
         <div className="relative">
           {/* Main Testimonial Display */}
           <div className="bg-gradient-to-br from-gray-800/60 to-gray-900/40 backdrop-blur-xl border border-gray-700/50 rounded-2xl p-8 md:p-12 mb-8">
             <div className="flex justify-center mb-6">
               {[...Array(5)].map((_, i) => <Star key={i} size={28} className="text-yellow-400" fill="currentColor" />)}
             </div>
-            
+
             <blockquote className="font-slab text-xl md:text-2xl lg:text-3xl font-medium italic text-white text-center max-w-4xl mx-auto leading-relaxed">
               "{testimonial.quote}"
             </blockquote>
-            
+
             <div className="mt-8 text-center">
               <p className="text-lg font-semibold text-white">{testimonial.author}, {testimonial.location}</p>
               <p className="text-sm text-gray-400">{testimonial.userSince}</p>
@@ -91,7 +91,7 @@ export function Testimonials() {
             </div>
           </div>
         </div>
-        
+
         {/* Stats Grid */}
         <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
           <div>

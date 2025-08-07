@@ -16,7 +16,7 @@ import { createClient } from '@/lib/supabase/server'
 export const GET = withAPIMiddleware(async (request: NextRequest, context: APIContext) => {
   try {
     const supabase = await createClient()
-    
+
     // Parse query parameters
     const { searchParams } = new URL(request.url)
     const limit = Math.min(parseInt(searchParams.get('limit') || '50'), 100)
@@ -105,12 +105,12 @@ export const POST = withAPIMiddleware(async (request: NextRequest, context: APIC
     // Validate required fields
     const requiredFields = ['property_id', 'damage_type', 'date_of_loss', 'description']
     const missingFields = requiredFields.filter(field => !body[field])
-    
+
     if (missingFields.length > 0) {
       return NextResponse.json(
-        { 
-          error: 'Validation Error', 
-          message: `Missing required fields: ${missingFields.join(', ')}` 
+        {
+          error: 'Validation Error',
+          message: `Missing required fields: ${missingFields.join(', ')}`
         },
         { status: 400 }
       )

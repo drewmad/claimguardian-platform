@@ -11,9 +11,9 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  DollarSign, 
-  TrendingUp, 
+import {
+  DollarSign,
+  TrendingUp,
   TrendingDown,
   AlertTriangle,
   CheckCircle2,
@@ -55,13 +55,13 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
   useEffect(() => {
     fetchQuickStats()
     fetchAlerts()
-    
+
     // Refresh every 5 minutes
     const interval = setInterval(() => {
       fetchQuickStats()
       fetchAlerts()
     }, 5 * 60 * 1000)
-    
+
     return () => clearInterval(interval)
   }, [])
 
@@ -185,8 +185,8 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
                   <div className={`flex items-center text-sm ${
                     stats.trend.isPositive ? 'text-red-400' : 'text-green-400'
                   }`}>
-                    {stats.trend.isPositive ? 
-                      <TrendingUp className="h-3 w-3 mr-1" /> : 
+                    {stats.trend.isPositive ?
+                      <TrendingUp className="h-3 w-3 mr-1" /> :
                       <TrendingDown className="h-3 w-3 mr-1" />
                     }
                     {Math.abs(stats.trend.costChange).toFixed(1)}%
@@ -203,8 +203,8 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
                   <div className={`flex items-center text-sm ${
                     stats.trend.requestChange > 0 ? 'text-blue-400' : 'text-gray-400'
                   }`}>
-                    {stats.trend.requestChange > 0 ? 
-                      <TrendingUp className="h-3 w-3 mr-1" /> : 
+                    {stats.trend.requestChange > 0 ?
+                      <TrendingUp className="h-3 w-3 mr-1" /> :
                       <TrendingDown className="h-3 w-3 mr-1" />
                     }
                     {Math.abs(stats.trend.requestChange).toFixed(1)}%
@@ -238,14 +238,14 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
               <div className="flex items-center justify-between text-sm">
                 <span className="text-gray-400">Success Rate</span>
                 <span className={`font-medium ${
-                  stats.successRate > 0.95 ? 'text-green-400' : 
+                  stats.successRate > 0.95 ? 'text-green-400' :
                   stats.successRate > 0.90 ? 'text-yellow-400' : 'text-red-400'
                 }`}>
                   {(stats.successRate * 100).toFixed(1)}%
                 </span>
               </div>
-              <Progress 
-                value={stats.successRate * 100} 
+              <Progress
+                value={stats.successRate * 100}
                 className="h-1"
               />
             </div>
@@ -268,7 +268,7 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
             <div className="text-gray-400 text-sm font-medium">Recent Warnings</div>
             <div className="space-y-2">
               {warningAlerts.slice(0, 3).map(alert => (
-                <div 
+                <div
                   key={alert.id}
                   className="p-2 rounded bg-yellow-500/10 border border-yellow-500/20"
                 >
@@ -288,8 +288,8 @@ export function CostMonitoringWidget({ onViewDetails }: { onViewDetails?: () => 
           <div className="text-gray-400 text-xs">
             Last updated: {new Date().toLocaleTimeString()}
           </div>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={onViewDetails}
             className="flex items-center gap-2"

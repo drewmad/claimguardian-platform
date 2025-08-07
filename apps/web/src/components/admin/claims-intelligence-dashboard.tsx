@@ -13,17 +13,17 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
-import { 
-  Shield, 
-  AlertTriangle, 
-  Clock, 
+import {
+  Shield,
+  AlertTriangle,
+  Clock,
   DollarSign,
   TrendingUp,
   TrendingDown,
@@ -132,7 +132,7 @@ interface CarrierPerformance {
 
 const FRAUD_COLORS = {
   low: '#10B981',
-  medium: '#F59E0B', 
+  medium: '#F59E0B',
   high: '#EF4444',
   critical: '#DC2626'
 }
@@ -167,7 +167,7 @@ export function ClaimsIntelligenceDashboard() {
   const loadClaimsData = async () => {
     try {
       setLoading(true)
-      
+
       // Load all claims intelligence data in parallel
       const [
         overviewData,
@@ -202,12 +202,12 @@ export function ClaimsIntelligenceDashboard() {
       setGeographic(geographicData.data || [])
       setTimeSeries(timeSeriesData.data || [])
       setCarriers(carriersData.data || [])
-      
+
       setError(null)
     } catch (err) {
       console.error('Error loading claims data:', err)
       setError('Failed to load claims intelligence data')
-      
+
       // Mock data for development
       setOverview({
         total_claims: 1247,
@@ -454,23 +454,23 @@ export function ClaimsIntelligenceDashboard() {
                 <ResponsiveContainer width="100%" height={300}>
                   <LineChart data={timeSeries}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis 
-                      dataKey="date" 
+                    <XAxis
+                      dataKey="date"
                       stroke="#9CA3AF"
                       tick={{ fontSize: 12 }}
                       tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     />
                     <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <Tooltip 
+                    <Tooltip
                       contentStyle={{ backgroundColor: '#1F2937', border: 'none' }}
                       labelStyle={{ color: '#9CA3AF' }}
                     />
                     <Legend />
                     <Bar dataKey="claims_submitted" fill="#3B82F6" name="Claims Submitted" />
-                    <Line 
-                      type="monotone" 
-                      dataKey="fraud_detected" 
-                      stroke="#EF4444" 
+                    <Line
+                      type="monotone"
+                      dataKey="fraud_detected"
+                      stroke="#EF4444"
                       strokeWidth={3}
                       name="Fraud Detected"
                     />
@@ -489,7 +489,7 @@ export function ClaimsIntelligenceDashboard() {
                   {['critical', 'high', 'medium', 'low'].map(level => {
                     const count = fraudIndicators.filter(f => getFraudLevel(f.fraud_score) === level).length
                     const percentage = fraudIndicators.length > 0 ? (count / fraudIndicators.length) * 100 : 0
-                    
+
                     return (
                       <div key={level} className="space-y-2">
                         <div className="flex justify-between text-sm">
@@ -497,11 +497,11 @@ export function ClaimsIntelligenceDashboard() {
                           <span className="text-gray-300">{count} ({percentage.toFixed(1)}%)</span>
                         </div>
                         <div className="w-full bg-gray-700 rounded-full h-2">
-                          <div 
-                            className="h-2 rounded-full" 
-                            style={{ 
-                              width: `${percentage}%`, 
-                              backgroundColor: FRAUD_COLORS[level as keyof typeof FRAUD_COLORS] 
+                          <div
+                            className="h-2 rounded-full"
+                            style={{
+                              width: `${percentage}%`,
+                              backgroundColor: FRAUD_COLORS[level as keyof typeof FRAUD_COLORS]
                             }}
                           />
                         </div>
@@ -542,8 +542,8 @@ export function ClaimsIntelligenceDashboard() {
                         <td className="text-right py-3 text-gray-300">{formatCurrency(fraud.amount_requested)}</td>
                         <td className="text-center py-3">
                           <div className="flex items-center justify-center space-x-2">
-                            <div 
-                              className="w-2 h-2 rounded-full" 
+                            <div
+                              className="w-2 h-2 rounded-full"
                               style={{ backgroundColor: getFraudColor(fraud.fraud_score) }}
                             />
                             <span className="text-gray-300">{fraud.fraud_score}</span>
@@ -564,9 +564,9 @@ export function ClaimsIntelligenceDashboard() {
                           </div>
                         </td>
                         <td className="text-center py-3">
-                          <Badge 
+                          <Badge
                             variant="outline"
-                            style={{ 
+                            style={{
                               borderColor: STATUS_COLORS[fraud.status as keyof typeof STATUS_COLORS],
                               color: STATUS_COLORS[fraud.status as keyof typeof STATUS_COLORS]
                             }}
@@ -654,7 +654,7 @@ export function ClaimsIntelligenceDashboard() {
                         <span className="text-gray-400">
                           {(stage.avg_duration_hours / 24).toFixed(1)} days avg
                         </span>
-                        <Badge 
+                        <Badge
                           variant="outline"
                           className={stage.bottleneck_score > 70 ? 'border-red-500 text-red-500' : stage.bottleneck_score > 40 ? 'border-yellow-500 text-yellow-500' : 'border-green-500 text-green-500'}
                         >
@@ -668,8 +668,8 @@ export function ClaimsIntelligenceDashboard() {
                     </div>
                     <div className="mt-2">
                       <div className="w-full bg-gray-700 rounded-full h-2">
-                        <div 
-                          className="bg-blue-600 h-2 rounded-full" 
+                        <div
+                          className="bg-blue-600 h-2 rounded-full"
                           style={{ width: `${stage.completion_rate}%` }}
                         />
                       </div>

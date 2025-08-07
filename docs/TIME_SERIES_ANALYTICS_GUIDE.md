@@ -127,7 +127,7 @@ Access comprehensive analytics through the admin panel:
 
 Features:
 - **Interactive time-series charts** with zoom and filtering
-- **Anomaly visualization** with severity indicators  
+- **Anomaly visualization** with severity indicators
 - **Trend analysis** with statistical significance
 - **Forecasting views** for capacity planning
 - **Comparison mode** for A/B test analysis
@@ -175,7 +175,7 @@ node scripts/analytics-worker.js run insights
 ### Scheduled Tasks
 
 - **Metric Aggregation**: Every 5 minutes
-- **Anomaly Detection**: Every 15 minutes  
+- **Anomaly Detection**: Every 15 minutes
 - **Insight Generation**: Every hour
 - **Data Cleanup**: Daily at 2 AM
 
@@ -189,7 +189,7 @@ Compare performance between different time periods:
 const comparison = await aiTimeSeriesAnalyzer.comparePerformance(
   baselineStart,    // Previous week
   baselineEnd,
-  comparisonStart,  // Current week  
+  comparisonStart,  // Current week
   comparisonEnd,
   {
     features: ['damage-analyzer'],
@@ -290,8 +290,8 @@ The system generates alerts for:
 #### 1. Missing Metrics
 ```sql
 -- Check if metrics are being inserted
-SELECT COUNT(*), MAX(timestamp) 
-FROM ai_performance_metrics 
+SELECT COUNT(*), MAX(timestamp)
+FROM ai_performance_metrics
 WHERE timestamp > NOW() - INTERVAL '1 hour';
 ```
 
@@ -304,7 +304,7 @@ SELECT aggregate_ai_metrics('15 minutes', '1 hour');
 #### 3. Anomaly Detection Issues
 ```sql
 -- Check anomaly detection results
-SELECT * FROM ai_anomalies 
+SELECT * FROM ai_anomalies
 WHERE detected_at > NOW() - INTERVAL '1 day'
 ORDER BY detected_at DESC;
 ```
@@ -315,7 +315,7 @@ ORDER BY detected_at DESC;
 # Test aggregation
 node scripts/analytics-worker.js run aggregate
 
-# Test anomaly detection  
+# Test anomaly detection
 node scripts/analytics-worker.js run anomalies
 
 # Generate insights
@@ -379,7 +379,7 @@ node scripts/analytics-worker.js status
 // Real-time metrics widget
 const MetricsWidget = () => {
   const [metrics, setMetrics] = useState(null)
-  
+
   useEffect(() => {
     const loadMetrics = async () => {
       const analysis = await aiTimeSeriesAnalyzer.analyzeAIPerformance({
@@ -389,12 +389,12 @@ const MetricsWidget = () => {
       })
       setMetrics(analysis)
     }
-    
+
     loadMetrics()
     const interval = setInterval(loadMetrics, 30000) // Refresh every 30s
     return () => clearInterval(interval)
   }, [])
-  
+
   return (
     <Card>
       <CardHeader>AI Performance</CardHeader>
@@ -419,14 +419,14 @@ const MetricsWidget = () => {
 const generateWeeklyReport = async () => {
   const endTime = new Date()
   const startTime = new Date(endTime.getTime() - 7 * 24 * 60 * 60 * 1000)
-  
+
   const analysis = await aiTimeSeriesAnalyzer.analyzeAIPerformance({
     startTime,
     endTime,
     resolution: '1h',
     includeForecasting: true
   })
-  
+
   const report = {
     period: { start: startTime, end: endTime },
     summary: {
@@ -443,7 +443,7 @@ const generateWeeklyReport = async () => {
     anomalies: analysis.anomalies.length,
     recommendations: analysis.recommendations
   }
-  
+
   return report
 }
 ```

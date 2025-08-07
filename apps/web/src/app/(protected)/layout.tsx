@@ -17,12 +17,12 @@ interface ProtectedLayoutProps {
 export default async function ProtectedLayout({ children }: ProtectedLayoutProps) {
   // Validate session on server
   const session = await getServerSession()
-  
+
   if (!session) {
     // No valid session, redirect to sign in
     redirect('/auth/signin?message=Please sign in to continue')
   }
-  
+
   // User is authenticated, render protected content
   return <>{children}</>
 }

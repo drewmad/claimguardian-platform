@@ -13,8 +13,8 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
-  Home, MapPin, DollarSign, Calendar, Shield, 
+import {
+  Home, MapPin, DollarSign, Calendar, Shield,
   AlertTriangle, Star, Share, Edit, Eye, MoreVertical,
   Camera, FileText, TrendingUp, Bookmark
 } from 'lucide-react'
@@ -200,7 +200,7 @@ export function TouchPropertyCard({
             className="w-16 h-16 rounded-lg"
           />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between mb-1">
             <h3 className="font-semibold text-gray-900 dark:text-white truncate">
@@ -210,11 +210,11 @@ export function TouchPropertyCard({
               {property.status.replace('_', ' ')}
             </Badge>
           </div>
-          
+
           <p className="text-sm text-gray-600 dark:text-gray-400 truncate mb-2">
             {property.address.street1}, {property.address.city}
           </p>
-          
+
           <div className="flex items-center gap-4 text-xs text-gray-500">
             <span className="flex items-center gap-1">
               {renderPropertyIcon()}
@@ -256,7 +256,7 @@ export function TouchPropertyCard({
             propertyType={property.type}
             className="w-20 h-20 rounded-lg flex-shrink-0"
           />
-          
+
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between mb-2">
               <div>
@@ -271,7 +271,7 @@ export function TouchPropertyCard({
                   {property.address.city}, {property.address.state} {property.address.zipCode}
                 </div>
               </div>
-              
+
               <Badge className={cn('text-xs', statusColors[property.status])}>
                 {property.status.replace('_', ' ')}
               </Badge>
@@ -290,7 +290,7 @@ export function TouchPropertyCard({
               Estimated Value
             </div>
           </div>
-          
+
           <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
             <div className="text-2xl font-bold text-gray-900 dark:text-white">
               {property.squareFootage?.toLocaleString() || 'N/A'}
@@ -384,7 +384,7 @@ export function TouchPropertyCard({
           <Eye className="w-4 h-4 mr-2" />
           View Details
         </TouchButton>
-        
+
         <TouchButton
           variant="ghost"
           size="sm"
@@ -395,7 +395,7 @@ export function TouchPropertyCard({
         >
           <Camera className="w-4 h-4" />
         </TouchButton>
-        
+
         <TouchButton
           variant="ghost"
           size="sm"

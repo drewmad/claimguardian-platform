@@ -24,4 +24,3 @@ supabase migration repair --status reverted 20250130000001 20250130000002 202501
 
 And update local migrations to match remote database:
 supabase db pull
-

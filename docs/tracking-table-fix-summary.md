@@ -64,7 +64,7 @@ CREATE TABLE "user_tracking" (
 ### 2. `/supabase/migrations/20250131000003_fix_user_tracking_columns.sql`
 - **Purpose**: Migration file for version control
 - **Usage**: Applied via Supabase migration system
-- **Benefits**: 
+- **Benefits**:
   - Tracks schema changes in version control
   - Can be applied to different environments consistently
 
@@ -107,13 +107,13 @@ supabase db push
 After applying the fix, you can verify it worked with:
 
 ```sql
-SELECT 
-    column_name, 
-    data_type, 
+SELECT
+    column_name,
+    data_type,
     is_nullable,
     column_default
-FROM information_schema.columns 
-WHERE table_name = 'user_tracking' 
+FROM information_schema.columns
+WHERE table_name = 'user_tracking'
   AND column_name IN ('event_type', 'event_data', 'device_fingerprint', 'page_url')
 ORDER BY column_name;
 ```

@@ -405,40 +405,40 @@ export interface SituationRoomState {
   threats: ThreatAssessment[]
   overallThreatLevel: ThreatLevel
   activeThreatCount: number
-  
+
   // Intelligence feeds
   intelligenceFeeds: IntelligenceFeed[]
   unreadFeedCount: number
-  
+
   // Property status
   propertyStatus: PropertyStatus | null
   systemsOnline: number
   totalSystems: number
-  
+
   // Community intelligence
   communityIntel: CommunityIntelligence | null
   neighborhoodThreatLevel: ThreatLevel
-  
+
   // AI recommendations
   aiRecommendations: AIRecommendation[]
   pendingActions: ActionItem[]
   completedActions: ActionItem[]
-  
+
   // Real-time events
   realtimeEvents: RealtimeEvent[]
   eventSubscriptions: string[]
-  
+
   // Emergency protocols
   emergencyMode: boolean
   emergencyContacts: EmergencyContact[]
   evacuationPlan: EvacuationPlan | null
-  
+
   // System status
   isLoading: boolean
   lastUpdate: Date | null
   connectionStatus: 'connected' | 'reconnecting' | 'disconnected'
   error: string | null
-  
+
   // AI assessment status
   aiAssessmentRunning: boolean
   lastAIAssessment: Date | null

@@ -12,12 +12,12 @@ import { Check, X, Trash2, Download, Archive, Tag, Shield, DollarSign, AlertCirc
 import { cn } from '@/lib/utils'
 import { Button } from './button'
 import { Card } from './card-variants'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
   DropdownMenuSeparator,
-  DropdownMenuTrigger 
+  DropdownMenuTrigger
 } from './dropdown-menu'
 import { toast } from 'sonner'
 
@@ -153,7 +153,7 @@ export function useBulkSelection<T extends { id: string }>(items: T[]) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const isSelected = (id: string) => selectedIds.has(id)
-  
+
   const toggleSelection = (id: string) => {
     setSelectedIds(prev => {
       const next = new Set(prev)
@@ -177,12 +177,12 @@ export function useBulkSelection<T extends { id: string }>(items: T[]) {
   const selectRange = (startId: string, endId: string) => {
     const startIndex = items.findIndex(item => item.id === startId)
     const endIndex = items.findIndex(item => item.id === endId)
-    
+
     if (startIndex === -1 || endIndex === -1) return
-    
+
     const [from, to] = startIndex < endIndex ? [startIndex, endIndex] : [endIndex, startIndex]
     const rangeIds = items.slice(from, to + 1).map(item => item.id)
-    
+
     setSelectedIds(prev => {
       const next = new Set(prev)
       rangeIds.forEach(id => next.add(id))

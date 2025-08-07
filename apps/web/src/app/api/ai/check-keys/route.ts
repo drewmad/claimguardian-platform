@@ -15,7 +15,7 @@ export async function GET() {
   try {
     // WARNING: API key moved to server-side - use /api/ai endpoint instead
     // WARNING: API key moved to server-side - use /api/ai endpoint instead
-    
+
     const hasOpenAIKey = !!process.env.OPENAI_API_KEY
     const hasGeminiKey = !!process.env.GEMINI_API_KEY
     const hasClaudeKey = !!process.env.ANTHROPIC_API_KEY

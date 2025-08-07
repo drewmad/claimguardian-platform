@@ -120,7 +120,7 @@ export function FloridaPropertyMap({
     // Map load event
     map.current.on('load', () => {
       setMapLoaded(true)
-      
+
       // Add data sources and layers
       addMapSources()
       addMapLayers()
@@ -184,7 +184,7 @@ export function FloridaPropertyMap({
       .addTo(map.current!)
 
     // Create popup
-    const popup = new mapboxgl.Popup({ 
+    const popup = new mapboxgl.Popup({
       offset: 15,
       className: 'property-popup'
     }).setHTML(createPopupHTML(property))
@@ -212,7 +212,7 @@ export function FloridaPropertyMap({
 
   // Create popup HTML
   const createPopupHTML = (property: Property): string => {
-    const formatCurrency = (value: number) => 
+    const formatCurrency = (value: number) =>
       new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(value)
 
     return `
@@ -330,8 +330,8 @@ export function FloridaPropertyMap({
 
   // Toggle layer visibility
   const toggleLayer = (layerId: string) => {
-    setLayers(prev => prev.map(layer => 
-      layer.id === layerId 
+    setLayers(prev => prev.map(layer =>
+      layer.id === layerId
         ? { ...layer, visible: !layer.visible }
         : layer
     ))
@@ -359,8 +359,8 @@ export function FloridaPropertyMap({
   return (
     <div className={`relative overflow-hidden rounded-lg border border-gray-700 ${className}`}>
       {/* Map Container */}
-      <div 
-        ref={mapContainer} 
+      <div
+        ref={mapContainer}
         className="w-full"
         style={{ height }}
       />
@@ -391,7 +391,7 @@ export function FloridaPropertyMap({
           >
             <Layers className="w-4 h-4" />
           </button>
-          
+
           {showLayerControls && (
             <div className="absolute top-12 right-0 bg-gray-800/95 border border-gray-600 rounded-lg p-3 min-w-48 backdrop-blur-sm">
               <h3 className="font-medium text-white mb-2 text-sm">Map Layers</h3>

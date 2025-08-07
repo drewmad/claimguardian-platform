@@ -126,7 +126,7 @@ act push -W .github/workflows/main.yml --secret-file .env.local
 
 ### Cost Saving Tips
 1. Use workflow conditions to skip unnecessary jobs
-2. Cache dependencies aggressively  
+2. Cache dependencies aggressively
 3. Run E2E tests only on important PRs
 4. Use matrix strategy for parallel testing
 

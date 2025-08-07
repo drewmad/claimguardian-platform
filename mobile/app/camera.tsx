@@ -26,16 +26,16 @@ export default function CameraScreen() {
     damage_item_id?: string
     return_screen: string
   }>()
-  
+
   const dispatch = useDispatch()
   const location = useSelector(selectLocation)
   const user = useSelector(selectUser)
-  
+
   const [permission, requestPermission] = useCameraPermissions()
   const [facing, setFacing] = useState<CameraType>('back')
   const [isCapturing, setIsCapturing] = useState(false)
   const [flashMode, setFlashMode] = useState<'off' | 'on' | 'auto'>('auto')
-  
+
   const cameraRef = useRef<CameraView>(null)
 
   useEffect(() => {
@@ -116,14 +116,14 @@ export default function CameraScreen() {
       // Generate unique filename
       const timestamp = new Date().toISOString()
       const filename = `damage_photo_${Date.now()}.jpg`
-      
+
       // Create permanent file path
       const documentsDir = FileSystem.documentDirectory
       const permanentUri = `${documentsDir}photos/${filename}`
-      
+
       // Ensure photos directory exists
       await FileSystem.makeDirectoryAsync(`${documentsDir}photos/`, { intermediates: true })
-      
+
       // Move photo to permanent location
       await FileSystem.moveAsync({
         from: photo.uri,
@@ -132,7 +132,7 @@ export default function CameraScreen() {
 
       // Get file info
       const fileInfo = await FileSystem.getInfoAsync(permanentUri)
-      
+
       // Create photo record
       const photoRecord: Photo = {
         id: `photo_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
@@ -173,7 +173,7 @@ export default function CameraScreen() {
     } catch (error) {
       console.error('Failed to capture photo:', error)
       Alert.alert(
-        'Capture Failed', 
+        'Capture Failed',
         'Failed to capture photo. Please try again.',
         [{ text: 'OK' }]
       )
@@ -202,7 +202,7 @@ export default function CameraScreen() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      
+
       <CameraView
         ref={cameraRef}
         style={styles.camera}
@@ -214,7 +214,7 @@ export default function CameraScreen() {
           <TouchableOpacity style={styles.controlButton} onPress={handleClose}>
             <MaterialCommunityIcons name="close" size={24} color="white" />
           </TouchableOpacity>
-          
+
           <View style={styles.rightControls}>
             <TouchableOpacity style={styles.controlButton} onPress={toggleFlash}>
               <MaterialCommunityIcons name={getFlashIcon()} size={24} color="white" />
@@ -230,8 +230,8 @@ export default function CameraScreen() {
         {/* Bottom Controls */}
         <View style={styles.bottomControls}>
           <View style={styles.controlSpacer} />
-          
-          <TouchableOpacity 
+
+          <TouchableOpacity
             style={[styles.captureButton, isCapturing && styles.captureButtonDisabled]}
             onPress={capturePhoto}
             disabled={isCapturing}
@@ -242,7 +242,7 @@ export default function CameraScreen() {
               <View style={styles.captureButtonInner} />
             )}
           </TouchableOpacity>
-          
+
           <TouchableOpacity style={styles.controlButton} onPress={toggleCameraFacing}>
             <MaterialCommunityIcons name="camera-flip" size={24} color="white" />
           </TouchableOpacity>
@@ -251,23 +251,23 @@ export default function CameraScreen() {
         {/* Info Bar */}
         <View style={styles.infoBar}>
           <View style={styles.infoItem}>
-            <MaterialCommunityIcons 
-              name={location.current ? "map-marker" : "map-marker-off"} 
-              size={16} 
-              color={location.current ? "#10B981" : "#9CA3AF"} 
+            <MaterialCommunityIcons
+              name={location.current ? "map-marker" : "map-marker-off"}
+              size={16}
+              color={location.current ? "#10B981" : "#9CA3AF"}
             />
             <Text style={styles.infoText}>
               {location.current ? "GPS Active" : "No GPS"}
             </Text>
           </View>
-          
+
           {params.assessment_id && (
             <View style={styles.infoItem}>
               <MaterialCommunityIcons name="clipboard-check" size={16} color="#3B82F6" />
               <Text style={styles.infoText}>Assessment Photo</Text>
             </View>
           )}
-          
+
           {params.damage_item_id && (
             <View style={styles.infoItem}>
               <MaterialCommunityIcons name="alert-circle" size={16} color="#F59E0B" />

@@ -62,10 +62,10 @@ function parseCSVLine(line) {
   const result = [];
   let current = '';
   let inQuotes = false;
-  
+
   for (let i = 0; i < line.length; i++) {
     const char = line[i];
-    
+
     if (char === '"') {
       if (inQuotes && line[i + 1] === '"') {
         current += '"';
@@ -80,7 +80,7 @@ function parseCSVLine(line) {
       current += char;
     }
   }
-  
+
   result.push(current.trim());
   return result;
 }
@@ -95,7 +95,7 @@ async function importBatchWithRetry(records, retryCount = 0) {
     if (error) {
       throw new Error(error.message);
     }
-    
+
     globalStats.successfulRecords += records.length;
     return { success: true };
   } catch (error) {
@@ -117,10 +117,10 @@ async function processCSVFile(filePath) {
   const fileName = path.basename(filePath);
   const fileSize = fs.statSync(filePath).size;
   globalStats.totalSize += fileSize;
-  
+
   console.log(`\n📄 Processing: ${fileName} (${(fileSize / 1024 / 1024).toFixed(2)} MB)`);
   console.log(`   Batch size: ${BATCH_SIZE} | Max retries: ${MAX_RETRIES}`);
-  
+
   return new Promise((resolve) => {
     const fileStream = fs.createReadStream(filePath);
     const rl = readline.createInterface({
@@ -138,10 +138,10 @@ async function processCSVFile(filePath) {
 
     rl.on('line', async (line) => {
       lineNumber++;
-      
+
       // Skip empty lines
       if (!line.trim()) return;
-      
+
       if (lineNumber === 1) {
         // Parse headers and convert to lowercase
         headers = parseCSVLine(line).map(h => h.toLowerCase().trim());
@@ -149,7 +149,7 @@ async function processCSVFile(filePath) {
       }
 
       const values = parseCSVLine(line);
-      
+
       if (values.length !== headers.length) {
         fileErrors++;
         return;
@@ -170,26 +170,26 @@ async function processCSVFile(filePath) {
       if (batch.length >= BATCH_SIZE) {
         rl.pause();
         batchCount++;
-        
+
         // Add delay between batches to avoid overwhelming the connection pool
         if (batchCount % 5 === 0) {
           await sleep(BATCH_DELAY * 2);
         } else {
           await sleep(BATCH_DELAY);
         }
-        
+
         const result = await importBatchWithRetry(batch);
         if (!result.success) {
           fileErrors += batch.length;
         }
-        
+
         // Update progress every second
         if (Date.now() - lastProgressUpdate > 1000) {
           const percent = ((fileRecords / 150000) * 100).toFixed(1); // Estimate ~150k records per file
           process.stdout.write(`\r  Progress: ${fileRecords} records | ${batchCount} batches | ~${percent}% complete`);
           lastProgressUpdate = Date.now();
         }
-        
+
         batch = [];
         rl.resume();
       }
@@ -206,18 +206,18 @@ async function processCSVFile(filePath) {
       }
 
       console.log(`\n  ✓ Processed ${fileRecords} records in ${batchCount} batches`);
-      
+
       const hasErrors = fileErrors > 0;
-      
+
       if (!hasErrors) {
         // Transfer from staging to main table with retry
         console.log('  🔄 Transferring to main table...');
-        
+
         let transferred = false;
         for (let i = 0; i < MAX_RETRIES; i++) {
           try {
             const { error } = await supabase.rpc('transfer_florida_parcels_staging');
-            
+
             if (!error) {
               console.log('  ✅ Transfer successful');
               transferred = true;
@@ -232,15 +232,15 @@ async function processCSVFile(filePath) {
             }
           }
         }
-        
+
         if (!transferred) {
           hasErrors = true;
           console.error('  ❌ Transfer failed after all retries');
         }
       }
 
-      resolve({ 
-        success: !hasErrors, 
+      resolve({
+        success: !hasErrors,
         recordCount: fileRecords,
         errorCount: fileErrors
       });
@@ -258,14 +258,14 @@ async function moveFile(filePath) {
   try {
     const fileName = path.basename(filePath);
     const backupDir = path.join(process.cwd(), 'CleanedSplit_imported');
-    
+
     if (!fs.existsSync(backupDir)) {
       fs.mkdirSync(backupDir);
     }
-    
+
     const backupPath = path.join(backupDir, fileName);
     fs.renameSync(filePath, backupPath);
-    
+
     console.log(`  📦 Moved to: CleanedSplit_imported/${fileName}`);
     return true;
   } catch (error) {
@@ -304,25 +304,25 @@ async function main() {
 
   console.log('⚠️  Files will be moved to CleanedSplit_imported/ after successful import');
   console.log('Press Ctrl+C to cancel, or wait 3 seconds to continue...\n');
-  
+
   await sleep(3000);
 
   // Process each file
   for (let i = 0; i < csvFiles.length; i++) {
     const csvFile = csvFiles[i];
     globalStats.processedFiles++;
-    
+
     console.log(`\n${'='.repeat(60)}`);
     console.log(`[${i + 1}/${csvFiles.length}] File: ${path.basename(csvFile)}`);
     console.log('='.repeat(60));
-    
+
     const startTime = Date.now();
     const result = await processCSVFile(csvFile);
     const duration = (Date.now() - startTime) / 1000;
-    
+
     console.log(`  ⏱️  File processing time: ${duration.toFixed(1)}s`);
     console.log(`  📊 Records/second: ${(result.recordCount / duration).toFixed(0)}`);
-    
+
     if (result.success) {
       globalStats.successfulFiles++;
       await moveFile(csvFile);
@@ -330,18 +330,18 @@ async function main() {
       globalStats.failedFiles.push(path.basename(csvFile));
       console.log('  ❌ File kept due to errors');
     }
-    
+
     // Overall progress
     const elapsed = (Date.now() - globalStats.startTime) / 1000;
     const filesRemaining = csvFiles.length - i - 1;
     const avgTimePerFile = elapsed / (i + 1);
     const eta = filesRemaining * avgTimePerFile;
-    
+
     console.log(`\n📊 Overall Progress:`);
     console.log(`   Files: ${i + 1}/${csvFiles.length} (${filesRemaining} remaining)`);
     console.log(`   Records: ${globalStats.successfulRecords.toLocaleString()} successful, ${globalStats.failedRecords.toLocaleString()} failed`);
     console.log(`   ETA: ${(eta / 60).toFixed(1)} minutes`);
-    
+
     // Add longer delay between files to let connections recover
     if (i < csvFiles.length - 1) {
       console.log('\n⏸️  Pausing 2 seconds before next file...');
@@ -361,12 +361,12 @@ async function main() {
   console.log(`💾 Total size: ${(globalStats.totalSize / 1024 / 1024 / 1024).toFixed(2)} GB`);
   console.log(`⏱️  Total duration: ${(totalDuration / 60).toFixed(2)} minutes`);
   console.log(`⚡ Average speed: ${(globalStats.totalRecords / totalDuration).toFixed(0)} records/second`);
-  
+
   if (globalStats.failedFiles.length > 0) {
     console.log(`\n❌ Failed files (${globalStats.failedFiles.length}):`);
     globalStats.failedFiles.forEach(file => console.log(`   - ${file}`));
   }
-  
+
   console.log('\n✨ Import process complete!');
   if (globalStats.successfulFiles > 0) {
     console.log('📁 Successfully imported files moved to: CleanedSplit_imported/');

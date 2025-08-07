@@ -27,7 +27,7 @@ export default function BlogPage() {
               Intelligence Blog
             </span>
           </h1>
-          
+
           <p className="text-xl text-gray-300 mb-12 max-w-2xl mx-auto">
             Expert insights on Florida property management, insurance optimization, and wealth building strategies.
           </p>
@@ -37,7 +37,7 @@ export default function BlogPage() {
             <p className="text-gray-400">
               Our blog is currently under development. We'll be sharing valuable content about:
             </p>
-            
+
             <div className="grid md:grid-cols-2 gap-4 mt-6 text-left">
               <ul className="space-y-2">
                 <li className="flex items-center gap-2">

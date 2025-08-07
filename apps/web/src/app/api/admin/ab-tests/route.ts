@@ -8,12 +8,12 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import type { 
-  AIABTest, 
-  CreateABTestRequest, 
+import type {
+  AIABTest,
+  CreateABTestRequest,
   UpdateABTestRequest,
   ABTestMetrics,
-  AIOperationsResponse 
+  AIOperationsResponse
 } from '@/types/ai-operations'
 
 // GET /api/admin/ab-tests - Get all A/B tests with metrics
@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
     if (includeMetrics && tests?.length > 0) {
       // Get metrics for each test
       const testIds = tests.map(test => test.id)
-      
+
       const { data: results, error: resultsError } = await supabase
         .from('ai_ab_test_results')
         .select('*')
@@ -87,17 +87,17 @@ export async function GET(request: NextRequest) {
           const metrics = metricsMap[result.test_id]
           if (!metrics) return
 
-          const modelMetrics = result.model === 'model_a' 
-            ? metrics.model_a_metrics 
+          const modelMetrics = result.model === 'model_a'
+            ? metrics.model_a_metrics
             : metrics.model_b_metrics
 
           modelMetrics.requests++
           modelMetrics.avg_time += result.response_time
-          
+
           if (result.success) {
             modelMetrics.success_rate++
           }
-          
+
           if (result.user_rating) {
             modelMetrics.user_rating += result.user_rating
           }

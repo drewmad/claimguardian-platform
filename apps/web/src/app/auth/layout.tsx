@@ -20,12 +20,12 @@ export default async function AuthLayout({
 }) {
   // Check if user is already authenticated
   const session = await getServerSession()
-  
+
   if (session) {
     // User is already signed in, redirect to dashboard
     redirect('/dashboard')
   }
-  
+
   // User is not authenticated, show auth pages
   return (
     <div className="min-h-screen">

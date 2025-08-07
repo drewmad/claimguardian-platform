@@ -7,7 +7,7 @@ class AIRetrospective {
   constructor(agent) {
     this.agent = agent;
     this.retrospectivePath = path.join(
-      process.cwd(), 
+      process.cwd(),
       '.ai-context/retrospectives',
       `${agent}-runs.jsonl`
     );
@@ -20,10 +20,10 @@ class AIRetrospective {
     const warnings = [];
     const lessons = [];
     const improvements = [];
-    
+
     let outcome = 'success';
     let result;
-    
+
     try {
       // Capture console warnings
       const originalWarn = console.warn;
@@ -31,17 +31,17 @@ class AIRetrospective {
         warnings.push(args.join(' '));
         originalWarn(...args);
       };
-      
+
       // Execute task
       result = await taskFunction();
-      
+
       // Restore console
       console.warn = originalWarn;
-      
+
     } catch (error) {
       outcome = 'failure';
       errors.push(error.message);
-      
+
       // Analyze error for lessons
       if (error.message.includes('lockfile')) {
         lessons.push('Always run pnpm install after package.json changes');
@@ -52,11 +52,11 @@ class AIRetrospective {
         improvements.push('Run tsc --noEmit in pre-task validation');
       }
     }
-    
+
     // Calculate metrics
     const duration = Date.now() - startTime;
     const memoryDelta = process.memoryUsage().heapUsed - startMemory.heapUsed;
-    
+
     // Git diff analysis
     let filesChanged = 0;
     try {
@@ -65,7 +65,7 @@ class AIRetrospective {
     } catch (e) {
       // No git repo or no changes
     }
-    
+
     // Log retrospective
     const retrospective = {
       timestamp: new Date().toISOString(),
@@ -83,9 +83,9 @@ class AIRetrospective {
         linesOfCode: this.countLinesChanged()
       }
     };
-    
+
     fs.appendFileSync(this.retrospectivePath, JSON.stringify(retrospective) + '\n');
-    
+
     return { result, retrospective };
   }
 
@@ -106,33 +106,33 @@ class AIRetrospective {
     if (!fs.existsSync(this.retrospectivePath)) {
       return { lessons: [], patterns: [] };
     }
-    
+
     const lines = fs.readFileSync(this.retrospectivePath, 'utf8').split('\n');
     const retrospectives = lines
       .filter(l => l)
       .map(l => JSON.parse(l));
-    
+
     // Analyze patterns
     const errorFrequency = {};
     const taskDurations = {};
     const allLessons = [];
-    
+
     retrospectives.forEach(r => {
       // Track error patterns
       r.errors.forEach(e => {
         errorFrequency[e] = (errorFrequency[e] || 0) + 1;
       });
-      
+
       // Track task performance
       if (!taskDurations[r.task]) {
         taskDurations[r.task] = [];
       }
       taskDurations[r.task].push(r.duration);
-      
+
       // Collect lessons
       allLessons.push(...r.lessons);
     });
-    
+
     // Generate insights
     const insights = {
       commonErrors: Object.entries(errorFrequency)
@@ -145,7 +145,7 @@ class AIRetrospective {
       uniqueLessons: [...new Set(allLessons)],
       successRate: retrospectives.filter(r => r.outcome === 'success').length / retrospectives.length
     };
-    
+
     return insights;
   }
 }
@@ -156,7 +156,7 @@ module.exports = AIRetrospective;
 if (require.main === module) {
   const [,, command, agent] = process.argv;
   const retro = new AIRetrospective(agent || 'system');
-  
+
   if (command === 'analyze') {
     retro.analyzeHistory().then(insights => {
       console.log(' Retrospective Analysis:');

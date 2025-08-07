@@ -78,7 +78,7 @@ import { useGLTF } from '@react-three/drei'
 const ModelViewerContent = dynamic(
   () => Promise.resolve(({ url, viewMode, autoRotate }: ModelViewerProps) => {
     const { scene } = useGLTF(url)
-    
+
     useEffect(() => {
       scene.traverse((child: unknown) => {
         if (child instanceof THREE.Mesh) {
@@ -134,34 +134,34 @@ function ThreeDModelGeneratorContent() {
 
   const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || [])
-    
+
     if (files.length + images.length > 4) {
       setErrorMessage('Maximum 4 images allowed for processing.')
       return
     }
-    
+
     const newImages: UploadedImage[] = []
-    
+
     for (const file of files) {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit per image
         setErrorMessage(`File ${file.name} exceeds 10MB limit.`)
         continue
       }
-      
+
       try {
         const { data, error } = await supabase.storage
           .from('3d-model-images')
           .upload(`${Date.now()}-${file.name}`, file)
-        
+
         if (error) {
           setErrorMessage(`Upload error: ${error.message}`)
           continue
         }
-        
+
         const { data: urlData } = supabase.storage
           .from('3d-model-images')
           .getPublicUrl(data.path)
-        
+
         newImages.push({
           id: Math.random().toString(36).substr(2, 9),
           file,
@@ -173,7 +173,7 @@ function ThreeDModelGeneratorContent() {
         setErrorMessage(`Failed to upload ${file.name}`)
       }
     }
-    
+
     setImages(prev => [...prev, ...newImages])
   }
 
@@ -190,27 +190,27 @@ function ThreeDModelGeneratorContent() {
       toast.error('Minimum 3 images required for 3D reconstruction')
       return
     }
-    
+
     setProcessingStage('analyzing')
     setProgress(0)
     setErrorMessage(null)
-    
+
     try {
       const imageUrls = images.map(img => img.url)
       const { data, error } = await supabase.functions.invoke('model_3d_generation', {
-        body: { 
+        body: {
           action: 'start',
-          imageUrls, 
-          settings: modelSettings 
+          imageUrls,
+          settings: modelSettings
         }
       })
-      
+
       if (error) {
         setErrorMessage(`Processing error: ${error.message}`)
         setProcessingStage('error')
         return
       }
-      
+
       setTaskId(data.taskId)
       toast.success('3D model generation started!')
     } catch (error) {
@@ -218,29 +218,29 @@ function ThreeDModelGeneratorContent() {
       setProcessingStage('error')
     }
   }
-  
+
   // Polling effect for task status
   useEffect(() => {
     if (taskId) {
       pollingInterval.current = setInterval(async () => {
         try {
           const { data, error } = await supabase.functions.invoke('model_3d_generation', {
-            body: { 
+            body: {
               action: 'status',
-              taskId 
+              taskId
             }
           })
-          
+
           if (error) {
             setErrorMessage(`Status error: ${error.message}`)
             clearInterval(pollingInterval.current!)
             setProcessingStage('error')
             return
           }
-          
+
           setProgress(data.progress || 0)
           setProcessingStage(data.stage || 'analyzing')
-          
+
           if (data.status === 'SUCCEEDED') {
             setModelUrl(data.modelUrl)
             setModelInfo(data.modelInfo)
@@ -260,7 +260,7 @@ function ThreeDModelGeneratorContent() {
         }
       }, 5000) // Poll every 5 seconds
     }
-      
+
     return () => {
       if (pollingInterval.current) {
         clearInterval(pollingInterval.current)
@@ -315,7 +315,7 @@ function ThreeDModelGeneratorContent() {
                 <Sparkles className="w-3 h-3 mr-1" />
                 AI Powered
               </Badge>
-              <button 
+              <button
                 onClick={() => setShowSettings(!showSettings)}
                 className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
               >
@@ -367,7 +367,7 @@ function ThreeDModelGeneratorContent() {
                   </div>
                 )}
               </div>
-              
+
               {processingStage !== 'upload' && processingStage !== 'error' && (
                 <Progress value={progress} className="h-2" />
               )}
@@ -386,7 +386,7 @@ function ThreeDModelGeneratorContent() {
                 </CardHeader>
                 <CardContent className="space-y-4">
                   {/* Upload Area */}
-                  <div 
+                  <div
                     onClick={() => fileInputRef.current?.click()}
                     className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center cursor-pointer hover:border-blue-500 transition-colors"
                   >
@@ -427,7 +427,7 @@ function ThreeDModelGeneratorContent() {
                   <div className="space-y-3">
                     {images.map((image) => (
                       <div key={image.id} className="flex items-center gap-3 p-3 bg-gray-700 rounded-lg">
-                        <div 
+                        <div
                           className="w-12 h-12 rounded bg-gray-600 flex items-center justify-center text-xs text-gray-300"
                         >
                           IMG
@@ -438,7 +438,7 @@ function ThreeDModelGeneratorContent() {
                             {(image.file.size / 1024 / 1024).toFixed(1)} MB
                           </p>
                         </div>
-                        <button 
+                        <button
                           onClick={() => removeImage(image.id)}
                           className="text-gray-400 hover:text-red-400"
                         >
@@ -455,7 +455,7 @@ function ThreeDModelGeneratorContent() {
                     className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-3 rounded-lg font-medium flex items-center justify-center gap-2"
                   >
                     <Zap className="w-4 h-4" />
-                    {processingStage === 'upload' || processingStage === 'error' ? 'Generate 3D Model' : 
+                    {processingStage === 'upload' || processingStage === 'error' ? 'Generate 3D Model' :
                      processingStage === 'complete' ? 'Generate New Model' : 'Processing...'}
                   </button>
                 </CardContent>
@@ -499,7 +499,7 @@ function ThreeDModelGeneratorContent() {
 
                     <div>
                       <label className="block text-sm font-medium text-white mb-2">Output Format</label>
-                      <select 
+                      <select
                         value={modelSettings.outputFormat}
                         onChange={(e) => setModelSettings(prev => ({ ...prev, outputFormat: e.target.value as 'obj' | 'fbx' | 'gltf' | 'stl' }))}
                         className="w-full p-2 bg-gray-700 border border-gray-600 rounded text-white"
@@ -523,9 +523,9 @@ function ThreeDModelGeneratorContent() {
                           <input
                             type="checkbox"
                             checked={modelSettings[option.key as keyof ModelSettings] as boolean}
-                            onChange={(e) => setModelSettings(prev => ({ 
-                              ...prev, 
-                              [option.key]: e.target.checked 
+                            onChange={(e) => setModelSettings(prev => ({
+                              ...prev,
+                              [option.key]: e.target.checked
                             }))}
                             className="mt-1"
                           />
@@ -585,18 +585,18 @@ function ThreeDModelGeneratorContent() {
                       }>
                         <ModelViewer url={modelUrl} viewMode={viewMode} autoRotate={isPlaying} />
                       </Suspense>
-                      
+
                       {/* Controls */}
                       <div className="absolute bottom-4 left-4 right-4 flex justify-between items-center">
                         <div className="flex items-center gap-2 bg-black/50 rounded-lg px-3 py-2">
-                          <button 
+                          <button
                             onClick={() => setIsPlaying(!isPlaying)}
                             className="text-white hover:text-cyan-400"
                             title="Toggle Auto-rotate"
                           >
                             {isPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                           </button>
-                          <button 
+                          <button
                             onClick={() => setViewMode(viewMode === '3d' ? 'wireframe' : viewMode === 'wireframe' ? 'textured' : '3d')}
                             className="text-white hover:text-cyan-400"
                             title="Cycle View Mode"
@@ -604,7 +604,7 @@ function ThreeDModelGeneratorContent() {
                             <Eye className="w-4 h-4" />
                           </button>
                         </div>
-                        
+
                         <div className="flex items-center gap-2 bg-black/50 rounded-lg px-3 py-2">
                           <span className="text-white text-sm">
                             {viewMode === '3d' ? '3D' : viewMode === 'wireframe' ? 'Wireframe' : 'Textured'}
@@ -672,12 +672,12 @@ function ThreeDModelGeneratorContent() {
                     </CardHeader>
                     <CardContent>
                       <div className="space-y-3">
-                        <a 
+                        <a
                           href={modelUrl ? `${modelUrl}?format=${modelSettings.outputFormat}` : '#'}
                           download
                           className="block"
                         >
-                          <button 
+                          <button
                             disabled={!modelUrl}
                             className="w-full bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
                           >
@@ -685,7 +685,7 @@ function ThreeDModelGeneratorContent() {
                             Download Model ({modelSettings.outputFormat.toUpperCase()})
                           </button>
                         </a>
-                        <button 
+                        <button
                           disabled={!modelUrl}
                           className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
                           onClick={() => toast.info('AR preview feature coming soon!')}
@@ -693,7 +693,7 @@ function ThreeDModelGeneratorContent() {
                           <Eye className="w-4 h-4" />
                           Preview in AR
                         </button>
-                        <button 
+                        <button
                           disabled={!modelUrl}
                           className="w-full bg-gray-700 hover:bg-gray-600 disabled:bg-gray-600 disabled:cursor-not-allowed text-white py-2 rounded-lg flex items-center justify-center gap-2"
                           onClick={() => toast.info('Measurement export feature coming soon!')}

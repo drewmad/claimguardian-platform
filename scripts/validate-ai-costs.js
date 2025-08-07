@@ -16,7 +16,7 @@ const execAsync = promisify(exec);
 const config = {
   features: [
     'damage-analyzer',
-    'policy-advisor', 
+    'policy-advisor',
     'inventory-scanner',
     'all'
   ],
@@ -65,7 +65,7 @@ function parseArgs() {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    
+
     switch (arg) {
       case '--feature':
       case '-f':
@@ -128,28 +128,28 @@ ${colors.bright}USAGE:${colors.reset}
 ${colors.bright}OPTIONS:${colors.reset}
   -f, --feature <feature>    AI feature to validate (default: all)
                             Options: ${config.features.join(', ')}
-  
+
   -p, --provider <provider>  AI provider to test (default: both)
                             Options: ${config.providers.join(', ')}
-  
+
   -e, --environment <env>    Target environment (default: development)
                             Options: ${config.environments.join(', ')}
-  
+
   --format <format>         Output format (default: console)
                             Options: ${config.formats.join(', ')}
-  
+
   -o, --output <file>       Output file path (optional)
-  
+
   -c, --max-cost <amount>   Maximum cost allowed for validation (default: $2.00)
-  
+
   --no-record              Don't record results to database
-  
+
   --dry-run                Show what would be tested without making API calls
-  
+
   --concurrent             Run validations concurrently (faster but higher cost)
-  
+
   -v, --verbose            Enable verbose output
-  
+
   -h, --help               Show this help message
 
 ${colors.bright}EXAMPLES:${colors.reset}
@@ -276,12 +276,12 @@ function estimateValidationCost(options) {
 
   let totalCost = 0;
 
-  const features = options.feature === 'all' 
-    ? Object.keys(baseCosts) 
+  const features = options.feature === 'all'
+    ? Object.keys(baseCosts)
     : [options.feature];
 
-  const providers = options.provider === 'both' 
-    ? ['openai', 'gemini'] 
+  const providers = options.provider === 'both'
+    ? ['openai', 'gemini']
     : [options.provider];
 
   features.forEach(feature => {
@@ -298,7 +298,7 @@ function estimateValidationCost(options) {
 // Run validation using the TypeScript validation service
 async function runValidation(options) {
   log.info('Compiling TypeScript validation service...');
-  
+
   // Build the validation service
   try {
     await execAsync('npx tsc --build', {
@@ -318,15 +318,15 @@ const { validateAICosts, runProductionAIValidation } = require('./src/lib/valida
 
 async function runValidation() {
   const options = ${JSON.stringify(options)};
-  
+
   try {
     let results;
-    
+
     if (options.feature === 'all') {
       results = await runProductionAIValidation();
     } else {
       const validator = validateAICosts;
-      
+
       switch (options.feature) {
         case 'damage-analyzer':
           results = [await validator.validateDamageAnalyzer()];
@@ -341,7 +341,7 @@ async function runValidation() {
           throw new Error('Unknown feature: ' + options.feature);
       }
     }
-    
+
     console.log(JSON.stringify({
       success: true,
       results: results,
@@ -352,7 +352,7 @@ async function runValidation() {
         averageAccuracy: results.reduce((sum, r) => sum + r.summary.averageCostAccuracy, 0) / results.length
       }
     }));
-    
+
   } catch (error) {
     console.log(JSON.stringify({
       success: false,
@@ -380,10 +380,10 @@ runValidation();
     testProcess.stdout.on('data', (data) => {
       const text = data.toString();
       output += text;
-      
+
       if (options.verbose) {
         // Filter out JSON result and show progress
-        const lines = text.split('\n').filter(line => 
+        const lines = text.split('\n').filter(line =>
           line.trim() && !line.startsWith('{') && !line.startsWith('}')
         );
         lines.forEach(line => log.info(line));
@@ -459,7 +459,7 @@ function generateReport(validationResult, options) {
 function analyzeResults(results) {
   const allResults = results.flatMap(r => r.results);
   const successfulResults = allResults.filter(r => r.success);
-  
+
   const analysis = {
     overallSuccessRate: (successfulResults.length / allResults.length) * 100,
     averageLatency: successfulResults.reduce((sum, r) => sum + r.latency, 0) / successfulResults.length || 0,
@@ -504,7 +504,7 @@ function generateRecommendations(results, totalCost, maxCost) {
     });
   }
 
-  // Accuracy recommendations  
+  // Accuracy recommendations
   const avgAccuracy = results.reduce((sum, r) => sum + r.summary.averageCostAccuracy, 0) / results.length;
   if (avgAccuracy < 90) {
     recommendations.push({
@@ -539,7 +539,7 @@ function generateRecommendations(results, totalCost, maxCost) {
 // Format console report
 function formatConsoleReport(report) {
   const { costs, summary, analysis, recommendations } = report;
-  
+
   let output = `
 ${colors.cyan}${colors.bright}🔍 AI Cost Validation Report${colors.reset}
 ${colors.cyan}Generated: ${report.timestamp}${colors.reset}
@@ -553,7 +553,7 @@ ${colors.bright}Configuration:${colors.reset}
 ${colors.bright}Cost Summary:${colors.reset}
   Total Cost: ${costs.withinBudget ? colors.green : colors.red}$${costs.totalCost.toFixed(6)}${colors.reset}
   Budget Status: ${costs.withinBudget ? '✅ Within Budget' : '⚠️ Over Budget'}
-  
+
 ${colors.bright}Test Results:${colors.reset}
   Total Tests: ${summary.totalTests}
   Successful: ${colors.green}${summary.successfulTests}${colors.reset}
@@ -627,7 +627,7 @@ function generateHTMLReport(report) {
         <p><strong>Generated:</strong> ${report.timestamp}</p>
         <p><strong>Feature:</strong> ${report.configuration.feature} | <strong>Provider:</strong> ${report.configuration.provider}</p>
     </div>
-    
+
     <div class="summary">
         <div class="metric">
             <h3>Total Cost</h3>
@@ -694,10 +694,10 @@ function generateHTMLReport(report) {
 // Generate CSV report
 function generateCSVReport(report) {
   const allResults = report.results.flatMap(r => r.results);
-  
+
   const headers = [
     'Provider',
-    'Model', 
+    'Model',
     'Success',
     'Actual Cost',
     'Estimated Cost',
@@ -786,12 +786,12 @@ async function main() {
   }
 
   const startTime = Date.now();
-  
+
   try {
     log.info('Starting AI cost validation...');
-    
+
     const validationResult = await runValidation(options);
-    
+
     if (!validationResult.success) {
       throw new Error(validationResult.error);
     }
@@ -804,7 +804,7 @@ async function main() {
 
     // Generate report
     const report = generateReport(validationResult, options);
-    
+
     if (options.output) {
       fs.writeFileSync(options.output, report);
       log.success(`Report saved to: ${options.output}`);
@@ -819,9 +819,9 @@ async function main() {
   } catch (error) {
     const endTime = Date.now();
     const duration = endTime - startTime;
-    
+
     log.error(`Validation failed after ${duration}ms: ${error.message}`);
-    
+
     if (options.verbose && error.stack) {
       console.error(error.stack);
     }

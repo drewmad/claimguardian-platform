@@ -22,14 +22,14 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const targetUrl = searchParams.get('url')
-    
+
     if (!targetUrl) {
       return NextResponse.json(
         { error: 'URL parameter is required' },
         { status: 400 }
       )
     }
-    
+
     // Validate the URL is from an allowed domain
     const url = new URL(targetUrl)
     if (!ALLOWED_DOMAINS.some(domain => url.hostname.includes(domain))) {
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest) {
         { status: 403 }
       )
     }
-    
+
     // Fetch the data from the target URL
     const response = await fetch(targetUrl, {
       headers: {
@@ -46,16 +46,16 @@ export async function GET(request: NextRequest) {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
       }
     })
-    
+
     if (!response.ok) {
       return NextResponse.json(
         { error: `Target server returned ${response.status}` },
         { status: response.status }
       )
     }
-    
+
     const data = await response.json()
-    
+
     // Return the data with CORS headers
     return NextResponse.json(data, {
       headers: {
@@ -63,7 +63,7 @@ export async function GET(request: NextRequest) {
         'Cache-Control': 'no-store'
       }
     })
-    
+
   } catch (error) {
     logger.error('Proxy error:', error)
     return NextResponse.json(

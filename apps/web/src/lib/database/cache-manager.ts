@@ -145,7 +145,7 @@ export class CacheManager {
       if (this.config.metricsEnabled) {
         this.startMetricsCollection()
       }
-      
+
       this.startCleanup()
       this.isInitialized = true
 
@@ -168,7 +168,7 @@ export class CacheManager {
     updateAccessTime?: boolean
   } = {}): Promise<T | null> {
     const startTime = performance.now()
-    
+
     if (!this.isInitialized) {
       await this.initialize()
     }
@@ -187,7 +187,7 @@ export class CacheManager {
         const entry = await layer.get<T>(key)
         if (entry) {
           this.recordHit(level)
-          
+
           if (updateAccessTime) {
             entry.metadata.lastAccessed = new Date()
             entry.metadata.accessCount++
@@ -225,7 +225,7 @@ export class CacheManager {
     skipLowerLevels?: boolean
   } = {}): Promise<void> {
     const startTime = performance.now()
-    
+
     if (!this.isInitialized) {
       await this.initialize()
     }
@@ -282,7 +282,7 @@ export class CacheManager {
     levels?: CacheLevel[]
   } = {}): Promise<boolean> {
     const startTime = performance.now()
-    
+
     if (!this.isInitialized) {
       await this.initialize()
     }
@@ -543,7 +543,7 @@ export class CacheManager {
   private recordLatency(operation: 'get' | 'set' | 'delete', latency: number): void {
     // Simple moving average
     const alpha = 0.1
-    this.metrics.performance[`${operation}Latency`] = 
+    this.metrics.performance[`${operation}Latency`] =
       (1 - alpha) * this.metrics.performance[`${operation}Latency`] + alpha * latency
   }
 
@@ -663,7 +663,7 @@ export class CacheManager {
       }
 
       // Sort by least recently used
-      entries.sort((a, b) => 
+      entries.sort((a, b) =>
         a.entry.metadata.lastAccessed.getTime() - b.entry.metadata.lastAccessed.getTime()
       )
 
@@ -791,7 +791,7 @@ class BrowserCacheLayer implements CacheLayer {
         const entry = JSON.parse(stored) as CacheEntry<T>
         entry.metadata.createdAt = new Date(entry.metadata.createdAt)
         entry.metadata.lastAccessed = new Date(entry.metadata.lastAccessed)
-        
+
         if (this.isValid(entry)) {
           return entry
         } else {

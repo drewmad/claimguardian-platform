@@ -32,7 +32,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
 
   useEffect(() => {
     startScanning()
-    
+
     return () => {
       reader.reset()
     }
@@ -42,14 +42,14 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
   const startScanning = async () => {
     try {
       setIsScanning(true)
-      
+
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment' }
       })
 
       if (videoRef.current && stream) {
         videoRef.current.srcObject = stream
-        
+
         await reader.decodeFromVideoDevice(
           null,
           videoRef.current,
@@ -97,7 +97,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
               <X className="h-4 w-4" />
             </Button>
           </div>
-          
+
           <div className="relative aspect-video bg-black rounded-lg overflow-hidden mb-4">
             <video
               ref={videoRef}
@@ -113,7 +113,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
               </div>
             )}
           </div>
-          
+
           <p className="text-sm text-gray-400 text-center">
             Position the barcode within the frame to scan
           </p>

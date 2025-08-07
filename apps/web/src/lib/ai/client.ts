@@ -54,7 +54,7 @@ export class AIClient {
 
   async analyzeImage(request: ImageAnalysisRequest) {
     const { model = 'openai' } = request
-    
+
     if (model === 'openai') {
       return this.openAIVision(request)
     } else {
@@ -83,7 +83,7 @@ export class AIClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          
+
           // Handle specific error types
           if (response.status === 429) {
             // Rate limit - wait before retry
@@ -102,32 +102,32 @@ export class AIClient {
             }
             throw new Error('OpenAI service is temporarily unavailable. Please try again later.')
           }
-          
+
           throw new Error(errorData.error?.message || `OpenAI API error: ${response.statusText}`)
         }
 
         const data = await response.json()
-        
+
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
           throw new Error('Invalid response format from OpenAI')
         }
-        
+
         return data.choices[0].message.content
       } catch (error) {
         if (attempt === retries) {
           throw error
         }
-        
+
         // Only retry on network errors or server errors
         if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
-        
+
         throw error
       }
     }
-    
+
     throw new Error('Max retries exceeded')
   }
 
@@ -165,7 +165,7 @@ export class AIClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          
+
           // Handle specific error types
           if (response.status === 429) {
             // Rate limit - wait before retry
@@ -184,32 +184,32 @@ export class AIClient {
             }
             throw new Error('Gemini service is temporarily unavailable. Please try again later.')
           }
-          
+
           throw new Error(errorData.error?.message || `Gemini API error: ${response.statusText}`)
         }
 
         const data = await response.json()
-        
+
         if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
           throw new Error('Invalid response format from Gemini')
         }
-        
+
         return data.candidates[0].content.parts[0].text
       } catch (error) {
         if (attempt === retries) {
           throw error
         }
-        
+
         // Only retry on network errors or server errors
         if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
-        
+
         throw error
       }
     }
-    
+
     throw new Error('Max retries exceeded')
   }
 
@@ -232,8 +232,8 @@ export class AIClient {
               {
                 type: 'image_url',
                 image_url: {
-                  url: request.image.startsWith('data:') 
-                    ? request.image 
+                  url: request.image.startsWith('data:')
+                    ? request.image
                     : `data:image/jpeg;base64,${request.image}`,
                 },
               },
@@ -313,7 +313,7 @@ export class AIClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          
+
           // Handle specific error types
           if (response.status === 429) {
             if (attempt < retries) {
@@ -330,32 +330,32 @@ export class AIClient {
             }
             throw new Error('Claude service is temporarily unavailable. Please try again later.')
           }
-          
+
           throw new Error(errorData.error?.message || `Claude API error: ${response.statusText}`)
         }
 
         const data = await response.json()
-        
+
         if (!data.content || !data.content[0] || !data.content[0].text) {
           throw new Error('Invalid response format from Claude')
         }
-        
+
         return data.content[0].text
       } catch (error) {
         if (attempt === retries) {
           throw error
         }
-        
+
         // Only retry on network errors or server errors
         if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
-        
+
         throw error
       }
     }
-    
+
     throw new Error('Max retries exceeded')
   }
 
@@ -383,7 +383,7 @@ export class AIClient {
 
         if (!response.ok) {
           const errorData = await response.json().catch(() => ({}))
-          
+
           // Handle specific error types
           if (response.status === 429) {
             if (attempt < retries) {
@@ -400,32 +400,32 @@ export class AIClient {
             }
             throw new Error('Grok service is temporarily unavailable. Please try again later.')
           }
-          
+
           throw new Error(errorData.error?.message || `Grok API error: ${response.statusText}`)
         }
 
         const data = await response.json()
-        
+
         if (!data.choices || !data.choices[0] || !data.choices[0].message) {
           throw new Error('Invalid response format from Grok')
         }
-        
+
         return data.choices[0].message.content
       } catch (error) {
         if (attempt === retries) {
           throw error
         }
-        
+
         // Only retry on network errors or server errors
         if (error instanceof TypeError || (error as Error)?.message?.includes('fetch')) {
           await new Promise(resolve => setTimeout(resolve, 1000 * attempt))
           continue
         }
-        
+
         throw error
       }
     }
-    
+
     throw new Error('Max retries exceeded')
   }
 }

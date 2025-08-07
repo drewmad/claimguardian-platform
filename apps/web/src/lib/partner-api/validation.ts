@@ -60,7 +60,7 @@ export async function validatePartnerRequest(
 
     // Check for any validation failures
     const failedValidation = results.find(result => !result.valid)
-    
+
     if (failedValidation) {
       logger.warn('Request validation failed', {
         endpoint: request.nextUrl.pathname,
@@ -68,7 +68,7 @@ export async function validatePartnerRequest(
         error: failedValidation.error,
         details: failedValidation.details
       })
-      
+
       return failedValidation
     }
 
@@ -105,11 +105,11 @@ export async function validatePartnerRequest(
  */
 async function validateHeaders(request: NextRequest): Promise<ValidationResult> {
   const errors: string[] = []
-  
+
   // Check Content-Type for POST/PUT/PATCH requests
   if (['POST', 'PUT', 'PATCH'].includes(request.method)) {
     const contentType = request.headers.get('content-type')
-    
+
     if (!contentType) {
       errors.push('Content-Type header is required for this method')
     } else if (!isValidContentType(contentType)) {
@@ -132,7 +132,7 @@ async function validateHeaders(request: NextRequest): Promise<ValidationResult> 
   // Validate custom headers
   const customHeaders = extractCustomHeaders(request)
   const customHeaderValidation = validateCustomHeaders(customHeaders)
-  
+
   if (!customHeaderValidation.valid) {
     errors.push(...(customHeaderValidation.errors || []))
   }
@@ -159,20 +159,20 @@ async function validateQueryParameters(
   schema?: any
 ): Promise<ValidationResult> {
   const query = Object.fromEntries(request.nextUrl.searchParams.entries())
-  
+
   // Basic query parameter validation
   const errors: string[] = []
-  
+
   // Check for common injection patterns
   for (const [key, value] of Object.entries(query)) {
     if (containsSqlInjectionPatterns(value)) {
       errors.push(`Potential SQL injection detected in parameter: ${key}`)
     }
-    
+
     if (containsXssPatterns(value)) {
       errors.push(`Potential XSS detected in parameter: ${key}`)
     }
-    
+
     // Validate parameter length
     if (typeof value === 'string' && value.length > 1000) {
       errors.push(`Parameter ${key} exceeds maximum length`)
@@ -227,7 +227,7 @@ async function validateRequestBody(
     // Parse body based on content type
     if (contentType.includes('application/json')) {
       const text = await request.text()
-      
+
       // Check for empty body
       if (!text.trim()) {
         return {
@@ -301,7 +301,7 @@ async function validateRequestBody(
 async function validateFileUpload(request: NextRequest): Promise<ValidationResult> {
   try {
     const contentType = request.headers.get('content-type') || ''
-    
+
     if (!contentType.includes('multipart/form-data')) {
       return { valid: true } // Not a file upload
     }
@@ -309,14 +309,14 @@ async function validateFileUpload(request: NextRequest): Promise<ValidationResul
     // Check content length
     const contentLength = parseInt(request.headers.get('content-length') || '0', 10)
     const maxFileSize = 50 * 1024 * 1024 // 50MB
-    
+
     if (contentLength > maxFileSize) {
       return {
         valid: false,
         error: 'File size exceeds maximum limit',
-        details: { 
-          maxSize: maxFileSize, 
-          actualSize: contentLength 
+        details: {
+          maxSize: maxFileSize,
+          actualSize: contentLength
         }
       }
     }
@@ -343,7 +343,7 @@ function isValidContentType(contentType: string): boolean {
     'application/x-www-form-urlencoded',
     'multipart/form-data'
   ]
-  
+
   return validTypes.some(type => contentType.includes(type))
 }
 
@@ -354,34 +354,34 @@ function isValidApiVersion(version: string): boolean {
 
 function extractCustomHeaders(request: NextRequest): Record<string, string> {
   const customHeaders: Record<string, string> = {}
-  
+
   request.headers.forEach((value, key) => {
     if (key.startsWith('x-') && key !== 'x-api-version') {
       customHeaders[key] = value
     }
   })
-  
+
   return customHeaders
 }
 
-function validateCustomHeaders(headers: Record<string, string>): { 
+function validateCustomHeaders(headers: Record<string, string>): {
   valid: boolean
-  errors?: string[] 
+  errors?: string[]
 } {
   const errors: string[] = []
-  
+
   for (const [key, value] of Object.entries(headers)) {
     // Validate header value length
     if (value.length > 500) {
       errors.push(`Header ${key} exceeds maximum length`)
     }
-    
+
     // Check for potential injection
     if (containsInjectionPatterns(value)) {
       errors.push(`Invalid characters in header ${key}`)
     }
   }
-  
+
   return {
     valid: errors.length === 0,
     errors: errors.length > 0 ? errors : undefined
@@ -394,7 +394,7 @@ function containsSqlInjectionPatterns(value: string): boolean {
     /(\s|^)(or|and)(\s|$)\d+(\s|$)(=|<|>)(\s|$)\d+/i,
     /['";][\s\S]*(union|select|insert|update|delete)/i
   ]
-  
+
   return sqlPatterns.some(pattern => pattern.test(value))
 }
 
@@ -406,7 +406,7 @@ function containsXssPatterns(value: string): boolean {
     /<iframe[\s\S]*?>/i,
     /<object[\s\S]*?>/i
   ]
-  
+
   return xssPatterns.some(pattern => pattern.test(value))
 }
 
@@ -414,26 +414,26 @@ function containsInjectionPatterns(value: string): boolean {
   return containsSqlInjectionPatterns(value) || containsXssPatterns(value)
 }
 
-function validatePagination(query: Record<string, string>): { 
+function validatePagination(query: Record<string, string>): {
   valid: boolean
-  errors?: string[] 
+  errors?: string[]
 } {
   const errors: string[] = []
-  
+
   if (query.page) {
     const page = parseInt(query.page, 10)
     if (isNaN(page) || page < 1 || page > 10000) {
       errors.push('Invalid page number')
     }
   }
-  
+
   if (query.limit) {
     const limit = parseInt(query.limit, 10)
     if (isNaN(limit) || limit < 1 || limit > 1000) {
       errors.push('Invalid limit value')
     }
   }
-  
+
   return {
     valid: errors.length === 0,
     errors: errors.length > 0 ? errors : undefined
@@ -442,17 +442,17 @@ function validatePagination(query: Record<string, string>): {
 
 function validateBodySecurity(body: any): ValidationResult {
   const errors: string[] = []
-  
+
   // Check for overly nested objects (potential DoS)
   if (getObjectDepth(body) > 10) {
     errors.push('Request body too deeply nested')
   }
-  
+
   // Check for excessive array sizes
   if (hasLargeArrays(body, 1000)) {
     errors.push('Request body contains arrays that are too large')
   }
-  
+
   // Check for suspicious patterns in string values
   const stringValues = extractStringValues(body)
   for (const value of stringValues) {
@@ -461,7 +461,7 @@ function validateBodySecurity(body: any): ValidationResult {
       break
     }
   }
-  
+
   if (errors.length > 0) {
     return {
       valid: false,
@@ -469,31 +469,31 @@ function validateBodySecurity(body: any): ValidationResult {
       details: { errors }
     }
   }
-  
+
   return { valid: true }
 }
 
 function validateRequiredFields(body: any, endpoint: string): ValidationResult {
   // Endpoint-specific validation logic would go here
   // For now, just basic validation
-  
+
   if (!body || typeof body !== 'object') {
     return {
       valid: false,
       error: 'Request body must be a valid object'
     }
   }
-  
+
   return { valid: true }
 }
 
-async function validateWithSchema(data: any, schema: any): Promise<{ 
+async function validateWithSchema(data: any, schema: any): Promise<{
   valid: boolean
-  errors?: string[] 
+  errors?: string[]
 }> {
   // This would integrate with Zod or similar schema validation library
   // For now, return a placeholder implementation
-  
+
   try {
     // Placeholder for actual schema validation
     // const result = schema.safeParse(data)
@@ -501,7 +501,7 @@ async function validateWithSchema(data: any, schema: any): Promise<{
     //   valid: result.success,
     //   errors: result.success ? undefined : result.error.issues.map(i => i.message)
     // }
-    
+
     return { valid: true }
   } catch (error) {
     return {
@@ -517,9 +517,9 @@ function getObjectDepth(obj: any, depth = 0): number {
   if (obj === null || typeof obj !== 'object') {
     return depth
   }
-  
+
   if (depth > 10) return depth // Prevent infinite recursion
-  
+
   let maxDepth = depth
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
@@ -527,7 +527,7 @@ function getObjectDepth(obj: any, depth = 0): number {
       maxDepth = Math.max(maxDepth, childDepth)
     }
   }
-  
+
   return maxDepth
 }
 
@@ -535,7 +535,7 @@ function hasLargeArrays(obj: any, maxSize: number): boolean {
   if (Array.isArray(obj)) {
     return obj.length > maxSize
   }
-  
+
   if (obj && typeof obj === 'object') {
     for (const key in obj) {
       if (obj.hasOwnProperty(key) && hasLargeArrays(obj[key], maxSize)) {
@@ -543,7 +543,7 @@ function hasLargeArrays(obj: any, maxSize: number): boolean {
       }
     }
   }
-  
+
   return false
 }
 
@@ -557,7 +557,7 @@ function extractStringValues(obj: any, values: string[] = []): string[] {
       }
     }
   }
-  
+
   return values
 }
 

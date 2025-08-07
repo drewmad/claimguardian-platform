@@ -124,7 +124,7 @@ export function PredictiveAnalyticsDashboard() {
   const [selectedMetric, setSelectedMetric] = useState<string>('all')
   const [loading, setLoading] = useState(false)
   const [refreshing, setRefreshing] = useState(false)
-  
+
   // Mock data - in production would come from AI models and database
   const [metrics, setMetrics] = useState<PredictiveMetric[]>([
     {
@@ -204,7 +204,7 @@ export function PredictiveAnalyticsDashboard() {
       priority: 'high'
     },
     {
-      id: '2', 
+      id: '2',
       claimId: 'CLM-2024-001235',
       riskScore: 73,
       indicators: ['Document anomalies', 'Network connections'],
@@ -234,7 +234,7 @@ export function PredictiveAnalyticsDashboard() {
     try {
       // Simulate API calls to refresh predictive data
       await new Promise(resolve => setTimeout(resolve, 2000))
-      
+
       // Update metrics with new predictions
       setMetrics(prev => prev.map(metric => ({
         ...metric,
@@ -268,7 +268,7 @@ export function PredictiveAnalyticsDashboard() {
     a.href = url
     a.download = `predictive-analytics-${timeRange}-${Date.now()}.json`
     a.click()
-    
+
     toast.success('Analytics report exported')
   }
 
@@ -313,7 +313,7 @@ export function PredictiveAnalyticsDashboard() {
           </h2>
           <p className="text-gray-600">AI-powered insights and predictions for business intelligence</p>
         </div>
-        
+
         <div className="flex gap-2">
           <Select value={timeRange} onValueChange={setTimeRange}>
             <SelectTrigger className="w-32">
@@ -326,12 +326,12 @@ export function PredictiveAnalyticsDashboard() {
               <SelectItem value="1y">1 year</SelectItem>
             </SelectContent>
           </Select>
-          
+
           <Button onClick={refreshData} disabled={refreshing} variant="outline">
             <RefreshCw className={`h-4 w-4 mr-2 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh
           </Button>
-          
+
           <Button onClick={exportReport}>
             <Download className="h-4 w-4 mr-2" />
             Export
@@ -344,7 +344,7 @@ export function PredictiveAnalyticsDashboard() {
         {metrics.map((metric) => {
           const Icon = getMetricIcon(metric.category)
           const TrendIcon = getTrendIcon(metric.trend)
-          
+
           return (
             <Card key={metric.id}>
               <CardContent className="p-6">
@@ -354,7 +354,7 @@ export function PredictiveAnalyticsDashboard() {
                     {metric.impact} impact
                   </Badge>
                 </div>
-                
+
                 <div className="space-y-2">
                   <div className="flex items-center space-x-2">
                     <p className="text-2xl font-bold">{metric.value.toLocaleString()}</p>
@@ -365,9 +365,9 @@ export function PredictiveAnalyticsDashboard() {
                       </span>
                     </div>
                   </div>
-                  
+
                   <p className="text-sm text-gray-500">{metric.name}</p>
-                  
+
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
                       <span>Prediction: {metric.prediction.toLocaleString()}</span>
@@ -410,17 +410,17 @@ export function PredictiveAnalyticsDashboard() {
                     <YAxis />
                     <Tooltip />
                     <Legend />
-                    <Line 
-                      type="monotone" 
-                      dataKey="predicted" 
-                      stroke="#8884d8" 
+                    <Line
+                      type="monotone"
+                      dataKey="predicted"
+                      stroke="#8884d8"
                       strokeWidth={3}
                       name="Predicted"
                     />
-                    <Line 
-                      type="monotone" 
-                      dataKey="actual" 
-                      stroke="#82ca9d" 
+                    <Line
+                      type="monotone"
+                      dataKey="actual"
+                      stroke="#82ca9d"
                       strokeWidth={2}
                       name="Actual"
                     />
@@ -555,7 +555,7 @@ export function PredictiveAnalyticsDashboard() {
                             Risk Score: {alert.riskScore}% • {alert.createdAt.toLocaleDateString()}
                           </p>
                         </div>
-                        
+
                         <div className="flex gap-2">
                           <Badge variant={
                             alert.priority === 'high' ? 'destructive' :
@@ -563,7 +563,7 @@ export function PredictiveAnalyticsDashboard() {
                           }>
                             {alert.priority} priority
                           </Badge>
-                          
+
                           <Badge variant={
                             alert.status === 'active' ? 'destructive' :
                             alert.status === 'investigating' ? 'secondary' :
@@ -573,7 +573,7 @@ export function PredictiveAnalyticsDashboard() {
                           </Badge>
                         </div>
                       </div>
-                      
+
                       <div className="mb-3">
                         <p className="text-sm text-gray-600 mb-1">Fraud Indicators:</p>
                         <div className="flex flex-wrap gap-1">
@@ -584,7 +584,7 @@ export function PredictiveAnalyticsDashboard() {
                           ))}
                         </div>
                       </div>
-                      
+
                       <div className="flex gap-2">
                         <Button size="sm" variant="outline">
                           <Eye className="h-3 w-3 mr-1" />
@@ -619,27 +619,27 @@ export function PredictiveAnalyticsDashboard() {
                           <h4 className="font-semibold">{segment.segment}</h4>
                           <p className="text-sm text-gray-500">{segment.count} customers</p>
                         </div>
-                        
+
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Avg Claim</p>
                           <p className="font-medium">${segment.avgClaimValue.toLocaleString()}</p>
                         </div>
-                        
+
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Churn Risk</p>
                           <p className="font-medium">{(segment.churnProbability * 100).toFixed(1)}%</p>
                         </div>
-                        
+
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Lifetime Value</p>
                           <p className="font-medium">${segment.lifetimeValue.toLocaleString()}</p>
                         </div>
-                        
+
                         <div className="text-center">
                           <p className="text-sm text-gray-500">Satisfaction</p>
                           <p className="font-medium">{segment.satisfaction}/10</p>
                         </div>
-                        
+
                         <div>
                           <Button size="sm" variant="outline">
                             View Details
@@ -715,17 +715,17 @@ export function PredictiveAnalyticsDashboard() {
                       <div>
                         <h4 className="font-semibold">{model.modelName}</h4>
                         <p className="text-sm text-gray-500">
-                          Last trained: {model.lastTrained.toLocaleDateString()} • 
-                          {model.predictions.toLocaleString()} predictions • 
+                          Last trained: {model.lastTrained.toLocaleDateString()} •
+                          {model.predictions.toLocaleString()} predictions •
                           {model.errors.toLocaleString()} errors
                         </p>
                       </div>
-                      
+
                       <Badge variant={model.accuracy > 90 ? 'default' : model.accuracy > 80 ? 'secondary' : 'destructive'}>
                         {model.accuracy}% accuracy
                       </Badge>
                     </div>
-                    
+
                     <div className="grid grid-cols-4 gap-4">
                       <div>
                         <p className="text-sm text-gray-500">Precision</p>
@@ -734,7 +734,7 @@ export function PredictiveAnalyticsDashboard() {
                           <span className="text-sm font-medium">{model.precision}%</span>
                         </div>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-500">Recall</p>
                         <div className="flex items-center space-x-2">
@@ -742,7 +742,7 @@ export function PredictiveAnalyticsDashboard() {
                           <span className="text-sm font-medium">{model.recall}%</span>
                         </div>
                       </div>
-                      
+
                       <div>
                         <p className="text-sm text-gray-500">F1 Score</p>
                         <div className="flex items-center space-x-2">
@@ -750,7 +750,7 @@ export function PredictiveAnalyticsDashboard() {
                           <span className="text-sm font-medium">{model.f1Score}%</span>
                         </div>
                       </div>
-                      
+
                       <div className="flex justify-end">
                         <Button size="sm" variant="outline">
                           <Settings className="h-3 w-3 mr-1" />
@@ -783,7 +783,7 @@ export function PredictiveAnalyticsDashboard() {
                     <div>
                       <h4 className="font-semibold">Claim Processing Efficiency</h4>
                       <p className="text-sm text-gray-600">
-                        AI automation has reduced processing time by 32% while maintaining 94% accuracy. 
+                        AI automation has reduced processing time by 32% while maintaining 94% accuracy.
                         Recommend scaling AI-assisted reviews to handle predicted 15% increase in Q2 claims.
                       </p>
                     </div>
@@ -798,7 +798,7 @@ export function PredictiveAnalyticsDashboard() {
                     <div>
                       <h4 className="font-semibold">Fraud Detection Optimization</h4>
                       <p className="text-sm text-gray-600">
-                        Current fraud model shows signs of drift. Recommend retraining with recent data to 
+                        Current fraud model shows signs of drift. Recommend retraining with recent data to
                         improve detection of emerging fraud patterns. Potential savings: $2.3M annually.
                       </p>
                     </div>
@@ -813,7 +813,7 @@ export function PredictiveAnalyticsDashboard() {
                     <div>
                       <h4 className="font-semibold">Customer Retention Opportunity</h4>
                       <p className="text-sm text-gray-600">
-                        234 customers predicted to churn in next 90 days. Proactive engagement could 
+                        234 customers predicted to churn in next 90 days. Proactive engagement could
                         retain 65-70% based on historical intervention success rates.
                       </p>
                     </div>
@@ -828,7 +828,7 @@ export function PredictiveAnalyticsDashboard() {
                     <div>
                       <h4 className="font-semibold">Seasonal Pattern Alert</h4>
                       <p className="text-sm text-gray-600">
-                        Hurricane season predictions suggest 40% higher claim volume than last year. 
+                        Hurricane season predictions suggest 40% higher claim volume than last year.
                         Consider scaling customer service and adjustor capacity by early June.
                       </p>
                     </div>
@@ -898,7 +898,7 @@ export function PredictiveAnalyticsDashboard() {
                     <AlertTriangle className="h-4 w-4" />
                     <AlertTitle>High Processing Load</AlertTitle>
                     <AlertDescription>
-                      Document intelligence system processing 300% above normal capacity. 
+                      Document intelligence system processing 300% above normal capacity.
                       Consider scaling resources.
                     </AlertDescription>
                   </Alert>

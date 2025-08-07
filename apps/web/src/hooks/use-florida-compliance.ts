@@ -28,7 +28,7 @@ export function useFloridaCompliance() {
   const { showDisclosures, hasSeenDisclosures } = useFloridaDisclosures()
   const [isLoading, setIsLoading] = useState(true)
   const [needsDisclosures, setNeedsDisclosures] = useState(false)
-  
+
   const checkComplianceStatus = useCallback(async () => {
     try {
       const { data: { user } } = await supabase.auth.getUser()
@@ -36,14 +36,14 @@ export function useFloridaCompliance() {
         setIsLoading(false)
         return
       }
-      
+
       // Check if user has already accepted Florida disclosures
       const { data: consents } = await supabase
         .from('user_consents')
         .select('consent_type')
         .eq('user_id', user.id)
         .in('consent_type', ['public_adjuster_notice', 'legal_advice_disclaimer', 'insurance_cooperation'])
-      
+
       const hasAllDisclosures = consents && consents.length === 3
       setNeedsDisclosures(!hasAllDisclosures && !hasSeenDisclosures)
       setIsLoading(false)
@@ -52,23 +52,23 @@ export function useFloridaCompliance() {
       setIsLoading(false)
     }
   }, [supabase, hasSeenDisclosures])
-  
+
   useEffect(() => {
     checkComplianceStatus()
   }, [checkComplianceStatus])
-  
+
   const triggerDisclosuresIfNeeded = async (context: 'policy_upload' | 'claim_creation' | 'florida_property') => {
     if (!needsDisclosures || hasSeenDisclosures) return
-    
+
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return
-    
+
     // Log the context for analytics
     logger.info(`Showing Florida disclosures for context: ${context}`)
-    
+
     showDisclosures(user.id)
   }
-  
+
   return {
     isLoading,
     needsDisclosures,
@@ -78,14 +78,14 @@ export function useFloridaCompliance() {
 
 /**
  * Example usage in a policy upload component:
- * 
+ *
  * function PolicyUpload() {
  *   const { triggerDisclosuresIfNeeded } = useFloridaCompliance()
- *   
+ *
  *   const handlePolicyUpload = async (file: File) => {
  *     // Show Florida disclosures before processing the policy
  *     await triggerDisclosuresIfNeeded('policy_upload')
- *     
+ *
  *     // Continue with policy upload...
  *   }
  * }

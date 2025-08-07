@@ -14,7 +14,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -25,7 +25,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true };
@@ -44,9 +44,9 @@ async function executeSQL(sql, description) {
 async function applyFix() {
   console.log('🔧 Fixing UPPERCASE View for CSV Import');
   console.log('=' .repeat(50));
-  
+
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/025_fix_uppercase_view_upsert.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -57,10 +57,10 @@ async function applyFix() {
 
   if (result.success) {
     console.log('\n🎉 UPPERCASE view fixed successfully!');
-    
+
     // Test the fix
     console.log('\n🧪 Testing the fix...');
-    
+
     const testSQL = `
       INSERT INTO florida_parcels_uppercase (
         "CO_NO", "PARCEL_ID", "OWN_NAME", "JV", "LND_VAL"
@@ -68,31 +68,31 @@ async function applyFix() {
         15, 'TEST-FIX-001', 'TEST OWNER', 100000, 50000
       );
     `;
-    
+
     const testResult = await executeSQL(testSQL, 'Test insert');
-    
+
     if (testResult.success) {
       console.log('\n✅ Insert test passed!');
-      
+
       // Verify and cleanup
       await executeSQL(
         'SELECT parcel_id, county_fips FROM florida_parcels WHERE parcel_id = \'TEST-FIX-001\'',
         'Verify county_fips derivation'
       );
-      
+
       await executeSQL(
         'DELETE FROM florida_parcels WHERE parcel_id = \'TEST-FIX-001\'',
         'Clean up test data'
       );
     }
-    
+
     console.log('\n📝 The florida_parcels_uppercase view is now ready!');
     console.log('\n✅ You can now import your CSV file through:');
     console.log('   1. Supabase Dashboard → Table Editor');
     console.log('   2. Select "florida_parcels_uppercase"');
     console.log('   3. Click "Import data from CSV"');
     console.log('   4. Upload your file with UPPERCASE headers');
-    
+
   } else {
     console.log('\n⚠️  Fix failed. Please check the error above.');
   }

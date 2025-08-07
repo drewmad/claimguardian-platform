@@ -127,14 +127,14 @@ serve(async (req) => {
 
     // Get property data
     let propertyData: any
-    
+
     if (requestData.parcel_id) {
       const { data, error } = await supabaseClient
         .from('florida_parcels')
         .select('*')
         .eq('parcel_id', requestData.parcel_id)
         .single()
-      
+
       if (error) throw error
       propertyData = data
     } else if (requestData.objectid) {
@@ -143,7 +143,7 @@ serve(async (req) => {
         .select('*')
         .eq('objectid', requestData.objectid)
         .single()
-      
+
       if (error) throw error
       propertyData = data
     } else if (requestData.lat && requestData.lon) {
@@ -155,7 +155,7 @@ serve(async (req) => {
           radius_miles: 0.1,
           property_count_limit: 1
         })
-      
+
       if (error) throw error
       if (!data || data.length === 0) {
         return new Response(
@@ -163,14 +163,14 @@ serve(async (req) => {
           { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
-      
+
       // Get full property data
       const { data: propData, error: propError } = await supabaseClient
         .from('florida_parcels')
         .select('*')
         .eq('parcel_id', data[0].parcel_id)
         .single()
-      
+
       if (propError) throw propError
       propertyData = propData
     }
@@ -191,8 +191,8 @@ serve(async (req) => {
     // Update property with AI processing flag
     await supabaseClient
       .from('florida_parcels')
-      .update({ 
-        ai_processed: true, 
+      .update({
+        ai_processed: true,
         last_enriched_at: new Date().toISOString(),
         ai_risk_score: enrichmentResult.risk_assessment.overall_risk_score
       })
@@ -208,45 +208,45 @@ serve(async (req) => {
           county_code: propertyData.co_no
         }
       }),
-      { 
-        status: 200, 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+      {
+        status: 200,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
     )
 
   } catch (error) {
     console.error('Property enrichment error:', error)
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: 'Internal server error',
-        details: error.message 
+        details: error.message
       }),
-      { 
-        status: 500, 
-        headers: { 
+      {
+        status: 500,
+        headers: {
           'Access-Control-Allow-Origin': '*',
-          'Content-Type': 'application/json' 
-        } 
+          'Content-Type': 'application/json'
+        }
       }
     )
   }
 })
 
 async function enrichProperty(
-  propertyData: any, 
-  supabase: any, 
+  propertyData: any,
+  supabase: any,
   openai: any
 ): Promise<EnrichmentResult> {
-  
+
   // 1. Risk Assessment
   const riskAssessment = await generateRiskAssessment(propertyData, supabase, openai)
-  
+
   // 2. Market Analysis
   const marketAnalysis = await generateMarketAnalysis(propertyData, supabase, openai)
-  
+
   // 3. Infrastructure Analysis
   const infrastructureData = await analyzeInfrastructure(propertyData, supabase)
-  
+
   // 4. AI Insights
   const aiInsights = await generateAIInsights(propertyData, riskAssessment, marketAnalysis, openai)
 
@@ -262,19 +262,19 @@ async function enrichProperty(
 async function generateRiskAssessment(propertyData: any, supabase: any, openai: any): Promise<RiskAssessment> {
   // Hurricane Risk (based on county and coastal proximity)
   const hurricaneRisk = calculateHurricaneRisk(propertyData)
-  
+
   // Flood Risk (FEMA flood zones)
   const floodRisk = await calculateFloodRisk(propertyData, supabase)
-  
+
   // Age Risk (building age)
   const ageRisk = calculateAgeRisk(propertyData.yr_blt)
-  
+
   // Construction Risk (property type and materials)
   const constructionRisk = calculateConstructionRisk(propertyData)
-  
+
   // Location Risk (general area risk factors)
   const locationRisk = await calculateLocationRisk(propertyData, supabase)
-  
+
   // Other risks (defaulted for now)
   const wildFireRisk = 15 // Florida has low wildfire risk
   const tornadoRisk = 25 // Moderate tornado risk
@@ -282,7 +282,7 @@ async function generateRiskAssessment(propertyData: any, supabase: any, openai: 
   const crimeRisk = await calculateCrimeRisk(propertyData, supabase)
 
   // Calculate overall risk score
-  const overallRiskScore = 
+  const overallRiskScore =
     hurricaneRisk * 0.3 +
     floodRisk * 0.25 +
     ageRisk * 0.15 +
@@ -321,11 +321,11 @@ async function generateRiskAssessment(propertyData: any, supabase: any, openai: 
 async function generateMarketAnalysis(propertyData: any, supabase: any, openai: any): Promise<MarketAnalysis> {
   // Get comparable properties
   const comparables = await getComparableProperties(propertyData, supabase)
-  
+
   // Calculate market metrics
   const pricePerSqft = propertyData.tot_lvg_area > 0 ? propertyData.tot_val / propertyData.tot_lvg_area : 0
   const estimatedValue = propertyData.tot_val * 1.02 // Slight appreciation estimate
-  
+
   // Rental estimates (simplified calculation)
   const rentEstimate = estimatedValue * 0.08 / 12 // 8% annual yield assumption
   const rentalYield = (rentEstimate * 12) / estimatedValue * 100
@@ -352,7 +352,7 @@ async function generateMarketAnalysis(propertyData: any, supabase: any, openai: 
 async function analyzeInfrastructure(propertyData: any, supabase: any): Promise<InfrastructureData> {
   // This would integrate with various APIs and databases
   // For now, providing estimated values based on location and property type
-  
+
   return {
     nearest_hospital_distance: 3.2,
     nearest_hospital_name: "Regional Medical Center",
@@ -375,12 +375,12 @@ async function analyzeInfrastructure(propertyData: any, supabase: any): Promise<
 }
 
 async function generateAIInsights(
-  propertyData: any, 
-  riskAssessment: RiskAssessment, 
-  marketAnalysis: MarketAnalysis, 
+  propertyData: any,
+  riskAssessment: RiskAssessment,
+  marketAnalysis: MarketAnalysis,
   openai: any
 ): Promise<AIInsights> {
-  
+
   const prompt = `Analyze this Florida property and provide comprehensive insights:
 
 Property Details:
@@ -423,7 +423,7 @@ Provide a comprehensive SWOT analysis and actionable insights for this property 
     })
 
     const analysis = completion.choices[0]?.message?.content || "Analysis unavailable"
-    
+
     // Parse AI response (simplified)
     return {
       summary: analysis.substring(0, 500) + "...",
@@ -508,13 +508,13 @@ async function storeEnrichmentResults(result: EnrichmentResult, supabase: any): 
 function calculateHurricaneRisk(propertyData: any): number {
   const coastalCounties = [13, 15, 16, 21, 26, 27, 28, 45, 53, 54, 60, 66, 68, 74]
   const isCoastal = coastalCounties.includes(propertyData.co_no)
-  
+
   let risk = isCoastal ? 70 : 40
-  
+
   // Adjust based on building age
   if (propertyData.yr_blt && propertyData.yr_blt < 1990) risk += 10
   if (propertyData.yr_blt && propertyData.yr_blt > 2000) risk -= 10
-  
+
   return Math.max(0, Math.min(100, risk))
 }
 
@@ -523,13 +523,13 @@ async function calculateFloodRisk(propertyData: any, supabase: any): Promise<num
   // For now, estimate based on coastal proximity and elevation
   const coastalCounties = [13, 15, 16, 21, 26, 27, 28, 45, 53, 54, 60, 66, 68, 74]
   const isCoastal = coastalCounties.includes(propertyData.co_no)
-  
+
   return isCoastal ? 60 : 20
 }
 
 function calculateAgeRisk(yearBuilt: number): number {
   if (!yearBuilt) return 50
-  
+
   const age = new Date().getFullYear() - yearBuilt
   if (age < 10) return 15
   if (age < 20) return 25
@@ -561,7 +561,7 @@ function isCoastalProperty(propertyData: any): boolean {
 
 function generateMitigationRecommendations(hurricaneRisk: number, floodRisk: number, ageRisk: number): Record<string, any> {
   const recommendations: Record<string, any> = {}
-  
+
   if (hurricaneRisk > 50) {
     recommendations.hurricane = [
       "Install hurricane shutters or impact windows",
@@ -570,7 +570,7 @@ function generateMitigationRecommendations(hurricaneRisk: number, floodRisk: num
       "Consider backup power generation"
     ]
   }
-  
+
   if (floodRisk > 40) {
     recommendations.flood = [
       "Consider flood insurance",
@@ -579,7 +579,7 @@ function generateMitigationRecommendations(hurricaneRisk: number, floodRisk: num
       "Use flood-resistant materials"
     ]
   }
-  
+
   if (ageRisk > 40) {
     recommendations.maintenance = [
       "Update electrical systems to current code",
@@ -588,7 +588,7 @@ function generateMitigationRecommendations(hurricaneRisk: number, floodRisk: num
       "Consider roof inspection and updates"
     ]
   }
-  
+
   return recommendations
 }
 

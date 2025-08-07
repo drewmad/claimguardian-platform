@@ -7,7 +7,7 @@ echo "📦 Starting dependency installation..."
 try_install() {
   local method=$1
   echo "🔄 Attempting: $method"
-  
+
   case $method in
     "standard")
       pnpm install --no-frozen-lockfile
@@ -21,7 +21,7 @@ try_install() {
       pnpm install --force
       ;;
   esac
-  
+
   return $?
 }
 

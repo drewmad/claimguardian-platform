@@ -188,7 +188,7 @@ const selection = await orchestrator.selectProvider({
   taskType: 'vision-analysis',
   factors: {
     cost: 0.3,        // Cost optimization weight
-    speed: 0.4,       // Response time weight  
+    speed: 0.4,       // Response time weight
     accuracy: 0.3     // Quality weight
   }
 })
@@ -274,7 +274,7 @@ logger.info('AI task completed', {
 OPENAI_API_KEY=sk-...
 GEMINI_API_KEY=...
 
-# Cache Configuration  
+# Cache Configuration
 REDIS_URL=redis://localhost:6379
 CACHE_TTL=3600
 

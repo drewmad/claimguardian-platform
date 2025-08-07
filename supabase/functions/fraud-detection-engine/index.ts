@@ -200,7 +200,7 @@ async function performFraudAnalysis(
     const historicalPatterns = analyzeHistoricalPatterns(data.historical)
     fraudScore += historicalPatterns.score
     behavioralPatterns.push(...historicalPatterns.patterns)
-    
+
     if (historicalPatterns.suspicious) {
       fraudIndicators.push({
         type: 'Historical Pattern',
@@ -299,7 +299,7 @@ function analyzeClaimTiming(claim: any): { score: number; suspicious: boolean; i
     const policyStart = new Date(claim.policy_start_date)
     const claimDate = new Date(claim.created_at)
     const daysSincePolicyStart = (claimDate.getTime() - policyStart.getTime()) / (1000 * 60 * 60 * 24)
-    
+
     if (daysSincePolicyStart < 30) {
       score += 25
       suspicious = true
@@ -312,7 +312,7 @@ function analyzeClaimTiming(claim: any): { score: number; suspicious: boolean; i
     const policyEnd = new Date(claim.policy_end_date)
     const claimDate = new Date(claim.created_at)
     const daysBeforePolicyEnd = (policyEnd.getTime() - claimDate.getTime()) / (1000 * 60 * 60 * 24)
-    
+
     if (daysBeforePolicyEnd < 30 && daysBeforePolicyEnd > 0) {
       score += 15
       suspicious = true
@@ -378,7 +378,7 @@ function analyzeDamagePatterns(description: string): { score: number; indicators
     'extensive damage',
     'needs complete replacement'
   ]
-  
+
   const matchedPhrases = commonFraudPhrases.filter(p => lowerDesc.includes(p))
   if (matchedPhrases.length > 2) {
     score += 15
@@ -402,7 +402,7 @@ function analyzeHistoricalPatterns(claims: any[]): any {
 
   // Frequency analysis
   const claimFrequency = claims.length
-  const timeSpan = claims.length > 1 
+  const timeSpan = claims.length > 1
     ? (new Date(claims[0].created_at).getTime() - new Date(claims[claims.length - 1].created_at).getTime()) / (1000 * 60 * 60 * 24 * 365)
     : 1
   const claimsPerYear = claimFrequency / Math.max(timeSpan, 1)
@@ -534,7 +534,7 @@ function analyzeFloridaSpecificPatterns(data: any): { score: number; flags: Flor
   if (data.claim?.damage_type === 'hurricane' || data.claim?.damage_type === 'wind') {
     const claimDate = new Date(data.claim?.created_at)
     const isPostStorm = checkIfPostStorm(claimDate)
-    
+
     if (isPostStorm && data.additional?.contractor_from_out_of_state) {
       score += 20
       flags.push({
@@ -643,7 +643,7 @@ function analyzeBehavior(user: any, claims: any[]): { score: number; patterns: B
     const lastUpdate = new Date(user.last_updated)
     const firstClaim = new Date(claims[0].created_at)
     const daysBetween = (firstClaim.getTime() - lastUpdate.getTime()) / (1000 * 60 * 60 * 24)
-    
+
     if (daysBetween < 7 && daysBetween > 0) {
       score += 10
       patterns.push({
@@ -669,11 +669,11 @@ function checkIfPostStorm(date: Date): boolean {
 
 function calculateEstimateVariance(estimates: number[]): number {
   if (estimates.length < 2) return 0
-  
+
   const mean = estimates.reduce((sum, val) => sum + val, 0) / estimates.length
   const variance = estimates.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / estimates.length
   const stdDev = Math.sqrt(variance)
-  
+
   return stdDev / mean // Coefficient of variation
 }
 

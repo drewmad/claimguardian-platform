@@ -88,7 +88,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
 
       setDisasterAlerts(disasters)
       setWeatherAlerts(weather)
-      
+
       // Mock system notifications
       setSystemNotifications([
         {
@@ -143,7 +143,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
         canAskAgain: false
       })
       setShowPermissionModal(false)
-      
+
       // Initialize push notification service
       await pushNotificationService.initialize()
     } else {
@@ -237,7 +237,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
     switch (activeTab) {
       case 'alerts':
         return (
-          <ScrollView 
+          <ScrollView
             style={styles.tabContent}
             refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
           >
@@ -271,7 +271,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
 
       case 'notifications':
         return (
-          <ScrollView 
+          <ScrollView
             style={styles.tabContent}
             refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={handleRefresh} />}
           >
@@ -317,7 +317,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
             {/* Notification Types */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Notification Types</Text>
-              
+
               <View style={styles.settingItem}>
                 <Text style={styles.settingLabel}>Disaster Alerts</Text>
                 <Switch
@@ -362,7 +362,7 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
             {/* Notification Behavior */}
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Notification Behavior</Text>
-              
+
               <View style={styles.settingItem}>
                 <Text style={styles.settingLabel}>Sound</Text>
                 <Switch
@@ -432,9 +432,9 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
         >
           <Ionicons name="arrow-back" size={24} color="#fff" />
         </TouchableOpacity>
-        
+
         <Text style={styles.headerTitle}>Notifications</Text>
-        
+
         <TouchableOpacity style={styles.headerAction}>
           <Ionicons name="ellipsis-horizontal" size={24} color="#fff" />
         </TouchableOpacity>
@@ -446,10 +446,10 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
           style={[styles.tab, activeTab === 'alerts' && styles.activeTab]}
           onPress={() => setActiveTab('alerts')}
         >
-          <Ionicons 
-            name="warning" 
-            size={20} 
-            color={activeTab === 'alerts' ? '#4CAF50' : '#666'} 
+          <Ionicons
+            name="warning"
+            size={20}
+            color={activeTab === 'alerts' ? '#4CAF50' : '#666'}
           />
           <Text style={[styles.tabText, activeTab === 'alerts' && styles.activeTabText]}>
             Alerts
@@ -460,10 +460,10 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
           style={[styles.tab, activeTab === 'notifications' && styles.activeTab]}
           onPress={() => setActiveTab('notifications')}
         >
-          <Ionicons 
-            name="notifications" 
-            size={20} 
-            color={activeTab === 'notifications' ? '#4CAF50' : '#666'} 
+          <Ionicons
+            name="notifications"
+            size={20}
+            color={activeTab === 'notifications' ? '#4CAF50' : '#666'}
           />
           <Text style={[styles.tabText, activeTab === 'notifications' && styles.activeTabText]}>
             Updates
@@ -474,10 +474,10 @@ export function NotificationCenter({ onClose }: NotificationCenterProps) {
           style={[styles.tab, activeTab === 'settings' && styles.activeTab]}
           onPress={() => setActiveTab('settings')}
         >
-          <Ionicons 
-            name="settings" 
-            size={20} 
-            color={activeTab === 'settings' ? '#4CAF50' : '#666'} 
+          <Ionicons
+            name="settings"
+            size={20}
+            color={activeTab === 'settings' ? '#4CAF50' : '#666'}
           />
           <Text style={[styles.tabText, activeTab === 'settings' && styles.activeTabText]}>
             Settings

@@ -16,7 +16,7 @@ if (!API_TOKEN) {
 async function executeSQL(sql, description) {
   try {
     console.log(`\n📄 ${description}...`);
-    
+
     const response = await fetch(`https://api.supabase.com/v1/projects/${PROJECT_ID}/database/query`, {
       method: 'POST',
       headers: {
@@ -27,7 +27,7 @@ async function executeSQL(sql, description) {
     });
 
     const result = await response.json();
-    
+
     if (response.ok) {
       console.log(`✅ ${description} - Success`);
       return { success: true };
@@ -49,7 +49,7 @@ async function applyFixes() {
 
   // Read and apply fix migration
   const migrationPath = path.join(__dirname, '../supabase/migrations_ai/023_fix_parcels_stats_final.sql');
-  
+
   if (!fs.existsSync(migrationPath)) {
     console.error('❌ Migration file not found');
     return;
@@ -60,10 +60,10 @@ async function applyFixes() {
 
   if (result.success) {
     console.log('\n🎉 Function fixes applied successfully!');
-    
+
     // Test the fixed functions
     console.log('\n🧪 Testing fixed functions...');
-    
+
     const tests = [
       {
         name: 'Test fixed statistics function',
@@ -92,7 +92,7 @@ async function applyFixes() {
     console.log('  ✓ Performance indexes on key fields');
     console.log('  ✓ Row Level Security enabled');
     console.log('  ✓ Connected to florida_counties reference table');
-    
+
   } else {
     console.log('\n⚠️  Fix migration failed. Please check the error above.');
   }

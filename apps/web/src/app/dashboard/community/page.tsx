@@ -10,7 +10,7 @@
  */
 'use client'
 
-import { 
+import {
   Users, MessageSquare, AlertTriangle, Shield, Calendar,
   MapPin, Phone, Globe, ChevronRight, Bell, ThumbsUp,
   Share2, Heart, TrendingUp, Info, Building,
@@ -64,7 +64,7 @@ interface LocalResource {
 
 function CommunityDashboardContent() {
   const router = useRouter() // eslint-disable-line @typescript-eslint/no-unused-vars
-  
+
   // Mock data
   const [posts] = useState<CommunityPost[]>([
     {
@@ -224,7 +224,7 @@ function CommunityDashboardContent() {
                 <p className="text-sm text-gray-400">Neighborhood</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -235,7 +235,7 @@ function CommunityDashboardContent() {
                 <p className="text-sm text-gray-400">Discussions</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -246,7 +246,7 @@ function CommunityDashboardContent() {
                 <p className="text-sm text-gray-400">Safety Score</p>
               </CardContent>
             </Card>
-            
+
             <Card className="bg-gray-800 border-gray-700">
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-2">
@@ -349,7 +349,7 @@ function CommunityDashboardContent() {
                                   <p className="text-sm text-gray-300">{post.content}</p>
                                 </div>
                               </div>
-                              
+
                               <div className="flex flex-wrap gap-2 mb-3">
                                 {post.tags.map((tag, index) => (
                                   <span key={index} className="text-xs bg-gray-600 text-gray-300 px-2 py-1 rounded">
@@ -357,7 +357,7 @@ function CommunityDashboardContent() {
                                   </span>
                                 ))}
                               </div>
-                              
+
                               <div className="flex items-center justify-between">
                                 <div className="flex items-center gap-4">
                                   <button className={`flex items-center gap-1 ${
@@ -383,7 +383,7 @@ function CommunityDashboardContent() {
                       )
                     })}
                   </div>
-                  
+
                   <button className="w-full mt-4 p-3 bg-gray-700 hover:bg-gray-600 rounded-lg text-center text-gray-300">
                     Load More Posts
                   </button>
@@ -446,7 +446,7 @@ function CommunityDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Megaphone className="w-5 h-5 text-purple-400" />
@@ -454,7 +454,7 @@ function CommunityDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Calendar className="w-5 h-5 text-green-400" />
@@ -462,7 +462,7 @@ function CommunityDashboardContent() {
                       </div>
                       <ChevronRight className="w-4 h-4 text-gray-400" />
                     </button>
-                    
+
                     <button className="w-full text-left p-3 bg-gray-700 hover:bg-gray-600 rounded-lg transition-colors flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <Building className="w-5 h-5 text-cyan-400" />

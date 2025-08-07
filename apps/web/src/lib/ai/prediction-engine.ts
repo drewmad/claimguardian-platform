@@ -142,7 +142,7 @@ export class PredictionEngine {
   ): Promise<ClaimPrediction> {
     try {
       const supabase = await createClient()
-      
+
       // Fetch property data
       const { data: property } = await supabase
         .from('properties')
@@ -236,7 +236,7 @@ export class PredictionEngine {
   ): Promise<DamageCostEstimation> {
     try {
       const supabase = await createClient()
-      
+
       // Fetch property details
       const { data: property } = await supabase
         .from('properties')
@@ -254,7 +254,7 @@ export class PredictionEngine {
 
       // Market data analysis
       const marketData = await this.analyzeMarketData((property as any).city, (property as any).state)
-      
+
       // Cost calculation with ML model
       const baseCost = this.calculateBaseCost(damageType, severity, property)
       const adjustedCost = this.applyMarketFactors(baseCost, marketData)
@@ -304,7 +304,7 @@ export class PredictionEngine {
   ): Promise<SettlementRecommendation> {
     try {
       const supabase = await createClient()
-      
+
       // Fetch claim details
       const { data: claim } = await supabase
         .from('claims')
@@ -326,7 +326,7 @@ export class PredictionEngine {
 
       // Market analysis
       const marketAnalysis = await this.performMarketAnalysis(claim.properties.city, claim.properties.state)
-      
+
       // ML-powered settlement calculation
       const recommendedAmount = await this.calculateOptimalSettlement(claim, comparableSettlements || [], marketAnalysis)
       const justification = this.generateJustification(claim, recommendedAmount, marketAnalysis)
@@ -367,7 +367,7 @@ export class PredictionEngine {
   async predictMaintenanceNeeds(propertyId: string, userId: string): Promise<MaintenancePrediction[]> {
     try {
       const supabase = await createClient()
-      
+
       // Fetch property and maintenance history
       const { data: property } = await supabase
         .from('properties')
@@ -441,7 +441,7 @@ export class PredictionEngine {
   // Private helper methods for AI calculations
   private async analyzeRiskFactors(property: any, claims: any[], similarProperties: any[]): Promise<RiskFactor[]> {
     const factors: RiskFactor[] = []
-    
+
     // Environmental factors
     if ((property as any).metadata?.flood_zone && (property as any).metadata.flood_zone !== 'X') {
       factors.push({
@@ -479,11 +479,11 @@ export class PredictionEngine {
 
   private async calculateLikelihoodScore(property: any, riskFactors: RiskFactor[], context?: unknown): Promise<number> {
     let baseScore = 20
-    
+
     // Risk factor contributions
     const riskContribution = riskFactors.reduce((sum, factor) => sum + factor.impact_score, 0) / riskFactors.length
     baseScore += (riskContribution * 0.4)
-    
+
     // Property type factors
     const propertyTypeMultipliers = {
       'single_family': 1.0,
@@ -491,32 +491,32 @@ export class PredictionEngine {
       'townhouse': 0.9,
       'mobile_home': 1.4
     }
-    
+
     baseScore *= propertyTypeMultipliers[(property as any).property_type as keyof typeof propertyTypeMultipliers] || 1.0
-    
+
     // Cap at 95 to maintain realism
     return Math.min(Math.round(baseScore), 95)
   }
 
   private async estimateClaimCost(property: any, riskFactors: RiskFactor[]): Promise<number> {
     let baseCost = 5000 // Base claim cost
-    
+
     // Property value factor
     if ((property as any).current_value) {
       baseCost = (property as any).current_value * 0.05 // 5% of property value
     }
-    
+
     // Risk factor adjustments
-    const riskMultiplier = riskFactors.reduce((mult, factor) => 
+    const riskMultiplier = riskFactors.reduce((mult, factor) =>
       mult + (factor.impact_score / 100 * 0.1), 1
     )
-    
+
     return Math.round(baseCost * riskMultiplier)
   }
 
   private generateRecommendedActions(riskFactors: RiskFactor[], property: any): RecommendedAction[] {
     const actions: RecommendedAction[] = []
-    
+
     // Generate actions based on risk factors
     riskFactors.forEach(factor => {
       factor.mitigation_suggestions.forEach(suggestion => {
@@ -529,7 +529,7 @@ export class PredictionEngine {
         })
       })
     })
-    
+
     return actions
   }
 
@@ -547,7 +547,7 @@ export class PredictionEngine {
       'wind': { minor: 1500, moderate: 6000, major: 20000, severe: 80000 },
       'hail': { minor: 3000, moderate: 10000, major: 30000, severe: 100000 }
     }
-    
+
     return (baseCosts as any)[damageType]?.[severity] || 10000
   }
 
@@ -582,9 +582,9 @@ export class PredictionEngine {
       'wind': { minor: 2, moderate: 5, major: 14, severe: 45 },
       'hail': { minor: 3, moderate: 7, major: 21, severe: 60 }
     }
-    
+
     const repairDays = (timelines as any)[damageType]?.[severity] || 14
-    
+
     return {
       inspection_days: 2,
       repair_days: repairDays,
@@ -678,12 +678,12 @@ export class PredictionEngine {
   private async analyzeSystemMaintenance(property: any, system: string, history: any[]): Promise<MaintenancePrediction | null> {
     const systemAge = this.calculateSystemAge(property, system)
     const lastMaintenance = this.getLastMaintenanceDate(history, system)
-    
+
     if (systemAge < 5 && !lastMaintenance) return null // Too new, no prediction needed
-    
+
     const failureProbability = this.calculateFailureProbability(systemAge, lastMaintenance)
     const predictedDate = this.calculatePredictedFailureDate(systemAge, lastMaintenance)
-    
+
     return {
       id: crypto.randomUUID(),
       property_id: (property as any).id,
@@ -702,32 +702,32 @@ export class PredictionEngine {
   }
 
   private getLastMaintenanceDate(history: any[], system: string): Date | null {
-    const systemMaintenance = history.filter(h => 
-      h.description?.toLowerCase().includes(system) || 
+    const systemMaintenance = history.filter(h =>
+      h.description?.toLowerCase().includes(system) ||
       h.tags?.includes(system)
     )
-    
+
     if (systemMaintenance.length === 0) return null
-    
+
     return new Date(Math.max(...systemMaintenance.map(m => new Date(m.created_at).getTime())))
   }
 
   private calculateFailureProbability(age: number, lastMaintenance: Date | null): number {
     let baseProbability = Math.min(age * 5, 90) // Age factor
-    
+
     if (lastMaintenance) {
       const daysSinceLastMaintenance = (Date.now() - lastMaintenance.getTime()) / (1000 * 60 * 60 * 24)
       const maintenanceBonus = Math.max(20 - (daysSinceLastMaintenance / 30), 0)
       baseProbability -= maintenanceBonus
     }
-    
+
     return Math.max(Math.min(baseProbability, 95), 5)
   }
 
   private calculatePredictedFailureDate(age: number, lastMaintenance: Date | null): Date {
     const baseMonths = Math.max(60 - (age * 3), 6) // Older systems fail sooner
     const randomVariation = (Math.random() - 0.5) * 12 // ±6 months variation
-    
+
     const monthsUntilFailure = baseMonths + randomVariation
     return new Date(Date.now() + (monthsUntilFailure * 30 * 24 * 60 * 60 * 1000))
   }
@@ -740,10 +740,10 @@ export class PredictionEngine {
       'plumbing': 2500,
       'structural': 15000
     }
-    
+
     const baseCost = (baseCosts as any)[system] || 5000
     const propertyValueMultiplier = ((property as any).current_value || 200000) / 200000
-    
+
     return Math.round(baseCost * propertyValueMultiplier)
   }
 
@@ -758,13 +758,13 @@ export class PredictionEngine {
         { action: 'Inspect and seal roof penetrations', cost: 300, time_to_complete: '3 hours', effectiveness: 85, savings_potential: 2000 }
       ]
     }
-    
+
     return (actions as any)[system] || []
   }
 
   private determineUrgencyLevel(predictedDate: Date, probability: number): 'low' | 'medium' | 'high' | 'critical' {
     const monthsUntilFailure = (predictedDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24 * 30)
-    
+
     if (monthsUntilFailure < 3 && probability > 80) return 'critical'
     if (monthsUntilFailure < 6 && probability > 60) return 'high'
     if (monthsUntilFailure < 12 && probability > 40) return 'medium'
@@ -780,7 +780,7 @@ export class PredictionEngine {
       'update aging systems': 8000,
       'consider major renovations': 25000
     }
-    
+
     return (costEstimates as any)[action.toLowerCase()] || 1000
   }
 }

@@ -7,7 +7,7 @@ cd /Users/madengineering/ClaimGuardian/data/florida/charlotte_chunks
 # Process each file
 for file in charlotte_part_*.csv; do
     echo "Processing $file..."
-    
+
     # Generate SQL file
     python3 -c "
 import csv
@@ -23,7 +23,7 @@ row_count = 0
 
 with open('$file', 'r') as f:
     reader = csv.DictReader(f)
-    
+
     values = []
     for row in reader:
         # Skip if this looks like a header row
@@ -32,18 +32,18 @@ with open('$file', 'r') as f:
         row_count += 1
         val = f\"({row.get('CO_NO', 18)}, {escape_sql(row.get('PARCEL_ID'))}, {escape_sql(row.get('OWN_NAME', 'UNKNOWN'))}, {escape_sql(row.get('PHY_ADDR1'))}, {escape_sql(row.get('PHY_CITY'))}, {escape_sql(row.get('PHY_ZIPCD'))}, {row.get('LND_VAL') or 'NULL'}, {row.get('JV') or 'NULL'})\"
         values.append(val)
-        
+
         if len(values) >= batch_size:
             with open(f'${file%.csv}_batch_{batch_num}.sql', 'w') as out:
                 out.write('-- Batch ' + str(batch_num) + ' of ' + '$file' + '\\n')
                 out.write('INSERT INTO florida_parcels (co_no, parcel_id, own_name, phy_addr1, phy_city, phy_zipcd, lnd_val, jv) VALUES\\n')
                 out.write(',\\n'.join(values))
                 out.write('\\nON CONFLICT DO NOTHING;\\n')
-            
+
             values = []
             batch_num += 1
             print(f'  Created ${file%.csv}_batch_{batch_num-1}.sql')
-    
+
     # Final batch
     if values:
         with open(f'${file%.csv}_batch_{batch_num}.sql', 'w') as out:

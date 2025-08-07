@@ -32,10 +32,10 @@ interface OCRScannerProps {
   showHistory?: boolean
 }
 
-export function OCRScanner({ 
-  onScanComplete, 
+export function OCRScanner({
+  onScanComplete,
   documentType = 'receipt',
-  showHistory = true 
+  showHistory = true
 }: OCRScannerProps) {
   const [isProcessing, setIsProcessing] = useState(false)
   const [result, setResult] = useState<OCRResult | null>(null)
@@ -91,11 +91,11 @@ export function OCRScanner({
       })
 
       setResult(ocrResult)
-      
+
       if (ocrResult.success) {
         toast.success('Document processed successfully!')
         onScanComplete?.(ocrResult)
-        
+
         // Reload usage and history
         await loadUsageInfo()
         if (showHistory) {
@@ -121,7 +121,7 @@ export function OCRScanner({
 
   const handleCameraCapture = async (file: File) => {
     setShowCamera(false)
-    
+
     processFile(file)
   }
 
@@ -148,7 +148,7 @@ export function OCRScanner({
                 <p className="font-medium">{receipt.date || 'N/A'}</p>
               </div>
             </div>
-            
+
             {receipt.items && receipt.items.length > 0 && (
               <div>
                 <p className="text-sm text-gray-500 mb-2">Items</p>
@@ -162,7 +162,7 @@ export function OCRScanner({
                 </div>
               </div>
             )}
-            
+
             <div className="border-t pt-4 space-y-1">
               {receipt.subtotal !== undefined && (
                 <div className="flex justify-between text-sm">
@@ -183,7 +183,7 @@ export function OCRScanner({
             </div>
           </div>
         )
-      
+
       default:
         return (
           <pre className="text-xs bg-gray-50 p-3 rounded overflow-auto max-h-96">
@@ -200,7 +200,7 @@ export function OCRScanner({
         <CardHeader>
           <CardTitle>OCR Usage</CardTitle>
           <CardDescription>
-            {usage.limit === -1 
+            {usage.limit === -1
               ? 'Unlimited OCR scans with your Pro plan'
               : `${usage.remaining} of ${usage.limit} scans remaining this month`}
           </CardDescription>
@@ -232,7 +232,7 @@ export function OCRScanner({
                   <Camera className="w-4 h-4 mr-2" />
                   Use Camera
                 </Button>
-                
+
                 <Button
                   variant="outline"
                   disabled={usage.remaining === 0}
@@ -325,7 +325,7 @@ export function OCRScanner({
                     <TabsTrigger value="structured">Structured Data</TabsTrigger>
                     <TabsTrigger value="text">Raw Text</TabsTrigger>
                   </TabsList>
-                  
+
                   <TabsContent value="structured" className="mt-4">
                     {result.structuredData ? (
                       renderStructuredData(result.structuredData)
@@ -333,7 +333,7 @@ export function OCRScanner({
                       <p className="text-sm text-gray-500">No structured data extracted</p>
                     )}
                   </TabsContent>
-                  
+
                   <TabsContent value="text" className="mt-4">
                     <div className="bg-gray-50 p-4 rounded">
                       <pre className="text-sm whitespace-pre-wrap">{result.text || 'No text extracted'}</pre>

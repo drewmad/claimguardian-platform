@@ -66,7 +66,7 @@ if supabase db push "$SQL_FILE" --project-ref "$PROJECT_ID" 2>/dev/null; then
     echo -e "${GREEN}✓ Policies applied successfully via CLI${NC}"
 else
     echo -e "${YELLOW}CLI method failed, trying alternative approach...${NC}"
-    
+
     # Method 2: Use psql if available
     if [ -n "${DATABASE_URL:-}" ]; then
         echo -e "${BLUE}Method 2: Using psql direct connection...${NC}"
@@ -93,7 +93,7 @@ cat > /tmp/verify-rls-policies.sql << 'EOF'
 -- Verify RLS Policies
 
 -- Count policies per table
-SELECT 
+SELECT
     tablename,
     COUNT(*) as policy_count,
     STRING_AGG(policyname, ', ' ORDER BY policyname) as policies
@@ -104,11 +104,11 @@ ORDER BY tablename;
 
 -- Check for tables still missing policies
 WITH rls_tables AS (
-    SELECT 
+    SELECT
         c.relname as table_name
     FROM pg_class c
     JOIN pg_namespace n ON n.oid = c.relnamespace
-    WHERE n.nspname = 'public' 
+    WHERE n.nspname = 'public'
         AND c.relkind = 'r'
         AND c.relrowsecurity = true
 ),
@@ -117,7 +117,7 @@ policy_tables AS (
     FROM pg_policies
     WHERE schemaname = 'public'
 )
-SELECT 
+SELECT
     rt.table_name as "Tables still missing policies"
 FROM rls_tables rt
 LEFT JOIN policy_tables pt ON pt.tablename = rt.table_name

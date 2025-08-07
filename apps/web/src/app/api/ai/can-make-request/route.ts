@@ -21,15 +21,15 @@ export async function POST(request: NextRequest) {
     const { toolName = 'general' } = body
 
     const canMakeRequest = await costTrackingService.canUserMakeRequest(toolName)
-    
+
     return NextResponse.json(canMakeRequest)
 
   } catch (error) {
     console.error('Failed to check request limits:', error)
     return NextResponse.json(
-      { 
-        allowed: false, 
-        reason: 'Unable to verify request limits' 
+      {
+        allowed: false,
+        reason: 'Unable to verify request limits'
       },
       { status: 500 }
     )

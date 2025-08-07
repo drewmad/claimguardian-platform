@@ -23,16 +23,16 @@ interface DepreciationTrackerProps {
   showDetails?: boolean
 }
 
-export function DepreciationTracker({ 
-  purchasePrice, 
-  purchaseDate, 
+export function DepreciationTracker({
+  purchasePrice,
+  purchaseDate,
   category,
   compact = false,
   showDetails = true
 }: DepreciationTrackerProps) {
   const depreciation = calculateDepreciation(purchasePrice, purchaseDate, category)
   const schedule = DEPRECIATION_SCHEDULES[category] || DEPRECIATION_SCHEDULES.electronics
-  
+
   const valueRetentionPercent = (depreciation.currentValue / purchasePrice) * 100
   const isAppreciating = depreciation.currentValue > purchasePrice
 
@@ -98,8 +98,8 @@ export function DepreciationTracker({
             )}
           </p>
         </div>
-        <Badge 
-          variant="outline" 
+        <Badge
+          variant="outline"
           className={cn(
             "mt-2",
             isAppreciating ? "border-green-600 text-green-400" : "border-gray-600 text-gray-400"
@@ -116,7 +116,7 @@ export function DepreciationTracker({
           <span className="text-white font-medium">{valueRetentionPercent.toFixed(0)}%</span>
         </div>
         <div className="relative h-2 w-full overflow-hidden rounded-full bg-gray-700">
-          <div 
+          <div
             className={cn(
               "h-full w-full flex-1 transition-all",
               valueRetentionPercent > 75 ? "bg-green-500" :

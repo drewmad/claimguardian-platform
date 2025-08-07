@@ -37,10 +37,10 @@ module.exports = {
         success: '#16a34a', // green-600
         error: '#f43f5e', // red-500
         warning: '#f59e0b', // amber-500 - Added for better UX
-        
+
         // Legacy colors (keeping for compatibility)
         bgPrimary: '#121212',
-        bgSecondary: '#1E1E1E', 
+        bgSecondary: '#1E1E1E',
         bgTertiary: '#2A2A2A',
         textPrimary: '#FFFFFF',
         textSecondary: '#E2E8F0', // Updated for accessibility
@@ -53,7 +53,7 @@ module.exports = {
         },
         // ClaimGuardian brand palette
         'brand-gunmetal': '#2B2D42',
-        'brand-royal': '#0038A8', 
+        'brand-royal': '#0038A8',
         'brand-neon': '#39FF14',
         'brand-crimson': '#DC143C',
       },

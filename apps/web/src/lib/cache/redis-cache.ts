@@ -123,7 +123,7 @@ class RedisCacheManager {
     }
 
     this.updateMetrics()
-    
+
     if (freedMemory > 0) {
       console.log(`[Cache] Cleaned up ${freedMemory} bytes`)
     }
@@ -147,7 +147,7 @@ class RedisCacheManager {
       if (this.metrics.totalSize - freedMemory <= targetSize) {
         break
       }
-      
+
       freedMemory += entry.size
       this.cache.delete(key)
     }
@@ -162,9 +162,9 @@ class RedisCacheManager {
   private updateMetrics(): void {
     this.metrics.totalSize = Array.from(this.cache.values())
       .reduce((sum, entry) => sum + entry.size, 0)
-    
+
     this.metrics.entryCount = this.cache.size
-    
+
     if (this.metrics.hits + this.metrics.misses > 0) {
       this.metrics.hitRate = this.metrics.hits / (this.metrics.hits + this.metrics.misses)
     }
@@ -182,7 +182,7 @@ class RedisCacheManager {
     }
 
     const entry = this.cache.get(key)
-    
+
     if (!entry || this.isExpired(entry)) {
       this.metrics.misses++
       this.updateMetrics()
@@ -192,9 +192,9 @@ class RedisCacheManager {
     // Update access statistics
     entry.hitCount++
     entry.lastAccessed = Date.now()
-    
+
     this.metrics.hits++
-    this.metrics.avgResponseTime = 
+    this.metrics.avgResponseTime =
       (this.metrics.avgResponseTime + (Date.now() - startTime)) / 2
 
     this.updateMetrics()
@@ -213,8 +213,8 @@ class RedisCacheManager {
    * Set data in cache
    */
   async set<T = unknown>(
-    key: string, 
-    data: T, 
+    key: string,
+    data: T,
     options: CacheOptions = {}
   ): Promise<void> {
     const {
@@ -225,7 +225,7 @@ class RedisCacheManager {
 
     try {
       let dataStr = JSON.stringify(data)
-      
+
       if (compress) {
         dataStr = this.compressData(dataStr)
       }
@@ -369,16 +369,16 @@ export const CACHE_CONFIGS = {
   // Static/reference data - long TTL
   legal_documents: { ttl: 24 * 60 * 60 * 1000, tags: ['legal'] }, // 24 hours
   ai_models: { ttl: 60 * 60 * 1000, tags: ['ai', 'config'] }, // 1 hour
-  
+
   // User data - medium TTL with user tags
   properties: { ttl: 30 * 60 * 1000, tags: ['user-data', 'properties'] }, // 30 minutes
   claims: { ttl: 15 * 60 * 1000, tags: ['user-data', 'claims'] }, // 15 minutes
   policies: { ttl: 60 * 60 * 1000, tags: ['user-data', 'policies'] }, // 1 hour
-  
+
   // Analytics data - short TTL
   ai_usage: { ttl: 5 * 60 * 1000, tags: ['analytics', 'ai'] }, // 5 minutes
   cost_tracking: { ttl: 10 * 60 * 1000, tags: ['analytics', 'costs'] }, // 10 minutes
-  
+
   // Real-time data - very short TTL
   monitoring: { ttl: 2 * 60 * 1000, tags: ['realtime'] }, // 2 minutes
   health_status: { ttl: 1 * 60 * 1000, tags: ['realtime', 'health'] }, // 1 minute
@@ -411,7 +411,7 @@ export function withCache<T extends any[], R>(
 
     descriptor.value = async function(...args: T): Promise<R> {
       const cacheKey = keyGenerator(...args)
-      
+
       return cacheManager.cacheWrapper(
         cacheKey,
         () => originalMethod.apply(this, args),

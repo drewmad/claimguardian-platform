@@ -13,7 +13,7 @@ import { claudeErrorLogger, claudeErrorHelpers, ClaudeErrorContext } from './cla
 
 /**
  * Example: How to integrate Claude error logging into development workflow
- * 
+ *
  * This file demonstrates best practices for using the Claude error logging system
  * to help Claude learn from mistakes and improve over time.
  */
@@ -37,9 +37,9 @@ export async function exampleCodeGenerationError() {
       'typescript',
       'Generate claims list component with filtering'
     )
-    
+
     console.log('Claude error logged:', errorId)
-    
+
     // Later, when we fix the error, mark it as resolved
     await claudeErrorLogger.resolveError(
       errorId!,
@@ -63,7 +63,7 @@ export async function exampleFileModificationError() {
       'Fix createClaim function signature',
       ['Edit', 'Read']
     )
-    
+
     // Mark as resolved with the correct approach
     await claudeErrorLogger.resolveError(
       errorId!,
@@ -82,7 +82,7 @@ export async function exampleAnalysisError() {
     'Build automated claim approval system',
     'assumed-automation-needed'
   )
-  
+
   await claudeErrorLogger.resolveError(
     errorId!,
     'Ask clarifying questions about automation scope and human oversight requirements',
@@ -101,12 +101,12 @@ export async function exampleLearningRetrieval() {
     codeLanguage: 'typescript',
     framework: 'react'
   })
-  
+
   console.log('Relevant learnings for React TypeScript component generation:')
   learnings.forEach(learning => {
     console.log(`- ${learning.pattern_name}: ${learning.solution_pattern}`)
   })
-  
+
   // Use these learnings to avoid previous mistakes
   if (learnings.length > 0) {
     console.log('Applying previous learnings to avoid common mistakes...')
@@ -144,7 +144,7 @@ export async function exampleComprehensiveError() {
       },
       'high'
     )
-    
+
     // Record the learning when resolved
     await claudeErrorLogger.resolveError(
       errorId!,
@@ -160,7 +160,7 @@ export async function exampleComprehensiveError() {
 export async function examplePatternAnalysis() {
   // Get error patterns for the last week
   const patterns = await claudeErrorLogger.getErrorPatterns('week')
-  
+
   console.log('Most common Claude error patterns:')
   patterns.forEach(pattern => {
     console.log(`
@@ -239,7 +239,7 @@ export function useClaudeErrorTracking(componentName: string, codeContext?: Clau
       codebaseContext: codeContext
     })
   }
-  
+
   return { logComponentError }
 }
 
@@ -264,7 +264,7 @@ export async function checkClaudeLearningsBeforeTask(
     framework: context.framework,
     codeLanguage: context.language
   })
-  
+
   if (learnings.length > 0) {
     console.log(`🧠 Found ${learnings.length} relevant Claude learnings for this task:`)
     learnings.forEach(learning => {
@@ -272,7 +272,7 @@ export async function checkClaudeLearningsBeforeTask(
     })
     return learnings
   }
-  
+
   return []
 }
 
@@ -283,7 +283,7 @@ export async function showClaudeLearningStats() {
   const patterns = await claudeErrorLogger.getErrorPatterns('month')
   const totalErrors = patterns.reduce((sum, p) => sum + p.count, 0)
   const totalResolved = patterns.reduce((sum, p) => sum + p.resolved, 0)
-  
+
   console.log(`
 🤖 Claude Learning Statistics (Last 30 days):
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -292,7 +292,7 @@ Resolved: ${totalResolved}
 Resolution Rate: ${((totalResolved / totalErrors) * 100).toFixed(1)}%
 
 Top Error Patterns:
-${patterns.slice(0, 5).map(p => 
+${patterns.slice(0, 5).map(p =>
   `  • ${p.pattern}: ${p.count} occurrences (${p.resolved} resolved)`
 ).join('\n')}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━

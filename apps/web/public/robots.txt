@@ -9,7 +9,7 @@ User-agent: GPTBot
 Allow: /
 Crawl-delay: 1
 
-User-agent: ChatGPT-User  
+User-agent: ChatGPT-User
 Allow: /
 Crawl-delay: 1
 

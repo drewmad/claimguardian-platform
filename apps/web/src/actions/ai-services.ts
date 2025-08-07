@@ -27,7 +27,7 @@ export async function generateClaimPrediction(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -48,8 +48,8 @@ export async function generateClaimPrediction(
 
     // Generate prediction
     const prediction = await predictionEngine.predictClaimLikelihood(
-      propertyId, 
-      user.id, 
+      propertyId,
+      user.id,
       contextData
     )
 
@@ -57,9 +57,9 @@ export async function generateClaimPrediction(
     return { data: prediction, error: null }
   } catch (error) {
     console.error('Failed to generate claim prediction:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to generate prediction' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to generate prediction'
     }
   }
 }
@@ -75,7 +75,7 @@ export async function estimateDamageRepairCost(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -106,9 +106,9 @@ export async function estimateDamageRepairCost(
     return { data: estimation, error: null }
   } catch (error) {
     console.error('Failed to estimate damage cost:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to estimate cost' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to estimate cost'
     }
   }
 }
@@ -119,7 +119,7 @@ export async function estimateDamageRepairCost(
 export async function generateSettlementRecommendation(claimId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -148,9 +148,9 @@ export async function generateSettlementRecommendation(claimId: string) {
     return { data: recommendation, error: null }
   } catch (error) {
     console.error('Failed to generate settlement recommendation:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to generate recommendation' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to generate recommendation'
     }
   }
 }
@@ -161,7 +161,7 @@ export async function generateSettlementRecommendation(claimId: string) {
 export async function predictMaintenanceNeeds(propertyId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -190,9 +190,9 @@ export async function predictMaintenanceNeeds(propertyId: string) {
     return { data: predictions, error: null }
   } catch (error) {
     console.error('Failed to predict maintenance needs:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to predict maintenance' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to predict maintenance'
     }
   }
 }
@@ -207,7 +207,7 @@ export async function classifyFieldDocumentation(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -238,9 +238,9 @@ export async function classifyFieldDocumentation(
     return { data: classification, error: null }
   } catch (error) {
     console.error('Failed to classify document:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to classify document' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to classify document'
     }
   }
 }
@@ -254,7 +254,7 @@ export async function analyzeDamageFromImage(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -272,9 +272,9 @@ export async function analyzeDamageFromImage(
     return { data: analysis, error: null }
   } catch (error) {
     console.error('Failed to analyze damage from image:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to analyze damage' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to analyze damage'
     }
   }
 }
@@ -290,7 +290,7 @@ export async function classifyInventoryItem(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -310,9 +310,9 @@ export async function classifyInventoryItem(
     return { data: classification, error: null }
   } catch (error) {
     console.error('Failed to classify inventory item:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to classify item' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to classify item'
     }
   }
 }
@@ -327,7 +327,7 @@ export async function autoTagDocumentation(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -352,9 +352,9 @@ export async function autoTagDocumentation(
     return { data: tags, error: null }
   } catch (error) {
     console.error('Failed to auto-tag documentation:', error)
-    return { 
-      data: existingTags, 
-      error: error instanceof Error ? error.message : 'Failed to generate tags' 
+    return {
+      data: existingTags,
+      error: error instanceof Error ? error.message : 'Failed to generate tags'
     }
   }
 }
@@ -369,7 +369,7 @@ export async function createAIWebhookSubscription(
 ) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -392,9 +392,9 @@ export async function createAIWebhookSubscription(
     return { data: result.data, error: null }
   } catch (error) {
     console.error('Failed to create webhook subscription:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to create subscription' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to create subscription'
     }
   }
 }
@@ -405,7 +405,7 @@ export async function createAIWebhookSubscription(
 export async function testWebhookEndpoint(subscriptionId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -418,9 +418,9 @@ export async function testWebhookEndpoint(subscriptionId: string) {
     return { data: result, error: null }
   } catch (error) {
     console.error('Failed to test webhook:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to test webhook' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to test webhook'
     }
   }
 }
@@ -431,7 +431,7 @@ export async function testWebhookEndpoint(subscriptionId: string) {
 export async function getAIPredictionHistory(propertyId: string) {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -453,9 +453,9 @@ export async function getAIPredictionHistory(propertyId: string) {
     return { data: predictions, error: null }
   } catch (error) {
     console.error('Failed to get prediction history:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get history' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get history'
     }
   }
 }
@@ -466,7 +466,7 @@ export async function getAIPredictionHistory(propertyId: string) {
 export async function getDamageAnalysisHistory() {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -488,9 +488,9 @@ export async function getDamageAnalysisHistory() {
     return { data: analyses, error: null }
   } catch (error) {
     console.error('Failed to get damage analysis history:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get history' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get history'
     }
   }
 }
@@ -501,7 +501,7 @@ export async function getDamageAnalysisHistory() {
 export async function getMaintenancePredictions() {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -531,9 +531,9 @@ export async function getMaintenancePredictions() {
     return { data: predictions, error: null }
   } catch (error) {
     console.error('Failed to get maintenance predictions:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get predictions' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get predictions'
     }
   }
 }
@@ -544,7 +544,7 @@ export async function getMaintenancePredictions() {
 export async function getWebhookSubscriptions() {
   try {
     const supabase = await createClient()
-    
+
     // Verify user authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
     if (authError || !user) {
@@ -565,9 +565,9 @@ export async function getWebhookSubscriptions() {
     return { data: subscriptions, error: null }
   } catch (error) {
     console.error('Failed to get webhook subscriptions:', error)
-    return { 
-      data: null, 
-      error: error instanceof Error ? error.message : 'Failed to get subscriptions' 
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to get subscriptions'
     }
   }
 }

@@ -62,7 +62,7 @@ scrape_configs:
             values: ["claimguardian.logging=enabled"]
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)' 
+        regex: '/(.*)'
         target_label: 'container'
       - source_labels: ['__meta_docker_container_log_stream']
         target_label: 'logstream'
@@ -167,7 +167,7 @@ scrape_configs:
             values: ["claimguardian.service=web"]
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)' 
+        regex: '/(.*)'
         target_label: 'container'
     pipeline_stages:
       - json:
@@ -200,7 +200,7 @@ scrape_configs:
             values: ["claimguardian.service=web"]
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)' 
+        regex: '/(.*)'
         target_label: 'container'
     pipeline_stages:
       - json:
@@ -232,7 +232,7 @@ scrape_configs:
             values: ["claimguardian.service=web"]
     relabel_configs:
       - source_labels: ['__meta_docker_container_name']
-        regex: '/(.*)' 
+        regex: '/(.*)'
         target_label: 'container'
     pipeline_stages:
       - json:

@@ -5,7 +5,7 @@ import React from 'react'
  * @dependencies ["@testing-library/react","@testing-library/user-event","react"]
  * @owner claims-team
  * @complexity high
- * @tags ["testing", "claims", "critical-flow", "insurance"]  
+ * @tags ["testing", "claims", "critical-flow", "insurance"]
  * @status stable
  */
 
@@ -33,7 +33,7 @@ describe('Claim Filing - Critical Tests', () => {
           if (evidence.photos.length < 3) {
             warnings.push('Consider uploading more photos for better documentation')
           }
-          
+
           // Validate photo descriptions
           const photosWithoutDescription = evidence.photos.filter(photo => !photo.description?.trim())
           if (photosWithoutDescription.length > 0) {
@@ -68,7 +68,7 @@ describe('Claim Filing - Critical Tests', () => {
 
       const calculateCompletenessScore = (evidence: Partial<DamageEvidence>) => {
         let score = 0
-        
+
         // Photos (40 points max)
         if (evidence.photos) {
           score += Math.min(40, evidence.photos.length * 10)
@@ -77,7 +77,7 @@ describe('Claim Filing - Critical Tests', () => {
           }
         }
 
-        // Videos (20 points max)  
+        // Videos (20 points max)
         if (evidence.videos && evidence.videos.length > 0) {
           score += Math.min(20, evidence.videos.length * 10)
         }
@@ -132,7 +132,7 @@ describe('Claim Filing - Critical Tests', () => {
           { name: 'John Neighbor', contact: 'john@email.com', statement: 'Saw the tree fall on the roof' }
         ]
       }
-      
+
       const comprehensiveValidation = validateDamageEvidence(comprehensiveEvidence)
       expect(comprehensiveValidation.isValid).toBe(true)
       expect(comprehensiveValidation.errors).toHaveLength(0)
@@ -142,7 +142,7 @@ describe('Claim Filing - Critical Tests', () => {
     it('should validate file uploads securely', () => {
       const validateFileUpload = (file: { name: string; size: number; type: string }) => {
         const errors: string[] = []
-        
+
         // File size limits (10MB for photos, 100MB for videos)
         const maxSizes = {
           image: 10 * 1024 * 1024, // 10MB
@@ -179,7 +179,7 @@ describe('Claim Filing - Critical Tests', () => {
 
         // Executable file check
         const executableExtensions = ['.exe', '.bat', '.cmd', '.scr', '.pif', '.com', '.js', '.vbs']
-        const hasExecutableExtension = executableExtensions.some(ext => 
+        const hasExecutableExtension = executableExtensions.some(ext =>
           file.name.toLowerCase().endsWith(ext)
         )
 
@@ -258,13 +258,13 @@ describe('Claim Filing - Critical Tests', () => {
         deductible: number
       }) => {
         // Structural damage calculation
-        const roofCost = (assessment.structuralDamage.roof.severity / 100) * 
+        const roofCost = (assessment.structuralDamage.roof.severity / 100) *
                         (assessment.structuralDamage.roof.area * 15) // $15/sq ft estimate
-        
-        const wallCost = (assessment.structuralDamage.walls.severity / 100) * 
+
+        const wallCost = (assessment.structuralDamage.walls.severity / 100) *
                         (assessment.structuralDamage.walls.area * 8) // $8/sq ft estimate
-        
-        const foundationCost = (assessment.structuralDamage.foundation.severity / 100) * 
+
+        const foundationCost = (assessment.structuralDamage.foundation.severity / 100) *
                               (assessment.structuralDamage.foundation.area * 25) // $25/sq ft estimate
 
         const totalStructuralCost = roofCost + wallCost + foundationCost
@@ -275,12 +275,12 @@ describe('Claim Filing - Critical Tests', () => {
         }, 0)
 
         // Additional living expenses
-        const aleCost = assessment.additionalLivingExpenses.displacement ? 
+        const aleCost = assessment.additionalLivingExpenses.displacement ?
           assessment.additionalLivingExpenses.estimatedDays * assessment.additionalLivingExpenses.dailyCost : 0
 
         // Apply policy limits
         const dwellingClaim = Math.min(totalStructuralCost, policy.dwellingCoverage)
-        const personalPropertyClaim = Math.min(personalPropertyCost, policy.personalPropertyCoverage)  
+        const personalPropertyClaim = Math.min(personalPropertyCost, policy.personalPropertyCoverage)
         const aleClaim = Math.min(aleCost, policy.aleCoverage)
 
         const totalBeforeDeductible = dwellingClaim + personalPropertyClaim + aleClaim
@@ -321,7 +321,7 @@ describe('Claim Filing - Critical Tests', () => {
       const majorDamageAssessment = {
         structuralDamage: {
           roof: { severity: 75, area: 2000 }, // 75% damage to 2000 sq ft roof
-          walls: { severity: 25, area: 1500 }, // 25% damage to 1500 sq ft walls  
+          walls: { severity: 25, area: 1500 }, // 25% damage to 1500 sq ft walls
           foundation: { severity: 10, area: 1800 } // 10% damage to 1800 sq ft foundation
         },
         personalProperty: [
@@ -381,7 +381,7 @@ describe('Claim Filing - Critical Tests', () => {
     it('should validate claim status transitions', () => {
       const VALID_STATUSES = [
         'draft',
-        'submitted', 
+        'submitted',
         'under-review',
         'additional-info-required',
         'approved',
@@ -407,11 +407,11 @@ describe('Claim Filing - Critical Tests', () => {
         }
 
         const allowedTransitions = VALID_TRANSITIONS[currentStatus as keyof typeof VALID_TRANSITIONS] || []
-        
+
         if (!allowedTransitions.includes(newStatus)) {
-          return { 
-            isValid: false, 
-            error: `Cannot transition from ${currentStatus} to ${newStatus}. Allowed: ${allowedTransitions.join(', ')}` 
+          return {
+            isValid: false,
+            error: `Cannot transition from ${currentStatus} to ${newStatus}. Allowed: ${allowedTransitions.join(', ')}`
           }
         }
 
@@ -442,13 +442,13 @@ describe('Claim Filing - Critical Tests', () => {
       }
 
       const analyzeClaimProgress = (events: ClaimEvent[]) => {
-        const sortedEvents = events.sort((a, b) => 
+        const sortedEvents = events.sort((a, b) =>
           new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
         )
 
         const currentStatus = sortedEvents[sortedEvents.length - 1]?.status || 'draft'
         const daysSinceLastUpdate = Math.floor(
-          (Date.now() - new Date(sortedEvents[sortedEvents.length - 1]?.timestamp || Date.now()).getTime()) / 
+          (Date.now() - new Date(sortedEvents[sortedEvents.length - 1]?.timestamp || Date.now()).getTime()) /
           (1000 * 60 * 60 * 24)
         )
 
@@ -458,7 +458,7 @@ describe('Claim Filing - Critical Tests', () => {
           const currentEvent = sortedEvents[i]
           const previousEvent = sortedEvents[i - 1]
           const daysInStage = Math.floor(
-            (new Date(currentEvent.timestamp).getTime() - new Date(previousEvent.timestamp).getTime()) / 
+            (new Date(currentEvent.timestamp).getTime() - new Date(previousEvent.timestamp).getTime()) /
             (1000 * 60 * 60 * 24)
           )
           stageTimings[previousEvent.status] = daysInStage
@@ -479,7 +479,7 @@ describe('Claim Filing - Critical Tests', () => {
         }
 
         const totalProcessingDays = sortedEvents.length > 1 ? Math.floor(
-          (new Date(sortedEvents[sortedEvents.length - 1].timestamp).getTime() - 
+          (new Date(sortedEvents[sortedEvents.length - 1].timestamp).getTime() -
            new Date(sortedEvents[0].timestamp).getTime()) / (1000 * 60 * 60 * 24)
         ) : 0
 
@@ -522,12 +522,12 @@ describe('Claim Filing - Critical Tests', () => {
       ]
 
       const analysis = analyzeClaimProgress(claimEvents)
-      
+
       expect(analysis.currentStatus).toBe('additional-info-required')
       expect(analysis.stageTimings['submitted']).toBe(2) // 2 days from submitted to under-review
       expect(analysis.stageTimings['under-review']).toBe(15) // 15 days from under-review to additional-info-required
       expect(analysis.totalProcessingDays).toBe(19)
-      
+
       // If current date is August 4, it's been 15 days since last update
       if (analysis.daysSinceLastUpdate > 5) {
         expect(analysis.delays).toContain('Waiting for user response > 5 days')

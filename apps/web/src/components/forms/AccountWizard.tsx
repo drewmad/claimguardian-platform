@@ -41,7 +41,7 @@ export function AccountWizard() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState(false)
-  
+
   const supabase = createBrowserSupabaseClient()
 
   const nextStep = (data: Partial<FormData>) => {
@@ -101,7 +101,7 @@ export function AccountWizard() {
         }
 
         setSuccess(true)
-        
+
         // Redirect to onboarding after success message
         setTimeout(() => {
           router.push('/onboarding')
@@ -153,21 +153,21 @@ export function AccountWizard() {
 
         {/* Step Content */}
         {step === 1 && (
-          <PersonalInfo 
-            onNext={nextStep} 
+          <PersonalInfo
+            onNext={nextStep}
             defaultValues={formData}
           />
         )}
-        
+
         {step === 2 && (
-          <Agreements 
-            onPrev={prevStep} 
+          <Agreements
+            onPrev={prevStep}
             onSubmit={submitForm}
             isLoading={isLoading}
           />
         )}
       </div>
-      
+
       {/* Footer Note */}
       <div className="text-center mt-6">
         <p className="text-xs text-gray-500">

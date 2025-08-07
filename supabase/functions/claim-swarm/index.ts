@@ -156,7 +156,7 @@ Focus on structural integrity, water damage, and repair urgency.
 
   } catch (error) {
     console.error('Error in claim-swarm function:', error)
-    
+
     return new Response(
       JSON.stringify({
         error: error instanceof Error ? error.message : String(error) || 'Internal server error',

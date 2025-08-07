@@ -12,7 +12,7 @@
 
 import { useState, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { 
+import {
   Eye,
   Brain,
   Zap,
@@ -112,14 +112,14 @@ export function ResultsPresentationEnhanced({
   const [filterType, setFilterType] = useState<ResultsType | 'all'>('all')
   const [sortBy, setSortBy] = useState<'timestamp' | 'confidence' | 'type'>('timestamp')
   const [displayMode, setDisplayMode] = useState<'grid' | 'list'>('grid')
-  
+
   const { success, error, info } = useToast()
   const { addNotification } = useNotifications()
 
   // Filter and sort results
   const processedResults = useMemo(() => {
     let filtered = results
-    
+
     if (filterType !== 'all') {
       filtered = filtered.filter(result => result.type === filterType)
     }
@@ -158,37 +158,37 @@ export function ResultsPresentationEnhanced({
   const getResultTypeInfo = useCallback((type: ResultsType) => {
     switch (type) {
       case 'damage-analysis':
-        return { 
-          icon: Scan, 
-          color: 'bg-red-500', 
+        return {
+          icon: Scan,
+          color: 'bg-red-500',
           name: 'Damage Analysis',
           description: 'AI-powered damage assessment and cost estimation'
         }
       case 'document-extraction':
-        return { 
-          icon: FileText, 
-          color: 'bg-blue-500', 
+        return {
+          icon: FileText,
+          color: 'bg-blue-500',
           name: 'Document Extraction',
           description: 'Automated data extraction from insurance documents'
         }
       case 'inventory-scan':
-        return { 
-          icon: Camera, 
-          color: 'bg-green-500', 
+        return {
+          icon: Camera,
+          color: 'bg-green-500',
           name: 'Inventory Scan',
           description: 'Smart home inventory cataloging and valuation'
         }
       case 'claim-processing':
-        return { 
-          icon: BarChart3, 
-          color: 'bg-purple-500', 
+        return {
+          icon: BarChart3,
+          color: 'bg-purple-500',
           name: 'Claim Processing',
           description: 'Automated claim analysis and recommendations'
         }
       case 'policy-analysis':
-        return { 
-          icon: Shield, 
-          color: 'bg-indigo-500', 
+        return {
+          icon: Shield,
+          color: 'bg-indigo-500',
           name: 'Policy Analysis',
           description: 'Insurance policy review and coverage assessment'
         }
@@ -197,7 +197,7 @@ export function ResultsPresentationEnhanced({
 
   // Toggle result selection
   const toggleResultSelection = useCallback((resultId: string) => {
-    setSelectedResults(prev => 
+    setSelectedResults(prev =>
       prev.includes(resultId)
         ? prev.filter(id => id !== resultId)
         : [...prev, resultId]
@@ -206,12 +206,12 @@ export function ResultsPresentationEnhanced({
 
   // Export results
   const handleExport = useCallback((format: 'pdf' | 'json' | 'csv') => {
-    const resultsToExport = selectedResults.length > 0 
+    const resultsToExport = selectedResults.length > 0
       ? results.filter(r => selectedResults.includes(r.id))
       : processedResults
 
     onExport?.(resultsToExport, format)
-    
+
     success(`Exporting ${resultsToExport.length} results as ${format.toUpperCase()}`, {
       subtitle: 'Download will start shortly'
     })
@@ -239,7 +239,7 @@ ${result.recommendations.map(rec => `• ${rec}`).join('\n')}
     `.trim()
 
     navigator.clipboard.writeText(summary)
-    
+
     success('Result summary copied', {
       subtitle: 'Summary copied to clipboard'
     })
@@ -401,18 +401,18 @@ ${result.recommendations.map(rec => `• ${rec}`).join('\n')}
                   Ready for export or bulk operations
                 </p>
               </div>
-              
+
               <div className="flex gap-2">
-                <Button 
-                  variant="outline" 
-                  size="sm" 
+                <Button
+                  variant="outline"
+                  size="sm"
                   onClick={() => setSelectedResults([])}
                 >
                   Clear Selection
                 </Button>
-                <Button 
-                  variant="default" 
-                  size="sm" 
+                <Button
+                  variant="default"
+                  size="sm"
                   onClick={() => handleExport('pdf')}
                   className="bg-blue-600 hover:bg-blue-700"
                 >
@@ -488,8 +488,8 @@ function ResultCard({
                   }}
                   className={cn(
                     "w-5 h-5 border-2 rounded transition-colors cursor-pointer flex items-center justify-center",
-                    isSelected 
-                      ? "bg-blue-500 border-blue-500" 
+                    isSelected
+                      ? "bg-blue-500 border-blue-500"
                       : "border-gray-300 hover:border-blue-400"
                   )}
                 >
@@ -501,13 +501,13 @@ function ResultCard({
               <div className={cn("w-12 h-12 rounded-lg flex items-center justify-center", typeInfo.color)}>
                 <Icon className="w-6 h-6 text-white" />
               </div>
-              
+
               <div className="flex-1 min-w-0">
                 <CardTitle className="text-lg mb-1 truncate">{result.title}</CardTitle>
                 <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2">
                   {result.description}
                 </p>
-                
+
                 <div className="flex items-center gap-2 mt-2">
                   <Badge className={cn("text-xs border", getConfidenceColor(confidenceLevel))}>
                     {result.confidence}% confidence
@@ -534,9 +534,9 @@ function ResultCard({
                   </Button>
                 </>
               )}
-              <Button 
-                variant="ghost" 
-                size="sm" 
+              <Button
+                variant="ghost"
+                size="sm"
                 onClick={onToggleExpanded}
                 className="h-8 w-8 p-0"
               >
@@ -545,7 +545,7 @@ function ResultCard({
             </div>
           </div>
         </CardHeader>
-        
+
         <CardContent>
           {/* Key Metrics */}
           <div className="grid grid-cols-2 gap-4 mb-4">
@@ -554,7 +554,7 @@ function ResultCard({
               <p className="text-xs text-gray-600">Processing Time</p>
               <p className="font-medium">{result.processingTime}s</p>
             </div>
-            
+
             <div className="text-center p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <Target className="w-4 h-4 text-gray-500 mx-auto mb-1" />
               <p className="text-xs text-gray-600">Status</p>
@@ -670,7 +670,7 @@ function ResultsVisualization({ result }: { result: AIResult }) {
               <Badge variant="outline">{result.data.severity}</Badge>
             </div>
             <Progress value={result.data.severityScore || 75} className="h-2" />
-            
+
             {result.data.estimatedCost && (
               <div className="flex justify-between items-center">
                 <span className="text-sm">Estimated Cost</span>
@@ -679,7 +679,7 @@ function ResultsVisualization({ result }: { result: AIResult }) {
             )}
           </div>
         )
-      
+
       case 'document-extraction':
         return (
           <div className="space-y-2">
@@ -691,7 +691,7 @@ function ResultsVisualization({ result }: { result: AIResult }) {
             ))}
           </div>
         )
-      
+
       case 'inventory-scan':
         return (
           <div className="space-y-3">
@@ -717,7 +717,7 @@ function ResultsVisualization({ result }: { result: AIResult }) {
             )}
           </div>
         )
-      
+
       default:
         return (
           <div className="text-sm text-gray-600">

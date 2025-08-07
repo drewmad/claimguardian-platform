@@ -97,32 +97,32 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    ```typescript
    // apps/web/src/app/auth/signin/page.tsx
    'use client'
-   
+
    import { useState } from 'react'
    import { useRouter } from 'next/navigation'
    import { useAuth } from '@/components/auth/auth-provider'
-   
+
    export default function SignInPage() {
      const { signIn } = useAuth()
      const router = useRouter()
      const [loading, setLoading] = useState(false)
-     
+
      const handleSubmit = async (e: React.FormEvent) => {
        e.preventDefault()
        setLoading(true)
-       
+
        const formData = new FormData(e.target as HTMLFormElement)
        const success = await signIn(
          formData.get('email') as string,
          formData.get('password') as string
        )
-       
+
        if (success) {
          router.push('/dashboard')
        }
        setLoading(false)
      }
-     
+
      return (
        <form onSubmit={handleSubmit}>
          {/* Existing form UI */}
@@ -155,10 +155,10 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    // apps/web/src/lib/supabase/server-auth.ts
    import { createServerClient } from '@supabase/ssr'
    import { cookies } from 'next/headers'
-   
+
    export async function createAuthClient() {
      const cookieStore = await cookies()
-     
+
      return createServerClient(
        process.env.NEXT_PUBLIC_SUPABASE_URL!,
        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
@@ -185,29 +185,29 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    export async function middleware(request: NextRequest) {
      const response = NextResponse.next()
      const supabase = createClient(request, response)
-     
+
      // Validate session
      const { data: { session }, error } = await supabase.auth.getSession()
-     
+
      // Enhanced cookie management
      if (error || !session) {
        // Clear all auth cookies properly
        clearAuthCookies(request, response)
      }
-     
+
      // Instant route protection
      const protectedRoutes = ['/dashboard', '/ai-tools', '/account']
-     const isProtected = protectedRoutes.some(route => 
+     const isProtected = protectedRoutes.some(route =>
        request.nextUrl.pathname.startsWith(route)
      )
-     
+
      if (isProtected && !session) {
        return NextResponse.redirect(new URL('/auth/signin', request.url))
      }
-     
+
      // Add security headers
      addSecurityHeaders(response)
-     
+
      return response
    }
    ```
@@ -222,12 +222,12 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    }) {
      const supabase = await createAuthClient()
      const { data: { session } } = await supabase.auth.getSession()
-     
+
      // Redirect if already authenticated
      if (session) {
        redirect('/dashboard')
      }
-     
+
      return <>{children}</>
    }
    ```
@@ -241,7 +241,7 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    // apps/web/src/app/auth/signin/page.tsx
    import { SignInForm } from './sign-in-form'
    import { createAuthClient } from '@/lib/supabase/server-auth'
-   
+
    export default async function SignInPage({
      searchParams
    }: {
@@ -250,11 +250,11 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
      // Server-side: Check if already authenticated
      const supabase = await createAuthClient()
      const { data: { session } } = await supabase.auth.getSession()
-     
+
      if (session) {
        redirect('/dashboard')
      }
-     
+
      // Server-rendered shell with client form
      return (
        <div className="auth-container">
@@ -268,34 +268,34 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    ```typescript
    // apps/web/src/app/auth/signin/sign-in-form.tsx
    'use client'
-   
+
    import { useAuth } from '@/components/auth/auth-provider'
    import { useRouter } from 'next/navigation'
    import { useState } from 'react'
-   
+
    export function SignInForm({ message }: { message?: string }) {
      const { signIn, error } = useAuth()
      const router = useRouter()
      const [isLoading, setIsLoading] = useState(false)
-     
+
      const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
        e.preventDefault()
        setIsLoading(true)
-       
+
        const formData = new FormData(e.currentTarget)
        const email = formData.get('email') as string
        const password = formData.get('password') as string
-       
+
        const success = await signIn(email, password)
-       
+
        if (success) {
          // Let auth provider handle navigation
          router.refresh()
        }
-       
+
        setIsLoading(false)
      }
-     
+
      return (
        <form onSubmit={handleSubmit}>
          {/* Form UI with loading states */}
@@ -311,7 +311,7 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
      // Sync with server state on mount
      const syncServerState = async () => {
        const { data: { session } } = await supabase.auth.getSession()
-       
+
        if (session) {
          // Validate with server
          const isValid = await validateServerSession()
@@ -320,7 +320,7 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
          }
        }
      }
-     
+
      syncServerState()
    }, [])
    ```
@@ -329,10 +329,10 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    ```typescript
    // apps/web/src/app/auth/actions.ts
    'use server'
-   
+
    import { createAuthClient } from '@/lib/supabase/server-auth'
    import { revalidatePath } from 'next/cache'
-   
+
    export async function signOut() {
      const supabase = await createAuthClient()
      await supabase.auth.signOut()
@@ -356,17 +356,17 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    export async function getServerSession() {
      const supabase = await createAuthClient()
      const { data: { session }, error } = await supabase.auth.getSession()
-     
+
      if (error || !session) {
        return null
      }
-     
+
      // Additional validation
      const { data: { user } } = await supabase.auth.getUser()
      if (!user) {
        return null
      }
-     
+
      return {
        ...session,
        user
@@ -379,7 +379,7 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
    // apps/web/src/app/api/auth/session/route.ts
    export async function GET() {
      const session = await getServerSession()
-     
+
      return NextResponse.json({
        authenticated: !!session,
        user: session?.user || null
@@ -396,11 +396,11 @@ This document outlines a comprehensive plan to migrate ClaimGuardian from its cu
      children: React.ReactNode
    }) {
      const session = await getServerSession()
-     
+
      if (!session) {
        redirect('/auth/signin')
      }
-     
+
      return (
        <DashboardProvider initialSession={session}>
          {children}

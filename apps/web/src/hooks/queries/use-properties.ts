@@ -47,19 +47,19 @@ export const propertyKeys = {
 // Fetch user's properties
 export function useProperties() {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: propertyKeys.lists(),
     queryFn: async () => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-      
+
       const { data, error } = await supabase
         .from('properties')
         .select('*')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
-      
+
       if (error) throw error
       return data
     },
@@ -69,7 +69,7 @@ export function useProperties() {
 // Fetch single property
 export function useProperty(id: string) {
   const supabase = createClient()
-  
+
   return useQuery({
     queryKey: propertyKeys.detail(id),
     queryFn: async () => {
@@ -78,7 +78,7 @@ export function useProperty(id: string) {
         .select('*')
         .eq('id', id)
         .single()
-      
+
       if (error) throw error
       return data
     },
@@ -90,12 +90,12 @@ export function useProperty(id: string) {
 export function useCreateProperty() {
   const queryClient = useQueryClient()
   const supabase = createClient()
-  
+
   return useMutation({
     mutationFn: async (input: Omit<PropertyInsert, 'user_id' | 'created_at' | 'updated_at'>) => {
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Not authenticated')
-      
+
       const { data, error } = await supabase
         .from('properties')
         .insert({
@@ -104,7 +104,7 @@ export function useCreateProperty() {
         })
         .select()
         .single()
-      
+
       if (error) throw error
       return data
     },
@@ -127,14 +127,14 @@ export function useCreateProperty() {
 export function useUpdateProperty() {
   const queryClient = useQueryClient()
   const supabase = createClient()
-  
+
   return useMutation({
-    mutationFn: async ({ 
-      id, 
-      updates 
-    }: { 
-      id: string; 
-      updates: Omit<PropertyUpdate, 'updated_at'> 
+    mutationFn: async ({
+      id,
+      updates
+    }: {
+      id: string;
+      updates: Omit<PropertyUpdate, 'updated_at'>
     }) => {
       const { data, error } = await supabase
         .from('properties')
@@ -145,20 +145,20 @@ export function useUpdateProperty() {
         .eq('id', id)
         .select()
         .single()
-      
+
       if (error) throw error
       return data
     },
     onSuccess: (data) => {
       // Update the specific property in cache
       queryClient.setQueryData(propertyKeys.detail(data.id), data)
-      
+
       // Update the property in the list cache
       queryClient.setQueryData<Property[]>(
         propertyKeys.lists(),
         (old) => old?.map(p => p.id === data.id ? data : p) || []
       )
-      
+
       toast.success('Property updated successfully')
     },
     onError: (error) => {
@@ -172,27 +172,27 @@ export function useUpdateProperty() {
 export function useDeleteProperty() {
   const queryClient = useQueryClient()
   const supabase = createClient()
-  
+
   return useMutation({
     mutationFn: async (id: string) => {
       const { error } = await supabase
         .from('properties')
         .delete()
         .eq('id', id)
-      
+
       if (error) throw error
       return id
     },
     onSuccess: (id) => {
       // Remove from cache
       queryClient.removeQueries({ queryKey: propertyKeys.detail(id) })
-      
+
       // Remove from list cache
       queryClient.setQueryData<Property[]>(
         propertyKeys.lists(),
         (old) => old?.filter(p => p.id !== id) || []
       )
-      
+
       toast.success('Property deleted successfully')
     },
     onError: (error) => {

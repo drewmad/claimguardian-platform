@@ -28,12 +28,12 @@ interface WidgetMetrics {
   lastUpdate: Date
 }
 
-export function ClaudeMonitoringWidget({ 
+export function ClaudeMonitoringWidget({
   refreshInterval = 30000,
-  compact = false 
-}: { 
+  compact = false
+}: {
   refreshInterval?: number
-  compact?: boolean 
+  compact?: boolean
 }) {
   const [metrics, setMetrics] = useState<WidgetMetrics | null>(null)
   const [loading, setLoading] = useState(true)
@@ -126,19 +126,19 @@ export function ClaudeMonitoringWidget({
           <Zap className="h-4 w-4 text-blue-500" />
           <span className="text-sm font-medium text-gray-300">Claude Learning</span>
         </div>
-        
+
         <div className="flex items-center gap-3 text-xs">
           <div className="flex items-center gap-1">
             {getStatusIcon()}
             <span className="capitalize">{metrics.systemStatus}</span>
           </div>
-          
+
           <div className="flex items-center gap-1">
             <span className="text-gray-400">Success:</span>
             <span className="font-medium">{(metrics.successRate * 100).toFixed(0)}%</span>
             {getTrendIcon()}
           </div>
-          
+
           {metrics.performanceGain > 0 && (
             <div className="flex items-center gap-1">
               <TrendingUp className="h-3 w-3 text-green-500" />
@@ -146,7 +146,7 @@ export function ClaudeMonitoringWidget({
             </div>
           )}
         </div>
-        
+
         <Link href="/admin/claude-monitoring" className="ml-auto">
           <Button variant="ghost" size="sm" className="h-6 px-2">
             <ExternalLink className="h-3 w-3" />
@@ -193,12 +193,12 @@ export function ClaudeMonitoringWidget({
               {getTrendIcon()}
             </div>
           </div>
-          
+
           <div>
             <p className="text-xs text-gray-400">Avg Time</p>
             <p className="text-lg font-bold">{(metrics.avgExecutionTime / 1000).toFixed(1)}s</p>
           </div>
-          
+
           <div>
             <p className="text-xs text-gray-400">Performance</p>
             <div className="flex items-center gap-1">
@@ -207,7 +207,7 @@ export function ClaudeMonitoringWidget({
               </p>
             </div>
           </div>
-          
+
           <div>
             <p className="text-xs text-gray-400">Optimizations</p>
             <p className="text-lg font-bold">{metrics.activeOptimizations}</p>
@@ -223,7 +223,7 @@ export function ClaudeMonitoringWidget({
             </div>
             <Progress value={Math.random() * 40 + 30} className="h-1" />
           </div>
-          
+
           <div>
             <div className="flex justify-between text-xs mb-1">
               <span className="text-gray-400">Learning Rate</span>

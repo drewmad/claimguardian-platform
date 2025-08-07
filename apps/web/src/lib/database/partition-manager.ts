@@ -153,15 +153,15 @@ class IntelligentPartitionManager {
         case 'range':
           createdPartitions.push(...await this.createRangePartitions(strategy, options?.ahead))
           break
-        
+
         case 'list':
           createdPartitions.push(...await this.createListPartitions(strategy))
           break
-        
+
         case 'hash':
           createdPartitions.push(...await this.createHashPartitions(strategy))
           break
-        
+
         case 'composite':
           createdPartitions.push(...await this.createCompositePartitions(strategy, options?.ahead))
           break
@@ -186,7 +186,7 @@ class IntelligentPartitionManager {
    * Create range-based partitions (time series)
    */
   private async createRangePartitions(
-    strategy: PartitionStrategy, 
+    strategy: PartitionStrategy,
     aheadDays = 7
   ): Promise<string[]> {
     const partitions: string[] = []
@@ -207,9 +207,9 @@ class IntelligentPartitionManager {
       const endDate = this.getNextInterval(currentDate, strategy.interval!)
 
       const sql = `
-        CREATE TABLE IF NOT EXISTS ${partitionName} 
-        PARTITION OF ${strategy.table} 
-        FOR VALUES FROM ('${startDate.toISOString()}') 
+        CREATE TABLE IF NOT EXISTS ${partitionName}
+        PARTITION OF ${strategy.table}
+        FOR VALUES FROM ('${startDate.toISOString()}')
         TO ('${endDate.toISOString()}');
       `
 
@@ -246,8 +246,8 @@ class IntelligentPartitionManager {
       )
 
       const sql = `
-        CREATE TABLE IF NOT EXISTS ${partitionName} 
-        PARTITION OF ${strategy.table} 
+        CREATE TABLE IF NOT EXISTS ${partitionName}
+        PARTITION OF ${strategy.table}
         FOR VALUES IN ('${value}');
       `
 
@@ -267,7 +267,7 @@ class IntelligentPartitionManager {
     // Create default partition for other values
     const defaultPartition = `${strategy.table}_default`
     const defaultSql = `
-      CREATE TABLE IF NOT EXISTS ${defaultPartition} 
+      CREATE TABLE IF NOT EXISTS ${defaultPartition}
       PARTITION OF ${strategy.table} DEFAULT;
     `
 
@@ -294,8 +294,8 @@ class IntelligentPartitionManager {
       const partitionName = `${strategy.table}_hash_${i}`
 
       const sql = `
-        CREATE TABLE IF NOT EXISTS ${partitionName} 
-        PARTITION OF ${strategy.table} 
+        CREATE TABLE IF NOT EXISTS ${partitionName}
+        PARTITION OF ${strategy.table}
         FOR VALUES WITH (modulus ${buckets}, remainder ${i});
       `
 
@@ -323,7 +323,7 @@ class IntelligentPartitionManager {
     aheadDays = 30
   ): Promise<string[]> {
     const partitions: string[] = []
-    
+
     // For composite partitioning, we need to handle multiple dimensions
     // Example: claims partitioned by status and month
     const statuses = ['draft', 'submitted', 'acknowledged', 'investigating', 'approved', 'denied', 'settled', 'closed', 'reopened', 'withdrawn']
@@ -337,14 +337,14 @@ class IntelligentPartitionManager {
 
       while (currentDate <= futureDate) {
         const partitionName = `${strategy.table}_${status}_${currentDate.getFullYear()}_${String(currentDate.getMonth() + 1).padStart(2, '0')}`
-        
+
         const startDate = new Date(currentDate)
         const endDate = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 1)
 
         const sql = `
-          CREATE TABLE IF NOT EXISTS ${partitionName} 
-          PARTITION OF ${strategy.table} 
-          FOR VALUES FROM ('${status}', '${startDate.toISOString()}') 
+          CREATE TABLE IF NOT EXISTS ${partitionName}
+          PARTITION OF ${strategy.table}
+          FOR VALUES FROM ('${status}', '${startDate.toISOString()}')
           TO ('${status}', '${endDate.toISOString()}');
         `
 
@@ -383,7 +383,7 @@ class IntelligentPartitionManager {
     recommendations: string[]
   }> {
     const partitions = await this.getPartitionInfo(tableName)
-    
+
     const metrics: PartitionMetrics = {
       totalPartitions: partitions.length,
       activePartitions: partitions.filter(p => p.status === 'active').length,
@@ -452,7 +452,7 @@ class IntelligentPartitionManager {
 
     // Process pending maintenance tasks
     const pendingTasks = this.maintenanceTasks.filter(t => t.status === 'pending')
-    
+
     for (const task of pendingTasks) {
       if (task.scheduled <= new Date()) {
         await this.executeMaintenanceTask(task)
@@ -469,11 +469,11 @@ class IntelligentPartitionManager {
 
         // Analyze and optimize
         const { metrics, recommendations } = await this.analyzePartitions(tableName)
-        
+
         // Schedule maintenance based on recommendations
         if (recommendations.length > 0) {
           console.log(`Recommendations for ${tableName}:`, recommendations)
-          
+
           for (const recommendation of recommendations) {
             if (recommendation.includes('Archive')) {
               this.scheduleArchival(metrics.coldPartitions)
@@ -493,30 +493,30 @@ class IntelligentPartitionManager {
    */
   private async executeMaintenanceTask(task: MaintenanceTask): Promise<void> {
     task.status = 'running'
-    
+
     try {
       switch (task.type) {
         case 'create':
           await this.executeSQL(`CREATE TABLE IF NOT EXISTS ${task.target}`)
           break
-        
+
         case 'drop':
           await this.executeSQL(`DROP TABLE IF EXISTS ${task.target}`)
           break
-        
+
         case 'vacuum':
           await this.executeSQL(`VACUUM ANALYZE ${task.target}`)
           break
-        
+
         case 'reindex':
           await this.executeSQL(`REINDEX TABLE ${task.target}`)
           break
-        
+
         case 'analyze':
           await this.executeSQL(`ANALYZE ${task.target}`)
           break
       }
-      
+
       task.status = 'completed'
     } catch (error) {
       task.status = 'failed'
@@ -571,7 +571,7 @@ class IntelligentPartitionManager {
 
     try {
       const sql = `
-        SELECT 
+        SELECT
           c.relname as partition_name,
           p.relname as parent_name,
           pg_get_expr(c.relpartbound, c.oid) as boundaries,
@@ -631,11 +631,11 @@ class IntelligentPartitionManager {
   ): Promise<void> {
     // Create same indexes as parent table
     const indexes = this.getTableIndexes(strategy.table)
-    
+
     for (const index of indexes) {
-      const sql = `CREATE INDEX IF NOT EXISTS idx_${partitionName}_${index.column} 
+      const sql = `CREATE INDEX IF NOT EXISTS idx_${partitionName}_${index.column}
                    ON ${partitionName} (${index.column})`
-      
+
       try {
         await this.executeSQL(sql)
       } catch (error) {
@@ -692,7 +692,7 @@ class IntelligentPartitionManager {
    */
   private getNextInterval(date: Date, interval: string): Date {
     const next = new Date(date)
-    
+
     switch (interval) {
       case 'daily':
         next.setDate(next.getDate() + 1)
@@ -707,7 +707,7 @@ class IntelligentPartitionManager {
         next.setFullYear(next.getFullYear() + 1)
         break
     }
-    
+
     return next
   }
 
@@ -776,9 +776,9 @@ class IntelligentPartitionManager {
 // Export singleton instance
 export const partitionManager = new IntelligentPartitionManager()
 
-export type { 
-  PartitionStrategy, 
-  PartitionInfo, 
-  PartitionMetrics, 
-  MaintenanceTask 
+export type {
+  PartitionStrategy,
+  PartitionInfo,
+  PartitionMetrics,
+  MaintenanceTask
 }

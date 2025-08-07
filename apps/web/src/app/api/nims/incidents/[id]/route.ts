@@ -22,14 +22,14 @@ export async function GET(
       .select('*')
       .eq('id', id)
       .single()
-    
+
     if (error) {
       if (error.code === 'PGRST116') {
         return NextResponse.json({ error: 'Incident not found' }, { status: 404 })
       }
       throw error
     }
-    
+
     return NextResponse.json({ incident: data })
   } catch (error) {
     console.error('Failed to fetch incident:', error)
@@ -44,10 +44,10 @@ export async function PUT(
   try {
     const { id } = await params
     const body = await request.json()
-    
+
     // Update incident using ICS integration service
     const updatedIncident = await icsIntegrationService.updateIncidentStatus(id, body)
-    
+
     return NextResponse.json({
       incident: updatedIncident,
       message: 'Incident updated successfully'
@@ -68,34 +68,34 @@ export async function DELETE(
   try {
     const { id } = await params
     const supabase = await createClient()
-    
+
     // Only allow deletion of closed incidents
     const { data: incident } = await supabase
       .from('ics_incidents')
       .select('status')
       .eq('id', id)
       .single()
-    
+
     if (!incident) {
       return NextResponse.json({ error: 'Incident not found' }, { status: 404 })
     }
-    
+
     if (incident.status !== 'closed') {
       return NextResponse.json(
         { error: 'Only closed incidents can be deleted' },
         { status: 400 }
       )
     }
-    
+
     const { error } = await supabase
       .from('ics_incidents')
       .delete()
       .eq('id', id)
-    
+
     if (error) {
       throw error
     }
-    
+
     return NextResponse.json({ message: 'Incident deleted successfully' })
   } catch (error) {
     console.error('Failed to delete incident:', error)
