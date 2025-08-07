@@ -29,6 +29,7 @@ import { PowerfulFeatures } from "@/components/landing/powerful-features";
 import { Pricing } from "@/components/landing/pricing";
 import { PropertyLifecycle } from "@/components/landing/property-lifecycle";
 import { Testimonials } from "@/components/landing/testimonials";
+import { ValuePropositions } from "@/components/landing/value-propositions";
 import { WhoWeFightFor } from "@/components/landing/who-we-fight-for";
 import { WhoWeServe } from "@/components/landing/who-we-serve";
 import { ContentModal } from "@/components/modals/content-modal";
@@ -71,12 +72,13 @@ export default function HomePage() {
 
       <main className="relative safe-area-bottom">
         <Hero />
+        <HowItWorks />
+        <ValuePropositions />
         <PowerfulFeatures />
         <PropertyLifecycle />
         <WhoWeServe />
         <Features />
         <WhoWeFightFor />
-        <HowItWorks />
         <Testimonials />
         <Pricing />
         <FAQ />

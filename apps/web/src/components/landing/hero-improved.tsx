@@ -175,37 +175,14 @@ export function Hero() {
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            <div className="mt-6 max-w-4xl mx-auto space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
-                  <h3 className="font-bold text-green-400 mb-1">
-                    Reclaim Your Time
-                  </h3>
-                  <p className="text-sm text-gray-300">
-                    Stop spending hundreds of hours on paperwork. Automate documentation, track warranties, and manage maintenance effortlessly.
-                  </p>
-                </div>
-                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
-                  <h3 className="font-bold text-blue-400 mb-1">
-                    Protect Your Wallet
-                  </h3>
-                  <p className="text-sm text-gray-300">
-                    Maximize claim settlements, avoid costly surprise repairs with proactive maintenance, and uncover insurance savings.
-                  </p>
-                </div>
-                <div className="bg-gray-800/40 backdrop-blur-xl border border-gray-700/50 rounded-xl p-4">
-                  <h3 className="font-bold text-purple-400 mb-1">
-                    Command Peace of Mind
-                  </h3>
-                  <p className="text-sm text-gray-300">
-                    Know your property is protected, your coverage is solid, and you're ready for anything. You're not a victim; you're prepared.
-                  </p>
-                </div>
+            {/* Florida Forged Badge */}
+            <div className="mt-6 flex justify-center">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/50 rounded-full backdrop-blur-sm">
+                <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L10 6.477V16h2a1 1 0 110 2H8a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"/>
+                </svg>
+                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Forged</span>
               </div>
-              <p className="text-xl font-bold text-white mt-6">
-                Founded in Florida, by a Florida Family, Exclusively for
-                Floridians
-              </p>
             </div>
           </AnimatedSection>
 
@@ -233,16 +210,6 @@ export function Hero() {
                 <span className="relative z-10 font-black tracking-wide">
                   Create My Digital Twin →
                 </span>
-              </Link>
-
-              <Link
-                href="#how-it-works"
-                className={`${liquidGlass.buttons.secondary} font-semibold py-3 px-6 rounded-full border-2 border-gray-600 text-gray-300 hover:border-gray-400 hover:text-white inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-gray-400/50 a11y-touch-target`}
-                aria-label="Learn how ClaimGuardian works"
-              >
-                <PlayCircle size={20} aria-hidden="true" />
-                <span className="hidden sm:inline">Learn How It Works</span>
-                <span className="sm:hidden">Learn More</span>
               </Link>
             </div>
           </AnimatedSection>
