@@ -37,6 +37,8 @@ import { SimpleLoginModal } from "@/components/modals/simple-login-modal";
 import { SimpleSignupModal } from "@/components/modals/simple-signup-modal";
 import { ResponsiveLoginModal } from "@/components/modals/responsive-login-modal";
 import { ResponsiveSignupModal } from "@/components/modals/responsive-signup-modal";
+import { ExitIntentModal, useExitIntent } from "@/components/marketing/exit-intent-modal";
+import { ScarcityBanner, SCARCITY_OFFERS } from "@/components/marketing/scarcity-banner";
 import {
   FAQData,
   HowToData,
@@ -47,6 +49,8 @@ import {
 } from "@/components/seo/structured-data";
 
 export default function HomePage() {
+  const { showModal, closeModal, handleSignup } = useExitIntent();
+
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
       {/* Structured Data for AI Answer Engines */}
@@ -95,6 +99,21 @@ export default function HomePage() {
       {/* New Responsive Modals */}
       <ResponsiveLoginModal />
       <ResponsiveSignupModal />
+
+      {/* Exit Intent Modal for Lead Capture */}
+      {showModal && (
+        <ExitIntentModal
+          onClose={closeModal}
+          onSignup={handleSignup}
+        />
+      )}
+
+      {/* Scarcity Banner for Limited Time Offers */}
+      <ScarcityBanner 
+        offer={SCARCITY_OFFERS.HURRICANE_PREP}
+        position="floating"
+        theme="hurricane"
+      />
     </div>
   );
 }

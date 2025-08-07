@@ -34,6 +34,7 @@ import { useState, useEffect, useRef } from "react";
 
 import { COLORS } from "@/lib/constants";
 import { liquidGlass } from "@/lib/styles/liquid-glass";
+import { useABTest, trackABTestConversion, AB_TEST_CONFIGS } from "@/hooks/useABTest";
 
 // Animation hook
 const useInView = (options: IntersectionObserverInit) => {
@@ -99,6 +100,9 @@ const GuardianHeroLogo = () => (
 
 export function Hero() {
   const [hoveredCTA, setHoveredCTA] = useState(false);
+  
+  // A/B Test for hero tagline
+  const { variant: taglineVariant, loading: taglineLoading } = useABTest(AB_TEST_CONFIGS.HERO_TAGLINE);
 
   const pills = [
     { label: "Homeowners", icon: Home },
@@ -190,12 +194,14 @@ export function Hero() {
                   Claim<span className="text-green-400">Guardian</span>
                 </h1>
                 <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">
-                  Your Property Intelligence, Not Theirs
+                  {taglineLoading ? 'Your Property Intelligence, Not Theirs' : taglineVariant?.data?.tagline || 'Your Property Intelligence, Not Theirs'}
                 </p>
-                {/* A/B Test Alternative Taglines (commented for future testing) */}
-                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">AI That Works For You—Not The Industry</p> */}
-                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">Intelligent Property Management, On Your Side</p> */}
-                {/* <p className="text-[clamp(1.25rem,2.5vw,1.75rem)] font-semibold text-gray-200 opacity-90">Your Property, Your Data, Your Guardian</p> */}
+                {/* A/B Test Debug Info (only in development) */}
+                {process.env.NODE_ENV === 'development' && taglineVariant && (
+                  <div className="text-xs text-yellow-400 mt-1 opacity-60">
+                    A/B Test: {taglineVariant.name} ({taglineVariant.id})
+                  </div>
+                )}
               </div>
             </header>
           </AnimatedSection>
@@ -264,6 +270,12 @@ export function Hero() {
                 }}
                 onMouseEnter={() => setHoveredCTA(true)}
                 onMouseLeave={() => setHoveredCTA(false)}
+                onClick={() => {
+                  // Track A/B test conversion
+                  if (taglineVariant) {
+                    trackABTestConversion(AB_TEST_CONFIGS.HERO_TAGLINE.testId, taglineVariant.id, 'cta_click');
+                  }
+                }}
                 aria-label="Deploy your digital guardian for complete property protection"
               >
                 <span className="relative z-10 font-black tracking-wide">
