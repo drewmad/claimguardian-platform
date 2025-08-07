@@ -75,6 +75,7 @@
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@turbo/gen": "^2.5.5",
+    "@types/mapbox-gl": "^3.4.1",
     "@types/node": "^24.2.0",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",
@@ -103,10 +104,11 @@
   "dependencies": {
     "@supabase/ssr": "^0.6.1",
     "@supabase/supabase-js": "^2.53.0",
-    
     "csv-parser": "^3.2.0",
     "dotenv": "^17.2.1",
-    "ioredis": "^5.7.0"
+    "ioredis": "^5.7.0",
+    "pg": "^8.16.3",
+    "zod": "3.23.8"
   },
   "resolutions": {
     "@types/react": "19.1.9",

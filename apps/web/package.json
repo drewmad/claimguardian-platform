@@ -10,6 +10,8 @@
     "type-check": "tsc --noEmit",
     "test": "jest",
     "test:watch": "jest --watch",
+    "tiles:schedule": "supabase functions invoke generate-vector-tiles --no-verify-jwt --body '{\"mode\":\"schedule\"}'",
+    "tiles:worker": "supabase functions invoke generate-vector-tiles --no-verify-jwt --body '{\"mode\":\"worker\"}'",
     "db:types": "supabase gen types typescript --linked --schema public,claims,properties > ../../packages/db/src/types/database.types.ts",
     "db:types:local": "supabase gen types typescript --local --schema public,claims,properties > ../../packages/db/src/types/database.types.ts",
     "db:diff": "supabase db diff --linked",
