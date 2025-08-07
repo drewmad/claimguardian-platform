@@ -446,14 +446,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
               <span className="font-medium">Settings</span>
             </button>
 
-            {/* AI Toolkit Label */}
-            <div className="px-4 py-2">
-              <p className="text-xs text-gray-500 text-center">AI Toolkit</p>
-              <p className="text-xs text-gray-600 text-center">
-                Leverage powerful AI to protect, manage, and understand your
-                assets.
-              </p>
-            </div>
+            {/* AI Toolkit Label (removed) */}
           </div>
         </aside>
 

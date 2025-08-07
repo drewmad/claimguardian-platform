@@ -29,6 +29,16 @@ declare global {
   }
 
   interface Window {
+    Sentry?: {
+      captureException: (error: Error, context?: unknown) => void;
+      getCurrentHub?: () => {
+        getClient?: () => {
+          getOptions?: () => {
+            enabled?: boolean;
+          };
+        };
+      };
+    };
     google?: {
       maps: {
         places: {

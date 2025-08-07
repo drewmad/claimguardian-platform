@@ -3,12 +3,6 @@
  * Ensures GDPR/CCPA compliance and proper consent handling
  */
 
-declare global {
-  interface Window {
-    Sentry?: any;
-  }
-}
-
 export type CookieConsent = 'accepted' | 'necessary-only' | null;
 
 export interface CookiePreferences {
