@@ -27,7 +27,7 @@ export function CookieConsentSimple() {
     } else {
       // Apply existing preferences on page load
       const prefs = cookieManager.getPreferences();
-      logger.info("Applying existing cookie preferences", prefs);
+      logger.info("Applying existing cookie preferences", { preferences: prefs });
     }
   }, []);
 

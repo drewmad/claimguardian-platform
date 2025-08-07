@@ -121,27 +121,27 @@ class CookieManager {
     if (typeof window === 'undefined') return;
     
     // Google Analytics
-    if (prefs.analytics && typeof gtag !== 'undefined') {
+    if (prefs.analytics && typeof window.gtag !== 'undefined') {
       // Enable GA
-      gtag('consent', 'update', {
+      window.gtag('consent', 'update', {
         'analytics_storage': 'granted'
       });
-    } else if (typeof gtag !== 'undefined') {
+    } else if (typeof window.gtag !== 'undefined') {
       // Disable GA
-      gtag('consent', 'update', {
+      window.gtag('consent', 'update', {
         'analytics_storage': 'denied'
       });
     }
     
     // Marketing cookies
-    if (prefs.marketing && typeof gtag !== 'undefined') {
-      gtag('consent', 'update', {
+    if (prefs.marketing && typeof window.gtag !== 'undefined') {
+      window.gtag('consent', 'update', {
         'ad_storage': 'granted',
         'ad_user_data': 'granted',
         'ad_personalization': 'granted'
       });
-    } else if (typeof gtag !== 'undefined') {
-      gtag('consent', 'update', {
+    } else if (typeof window.gtag !== 'undefined') {
+      window.gtag('consent', 'update', {
         'ad_storage': 'denied',
         'ad_user_data': 'denied',
         'ad_personalization': 'denied'
@@ -149,18 +149,24 @@ class CookieManager {
     }
     
     // PostHog Analytics
-    if (prefs.analytics && typeof posthog !== 'undefined') {
-      posthog.opt_in_capturing();
-    } else if (typeof posthog !== 'undefined') {
-      posthog.opt_out_capturing();
+    if (prefs.analytics && typeof window.posthog !== 'undefined') {
+      window.posthog.opt_in_capturing();
+    } else if (typeof window.posthog !== 'undefined') {
+      window.posthog.opt_out_capturing();
     }
     
     // Sentry error tracking (considered necessary but respecting user choice)
-    if (prefs.analytics && typeof Sentry !== 'undefined') {
+    if (prefs.analytics && window.Sentry) {
       // Sentry is usually necessary for error tracking but we respect user choice
-      Sentry.getCurrentHub().getClient()?.getOptions().enabled = true;
-    } else if (typeof Sentry !== 'undefined') {
-      Sentry.getCurrentHub().getClient()?.getOptions().enabled = false;
+      const client = window.Sentry.getCurrentHub().getClient();
+      if (client && client.getOptions()) {
+        client.getOptions().enabled = true;
+      }
+    } else if (window.Sentry) {
+      const client = window.Sentry.getCurrentHub().getClient();
+      if (client && client.getOptions()) {
+        client.getOptions().enabled = false;
+      }
     }
   }
   

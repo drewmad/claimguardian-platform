@@ -38,7 +38,7 @@ export interface RateLimitOptions {
 export class RateLimiter {
   private defaultConfig: RateLimitConfig = {
     windowMs: 60 * 1000, // 1 minute
-    maxRequests: 100,
+    maxRequests: 150, // Increased from 100 to 150
     keyGenerator: (identifier: string, action: string) => `rate_limit:${action}:${identifier}`,
     skipSuccessfulRequests: false,
     skipFailedRequests: false,
@@ -124,17 +124,17 @@ export class RateLimiter {
   }): Promise<RateLimitResult> {
     const { userId, aiProvider, operation, tokenCount = 1 } = options;
 
-    // Different limits for different AI operations
+    // Different limits for different AI operations (increased for better UX)
     const aiLimits = {
       openai: {
-        chat: { windowMs: 60 * 1000, maxRequests: 20 }, // 20 per minute
-        analysis: { windowMs: 60 * 1000, maxRequests: 10 }, // 10 per minute
-        generation: { windowMs: 60 * 1000, maxRequests: 5 }, // 5 per minute
+        chat: { windowMs: 60 * 1000, maxRequests: 30 }, // Increased from 20 to 30 per minute
+        analysis: { windowMs: 60 * 1000, maxRequests: 15 }, // Increased from 10 to 15 per minute
+        generation: { windowMs: 60 * 1000, maxRequests: 10 }, // Increased from 5 to 10 per minute
       },
       gemini: {
-        chat: { windowMs: 60 * 1000, maxRequests: 30 }, // 30 per minute
-        analysis: { windowMs: 60 * 1000, maxRequests: 15 }, // 15 per minute
-        generation: { windowMs: 60 * 1000, maxRequests: 8 }, // 8 per minute
+        chat: { windowMs: 60 * 1000, maxRequests: 40 }, // Increased from 30 to 40 per minute
+        analysis: { windowMs: 60 * 1000, maxRequests: 20 }, // Increased from 15 to 20 per minute
+        generation: { windowMs: 60 * 1000, maxRequests: 12 }, // Increased from 8 to 12 per minute
       },
     };
 
@@ -160,7 +160,7 @@ export class RateLimiter {
 
     // Higher limits during emergency situations
     const isEmergencyActive = await this.isEmergencyActive(county);
-    const baseLimit = isEmergencyActive ? 200 : 100;
+    const baseLimit = isEmergencyActive ? 300 : 150; // Increased from 200/100 to 300/150
 
     return this.checkLimit({
       identifier: userId,
@@ -183,9 +183,9 @@ export class RateLimiter {
     const { userId, operation, fileSize = 0 } = options;
 
     const documentLimits = {
-      upload: { windowMs: 5 * 60 * 1000, maxRequests: 20 }, // 20 uploads per 5 minutes
-      analysis: { windowMs: 60 * 1000, maxRequests: 10 }, // 10 analyses per minute
-      extraction: { windowMs: 60 * 1000, maxRequests: 15 }, // 15 extractions per minute
+      upload: { windowMs: 5 * 60 * 1000, maxRequests: 30 }, // Increased from 20 to 30 uploads per 5 minutes
+      analysis: { windowMs: 60 * 1000, maxRequests: 15 }, // Increased from 10 to 15 analyses per minute
+      extraction: { windowMs: 60 * 1000, maxRequests: 20 }, // Increased from 15 to 20 extractions per minute
     };
 
     const config = documentLimits[operation];
@@ -209,13 +209,13 @@ export class RateLimiter {
   }): Promise<RateLimitResult> {
     const { identifier, endpoint, method } = options;
 
-    // Different limits for different endpoint types
+    // Different limits for different endpoint types (increased for better UX)
     const globalLimits = {
-      "/api/auth": { windowMs: 15 * 60 * 1000, maxRequests: 10 }, // Auth: 10 per 15 minutes
-      "/api/ai": { windowMs: 60 * 1000, maxRequests: 30 }, // AI: 30 per minute
-      "/api/properties": { windowMs: 60 * 1000, maxRequests: 100 }, // Properties: 100 per minute
-      "/api/claims": { windowMs: 60 * 1000, maxRequests: 50 }, // Claims: 50 per minute
-      default: { windowMs: 60 * 1000, maxRequests: 200 }, // Default: 200 per minute
+      "/api/auth": { windowMs: 15 * 60 * 1000, maxRequests: 15 }, // Auth: Increased from 10 to 15 per 15 minutes
+      "/api/ai": { windowMs: 60 * 1000, maxRequests: 50 }, // AI: Increased from 30 to 50 per minute
+      "/api/properties": { windowMs: 60 * 1000, maxRequests: 150 }, // Properties: Increased from 100 to 150 per minute
+      "/api/claims": { windowMs: 60 * 1000, maxRequests: 75 }, // Claims: Increased from 50 to 75 per minute
+      default: { windowMs: 60 * 1000, maxRequests: 300 }, // Default: Increased from 200 to 300 per minute
     };
 
     const endpointPattern = Object.keys(globalLimits).find(pattern => 
@@ -241,7 +241,7 @@ export class RateLimiter {
   }): Promise<RateLimitResult> {
     const { ip, endpoint, suspicious = false } = options;
 
-    const ipLimit = suspicious ? 10 : 500; // Lower limit for suspicious IPs
+    const ipLimit = suspicious ? 20 : 750; // Increased from 10/500 to 20/750
     
     return this.checkLimit({
       identifier: ip,
