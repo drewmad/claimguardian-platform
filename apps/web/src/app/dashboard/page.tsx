@@ -788,8 +788,11 @@ function DashboardContent() {
                     <div className="relative h-[400px] w-full">
                       <FloridaPropertyMap
                         height="400px"
-                        showControls={false}
+                        showControls={true}
                         mapStyle="mapbox://styles/mapbox/dark-v11"
+                        enableClustering={true}
+                        showHeatMap={false}
+                        showRealParcels={true}
                       />
                       {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (
                         <div className="absolute inset-0 bg-gray-800/90 flex items-center justify-center">

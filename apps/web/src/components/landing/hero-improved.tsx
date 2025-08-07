@@ -175,13 +175,19 @@ export function Hero() {
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            {/* Florida Forged Badge */}
-            <div className="mt-6 flex justify-center">
+            {/* Florida Forged & Hurricane Tested Badges */}
+            <div className="mt-6 flex justify-center gap-3 flex-wrap">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/50 rounded-full backdrop-blur-sm">
-                <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M10 2a1 1 0 011 1v1.323l3.954 1.582 1.599-.8a1 1 0 01.894 1.79l-1.233.616 1.738 5.42a1 1 0 01-.285 1.05A3.989 3.989 0 0115 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.715-5.349L10 6.477V16h2a1 1 0 110 2H8a1 1 0 110-2h2V6.477L6.237 7.582l1.715 5.349a1 1 0 01-.285 1.05A3.989 3.989 0 015 15a3.989 3.989 0 01-2.667-1.019 1 1 0 01-.285-1.05l1.738-5.42-1.233-.617a1 1 0 01.894-1.788l1.599.799L9 4.323V3a1 1 0 011-1z"/>
+                {/* Shark Tooth Icon */}
+                <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2L4 20h16L12 2zm0 4.5l4.5 11h-9L12 6.5z"/>
                 </svg>
                 <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Forged</span>
+              </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/50 rounded-full backdrop-blur-sm">
+                <span className="text-lg">🌀</span>
+                <span className="text-sm font-bold text-blue-300 uppercase tracking-wider">Hurricane Tested</span>
+                <span className="text-lg">⚡</span>
               </div>
             </div>
           </AnimatedSection>
