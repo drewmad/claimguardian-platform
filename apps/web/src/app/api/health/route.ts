@@ -255,15 +255,24 @@ async function checkSupabaseHealth(): Promise<{
   try {
     const supabase = await createClient();
 
-    // Test basic query
-    const { error } = await supabase.from("users").select("id").limit(1);
+    // Use pure liveness RPC instead of table query
+    // Function is created in migration 20250807_fix_health_and_onboarding.sql
+    const { data, error } = await supabase.rpc('ping');
     const responseTime = Date.now() - startTime;
 
-    if (error && !error.message.includes("permission denied")) {
+    if (error) {
       return {
         status: "fail",
         responseTime,
         error: error.message,
+      };
+    }
+
+    if (data !== 'pong') {
+      return {
+        status: "fail",
+        responseTime,
+        error: `Unexpected response: ${data}`,
       };
     }
 
@@ -272,6 +281,7 @@ async function checkSupabaseHealth(): Promise<{
       responseTime,
       details: {
         url: process.env.NEXT_PUBLIC_SUPABASE_URL,
+        response: data,
       },
     };
   } catch (error) {
@@ -417,11 +427,11 @@ async function getSystemMetrics(): Promise<{
 // Also support HEAD requests for simple up/down checks
 export async function HEAD(): Promise<NextResponse> {
   try {
-    // Simple check - just verify we can respond
+    // Simple check - use pure liveness RPC
     const supabase = await createClient();
-    const { error } = await supabase.from("users").select("id").limit(1);
+    const { data, error } = await supabase.rpc('ping');
 
-    if (error && !error.message.includes("permission denied")) {
+    if (error || data !== 'pong') {
       return new NextResponse(null, { status: 503 });
     }
 

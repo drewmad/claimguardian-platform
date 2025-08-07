@@ -451,12 +451,14 @@ export class ProductionMonitor {
 
   private async checkDatabaseHealth(): Promise<boolean> {
     try {
+      // Pure liveness check via RPC. No table dependency.
+      // Function is created in migration 20250807_fix_health_and_onboarding.sql
       const supabase = createServiceClient();
-      const { error } = await supabase
-        .from("health_checks")
-        .select("1")
-        .limit(1);
-      return !error;
+      const { data, error } = await supabase.rpc("ping");
+      if (error) {
+        return false;
+      }
+      return data === "pong";
     } catch {
       return false;
     }

@@ -1,41 +1,28 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Apply database fixes for missing tables and functions
+# scripts/apply-database-fixes.sh
+# Safe, idempotent database fixes for ClaimGuardian.
 
-echo "🔧 Applying database fixes..."
+ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
-# Get the migration file path
-MIGRATION_FILE="supabase/migrations/20250806_fix_missing_tables_and_functions.sql"
+echo "[db-fixes] Guarding against illegal role grants..."
+"${ROOT_DIR}/scripts/guard-privileges.sh"
 
-if [ ! -f "$MIGRATION_FILE" ]; then
-  echo "❌ Migration file not found: $MIGRATION_FILE"
-  exit 1
-fi
+echo "[db-fixes] Applying core fixes migration..."
+# Use your preferred invocation. Examples:
 
-# Check if Supabase CLI is available
-if ! command -v supabase &> /dev/null; then
-  echo "❌ Supabase CLI is not installed"
-  echo "Please install it: https://supabase.com/docs/guides/cli"
-  exit 1
-fi
+# Option A: psql with environment variables already set for production
+# psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f "$ROOT_DIR/supabase/migrations/20250807_fix_health_and_onboarding.sql"
 
-# Apply the migration
-echo "📤 Applying migration: $MIGRATION_FILE"
-supabase db push --include-migrations || {
-  echo "❌ Failed to apply migration via Supabase CLI"
-  echo ""
-  echo "Alternative: Apply manually via Supabase Dashboard:"
-  echo "1. Go to https://supabase.com/dashboard/project/tmlrvecuwgppbaynesji/sql"
-  echo "2. Copy the contents of $MIGRATION_FILE"
-  echo "3. Paste and run in the SQL Editor"
-  exit 1
-}
+# Option B: Supabase CLI for local dev
+# supabase db reset --db-url "$LOCAL_DATABASE_URL" --no-seed
+# supabase migration up
 
-echo "✅ Database fixes applied successfully!"
-echo ""
-echo "The following issues have been resolved:"
-echo "- Created policy_documents_extended view"
-echo "- Created util.autofix_signup_privileges() function"
-echo "- Created public.handle_new_user() trigger function"
-echo "- Fixed pg_cron job syntax (CALL -> SELECT)"
-echo "- Added necessary permissions and RLS policies"
+echo "[db-fixes] Done."
+
+# Notes:
+# - Removed any call to util.autofix_signup_privileges() since it does not exist
+#   and is not needed with the onboarding trigger in place.
+# - If you had a previous call like: CALL util.autofix_signup_privileges();
+#   that is now intentionally gone.

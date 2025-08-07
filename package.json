@@ -23,7 +23,9 @@
     "fix:imports": "tsx ./scripts/fix-internal-imports.ts",
     "db:migrate:local": "supabase migration up",
     "db:types:local": "supabase gen types typescript --local > packages/db/src/generated.supabase.ts",
-    "precommit": "pnpm -w run lint && pnpm -w run typecheck"
+    "precommit": "pnpm -w run lint && pnpm -w run typecheck",
+    "db:guard": "bash scripts/guard-privileges.sh",
+    "db:fix": "bash scripts/apply-database-fixes.sh"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.1",
