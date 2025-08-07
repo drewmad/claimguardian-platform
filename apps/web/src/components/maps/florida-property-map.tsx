@@ -302,12 +302,12 @@ export function FloridaPropertyMap({
     if (showSearch) {
       const geocoder = new MapboxGeocoder({
         accessToken: mapboxgl.accessToken,
-        mapboxgl: mapboxgl,
+        mapboxgl: mapboxgl as any,
         marker: false,
         placeholder: "Search properties, addresses, counties...",
-        bbox: FLORIDA_BOUNDS.flat(),
+        bbox: FLORIDA_BOUNDS.flat() as [number, number, number, number],
       });
-      map.current.addControl(geocoder, "top-left");
+      map.current.addControl(geocoder as any, "top-left");
     }
 
     // Map load event

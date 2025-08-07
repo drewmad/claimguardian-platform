@@ -733,7 +733,7 @@ export function EnhancedPropertyMap({
                     <div key={layer.id} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" style={{ color: layer.color }} />
+                          <Icon className="w-4 h-4" style={{ color: layer.color } as React.CSSProperties} />
                           <span className="text-sm text-white">{layer.name}</span>
                         </div>
                         <Switch
@@ -758,7 +758,7 @@ export function EnhancedPropertyMap({
                 <div className="space-y-2">
                   <Slider
                     value={valueRange}
-                    onValueChange={setValueRange}
+                    onValueChange={(value) => setValueRange(value as [number, number])}
                     min={0}
                     max={5000000}
                     step={100000}
