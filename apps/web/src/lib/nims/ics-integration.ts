@@ -6,7 +6,7 @@
  * @status stable
  */
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { createHash } from "crypto";
 
@@ -249,7 +249,9 @@ export interface SituationReport {
 }
 
 export class ICSIntegrationService {
-  private supabase = createClient();
+  private async getSupabase() {
+    return await createClient();
+  }
 
   /**
    * Create a new ICS incident structure
@@ -306,7 +308,8 @@ export class ICSIntegrationService {
     };
 
     // Store in database
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("ics_incidents")
       .insert(incident);
 
@@ -452,7 +455,8 @@ export class ICSIntegrationService {
     };
 
     // Store in database and trigger notification workflow
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("resource_requests")
       .insert(resourceRequest);
 
@@ -480,7 +484,8 @@ export class ICSIntegrationService {
       last_updated: new Date().toISOString(),
     };
 
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("ics_incidents")
       .update(updatedIncident)
       .eq("id", incidentId);
@@ -524,7 +529,8 @@ export class ICSIntegrationService {
   }
 
   private async getIncident(incidentId: string): Promise<ICSIncident> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from("ics_incidents")
       .select("*")
       .eq("id", incidentId)
@@ -538,7 +544,8 @@ export class ICSIntegrationService {
   }
 
   private async saveForm(form: ICSForm): Promise<void> {
-    const { error } = await this.supabase.from("ics_forms").insert(form);
+    const supabase = await this.getSupabase();
+    const { error } = await supabase.from("ics_forms").insert(form);
 
     if (error) {
       throw new Error(`Failed to save ICS form: ${error.message}`);
@@ -734,13 +741,15 @@ export class ICSIntegrationService {
       approved_by: incident.organization.incident_commander.name,
     };
 
-    await this.supabase.from("situation_reports").insert(report);
+    const supabase = await this.getSupabase();
+    await supabase.from("situation_reports").insert(report);
 
     return report;
   }
 
   private async getNextReportNumber(incidentId: string): Promise<number> {
-    const { count } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { count } = await supabase
       .from("situation_reports")
       .select("*", { count: "exact", head: true })
       .eq("incident_id", incidentId);

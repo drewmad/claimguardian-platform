@@ -323,7 +323,9 @@ export default function PWADemoPage() {
               <Badge
                 className={`mt-2 ${notificationsEnabled ? "bg-green-600" : "bg-gray-600"}`}
               >
-                {Notification?.permission || "default"}
+                {typeof window !== "undefined" && "Notification" in window
+                  ? Notification.permission
+                  : "default"}
               </Badge>
             </CardContent>
           </Card>

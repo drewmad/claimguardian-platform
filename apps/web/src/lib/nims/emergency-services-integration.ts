@@ -6,7 +6,7 @@
  * @status stable
  */
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { CAPMessage, EDXLDistribution } from "./emergency-communications";
 import { NIMSResource } from "./resource-management";
 
@@ -110,7 +110,9 @@ export interface SystemStatus {
 }
 
 export class EmergencyServicesIntegration {
-  private supabase = createClient();
+  private async getSupabase() {
+    return await createClient();
+  }
   private integrations: Map<ServiceProvider, ServiceIntegration> = new Map();
 
   constructor() {
@@ -131,7 +133,8 @@ export class EmergencyServicesIntegration {
     }
 
     // Store integration
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("service_integrations")
       .insert(integration);
 
@@ -545,7 +548,8 @@ export class EmergencyServicesIntegration {
 
   // Private helper methods
   private async loadIntegrations(): Promise<void> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from("service_integrations")
       .select("*")
       .eq("status", "active");
@@ -657,7 +661,8 @@ export class EmergencyServicesIntegration {
       message.updated_at = new Date().toISOString();
 
       // Store message
-      await this.supabase.from("data_exchange_messages").insert(message);
+    const supabase = await this.getSupabase();
+      await supabase.from("data_exchange_messages").insert(message);
     }
   }
 

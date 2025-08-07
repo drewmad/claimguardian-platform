@@ -6,7 +6,7 @@
  * @status stable
  */
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import { parseString } from "xml2js";
 
@@ -320,7 +320,9 @@ export interface EmergencyAlert {
 }
 
 export class EmergencyCommunicationManager {
-  private supabase = createClient();
+  private async getSupabase() {
+    return await createClient();
+  }
 
   /**
    * Create and distribute CAP-compliant emergency alert
@@ -361,7 +363,8 @@ export class EmergencyCommunicationManager {
     alert.edxl_distribution = this.generateEDXLDistribution(alert);
 
     // Save to database
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("emergency_alerts")
       .insert(alert);
 
@@ -416,7 +419,8 @@ export class EmergencyCommunicationManager {
     }
 
     // Update alert with delivery receipts and final status
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("emergency_alerts")
       .update({
         status: "sent",
@@ -447,7 +451,8 @@ export class EmergencyCommunicationManager {
       ...planData,
     };
 
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("communication_plans")
       .insert(plan);
 
@@ -495,7 +500,8 @@ export class EmergencyCommunicationManager {
     };
 
     // Store message
-    const { error } = await this.supabase.from("edxl_messages").insert({
+    const supabase = await this.getSupabase();
+    const { error } = await supabase.from("edxl_messages").insert({
       message_id: resourceMessage.messageID,
       message_type: "resource_request",
       content: resourceMessage,
@@ -726,7 +732,8 @@ export class EmergencyCommunicationManager {
   }
 
   private async getAlert(alertId: string): Promise<EmergencyAlert> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from("emergency_alerts")
       .select("*")
       .eq("id", alertId)
@@ -743,7 +750,8 @@ export class EmergencyCommunicationManager {
     alertId: string,
     status: EmergencyAlert["status"],
   ): Promise<void> {
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("emergency_alerts")
       .update({
         status,

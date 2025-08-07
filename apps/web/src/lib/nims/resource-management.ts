@@ -6,7 +6,7 @@
  * @status stable
  */
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { NIMSResource } from "./ics-integration";
 
 // Re-export NIMSResource for other modules
@@ -346,7 +346,9 @@ export interface ResourceDeployment {
 }
 
 export class NIMSResourceManager {
-  private supabase = createClient();
+  private async getSupabase() {
+    return await createClient();
+  }
 
   /**
    * Register a new resource in the NIMS inventory
@@ -379,7 +381,8 @@ export class NIMSResourceManager {
       ...resourceData,
     };
 
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("nims_resources")
       .insert(resource);
 
@@ -410,7 +413,8 @@ export class NIMSResourceManager {
     }
 
     // Update resource with official typing
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("nims_resources")
       .update({
         type: resourceType,
@@ -429,7 +433,8 @@ export class NIMSResourceManager {
     capabilities?: string[];
     status?: ResourceStatus;
   }): Promise<NIMSResource[]> {
-    let query = this.supabase.from("nims_resources").select("*");
+    const supabase = await this.getSupabase();
+    let query = supabase.from("nims_resources").select("*");
 
     if (criteria.type) {
       query = query.eq("type", criteria.type);
@@ -514,7 +519,8 @@ export class NIMSResourceManager {
     };
 
     // Update resource status
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("nims_resources")
       .update({
         status: ResourceStatus.ASSIGNED,
@@ -523,7 +529,7 @@ export class NIMSResourceManager {
       .eq("id", resourceId);
 
     // Create deployment record
-    const { error } = await this.supabase
+    const { error } = await supabase
       .from("resource_deployments")
       .insert(deployment);
 
@@ -540,7 +546,8 @@ export class NIMSResourceManager {
   async generateInventoryReport(
     organizationId: string,
   ): Promise<ResourceInventory> {
-    const { data: resources, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data: resources, error } = await supabase
       .from("nims_resources")
       .select("*")
       .eq("organization_id", organizationId);
@@ -625,7 +632,8 @@ export class NIMSResourceManager {
   }
 
   private async getResource(resourceId: string): Promise<NIMSResource> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from("nims_resources")
       .select("*")
       .eq("id", resourceId)

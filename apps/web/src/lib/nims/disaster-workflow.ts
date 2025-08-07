@@ -6,7 +6,7 @@
  * @status stable
  */
 
-import { createClient } from "@/lib/supabase/client";
+import { createClient } from "@/lib/supabase/server";
 import { logger } from "@/lib/logger";
 import {
   ICSIncident,
@@ -391,7 +391,9 @@ export const DISASTER_WORKFLOW_TEMPLATES: Record<
 };
 
 export class DisasterWorkflowManager {
-  private supabase = createClient();
+  private async getSupabase() {
+    return await createClient();
+  }
 
   /**
    * Create disaster response workflow from template
@@ -433,7 +435,8 @@ export class DisasterWorkflowManager {
     };
 
     // Save to database
-    const { error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { error } = await supabase
       .from("disaster_workflows")
       .insert(workflow);
 
@@ -518,7 +521,8 @@ export class DisasterWorkflowManager {
     await this.completePhaseActivities(workflowId, fromPhase);
 
     // Update workflow current phase
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("disaster_workflows")
       .update({
         current_phase: toPhase,
@@ -568,7 +572,8 @@ export class DisasterWorkflowManager {
     });
 
     // Save assignment
-    await this.supabase.from("resource_assignments").insert(assignment);
+    const supabase = await this.getSupabase();
+    await supabase.from("resource_assignments").insert(assignment);
 
     return assignment;
   }
@@ -613,7 +618,8 @@ export class DisasterWorkflowManager {
     }
 
     // Save updated workflow
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("disaster_workflows")
       .update({
         phases: workflow.phases,
@@ -672,7 +678,8 @@ export class DisasterWorkflowManager {
     };
 
     // Update workflow with metrics
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("disaster_workflows")
       .update({
         performance_metrics: metrics,
@@ -685,7 +692,8 @@ export class DisasterWorkflowManager {
 
   // Private helper methods
   private async getWorkflow(workflowId: string): Promise<DisasterWorkflow> {
-    const { data, error } = await this.supabase
+    const supabase = await this.getSupabase();
+    const { data, error } = await supabase
       .from("disaster_workflows")
       .select("*")
       .eq("id", workflowId)
@@ -702,7 +710,8 @@ export class DisasterWorkflowManager {
     workflowId: string,
     status: WorkflowStatus,
   ): Promise<void> {
-    await this.supabase
+    const supabase = await this.getSupabase();
+    await supabase
       .from("disaster_workflows")
       .update({
         status,
