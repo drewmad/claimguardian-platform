@@ -12,23 +12,27 @@ import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { logger } from "@/lib/logger/production-logger";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-  apiVersion: "2025-07-30.basil",
-});
+// Initialize Stripe only if the secret key is available
+const stripeSecretKey = process.env.STRIPE_SECRET_KEY;
+const stripe = stripeSecretKey
+  ? new Stripe(stripeSecretKey, {
+      apiVersion: "2025-07-30.basil",
+    })
+  : null;
 
 const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET || "";
 
-// Use service role for webhook processing
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
-  },
-);
+// Use service role for webhook processing (only if configured)
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const supabase = supabaseUrl && supabaseServiceKey
+  ? createClient(supabaseUrl, supabaseServiceKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
+    })
+  : null;
 
 // Map Stripe price IDs to our tiers
 const PRICE_TO_TIER: Record<string, string> = {
@@ -41,6 +45,18 @@ const PRICE_TO_TIER: Record<string, string> = {
 };
 
 export async function POST(request: Request) {
+  // Return early if Stripe is not configured
+  if (!stripe || !supabase) {
+    logger.error("Payment processing is not fully configured", {
+      stripeConfigured: !!stripe,
+      supabaseConfigured: !!supabase,
+    });
+    return NextResponse.json(
+      { error: "Payment processing is not configured" },
+      { status: 503 },
+    );
+  }
+
   const body = await request.text();
   const headersList = await headers();
   const signature = headersList.get("stripe-signature");

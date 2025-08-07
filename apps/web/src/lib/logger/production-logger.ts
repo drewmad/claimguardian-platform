@@ -286,12 +286,3 @@ class ProductionLogger {
 
 // Singleton instance
 export const logger = new ProductionLogger();
-
-// Declare global interface for Sentry if it exists
-declare global {
-  interface Window {
-    Sentry?: {
-      captureException: (error: Error, context?: unknown) => void;
-    };
-  }
-}
