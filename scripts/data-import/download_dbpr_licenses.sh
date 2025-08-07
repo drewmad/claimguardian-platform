@@ -29,13 +29,13 @@ if ls "$DOWNLOAD_DIR"*.csv 1> /dev/null 2>&1; then
     cp "$DOWNLOAD_DIR"*.csv "${ARCHIVE_DIR}${TIMESTAMP}/"
 fi
 
-# URLs for the DBPR license files
-declare -A LICENSE_FILES=(
-    ["cilb_certified.csv"]="https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_certified.csv"
-    ["cilb_registered.csv"]="https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_registered.csv"
-    ["elc.csv"]="https://www2.myfloridalicense.com/sto/file_download/extracts/elc.csv"
-    ["plc.csv"]="https://www2.myfloridalicense.com/sto/file_download/extracts/plc.csv"
-    ["cilb_roofing.csv"]="https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_roofing.csv"
+# URLs for the DBPR license files - using arrays for compatibility
+LICENSE_FILES=(
+    "cilb_certified.csv|https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_certified.csv"
+    "cilb_registered.csv|https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_registered.csv"
+    "elc.csv|https://www2.myfloridalicense.com/sto/file_download/extracts/elc.csv"
+    "plc.csv|https://www2.myfloridalicense.com/sto/file_download/extracts/plc.csv"
+    "cilb_roofing.csv|https://www2.myfloridalicense.com/sto/file_download/extracts/cilb_roofing.csv"
 )
 
 # Track download results
@@ -43,8 +43,9 @@ DOWNLOAD_SUCCESS=0
 DOWNLOAD_FAILED=0
 
 # Loop through the URLs and download each file
-for FILENAME in "${!LICENSE_FILES[@]}"; do
-    URL="${LICENSE_FILES[$FILENAME]}"
+for ENTRY in "${LICENSE_FILES[@]}"; do
+    FILENAME="${ENTRY%%|*}"
+    URL="${ENTRY##*|}"
     OUTPUT_FILE="$DOWNLOAD_DIR$FILENAME"
     
     log_message "Downloading $FILENAME..."
@@ -71,7 +72,8 @@ done
 log_message "Download complete: $DOWNLOAD_SUCCESS successful, $DOWNLOAD_FAILED failed"
 
 # If all downloads successful, trigger import
-if [ $DOWNLOAD_SUCCESS -eq ${#LICENSE_FILES[@]} ]; then
+TOTAL_FILES=5
+if [ $DOWNLOAD_SUCCESS -eq $TOTAL_FILES ]; then
     log_message "All files downloaded successfully. Triggering import..."
     
     # Call the import script

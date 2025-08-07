@@ -17,7 +17,7 @@
  */
 "use client";
 
-import { Clock, DollarSign, ShieldCheck, Search, Wrench, Hammer, FileCheck, AlertCircle, HandCoins } from "lucide-react";
+import { Clock, DollarSign, ShieldCheck, Search, Wrench, Hammer, FileCheck, AlertCircle, HandCoins, Home, AlertTriangle, Calculator } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 
 import { liquidGlass } from "@/lib/styles/liquid-glass";
@@ -81,56 +81,87 @@ export function Features() {
             Your Property's Complete Lifecycle Command Center
           </span>
         </h2>
-        <p className="mt-6 max-w-4xl mx-auto text-xl text-gray-300">
-          More than insurance claims. More than documentation. ClaimGuardian is
-          your AI-powered property command center—from the day you buy to the
-          legacy you leave.
+        <p className="mt-6 max-w-4xl mx-auto text-lg text-gray-400">
+          From the day you sign to the legacy you leave. Every phase of property ownership, intelligently managed and forever protected.
         </p>
 
-        {/* Property Lifecycle Stages */}
-        <div className="mt-12 mb-8">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-5xl mx-auto">
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-blue-600/20 group-hover:bg-blue-600/30 transition-colors">
-                <Search className="h-6 w-6 text-blue-400" />
+        {/* Property Lifecycle Stages - Top Row */}
+        <div className="mt-12 mb-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-blue-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-blue-600/10 group-hover:bg-blue-600/20 transition-colors flex items-center justify-center">
+                <Search className="h-8 w-8 text-blue-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Track</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Track</span>
+            </button>
             
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-green-600/20 group-hover:bg-green-600/30 transition-colors">
-                <Wrench className="h-6 w-6 text-green-400" />
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-green-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-green-600/10 group-hover:bg-green-600/20 transition-colors flex items-center justify-center">
+                <Wrench className="h-8 w-8 text-green-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Maintain</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Maintain</span>
+            </button>
             
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-orange-600/20 group-hover:bg-orange-600/30 transition-colors">
-                <Hammer className="h-6 w-6 text-orange-400" />
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-orange-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-orange-600/10 group-hover:bg-orange-600/20 transition-colors flex items-center justify-center">
+                <Hammer className="h-8 w-8 text-orange-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Fix</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Fix</span>
+            </button>
             
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-purple-600/20 group-hover:bg-purple-600/30 transition-colors">
-                <FileCheck className="h-6 w-6 text-purple-400" />
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-purple-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-purple-600/10 group-hover:bg-purple-600/20 transition-colors flex items-center justify-center">
+                <FileCheck className="h-8 w-8 text-purple-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Warranty</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Warranty</span>
+            </button>
             
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-red-600/20 group-hover:bg-red-600/30 transition-colors">
-                <AlertCircle className="h-6 w-6 text-red-400" />
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-red-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-red-600/10 group-hover:bg-red-600/20 transition-colors flex items-center justify-center">
+                <AlertCircle className="h-8 w-8 text-red-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Claim</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Claim</span>
+            </button>
             
-            <div className="flex flex-col items-center gap-3 p-4 rounded-xl bg-gray-800/40 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/60 transition-all duration-300 group">
-              <div className="p-3 rounded-full bg-cyan-600/20 group-hover:bg-cyan-600/30 transition-colors">
-                <HandCoins className="h-6 w-6 text-cyan-400" />
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-cyan-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-2xl bg-cyan-600/10 group-hover:bg-cyan-600/20 transition-colors flex items-center justify-center">
+                <HandCoins className="h-8 w-8 text-cyan-400" />
               </div>
-              <span className="text-sm font-medium text-gray-300">Donate/Sell</span>
-            </div>
+              <span className="text-base font-medium text-gray-200">Donate/Sell</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Property Lifecycle Stages - Bottom Row */}
+        <div className="mb-12">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 max-w-5xl mx-auto">
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-emerald-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-emerald-600/10 group-hover:bg-emerald-600/20 transition-colors flex items-center justify-center border-2 border-emerald-500/30 group-hover:border-emerald-500/50">
+                <Home className="h-8 w-8 text-emerald-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Buy & Document</span>
+            </button>
+            
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-gray-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-gray-600/10 group-hover:bg-gray-600/20 transition-colors flex items-center justify-center border-2 border-gray-500/30 group-hover:border-gray-500/50">
+                <Wrench className="h-8 w-8 text-gray-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Prevent & Optimize</span>
+            </button>
+            
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-gray-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-gray-600/10 group-hover:bg-gray-600/20 transition-colors flex items-center justify-center border-2 border-gray-500/30 group-hover:border-gray-500/50">
+                <AlertTriangle className="h-8 w-8 text-gray-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Crisis & Recovery</span>
+            </button>
+            
+            <button className="flex flex-col items-center gap-2 p-6 rounded-2xl bg-gray-900/60 backdrop-blur-sm border border-gray-700/50 hover:bg-gray-800/80 hover:border-gray-500/50 transition-all duration-300 group cursor-pointer">
+              <div className="w-16 h-16 rounded-full bg-gray-600/10 group-hover:bg-gray-600/20 transition-colors flex items-center justify-center border-2 border-gray-500/30 group-hover:border-gray-500/50">
+                <Calculator className="h-8 w-8 text-gray-400" />
+              </div>
+              <span className="text-sm font-medium text-gray-300">Legacy & Transfer</span>
+            </button>
           </div>
         </div>
 
