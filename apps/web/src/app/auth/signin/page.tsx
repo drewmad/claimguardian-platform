@@ -1,16 +1,16 @@
 /**
  * @fileMetadata
- * @purpose "Sign-in page with simplified authentication flow"
+ * @purpose "Sign-in page with robust authentication flow"
  * @owner frontend-team
- * @dependencies ["react", "./simple-sign-in-form"]
+ * @dependencies ["react", "./sign-in-form"]
  * @exports ["SignInPage"]
  * @complexity low
  * @tags ["auth", "signin", "client"]
  * @status stable
- * @notes Uses simplified form with direct Supabase auth
+ * @notes Uses the main SignInForm which is integrated with the AuthProvider
  */
 
-import { SimpleSignInForm } from "./simple-sign-in-form";
+import { SignInForm } from "./sign-in-form";
 
 export default async function SignInPage({
   searchParams,
@@ -19,5 +19,5 @@ export default async function SignInPage({
 }) {
   const params = await searchParams;
 
-  return <SimpleSignInForm message={params?.message} />;
+  return <SignInForm message={params?.message} />;
 }
