@@ -321,7 +321,7 @@ if (typeof window !== "undefined") {
 // TypeScript augmentation for window object
 declare global {
   interface Window {
-    gtag?: (command: string, targetId: string, config?: any) => void;
+    gtag?: (...args: any[]) => void;
     plausible?: (eventName: string, options?: { props?: any }) => void;
     posthog?: {
       capture?: (eventName: string, properties?: any) => void;

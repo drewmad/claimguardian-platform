@@ -39,6 +39,8 @@ import { Slider } from "@/components/ui/slider";
 import { Switch } from "@/components/ui/switch";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { parcelsVectorSource, DEFAULT_LAYER_CONFIGS } from "@/lib/integrations/mapbox-source";
+import LoadingStates from "@/components/maps/loading-states";
 
 // Types
 interface Property {
@@ -98,6 +100,9 @@ const FLORIDA_BOUNDS: [[number, number], [number, number]] = [
   [-87.6349, 24.3963],
   [-79.9743, 31.0007],
 ];
+
+// Feature flag for MVT tiles (set to false to use original GeoJSON)
+const USE_MVT = true;
 
 // Enhanced map layers
 const ENHANCED_LAYERS: MapLayer[] = [
@@ -327,123 +332,196 @@ export function EnhancedPropertyMap({
   const setupMapLayers = useCallback(() => {
     if (!map.current) return;
 
-    // Add property data source
-    map.current.addSource("properties", {
-      type: "geojson",
-      data: {
-        type: "FeatureCollection",
-        features: properties.map((property) => ({
-          type: "Feature",
-          geometry: {
-            type: "Point",
-            coordinates: property.coordinates,
-          },
-          properties: property,
-        })),
-      },
-      cluster: true,
-      clusterMaxZoom: 14,
-      clusterRadius: 50,
-    });
+    if (USE_MVT) {
+      // Add MVT vector tile source for parcels
+      const baseUrl = `${window.location.origin}/api/tiles/mvt`;
+      
+      if (!map.current.getSource("parcels")) {
+        map.current.addSource("parcels", parcelsVectorSource(baseUrl));
+      }
 
-    // Add clustered properties layer
-    map.current.addLayer({
-      id: "clusters",
-      type: "circle",
-      source: "properties",
-      filter: ["has", "point_count"],
-      paint: {
-        "circle-color": [
-          "step",
-          ["get", "point_count"],
-          "#51bbd6",
-          10,
-          "#f1f075",
-          50,
-          "#f28cb1",
-        ],
-        "circle-radius": [
-          "step",
-          ["get", "point_count"],
-          20,
-          10,
-          30,
-          50,
-          40,
-        ],
-      },
-    });
+      // Add parcels fill layer
+      if (!map.current.getLayer("parcels-fill")) {
+        map.current.addLayer({
+          ...DEFAULT_LAYER_CONFIGS.properties.fill,
+          source: "parcels",
+        });
+      }
 
-    // Add cluster count
-    map.current.addLayer({
-      id: "cluster-count",
-      type: "symbol",
-      source: "properties",
-      filter: ["has", "point_count"],
-      layout: {
-        "text-field": "{point_count_abbreviated}",
-        "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
-        "text-size": 12,
-      },
-      paint: {
-        "text-color": "#ffffff",
-      },
-    });
+      // Add parcels outline layer
+      if (!map.current.getLayer("parcels-outline")) {
+        map.current.addLayer({
+          ...DEFAULT_LAYER_CONFIGS.properties.outline,
+          source: "parcels",
+        });
+      }
 
-    // Add individual properties layer
-    map.current.addLayer({
-      id: "properties-layer",
-      type: "circle",
-      source: "properties",
-      filter: ["!", ["has", "point_count"]],
-      paint: {
-        "circle-color": [
-          "match",
-          ["get", "riskLevel"],
-          "low", "#22c55e",
-          "medium", "#fbbf24",
-          "high", "#ef4444",
-          "#6b7280",
-        ],
-        "circle-radius": 8,
-        "circle-stroke-width": 2,
-        "circle-stroke-color": "#ffffff",
-        "circle-stroke-opacity": 0.8,
-      },
-    });
+      // Setup click handler for MVT parcels
+      map.current.off("click", "parcels-fill" as any);
+      map.current.on("click", "parcels-fill", (e) => {
+        if (e.features && e.features[0]) {
+          const feature = e.features[0];
+          const props = feature.properties?.props ? JSON.parse(feature.properties.props) : feature.properties;
+          
+          // Create property object from parcel data
+          const property: Property = {
+            id: props.PARCEL_ID || props.parcel_id || 'unknown',
+            parcelId: props.PARCEL_ID || props.parcel_id,
+            name: props.OWN_NAME || props.owner_name || 'Unknown Owner',
+            address: `${props.SITUS_NUM || ''} ${props.SITUS_ST || ''}`.trim() || props.address || 'Address not available',
+            coordinates: feature.geometry?.type === 'Point' ? feature.geometry.coordinates as [number, number] : [0, 0],
+            type: 'single_family', // Default type
+            value: props.JUST_VAL || props.assessed_value || 0,
+            insuranceStatus: 'none' as const,
+            claimsCount: 0,
+            riskLevel: 'low' as const,
+            county: `County ${props.CO_NO || props.county_code || ''}`,
+            yearBuilt: props.ACT_YR_BLT || props.year_built,
+            squareFeet: undefined,
+            floodZone: undefined,
+            windZone: undefined,
+            lastUpdated: new Date(),
+          };
 
-    // Add value heatmap
-    map.current.addLayer({
-      id: "property-heat",
-      type: "heatmap",
-      source: "properties",
-      layout: {
-        visibility: "none",
-      },
-      paint: {
-        "heatmap-weight": [
-          "interpolate",
-          ["linear"],
-          ["get", "value"],
-          0, 0,
-          5000000, 1,
-        ],
-        "heatmap-intensity": 1,
-        "heatmap-color": [
-          "interpolate",
-          ["linear"],
-          ["heatmap-density"],
-          0, "rgba(33,102,172,0)",
-          0.2, "rgb(103,169,207)",
-          0.4, "rgb(209,229,240)",
-          0.6, "rgb(253,219,199)",
-          0.8, "rgb(239,138,98)",
-          1, "rgb(178,24,43)",
-        ],
-        "heatmap-radius": 30,
-        "heatmap-opacity": 0.6,
-      },
-    });
+          handlePropertyClick(property);
+        }
+      });
+
+      // Setup hover effects
+      map.current.on("mouseenter", "parcels-fill", () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = "pointer";
+        }
+      });
+
+      map.current.on("mouseleave", "parcels-fill", () => {
+        if (map.current) {
+          map.current.getCanvas().style.cursor = "";
+        }
+      });
+
+    } else {
+      // Original GeoJSON source for fallback
+      map.current.addSource("properties", {
+        type: "geojson",
+        data: {
+          type: "FeatureCollection",
+          features: properties.map((property) => ({
+            type: "Feature",
+            geometry: {
+              type: "Point",
+              coordinates: property.coordinates,
+            },
+            properties: property,
+          })),
+        },
+        cluster: true,
+        clusterMaxZoom: 14,
+        clusterRadius: 50,
+      });
+    }
+
+    if (!USE_MVT) {
+      // Only add GeoJSON clustering layers if not using MVT
+      // Add clustered properties layer
+      map.current.addLayer({
+        id: "clusters",
+        type: "circle",
+        source: "properties",
+        filter: ["has", "point_count"],
+        paint: {
+          "circle-color": [
+            "step",
+            ["get", "point_count"],
+            "#51bbd6",
+            10,
+            "#f1f075",
+            50,
+            "#f28cb1",
+          ],
+          "circle-radius": [
+            "step",
+            ["get", "point_count"],
+            20,
+            10,
+            30,
+            50,
+            40,
+          ],
+        },
+      });
+
+      // Add cluster count
+      map.current.addLayer({
+        id: "cluster-count",
+        type: "symbol",
+        source: "properties",
+        filter: ["has", "point_count"],
+        layout: {
+          "text-field": "{point_count_abbreviated}",
+          "text-font": ["DIN Offc Pro Medium", "Arial Unicode MS Bold"],
+          "text-size": 12,
+        },
+        paint: {
+          "text-color": "#ffffff",
+        },
+      });
+
+      // Add individual properties layer
+      map.current.addLayer({
+        id: "properties-layer",
+        type: "circle",
+        source: "properties",
+        filter: ["!", ["has", "point_count"]],
+        paint: {
+          "circle-color": [
+            "match",
+            ["get", "riskLevel"],
+            "low", "#22c55e",
+            "medium", "#fbbf24",
+            "high", "#ef4444",
+            "#6b7280",
+          ],
+          "circle-radius": 8,
+          "circle-stroke-width": 2,
+          "circle-stroke-color": "#ffffff",
+          "circle-stroke-opacity": 0.8,
+        },
+      });
+
+      // Add value heatmap for GeoJSON data
+      map.current.addLayer({
+        id: "property-heat",
+        type: "heatmap",
+        source: "properties",
+        layout: {
+          visibility: "none",
+        },
+        paint: {
+          "heatmap-weight": [
+            "interpolate",
+            ["linear"],
+            ["get", "value"],
+            0, 0,
+            5000000, 1,
+          ],
+          "heatmap-intensity": 1,
+          "heatmap-color": [
+            "interpolate",
+            ["linear"],
+            ["heatmap-density"],
+            0, "rgba(33,102,172,0)",
+            0.2, "rgb(103,169,207)",
+            0.4, "rgb(209,229,240)",
+            0.6, "rgb(253,219,199)",
+            0.8, "rgb(239,138,98)",
+            1, "rgb(178,24,43)",
+          ],
+          "heatmap-radius": 30,
+          "heatmap-opacity": 0.6,
+        },
+      });
+    }
 
     // Load risk zones (mock data for demo)
     loadRiskZones();
@@ -636,6 +714,9 @@ export function EnhancedPropertyMap({
     <div className={cn("relative", className)} style={{ height }}>
       {/* Map Container */}
       <div ref={mapContainer} className="w-full h-full" />
+
+      {/* Loading States for MVT tiles */}
+      {USE_MVT && <LoadingStates map={map.current} viewportPriority="center" />}
 
       {/* Map not configured message */}
       {!process.env.NEXT_PUBLIC_MAPBOX_TOKEN && (

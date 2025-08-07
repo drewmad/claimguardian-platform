@@ -79,11 +79,18 @@ export async function estimateTileComplexity(tile: TileInfo): Promise<number> {
  * Calculate tile bounds in different coordinate systems
  */
 export function calculateTileBounds(z: number, x: number, y: number) {
-  const n = Math.PI - (2 * Math.PI * y) / Math.pow(2, z);
-  const minLon = (x / Math.pow(2, z)) * 360 - 180;
-  const maxLon = ((x + 1) / Math.pow(2, z)) * 360 - 180;
-  const minLat = (Math.atan(Math.sinh(n + (2 * Math.PI) / Math.pow(2, z))) * 180) / Math.PI;
-  const maxLat = (Math.atan(Math.sinh(n)) * 180) / Math.PI;
+  const tileCount = Math.pow(2, z);
+  
+  // Calculate longitude bounds
+  const minLon = (x / tileCount) * 360 - 180;
+  const maxLon = ((x + 1) / tileCount) * 360 - 180;
+  
+  // Calculate latitude bounds (Web Mercator projection)
+  const n1 = Math.PI - (2 * Math.PI * y) / tileCount;
+  const n2 = Math.PI - (2 * Math.PI * (y + 1)) / tileCount;
+  
+  const maxLat = (Math.atan(Math.sinh(n1)) * 180) / Math.PI;
+  const minLat = (Math.atan(Math.sinh(n2)) * 180) / Math.PI;
   
   return {
     minLon,
@@ -101,13 +108,17 @@ export function calculateTileBounds(z: number, x: number, y: number) {
  * Check if tile coordinates are valid
  */
 export function isValidTile(z: number, x: number, y: number): boolean {
+  if (!Number.isInteger(z) || !Number.isInteger(x) || !Number.isInteger(y)) {
+    return false;
+  }
+  
+  if (z < 0 || z > 22) {
+    return false;
+  }
+  
   const maxTile = Math.pow(2, z);
   
-  return (
-    z >= 0 && z <= 22 &&
-    x >= 0 && x < maxTile &&
-    y >= 0 && y < maxTile
-  );
+  return x >= 0 && x < maxTile && y >= 0 && y < maxTile;
 }
 
 /**

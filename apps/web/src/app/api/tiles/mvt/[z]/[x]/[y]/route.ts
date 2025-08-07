@@ -13,25 +13,23 @@ import { generateTileETag } from '@/lib/util/hash';
 // Force Node.js runtime for database connections
 export const runtime = 'nodejs';
 
-interface RouteParams {
-  z: string;
-  x: string;
-  y: string;
-}
-
 const MVT_VERSION_SIG = process.env.MVT_VERSION_SIG || 'properties|boundaries|risk_zones@v1';
 const MVT_DEFAULT_TTL = parseInt(process.env.MVT_DEFAULT_TTL_SECONDS || '604800', 10); // 7 days
 const MVT_ACTIVE_TTL = parseInt(process.env.MVT_ACTIVE_TTL_SECONDS || '86400', 10); // 1 day
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: RouteParams }
+  context: any
 ) {
   try {
+    // Handle both Next 15 variants: params or Promise<params>
+    const p = await context.params;
+    const { z: zStr, x: xStr, y: yStr } = p as { z: string; x: string; y: string };
+    
     // Parse and validate tile coordinates
-    const z = parseInt(params.z, 10);
-    const x = parseInt(params.x, 10);
-    const y = parseInt(params.y, 10);
+    const z = parseInt(zStr, 10);
+    const x = parseInt(xStr, 10);
+    const y = parseInt(yStr, 10);
 
     if (!isValidTile(z, x, y)) {
       return new NextResponse('Invalid tile coordinates', { 
@@ -115,7 +113,7 @@ export async function GET(
     const browserCacheAge = z >= 14 ? 1800 : 3600; // 30 min for high zoom, 1 hour for low zoom
     const cdnCacheAge = z >= 14 ? 7200 : 86400; // 2 hours for high zoom, 24 hours for low zoom
 
-    return new NextResponse(tileData, {
+    return new NextResponse(new Uint8Array(tileData), {
       status: 200,
       headers: {
         'Content-Type': 'application/vnd.mapbox-vector-tile',
@@ -132,7 +130,8 @@ export async function GET(
     });
 
   } catch (error) {
-    console.error(`Error serving tile ${params.z}/${params.x}/${params.y}:`, error);
+    const p = await context.params.catch(() => ({ z: '?', x: '?', y: '?' }));
+    console.error(`Error serving tile ${p.z}/${p.x}/${p.y}:`, error);
     
     return new NextResponse('Internal server error', {
       status: 500,
