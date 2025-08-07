@@ -6,7 +6,7 @@
 import { vi, beforeEach } from 'vitest';
 
 // Mock environment variables
-process.env.NODE_ENV = 'test';
+vi.stubEnv('NODE_ENV', 'test');
 process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test';
 process.env.MVT_VERSION_SIG = 'test@v1';
 process.env.MVT_DEFAULT_TTL_SECONDS = '3600';

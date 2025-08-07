@@ -273,7 +273,7 @@ export class QueryOptimizer {
 
       return {
         data: [],
-        error,
+        error: error instanceof Error ? error : new Error(String(error)),
         metrics,
       };
     }
@@ -297,7 +297,7 @@ export class QueryOptimizer {
 
       return { data: data || [], error };
     } catch (error) {
-      return { data: [], error };
+      return { data: [], error: error instanceof Error ? error : new Error(String(error)) };
     }
   }
 

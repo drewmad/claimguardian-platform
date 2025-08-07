@@ -338,7 +338,7 @@ export class AIContentTestingFramework {
           );
         } catch (error) {
           console.error(`❌ Request ${i + 1} failed:`, error);
-          errors.push(`Request ${i + 1}: ${error.message}`);
+          errors.push(`Request ${i + 1}: ${error instanceof Error ? error.message : String(error)}`);
         }
       }
 
@@ -365,7 +365,7 @@ export class AIContentTestingFramework {
       console.log(`   Budget alerts: ${budgetAlertsTriggered}`);
     } catch (error) {
       console.error(`💥 Test scenario failed:`, error);
-      errors.push(`Scenario failure: ${error.message}`);
+      errors.push(`Scenario failure: ${error instanceof Error ? error.message : String(error)}`);
     } finally {
       // Cleanup test data
       await this.cleanupTestData(userId);
@@ -576,7 +576,7 @@ export class AIStressTestFramework {
         );
       } catch (error) {
         this.errors.push(
-          `User ${userId}, Request ${requestCount}: ${error.message}`,
+          `User ${userId}, Request ${requestCount}: ${error instanceof Error ? error.message : String(error)}`,
         );
       } finally {
         this.concurrentRequests--;

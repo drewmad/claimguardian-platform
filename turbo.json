@@ -1,24 +1,39 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "clean": {
-      "cache": false
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**", ".next/**", "build/**", "tsconfig.tsbuildinfo", "coverage/**"]
+    },
+    "type-check": {
+      "dependsOn": ["^build"],
+      "outputs": []
     },
     "lint": {
       "outputs": [],
       "dependsOn": []
     },
-    "typecheck": {
-      "dependsOn": ["^build"],
-      "outputs": []
-    },
-    "build": {
-      "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".next/**", "build/**", "tsconfig.tsbuildinfo", "coverage/**"]
-    },
     "test": {
       "dependsOn": ["^build"],
       "outputs": ["coverage/**", "junit.xml"]
+    },
+    "clean": {
+      "cache": false
+    },
+    "storybook": {
+      "dependsOn": ["build"],
+      "outputs": ["storybook-static/**"],
+      "cache": false,
+      "env": ["NODE_ENV"]
+    },
+    "storybook:build": {
+      "dependsOn": ["build"],
+      "outputs": ["storybook-static/**"]
+    },
+    "dev": {
+      "dependsOn": ["^build"],
+      "cache": false,
+      "persistent": true
     }
   }
 }

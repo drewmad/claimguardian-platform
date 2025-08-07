@@ -129,7 +129,14 @@ export function addRiskChoroplethLayer(map: mapboxgl.Map) {
 // Add animated pulse effect for active claims
 export function addActiveClaimsPulse(map: mapboxgl.Map) {
   const size = 200;
-  const pulsingDot = {
+  const pulsingDot: {
+    width: number;
+    height: number;
+    data: Uint8Array | Uint8ClampedArray;
+    context?: CanvasRenderingContext2D | null;
+    onAdd: () => void;
+    render: () => boolean;
+  } = {
     width: size,
     height: size,
     data: new Uint8Array(size * size * 4),

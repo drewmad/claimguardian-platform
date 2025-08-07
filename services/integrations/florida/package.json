@@ -1,0 +1,36 @@
+{
+  "name": "@claimguardian/florida-em-adapter",
+  "version": "1.0.0",
+  "description": "Florida Emergency Management Data Adapter for real-time county emergency alerts",
+  "main": "dist/countyEmAdapter.js",
+  "types": "dist/countyEmAdapter.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "clean": "rimraf dist",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "lint": "eslint src --ext .ts,.tsx",
+    "lint:fix": "eslint src --ext .ts,.tsx --fix"
+  },
+  "dependencies": {
+    "fast-xml-parser": "^4.5.0",
+    "node-fetch": "^3.3.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.2.0",
+    "typescript": "^5.9.2",
+    "rimraf": "^5.0.5"
+  },
+  "keywords": [
+    "florida",
+    "emergency-management",
+    "weather-alerts",
+    "cap",
+    "noaa",
+    "nws",
+    "disaster-response"
+  ],
+  "author": "ClaimGuardian AI",
+  "license": "Proprietary"
+}

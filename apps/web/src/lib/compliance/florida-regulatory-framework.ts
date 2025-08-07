@@ -809,12 +809,12 @@ export class FloridaComplianceManager extends SupabaseService {
     riskLevel: "low" | "medium" | "high" | "critical";
     checks: {
       insuranceCode: Awaited<
-        ReturnType<typeof this.checkInsuranceCodeCompliance>
+        ReturnType<FloridaComplianceManager['checkInsuranceCodeCompliance']>
       >;
       promptPayment: Awaited<
-        ReturnType<typeof this.checkPromptPaymentActCompliance>
+        ReturnType<FloridaComplianceManager['checkPromptPaymentActCompliance']>
       >;
-      badFaith: Awaited<ReturnType<typeof this.assessBadFaithRisk>>;
+      badFaith: Awaited<ReturnType<FloridaComplianceManager['assessBadFaithRisk']>>;
       hurricane?: HurricaneClaimReporting;
     };
     recommendations: string[];
@@ -822,9 +822,9 @@ export class FloridaComplianceManager extends SupabaseService {
   }> {
     try {
       const checks: {
-        insuranceCode: Awaited<ReturnType<typeof this.checkInsuranceCodeCompliance>>;
-        promptPayment: Awaited<ReturnType<typeof this.checkPromptPaymentActCompliance>>;
-        badFaith: Awaited<ReturnType<typeof this.assessBadFaithRisk>>;
+        insuranceCode: Awaited<ReturnType<FloridaComplianceManager['checkInsuranceCodeCompliance']>>;
+        promptPayment: Awaited<ReturnType<FloridaComplianceManager['checkPromptPaymentActCompliance']>>;
+        badFaith: Awaited<ReturnType<FloridaComplianceManager['assessBadFaithRisk']>>;
         hurricane?: HurricaneClaimReporting;
       } = {
         insuranceCode: await this.checkInsuranceCodeCompliance(claimId),

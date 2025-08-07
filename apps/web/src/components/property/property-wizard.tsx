@@ -284,9 +284,9 @@ function wizardReducer(
 }
 
 // --- Custom Hooks ---
-const useDebounce = (callback: (...args: unknown[]) => void, delay: number) => {
+const useDebounce = <T extends unknown[]>(callback: (...args: T) => void, delay: number) => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  return (...args: unknown[]) => {
+  return (...args: T) => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
     timeoutRef.current = setTimeout(() => {
       callback(...args);
@@ -441,15 +441,15 @@ export function PropertyWizard({
     setTimeout(() => dispatch({ type: "SET_LOADING", payload: false }), 200);
   }, [open]);
 
-  const debouncedSave = useCallback(
-    useDebounce((newState: PropertyData) => {
+  const debouncedSave = useDebounce<[PropertyData]>(
+    (newState: PropertyData) => {
       if (!newState.id) return;
       // Auto-save to localStorage
       localStorage.setItem("propertyWizardState", JSON.stringify(newState));
       setShowSavedToast(true);
       setTimeout(() => setShowSavedToast(false), 2000);
-    }, 600),
-    [],
+    },
+    600
   );
 
   useEffect(() => {

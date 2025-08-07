@@ -1,9 +1,10 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: ClaimGuardian AI-First Platform API
   description: |
     Comprehensive API for ClaimGuardian's AI-powered insurance claim advocacy platform.
-    Supports property management, AI-powered analysis, disaster monitoring, and claim optimization.
+    Supports property management, AI-powered analysis, disaster monitoring, claim optimization,
+    subscription management, team collaboration, and admin analytics.
   version: 1.0.0
   contact:
     name: ClaimGuardian API Team
@@ -22,6 +23,365 @@ servers:
     description: Development API
 
 paths:
+  # Subscription Management APIs
+  /subscriptions/checkout:
+    post:
+      summary: Create Stripe checkout session
+      description: Initialize a Stripe checkout session for subscription plans
+      operationId: createCheckout
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                planId:
+                  type: string
+                  description: Subscription plan ID (homeowner-essentials, landlord-pro, enterprise)
+                successUrl:
+                  type: string
+                  format: uri
+                  description: URL to redirect after successful payment
+                cancelUrl:
+                  type: string
+                  format: uri
+                  description: URL to redirect after cancelled payment
+              required:
+                - planId
+      responses:
+        '200':
+          description: Checkout URL created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  checkoutUrl:
+                    type: string
+                    format: uri
+                  sessionId:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /subscriptions:
+    get:
+      summary: Get user subscription
+      description: Retrieve current subscription details for authenticated user
+      operationId: getUserSubscription
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Subscription details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      summary: Create or update subscription
+      description: Create a new subscription or update existing one
+      operationId: createSubscription
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateSubscriptionRequest'
+      responses:
+        '201':
+          description: Subscription created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Subscription'
+
+  /subscriptions/cancel:
+    post:
+      summary: Cancel subscription
+      description: Cancel active subscription (effective at period end)
+      operationId: cancelSubscription
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Subscription cancelled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  cancelAt:
+                    type: string
+                    format: date-time
+
+  # Team Management APIs
+  /teams:
+    get:
+      summary: List user teams
+      description: Get list of teams user is a member of
+      operationId: listTeams
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Teams list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  teams:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Team'
+
+    post:
+      summary: Create a new team/organization
+      description: Create a new team for collaborative property and claim management
+      operationId: createTeam
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateTeamRequest'
+      responses:
+        '201':
+          description: Team created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+
+  /teams/{teamId}:
+    get:
+      summary: Get team details
+      description: Retrieve detailed information about a specific team
+      operationId: getTeam
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Team details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+
+    patch:
+      summary: Update team
+      description: Update team information (owner/admin only)
+      operationId: updateTeam
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTeamRequest'
+      responses:
+        '200':
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+
+  /teams/{teamId}/members:
+    get:
+      summary: List team members
+      description: Get list of team members with their roles
+      operationId: listTeamMembers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Team members list
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TeamMember'
+
+    post:
+      summary: Invite team member
+      description: Send invitation to join team
+      operationId: inviteTeamMember
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: teamId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  format: email
+                role:
+                  type: string
+                  enum: [member, admin]
+                  default: member
+              required:
+                - email
+      responses:
+        '201':
+          description: Invitation sent
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  invitationId:
+                    type: string
+
+  # Admin Analytics APIs
+  /admin/analytics:
+    get:
+      summary: Get platform analytics
+      description: Retrieve comprehensive platform analytics (admin only)
+      operationId: getAdminAnalytics
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: timeframe
+          in: query
+          schema:
+            type: string
+            enum: [24h, 7d, 30d, 90d, 1y]
+            default: 30d
+        - name: metrics
+          in: query
+          schema:
+            type: array
+            items:
+              type: string
+              enum: [users, properties, claims, ai_usage, revenue, performance]
+          style: form
+          explode: false
+      responses:
+        '200':
+          description: Analytics data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminAnalytics'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /admin/users:
+    get:
+      summary: List all users
+      description: Get paginated list of all platform users (admin only)
+      operationId: listAllUsers
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: status
+          in: query
+          schema:
+            type: string
+            enum: [active, suspended, deleted]
+        - name: subscription
+          in: query
+          schema:
+            type: string
+            enum: [free, homeowner-essentials, landlord-pro, enterprise]
+      responses:
+        '200':
+          description: Users list
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminUserListResponse'
+
+  /admin/ai-costs:
+    get:
+      summary: Get AI usage costs
+      description: Retrieve AI provider costs and usage metrics (admin only)
+      operationId: getAICosts
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: timeframe
+          in: query
+          schema:
+            type: string
+            enum: [24h, 7d, 30d]
+            default: 7d
+        - name: provider
+          in: query
+          schema:
+            type: string
+            enum: [openai, anthropic, google]
+      responses:
+        '200':
+          description: AI costs and usage
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AICostsResponse'
+
   # Parcel APIs
   /parcels/search:
     get:
@@ -452,6 +812,319 @@ components:
         - moderate
         - high
         - extreme
+
+    SubscriptionStatus:
+      type: string
+      enum:
+        - active
+        - past_due
+        - canceled
+        - incomplete
+        - incomplete_expired
+        - trialing
+        - unpaid
+
+    TeamRole:
+      type: string
+      enum:
+        - owner
+        - admin
+        - member
+
+    # Subscription Schemas
+    Subscription:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        planId:
+          type: string
+          enum: [homeowner-essentials, landlord-pro, enterprise]
+        status:
+          $ref: '#/components/schemas/SubscriptionStatus'
+        currentPeriodStart:
+          type: string
+          format: date-time
+        currentPeriodEnd:
+          type: string
+          format: date-time
+        cancelAtPeriodEnd:
+          type: boolean
+        stripeSubscriptionId:
+          type: string
+        stripeCustomerId:
+          type: string
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateSubscriptionRequest:
+      type: object
+      required:
+        - planId
+      properties:
+        planId:
+          type: string
+          enum: [homeowner-essentials, landlord-pro, enterprise]
+        paymentMethodId:
+          type: string
+          description: Stripe payment method ID
+
+    # Team Schemas
+    Team:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        description:
+          type: string
+        ownerId:
+          type: string
+        memberCount:
+          type: integer
+        settings:
+          type: object
+          properties:
+            allowMemberInvites:
+              type: boolean
+            requireApprovalForClaims:
+              type: boolean
+        metadata:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+
+    CreateTeamRequest:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: "My Company"
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        settings:
+          type: object
+          properties:
+            allowMemberInvites:
+              type: boolean
+              default: true
+            requireApprovalForClaims:
+              type: boolean
+              default: false
+
+    UpdateTeamRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 100
+        description:
+          type: string
+          maxLength: 500
+        settings:
+          type: object
+
+    TeamMember:
+      type: object
+      properties:
+        id:
+          type: string
+        userId:
+          type: string
+        teamId:
+          type: string
+        role:
+          $ref: '#/components/schemas/TeamRole'
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        joinedAt:
+          type: string
+          format: date-time
+        lastActiveAt:
+          type: string
+          format: date-time
+
+    # Admin Analytics Schemas
+    AdminAnalytics:
+      type: object
+      properties:
+        timeframe:
+          type: string
+        metrics:
+          type: object
+          properties:
+            users:
+              type: object
+              properties:
+                total:
+                  type: integer
+                new:
+                  type: integer
+                active:
+                  type: integer
+                retention:
+                  type: number
+            properties:
+              type: object
+              properties:
+                total:
+                  type: integer
+                added:
+                  type: integer
+                averageValue:
+                  type: number
+            claims:
+              type: object
+              properties:
+                total:
+                  type: integer
+                submitted:
+                  type: integer
+                approved:
+                  type: integer
+                settled:
+                  type: integer
+                totalValue:
+                  type: number
+            aiUsage:
+              type: object
+              properties:
+                totalRequests:
+                  type: integer
+                damageAnalyses:
+                  type: integer
+                costEstimates:
+                  type: integer
+                totalCost:
+                  type: number
+                averageResponseTime:
+                  type: number
+            revenue:
+              type: object
+              properties:
+                totalRevenue:
+                  type: number
+                subscriptionRevenue:
+                  type: number
+                averageRevenuePerUser:
+                  type: number
+            performance:
+              type: object
+              properties:
+                averageApiResponseTime:
+                  type: number
+                errorRate:
+                  type: number
+                uptime:
+                  type: number
+        trends:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              type: object
+              properties:
+                date:
+                  type: string
+                  format: date
+                value:
+                  type: number
+
+    AdminUserListResponse:
+      type: object
+      properties:
+        users:
+          type: array
+          items:
+            type: object
+            properties:
+              id:
+                type: string
+              email:
+                type: string
+              name:
+                type: string
+              subscription:
+                type: string
+              status:
+                type: string
+              lastActiveAt:
+                type: string
+                format: date-time
+              createdAt:
+                type: string
+                format: date-time
+        totalCount:
+          type: integer
+        page:
+          type: integer
+        totalPages:
+          type: integer
+        hasNextPage:
+          type: boolean
+        hasPreviousPage:
+          type: boolean
+
+    AICostsResponse:
+      type: object
+      properties:
+        timeframe:
+          type: string
+        totalCost:
+          type: number
+        providers:
+          type: array
+          items:
+            type: object
+            properties:
+              provider:
+                type: string
+              cost:
+                type: number
+              requestCount:
+                type: integer
+              models:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    model:
+                      type: string
+                    cost:
+                      type: number
+                    requests:
+                      type: integer
+        costBreakdown:
+          type: object
+          properties:
+            damageAnalysis:
+              type: number
+            repairEstimation:
+              type: number
+            chatbot:
+              type: number
+            other:
+              type: number
 
     # Complex Types
     ParcelSearchResponse:
@@ -920,6 +1593,30 @@ components:
               details:
                 type: object
 
+    Unauthorized:
+      description: Authentication required
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+
+    Forbidden:
+      description: Access forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+              message:
+                type: string
+
     NotFound:
       description: Resource not found
       content:
@@ -945,6 +1642,12 @@ components:
                 type: string
 
 tags:
+  - name: Subscriptions
+    description: Subscription and billing management
+  - name: Teams
+    description: Team and organization management
+  - name: Admin
+    description: Administrative endpoints and analytics
   - name: Parcels
     description: Florida parcel data and search
   - name: Claims

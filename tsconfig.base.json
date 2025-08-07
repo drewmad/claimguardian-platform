@@ -13,7 +13,7 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "esModuleInterop": true,
-    "verbatimModuleSyntax": true,
-    "incremental": true
+    "verbatimModuleSyntax": false,
+    "incremental": false
   }
 }

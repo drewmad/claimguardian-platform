@@ -4,6 +4,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 
+// Force Node.js runtime for AI operations (requires Supabase server client)
+export const runtime = 'nodejs';
+
+// Workspace guard: Ensure @claimguardian packages are available
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+  throw new Error('[@claimguardian/ai-services] Supabase configuration required for AI operations');
+}
+
 interface Alert {
   id: string;
   type: string;

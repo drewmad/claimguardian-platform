@@ -461,7 +461,7 @@ describe("ErrorTracker", () => {
 
       // Capture same error multiple times
       await tracker.captureError({
-        type: "critical",
+        type: "security",
         name: "CriticalError",
         message: "Critical system failure",
         severity: "critical",
@@ -471,7 +471,7 @@ describe("ErrorTracker", () => {
       mockSystemMonitor.createAlert.mockClear();
 
       await tracker.captureError({
-        type: "critical", 
+        type: "security", 
         name: "CriticalError",
         message: "Critical system failure", 
         severity: "critical",

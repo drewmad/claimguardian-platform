@@ -1,12 +1,9 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "PostCSS configuration for Tailwind CSS and Autoprefixer"
+ * @dependencies ["tailwindcss", "autoprefixer"]
  * @status stable
- * @ai-integration multi-provider
- * @insurance-context claims
- * @supabase-integration edge-functions
  */
 module.exports = {
   plugins: {
