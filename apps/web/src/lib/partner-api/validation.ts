@@ -11,6 +11,7 @@
 
 import { NextRequest } from "next/server";
 import { logger } from "@/lib/logger/production-logger";
+import { z } from "zod";
 
 export interface ValidationResult {
   valid: boolean;
@@ -523,19 +524,23 @@ async function validateWithSchema(
   valid: boolean;
   errors?: string[];
 }> {
-  // This would integrate with Zod or similar schema validation library
-  // For now, return a placeholder implementation
+  if (!schema) {
+    return { valid: true };
+  }
 
   try {
-    // Placeholder for actual schema validation
-    // const result = schema.safeParse(data)
-    // return {
-    //   valid: result.success,
-    //   errors: result.success ? undefined : result.error.issues.map(i => i.message)
-    // }
-
-    return { valid: true };
+    // Use Zod schema validation
+    const result = schema.safeParse(data);
+    return {
+      valid: result.success,
+      errors: result.success ? undefined : result.error.issues.map((i: any) => `${i.path.join('.')}: ${i.message}`)
+    };
   } catch (error) {
+    logger.warn("Schema validation error", {
+      error: error instanceof Error ? error.message : "Unknown error",
+      dataKeys: typeof data === 'object' && data ? Object.keys(data) : [],
+    });
+    
     return {
       valid: false,
       errors: ["Schema validation failed"],
@@ -597,7 +602,86 @@ function extractStringValues(obj: any, values: string[] = []): string[] {
  * Create validation schemas for common Partner API endpoints
  */
 export function createValidationSchema(endpoint: string): any {
-  // This would return appropriate Zod schemas based on the endpoint
-  // For now, return a placeholder
-  return null;
+  const schemas: Record<string, any> = {
+    "/api/claims": {
+      body: z.object({
+        property_id: z.string().uuid("Invalid property ID format"),
+        claim_number: z.string().min(1, "Claim number is required").max(50, "Claim number too long"),
+        incident_date: z.string().datetime("Invalid incident date format"),
+        description: z.string().min(10, "Description must be at least 10 characters").max(2000, "Description too long"),
+        estimated_damage_cost: z.number().positive("Estimated cost must be positive").max(10000000, "Cost too high"),
+        claim_type: z.enum(["property_damage", "liability", "flood", "hurricane", "fire"], {
+          errorMap: () => ({ message: "Invalid claim type" })
+        }),
+        status: z.enum(["draft", "submitted", "investigating", "approved", "denied"], {
+          errorMap: () => ({ message: "Invalid status" })
+        }).optional(),
+        priority: z.enum(["low", "medium", "high", "urgent"]).optional(),
+        metadata: z.record(z.unknown()).optional()
+      })
+    },
+    
+    "/api/properties": {
+      body: z.object({
+        address: z.object({
+          street: z.string().min(1, "Street address is required").max(200, "Address too long"),
+          city: z.string().min(1, "City is required").max(100, "City name too long"),
+          state: z.string().length(2, "State must be 2 characters").regex(/^[A-Z]{2}$/, "Invalid state format"),
+          zip: z.string().regex(/^\d{5}(-\d{4})?$/, "Invalid ZIP code format"),
+          county: z.string().max(100, "County name too long").optional()
+        }),
+        property_type: z.enum(["single_family", "condo", "townhouse", "mobile_home", "commercial"], {
+          errorMap: () => ({ message: "Invalid property type" })
+        }),
+        year_built: z.number().int().min(1800, "Year too old").max(new Date().getFullYear(), "Year cannot be in future"),
+        square_footage: z.number().positive("Square footage must be positive").max(50000, "Square footage too large"),
+        value: z.number().positive("Property value must be positive").max(100000000, "Value too high"),
+        flood_zone: z.string().max(10, "Flood zone code too long").optional(),
+        hurricane_deductible: z.number().min(0, "Deductible cannot be negative").optional()
+      }),
+      
+      query: z.object({
+        page: z.string().regex(/^\d+$/, "Page must be a number").optional(),
+        limit: z.string().regex(/^\d+$/, "Limit must be a number").optional(),
+        filter_by: z.enum(["type", "value", "location", "date"]).optional(),
+        sort_by: z.enum(["created_at", "updated_at", "value", "address"]).optional(),
+        order: z.enum(["asc", "desc"]).optional()
+      })
+    },
+    
+    "/api/auth/login": {
+      body: z.object({
+        email: z.string().email("Invalid email format").max(255, "Email too long"),
+        password: z.string().min(8, "Password must be at least 8 characters").max(128, "Password too long"),
+        remember_me: z.boolean().optional()
+      })
+    },
+    
+    "/api/ai/analyze-image": {
+      body: z.object({
+        image_data: z.string().min(100, "Image data required"),
+        analysis_type: z.enum(["damage_assessment", "property_inspection", "document_analysis"], {
+          errorMap: () => ({ message: "Invalid analysis type" })
+        }),
+        context: z.object({
+          property_id: z.string().uuid("Invalid property ID").optional(),
+          claim_id: z.string().uuid("Invalid claim ID").optional(),
+          location: z.string().max(200, "Location too long").optional()
+        }).optional()
+      })
+    },
+    
+    "/api/documents": {
+      query: z.object({
+        document_type: z.enum(["policy", "invoice", "receipt", "photo", "report"]).optional(),
+        claim_id: z.string().uuid("Invalid claim ID").optional(),
+        property_id: z.string().uuid("Invalid property ID").optional(),
+        date_from: z.string().datetime("Invalid date format").optional(),
+        date_to: z.string().datetime("Invalid date format").optional()
+      })
+    }
+  };
+
+  // Return the schema for the specific endpoint
+  return schemas[endpoint] || null;
 }

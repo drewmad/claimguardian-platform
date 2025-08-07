@@ -55,6 +55,35 @@ function setCachedUserValidation(userId: string, user: any): void {
   }
 }
 
+// Admin role validation function
+async function isUserAdmin(supabase: any, userId: string): Promise<boolean> {
+  try {
+    // Check if user has admin role in user_profiles table
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('role, is_admin')
+      .eq('id', userId)
+      .single();
+    
+    if (error) {
+      logger.warn("[MIDDLEWARE] Failed to check admin status:", {
+        userId,
+        error: error.message,
+      });
+      return false;
+    }
+    
+    // User is admin if role is 'admin' or is_admin is true
+    return data?.role === 'admin' || data?.is_admin === true;
+  } catch (error) {
+    logger.error("[MIDDLEWARE] Admin check error:", {
+      userId,
+      error: error instanceof Error ? error.message : "Unknown error",
+    });
+    return false;
+  }
+}
+
 // Type guards for middleware safety
 type MiddlewareRequest = NextRequest & {
   cookies: {
@@ -517,14 +546,33 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(redirectUrl);
     }
 
-    // Check admin routes (placeholder for future implementation)
+    // Check admin routes - enforce actual admin authorization
     if (matchedRoute?.requiresAdmin && validatedUser) {
-      // TODO: Check if user has admin role
-      // For now, log the attempt
-      logger.warn("[MIDDLEWARE] Admin route accessed:", {
+      const userIsAdmin = await isUserAdmin(supabase, validatedUser.id);
+      
+      if (!userIsAdmin) {
+        logger.warn("[MIDDLEWARE] Unauthorized admin access attempt:", {
+          userId: validatedUser.id,
+          email: validatedUser.email,
+          path: pathname,
+          timestamp: new Date().toISOString(),
+        });
+        
+        // Return 403 Forbidden for non-admin users trying to access admin routes
+        return new NextResponse("Access Denied: Admin privileges required", {
+          status: 403,
+          headers: {
+            "Content-Type": "text/plain",
+          },
+        });
+      }
+      
+      // Log successful admin access for auditing
+      logger.info("[MIDDLEWARE] Admin route accessed successfully:", {
         userId: validatedUser.id,
         email: validatedUser.email,
         path: pathname,
+        timestamp: new Date().toISOString(),
       });
     }
 
