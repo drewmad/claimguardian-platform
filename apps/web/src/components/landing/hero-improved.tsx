@@ -189,56 +189,13 @@ export function Hero() {
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            {/* Florida Focused & Hurricane Tested Badges */}
-            <div className="mt-6 flex justify-center gap-3 flex-wrap">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/50 rounded-full backdrop-blur-sm">
-                <span className="text-lg">🐊</span>
-                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Focused</span>
-              </div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/50 rounded-full backdrop-blur-sm">
-                <span className="text-lg">🌀</span>
-                <span className="text-sm font-bold text-blue-300 uppercase tracking-wider">Hurricane Tested</span>
-                <span className="text-lg">⚡</span>
-              </div>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={300}>
-            <div
-              className="mt-8 flex flex-col sm:flex-row gap-4 justify-center items-center"
-              role="group"
-              aria-label="Primary actions"
-            >
-              <Link
-                href="/auth/signup"
-                className={`group relative font-bold py-5 px-10 text-black text-lg hover:scale-105 inline-flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
-                style={{
-                  background: hoveredCTA
-                    ? `linear-gradient(135deg, #39FF14, #00FF7F)`
-                    : `linear-gradient(135deg, #39FF14, #32CD32)`,
-                  boxShadow: hoveredCTA
-                    ? "0 0 40px rgba(57, 255, 20, 0.6), 0 20px 60px rgba(0, 0, 0, 0.4)"
-                    : "0 0 20px rgba(57, 255, 20, 0.4), 0 10px 40px rgba(0, 0, 0, 0.3)",
-                }}
-                onMouseEnter={() => setHoveredCTA(true)}
-                onMouseLeave={() => setHoveredCTA(false)}
-                aria-label="Deploy your digital guardian for complete property protection"
-              >
-                <span className="relative z-10 font-black tracking-wide">
-                  Deploy My Digital Guardian →
-                </span>
-              </Link>
-            </div>
-          </AnimatedSection>
-
-          <AnimatedSection delay={400}>
-            {/* Horizontal scroll chips for mobile */}
+            {/* Audience Pills - Positioned before CTA for better hierarchy */}
             <div className="mt-8 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
               <div className="flex gap-3 justify-center min-w-max px-4">
                 {pills.map((pill) => (
                   <button
                     key={pill.label}
-                    className={`${liquidGlass.backgrounds.secondary} flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle}`}
+                    className={`${liquidGlass.backgrounds.secondary} flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 hover:border-white/20 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-offset-2 focus:ring-offset-black ${liquidGlass.hover.subtle} transition-all duration-300`}
                     onClick={() =>
                       document
                         .getElementById("who-we-serve")
@@ -254,6 +211,54 @@ export function Hero() {
                     </span>
                   </button>
                 ))}
+              </div>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={300}>
+            {/* Primary CTA - Now more prominent with better positioning */}
+            <div
+              className="mt-10 flex flex-col sm:flex-row gap-4 justify-center items-center"
+              role="group"
+              aria-label="Primary actions"
+            >
+              <Link
+                href="/auth/signup"
+                className={`group relative font-bold py-6 px-12 text-black text-xl hover:scale-105 inline-flex items-center gap-3 focus:outline-none focus:ring-4 focus:ring-green-400/50 a11y-touch-target shadow-2xl rounded-2xl transition-all duration-300`}
+                style={{
+                  background: hoveredCTA
+                    ? `linear-gradient(135deg, #39FF14, #00FF7F)`
+                    : `linear-gradient(135deg, #39FF14, #32CD32)`,
+                  boxShadow: hoveredCTA
+                    ? "0 0 50px rgba(57, 255, 20, 0.7), 0 25px 70px rgba(0, 0, 0, 0.5)"
+                    : "0 0 30px rgba(57, 255, 20, 0.5), 0 15px 50px rgba(0, 0, 0, 0.4)",
+                }}
+                onMouseEnter={() => setHoveredCTA(true)}
+                onMouseLeave={() => setHoveredCTA(false)}
+                aria-label="Deploy your digital guardian for complete property protection"
+              >
+                <span className="relative z-10 font-black tracking-wide">
+                  Deploy My Digital Guardian
+                </span>
+                <ArrowRight 
+                  size={24} 
+                  className="relative z-10 group-hover:translate-x-1 transition-transform duration-300" 
+                />
+              </Link>
+            </div>
+          </AnimatedSection>
+
+          <AnimatedSection delay={400}>
+            {/* Trust Badges - Moved below CTA for credibility reinforcement */}
+            <div className="mt-8 flex justify-center gap-4 flex-wrap">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/50 rounded-full backdrop-blur-sm transition-all duration-300 hover:border-orange-400/70 hover:bg-gradient-to-r hover:from-orange-500/30 hover:to-yellow-500/30">
+                <span className="text-lg">🐊</span>
+                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Focused</span>
+              </div>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/50 rounded-full backdrop-blur-sm transition-all duration-300 hover:border-blue-400/70 hover:bg-gradient-to-r hover:from-blue-500/30 hover:to-cyan-500/30">
+                <span className="text-lg">🌀</span>
+                <span className="text-sm font-bold text-blue-300 uppercase tracking-wider">Hurricane Tested</span>
+                <span className="text-lg">⚡</span>
               </div>
             </div>
           </AnimatedSection>
