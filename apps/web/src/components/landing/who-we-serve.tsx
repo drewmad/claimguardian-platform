@@ -10,7 +10,7 @@
  */
 "use client";
 
-import { Home, Building, Users, Shield } from "lucide-react";
+import { Home, Building, Users, Shield, Key, Briefcase } from "lucide-react";
 import Image from "next/image";
 
 const segments = [
@@ -21,8 +21,14 @@ const segments = [
       "Create a complete digital twin of your property. Track every warranty, schedule maintenance, document improvements, and protect your largest investment for generations.",
   },
   {
+    icon: Key,
+    title: "Renters",
+    description:
+      "Document your rental condition, protect your security deposit, track maintenance requests, and build a verified rental history for future housing applications.",
+  },
+  {
     icon: Building,
-    title: "Real Estate Investors",
+    title: "Real Estate Professionals",
     description:
       "Manage entire portfolios with intelligent oversight. Track ROI on improvements, optimize maintenance schedules, and maximize property values across all holdings.",
   },
@@ -33,10 +39,16 @@ const segments = [
       "Build and transfer generational wealth. Every repair, upgrade, and lesson learned becomes part of your family's property legacy, preserved forever.",
   },
   {
-    icon: Shield,
-    title: "Hurricane Survivors",
+    icon: Briefcase,
+    title: "Enterprise & Government",
     description:
-      "From pre-storm preparation to post-disaster recovery. Document everything before, command the claims process during, and rebuild stronger after.",
+      "FEMA NIMS-compliant disaster response, multi-property management, and institutional-grade documentation for corporate real estate and government facilities.",
+  },
+  {
+    icon: Shield,
+    title: "Insurance & Legal",
+    description:
+      "Comprehensive claim documentation, policy compliance tracking, and litigation support with AI-powered evidence organization and timeline reconstruction.",
   },
 ];
 
@@ -57,7 +69,7 @@ export function WhoWeServe() {
           lifecycle command center.
         </p>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {segments.map((segment, index) => {
             const Icon = segment.icon;
             return (
