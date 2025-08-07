@@ -87,8 +87,8 @@ export function EmailVerificationWizard({
 
   const [countdown, setCountdown] = useState(0)
   const [isPolling, setIsPolling] = useState(false)
-  const pollingInterval = useRef<NodeJS.Timeout>()
-  const countdownInterval = useRef<NodeJS.Timeout>()
+  const pollingInterval = useRef<NodeJS.Timeout>(undefined)
+  const countdownInterval = useRef<NodeJS.Timeout>(undefined)
 
   const { success, error, info, loading } = useToast()
   const { addNotification } = useNotifications()

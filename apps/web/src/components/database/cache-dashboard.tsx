@@ -27,7 +27,7 @@ import {
   Trash2,
   Settings,
   RefreshCw,
-  Optimize,
+  Settings2 as Optimize,
   AlertTriangle,
   CheckCircle,
   Clock,

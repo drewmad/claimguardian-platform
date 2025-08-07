@@ -131,7 +131,7 @@ export function WelcomeTour({ onComplete, onSkip, startDelay = 500 }: WelcomeTou
   const [tooltipPosition, setTooltipPosition] = useState<TooltipPosition>({})
   const [highlightPosition, setHighlightPosition] = useState<DOMRect | null>(null)
   const tooltipRef = useRef<HTMLDivElement>(null)
-  const animationFrame = useRef<number>()
+  const animationFrame = useRef<number>(undefined)
 
   const currentTourStep = TOUR_STEPS[currentStep]
   const StepIcon = currentTourStep?.icon

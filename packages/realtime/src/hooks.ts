@@ -49,7 +49,7 @@ export function useRealtimeTable<T = unknown>(
 ) {
   const [events, setEvents] = useState<RealtimeEvent<T>[]>([])
   const [isConnected, setIsConnected] = useState(false)
-  const clientRef = useRef<RealtimeClient>()
+  const clientRef = useRef<RealtimeClient>(undefined)
 
   useEffect(() => {
     if (options?.enabled === false) return
@@ -123,7 +123,7 @@ export function useRealtimeRecord<T = unknown>(
 ) {
   const [record, setRecord] = useState<T | null>(null)
   const [isDeleted, setIsDeleted] = useState(false)
-  const clientRef = useRef<RealtimeClient>()
+  const clientRef = useRef<RealtimeClient>(undefined)
 
   useEffect(() => {
     if (!id || options?.enabled === false) return
@@ -275,7 +275,7 @@ export function usePresence(
 ) {
   const [presenceState, setPresenceState] = useState<PresenceState>({})
   const [activeUsers, setActiveUsers] = useState<string[]>([])
-  const clientRef = useRef<RealtimeClient>()
+  const clientRef = useRef<RealtimeClient>(undefined)
 
   useEffect(() => {
     const client = getRealtimeClient(supabase, userId)
@@ -324,7 +324,7 @@ export function useBroadcast(
   channelName: string
 ) {
   const [messages, setMessages] = useState<Array<{ event: string; payload: unknown; timestamp: string }>>([])
-  const clientRef = useRef<RealtimeClient>()
+  const clientRef = useRef<RealtimeClient>(undefined)
 
   useEffect(() => {
     const client = getRealtimeClient(supabase)
@@ -368,7 +368,7 @@ export function useTypingIndicator(
   userName: string
 ) {
   const [typingUsers, setTypingUsers] = useState<Map<string, TypingIndicator>>(new Map())
-  const typingTimeoutRef = useRef<NodeJS.Timeout>()
+  const typingTimeoutRef = useRef<NodeJS.Timeout>(undefined)
   const { broadcast } = useBroadcast(supabase, `typing-${channelName}`)
 
   useEffect(() => {

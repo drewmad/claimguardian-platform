@@ -60,11 +60,11 @@ const DEFAULT_RETRY_CONFIG: RetryConfig = {
   retryCondition: (error) => {
     // Retry on network errors, timeouts, and 5xx errors
     return (
-      error.code === 'NETWORK_ERROR' ||
+      // Often network-related
+      (error.code === 'NETWORK_ERROR' ||
       error.code === 'TIMEOUT' ||
-      (error.status && error.status >= 500 && error.status < 600) ||
-      error.name === 'TypeError' // Often network-related
-    )
+      (error.status && error.status >= 500 && error.status < 600) || error.name === 'TypeError')
+    );
   }
 }
 
@@ -78,7 +78,7 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
     lastAttemptTime: 0
   })
 
-  const retryTimeoutRef = useRef<NodeJS.Timeout>()
+  const retryTimeoutRef = useRef<NodeJS.Timeout>(undefined)
   const operationRef = useRef<(() => Promise<any>) | null>(null)
 
   const clearError = useCallback(() => {

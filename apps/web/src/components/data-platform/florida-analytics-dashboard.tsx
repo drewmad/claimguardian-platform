@@ -319,7 +319,7 @@ export function FloridaAnalyticsDashboard() {
                       outerRadius={100}
                       dataKey="value"
                       label={({ name, value, percent }) =>
-                        `${name}: ${value.toLocaleString()} (${(percent * 100).toFixed(1)}%)`
+                        `${name}: ${value?.toLocaleString() ?? 0} (${((percent ?? 0) * 100).toFixed(1)}%)`
                       }
                     >
                       {riskDistribution.map((entry, index) => (

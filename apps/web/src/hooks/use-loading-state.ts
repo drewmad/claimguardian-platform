@@ -62,9 +62,9 @@ export function useLoadingState(options: LoadingStateOptions = {}) {
   const [error, setError] = useState<Error | null>(null)
   const [progress, setProgress] = useState<number>(0)
 
-  const timeoutRef = useRef<NodeJS.Timeout>()
-  const minDurationRef = useRef<NodeJS.Timeout>()
-  const startTimeRef = useRef<number>()
+  const timeoutRef = useRef<NodeJS.Timeout>(undefined)
+  const minDurationRef = useRef<NodeJS.Timeout>(undefined)
+  const startTimeRef = useRef<number>(undefined)
 
   const { setLoading: setGlobalLoading, clearLoading: clearGlobalLoading } = useGlobalLoadingStore()
 

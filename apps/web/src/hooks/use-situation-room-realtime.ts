@@ -77,7 +77,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
   const channelsRef = useRef<Map<string, RealtimeChannel>>(new Map())
   const connectionStateRef = useRef<'connected' | 'reconnecting' | 'disconnected'>('disconnected')
   const reconnectAttemptsRef = useRef(0)
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout>()
+  const reconnectTimeoutRef = useRef<NodeJS.Timeout>(undefined)
   const heartbeatRef = useRef<Date | null>(null)
   const configRef = useRef<RealtimeSubscriptionConfig | null>(null)
 
