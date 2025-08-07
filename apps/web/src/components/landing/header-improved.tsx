@@ -61,7 +61,7 @@ export function Header() {
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
           <div className="flex items-center gap-4">
             <Link
-              href="/auth/signup"
+              href="/auth/signin"
               className="text-gray-300 hover:text-white transition-colors duration-200"
             >
               Sign In
