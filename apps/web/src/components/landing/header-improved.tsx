@@ -67,16 +67,22 @@ export function Header() {
               Sign In
             </Link>
             <Link
+              href="/community"
+              className="text-gray-400 hover:text-gray-300 transition-colors duration-200 py-2 px-3 rounded-lg border border-gray-600/30 hover:border-gray-500/50"
+            >
+              Join Community
+            </Link>
+            <Link
               href="/auth/signup"
-              className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group"
+              className="relative py-2 px-5 rounded-full font-semibold transition-all duration-300 hover:scale-105 overflow-hidden group border border-green-400/30"
               style={{
-                backgroundColor: COLORS.brand.neonGreen,
-                color: "black",
+                backgroundColor: COLORS.brand.royalBlue,
+                color: COLORS.brand.neonGreen,
               }}
             >
-              <span className="relative z-10">Start Free</span>
+              <span className="relative z-10 font-bold">Start Free</span>
               {/* Hover gradient effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-green-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-r from-slate-900 to-gray-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </Link>
           </div>
         </nav>
@@ -85,10 +91,10 @@ export function Header() {
         <div className="md:hidden flex items-center gap-3">
           <Link
             href="/auth/signup"
-            className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target"
+            className="font-semibold text-sm py-2.5 px-4 rounded-lg transition-all duration-300 hover:scale-105 inline-block a11y-touch-target border border-green-400/30"
             style={{
-              backgroundColor: COLORS.brand.neonGreen,
-              color: "black",
+              backgroundColor: COLORS.brand.royalBlue,
+              color: COLORS.brand.neonGreen,
             }}
           >
 Start Free
@@ -134,10 +140,10 @@ Start Free
                 </Link>
                 <Link
                   href="/auth/signup"
-                  className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target"
+                  className="block text-center py-3 px-6 rounded-full font-semibold transition-all duration-300 a11y-touch-target border border-green-400/30"
                   style={{
-                    backgroundColor: COLORS.brand.neonGreen,
-                    color: "black",
+                    backgroundColor: COLORS.brand.royalBlue,
+                    color: COLORS.brand.neonGreen,
                   }}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
