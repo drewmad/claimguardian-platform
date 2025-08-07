@@ -12,7 +12,7 @@ import {
   AnalyticsTaskContext,
 } from "./claude-advanced-analytics";
 import { completeLearningSystem } from "./claude-complete-learning-system";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface AutoOptimizationRule {
   id: string;
@@ -569,7 +569,7 @@ class ClaudeEnhancedAutomation {
 
     // Create consolidated learnings
     const consolidated: string[] = [];
-    for (const [category, learnings] of learningGroups) {
+    Array.from(learningGroups.entries()).forEach(([category, learnings]) => {
       if (learnings.length > 1) {
         consolidated.push(
           `${category}: Pattern appears ${learnings.length} times - high confidence`,
@@ -577,7 +577,7 @@ class ClaudeEnhancedAutomation {
       } else {
         consolidated.push(learnings[0]);
       }
-    }
+    });
 
     return consolidated;
   }

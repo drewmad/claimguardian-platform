@@ -200,7 +200,7 @@ export function useInstallPrompt() {
         return false;
       }
     } catch (error) {
-      logger.error("Install prompt failed", { error });
+      logger.error("Install prompt failed", {}, error instanceof Error ? error : new Error(String(error)));
       setState((prev) => ({
         ...prev,
         installStatus: "failed",
@@ -331,7 +331,7 @@ export function useServiceWorker() {
           window.location.reload();
         });
       } catch (error) {
-        logger.error("Service worker registration failed", { error });
+        logger.error("Service worker registration failed", {}, error instanceof Error ? error : new Error(String(error)));
       }
     };
 
@@ -382,11 +382,18 @@ export function requestBackgroundSync(tag: string, data?: any) {
   ) {
     navigator.serviceWorker.ready
       .then((registration) => {
-        return registration.sync.register(tag);
+        // Check if sync is available on this registration
+        if ('sync' in registration) {
+          return (registration as any).sync.register(tag);
+        } else {
+          logger.warn("Background sync not supported on this registration", { tag });
+        }
       })
       .catch((error) => {
         logger.error("Background sync registration failed", { error, tag });
       });
+  } else {
+    logger.warn("Background sync not supported", { tag });
   }
 }
 

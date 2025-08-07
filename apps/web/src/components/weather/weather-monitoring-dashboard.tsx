@@ -371,7 +371,7 @@ export function WeatherMonitoringDashboard({
                 <Badge
                   variant={
                     syncStatus.weatherStatus === "active"
-                      ? "success"
+                      ? "default"
                       : "secondary"
                   }
                 >
@@ -389,7 +389,7 @@ export function WeatherMonitoringDashboard({
                 <span className="font-medium">FEMA:</span>
                 <Badge
                   variant={
-                    syncStatus.femaStatus === "active" ? "success" : "secondary"
+                    syncStatus.femaStatus === "active" ? "default" : "secondary"
                   }
                 >
                   {syncStatus.femaStatus || "Unknown"}

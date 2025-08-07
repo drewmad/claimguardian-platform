@@ -171,7 +171,7 @@ export function ResponsiveSignupModal() {
         toast.success("Account created! Please check your email.");
       }
     } catch (error) {
-      logger.error("Signup failed", { error });
+      logger.error("Signup failed", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to create account. Please try again.");
     } finally {
       setLoading(false);

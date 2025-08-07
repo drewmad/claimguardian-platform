@@ -169,10 +169,8 @@ export async function captureSignupData(data: SignupTrackingData) {
       );
 
       if (captureError) {
-        logger.error("[USER TRACKING] RPC function error", {
-          error: captureError.message,
-          code: captureError.code,
-        });
+        logger.error("[USER TRACKING] RPC function error", { error: captureError.message,
+          code: captureError.code });
         // If RPC doesn't exist, fall back to direct insert
         if (
           captureError.message?.includes("function") ||
@@ -206,19 +204,15 @@ export async function captureSignupData(data: SignupTrackingData) {
             });
 
           if (profileError) {
-            logger.error("[USER TRACKING] Profile update error", {
-              error: profileError.message,
-              code: profileError.code,
-            });
+            logger.error("[USER TRACKING] Profile update error", { error: profileError.message,
+              code: profileError.code });
             // Don't throw - this is not critical for signup
           }
         } else {
           // For other RPC errors, log but don't throw
-          logger.error("Failed to capture signup data via RPC", {
-            userId: data.userId,
+          logger.error("Failed to capture signup data via RPC", { userId: data.userId,
             error: captureError.message,
-            code: captureError.code,
-          });
+            code: captureError.code });
         }
       }
     } catch (rpcError) {
@@ -258,10 +252,8 @@ export async function captureSignupData(data: SignupTrackingData) {
       );
 
       if (prefsError) {
-        logger.error("[USER TRACKING] Preferences error", {
-          error: prefsError.message,
-          code: prefsError.code,
-        });
+        logger.error("[USER TRACKING] Preferences error", { error: prefsError.message,
+          code: prefsError.code });
         // Try direct insert as fallback
         const { error: directError } = await supabase
           .from("user_preferences")
@@ -285,16 +277,11 @@ export async function captureSignupData(data: SignupTrackingData) {
               Intl.DateTimeFormat().resolvedOptions().timeZone,
           });
         if (directError) {
-          logger.error(
-            "[USER TRACKING] Direct preferences insert also failed",
-            { error: directError.message, code: directError.code },
-          );
+          logger.error("[USER TRACKING] Direct preferences insert also failed", { error: directError.message, code: directError.code });
         }
-        logger.error("Failed to create user preferences", {
-          userId: data.userId,
+        logger.error("Failed to create user preferences", { userId: data.userId,
           error: prefsError.message,
-          code: prefsError.code,
-        });
+          code: prefsError.code });
         // Don't throw - preferences are not critical for signup
       }
     } catch (prefsError) {
@@ -338,10 +325,8 @@ export async function captureSignupData(data: SignupTrackingData) {
             });
 
           if (auditError) {
-            logger.error("[USER TRACKING] Consent audit error", {
-              error: auditError.message,
-              code: auditError.code,
-            });
+            logger.error("[USER TRACKING] Consent audit error", { error: auditError.message,
+              code: auditError.code });
             // Don't throw - audit logging is not critical
           }
         }

@@ -140,11 +140,9 @@ export async function recordSignupConsent(
     });
 
     if (!resultData?.success || !resultData?.consent_token) {
-      logger.error("Consent recording returned invalid response", {
-        email: data.email,
+      logger.error("Consent recording returned invalid response", { email: data.email,
         resultData,
-        detailedResult: JSON.stringify(resultData, null, 2),
-      });
+        detailedResult: JSON.stringify(resultData, null, 2) });
       return {
         success: false,
         errorMessage: resultData?.error_message || "Failed to record consent",

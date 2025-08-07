@@ -177,8 +177,7 @@ class ErrorBoundary extends Component<Props, State> {
     const classified = this.classifyError(error);
 
     // Log error with classification
-    logger.error("React error boundary caught error", {
-      errorId,
+    logger.error("React error boundary caught error", { errorId,
       name: error.name,
       message: error.message,
       stack: error.stack,
@@ -187,8 +186,7 @@ class ErrorBoundary extends Component<Props, State> {
       userAgent:
         typeof navigator !== "undefined" ? navigator.userAgent : "unknown",
       url: typeof window !== "undefined" ? window.location.href : "unknown",
-      timestamp: new Date().toISOString(),
-    });
+      timestamp: new Date().toISOString() });
 
     // Call custom error handler if provided
     if (this.props.onError) {

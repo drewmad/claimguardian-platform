@@ -1,39 +1,185 @@
 /**
  * @fileMetadata
  * @owner @ai-team
- * @purpose "Brief description of file purpose"
- * @dependencies ["package1", "package2"]
+ * @purpose "Property management store with proper database types"
+ * @dependencies ["@claimguardian/db", "zustand"]
  * @status stable
  * @ai-integration multi-provider
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import type {
-  Asset,
-  InventoryItem,
-  HomeSystem,
-  Structure,
-  RenovationProject,
-  MaintenanceTask,
-  Warranty,
-  PropertyDocument,
-} from "@claimguardian/db";
+import type { Database } from "@claimguardian/db";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
+// Define types from the database schema - using fallback approach due to type truncation
+type DatabaseProperty = {
+  id: string | null;
+  bathrooms: number | null;
+  bedrooms: number | null;
+  city: string | null;
+  construction_type: string | null;
+  county_id: string | null;
+  county_name: string | null;
+  created_at: string | null;
+  current_value: number | null;
+  electrical_year: number | null;
+  evacuation_zone: string | null;
+  flood_zone: string | null;
+  full_address: string | null;
+  garage_spaces: number | null;
+  hvac_year: number | null;
+  is_current: boolean | null;
+  legal_description: string | null;
+  location: unknown | null;
+  lot_size_acres: number | null;
+  metadata: any | null;
+  mortgage_balance: number | null;
+  occupancy_status: string | null;
+  parcel_id: string | null;
+  plumbing_year: number | null;
+  pool: boolean | null;
+  property_type: string | null;
+  purchase_date: string | null;
+  purchase_price: number | null;
+  roof_type: string | null;
+  roof_year: number | null;
+  square_footage: number | null;
+  state: string | null;
+  stories: number | null;
+  street_address: string | null;
+  updated_at: string | null;
+  user_id: string | null;
+  valid_from: string | null;
+  valid_to: string | null;
+  version: number | null;
+  version_id: string | null;
+  wind_zone: string | null;
+  year_built: number | null;
+  zip_code: string | null;
+};
+
+type PropertyInsert = Omit<DatabaseProperty, "id" | "created_at" | "updated_at" | "version_id" | "valid_from" | "valid_to" | "is_current" | "full_address">;
+type PropertyUpdate = Partial<Omit<DatabaseProperty, "id" | "created_at">>;
+
+// Define additional types for property management (these might not exist in DB yet)
+interface InventoryItem {
+  id: string;
+  name: string;
+  category: string;
+  value: number;
+  description?: string;
+  purchase_date?: string;
+  warranty_expiry?: string;
+  location?: string;
+}
+
+interface HomeSystem {
+  id: string;
+  name: string;
+  type: "hvac" | "electrical" | "plumbing" | "security" | "solar";
+  installation_date?: string;
+  warranty_expiry?: string;
+  last_maintenance?: string;
+  next_maintenance?: string;
+  manufacturer?: string;
+  model?: string;
+}
+
+interface Structure {
+  id: string;
+  name: string;
+  type: "main_house" | "garage" | "shed" | "pool_house" | "deck" | "fence";
+  square_footage?: number;
+  materials?: string[];
+  construction_year?: number;
+  condition?: "excellent" | "good" | "fair" | "poor";
+}
+
+interface RenovationProject {
+  id: string;
+  name: string;
+  description?: string;
+  start_date?: string;
+  completion_date?: string;
+  cost?: number;
+  contractor?: string;
+  permits?: string[];
+  status: "planned" | "in_progress" | "completed" | "cancelled";
+}
+
+interface MaintenanceTask {
+  id: string;
+  title: string;
+  description?: string;
+  due_date?: string;
+  completed_date?: string;
+  priority: "low" | "medium" | "high" | "urgent";
+  status: "pending" | "in_progress" | "completed" | "overdue";
+  estimated_cost?: number;
+  actual_cost?: number;
+  contractor?: string;
+}
+
+interface Warranty {
+  id: string;
+  item_name: string;
+  category: string;
+  purchase_date: string;
+  warranty_period_months: number;
+  expiry_date: string;
+  manufacturer: string;
+  warranty_type: "manufacturer" | "extended" | "service_plan";
+  coverage_details?: string;
+  claim_instructions?: string;
+  is_transferable: boolean;
+}
+
+interface PropertyDocument {
+  id: string;
+  name: string;
+  type: "deed" | "insurance" | "warranty" | "inspection" | "permit" | "tax" | "other";
+  url?: string;
+  upload_date: string;
+  expiry_date?: string;
+  description?: string;
+}
+
+// Extended property type for the store (includes additional local data)
+type Property = DatabaseProperty & {
+  // Additional fields for local property management
+  inventory?: InventoryItem[];
+  systems?: HomeSystem[];
+  structures?: Structure[];
+  renovations?: RenovationProject[];
+  inspections?: any[];
+  documents?: PropertyDocument[];
+  maintenanceTasks?: MaintenanceTask[];
+  warranties?: Warranty[];
+  permits?: any[];
+  easements?: any[];
+  utilitiesInfo?: any[];
+  identifiedMaterials?: any[];
+  saleHistory?: any[];
+  taxHistory?: any[];
+  lastSynced?: string;
+  // Legacy field support for backwards compatibility
+  isPrimaryResidence?: boolean;
+};
+
 interface PropertyState {
   // Properties
-  properties: Asset[];
+  properties: Property[];
   selectedPropertyId: string | null;
 
   // Property management
-  getPropertyById: (id: string) => Asset | undefined;
-  getPrimaryProperty: () => Asset | undefined;
+  getPropertyById: (id: string) => Property | undefined;
+  getPrimaryProperty: () => Property | undefined;
   setSelectedProperty: (id: string | null) => void;
   addProperty: (
-    property: Omit<Asset, "id" | "createdAt" | "updatedAt">,
+    property: Omit<Property, "id" | "created_at" | "updated_at" | "version_id" | "valid_from" | "valid_to" | "is_current" | "full_address">,
   ) => string;
-  updateProperty: (id: string, updates: Partial<Asset>) => void;
+  updateProperty: (id: string, updates: Partial<Property>) => void;
   deleteProperty: (id: string) => void;
 
   // Inventory management
@@ -140,11 +286,18 @@ export const usePropertyStore = create<PropertyState>()(
       addProperty: (propertyData) => {
         const id = generateId();
         const now = new Date().toISOString();
-        const newProperty: Asset = {
+        const newProperty: Property = {
           ...propertyData,
           id,
-          createdAt: now,
-          updatedAt: now,
+          created_at: now,
+          updated_at: now,
+          version_id: generateId(),
+          valid_from: now,
+          valid_to: "infinity",
+          is_current: true,
+          version: 1,
+          full_address: null, // This will be generated by the database
+          // Initialize additional arrays
           inventory: [],
           systems: [],
           structures: [],
@@ -172,7 +325,7 @@ export const usePropertyStore = create<PropertyState>()(
         set((state) => ({
           properties: state.properties.map((p) =>
             p.id === id
-              ? { ...p, ...updates, updatedAt: new Date().toISOString() }
+              ? { ...p, ...updates, updated_at: new Date().toISOString() }
               : p,
           ),
         }));
@@ -195,7 +348,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   inventory: [...(p.inventory || []), itemWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -211,7 +364,7 @@ export const usePropertyStore = create<PropertyState>()(
                   inventory: (p.inventory || []).map((item) =>
                     item.id === itemId ? { ...item, ...updates } : item,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -227,7 +380,7 @@ export const usePropertyStore = create<PropertyState>()(
                   inventory: (p.inventory || []).filter(
                     (item) => item.id !== itemId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -245,7 +398,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   inventory: [...(p.inventory || []), ...itemsWithIds],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -261,7 +414,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   systems: [...(p.systems || []), systemWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -277,7 +430,7 @@ export const usePropertyStore = create<PropertyState>()(
                   systems: (p.systems || []).map((system) =>
                     system.id === systemId ? { ...system, ...updates } : system,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -293,7 +446,7 @@ export const usePropertyStore = create<PropertyState>()(
                   systems: (p.systems || []).filter(
                     (system) => system.id !== systemId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -309,7 +462,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   structures: [...(p.structures || []), structureWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -327,7 +480,7 @@ export const usePropertyStore = create<PropertyState>()(
                       ? { ...structure, ...updates }
                       : structure,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -343,7 +496,7 @@ export const usePropertyStore = create<PropertyState>()(
                   structures: (p.structures || []).filter(
                     (structure) => structure.id !== structureId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -359,7 +512,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   renovations: [...(p.renovations || []), renovationWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -377,7 +530,7 @@ export const usePropertyStore = create<PropertyState>()(
                       ? { ...renovation, ...updates }
                       : renovation,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -393,7 +546,7 @@ export const usePropertyStore = create<PropertyState>()(
                   renovations: (p.renovations || []).filter(
                     (renovation) => renovation.id !== renovationId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -409,7 +562,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   maintenanceTasks: [...(p.maintenanceTasks || []), taskWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -425,7 +578,7 @@ export const usePropertyStore = create<PropertyState>()(
                   maintenanceTasks: (p.maintenanceTasks || []).map((task) =>
                     task.id === taskId ? { ...task, ...updates } : task,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -441,7 +594,7 @@ export const usePropertyStore = create<PropertyState>()(
                   maintenanceTasks: (p.maintenanceTasks || []).filter(
                     (task) => task.id !== taskId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -457,7 +610,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   warranties: [...(p.warranties || []), warrantyWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -475,7 +628,7 @@ export const usePropertyStore = create<PropertyState>()(
                       ? { ...warranty, ...updates }
                       : warranty,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -491,7 +644,7 @@ export const usePropertyStore = create<PropertyState>()(
                   warranties: (p.warranties || []).filter(
                     (warranty) => warranty.id !== warrantyId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -507,7 +660,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   documents: [...(p.documents || []), documentWithId],
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -525,7 +678,7 @@ export const usePropertyStore = create<PropertyState>()(
                       ? { ...document, ...updates }
                       : document,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -541,7 +694,7 @@ export const usePropertyStore = create<PropertyState>()(
                   documents: (p.documents || []).filter(
                     (document) => document.id !== documentId,
                   ),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),
@@ -558,7 +711,7 @@ export const usePropertyStore = create<PropertyState>()(
               ? {
                   ...p,
                   lastSynced: new Date().toISOString(),
-                  updatedAt: new Date().toISOString(),
+                  updated_at: new Date().toISOString(),
                 }
               : p,
           ),

@@ -32,7 +32,7 @@ export function useAIImageAnalysis() {
     },
     onError: (error) => {
       toast.error("Failed to analyze image");
-      logger.error("AI image analysis error:", error);
+      logger.error("AI image analysis error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -61,7 +61,7 @@ export function useAIChat() {
     },
     onError: (error) => {
       toast.error("Failed to get AI response");
-      logger.error("AI chat error:", error);
+      logger.error("AI chat error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -91,7 +91,7 @@ export function useAIDocumentAnalysis() {
     },
     onError: (error) => {
       toast.error("Failed to analyze document");
-      logger.error("AI document analysis error:", error);
+      logger.error("AI document analysis error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -130,7 +130,7 @@ export function useAIBulkAnalysis<T, R = unknown>() {
     },
     onError: (error) => {
       toast.error("Bulk analysis failed");
-      logger.error("AI bulk analysis error:", error);
+      logger.error("AI bulk analysis error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

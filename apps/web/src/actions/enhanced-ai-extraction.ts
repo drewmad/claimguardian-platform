@@ -75,9 +75,7 @@ export async function processEnhancedExtraction(
       error: userError,
     } = await supabase.auth.getUser();
     if (userError || !user) {
-      logger.error("User not authenticated for enhanced document extraction", {
-        error: userError,
-      });
+      logger.error("User not authenticated for enhanced document extraction", { error: userError });
       return { data: null, error: "User not authenticated" };
     }
 
@@ -90,11 +88,9 @@ export async function processEnhancedExtraction(
       .single();
 
     if (docError || !document) {
-      logger.error("Document not found or access denied", {
-        documentId: params.documentId,
+      logger.error("Document not found or access denied", { documentId: params.documentId,
         userId: user.id,
-        error: docError,
-      });
+        error: docError });
       return { data: null, error: "Document not found or access denied" };
     }
 
@@ -142,9 +138,7 @@ export async function processEnhancedExtraction(
       .single();
 
     if (extractionError) {
-      logger.error("Failed to create enhanced extraction record", {
-        error: extractionError,
-      });
+      logger.error("Failed to create enhanced extraction record", { error: extractionError });
       return { data: null, error: extractionError.message };
     }
 
@@ -154,10 +148,8 @@ export async function processEnhancedExtraction(
       .createSignedUrl(document.file_path, 3600); // 1 hour expiry
 
     if (urlError) {
-      logger.error("Failed to create signed URL for document", {
-        error: urlError,
-        filePath: document.file_path,
-      });
+      logger.error("Failed to create signed URL for document", { error: urlError,
+        filePath: document.file_path });
 
       // Update extraction status to failed
       await supabase
@@ -239,9 +231,7 @@ export async function processEnhancedExtraction(
       .single();
 
     if (updateError) {
-      logger.error("Failed to update enhanced extraction record", {
-        error: updateError,
-      });
+      logger.error("Failed to update enhanced extraction record", { error: updateError });
       return { data: null, error: updateError.message };
     }
 
@@ -265,10 +255,8 @@ export async function processEnhancedExtraction(
 
     return { data: updatedExtraction, error: null };
   } catch (error) {
-    logger.error("Unexpected error during enhanced document extraction", {
-      error,
-      documentId: params.documentId,
-    });
+    logger.error("Unexpected error during enhanced document extraction", { error,
+      documentId: params.documentId });
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -318,18 +306,14 @@ export async function getEnhancedExtractionResults(documentId: string) {
       .single();
 
     if (error) {
-      logger.error("Failed to fetch enhanced extraction results", {
-        error,
-        documentId,
-      });
+      logger.error("Failed to fetch enhanced extraction results", { error,
+        documentId });
       return { data: null, error: error.message };
     }
 
     return { data: extraction, error: null };
   } catch (error) {
-    logger.error("Unexpected error fetching enhanced extraction results", {
-      error,
-    });
+    logger.error("Unexpected error fetching enhanced extraction results", { error });
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -379,9 +363,7 @@ export async function approveExtraction(
         .eq("id", extractionId);
 
       if (updateError) {
-        logger.error("Failed to update extraction with edits", {
-          error: updateError,
-        });
+        logger.error("Failed to update extraction with edits", { error: updateError });
         return { data: null, error: updateError.message };
       }
     }
@@ -399,7 +381,7 @@ export async function approveExtraction(
       .single();
 
     if (approveError) {
-      logger.error("Failed to approve extraction", { error: approveError });
+      logger.error("Failed to approve extraction", {}, approveError instanceof Error ? approveError : new Error(String(approveError)));
       return { data: null, error: approveError.message };
     }
 
@@ -418,7 +400,7 @@ export async function approveExtraction(
 
     return { data: approvedExtraction, error: null };
   } catch (error) {
-    logger.error("Unexpected error approving extraction", { error });
+    logger.error("Unexpected error approving extraction", {}, error instanceof Error ? error : new Error(String(error)));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -449,13 +431,13 @@ export async function getExtractionQueue() {
       .eq("processed_by", user.id);
 
     if (error) {
-      logger.error("Failed to fetch extraction queue", { error });
+      logger.error("Failed to fetch extraction queue", {}, error instanceof Error ? error : new Error(String(error)));
       return { data: null, error: error.message };
     }
 
     return { data: queue, error: null };
   } catch (error) {
-    logger.error("Unexpected error fetching extraction queue", { error });
+    logger.error("Unexpected error fetching extraction queue", {}, error instanceof Error ? error : new Error(String(error)));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -488,13 +470,13 @@ export async function getExtractionStatistics(days: number = 30) {
       .single();
 
     if (error) {
-      logger.error("Failed to fetch extraction statistics", { error });
+      logger.error("Failed to fetch extraction statistics", {}, error instanceof Error ? error : new Error(String(error)));
       return { data: null, error: error.message };
     }
 
     return { data: stats, error: null };
   } catch (error) {
-    logger.error("Unexpected error fetching extraction statistics", { error });
+    logger.error("Unexpected error fetching extraction statistics", {}, error instanceof Error ? error : new Error(String(error)));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",

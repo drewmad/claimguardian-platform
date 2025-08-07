@@ -135,7 +135,7 @@ export function SettingsModal() {
         setPreferences(JSON.parse(savedPrefs));
       }
     } catch (error) {
-      logger.error("Failed to load user settings", { error });
+      logger.error("Failed to load user settings", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -160,7 +160,7 @@ export function SettingsModal() {
       logger.track("profile_updated", { userId: user?.id });
     } catch (error) {
       setError("Failed to save profile");
-      logger.error("Profile save failed", { error });
+      logger.error("Profile save failed", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
     }

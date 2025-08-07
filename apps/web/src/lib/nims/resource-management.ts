@@ -9,6 +9,9 @@
 import { createClient } from "@/lib/supabase/client";
 import { NIMSResource } from "./ics-integration";
 
+// Re-export NIMSResource for other modules
+export type { NIMSResource };
+
 // NIMS Resource Categories (standardized)
 export enum ResourceCategory {
   PERSONNEL = "personnel",

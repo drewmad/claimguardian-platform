@@ -76,7 +76,7 @@ export function PropertyImage({
           setImageUrl(image);
         }
       } catch (err) {
-        logger.error("Error loading property image:", err);
+        logger.error("Error loading property image:", {}, err instanceof Error ? err : new Error(String(err)));
         setError(true);
       } finally {
         setLoading(false);

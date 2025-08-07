@@ -12,6 +12,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { addHours, format, isAfter, isBefore } from "date-fns";
+import { logger } from "@/lib/logger";
 
 export interface CrisisEvent {
   id: string;
@@ -274,7 +275,7 @@ export class CrisisResponseCoordinator {
 
       return relevantCrises;
     } catch (error) {
-      console.error("Error monitoring crisis events:", error);
+      logger.error("Error monitoring crisis events", { module: "crisis-response-coordinator", userId }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -352,7 +353,7 @@ export class CrisisResponseCoordinator {
 
       return crisisResponse;
     } catch (error) {
-      console.error("Error activating crisis response:", error);
+      logger.error("Error activating crisis response", { module: "crisis-response-coordinator", userId, crisisEventId }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -695,7 +696,7 @@ export class CrisisResponseCoordinator {
       // For now, return mock data
       return this.getMockEmergencyResources(location, resourceTypes);
     } catch (error) {
-      console.error("Error finding emergency resources:", error);
+      logger.error("Error finding emergency resources", { module: "crisis-response-coordinator", location: location.toString() }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -742,7 +743,7 @@ export class CrisisResponseCoordinator {
 
       return true;
     } catch (error) {
-      console.error("Error updating action status:", error);
+      logger.error("Error updating action status", { module: "crisis-response-coordinator", responseId, actionId, status }, error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -782,7 +783,7 @@ export class CrisisResponseCoordinator {
         },
       ];
     } catch (error) {
-      console.error("Error fetching external crisis events:", error);
+      logger.error("Error fetching external crisis events", { module: "crisis-response-coordinator" }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }

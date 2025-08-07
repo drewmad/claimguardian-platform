@@ -93,7 +93,14 @@ export class RedisCacheManager {
       // Dynamic import to handle Redis client based on environment
       if (typeof window === "undefined") {
         // Server-side - use ioredis if available
-        const Redis = await import("ioredis").catch(() => null);
+        let Redis: any = null;
+        try {
+          // Dynamically import ioredis as optional dependency
+          Redis = await import("ioredis" as string);
+        } catch (error) {
+          logger.warn("ioredis not available, using fallback cache only");
+          return;
+        }
 
         if (Redis?.default) {
           const client = new Redis.default(process.env.REDIS_URL, {
@@ -113,7 +120,7 @@ export class RedisCacheManager {
           });
 
           client.on("error", (error) => {
-            logger.error("Redis client error", error);
+            logger.error("Redis client error", {}, error instanceof Error ? error : new Error(String(error)));
             this.stats.errors++;
             this.isConnected = false;
           });
@@ -418,7 +425,7 @@ export class RedisCacheManager {
 
       return true;
     } catch (error) {
-      logger.error("Cache clear error", error);
+      logger.error("Cache clear error", {}, error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -523,7 +530,7 @@ export class RedisCacheManager {
       try {
         await this.client.quit();
       } catch (error) {
-        logger.error("Error closing Redis connection", error);
+        logger.error("Error closing Redis connection", {}, error instanceof Error ? error : new Error(String(error)));
       }
     }
 

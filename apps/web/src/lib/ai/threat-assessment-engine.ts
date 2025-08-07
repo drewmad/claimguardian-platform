@@ -966,7 +966,7 @@ Respond with valid JSON only, no additional text.
         processingTime: Date.now() - startTime,
       };
     } catch (error) {
-      logger.error("Failed to parse AI response:", toError(error));
+      logger.error("Failed to parse AI response:", {}, toError(error));
       return this.fallbackAssessment(request, startTime);
     }
   }

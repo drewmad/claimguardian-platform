@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -45,8 +44,7 @@ export async function GET(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Get A/B tests
@@ -59,8 +57,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching A/B tests:", testsError);
       return NextResponse.json(
         { error: "Failed to fetch A/B tests", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     const response: Record<string, unknown> = { tests };
@@ -146,8 +143,7 @@ export async function GET(request: NextRequest) {
     console.error("A/B Tests GET error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -165,8 +161,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -179,23 +174,20 @@ export async function POST(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Validate input
     if (!body.name || !body.feature_id || !body.model_a || !body.model_b) {
       return NextResponse.json(
         { error: "Missing required fields", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     if (body.traffic_split < 10 || body.traffic_split > 90) {
       return NextResponse.json(
         { error: "Traffic split must be between 10 and 90", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Check if there's already an active test for this feature
@@ -212,8 +204,7 @@ export async function POST(request: NextRequest) {
           error: "An active A/B test already exists for this feature",
           success: false,
         },
-        { status: 409 },
-      );
+        { status: 409 });
     }
 
     // Create new A/B test
@@ -234,8 +225,7 @@ export async function POST(request: NextRequest) {
       console.error("Error creating A/B test:", createError);
       return NextResponse.json(
         { error: "Failed to create A/B test", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -246,7 +236,6 @@ export async function POST(request: NextRequest) {
     console.error("A/B Tests POST error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

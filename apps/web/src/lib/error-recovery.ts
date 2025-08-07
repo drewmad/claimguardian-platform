@@ -200,7 +200,7 @@ export function withErrorBoundary<T>(
   errorMessage?: string,
 ): Promise<T> {
   return operation().catch((error) => {
-    logger.error("Error caught by boundary:", error);
+    logger.error("Error caught by boundary:", {}, error instanceof Error ? error : new Error(String(error)));
 
     if (errorMessage) {
       toast.error(errorMessage);

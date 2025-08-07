@@ -100,7 +100,7 @@ export class WebhookManager {
         });
 
       if (eventError) {
-        logger.error("Failed to store webhook event:", eventError);
+        logger.error("Failed to store webhook event", new Error(eventError.message || "Unknown database error"));
         return;
       }
 
@@ -113,7 +113,7 @@ export class WebhookManager {
         .contains("event_types", [event.type]);
 
       if (subError) {
-        logger.error("Failed to fetch webhook subscriptions:", subError);
+        logger.error("Failed to fetch webhook subscriptions", new Error(subError.message || "Unknown database error"));
         return;
       }
 
@@ -126,7 +126,7 @@ export class WebhookManager {
         `Webhook event ${event.type} emitted to ${subscriptions?.length || 0} subscribers`,
       );
     } catch (error) {
-      logger.error("Failed to emit webhook event:", error);
+      logger.error("Failed to emit webhook event", error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -182,7 +182,7 @@ export class WebhookManager {
         await this.attemptDelivery(event, subscription);
       }
     } catch (error) {
-      logger.error("Failed to deliver webhook:", error);
+      logger.error("Failed to deliver webhook", error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -257,8 +257,8 @@ export class WebhookManager {
       }
     } catch (error) {
       logger.error(
-        `Webhook delivery failed (attempt ${attemptNumber}):`,
-        error,
+        `Webhook delivery failed (attempt ${attemptNumber})`,
+        error instanceof Error ? error : new Error(String(error)),
       );
 
       // Record failed attempt

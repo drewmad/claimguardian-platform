@@ -3,7 +3,7 @@
  * Multi-channel alert delivery for WebSocket monitoring
  */
 
-import { webSocketMonitor, WebSocketAlert } from "./websocket-metrics";
+import { webSocketMonitor, WebSocketAlert, WebSocketServiceMetrics } from "./websocket-metrics";
 
 export interface AlertChannel {
   name: string;
@@ -17,8 +17,8 @@ export interface AlertChannel {
 
 export interface AlertRule {
   name: string;
-  condition: (metrics: any) => boolean;
-  message: (metrics: any) => string;
+  condition: (metrics: WebSocketServiceMetrics) => boolean;
+  message: (metrics: WebSocketServiceMetrics) => string;
   severity: WebSocketAlert["severity"];
   enabled: boolean;
   cooldownMinutes: number;
@@ -549,7 +549,7 @@ export class WebSocketAlertManager {
     );
   }
 
-  private checkRules(metrics: any): void {
+  private checkRules(metrics: WebSocketServiceMetrics): void {
     const now = Date.now();
 
     this.rules.forEach((rule) => {
@@ -575,7 +575,7 @@ export class WebSocketAlertManager {
           this.handleAlert(alert);
         }
       } catch (error) {
-        console.error(`Error evaluating rule ${rule.name}:`, error);
+        console.error(`Error evaluating rule ${rule.name}:`, error instanceof Error ? error.message : String(error));
       }
     });
   }

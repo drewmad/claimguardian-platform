@@ -32,8 +32,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -46,8 +45,7 @@ export async function GET(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Build base query
@@ -74,8 +72,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching quality scores:", scoresError);
       return NextResponse.json(
         { error: "Failed to fetch quality scores", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     // Calculate summary metrics
@@ -152,8 +149,7 @@ export async function GET(request: NextRequest) {
     console.error("Quality Scores GET error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -171,8 +167,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Validate input
@@ -185,23 +180,20 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json(
         { error: "Missing required fields", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     if (body.numeric_rating < 1 || body.numeric_rating > 5) {
       return NextResponse.json(
         { error: "Numeric rating must be between 1 and 5", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const validRatings = ["excellent", "good", "fair", "poor"];
     if (!validRatings.includes(body.rating)) {
       return NextResponse.json(
         { error: "Invalid rating value", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Create quality score
@@ -226,8 +218,7 @@ export async function POST(request: NextRequest) {
       console.error("Error creating quality score:", createError);
       return NextResponse.json(
         { error: "Failed to create quality score", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -238,7 +229,6 @@ export async function POST(request: NextRequest) {
     console.error("Quality Scores POST error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

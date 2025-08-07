@@ -124,7 +124,7 @@ export async function collectSignupTrackingData(): Promise<SignupTrackingData> {
       }
     }
   } catch (error) {
-    logger.error("Error collecting tracking data:", toError(error));
+    logger.error("Error collecting tracking data:", {}, toError(error));
   }
 
   return trackingData;

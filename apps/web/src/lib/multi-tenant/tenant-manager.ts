@@ -8,6 +8,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 // Specific configuration types
 interface OrganizationConfiguration extends Record<string, unknown> {
@@ -259,7 +260,11 @@ class TenantManager {
 
       return this.parseOrganization(data as OrganizationRow);
     } catch (error) {
-      console.error(`Failed to get organization ${organizationId}:`, error);
+      logger.error(
+        `Failed to get organization ${organizationId}`,
+        { module: "tenant-manager", organizationId },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -276,7 +281,7 @@ class TenantManager {
         "enterprise_organizations",
       )
         .select("*")
-        .eq("org_code", code)
+        .eq("organization_code", code)
         .eq("is_active", true)
         .single();
 
@@ -289,7 +294,11 @@ class TenantManager {
 
       return this.parseOrganization(data as OrganizationRow);
     } catch (error) {
-      console.error(`Failed to get organization by code ${code}:`, error);
+      logger.error(
+        `Failed to get organization by code ${code}`,
+        { module: "tenant-manager", code },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -320,7 +329,11 @@ class TenantManager {
 
       return this.parseOrganization(data as OrganizationRow);
     } catch (error) {
-      console.error(`Failed to get organization by domain ${domain}:`, error);
+      logger.error(
+        `Failed to get organization by domain ${domain}`,
+        { module: "tenant-manager", domain },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -346,7 +359,11 @@ class TenantManager {
 
       return this.getOrganizationById(userOrg.organization_id);
     } catch (error) {
-      console.error(`Failed to get user organization for ${userId}:`, error);
+      logger.error(
+        `Failed to get user organization for ${userId}`,
+        { module: "tenant-manager", userId },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -450,7 +467,11 @@ class TenantManager {
 
       return context;
     } catch (error) {
-      console.error(`Failed to get tenant context for user ${userId}:`, error);
+      logger.error(
+        `Failed to get tenant context for user ${userId}`,
+        { module: "tenant-manager", userId },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return null;
     }
   }
@@ -505,7 +526,7 @@ class TenantManager {
       const { data: existingUsers } =
         await this.supabase!.auth.admin.listUsers();
       const existingUser = existingUsers?.users?.find(
-        (user) => user.email === userEmail,
+        (user: { email?: string }) => user.email === userEmail,
       );
 
       if (existingUser) {
@@ -545,7 +566,11 @@ class TenantManager {
         return { success: true, invitationToken };
       }
     } catch (error) {
-      console.error("Failed to add user to organization:", error);
+      logger.error(
+        "Failed to add user to organization",
+        { module: "tenant-manager", organizationId, userEmail, role },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return { success: false };
     }
   }
@@ -579,7 +604,11 @@ class TenantManager {
 
       return true;
     } catch (error) {
-      console.error("Failed to update user role:", error);
+      logger.error(
+        "Failed to update user role",
+        { module: "tenant-manager", organizationId, userId, role },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -612,7 +641,11 @@ class TenantManager {
 
       return true;
     } catch (error) {
-      console.error("Failed to remove user from organization:", error);
+      logger.error(
+        "Failed to remove user from organization",
+        { module: "tenant-manager", organizationId, userId },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -653,7 +686,11 @@ class TenantManager {
 
       return true;
     } catch (error) {
-      console.error("Failed to update organization customizations:", error);
+      logger.error(
+        "Failed to update organization customizations",
+        { module: "tenant-manager", organizationId },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return false;
     }
   }
@@ -766,7 +803,11 @@ class TenantManager {
 
       return (data || []) as T[];
     } catch (error) {
-      console.error("Failed to execute tenant query:", error);
+      logger.error(
+        "Failed to execute tenant query",
+        { module: "tenant-manager", query: typeof queryOrOrgCode === "string" ? queryOrOrgCode : "complex" },
+        error instanceof Error ? error : new Error(String(error))
+      );
       if (typeof queryOrOrgCode === "string") {
         return {
           data: null,
@@ -816,9 +857,10 @@ class TenantManager {
 
       return true;
     } catch (error) {
-      console.error(
-        `Failed to update usage metrics for ${organizationId}:`,
-        error,
+      logger.error(
+        `Failed to update usage metrics for ${organizationId}`,
+        { module: "tenant-manager", organizationId, metrics },
+        error instanceof Error ? error : new Error(String(error))
       );
       return false;
     }
@@ -844,9 +886,10 @@ class TenantManager {
         this.parseOrganizationUser(row),
       );
     } catch (error) {
-      console.error(
-        `Failed to get users for organization ${organizationId}:`,
-        error,
+      logger.error(
+        `Failed to get users for organization ${organizationId}`,
+        { module: "tenant-manager", organizationId },
+        error instanceof Error ? error : new Error(String(error))
       );
       return [];
     }

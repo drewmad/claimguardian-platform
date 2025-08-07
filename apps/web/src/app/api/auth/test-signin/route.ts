@@ -21,8 +21,7 @@ export async function POST(request: Request) {
           success: false,
           error: "Email and password are required",
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const supabase = await createClient();
@@ -47,8 +46,7 @@ export async function POST(request: Request) {
           errorCode: error.code,
           errorStatus: error.status,
         },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     return NextResponse.json({
@@ -64,13 +62,12 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
-    logger.error("Test sign in error:", error);
+    logger.error("Test sign in error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

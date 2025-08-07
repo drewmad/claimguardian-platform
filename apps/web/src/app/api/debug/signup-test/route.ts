@@ -83,15 +83,14 @@ export async function GET() {
       },
     });
   } catch (error) {
-    logger.error("Signup test error:", error);
+    logger.error("Signup test error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         status: "error",
         message: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -128,14 +127,13 @@ export async function POST() {
       testEmail: testSignupData.email,
     });
   } catch (error) {
-    logger.error("POST signup test error:", error);
+    logger.error("POST signup test error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         status: "error",
         message: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

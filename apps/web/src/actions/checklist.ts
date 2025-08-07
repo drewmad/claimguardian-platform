@@ -36,12 +36,11 @@ export async function updateUserChecklist({
     .from("user_checklist_progress")
     .upsert(
       { user_id: user.id, item_id: itemId, completed },
-      { onConflict: "user_id, item_id" },
-    )
+      { onConflict: "user_id, item_id" })
     .select();
 
   if (error) {
-    logger.error("Error updating checklist progress:", error);
+    logger.error("Error updating checklist progress", error instanceof Error ? error : new Error(String(error)));
     return { error: "Failed to save progress" };
   }
 
@@ -67,7 +66,7 @@ export async function getChecklistProgress() {
     .eq("user_id", user.id);
 
   if (error) {
-    logger.error("Error fetching checklist progress:", error);
+    logger.error("Error fetching checklist progress", error instanceof Error ? error : new Error(String(error)));
     return { error: "Failed to fetch progress" };
   }
 

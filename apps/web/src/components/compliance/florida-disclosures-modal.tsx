@@ -88,7 +88,7 @@ export function FloridaDisclosuresModal({
       // Success - call parent callback
       onAccept();
     } catch (err) {
-      logger.error("Error saving consents:", err);
+      logger.error("Error saving consents:", {}, err instanceof Error ? err : new Error(String(err)));
       setError("Failed to save your acknowledgments. Please try again.");
     } finally {
       setIsLoading(false);

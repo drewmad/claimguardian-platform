@@ -142,8 +142,7 @@ export async function GET(request: NextRequest) {
         timestamp: new Date().toISOString(),
         status: "error",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -169,8 +168,7 @@ export async function POST(request: NextRequest) {
       default:
         return NextResponse.json(
           { error: 'Invalid cache type. Use "all" or "expired"' },
-          { status: 400 },
-        );
+          { status: 400 });
     }
 
     return NextResponse.json({
@@ -182,8 +180,7 @@ export async function POST(request: NextRequest) {
     console.error("Cache clear error:", error);
     return NextResponse.json(
       { error: "Failed to clear cache" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

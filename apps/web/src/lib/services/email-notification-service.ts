@@ -7,6 +7,7 @@
  */
 
 import { UserTier, PermissionType } from "@/lib/permissions/permission-checker";
+import { logger } from "@/lib/logger";
 
 interface EmailNotificationOptions {
   to: string;
@@ -79,7 +80,7 @@ export class EmailNotificationService {
       // Mock successful email send
       return { success: true };
     } catch (error) {
-      console.error("Failed to send email notification:", error);
+      logger.error("Failed to send email notification", { module: "email-notification-service", to: options.to }, error instanceof Error ? error : new Error(String(error)));
       return { success: false, error: (error as Error).message };
     }
   }

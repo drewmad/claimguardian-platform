@@ -55,7 +55,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
         const { data } = await simpleAuthService.getCurrentUser();
         setUser(data || null);
       } catch (err) {
-        logger.error("Error checking user session:", err);
+        logger.error("Error checking user session:", {}, err instanceof Error ? err : new Error(String(err)));
       } finally {
         setLoading(false);
       }
@@ -106,7 +106,7 @@ export function SimpleAuthProvider({ children }: { children: ReactNode }) {
       setUser(null);
       router.push("/");
     } catch (err) {
-      logger.error("Error signing out:", err);
+      logger.error("Error signing out:", {}, err instanceof Error ? err : new Error(String(err)));
     }
   };
 

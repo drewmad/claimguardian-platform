@@ -20,8 +20,7 @@ export async function POST(request: NextRequest) {
     if (!documentText) {
       return NextResponse.json(
         { error: "Document text is required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Call our Edge Function for deadline analysis
@@ -41,8 +40,7 @@ export async function POST(request: NextRequest) {
       console.error("Edge function error:", error);
       return NextResponse.json(
         { error: "Deadline analysis failed" },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json(data);
@@ -50,7 +48,6 @@ export async function POST(request: NextRequest) {
     console.error("Deadline analysis API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

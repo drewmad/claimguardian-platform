@@ -14,10 +14,8 @@ import { logger } from "@/lib/logger";
 
 export function queryErrorHandler(error: Error) {
   // Log the error
-  logger.error("React Query error", {
-    message: error.message,
-    stack: error.stack,
-  });
+  logger.error("React Query error", { message: error.message,
+    stack: error.stack });
 
   // Show user-friendly error messages
   if (error.message.includes("Network")) {

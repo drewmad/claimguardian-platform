@@ -228,10 +228,8 @@ export class FloridaComplianceManager extends SupabaseService {
         riskLevel,
       };
     } catch (error) {
-      logger.error("Florida Insurance Code compliance check failed", {
-        claimId,
-        error,
-      });
+      logger.error("Florida Insurance Code compliance check failed", { claimId,
+        error });
       throw error;
     }
   }
@@ -367,10 +365,8 @@ export class FloridaComplianceManager extends SupabaseService {
         violations,
       };
     } catch (error) {
-      logger.error("Prompt Payment Act compliance check failed", {
-        claimId,
-        error,
-      });
+      logger.error("Prompt Payment Act compliance check failed", { claimId,
+        error });
       throw error;
     }
   }
@@ -587,11 +583,9 @@ export class FloridaComplianceManager extends SupabaseService {
         retentionRequirements,
       };
     } catch (error) {
-      logger.error("Public Records Law compliance check failed", {
-        entityId,
+      logger.error("Public Records Law compliance check failed", { entityId,
         entityType,
-        error,
-      });
+        error });
       throw error;
     }
   }
@@ -718,10 +712,8 @@ export class FloridaComplianceManager extends SupabaseService {
         complianceStatus,
       };
     } catch (error) {
-      logger.error("Public adjuster compliance validation failed", {
-        licenseNumber,
-        error,
-      });
+      logger.error("Public adjuster compliance validation failed", { licenseNumber,
+        error });
       throw error;
     }
   }
@@ -799,10 +791,8 @@ export class FloridaComplianceManager extends SupabaseService {
         specialRequirements,
       };
     } catch (error) {
-      logger.error("Hurricane claim reporting check failed", {
-        claimId,
-        error,
-      });
+      logger.error("Hurricane claim reporting check failed", { claimId,
+        error });
       throw error;
     }
   }

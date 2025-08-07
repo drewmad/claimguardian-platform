@@ -50,8 +50,7 @@ export async function GET(request: NextRequest) {
     console.error("Failed to search resources:", error);
     return NextResponse.json(
       { error: "Failed to search resources" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -63,8 +62,7 @@ export async function POST(request: NextRequest) {
     if (!body.name || !body.type || !body.category) {
       return NextResponse.json(
         { error: "Missing required fields: name, type, category" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const resource = await nimsResourceManager.registerResource(body);
@@ -74,13 +72,11 @@ export async function POST(request: NextRequest) {
         resource,
         message: "Resource registered successfully",
       },
-      { status: 201 },
-    );
+      { status: 201 });
   } catch (error) {
     console.error("Failed to register resource:", error);
     return NextResponse.json(
       { error: "Failed to register resource" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

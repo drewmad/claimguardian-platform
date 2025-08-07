@@ -7,6 +7,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 import { createHash } from "crypto";
 
 // NIMS ICS Standard Organizational Positions
@@ -674,9 +675,13 @@ export class ICSIntegrationService {
     request: ResourceRequest,
   ): Promise<void> {
     // Implementation would send notifications through appropriate channels
-    console.log(
-      `Resource request ${request.request_number} submitted for ${request.resource_type}`,
-    );
+    logger.info(`Resource request submitted`, {
+      requestNumber: request.request_number,
+      resourceType: request.resource_type,
+      priority: request.priority,
+      incidentId: request.incident_id,
+      module: 'ics-integration'
+    });
   }
 
   private isSignificantUpdate(updates: Partial<ICSIncident>): boolean {

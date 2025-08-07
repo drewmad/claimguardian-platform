@@ -46,14 +46,13 @@ export async function GET() {
         .map((c) => c.name),
     });
   } catch (error) {
-    logger.error("Clear cookies error:", error);
+    logger.error("Clear cookies error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

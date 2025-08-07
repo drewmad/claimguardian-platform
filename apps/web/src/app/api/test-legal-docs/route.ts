@@ -28,11 +28,10 @@ export async function GET() {
       .order("type");
 
     if (error) {
-      logger.error("Query error:", error);
+      logger.error("Query error:", {}, error instanceof Error ? error : new Error(String(error)));
       return NextResponse.json(
         { error: error.message, code: error.code },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     logger.info("Found documents:", data?.length);
@@ -43,7 +42,7 @@ export async function GET() {
       documents: data?.map((d) => ({ id: d.id, type: d.type, title: d.title })),
     });
   } catch (err) {
-    logger.error("Unexpected error:", err);
+    logger.error("Unexpected error:", {}, err instanceof Error ? err : new Error(String(err)));
     return NextResponse.json({ error: "Unexpected error" }, { status: 500 });
   }
 }

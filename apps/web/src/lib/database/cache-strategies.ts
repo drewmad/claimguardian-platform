@@ -100,8 +100,7 @@ export abstract class BaseCacheStrategy {
   ): Promise<void>;
   abstract invalidate(
     key: CacheKey,
-    options?: { pattern?: boolean },
-  ): Promise<void>;
+    options?: { pattern?: boolean }): Promise<void>;
   abstract warmup(keys?: CacheKey[]): Promise<void>;
 
   /**
@@ -196,8 +195,7 @@ export class FrequentlyAccessedStrategy extends BaseCacheStrategy {
 
   async invalidate(
     key: CacheKey,
-    options?: { pattern?: boolean },
-  ): Promise<void> {
+    options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key);
 
     try {
@@ -286,8 +284,7 @@ export class SessionBasedStrategy extends BaseCacheStrategy {
 
   async invalidate(
     key: CacheKey,
-    options?: { pattern?: boolean },
-  ): Promise<void> {
+    options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key);
 
     try {
@@ -456,8 +453,7 @@ export class ReferenceDataStrategy extends BaseCacheStrategy {
 
   async invalidate(
     key: CacheKey,
-    options?: { pattern?: boolean },
-  ): Promise<void> {
+    options?: { pattern?: boolean }): Promise<void> {
     const cacheKey = this.generateCacheKey(key);
 
     try {

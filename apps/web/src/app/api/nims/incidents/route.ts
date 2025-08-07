@@ -57,8 +57,7 @@ export async function GET(request: NextRequest) {
       console.error("Failed to fetch incidents:", error);
       return NextResponse.json(
         { error: "Failed to fetch incidents" },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -69,8 +68,7 @@ export async function GET(request: NextRequest) {
     console.error("NIMS incidents API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -85,8 +83,7 @@ export async function POST(request: NextRequest) {
           error:
             "Missing required fields: incident_name, incident_type, location",
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Create incident using ICS integration service
@@ -105,13 +102,11 @@ export async function POST(request: NextRequest) {
         incident,
         message: "Incident created successfully",
       },
-      { status: 201 },
-    );
+      { status: 201 });
   } catch (error) {
     console.error("Failed to create incident:", error);
     return NextResponse.json(
       { error: "Failed to create incident" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

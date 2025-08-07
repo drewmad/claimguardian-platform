@@ -134,7 +134,7 @@ export async function POST() {
     });
 
     if (linkError) {
-      logger.error("Failed to link consent:", linkError);
+      logger.error("Failed to link consent:", { linkError });
       // Don't fail the whole flow if linking fails
     }
 
@@ -171,15 +171,14 @@ export async function POST() {
       },
     });
   } catch (error) {
-    logger.error("Test signup flow error:", error);
+    logger.error("Test signup flow error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
         error: "Unexpected error during signup flow test",
         details: error instanceof Error ? error.message : String(error),
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

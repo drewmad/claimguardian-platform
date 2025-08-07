@@ -234,7 +234,7 @@ export class SOXAuditTrailManager extends SupabaseService {
       const eventData = {
         ...event,
         id: eventId,
-        timestamp: timestamp.toISOString(),
+        timestamp,
       };
       const eventHash = this.generateEventHash(eventData);
 
@@ -378,10 +378,8 @@ export class SOXAuditTrailManager extends SupabaseService {
 
       return transactionId;
     } catch (error) {
-      logger.error("Financial transaction logging failed", {
-        transaction,
-        error,
-      });
+      logger.error("Financial transaction logging failed", { transaction,
+        error });
       throw error;
     }
   }
@@ -430,12 +428,10 @@ export class SOXAuditTrailManager extends SupabaseService {
         reason,
       });
     } catch (error) {
-      logger.error("Transaction status update logging failed", {
-        transactionId,
+      logger.error("Transaction status update logging failed", { transactionId,
         newStatus,
         updatedBy,
-        error,
-      });
+        error });
       throw error;
     }
   }
@@ -479,9 +475,7 @@ export class SOXAuditTrailManager extends SupabaseService {
 
       if (error && error.code !== "PGRST116") {
         // PGRST116 is "no rows returned"
-        logger.error("Failed to get last audit entry for chain hash", {
-          error,
-        });
+        logger.error("Failed to get last audit entry for chain hash", { error });
         throw error;
       }
 
@@ -533,10 +527,7 @@ export class SOXAuditTrailManager extends SupabaseService {
       const { data: auditEvents, error } = await query;
 
       if (error) {
-        logger.error(
-          "Failed to retrieve audit events for integrity verification",
-          { error },
-        );
+        logger.error("Failed to retrieve audit events for integrity verification", { error: error instanceof Error ? error.message : String(error) });
         throw error;
       }
 
@@ -609,11 +600,9 @@ export class SOXAuditTrailManager extends SupabaseService {
         integrityViolations,
       };
     } catch (error) {
-      logger.error("Audit trail integrity verification failed", {
-        fromDate,
+      logger.error("Audit trail integrity verification failed", { fromDate,
         toDate,
-        error,
-      });
+        error });
       throw error;
     }
   }
@@ -819,7 +808,7 @@ export class FinancialControlsMonitor extends SupabaseService {
         overallAssessment,
       };
     } catch (error) {
-      logger.error("Financial controls monitoring failed", { error });
+      logger.error("Financial controls monitoring failed", { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -868,11 +857,9 @@ export class FinancialControlsMonitor extends SupabaseService {
         tester: testResults.testerName,
       });
     } catch (error) {
-      logger.error("Control testing logging failed", {
-        controlId,
+      logger.error("Control testing logging failed", { controlId,
         testResults,
-        error,
-      });
+        error });
       throw error;
     }
   }

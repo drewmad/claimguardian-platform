@@ -100,11 +100,10 @@ export async function GET() {
 
     return NextResponse.json(data?.config || defaultConfig);
   } catch (error) {
-    logger.error("Failed to fetch AI model configuration:", error);
+    logger.error("Failed to fetch AI model configuration:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to fetch configuration" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -116,8 +115,7 @@ export async function POST(request: NextRequest) {
     if (!featureMappings || !Array.isArray(featureMappings)) {
       return NextResponse.json(
         { error: "Invalid feature mappings" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const supabase = await createClient();
@@ -151,11 +149,10 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error("Failed to save AI model configuration:", error);
+    logger.error("Failed to save AI model configuration:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to save configuration" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -181,10 +178,9 @@ export async function PATCH(request: NextRequest) {
 
     return NextResponse.json(stats);
   } catch (error) {
-    logger.error("Failed to fetch model performance stats:", error);
+    logger.error("Failed to fetch model performance stats:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to fetch stats" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

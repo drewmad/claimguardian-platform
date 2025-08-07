@@ -168,7 +168,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     return NextResponse.json(healthCheck, { status: httpStatus });
   } catch (error) {
     const responseTime = Date.now() - startTime;
-    logger.error("Health check error", error);
+    logger.error("Health check error", {}, error instanceof Error ? error : new Error(String(error)));
 
     const errorResponse: HealthCheckResult = {
       status: "critical",

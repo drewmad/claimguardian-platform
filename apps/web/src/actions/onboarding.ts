@@ -252,10 +252,8 @@ export async function completeOnboarding(
         .single();
 
       if (propertyError) {
-        logger.error("Failed to create property during onboarding", {
-          userId,
-          propertyError,
-        });
+        logger.error("Failed to create property during onboarding", { userId,
+          propertyError });
         // Don't fail the entire onboarding if property creation fails
         // User can add property manually later
       } else {
@@ -284,10 +282,8 @@ export async function completeOnboarding(
               });
 
             if (enrichmentError) {
-              logger.error("Property enrichment failed", {
-                propertyId: newProperty.id,
-                error: enrichmentError,
-              });
+              logger.error("Property enrichment failed", { propertyId: newProperty.id,
+                error: enrichmentError });
             } else if (enrichmentResult) {
               logger.info("Property enriched successfully", {
                 propertyId: newProperty.id,
@@ -297,10 +293,8 @@ export async function completeOnboarding(
             }
           } catch (enrichmentError) {
             // Don't fail onboarding if enrichment fails
-            logger.error("Error enriching property", {
-              propertyId: newProperty.id,
-              error: enrichmentError,
-            });
+            logger.error("Error enriching property", { propertyId: newProperty.id,
+              error: enrichmentError });
           }
         }
       }

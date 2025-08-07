@@ -17,6 +17,7 @@ import {
   isAfter,
   isBefore,
 } from "date-fns";
+import { logger } from "@/lib/logger";
 
 export interface Deadline {
   id: string;
@@ -142,7 +143,7 @@ export class DeadlineGuardianService {
       const analysis = await response.json();
       return this.processDeadlineAnalysis(analysis, documentId, userId);
     } catch (error) {
-      console.error("Error analyzing document for deadlines:", error);
+      logger.error("Error analyzing document for deadlines", { module: "deadline-guardian", documentId, userId }, error instanceof Error ? error : new Error(String(error)));
       return this.fallbackDeadlineDetection(documentText, documentId, userId);
     }
   }
@@ -257,13 +258,13 @@ export class DeadlineGuardianService {
         .single();
 
       if (error) {
-        console.error("Error saving deadline:", error);
+        logger.error("Error saving deadline", { module: "deadline-guardian", deadlineType: deadline.type }, error instanceof Error ? error : new Error(String(error)));
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error("Error saving deadline:", error);
+      logger.error("Error saving deadline", { module: "deadline-guardian" }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -301,13 +302,13 @@ export class DeadlineGuardianService {
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching deadlines:", error);
+        logger.error("Error fetching deadlines", { module: "deadline-guardian", userId }, error instanceof Error ? error : new Error(String(error)));
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error("Error fetching deadlines:", error);
+      logger.error("Error fetching deadlines", { module: "deadline-guardian", userId }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -329,7 +330,7 @@ export class DeadlineGuardianService {
       const { data: deadlines, error } = await query;
 
       if (error || !deadlines) {
-        console.error("Error fetching deadlines for check:", error);
+        logger.error("Error fetching deadlines for check", { module: "deadline-guardian", userId: userId || 'all' }, error instanceof Error ? error : new Error(String(error)));
         return [];
       }
 
@@ -384,7 +385,7 @@ export class DeadlineGuardianService {
 
       return alerts;
     } catch (error) {
-      console.error("Error checking upcoming deadlines:", error);
+      logger.error("Error checking upcoming deadlines", { module: "deadline-guardian", userId: userId || 'all' }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -406,13 +407,13 @@ export class DeadlineGuardianService {
         .eq("id", deadlineId);
 
       if (error) {
-        console.error("Error updating deadline status:", error);
+        logger.error("Error updating deadline status", { module: "deadline-guardian", deadlineId, status }, error instanceof Error ? error : new Error(String(error)));
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Error updating deadline status:", error);
+      logger.error("Error updating deadline status", { module: "deadline-guardian", deadlineId, status }, error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -527,7 +528,7 @@ export class DeadlineGuardianService {
 
       return stats;
     } catch (error) {
-      console.error("Error getting deadline stats:", error);
+      logger.error("Error getting deadline stats", { module: "deadline-guardian", userId }, error instanceof Error ? error : new Error(String(error)));
       return {
         total: 0,
         upcoming: 0,

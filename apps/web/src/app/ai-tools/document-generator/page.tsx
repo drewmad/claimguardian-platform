@@ -422,7 +422,7 @@ The letter should be ready to send after adding the recipient's information.`;
         responseTime,
       });
 
-      logger.error("Error generating document:", toError(error));
+      logger.error("Error generating document:", {}, toError(error));
       toast.error("Failed to generate document");
     } finally {
       setIsGenerating(false);

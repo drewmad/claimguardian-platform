@@ -22,8 +22,7 @@ export async function POST(request: NextRequest) {
     if (!authHeader?.startsWith("Bearer ")) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     const token = authHeader.substring(7);
@@ -39,8 +38,7 @@ export async function POST(request: NextRequest) {
       logger.warn("Unauthorized legal acceptance attempt", { authError });
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Parse request body
@@ -50,15 +48,13 @@ export async function POST(request: NextRequest) {
     if (!acceptances || !Array.isArray(acceptances)) {
       return NextResponse.json(
         { error: "Invalid request body. Expected acceptances array." },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     if (acceptances.length === 0) {
       return NextResponse.json(
         { error: "No acceptances provided" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Get client metadata for audit trail
@@ -113,8 +109,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

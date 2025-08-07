@@ -36,7 +36,6 @@ export async function POST(
 
     return NextResponse.json(
       { error: "Failed to distribute alert" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

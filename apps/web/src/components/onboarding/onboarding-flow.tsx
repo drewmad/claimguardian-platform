@@ -144,7 +144,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
           .single();
 
         if (error && error.code !== "PGRST116") {
-          logger.error("Error fetching preferences:", error);
+          logger.error("Error fetching preferences:", {}, error instanceof Error ? error : new Error(String(error)));
           return;
         }
 
@@ -211,7 +211,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         );
         setCurrentStep(firstIncomplete !== -1 ? firstIncomplete : 0);
       } catch (error) {
-        logger.error("Error checking onboarding status:", error);
+        logger.error("Error checking onboarding status:", {}, error instanceof Error ? error : new Error(String(error)));
       } finally {
         setLoading(false);
       }
@@ -244,7 +244,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
 
   //     setPreferences({ ...preferences, ...updates })
   //   } catch (error) {
-  //     logger.error('Error updating preferences:', error)
+  //     logger.error('Error updating preferences:', error.message || String(error))
   //     toast.error('Failed to save preferences')
   //   }
   // }
@@ -266,7 +266,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
       // Track step completion for analytics
       await trackOnboardingStep(user.id, stepIndex + 1, stepId);
     } catch (error) {
-      logger.error("Failed to save onboarding progress:", error);
+      logger.error("Failed to save onboarding progress:", {}, error instanceof Error ? error : new Error(String(error)));
       // Continue anyway - don't block user flow
     }
 
@@ -300,7 +300,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         }, 1500); // Give time for success message
       }
     } catch (error) {
-      logger.error("Failed to complete onboarding:", error);
+      logger.error("Failed to complete onboarding:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to save setup. Please try again.");
     }
   };
@@ -318,7 +318,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
       });
 
       if (error) {
-        logger.error("Failed to skip onboarding:", error);
+        logger.error("Failed to skip onboarding:", {}, error instanceof Error ? error : new Error(String(error)));
       }
 
       // Call onComplete callback if provided, otherwise redirect
@@ -328,7 +328,7 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps = {}) {
         router.push("/dashboard");
       }
     } catch (error) {
-      logger.error("Failed to skip onboarding:", error);
+      logger.error("Failed to skip onboarding:", {}, error instanceof Error ? error : new Error(String(error)));
       // Still handle completion even if save fails
       if (onComplete) {
         onComplete();
@@ -512,8 +512,7 @@ function UserProfileStep({
     data.propertyStructures || [],
   );
   const [roomsPerFloor, setRoomsPerFloor] = useState<Record<number, number>>(
-    data.roomsPerFloor || { 1: 4 },
-  );
+    data.roomsPerFloor || { 1: 4 });
 
   // Use centralized Google Maps hook
   const {

@@ -50,7 +50,7 @@ export function CameraCapture({ onClose, onCapture }: CameraCaptureProps) {
         videoRef.current.srcObject = mediaStream;
       }
     } catch (err) {
-      logger.error("Error accessing camera:", err);
+      logger.error("Error accessing camera:", {}, err instanceof Error ? err : new Error(String(err)));
       setError("Unable to access camera. Please check permissions.");
     }
   }, [facingMode]);

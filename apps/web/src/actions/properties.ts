@@ -74,7 +74,7 @@ export async function getProperty({ propertyId }: { propertyId: string }) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error fetching property:", toError(error));
+    logger.error("Error fetching property", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -109,7 +109,7 @@ export async function getPropertyHistory({
 
     return { data: userProperties, error: null };
   } catch (error) {
-    logger.error("Error fetching property history:", toError(error));
+    logger.error("Error fetching property history", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -147,7 +147,7 @@ export async function getPropertyAtTime({
 
     return { data: userProperty || null, error: null };
   } catch (error) {
-    logger.error("Error fetching property at time:", toError(error));
+    logger.error("Error fetching property at time", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -161,7 +161,7 @@ export async function getProperties(params?: PaginationParams) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError) {
-      logger.error("Auth error in getProperties:", authError);
+      logger.error("Auth error in getProperties:", { authError });
       throw new Error("Authentication failed");
     }
 
@@ -190,7 +190,7 @@ export async function getProperties(params?: PaginationParams) {
       .range(offset, offset + limit - 1);
 
     if (error) {
-      logger.error("Database error in getProperties:", error);
+      logger.error("Database error in getProperties", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
 
@@ -202,7 +202,7 @@ export async function getProperties(params?: PaginationParams) {
 
     return { data: paginatedResponse, error: null };
   } catch (error) {
-    logger.error("Error fetching properties:", toError(error));
+    logger.error("Error fetching properties", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -225,7 +225,7 @@ export async function updateProperty(params: unknown) {
       error: authError,
     } = await supabase.auth.getUser();
     if (authError) {
-      logger.error("[UPDATE PROPERTY] Auth error:", authError);
+      logger.error("[UPDATE PROPERTY] Auth error:", { authError });
       throw new Error(`Authentication failed: ${authError.message}`);
     }
     if (!user) {
@@ -260,7 +260,7 @@ export async function updateProperty(params: unknown) {
       .single();
 
     if (checkError) {
-      logger.error("[UPDATE PROPERTY] Property check error:", checkError);
+      logger.error("[UPDATE PROPERTY] Property check error:", { checkError });
       throw new Error(
         `Property not found or access denied: ${checkError.message}`,
       );
@@ -315,7 +315,7 @@ export async function updateProperty(params: unknown) {
     );
 
     if (error) {
-      logger.error("[UPDATE PROPERTY] Temporal update error:", error);
+      logger.error("[UPDATE PROPERTY] Temporal update error", error instanceof Error ? error : new Error(String(error)));
       throw new Error(`Failed to update property: ${error.message}`);
     }
 
@@ -346,7 +346,7 @@ export async function updateProperty(params: unknown) {
       error: null,
     };
   } catch (error) {
-    logger.error("[UPDATE PROPERTY] Error updating property:", error);
+    logger.error("[UPDATE PROPERTY] Error updating property", error instanceof Error ? error : new Error(String(error)));
     return { data: null, error: error as Error };
   }
 }
@@ -396,7 +396,7 @@ export async function createProperty({
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error creating property:", error);
+    logger.error("Error creating property", error instanceof Error ? error : new Error(String(error)));
     return { data: null, error: error as Error };
   }
 }
@@ -431,7 +431,7 @@ export async function deleteProperty({ propertyId }: { propertyId: string }) {
 
     return { data: { success: true }, error: null };
   } catch (error) {
-    logger.error("Error deleting property:", error);
+    logger.error("Error deleting property", error instanceof Error ? error : new Error(String(error)));
     return { data: null, error: error as Error };
   }
 }

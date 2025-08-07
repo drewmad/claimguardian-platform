@@ -60,7 +60,7 @@ export async function createPolicy(input: CreatePolicyInput) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error creating policy:", toError(error));
+    logger.error("Error creating policy", toError(error));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Failed to create policy",
@@ -108,7 +108,7 @@ export async function getPolicies(propertyId?: string) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error fetching policies:", toError(error));
+    logger.error("Error fetching policies", toError(error));
     return {
       data: null,
       error:
@@ -158,7 +158,7 @@ export async function getPolicy(policyId: string) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error fetching policy:", toError(error));
+    logger.error("Error fetching policy", toError(error));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Failed to fetch policy",
@@ -218,7 +218,7 @@ export async function updatePolicy(
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error updating policy:", toError(error));
+    logger.error("Error updating policy", toError(error));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Failed to update policy",
@@ -260,7 +260,7 @@ export async function getActivePolicies() {
 
     return { data: userPolicies, error: null };
   } catch (error) {
-    logger.error("Error fetching active policies:", toError(error));
+    logger.error("Error fetching active policies", toError(error));
     return {
       data: null,
       error:
@@ -319,7 +319,7 @@ export async function deactivatePolicy(policyId: string) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error deactivating policy:", toError(error));
+    logger.error("Error deactivating policy", toError(error));
     return {
       data: null,
       error:
@@ -364,7 +364,7 @@ export async function getPoliciesByProperty(propertyId: string) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("Error fetching policies by property:", toError(error));
+    logger.error("Error fetching policies by property", toError(error));
     return {
       data: null,
       error:

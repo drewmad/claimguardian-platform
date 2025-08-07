@@ -175,7 +175,7 @@ export default function ARDamageDocumenterPage() {
       setArSession({ active: true });
       toast.success("AR session started");
     } catch (error) {
-      logger.error("Failed to start AR session:", toError(error));
+      logger.error("Failed to start AR session:", {}, toError(error));
       toast.error("Failed to start AR session");
     }
   };
@@ -237,8 +237,7 @@ export default function ARDamageDocumenterPage() {
           });
         },
         (error) => reject(error),
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 },
-      );
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 });
     });
   };
 
@@ -284,7 +283,7 @@ export default function ARDamageDocumenterPage() {
         };
         reader.readAsDataURL(file);
       } catch (error) {
-        logger.error("Error processing image:", toError(error));
+        logger.error("Error processing image:", {}, toError(error));
         toast.error("Failed to process image");
       }
     }
@@ -329,7 +328,7 @@ export default function ARDamageDocumenterPage() {
       };
       reader.readAsDataURL(file);
     } catch (error) {
-      logger.error("Error processing captured image:", toError(error));
+      logger.error("Error processing captured image:", {}, toError(error));
       toast.error("Failed to process captured image");
     }
   };

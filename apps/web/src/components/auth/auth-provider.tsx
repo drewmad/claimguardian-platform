@@ -172,8 +172,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
             } else {
               logger.warn(
                 "Session expires soon, skipping monitoring to avoid immediate logout",
-                { timeUntilExpiry },
-              );
+                { timeUntilExpiry });
             }
           } else {
             logger.info("No active session found during initialization");
@@ -278,8 +277,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
               } else {
                 logger.warn(
                   "New session expires very soon, skipping monitoring",
-                  { timeUntilExpiry },
-                );
+                  { timeUntilExpiry });
               }
             }
 

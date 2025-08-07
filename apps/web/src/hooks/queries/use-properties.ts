@@ -123,7 +123,7 @@ export function useCreateProperty() {
     },
     onError: (error) => {
       toast.error("Failed to create property");
-      logger.error("Property creation error:", error);
+      logger.error("Property creation error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -168,7 +168,7 @@ export function useUpdateProperty() {
     },
     onError: (error) => {
       toast.error("Failed to update property");
-      logger.error("Property update error:", error);
+      logger.error("Property update error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -199,7 +199,7 @@ export function useDeleteProperty() {
     },
     onError: (error) => {
       toast.error("Failed to delete property");
-      logger.error("Property deletion error:", error);
+      logger.error("Property deletion error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

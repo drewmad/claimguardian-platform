@@ -48,7 +48,6 @@ export const GET = cacheable({ endpoint: "ai_usage" })(async (
     console.error("Failed to get AI usage:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 });

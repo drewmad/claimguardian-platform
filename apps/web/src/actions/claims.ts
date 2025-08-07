@@ -137,11 +137,11 @@ export async function createClaim({
   );
 
   if (!result.success) {
-    logger.error("Failed to create claim", {
+    logger.error("Failed to create claim", { 
+      error: result.error, 
       propertyId,
       claimType,
-      duration: Date.now() - operationStart,
-      error: result.error,
+      duration: Date.now() - operationStart
     });
 
     return {

@@ -73,24 +73,21 @@ export const LazyImageUploadAnalyzer = dynamic<ImageUploadAnalyzerProps>(
     import("@/components/ai/image-upload-analyzer").then((mod) => ({
       default: mod.ImageUploadAnalyzer,
     })),
-  { loading: () => <LoadingCard />, ssr: false },
-);
+  { loading: () => <LoadingCard />, ssr: false });
 
 export const LazyAIChatInterface = dynamic<AIChatInterfaceProps>(
   () =>
     import("@/components/ai/ai-chat-interface").then((mod) => ({
       default: mod.AIChatInterface,
     })),
-  { loading: () => <LoadingChat />, ssr: false },
-);
+  { loading: () => <LoadingChat />, ssr: false });
 
 export const LazyCameraCapture = dynamic<CameraCaptureProps>(
   () =>
     import("@/components/ai/camera-capture").then((mod) => ({
       default: mod.CameraCapture,
     })),
-  { loading: () => <LoadingCard />, ssr: false },
-);
+  { loading: () => <LoadingCard />, ssr: false });
 
 // Report Components
 export const LazyReportGenerator = dynamic<ReportGeneratorProps>(
@@ -98,8 +95,7 @@ export const LazyReportGenerator = dynamic<ReportGeneratorProps>(
     import("@/components/reports/report-generator").then((mod) => ({
       default: mod.ReportGenerator,
     })),
-  { loading: () => <LoadingCard />, ssr: false },
-);
+  { loading: () => <LoadingCard />, ssr: false });
 
 // Note: PDF and 3D viewer components will be added when implemented
 
@@ -109,8 +105,7 @@ export const LazyDragDropUpload = dynamic(
     import("@/components/ui/drag-drop-upload").then((mod) => ({
       default: mod.DragDropUpload,
     })),
-  { loading: () => <LoadingCard />, ssr: false },
-);
+  { loading: () => <LoadingCard />, ssr: false });
 
 // Map Components - Disabled until map component is implemented
 // export const LazyMap = dynamic<MapProps>(

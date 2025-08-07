@@ -85,7 +85,7 @@ class RealTimeStatusManager {
             this.systemStatusCallbacks.forEach((cb) => cb(status));
           }
         } catch (error) {
-          logger.error("Error parsing WebSocket message:", toError(error));
+          logger.error("Error parsing WebSocket message:", {}, toError(error));
         }
       };
 
@@ -102,7 +102,7 @@ class RealTimeStatusManager {
         this.isConnected = false;
       };
     } catch (error) {
-      logger.error("Failed to connect to WebSocket:", toError(error));
+      logger.error("Failed to connect to WebSocket:", {}, toError(error));
       this.reconnect();
     }
   }

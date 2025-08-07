@@ -94,11 +94,9 @@ export async function validatePartnerRequest(
       data: validData,
     };
   } catch (error) {
-    logger.error("Validation error", {
-      error,
+    logger.error("Validation error", { error,
       endpoint: request.nextUrl.pathname,
-      method: request.method,
-    });
+      method: request.method });
 
     return {
       valid: false,
@@ -422,6 +420,8 @@ function containsSqlInjectionPatterns(value: string): boolean {
     /(\s|^)(union|select|insert|update|delete|drop|create|alter|exec|execute|sp_)(\s|$)/i,
     /(\s|^)(or|and)(\s|$)\d+(\s|$)(=|<|>)(\s|$)\d+/i,
     /['";][\s\S]*(union|select|insert|update|delete)/i,
+    /'\s+(or|and)\s+'/i, // Match ' OR ' and ' AND ' patterns
+    /\d+\s*=\s*\d+/i, // Match number = number patterns (like 1=1)
   ];
 
   return sqlPatterns.some((pattern) => pattern.test(value));

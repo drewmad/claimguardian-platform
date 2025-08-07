@@ -305,7 +305,7 @@ function DamageAnalyzerContent() {
         );
       } catch (error) {
         toast.error("Failed to load insurance policies.");
-        logger.error("Failed to load policies:", toError(error));
+        logger.error("Failed to load policies:", {}, toError(error));
         // Fallback to mock data on error
         setPolicies(MOCK_POLICIES);
       } finally {
@@ -400,12 +400,11 @@ Please analyze the damage carefully, considering the policy context provided.`,
 
       logger.info(
         "Damage analysis completed successfully with enhanced AI client",
-        { abTest: mockAbTestInfo },
-      );
+        { abTest: mockAbTestInfo });
     } catch (error) {
       const errorObj = toError(error);
 
-      logger.error("Analysis failed:", errorObj);
+      logger.error("Analysis failed:", { errorObj });
       toast.error(errorObj.message);
       setStep("upload");
     }
@@ -470,7 +469,7 @@ Please analyze the damage carefully, considering the policy context provided.`,
       setFeedbackSubmitted(true);
       toast.success("Thank you for your feedback!");
     } catch (error) {
-      logger.error("Failed to submit quality feedback:", toError(error));
+      logger.error("Failed to submit quality feedback:", {}, toError(error));
       toast.error("Failed to submit feedback");
     }
   };

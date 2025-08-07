@@ -93,8 +93,7 @@ class LegalService {
     try {
       const { data, error } = await this.supabase.rpc(
         "get_user_consent_status",
-        { p_user_id: userId },
-      );
+        { p_user_id: userId });
 
       if (error) throw error;
 

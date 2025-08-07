@@ -299,7 +299,7 @@ Format as a complete email ready to send.`;
         responseTime,
       });
 
-      logger.error("Error generating message:", toError(error));
+      logger.error("Error generating message:", {}, toError(error));
       toast.error("Failed to generate message");
     } finally {
       setIsGenerating(false);

@@ -295,10 +295,8 @@ export class EnhancedDocumentExtractor {
       };
     } catch (error) {
       const err = toError(error);
-      logger.error("Real-time document analysis failed", {
-        error: err,
-        fileName: file.name,
-      });
+      logger.error("Real-time document analysis failed", { error: err,
+        fileName: file.name });
 
       return {
         success: false,
@@ -655,10 +653,8 @@ export class EnhancedDocumentExtractor {
         });
       }
     } catch (error) {
-      logger.error("Error saving evidence analyses", {
-        error: toError(error),
-        claimId,
-      });
+      logger.error("Error saving evidence analyses", { error: toError(error),
+        claimId });
     }
   }
 
@@ -741,10 +737,8 @@ export class EnhancedDocumentExtractor {
 
       return extractionResult;
     } catch (error) {
-      logger.error("Unexpected error during enhanced document extraction", {
-        error,
-        fileName,
-      });
+      logger.error("Unexpected error during enhanced document extraction", { error,
+        fileName });
 
       return {
         success: false,
@@ -1049,7 +1043,7 @@ export class EnhancedDocumentExtractor {
 
       return { success: true, extractionId: extraction.id };
     } catch (error) {
-      logger.error("Failed to store extracted data", { error });
+      logger.error("Failed to store extracted data", {}, error instanceof Error ? error : new Error(String(error)));
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -1125,7 +1119,7 @@ export class EnhancedDocumentExtractor {
 
       return policy;
     } catch (error) {
-      logger.error("Failed to auto-create policy", { error });
+      logger.error("Failed to auto-create policy", {}, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }

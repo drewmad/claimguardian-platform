@@ -97,7 +97,7 @@ export class APIMiddleware {
 
       return response;
     } catch (error) {
-      logger.error("API middleware error:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("API middleware error", error instanceof Error ? error : new Error(String(error)));
 
       const errorResponse = this.createErrorResponse(
         500,
@@ -150,7 +150,7 @@ export class APIMiddleware {
         },
       };
     } catch (error) {
-      logger.error("Authentication error:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Authentication error", error instanceof Error ? error : new Error(String(error)));
       return { success: false, error: "Authentication failed" };
     }
   }
@@ -245,7 +245,7 @@ export class APIMiddleware {
 
       return data?.tier || "free";
     } catch (error) {
-      logger.error("Failed to get user tier:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to get user tier", error instanceof Error ? error : new Error(String(error)));
       return "free";
     }
   }
@@ -327,8 +327,7 @@ export class APIMiddleware {
         timestamp: new Date().toISOString(),
         request_id: requestInfo.requestId,
       },
-      { status },
-    );
+      { status });
 
     // Add CORS headers
     this.addCORSHeaders(response);
@@ -367,8 +366,7 @@ export class APIMiddleware {
         timestamp: new Date().toISOString(),
         request_id: requestInfo.requestId,
       },
-      { status: 429 },
-    );
+      { status: 429 });
 
     this.addRateLimitHeaders(response, rateLimitResult);
     this.addCORSHeaders(response);

@@ -48,13 +48,12 @@ export async function GET() {
       ),
     );
   } catch (error) {
-    logger.error("Fix session error:", error);
+    logger.error("Fix session error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

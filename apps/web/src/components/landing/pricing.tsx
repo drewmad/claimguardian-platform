@@ -296,7 +296,7 @@ export function Pricing() {
           "Payment processing is currently being updated. Please try again later.",
         );
       } catch (error) {
-        logger.error("Error starting checkout:", error);
+        logger.error("Error starting checkout:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to start checkout process");
       } finally {
         setProcessingPlan(null);

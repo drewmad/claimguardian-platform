@@ -144,8 +144,7 @@ export class SettlementPredictionEngine {
   async getSettlementTrends(
     location: { county: string; state?: string },
     damageType?: string,
-    timeRange?: { start: string; end: string },
-  ): Promise<{
+    timeRange?: { start: string; end: string }): Promise<{
     avgSettlement: number;
     medianDays: number;
     successRate: number;
@@ -227,10 +226,8 @@ export class SettlementPredictionEngine {
         trends,
       };
     } catch (error) {
-      logger.error("Failed to get settlement trends", {
-        error: toError(error),
-        location,
-      });
+      logger.error("Failed to get settlement trends", { error: toError(error),
+        location });
       return {
         avgSettlement: 0,
         medianDays: 0,
@@ -494,9 +491,7 @@ export class SettlementPredictionEngine {
 
       return JSON.parse(response);
     } catch (error) {
-      logger.error("AI prediction generation failed", {
-        error: toError(error),
-      });
+      logger.error("AI prediction generation failed", { error: toError(error) });
 
       // Fallback to basic calculation
       const median =

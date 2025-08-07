@@ -8,7 +8,7 @@
 
 import { claudeProductionMonitor } from "./claude-production-monitor";
 import { claudeABTesting } from "./claude-ab-testing";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 interface ThresholdAnalysis {
   threshold: number;

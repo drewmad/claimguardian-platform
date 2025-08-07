@@ -31,8 +31,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -45,8 +44,7 @@ export async function GET(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Build query
@@ -65,8 +63,7 @@ export async function GET(request: NextRequest) {
       console.error("Error fetching custom prompts:", promptsError);
       return NextResponse.json(
         { error: "Failed to fetch custom prompts", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     const response: Record<string, unknown> = { prompts };
@@ -139,8 +136,7 @@ export async function GET(request: NextRequest) {
     console.error("Custom Prompts GET error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -158,8 +154,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -172,16 +167,14 @@ export async function POST(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Validate input
     if (!body.feature_id || !body.name || !body.system_prompt) {
       return NextResponse.json(
         { error: "Missing required fields", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     if (body.system_prompt.length < 10) {
@@ -190,8 +183,7 @@ export async function POST(request: NextRequest) {
           error: "System prompt must be at least 10 characters",
           success: false,
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Check if prompt name already exists for this feature
@@ -208,8 +200,7 @@ export async function POST(request: NextRequest) {
           error: "A prompt with this name already exists for this feature",
           success: false,
         },
-        { status: 409 },
-      );
+        { status: 409 });
     }
 
     // Create new custom prompt
@@ -228,8 +219,7 @@ export async function POST(request: NextRequest) {
       console.error("Error creating custom prompt:", createError);
       return NextResponse.json(
         { error: "Failed to create custom prompt", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -240,7 +230,6 @@ export async function POST(request: NextRequest) {
     console.error("Custom Prompts POST error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

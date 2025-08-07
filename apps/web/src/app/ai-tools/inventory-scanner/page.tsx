@@ -46,8 +46,7 @@ import { Input } from "@/components/ui/input";
 const BarcodeScanner = NextDynamic(
   () =>
     import("@/components/ui/barcode-scanner").then((mod) => mod.BarcodeScanner),
-  { ssr: false },
-);
+  { ssr: false });
 
 import { enhancedAIClient } from "@/lib/ai/enhanced-client";
 import { AI_PROMPTS } from "@/lib/ai/config";
@@ -157,10 +156,10 @@ Analyze this image and identify all items visible. For each item, provide detail
             );
             allItems.push(...itemsWithIds);
           } catch {
-            logger.error("Parse error for image", i + 1);
+            logger.error("Parse error for image", { imageIndex: i + 1 });
           }
         } catch (error) {
-          logger.error(`Failed to analyze image ${i + 1}:`, toError(error));
+          logger.error(`Failed to analyze image ${i + 1}:`, {}, toError(error));
           // Continue with other images even if one fails
         }
       }
@@ -177,16 +176,14 @@ Analyze this image and identify all items visible. For each item, provide detail
           acc[item.category] = (acc[item.category] || 0) + 1;
           return acc;
         },
-        {} as { [key: string]: number },
-      );
+        {} as { [key: string]: number });
 
       const rooms = allItems.reduce(
         (acc, item) => {
           acc[item.room] = (acc[item.room] || 0) + 1;
           return acc;
         },
-        {} as { [key: string]: number },
-      );
+        {} as { [key: string]: number });
 
       const recommendations = [
         totalValue > 100000
@@ -229,7 +226,7 @@ Analyze this image and identify all items visible. For each item, provide detail
         `Found ${allItems.length} items worth $${totalValue.toLocaleString()}`,
       );
     } catch (error) {
-      logger.error("Scan error:", toError(error));
+      logger.error("Scan error:", {}, toError(error));
       toast.error("Failed to scan images");
       throw error;
     }
@@ -341,7 +338,7 @@ Analyze this image and identify all items visible. For each item, provide detail
         toast.success("Barcode added to item");
       }
     } catch (error) {
-      logger.error("Error looking up product:", error);
+      logger.error("Error looking up product:", {}, error instanceof Error ? error : new Error(String(error)));
       // Fallback: just add the barcode
       if (selectedItemForBarcode) {
         updateItem(selectedItemForBarcode, {

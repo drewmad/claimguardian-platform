@@ -285,7 +285,7 @@ export function SyncStatus({
       logger.track("manual_sync_completed");
     } catch (error) {
       toast.error("Sync failed. Please try again.");
-      logger.error("Manual sync failed", { error });
+      logger.error("Manual sync failed", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setIsSyncing(false);
     }

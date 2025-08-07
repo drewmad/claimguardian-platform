@@ -11,7 +11,7 @@
 
 import { completeLearningSystem } from "./claude-complete-learning-system";
 import { claudeSharedPatterns } from "./claude-shared-patterns";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 import { createHash, randomBytes } from "crypto";
 
 export interface KnowledgeExport {
@@ -348,8 +348,7 @@ class ClaudeKnowledgeTransfer {
   private calculateStatistics(
     learnings: ExportedLearning[],
     patterns: ExportedPattern[],
-    dateRange?: { from: Date; to: Date },
-  ): ExportStatistics {
+    dateRange?: { from: Date; to: Date }): ExportStatistics {
     const categories = new Map<string, number>();
 
     learnings.forEach((l) => {
@@ -483,7 +482,7 @@ class ClaudeKnowledgeTransfer {
       });
     } catch (error) {
       result.errors.push(`Import failed: ${error}`);
-      logger.error("Knowledge import failed", { error });
+      logger.error("Knowledge import failed", {}, error instanceof Error ? error : new Error(String(error)));
     }
 
     return result;
@@ -618,8 +617,8 @@ class ClaudeKnowledgeTransfer {
     const words1 = new Set(str1.toLowerCase().split(" "));
     const words2 = new Set(str2.toLowerCase().split(" "));
 
-    const intersection = new Set([...words1].filter((w) => words2.has(w)));
-    const union = new Set([...words1, ...words2]);
+    const intersection = new Set(Array.from(words1).filter((w) => words2.has(w)));
+    const union = new Set([...Array.from(words1), ...Array.from(words2)]);
 
     return intersection.size / union.size;
   }
@@ -630,12 +629,12 @@ class ClaudeKnowledgeTransfer {
   ): Promise<void> {
     // Merge logic - combine learnings and update confidence
     const mergedConfidence = (existing.confidence + imported.confidence) / 2;
-    const mergedLearnings = [
-      ...new Set([...existing.learnings, ...imported.learnings]),
-    ];
-    const mergedPatterns = [
-      ...new Set([...existing.patterns, ...imported.patterns]),
-    ];
+    const mergedLearnings = Array.from(
+      new Set([...existing.learnings, ...imported.learnings]),
+    );
+    const mergedPatterns = Array.from(
+      new Set([...existing.patterns, ...imported.patterns]),
+    );
 
     // Update existing learning
     await (completeLearningSystem as any).updateLearning(existing.id, {

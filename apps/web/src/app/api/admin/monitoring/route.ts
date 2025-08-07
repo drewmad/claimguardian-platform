@@ -76,8 +76,7 @@ export async function GET(request: NextRequest) {
         error:
           error instanceof Error ? error.message : "Unknown error occurred",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -116,8 +115,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "Invalid action specified",
           },
-          { status: 400 },
-        );
+          { status: 400 });
     }
   } catch (error) {
     return NextResponse.json(
@@ -126,7 +124,6 @@ export async function POST(request: NextRequest) {
         error:
           error instanceof Error ? error.message : "Unknown error occurred",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

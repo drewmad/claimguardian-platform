@@ -35,7 +35,7 @@ export async function getDisasterHubData() {
     .not("longitude", "is", null);
 
   if (propertiesError) {
-    logger.error("Error fetching properties:", propertiesError);
+    logger.error("Error fetching properties:", { propertiesError });
     return { error: "Failed to fetch properties" };
   }
 
@@ -57,7 +57,7 @@ export async function getDisasterHubData() {
     .order("effective_at", { ascending: false });
 
   if (alertsError) {
-    logger.error("Error fetching disaster alerts:", alertsError);
+    logger.error("Error fetching disaster alerts:", { alertsError });
     return { error: "Failed to fetch disaster alerts" };
   }
 

@@ -184,10 +184,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         .eq("user_id", userId);
 
       if (consentError) {
-        logger.error("Failed to retrieve consent records", {
-          userId,
-          error: consentError,
-        });
+        logger.error("Failed to retrieve consent records", { userId,
+          error: consentError });
         violations.push("Unable to verify consent status");
       }
 
@@ -269,8 +267,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         {
           right: "Right of Access (Article 15)",
           status: privacyRequests?.some((r) => r.request_type === "data_access")
-            ? "exercised"
-            : "available",
+            ? ("exercised" as const)
+            : ("available" as const),
           lastExercised: privacyRequests?.find(
             (r) => r.request_type === "data_access",
           )?.completed_at
@@ -286,8 +284,8 @@ export class PrivacyComplianceManager extends SupabaseService {
           status: privacyRequests?.some(
             (r) => r.request_type === "data_rectification",
           )
-            ? "exercised"
-            : "available",
+            ? ("exercised" as const)
+            : ("available" as const),
           lastExercised: privacyRequests?.find(
             (r) => r.request_type === "data_rectification",
           )?.completed_at
@@ -303,8 +301,8 @@ export class PrivacyComplianceManager extends SupabaseService {
           status: privacyRequests?.some(
             (r) => r.request_type === "data_erasure",
           )
-            ? "exercised"
-            : "available",
+            ? ("exercised" as const)
+            : ("available" as const),
           lastExercised: privacyRequests?.find(
             (r) => r.request_type === "data_erasure",
           )?.completed_at
@@ -320,8 +318,8 @@ export class PrivacyComplianceManager extends SupabaseService {
           status: privacyRequests?.some(
             (r) => r.request_type === "data_portability",
           )
-            ? "exercised"
-            : "available",
+            ? ("exercised" as const)
+            : ("available" as const),
           lastExercised: privacyRequests?.find(
             (r) => r.request_type === "data_portability",
           )?.completed_at
@@ -337,8 +335,8 @@ export class PrivacyComplianceManager extends SupabaseService {
           status: privacyRequests?.some(
             (r) => r.request_type === "object_to_processing",
           )
-            ? "exercised"
-            : "available",
+            ? ("exercised" as const)
+            : ("available" as const),
           lastExercised: privacyRequests?.find(
             (r) => r.request_type === "object_to_processing",
           )?.completed_at
@@ -349,7 +347,7 @@ export class PrivacyComplianceManager extends SupabaseService {
               )
             : undefined,
         },
-      ] as const;
+      ];
 
       // Additional compliance checks
       if (violations.length === 0) {
@@ -407,10 +405,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         .single();
 
       if (error) {
-        logger.error("Failed to retrieve user profile for CCPA check", {
-          userId,
-          error,
-        });
+        logger.error("Failed to retrieve user profile for CCPA check", { userId,
+          error });
       }
 
       const applicable =
@@ -611,10 +607,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         });
 
       if (insertError) {
-        logger.error("Failed to create privacy request record", {
-          requestId,
-          error: insertError,
-        });
+        logger.error("Failed to create privacy request record", { requestId,
+          error: insertError });
         throw insertError;
       }
 
@@ -678,10 +672,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         ); // 30 days ago
 
       if (requestError) {
-        logger.error("Failed to check for recent privacy requests", {
-          userId: request.userId,
-          error: requestError,
-        });
+        logger.error("Failed to check for recent privacy requests", { userId: request.userId,
+          error: requestError });
       }
 
       if (recentRequests && recentRequests.length > 0) {
@@ -692,7 +684,7 @@ export class PrivacyComplianceManager extends SupabaseService {
       }
 
       // Validate request type specific requirements
-      if (request.type === "data_erasure") {
+      if (request.type === "erasure") {
         // Check if there are legal obligations to retain data
         const hasLegalHold = await this.checkLegalRetentionRequirements(
           request.userId,
@@ -730,10 +722,8 @@ export class PrivacyComplianceManager extends SupabaseService {
 
       logger.info("Privacy request workflow started", { requestId });
     } catch (error) {
-      logger.error("Failed to start privacy request workflow", {
-        requestId,
-        error,
-      });
+      logger.error("Failed to start privacy request workflow", { requestId,
+        error });
       throw error;
     }
   }
@@ -754,10 +744,8 @@ export class PrivacyComplianceManager extends SupabaseService {
         .eq("legal_hold", true);
 
       if (error) {
-        logger.error("Failed to check legal retention requirements", {
-          userId,
-          error,
-        });
+        logger.error("Failed to check legal retention requirements", { userId,
+          error });
         return true; // Err on the side of caution
       }
 
@@ -848,11 +836,9 @@ export class ConsentManager extends SupabaseService {
         .eq("consent_status", "granted");
 
       if (error) {
-        logger.error("Failed to withdraw consent", {
-          userId,
+        logger.error("Failed to withdraw consent", { userId,
           consentType,
-          error,
-        });
+          error });
         throw error;
       }
 
@@ -889,11 +875,9 @@ export class ConsentManager extends SupabaseService {
       const { data: consents, error } = await query;
 
       if (error) {
-        logger.error("Failed to retrieve consent status", {
-          userId,
+        logger.error("Failed to retrieve consent status", { userId,
           consentType,
-          error,
-        });
+          error });
         throw error;
       }
 
@@ -1074,11 +1058,9 @@ export class DataDeletionService extends SupabaseService {
         errors,
       };
     } catch (error) {
-      logger.error("Data deletion execution failed", {
-        userId,
+      logger.error("Data deletion execution failed", { userId,
         options,
-        error,
-      });
+        error });
       throw error;
     }
   }

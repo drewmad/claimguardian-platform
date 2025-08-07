@@ -236,7 +236,7 @@ export class PredictionEngine {
       );
       return prediction;
     } catch (error) {
-      logger.error("Failed to generate claim prediction:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to generate claim prediction", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -316,7 +316,7 @@ export class PredictionEngine {
       );
       return estimation;
     } catch (error) {
-      logger.error("Failed to estimate damage cost:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to estimate damage cost", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -403,7 +403,7 @@ export class PredictionEngine {
       );
       return recommendation;
     } catch (error) {
-      logger.error("Failed to generate settlement recommendation:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to generate settlement recommendation", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -492,7 +492,7 @@ export class PredictionEngine {
       );
       return predictions;
     } catch (error) {
-      logger.error("Failed to predict maintenance needs:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to predict maintenance needs", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }

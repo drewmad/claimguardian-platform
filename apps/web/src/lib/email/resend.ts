@@ -126,10 +126,8 @@ export async function sendBulkEmails(
     const { data, error } = await resend.batch.send(emails);
 
     if (error) {
-      logger.error("Failed to send bulk emails", {
-        error,
-        count: recipients.length,
-      });
+      logger.error("Failed to send bulk emails", { error,
+        count: recipients.length });
       return recipients.map(() => ({ success: false, error: error.message }));
     }
 

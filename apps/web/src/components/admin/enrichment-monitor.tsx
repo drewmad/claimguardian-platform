@@ -77,7 +77,7 @@ export function EnrichmentMonitor() {
         setHealthData(healthResult.data);
       }
     } catch (error) {
-      logger.error("Error fetching enrichment data:", error);
+      logger.error("Error fetching enrichment data:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to load enrichment data");
     } finally {
       setLoading(false);

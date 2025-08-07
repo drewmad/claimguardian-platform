@@ -116,11 +116,9 @@ class PartnerRateLimiter {
         resetTime: result.resetTime,
       };
     } catch (error) {
-      logger.error("Rate limiter error", {
-        error,
+      logger.error("Rate limiter error", { error,
         partnerId: request.partnerId,
-        endpoint: request.endpoint,
-      });
+        endpoint: request.endpoint });
 
       // Fail open - allow request if rate limiter fails
       return {
@@ -420,11 +418,9 @@ class PartnerRateLimiter {
 
       return { success: true };
     } catch (error) {
-      logger.error("Error resetting rate limits", {
-        error,
+      logger.error("Error resetting rate limits", { error,
         partnerId,
-        apiKeyId,
-      });
+        apiKeyId });
       return {
         success: false,
         error: "Failed to reset rate limits",
@@ -453,11 +449,9 @@ class PartnerRateLimiter {
 
       return { success: true };
     } catch (error) {
-      logger.error("Error updating rate limits", {
-        error,
+      logger.error("Error updating rate limits", { error,
         partnerId,
-        apiKeyId,
-      });
+        apiKeyId });
       return {
         success: false,
         error: "Failed to update rate limits",

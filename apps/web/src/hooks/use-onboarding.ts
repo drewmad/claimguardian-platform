@@ -87,7 +87,7 @@ export function useOnboarding(): UseOnboardingReturn {
           }
         }
       } catch (error) {
-        logger.error("Failed to load onboarding state", { error });
+        logger.error("Failed to load onboarding state", {}, error instanceof Error ? error : new Error(String(error)));
       } finally {
         setState((prev) => ({ ...prev, isLoading: false }));
       }
@@ -117,7 +117,7 @@ export function useOnboarding(): UseOnboardingReturn {
 
       logger.track("onboarding_preferences_created", { userId: user.id });
     } catch (error) {
-      logger.error("Failed to create default preferences", { error });
+      logger.error("Failed to create default preferences", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -151,7 +151,7 @@ export function useOnboarding(): UseOnboardingReturn {
             })
             .eq("user_id", user.id);
         } catch (error) {
-          logger.error("Failed to save onboarding state", { error });
+          logger.error("Failed to save onboarding state", {}, error instanceof Error ? error : new Error(String(error)));
         }
       }
     },

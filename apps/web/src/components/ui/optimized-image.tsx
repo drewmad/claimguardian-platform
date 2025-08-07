@@ -48,7 +48,6 @@ interface AvatarImageProps
 
 // Size mappings for consistent sizing
 const PROPERTY_SIZES = {
-  xs: { width: 150, height: 120 },
   sm: { width: 200, height: 150 },
   md: { width: 320, height: 240 },
   lg: { width: 480, height: 360 },
@@ -194,11 +193,14 @@ export function PropertyImage({
   const dimensions = PROPERTY_SIZES[size];
 
   // Adjust dimensions based on aspect ratio
-  let { width, height } = dimensions;
+  let width: number = dimensions.width;
+  let height: number = dimensions.height;
   if (aspectRatio === "square") {
     height = width;
   } else if (aspectRatio === "portrait") {
-    [width, height] = [height, width];
+    const temp = width;
+    width = height;
+    height = temp;
   }
 
   // Generate responsive sizes

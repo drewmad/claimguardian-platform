@@ -86,7 +86,7 @@ export function usePolicyData(propertyId?: string): UsePolicyDataReturn {
 
       setPolicies(data || []);
     } catch (err) {
-      logger.error("Error fetching policies:", err);
+      logger.error("Error fetching policies:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : "Failed to fetch policies");
     } finally {
       setLoading(false);

@@ -9,7 +9,7 @@
 import { processClaimGuardianErrorLogs } from "./log-processor";
 import { productionErrorMonitor } from "./production-error-monitor";
 import { claudeErrorLogger } from "./claude-error-logger";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface MonitoringConfig {
   healthCheckInterval: number; // minutes

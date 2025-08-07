@@ -38,8 +38,7 @@ export async function POST(request: NextRequest) {
               success: false,
               error: "Email and password are required",
             },
-            { status: 400 },
-          );
+            { status: 400 });
         }
 
         // Check honeypot
@@ -58,8 +57,7 @@ export async function POST(request: NextRequest) {
               success: false,
               error: "Invalid credentials",
             },
-            { status: 401 },
-          );
+            { status: 401 });
         }
 
         // Additional bot check
@@ -78,8 +76,7 @@ export async function POST(request: NextRequest) {
               success: false,
               error: "Access denied",
             },
-            { status: 403 },
-          );
+            { status: 403 });
         }
 
         // Proceed with login
@@ -105,8 +102,7 @@ export async function POST(request: NextRequest) {
                 error: "Please verify your email before logging in",
                 errorCode: "AUTH_EMAIL_NOT_VERIFIED",
               },
-              { status: 401 },
-            );
+              { status: 401 });
           }
 
           if (error.message.includes("Invalid login credentials")) {
@@ -116,8 +112,7 @@ export async function POST(request: NextRequest) {
                 error: "Invalid email or password",
                 errorCode: "AUTH_INVALID_CREDENTIALS",
               },
-              { status: 401 },
-            );
+              { status: 401 });
           }
 
           return NextResponse.json(
@@ -126,8 +121,7 @@ export async function POST(request: NextRequest) {
               error: error.message,
               errorCode: error.code || "AUTH_ERROR",
             },
-            { status: 401 },
-          );
+            { status: 401 });
         }
 
         // Log successful login
@@ -166,8 +160,7 @@ export async function POST(request: NextRequest) {
             success: false,
             error: "An unexpected error occurred",
           },
-          { status: 500 },
-        );
+          { status: 500 });
       }
     },
   );

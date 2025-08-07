@@ -102,7 +102,7 @@ export class APIKeyManager {
         plainTextKey,
       };
     } catch (error) {
-      logger.error("Failed to generate API key:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to generate API key", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -159,7 +159,7 @@ export class APIKeyManager {
         permissions: data.permissions,
       };
     } catch (error) {
-      logger.error("Failed to validate API key:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to validate API key", error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -195,7 +195,7 @@ export class APIKeyManager {
         reset_time: new Date(data.reset_time),
       };
     } catch (error) {
-      logger.error("Failed to check rate limit:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to check rate limit", error instanceof Error ? error : new Error(String(error)));
       // Default to allowing request if rate limit check fails
       return {
         allowed: true,
@@ -244,7 +244,7 @@ export class APIKeyManager {
         p_metadata: metadata || {},
       });
     } catch (error) {
-      logger.error("Failed to log API usage:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to log API usage", error instanceof Error ? error : new Error(String(error)));
       // Don't throw error for logging failures
     }
   }
@@ -303,7 +303,7 @@ export class APIKeyManager {
 
       return stats;
     } catch (error) {
-      logger.error("Failed to get usage stats:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to get usage stats", error instanceof Error ? error : new Error(String(error)));
       return {
         total_requests: 0,
         successful_requests: 0,
@@ -334,7 +334,7 @@ export class APIKeyManager {
 
       return data || [];
     } catch (error) {
-      logger.error("Failed to list API keys:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to list API keys", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -358,7 +358,7 @@ export class APIKeyManager {
 
       logger.info(`API key revoked: ${keyId} for user ${userId}`);
     } catch (error) {
-      logger.error("Failed to revoke API key:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to revoke API key", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -388,7 +388,7 @@ export class APIKeyManager {
 
       logger.info(`API key permissions updated: ${keyId} for user ${userId}`);
     } catch (error) {
-      logger.error("Failed to update API key permissions:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to update API key permissions", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }

@@ -82,8 +82,7 @@ export class TrackedAIClient {
    * Generate image analysis with automatic cost tracking
    */
   async analyzeImage(
-    request: TrackedAIRequest & { images: string[] },
-  ): Promise<TrackedAIResponse> {
+    request: TrackedAIRequest & { images: string[] }): Promise<TrackedAIResponse> {
     const startTime = Date.now();
 
     try {
@@ -207,8 +206,7 @@ export class TrackedAIClient {
   }
 
   private async analyzeOpenAIImage(
-    request: TrackedAIRequest & { images: string[] },
-  ): Promise<TrackedAIResponse> {
+    request: TrackedAIRequest & { images: string[] }): Promise<TrackedAIResponse> {
     const messages = [
       {
         role: "user" as const,
@@ -250,8 +248,7 @@ export class TrackedAIClient {
   }
 
   private async analyzeGeminiImage(
-    request: TrackedAIRequest & { images: string[] },
-  ): Promise<TrackedAIResponse> {
+    request: TrackedAIRequest & { images: string[] }): Promise<TrackedAIResponse> {
     const model = genai.getGenerativeModel({ model: request.model });
 
     // Convert base64 images to Gemini format

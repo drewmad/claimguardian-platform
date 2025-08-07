@@ -77,7 +77,7 @@ export function SignInForm({ message }: SignInFormProps) {
         setIsLoading(false);
       }
     } catch (error) {
-      logger.error("[SIGNIN FORM] Unexpected error:", error);
+      logger.error("[SIGNIN FORM] Unexpected error:", {}, error instanceof Error ? error : new Error(String(error)));
       setFormError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }

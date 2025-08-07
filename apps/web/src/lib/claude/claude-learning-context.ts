@@ -9,12 +9,13 @@
  * @status stable
  */
 
+import * as React from "react";
 import {
   claudeErrorLogger,
   ClaudeErrorContext,
   ClaudeLearning,
 } from "./claude-error-logger";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface TaskContext {
   taskType: ClaudeErrorContext["taskType"];
@@ -565,5 +566,3 @@ export function withLearningContext<
   }) as T;
 }
 
-// Import React for hooks
-import React from "react";

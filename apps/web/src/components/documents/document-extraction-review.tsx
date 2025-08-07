@@ -87,7 +87,7 @@ export function DocumentExtractionReview({
         setEditedData(data.extracted_data as ExtractedPolicyData);
       }
     } catch (error) {
-      logger.error("Error checking extraction:", error);
+      logger.error("Error checking extraction:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   }, [documentId]);
 

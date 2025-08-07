@@ -94,7 +94,7 @@ export function withCacheMiddleware(
           // Cache the response data
           await cacheManager.set(cacheKey, responseData, {
             ttl,
-            tags: cacheConfig?.tags,
+            tags: cacheConfig?.tags ? [...cacheConfig.tags] : undefined,
             compress: true,
           });
 

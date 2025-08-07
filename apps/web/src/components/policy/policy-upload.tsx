@@ -205,7 +205,7 @@ export function PolicyUpload({
         // Poll for extraction completion
         pollExtractionStatus(document.id);
       } catch (error) {
-        logger.error("Upload error:", error);
+        logger.error("Upload error:", {}, error instanceof Error ? error : new Error(String(error)));
         setUploadStatus({
           stage: "error",
           progress: 0,

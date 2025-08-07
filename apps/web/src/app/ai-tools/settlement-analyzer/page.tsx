@@ -160,7 +160,7 @@ Consider Florida insurance law, typical settlements for similar claims, and the 
 
       toast.success("Settlement analysis complete!");
     } catch (error) {
-      logger.error("Settlement analysis error:", toError(error));
+      logger.error("Settlement analysis error:", {}, toError(error));
       toast.error("Failed to analyze settlement");
     } finally {
       setIsAnalyzing(false);

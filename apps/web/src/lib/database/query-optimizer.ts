@@ -129,6 +129,9 @@ export class QueryOptimizer {
   private cache: Map<string, CacheEntry> = new Map();
   private queryMetrics: QueryMetrics[] = [];
   private indexRecommendations: IndexRecommendation[] = [];
+  private queryCache: Map<string, { result: unknown; timestamp: number }> = new Map();
+  private queryStats: Map<string, QueryStats[]> = new Map();
+  private cacheTTL: number = 5 * 60 * 1000; // 5 minutes default
 
   constructor(supabase: SupabaseClient) {
     this.supabase = supabase;
@@ -246,12 +249,10 @@ export class QueryOptimizer {
     } catch (error) {
       const executionTime = performance.now() - startTime;
 
-      logger.error("Query execution failed", {
-        queryId,
+      logger.error("Query execution failed", { queryId,
         executionTime,
         query: query.substring(0, 100),
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+        error: error instanceof Error ? error.message : "Unknown error" });
 
       const metrics: QueryMetrics = {
         queryId,
@@ -324,10 +325,8 @@ export class QueryOptimizer {
         suggestions,
       };
     } catch (error) {
-      logger.error("Query analysis failed", {
-        query: query.substring(0, 100),
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+      logger.error("Query analysis failed", { query: query.substring(0, 100),
+        error: error instanceof Error ? error.message : "Unknown error" });
 
       // Return default plan on error
       return {
@@ -447,9 +446,7 @@ export class QueryOptimizer {
         recommendations,
       };
     } catch (error) {
-      logger.error("Failed to get database stats", {
-        error: error instanceof Error ? error.message : "Unknown error",
-      });
+      logger.error("Failed to get database stats", { error: error instanceof Error ? error.message : "Unknown error" });
 
       return {
         queryStats: {
@@ -851,10 +848,17 @@ class FloridaParcelQueryOptimizer {
 
     return {
       query,
-      parameters,
-      indexes: [...new Set(indexes)], // Remove duplicates
-      estimatedCost,
-      estimatedRows,
+      planTime: 0,
+      executionTime: 0,
+      totalCost: estimatedCost,
+      startupCost: 0,
+      rows: estimatedRows,
+      width: 0,
+      actualTime: 0,
+      actualRows: 0,
+      actualLoops: 0,
+      operations: [],
+      suggestions: []
     };
   }
 
@@ -952,229 +956,6 @@ class FloridaParcelQueryOptimizer {
       throw error;
     }
   }
-
-  /**
-   * Get optimization recommendations based on query patterns
-   */
-  async getOptimizationRecommendations(): Promise<OptimizationStrategy[]> {
-    const recommendations: OptimizationStrategy[] = [];
-
-    // Analyze query statistics
-    const stats = this.analyzeQueryPatterns();
-
-    // Index recommendations
-    if (stats.slowQueries.some((q) => q.includes("own_name"))) {
-      recommendations.push({
-        type: "index",
-        description:
-          "Create trigram index on owner name for faster text search",
-        impact: "high",
-        implementation: `
-          CREATE EXTENSION IF NOT EXISTS pg_trgm;
-          CREATE INDEX idx_florida_parcels_own_name_trgm
-          ON florida_parcels USING gin(own_name gin_trgm_ops);
-        `,
-      });
-    }
-
-    // Partitioning recommendations
-    if (stats.totalRows > 10000000) {
-      recommendations.push({
-        type: "partition",
-        description: "Partition table by county for better query performance",
-        impact: "high",
-        implementation: `
-          -- Create partitioned table
-          CREATE TABLE florida_parcels_partitioned (
-            LIKE florida_parcels INCLUDING ALL
-          ) PARTITION BY LIST (county_name);
-
-          -- Create partitions for each county
-          CREATE TABLE florida_parcels_miami_dade
-          PARTITION OF florida_parcels_partitioned
-          FOR VALUES IN ('MIAMI-DADE');
-        `,
-      });
-    }
-
-    // Materialized view recommendations
-    if (stats.frequentAggregations) {
-      recommendations.push({
-        type: "materialized_view",
-        description: "Create materialized view for county statistics",
-        impact: "medium",
-        implementation: `
-          CREATE MATERIALIZED VIEW mv_county_statistics AS
-          SELECT
-            county_name,
-            COUNT(*) as parcel_count,
-            AVG(just_value) as avg_value,
-            SUM(just_value) as total_value,
-            COUNT(DISTINCT own_name) as unique_owners
-          FROM florida_parcels
-          GROUP BY county_name;
-
-          CREATE INDEX idx_mv_county_stats_county
-          ON mv_county_statistics(county_name);
-        `,
-      });
-    }
-
-    // Query rewrite recommendations
-    if (stats.inefficientPatterns.length > 0) {
-      recommendations.push({
-        type: "query_rewrite",
-        description: "Optimize common query patterns",
-        impact: "medium",
-        implementation: this.generateQueryRewriteExamples(
-          stats.inefficientPatterns,
-        ),
-      });
-    }
-
-    return recommendations;
-  }
-
-  /**
-   * Analyze query patterns for optimization opportunities
-   */
-  private analyzeQueryPatterns(): {
-    slowQueries: string[];
-    frequentQueries: string[];
-    inefficientPatterns: string[];
-    totalRows: number;
-    frequentAggregations: boolean;
-  } {
-    const allStats = Array.from(this.queryStats.values()).flat();
-
-    // Find slow queries (> 1 second)
-    const slowQueries = allStats
-      .filter((s) => s.executionTime > 1000)
-      .map(() => "slow_query"); // Would map to actual queries in production
-
-    // Find frequently used patterns
-
-    return {
-      slowQueries,
-      frequentQueries: [],
-      inefficientPatterns: [],
-      totalRows: 20000000, // Example count
-      frequentAggregations: true,
-    };
-  }
-
-  /**
-   * Generate query rewrite examples
-   */
-  private generateQueryRewriteExamples(patterns: string[]): string {
-    const examples: string[] = [];
-
-    examples.push(`
-      -- Instead of multiple OR conditions:
-      SELECT * FROM florida_parcels
-      WHERE county_name = 'MIAMI-DADE'
-         OR county_name = 'BROWARD'
-         OR county_name = 'PALM BEACH';
-
-      -- Use IN or ANY:
-      SELECT * FROM florida_parcels
-      WHERE county_name = ANY(ARRAY['MIAMI-DADE', 'BROWARD', 'PALM BEACH']);
-    `);
-
-    examples.push(`
-      -- Instead of LIKE with leading wildcard:
-      SELECT * FROM florida_parcels WHERE own_name LIKE '%SMITH%';
-
-      -- Use trigram index with ILIKE:
-      SELECT * FROM florida_parcels WHERE own_name ILIKE '%SMITH%';
-    `);
-
-    return examples.join("\n\n");
-  }
-
-  /**
-   * Cache management
-   */
-  private generateCacheKey(operation: string, params: unknown): string {
-    return `${operation}:${JSON.stringify(params)}`;
-  }
-
-  private getFromCache(key: string): unknown | null {
-    const cached = this.queryCache.get(key);
-    if (cached && Date.now() - cached.timestamp < this.cacheTTL) {
-      return cached.result;
-    }
-    this.queryCache.delete(key);
-    return null;
-  }
-
-  private setCache(key: string, result: unknown): void {
-    this.queryCache.set(key, {
-      result,
-      timestamp: Date.now(),
-    });
-
-    // Limit cache size
-    if (this.queryCache.size > 1000) {
-      const firstKey = this.queryCache.keys().next().value;
-      if (firstKey) {
-        this.queryCache.delete(firstKey);
-      }
-    }
-  }
-
-  /**
-   * Track query statistics
-   */
-  private trackQueryStats(operation: string, stats: QueryStats): void {
-    const existing = this.queryStats.get(operation) || [];
-    existing.push(stats);
-
-    // Keep last 100 queries per operation
-    if (existing.length > 100) {
-      existing.shift();
-    }
-
-    this.queryStats.set(operation, existing);
-  }
-
-  /**
-   * Get query performance report
-   */
-  getPerformanceReport(): {
-    operations: Array<{
-      name: string;
-      avgExecutionTime: number;
-      totalQueries: number;
-      cacheHitRate: number;
-      avgRowsReturned: number;
-    }>;
-    recommendations: OptimizationStrategy[];
-  } {
-    const operations = Array.from(this.queryStats.entries()).map(
-      ([name, stats]) => {
-        const totalQueries = stats.length;
-        const avgExecutionTime =
-          stats.reduce((sum, s) => sum + s.executionTime, 0) / totalQueries;
-        const cacheHits = stats.filter((s) => s.cacheHit).length;
-        const avgRowsReturned =
-          stats.reduce((sum, s) => sum + s.rowsReturned, 0) / totalQueries;
-
-        return {
-          name,
-          avgExecutionTime,
-          totalQueries,
-          cacheHitRate: (cacheHits / totalQueries) * 100,
-          avgRowsReturned,
-        };
-      },
-    );
-
-    return {
-      operations,
-      recommendations: [],
-    };
-  }
 }
 
 // Export singleton instance
@@ -1183,7 +964,6 @@ export const parcelQueryOptimizer = new FloridaParcelQueryOptimizer();
 export type {
   ParcelQueryOptions,
   GeoQueryOptions,
-  QueryPlan,
   QueryStats,
   OptimizationStrategy,
 };

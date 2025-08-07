@@ -37,9 +37,7 @@ export async function GET(request: NextRequest) {
       const { error } = await supabase.auth.exchangeCodeForSession(code);
 
       if (error) {
-        logger.error("Failed to exchange code for session", {
-          error: error.message,
-        });
+        logger.error("Failed to exchange code for session", { error: error.message });
         return NextResponse.redirect(
           new URL(
             `/auth/signin?error=${encodeURIComponent(error.message)}`,

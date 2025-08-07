@@ -8,6 +8,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { tenantManager } from "@/lib/multi-tenant/tenant-manager";
+import { logger } from "@/lib/logger";
 
 interface TenantContext {
   organizationId: string;
@@ -81,31 +82,7 @@ export async function extractTenantContext(
     subscriptionStatus: organization.subscriptionStatus,
     allowedStates: organization.allowedStates,
     featureFlags: organization.featureFlags,
-    customizations: customizations
-      ? {
-          id: customizations.id,
-          organizationId: customizations.organizationId,
-          theme: customizations.theme,
-          logoUrl: customizations.logoUrl,
-          faviconUrl: customizations.faviconUrl,
-          customCss: customizations.customCss,
-          enabledFeatures: customizations.enabledFeatures,
-          disabledFeatures: customizations.disabledFeatures,
-          featureLimits: customizations.featureLimits,
-          claimWorkflow: customizations.claimWorkflow,
-          approvalWorkflows: customizations.approvalWorkflows,
-          notificationPreferences: customizations.notificationPreferences,
-          webhookUrls: customizations.webhookUrls,
-          apiKeys: customizations.apiKeys,
-          externalIntegrations: customizations.externalIntegrations,
-          securityPolicies: customizations.securityPolicies,
-          dataExportSettings: customizations.dataExportSettings,
-          auditSettings: customizations.auditSettings,
-          createdAt: customizations.createdAt,
-          updatedAt: customizations.updatedAt,
-          createdBy: customizations.createdBy,
-        }
-      : undefined,
+    customizations
   };
 }
 
@@ -120,7 +97,11 @@ export async function checkTenantAccess(
     const userOrg = await tenantManager.getUserOrganization(userId);
     return userOrg?.id === tenantContext.organizationId;
   } catch (error) {
-    console.error("Failed to check tenant access:", error);
+    logger.error(
+      "Failed to check tenant access",
+      { module: "tenant-middleware", userId, organizationId: tenantContext.organizationId },
+      error instanceof Error ? error : new Error(String(error))
+    );
     return false;
   }
 }
@@ -149,17 +130,26 @@ export function applyCustomizations(
 
   // Add customizations for client-side theming
   if (tenantContext.customizations) {
-    const theme = (tenantContext.customizations as any)?.theme || {};
+    const customizations = tenantContext.customizations;
+    
+    // Safely access theme property
+    const theme = typeof customizations === 'object' && customizations !== null 
+      ? (customizations as Record<string, unknown>)?.theme || {} 
+      : {};
     response.headers.set("X-Tenant-Theme", JSON.stringify(theme));
 
-    const logoUrl = (tenantContext.customizations as any)?.logoUrl;
-    if (logoUrl && typeof logoUrl === "string") {
-      response.headers.set("X-Tenant-Logo", logoUrl);
-    }
+    // Safely access logoUrl property
+    if (typeof customizations === 'object' && customizations !== null) {
+      const logoUrl = (customizations as Record<string, unknown>)?.logoUrl;
+      if (logoUrl && typeof logoUrl === "string") {
+        response.headers.set("X-Tenant-Logo", logoUrl);
+      }
 
-    const customCss = (tenantContext.customizations as any)?.customCss;
-    if (customCss && typeof customCss === "string") {
-      response.headers.set("X-Tenant-CSS", customCss);
+      // Safely access customCss property
+      const customCss = (customizations as Record<string, unknown>)?.customCss;
+      if (customCss && typeof customCss === "string") {
+        response.headers.set("X-Tenant-CSS", customCss);
+      }
     }
   }
 
@@ -401,16 +391,20 @@ function generateTenantCSPInternal(tenantContext: TenantContext): string {
 
   // Add tenant-specific domains
   const tenantDomains = [tenantContext.domain];
-  if (tenantContext.customizations) {
-    const webhookUrls = (tenantContext.customizations as any)?.webhookUrls;
-    if (webhookUrls && typeof webhookUrls === "object") {
-      Object.values(webhookUrls).forEach((url: unknown) => {
+  if (tenantContext.customizations && typeof tenantContext.customizations === 'object' && tenantContext.customizations !== null) {
+    const webhookUrls = (tenantContext.customizations as Record<string, unknown>)?.webhookUrls;
+    if (webhookUrls && typeof webhookUrls === "object" && webhookUrls !== null) {
+      Object.values(webhookUrls as Record<string, unknown>).forEach((url: unknown) => {
         if (typeof url === "string") {
           try {
             const domain = new URL(url).hostname;
             tenantDomains.push(domain);
           } catch (error) {
             // Invalid URL, skip
+            logger.warn("Invalid webhook URL in tenant customizations", {
+              module: "tenant-middleware",
+              url
+            });
           }
         }
       });

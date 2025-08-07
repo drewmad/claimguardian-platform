@@ -11,7 +11,7 @@
 
 import { claudeErrorLogger } from "./claude-error-logger";
 import { claudeLearningContext } from "./claude-learning-context";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface ReflectionContext {
   // Task details

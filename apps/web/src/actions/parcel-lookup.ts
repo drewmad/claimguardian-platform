@@ -206,7 +206,7 @@ export async function searchParcels(params: ParcelSearchParams) {
     const { data, error } = await query;
 
     if (error) {
-      logger.error("[PARCEL SEARCH] Database error:", error);
+      logger.error("[PARCEL SEARCH] Database error", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
 
@@ -219,7 +219,7 @@ export async function searchParcels(params: ParcelSearchParams) {
 
     return { data: transformedData, error: null };
   } catch (error) {
-    logger.error("[PARCEL SEARCH] Error:", toError(error));
+    logger.error("[PARCEL SEARCH] Error", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -246,7 +246,7 @@ export async function getParcelDetails(parcelId: string) {
 
     return { data: transformedData, error: null };
   } catch (error) {
-    logger.error("[PARCEL DETAILS] Error:", toError(error));
+    logger.error("[PARCEL DETAILS] Error", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -266,7 +266,7 @@ export async function getCountyStats(countyFips: string) {
 
     return { data, error: null };
   } catch (error) {
-    logger.error("[COUNTY STATS] Error:", toError(error));
+    logger.error("[COUNTY STATS] Error", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -313,7 +313,7 @@ export async function assessPropertyRisk(parcelId: string) {
       error: null,
     };
   } catch (error) {
-    logger.error("[RISK ASSESSMENT] Error:", toError(error));
+    logger.error("[RISK ASSESSMENT] Error", toError(error));
     return { data: null, error: error as Error };
   }
 }

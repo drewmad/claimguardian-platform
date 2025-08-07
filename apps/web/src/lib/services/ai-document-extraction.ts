@@ -131,11 +131,10 @@ class AIDocumentExtractionService {
 
       return extractionResult;
     } catch (error) {
-      logger.error("Unexpected error during document extraction", {
+      logger.error("Unexpected error during document extraction", { 
         error,
         fileName,
-        fileUrl: fileUrl.substring(0, 50) + "...",
-      });
+        fileUrl: fileUrl.substring(0, 50) + "..." });
 
       return {
         success: false,

@@ -8,7 +8,10 @@
  * @insurance-context claims
  * @supabase-integration edge-functions
  */
-import type { Database, ClaimStatus } from "@claimguardian/db";
+import type { Database } from "@claimguardian/db";
+
+// Define ClaimStatus type from database enum
+type ClaimStatus = Database["public"]["Enums"]["claim_status"];
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 

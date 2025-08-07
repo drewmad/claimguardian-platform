@@ -79,7 +79,7 @@ export function useCreatePolicy() {
     },
     onError: (error) => {
       toast.error("An unexpected error occurred");
-      logger.error("Policy creation error:", error);
+      logger.error("Policy creation error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -112,7 +112,7 @@ export function useUpdatePolicy() {
     },
     onError: (error) => {
       toast.error("An unexpected error occurred");
-      logger.error("Policy update error:", error);
+      logger.error("Policy update error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

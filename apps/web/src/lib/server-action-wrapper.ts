@@ -64,11 +64,9 @@ export function withAuth<TParams, TResult>(
       return { data: result, error: null };
     } catch (error) {
       // Log error with context
-      logger.error("Server action failed", {
-        action: action.name,
+      logger.error("Server action failed", { action: action.name,
         params,
-        error: serializeError(error),
-      });
+        error: serializeError(error) });
 
       // Return user-friendly error message
       if (isBaseError(error)) {
@@ -109,11 +107,9 @@ export function withoutAuth<TParams, TResult>(
       return { data: result, error: null };
     } catch (error) {
       // Log error with context
-      logger.error("Server action failed", {
-        action: action.name,
+      logger.error("Server action failed", { action: action.name,
         params,
-        error: serializeError(error),
-      });
+        error: serializeError(error) });
 
       // Return user-friendly error message
       if (isBaseError(error)) {

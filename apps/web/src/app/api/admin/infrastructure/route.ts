@@ -82,8 +82,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // TODO: Add proper admin role check
@@ -160,12 +159,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     return NextResponse.json(metrics);
   } catch (error) {
-    logger.error("Failed to collect infrastructure metrics", error);
+    logger.error("Failed to collect infrastructure metrics", {}, error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json(
       { error: "Failed to collect infrastructure metrics" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -403,8 +401,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Authentication required" },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     const body = await request.json();
@@ -427,11 +424,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         return NextResponse.json({ error: "Invalid action" }, { status: 400 });
     }
   } catch (error) {
-    logger.error("Infrastructure API error", error);
+    logger.error("Infrastructure API error", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -455,7 +451,7 @@ async function getHistoricalMetrics(timeRange: string): Promise<any[]> {
 
     return metrics.filter((_, index) => index % step === 0);
   } catch (error) {
-    logger.error("Failed to get historical metrics", error);
+    logger.error("Failed to get historical metrics", {}, error instanceof Error ? error : new Error(String(error)));
     return [];
   }
 }
@@ -485,7 +481,7 @@ async function getPerformanceBreakdown(): Promise<Record<string, unknown>> {
       timestamp: new Date().toISOString(),
     };
   } catch (error) {
-    logger.error("Failed to get performance breakdown", error);
+    logger.error("Failed to get performance breakdown", {}, error instanceof Error ? error : new Error(String(error)));
     return { endpoints: [], errors: [], timestamp: new Date().toISOString() };
   }
 }

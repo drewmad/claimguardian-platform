@@ -31,7 +31,6 @@ export async function POST(request: NextRequest) {
         allowed: false,
         reason: "Unable to verify request limits",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

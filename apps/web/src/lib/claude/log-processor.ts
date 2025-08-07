@@ -11,7 +11,7 @@ import {
   productionErrorMonitor,
 } from "./production-error-monitor";
 import { claudeErrorLogger } from "./claude-error-logger";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 interface RawLogEntry {
   event_message: string;

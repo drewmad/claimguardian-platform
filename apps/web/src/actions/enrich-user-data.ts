@@ -135,11 +135,10 @@ export async function enrichUserData(data: EnrichmentData) {
     return {
       success: true,
       results: results.map((r) =>
-        r.status === "fulfilled" ? r.value : { success: false },
-      ),
+        r.status === "fulfilled" ? r.value : { success: false }),
     };
   } catch (error) {
-    logger.error("User data enrichment failed", error as Error);
+    logger.error("User data enrichment failed", error instanceof Error ? error : new Error(String(error)));
     return { success: false, error };
   }
 }

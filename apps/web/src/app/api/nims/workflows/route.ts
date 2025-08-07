@@ -53,8 +53,7 @@ export async function GET(request: NextRequest) {
       console.error("Failed to fetch workflows:", error);
       return NextResponse.json(
         { error: "Failed to fetch workflows" },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -65,8 +64,7 @@ export async function GET(request: NextRequest) {
     console.error("NIMS workflows API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -78,8 +76,7 @@ export async function POST(request: NextRequest) {
     if (!body.incident_id || !body.incident_type) {
       return NextResponse.json(
         { error: "Missing required fields: incident_id, incident_type" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const workflow = await disasterWorkflowManager.createWorkflow(
@@ -93,13 +90,11 @@ export async function POST(request: NextRequest) {
         workflow,
         message: "Disaster workflow created successfully",
       },
-      { status: 201 },
-    );
+      { status: 201 });
   } catch (error) {
     console.error("Failed to create workflow:", error);
     return NextResponse.json(
       { error: "Failed to create workflow" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

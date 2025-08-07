@@ -64,7 +64,7 @@ export async function GET(request: Request) {
         error: healthError?.message || null,
       };
     } catch (clientError) {
-      logger.error("Client creation error:", clientError);
+      logger.error("Client creation error:", { clientError });
       sessionCheck = {
         hasSession: false,
         error:
@@ -100,14 +100,13 @@ export async function GET(request: Request) {
       },
     });
   } catch (error) {
-    logger.error("Debug endpoint error:", error);
+    logger.error("Debug endpoint error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         status: "error",
         message: error instanceof Error ? error.message : "Unknown error",
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

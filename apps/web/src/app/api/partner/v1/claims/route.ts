@@ -108,11 +108,9 @@ export const GET = withPartnerAuth(
       const { data: claims, error: claimsError } = await query;
 
       if (claimsError) {
-        logger.error("Error fetching partner claims", {
-          error: claimsError,
+        logger.error("Error fetching partner claims", { error: claimsError,
           partnerId: context.partner.id,
-          requestId: context.requestId,
-        });
+          requestId: context.requestId });
 
         return {
           success: false,
@@ -165,11 +163,9 @@ export const GET = withPartnerAuth(
         },
       };
     } catch (error) {
-      logger.error("Claims API GET error", {
-        error,
+      logger.error("Claims API GET error", { error,
         partnerId: context.partner.id,
-        requestId: context.requestId,
-      });
+        requestId: context.requestId });
 
       return {
         success: false,
@@ -359,12 +355,10 @@ export const POST = withPartnerAuth(
         .single();
 
       if (createError) {
-        logger.error("Error creating partner claim", {
-          error: createError,
+        logger.error("Error creating partner claim", { error: createError,
           partnerId: context.partner.id,
           externalId: body.externalId,
-          requestId: context.requestId,
-        });
+          requestId: context.requestId });
 
         return {
           success: false,
@@ -439,11 +433,9 @@ export const POST = withPartnerAuth(
         },
       };
     } catch (error) {
-      logger.error("Claims API POST error", {
-        error,
+      logger.error("Claims API POST error", { error,
         partnerId: context.partner.id,
-        requestId: context.requestId,
-      });
+        requestId: context.requestId });
 
       return {
         success: false,
@@ -549,11 +541,9 @@ async function triggerAIProcessing(
     // In production, this would trigger AI processing pipeline
     logger.info("AI processing triggered", { claimId, partnerId });
   } catch (error) {
-    logger.error("Failed to trigger AI processing", {
-      error,
+    logger.error("Failed to trigger AI processing", { error,
       claimId,
-      partnerId,
-    });
+      partnerId });
   }
 }
 
@@ -566,11 +556,9 @@ async function sendWebhookNotification(
     // In production, this would send webhook notifications
     logger.info("Webhook notification queued", { partnerId, event, data });
   } catch (error) {
-    logger.error("Failed to send webhook notification", {
-      error,
+    logger.error("Failed to send webhook notification", { error,
       partnerId,
-      event,
-    });
+      event });
   }
 }
 

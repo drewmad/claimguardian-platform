@@ -145,10 +145,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(modelStats);
   } catch (error) {
-    logger.error("Failed to fetch AI model performance data:", error);
+    logger.error("Failed to fetch AI model performance data:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to fetch performance data" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

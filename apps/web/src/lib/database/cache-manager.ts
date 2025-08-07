@@ -162,7 +162,7 @@ export class CacheManager {
         strategy: this.config.strategy,
       });
     } catch (error) {
-      logger.error("Failed to initialize cache manager", {}, error as Error);
+      logger.error("Failed to initialize cache manager", { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -219,7 +219,7 @@ export class CacheManager {
       this.recordLatency("get", performance.now() - startTime);
       return null;
     } catch (error) {
-      logger.error("Cache get operation failed", { key }, error as Error);
+      logger.error("Cache get operation failed", { key, error: error instanceof Error ? error.message : String(error) });
       return null;
     }
   }
@@ -288,7 +288,7 @@ export class CacheManager {
 
       this.recordLatency("set", performance.now() - startTime);
     } catch (error) {
-      logger.error("Cache set operation failed", { key }, error as Error);
+      logger.error("Cache set operation failed", { key, error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -328,7 +328,7 @@ export class CacheManager {
       this.recordLatency("delete", performance.now() - startTime);
       return deleted;
     } catch (error) {
-      logger.error("Cache delete operation failed", { key }, error as Error);
+      logger.error("Cache delete operation failed", { key, error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }
@@ -357,7 +357,7 @@ export class CacheManager {
       }
       return false;
     } catch (error) {
-      logger.error("Cache exists check failed", { key }, error as Error);
+      logger.error("Cache exists check failed", { key, error: error instanceof Error ? error.message : String(error) });
       return false;
     }
   }
@@ -389,7 +389,7 @@ export class CacheManager {
       await Promise.all(promises);
       logger.info("Cache cleared", { levels });
     } catch (error) {
-      logger.error("Cache clear operation failed", {}, error as Error);
+      logger.error("Cache clear operation failed", { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -489,7 +489,7 @@ export class CacheManager {
         optimizations,
       };
     } catch (error) {
-      logger.error("Cache optimization failed", {}, error as Error);
+      logger.error("Cache optimization failed", { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -524,7 +524,7 @@ export class CacheManager {
       this.isInitialized = false;
       logger.info("Cache manager shutdown complete");
     } catch (error) {
-      logger.error("Cache manager shutdown failed", {}, error as Error);
+      logger.error("Cache manager shutdown failed", { error: error instanceof Error ? error.message : String(error) });
       throw error;
     }
   }
@@ -602,8 +602,7 @@ export class CacheManager {
         } catch (error) {
           logger.warn(
             "Failed to promote cache entry to higher level",
-            { key, level: higherLevel },
-            error as Error,
+            { key, level: higherLevel, error: error instanceof Error ? error.message : String(error) }
           );
         }
       }
@@ -627,7 +626,7 @@ export class CacheManager {
           }
         }
       } catch (error) {
-        logger.error("Background write failed", { key }, error as Error);
+        logger.error("Background write failed", { key, error: error instanceof Error ? error.message : String(error) });
       }
     }, 100); // Small delay to batch writes
   }
@@ -687,8 +686,7 @@ export class CacheManager {
       } catch (error) {
         logger.warn(
           "Cleanup failed for cache level",
-          { level },
-          error as Error,
+          { level, error: error instanceof Error ? error.message : String(error) }
         );
       }
     }
@@ -729,7 +727,7 @@ export class CacheManager {
         this.metrics.operations.evictions++;
       }
     } catch (error) {
-      logger.error("Failed to evict least used entries", {}, error as Error);
+      logger.error("Failed to evict least used entries", { error: error instanceof Error ? error.message : String(error) });
     }
   }
 
@@ -861,7 +859,7 @@ class BrowserCacheLayer implements CacheLayer {
         }
       }
     } catch (error) {
-      logger.warn("Browser cache get failed", { key }, error as Error);
+      logger.warn("Browser cache get failed", { key, error: error instanceof Error ? error.message : String(error) });
     }
     return null;
   }
@@ -892,7 +890,7 @@ class BrowserCacheLayer implements CacheLayer {
       };
       localStorage.setItem(`cache:${key}`, JSON.stringify(entry));
     } catch (error) {
-      logger.warn("Browser cache set failed", { key }, error as Error);
+      logger.warn("Browser cache set failed", { key, error: error instanceof Error ? error.message : String(error) });
     }
   }
 

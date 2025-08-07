@@ -90,12 +90,10 @@ export const useErrorStore = create<ErrorStore>((set, get) => ({
     }
 
     // Log error
-    logger.error("Global error added", {
-      errorId: id,
+    logger.error("Global error added", { errorId: id,
       level: error.level,
       message: error.message,
-      context: error.context,
-    });
+      context: error.context });
 
     return id;
   },

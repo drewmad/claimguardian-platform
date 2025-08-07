@@ -15,7 +15,7 @@ import {
   completeLearningSystem,
   withCompleteLearning,
 } from "./claude-complete-learning-system";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 /**
  * INTEGRATION EXAMPLE 1: Smart Task Execution with Full Learning System
@@ -58,8 +58,7 @@ async function executeTaskWithFullLearning<T>(
   // PHASE 1: Pre-task Analytics
   const prediction = await claudeAdvancedAnalytics.predictTaskSuccess(
     taskContext.complexity,
-    { ...taskContext, taskType: taskType as any },
-  );
+    { ...taskContext, taskType: taskType as any });
 
   logger.info("Task prediction generated", {
     successProbability: prediction.successProbability,

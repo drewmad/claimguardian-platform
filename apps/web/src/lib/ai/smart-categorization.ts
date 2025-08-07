@@ -276,7 +276,7 @@ export class SmartCategorizationEngine {
       );
       return classification;
     } catch (error) {
-      logger.error("Failed to classify document:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to classify document", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -362,7 +362,7 @@ export class SmartCategorizationEngine {
       );
       return analysis;
     } catch (error) {
-      logger.error("Failed to analyze damage from image:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to analyze damage from image", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -447,7 +447,7 @@ export class SmartCategorizationEngine {
       );
       return classification;
     } catch (error) {
-      logger.error("Failed to classify inventory item:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to classify inventory item", error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -481,7 +481,7 @@ export class SmartCategorizationEngine {
         .slice(0, 10)
         .map((t) => t.tag);
     } catch (error) {
-      logger.error("Failed to auto-tag documentation:", {}, error instanceof Error ? error : new Error(String(error)));
+      logger.error("Failed to auto-tag documentation", error instanceof Error ? error : new Error(String(error)));
       return existingTags;
     }
   }

@@ -89,7 +89,7 @@ export default function FLOIRSearch() {
 
       setResults(data);
     } catch (err: unknown) {
-      logger.error("Search error:", err);
+      logger.error("Search error:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : "Search failed");
     } finally {
       setLoading(false);

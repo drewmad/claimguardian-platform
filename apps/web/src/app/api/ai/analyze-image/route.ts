@@ -117,8 +117,7 @@ export const POST = withBudgetCheck(
 
             return NextResponse.json(
               { error: result.error.message },
-              { status },
-            );
+              { status });
           }
 
           return NextResponse.json(result.data);

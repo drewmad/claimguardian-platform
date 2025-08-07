@@ -424,7 +424,7 @@ export default function AIToolsPage() {
         setHasOpenAIKey(keysStatus.hasOpenAIKey);
         setHasGeminiKey(keysStatus.hasGeminiKey);
       } catch (error) {
-        logger.error("Failed to check API keys:", toError(error));
+        logger.error("Failed to check API keys:", {}, toError(error));
       } finally {
         setKeysLoaded(true);
       }

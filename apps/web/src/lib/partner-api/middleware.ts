@@ -276,15 +276,15 @@ export function withPartnerAuth<T = any>(
       const errorMessage =
         error instanceof Error ? error.message : "Internal server error";
 
-      logger.error("Partner API error", {
+      logger.error("Partner API error", { 
+        startTime,
         error,
         requestId,
         endpoint: request.nextUrl.pathname,
         method: request.method,
         ip,
         userAgent,
-        responseTime: Date.now() - startTime,
-      });
+        responseTime: Date.now() - startTime });
 
       if (options.logging?.logErrors !== false) {
         await logApiRequest({
@@ -313,8 +313,7 @@ export function withPartnerAuth<T = any>(
 
 async function validateBasicRequest(
   request: NextRequest,
-  metadata: { ip: string; userAgent: string; requestSize: number },
-): Promise<{
+  metadata: { ip: string; userAgent: string; requestSize: number }): Promise<{
   valid: boolean;
   error?: string;
   errorCode?: PartnerApiErrorCode;

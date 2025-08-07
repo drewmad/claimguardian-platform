@@ -42,8 +42,7 @@ const ARRoomScanner = dynamic(
     import("@/components/ar/ar-room-scanner").then((mod) => ({
       default: mod.ARRoomScanner,
     })),
-  { ssr: false },
-);
+  { ssr: false });
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { DashboardLayout } from "@/components/dashboard/dashboard-layout";

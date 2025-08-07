@@ -37,8 +37,7 @@ export async function GET() {
     // Test 4: Check if auth schema exists
     const { data: authSchema, error: schemaError } = await supabase.rpc(
       "to_regclass",
-      { rel_name: "auth.users" },
-    );
+      { rel_name: "auth.users" });
 
     return NextResponse.json({
       status: "success",
@@ -74,7 +73,6 @@ export async function GET() {
         stack: error instanceof Error ? error.stack : null,
         timestamp: new Date().toISOString(),
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

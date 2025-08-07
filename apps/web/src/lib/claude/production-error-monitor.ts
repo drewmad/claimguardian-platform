@@ -7,7 +7,7 @@
  */
 
 import { claudeErrorLogger, claudeErrorHelpers } from "./claude-error-logger";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 import { createClient } from "@supabase/supabase-js";
 
 export interface ProductionErrorPattern {
@@ -118,7 +118,7 @@ class ProductionErrorMonitor {
       userId,
       operation,
       errorDetails,
-      errorId,
+      errorId
     });
   }
 
@@ -161,7 +161,7 @@ class ProductionErrorMonitor {
       operation,
       userId,
       errorDetails,
-      errorId,
+      errorId
     });
   }
 

@@ -103,7 +103,7 @@ export async function getComplianceDashboardData(): Promise<{
       .limit(20);
 
     if (consentsError) {
-      logger.error("Error fetching consent records", { error: consentsError });
+      logger.error("Error fetching consent records", {}, consentsError instanceof Error ? consentsError : new Error(String(consentsError)));
       throw consentsError;
     }
 
@@ -194,7 +194,7 @@ export async function exportConsentRecords(): Promise<{
       .order("consent_timestamp", { ascending: false });
 
     if (error) {
-      logger.error("Error exporting consent records", { error });
+      logger.error("Error exporting consent records", {}, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
 

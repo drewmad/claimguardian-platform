@@ -301,9 +301,7 @@ Provide strategy in JSON format:
 
       return JSON.parse(response);
     } catch (error) {
-      logger.error("Negotiation strategy generation failed", {
-        error: toError(error),
-      });
+      logger.error("Negotiation strategy generation failed", { error: toError(error) });
 
       // Fallback strategy
       const gap = claimDetails.estimatedDamage - claimDetails.currentOffer;
@@ -611,9 +609,7 @@ Generate comprehensive response in JSON format:
         ],
       };
     } catch (error) {
-      logger.error("Failed to get communication insights", {
-        error: toError(error),
-      });
+      logger.error("Failed to get communication insights", { error: toError(error) });
       return {
         totalCommunications: 0,
         responseRates: {},

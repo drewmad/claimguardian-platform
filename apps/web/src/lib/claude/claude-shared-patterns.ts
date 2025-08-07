@@ -8,7 +8,7 @@
 
 import { completeLearningSystem } from "./claude-complete-learning-system";
 import { claudeErrorLogger } from "./claude-error-logger";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface SharedPattern {
   id: string;
@@ -526,10 +526,9 @@ const testUser2 = new UserBuilder()
       this.addPattern(pattern);
       return pattern;
     } catch (error) {
-      logger.error("Failed to derive pattern from learnings", {
-        error,
-        learningIds,
-      });
+      logger.error("Failed to derive pattern from learnings", { 
+        learningIds 
+      }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }

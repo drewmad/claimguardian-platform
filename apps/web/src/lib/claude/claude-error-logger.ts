@@ -10,7 +10,7 @@
  */
 
 import { createClient, SupabaseClient } from "@supabase/supabase-js";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 import type { Database } from "@claimguardian/db";
 
 export interface ClaudeErrorContext {

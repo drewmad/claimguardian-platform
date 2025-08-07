@@ -68,7 +68,7 @@ export function SimpleSignInForm({ message }: SimpleSignInFormProps) {
         router.refresh();
       }
     } catch (error) {
-      logger.error("Sign in error:", error);
+      logger.error("Sign in error:", {}, error instanceof Error ? error : new Error(String(error)));
       setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }

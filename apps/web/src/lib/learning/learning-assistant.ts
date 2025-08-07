@@ -94,7 +94,7 @@ export class LearningAssistant {
       );
 
       if (error) {
-        logger.error("Failed to detect patterns", { error });
+        logger.error("Failed to detect patterns", {}, error instanceof Error ? error : new Error(String(error)));
         return [];
       }
 
@@ -145,7 +145,7 @@ export class LearningAssistant {
       });
 
       if (error) {
-        logger.error("Failed to log learning", { error });
+        logger.error("Failed to log learning", {}, error instanceof Error ? error : new Error(String(error)));
         return { success: false };
       }
 
@@ -172,7 +172,7 @@ export class LearningAssistant {
         .gte("created_at", startDate.toISOString());
 
       if (error) {
-        logger.error("Failed to get stats", { error });
+        logger.error("Failed to get stats", {}, error instanceof Error ? error : new Error(String(error)));
         return null;
       }
 

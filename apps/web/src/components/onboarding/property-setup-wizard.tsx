@@ -352,7 +352,7 @@ export function PropertySetupWizard({
       // Navigate to property page
       router.push(`/dashboard/property/${property.id}`);
     } catch (error) {
-      logger.error("Failed to create property", { error });
+      logger.error("Failed to create property", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to save property. Please try again.");
     } finally {
       setIsSubmitting(false);

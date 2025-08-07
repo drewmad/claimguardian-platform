@@ -13,7 +13,7 @@ import {
   claudeSelfReflection,
   ReflectionContext,
 } from "./claude-self-reflection";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface ReflectionTrigger {
   name: string;

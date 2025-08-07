@@ -56,9 +56,7 @@ class FileUploadService {
         error: userError,
       } = await this.supabase.auth.getUser();
       if (userError || !user) {
-        logger.error("User not authenticated for file upload", {
-          error: userError,
-        });
+        logger.error("User not authenticated for file upload", { error: userError });
         return { success: false, error: "User not authenticated" };
       }
 
@@ -104,7 +102,7 @@ class FileUploadService {
         path: filePath,
       };
     } catch (error) {
-      logger.error("Unexpected error during file upload", { error });
+      logger.error("Unexpected error during file upload", {}, error instanceof Error ? error : new Error(String(error)));
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
@@ -149,7 +147,7 @@ class FileUploadService {
 
       return data.signedUrl;
     } catch (error) {
-      logger.error("Unexpected error creating signed URL", { error });
+      logger.error("Unexpected error creating signed URL", {}, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -171,7 +169,7 @@ class FileUploadService {
       logger.info("File deleted successfully", { filePath });
       return true;
     } catch (error) {
-      logger.error("Unexpected error deleting file", { error });
+      logger.error("Unexpected error deleting file", {}, error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -197,7 +195,7 @@ class FileUploadService {
 
       return data || [];
     } catch (error) {
-      logger.error("Unexpected error listing files", { error });
+      logger.error("Unexpected error listing files", {}, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -248,10 +246,8 @@ class FileUploadService {
 
       return data;
     } catch (error) {
-      logger.error("Unexpected error getting file metadata", {
-        error,
-        filePath,
-      });
+      logger.error("Unexpected error getting file metadata", { error,
+        filePath });
       return null;
     }
   }

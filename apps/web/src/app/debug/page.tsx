@@ -128,7 +128,7 @@ export default function DebugIndexPage() {
       await navigator.clipboard.writeText(text);
       // Could add a toast notification here
     } catch (err) {
-      logger.error("Failed to copy:", err);
+      logger.error("Failed to copy:", {}, err instanceof Error ? err : new Error(String(err)));
     }
   };
 
@@ -349,7 +349,7 @@ export default function DebugIndexPage() {
 
       setDebugInfo(info);
     } catch (error) {
-      logger.error("Failed to collect debug info:", error);
+      logger.error("Failed to collect debug info:", {}, error instanceof Error ? error : new Error(String(error)));
     }
     setLoading(false);
   }, [supabase, collectGoogleMapsStatus]);

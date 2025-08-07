@@ -117,7 +117,9 @@ export class DatabaseConnectionPool {
             schema: "public",
           },
           realtime: {
-            enabled: false,
+            params: {
+              eventsPerSecond: 0,
+            },
           },
         },
       );

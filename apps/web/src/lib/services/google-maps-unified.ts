@@ -264,8 +264,7 @@ export class GoogleMapsUnifiedService {
 
   async getWeatherForClaims(
     location: PropertyLocation,
-    dateRange?: { start: Date; end: Date },
-  ): Promise<UnifiedResponse<any>> {
+    dateRange?: { start: Date; end: Date }): Promise<UnifiedResponse<any>> {
     const endpoint = dateRange
       ? `${this.config.baseUrls.weather}/onecall/timemachine`
       : `${this.config.baseUrls.weather}/onecall`;
@@ -467,8 +466,7 @@ export class GoogleMapsUnifiedService {
     try {
       logger.info(
         "[GoogleMapsUnified] Starting complete property intelligence gathering",
-        { location },
-      );
+        { location });
 
       // Execute all APIs in parallel where possible
       const [
@@ -538,10 +536,7 @@ export class GoogleMapsUnifiedService {
         timestamp: new Date().toISOString(),
       };
     } catch (error) {
-      logger.error(
-        "[GoogleMapsUnified] Complete property intelligence failed",
-        { error, location },
-      );
+      logger.error("[GoogleMapsUnified] Complete property intelligence failed", { error, location });
       return {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",

@@ -66,7 +66,7 @@ export async function getStates() {
 
     return { data: data as State[], error: null };
   } catch (error) {
-    logger.error("Error fetching states:", toError(error));
+    logger.error("Error fetching states", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -98,7 +98,7 @@ export async function getCounties(stateCode?: string) {
       error: null,
     };
   } catch (error) {
-    logger.error("Error fetching counties:", toError(error));
+    logger.error("Error fetching counties", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -138,7 +138,7 @@ export async function getCities(countyId?: number, stateCode?: string) {
       error: null,
     };
   } catch (error) {
-    logger.error("Error fetching cities:", toError(error));
+    logger.error("Error fetching cities", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -188,7 +188,7 @@ export async function getZipCodes(
       error: null,
     };
   } catch (error) {
-    logger.error("Error fetching ZIP codes:", toError(error));
+    logger.error("Error fetching ZIP codes", toError(error));
     return { data: null, error: error as Error };
   }
 }
@@ -309,7 +309,7 @@ export async function validateAddress({
       error: null,
     };
   } catch (error) {
-    logger.error("Error validating address:", toError(error));
+    logger.error("Error validating address", toError(error));
     return { data: null, error: error as Error };
   }
 }

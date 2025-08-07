@@ -190,7 +190,7 @@ export function ClaimTimeline({
       });
 
       if (error) {
-        logger.error("Error saving timeline event:", error);
+        logger.error("Error saving timeline event:", {}, error instanceof Error ? error : new Error(String(error)));
         // Continue anyway for demo
       }
 
@@ -213,7 +213,7 @@ export function ClaimTimeline({
 
       toast.success("Timeline event added");
     } catch (error) {
-      logger.error("Error adding timeline event:", error);
+      logger.error("Error adding timeline event:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to add timeline event");
     }
   };

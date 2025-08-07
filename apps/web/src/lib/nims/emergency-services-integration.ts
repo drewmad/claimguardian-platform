@@ -503,11 +503,16 @@ export class EmergencyServicesIntegration {
 
         try {
           // Perform health check
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 5000);
+          
           const response = await fetch(`${integration.api_endpoint}/health`, {
             method: "GET",
-            timeout: 5000,
+            signal: controller.signal,
             headers: this.getAuthHeaders(integration),
           });
+          
+          clearTimeout(timeoutId);
 
           responseTime = Date.now() - startTime;
 
@@ -577,11 +582,16 @@ export class EmergencyServicesIntegration {
     integration: ServiceIntegration,
   ): Promise<{ success: boolean; error?: string }> {
     try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+      
       const response = await fetch(`${integration.api_endpoint}/health`, {
         method: "GET",
+        signal: controller.signal,
         headers: this.getAuthHeaders(integration),
-        timeout: 10000,
       });
+      
+      clearTimeout(timeoutId);
 
       return {
         success: response.ok,

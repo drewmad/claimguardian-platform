@@ -279,7 +279,7 @@ export function ClaimCreationWizard({
 
       toast.success("Draft saved");
     } catch (error) {
-      logger.error("Error saving draft:", error);
+      logger.error("Error saving draft:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to save draft");
     } finally {
       setSaving(false);
@@ -328,7 +328,7 @@ export function ClaimCreationWizard({
             .upload(fileName, photo);
 
           if (uploadError) {
-            logger.error("Photo upload error:", uploadError);
+            logger.error("Photo upload error:", { uploadError });
           }
         }
       }
@@ -341,7 +341,7 @@ export function ClaimCreationWizard({
         router.push(`/dashboard/claims/${claim.id}`);
       }
     } catch (error) {
-      logger.error("Error submitting claim:", error);
+      logger.error("Error submitting claim:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to submit claim");
     } finally {
       setLoading(false);

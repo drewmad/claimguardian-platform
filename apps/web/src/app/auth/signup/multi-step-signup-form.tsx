@@ -330,7 +330,7 @@ export function MultiStepSignupForm() {
         );
       }
     } catch (err) {
-      logger.error("❌ Signup error:", err);
+      logger.error("❌ Signup error:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(
         err instanceof Error ? err.message : "An error occurred during signup",
       );

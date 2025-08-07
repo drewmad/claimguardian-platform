@@ -39,7 +39,7 @@ export async function GET() {
       },
     });
   } catch (error) {
-    logger.error("Session check error:", error);
+    logger.error("Session check error:", {}, error instanceof Error ? error : new Error(String(error)));
 
     return NextResponse.json(
       {
@@ -48,7 +48,6 @@ export async function GET() {
         session: null,
         error: "Failed to check session",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

@@ -58,8 +58,7 @@ export async function POST(req: NextRequest) {
     if (!latitude || !longitude) {
       return NextResponse.json(
         { error: "Location coordinates required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const response: any = {
@@ -76,8 +75,7 @@ export async function POST(req: NextRequest) {
       // Current conditions
       const { data: currentWeather } = await supabase.rpc(
         "get_current_conditions",
-        { lat: latitude, lon: longitude },
-      );
+        { lat: latitude, lon: longitude });
 
       // 48-hour forecast
       const { data: forecast } = await supabase
@@ -238,8 +236,7 @@ export async function POST(req: NextRequest) {
     console.error("Emergency data API error:", error);
     return NextResponse.json(
       { error: "Failed to fetch emergency data", details: error.message },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

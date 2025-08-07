@@ -73,7 +73,7 @@ export function useUploadDocument() {
     },
     onError: (error: Error) => {
       toast.error("Failed to upload document");
-      logger.error("Document upload error:", error);
+      logger.error("Document upload error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -94,7 +94,7 @@ export function useCreateDocumentRecord() {
     },
     onError: (error: Error) => {
       toast.error("Failed to create document record");
-      logger.error("Document record creation error:", error);
+      logger.error("Document record creation error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }
@@ -119,7 +119,7 @@ export function useDeleteDocument() {
     },
     onError: (error: Error) => {
       toast.error("Failed to delete document");
-      logger.error("Document deletion error:", error);
+      logger.error("Document deletion error:", {}, error instanceof Error ? error : new Error(String(error)));
     },
   });
 }

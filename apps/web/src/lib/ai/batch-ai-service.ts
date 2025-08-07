@@ -8,6 +8,7 @@
 
 import { aiBatchProcessor } from "./batch-processor";
 import { enhancedAIClient } from "./enhanced-client";
+import { logger } from "@/lib/logger/production-logger";
 interface ChatMessage {
   role: "user" | "assistant" | "system";
   content: string;
@@ -62,9 +63,10 @@ class BatchAIService {
           responseTime: Date.now() - startTime,
         };
       } catch (error) {
-        console.error(
-          "Direct chat processing failed, falling back to batch:",
-          error,
+        logger.error(
+          "Direct chat processing failed, falling back to batch",
+          error instanceof Error ? error : new Error(String(error)),
+          "BatchAIService"
         );
       }
     }
@@ -160,7 +162,11 @@ class BatchAIService {
           responseTime: Date.now() - startTime,
         };
       } catch (error) {
-        console.error("Smart processing fallback to batch:", error);
+        logger.error(
+          "Smart processing fallback to batch",
+          error instanceof Error ? error : new Error(String(error)),
+          "BatchAIService"
+        );
       }
     }
 
@@ -273,7 +279,11 @@ class BatchAIService {
               responseTime: Date.now() - startTime,
             };
           } catch (error) {
-            console.error("Load balanced processing failed:", error);
+            logger.error(
+              "Load balanced processing failed",
+              error instanceof Error ? error : new Error(String(error)),
+              "BatchAIService"
+            );
             // Fallback to batch processing
             return await this.processChat(request);
           }
@@ -315,7 +325,11 @@ class BatchAIService {
         responseTime: Date.now() - startTime,
       };
     } catch (error) {
-      console.error("Emergency processing failed:", error);
+      logger.error(
+        "Emergency processing failed",
+        error instanceof Error ? error : new Error(String(error)),
+        "BatchAIService"
+      );
       throw error;
     }
   }

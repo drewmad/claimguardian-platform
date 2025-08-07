@@ -40,8 +40,7 @@ export async function GET(request: NextRequest) {
     if (!type || !LEGAL_DOCS[type as keyof typeof LEGAL_DOCS]) {
       return NextResponse.json(
         { error: "Invalid document type" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const docConfig = LEGAL_DOCS[type as keyof typeof LEGAL_DOCS];
@@ -65,7 +64,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ data: document });
   } catch (error) {
-    logger.error("Failed to load legal document:", error);
+    logger.error("Failed to load legal document:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json({ error: "Document not found" }, { status: 404 });
   }
 }

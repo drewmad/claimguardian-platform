@@ -122,7 +122,7 @@ export function FloridaAddressForm({
           setCounties(data);
         }
       } catch (error) {
-        logger.error("Error loading counties:", error);
+        logger.error("Error loading counties:", {}, error instanceof Error ? error : new Error(String(error)));
       }
     };
 
@@ -241,7 +241,7 @@ export function FloridaAddressForm({
             setValidationMessage(`ZIP code ${zipCode} not found in Florida`);
           }
         } catch (error) {
-          logger.error("Error validating ZIP:", error);
+          logger.error("Error validating ZIP:", {}, error instanceof Error ? error : new Error(String(error)));
           setValidationMessage("");
         }
       } else {

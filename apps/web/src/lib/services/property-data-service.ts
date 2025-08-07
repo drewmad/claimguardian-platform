@@ -82,7 +82,7 @@ class PropertyDataService {
 
       return mockData;
     } catch (error) {
-      logger.error("Error fetching property data", { error });
+      logger.error("Error fetching property data", {}, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -110,7 +110,7 @@ class PropertyDataService {
       const data = await response.json();
       return data.result;
     } catch (error) {
-      logger.error("Error fetching Google Place details", { error });
+      logger.error("Error fetching Google Place details", {}, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }

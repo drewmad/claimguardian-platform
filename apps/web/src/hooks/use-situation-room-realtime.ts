@@ -120,7 +120,7 @@ export function useSituationRoomRealtime(): SituationRoomRealtimeHook {
 
   const handleError = useCallback(
     (error: Error) => {
-      logger.error("Situation Room realtime error:", error);
+      logger.error("Situation Room realtime error:", {}, error instanceof Error ? error : new Error(String(error)));
       setError(error.message);
       configRef.current?.onError?.(error);
     },

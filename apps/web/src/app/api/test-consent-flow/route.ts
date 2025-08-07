@@ -67,8 +67,7 @@ export async function GET() {
           error: recordError.message,
           details: recordError,
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     const consentResult = recordResult?.[0];
@@ -81,8 +80,7 @@ export async function GET() {
           error: consentResult?.error_message || "Failed to record consent",
           result: consentResult,
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     logger.info("Consent recorded successfully:", consentResult.consent_token);
@@ -105,8 +103,7 @@ export async function GET() {
           details: validateError,
           consent_token: consentResult.consent_token,
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     const validationResult = validateResult?.[0];
@@ -123,8 +120,7 @@ export async function GET() {
           result: validationResult,
           consent_token: consentResult.consent_token,
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     logger.info("Consent validated successfully");
@@ -189,15 +185,14 @@ export async function GET() {
       test_email: testEmail,
     });
   } catch (error) {
-    logger.error("Test consent flow error:", error);
+    logger.error("Test consent flow error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       {
         success: false,
         error: error instanceof Error ? error.message : "Unknown error",
         details: error,
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

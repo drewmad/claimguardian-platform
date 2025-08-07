@@ -27,8 +27,7 @@ export async function PATCH(
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -41,8 +40,7 @@ export async function PATCH(
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Validate system prompt length if provided
@@ -52,8 +50,7 @@ export async function PATCH(
           error: "System prompt must be at least 10 characters",
           success: false,
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // If activating a prompt, deactivate others for the same feature
@@ -97,15 +94,13 @@ export async function PATCH(
       console.error("Error updating custom prompt:", updateError);
       return NextResponse.json(
         { error: "Failed to update custom prompt", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     if (!updatedPrompt) {
       return NextResponse.json(
         { error: "Custom prompt not found", success: false },
-        { status: 404 },
-      );
+        { status: 404 });
     }
 
     return NextResponse.json({
@@ -116,8 +111,7 @@ export async function PATCH(
     console.error("Custom Prompt PATCH error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -138,8 +132,7 @@ export async function DELETE(
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -152,8 +145,7 @@ export async function DELETE(
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Delete custom prompt (cascade will delete performance data)
@@ -166,8 +158,7 @@ export async function DELETE(
       console.error("Error deleting custom prompt:", deleteError);
       return NextResponse.json(
         { error: "Failed to delete custom prompt", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -178,7 +169,6 @@ export async function DELETE(
     console.error("Custom Prompt DELETE error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

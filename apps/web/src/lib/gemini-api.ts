@@ -85,14 +85,14 @@ const callGeminiAPI = async (
       const responseText = result.candidates[0].content.parts[0].text;
       return jsonSchema ? JSON.parse(responseText) : responseText;
     } else {
-      logger.error("Unexpected API response structure:", result);
+      logger.error("Unexpected API response structure:", { result });
       if (result.promptFeedback && result.promptFeedback.blockReason) {
         return `My apologies, but I cannot fulfill that request. Reason: ${result.promptFeedback.blockReason}`;
       }
       return "Sorry, I couldn't get a response. Please try again.";
     }
   } catch (error) {
-    logger.error("Error calling Gemini API:", toError(error));
+    logger.error("Error calling Gemini API:", {}, toError(error));
     Sentry.captureException(error); // Capture exception with Sentry
     return jsonSchema
       ? {}

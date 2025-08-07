@@ -42,36 +42,7 @@ const logger = {
   error: (message: string, error?: unknown) => console.error(message, error),
 };
 
-// Add Google Maps types
-declare global {
-  interface Window {
-    google: {
-      maps: {
-        places: {
-          Autocomplete: new (
-            input: HTMLInputElement,
-            options?: {
-              types?: string[];
-              componentRestrictions?: { country: string };
-            },
-          ) => {
-            addListener: (event: string, callback: () => void) => void;
-            getPlace: () => {
-              formatted_address?: string;
-              address_components?: Array<{
-                types: string[];
-                long_name: string;
-              }>;
-            };
-          };
-        };
-        event: {
-          clearInstanceListeners: (instance: unknown) => void;
-        };
-      };
-    };
-  }
-}
+// Google Maps types are declared in src/types/globals.d.ts
 
 // --- Constants & Configuration ---
 const COLORS = {
@@ -373,7 +344,7 @@ const useGooglePlaces = (
       setScriptState({ loaded: false, error: null });
       return;
     }
-    if (window.google && window.google.maps) {
+    if (window.google?.maps) {
       setScriptState({ loaded: true, error: null });
       return;
     }
@@ -395,10 +366,7 @@ const useGooglePlaces = (
     };
   }, [GOOGLE_MAPS_API_KEY]);
 
-  const parseAddress = (place: {
-    formatted_address?: string;
-    address_components?: Array<{ types: string[]; long_name: string }>;
-  }) => {
+  const parseAddress = (place: ReturnType<InstanceType<typeof google.maps.places.Autocomplete>['getPlace']>) => {
     const components: Record<string, string> = {};
     if (place.address_components) {
       place.address_components.forEach((c) => {
@@ -419,8 +387,8 @@ const useGooglePlaces = (
 
   const initAutocomplete = useCallback(
     (inputElement: HTMLInputElement) => {
-      if (!scriptState.loaded || !inputElement || !window.google) return;
-      const autocomplete = new window.google.maps.places.Autocomplete(
+      if (!scriptState.loaded || !inputElement || !window.google?.maps) return;
+      const autocomplete = new google.maps.places.Autocomplete(
         inputElement,
         { types: ["address"], componentRestrictions: { country: "us" } },
       );
@@ -543,7 +511,7 @@ export function PropertyWizard({
       dispatch({ type: "RESET" });
       onClose();
     } catch (error) {
-      logger.error("Error creating property:", error);
+      logger.error("Error creating property:", error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to create property");
     } finally {
       dispatch({ type: "SET_LOADING", payload: false });

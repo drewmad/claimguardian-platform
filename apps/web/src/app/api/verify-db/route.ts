@@ -73,7 +73,6 @@ export async function GET() {
         error: error instanceof Error ? error.message : "Unknown error",
         results,
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

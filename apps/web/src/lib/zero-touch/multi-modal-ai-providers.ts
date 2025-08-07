@@ -9,29 +9,131 @@
  * @florida-specific true
  */
 
-import OpenAI from "openai";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import Anthropic from "@anthropic-ai/sdk";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
+
+import { logger } from "../logger";
+
+// Type definitions for better type safety
+export type DocumentType = 
+  | "invoice" 
+  | "receipt" 
+  | "policy" 
+  | "contract" 
+  | "report" 
+  | "legal" 
+  | "medical" 
+  | "general";
+
+export interface FloridaContext {
+  hurricane?: boolean;
+  flood?: boolean;
+  windMitigation?: string[];
+  floodZone?: string;
+  femaDeclaration?: string;
+  buildingCode?: string;
+  sinkholeRisk?: boolean;
+}
+
+export interface ExtractedEntity {
+  type: string;
+  value: string;
+  confidence: number;
+}
+
+export interface ExtractedAmount {
+  value: number;
+  type: string;
+  currency?: string;
+  confidence: number;
+}
+
+export interface DamageAssessment {
+  severity: "minor" | "moderate" | "severe" | "catastrophic";
+  types: string[];
+  estimatedCost: number;
+  confidence: number;
+}
+
+export interface DetectedAnomaly {
+  type: string;
+  description: string;
+  confidence: number;
+  severity: "low" | "medium" | "high";
+}
+
+export interface DocumentAnalysisResult {
+  documentType?: DocumentType;
+  category?: string;
+  dates?: string[];
+  amounts?: ExtractedAmount[];
+  entities?: Record<string, ExtractedEntity>;
+  damageAssessment?: DamageAssessment;
+  anomalies?: DetectedAnomaly[];
+  suggestedName?: string;
+  associations?: Array<{
+    type: string;
+    id: string;
+    confidence: number;
+  }>;
+  floridaSpecific?: FloridaContext;
+  confidence?: number;
+  rawText?: string;
+  metadata?: Record<string, unknown>;
+  providerInsights?: Array<{
+    provider: string;
+    uniqueFindings: Array<{
+      field: string;
+      value: unknown;
+    }>;
+  }>;
+}
+
+export interface ProviderAnalysis {
+  provider: string;
+  result: DocumentAnalysisResult;
+  processingTime?: number;
+  error?: string;
+}
+
+export interface AnalysisInput {
+  fileData: Blob;
+  documentType?: DocumentType;
+  floridaContext?: FloridaContext;
+}
+
+export interface AnalysisConsensus {
+  consensus: DocumentAnalysisResult;
+  providers: ProviderAnalysis[];
+  confidence: number;
+  processingTime: number;
+}
 
 export interface AIProvider {
   name: string;
-  analyze: (data: any) => Promise<any>;
+  analyze: (data: AnalysisInput) => Promise<DocumentAnalysisResult>;
   confidence: number;
-  specialties: string[];
+  specialties: Array<DocumentType | string>;
+}
+
+export interface AIConfig {
+  openaiKey?: string;
+  geminiKey?: string;
+  anthropicKey?: string;
+  xaiKey?: string;
 }
 
 export class MultiModalAIOrchestrator {
   private providers: Map<string, AIProvider> = new Map();
+  private readonly module = "multi-modal-ai";
 
-  constructor(
-    private config: {
-      openaiKey?: string;
-      geminiKey?: string;
-      anthropicKey?: string;
-      xaiKey?: string;
-    },
-  ) {
+  constructor(private config: AIConfig) {
     this.initializeProviders();
+    logger.info("MultiModalAIOrchestrator initialized", {
+      module: this.module,
+      providersCount: this.providers.size,
+    });
   }
 
   private initializeProviders() {
@@ -88,53 +190,156 @@ export class MultiModalAIOrchestrator {
 
   async analyzeDocument(
     fileData: Blob,
-    documentType?: string,
-    floridaContext?: any,
-  ): Promise<{
-    consensus: any;
-    providers: any[];
-    confidence: number;
-  }> {
-    // Select optimal providers based on document type
-    const selectedProviders = this.selectProviders(
+    documentType?: DocumentType,
+    floridaContext?: FloridaContext,
+  ): Promise<AnalysisConsensus> {
+    const startTime = Date.now();
+    
+    logger.info("Starting document analysis", {
+      module: this.module,
       documentType,
-      floridaContext,
-    );
+      fileSize: fileData.size,
+      fileType: fileData.type,
+    });
+    try {
+      // Select optimal providers based on document type
+      const selectedProviders = this.selectProviders(
+        documentType,
+        floridaContext,
+      );
 
-    // Run parallel analysis with all selected providers
-    const analyses = await Promise.allSettled(
-      selectedProviders.map(async (provider) => ({
-        provider: provider.name,
-        result: await provider.analyze({
-          fileData,
-          documentType,
-          floridaContext,
+      logger.debug("Selected providers for analysis", {
+        module: this.module,
+        providers: selectedProviders.map(p => p.name),
+        count: selectedProviders.length,
+      });
+
+      // Run parallel analysis with all selected providers
+      const analyses = await Promise.allSettled(
+        selectedProviders.map(async (provider): Promise<ProviderAnalysis> => {
+          const providerStartTime = Date.now();
+          try {
+            const result = await provider.analyze({
+              fileData,
+              documentType,
+              floridaContext,
+            });
+            
+            const processingTime = Date.now() - providerStartTime;
+            
+            logger.debug("Provider analysis completed", {
+              module: this.module,
+              provider: provider.name,
+              processingTime,
+              success: true,
+            });
+            
+            return {
+              provider: provider.name,
+              result,
+              processingTime,
+            };
+          } catch (error) {
+            const processingTime = Date.now() - providerStartTime;
+            const errorMessage = error instanceof Error ? error.message : "Unknown error";
+            
+            logger.error("Provider analysis failed", {
+              module: this.module,
+              provider: provider.name,
+              processingTime,
+              error: errorMessage,
+            }, error instanceof Error ? error : new Error(errorMessage));
+            
+            return {
+              provider: provider.name,
+              result: {} as DocumentAnalysisResult,
+              processingTime,
+              error: errorMessage,
+            };
+          }
         }),
-      })),
-    );
+      );
 
-    // Process results
-    const successfulAnalyses = analyses
-      .filter((r) => r.status === "fulfilled")
-      .map((r) => (r as any).value);
+      // Process results
+      const successfulAnalyses: ProviderAnalysis[] = analyses
+        .filter((r): r is PromiseFulfilledResult<ProviderAnalysis> => r.status === "fulfilled")
+        .map((r) => r.value)
+        .filter(analysis => !analysis.error);
 
-    // Build consensus from multiple AI providers
-    const consensus = this.buildConsensus(successfulAnalyses);
+      const failedAnalyses = analyses
+        .filter((r) => r.status === "rejected" || 
+          (r.status === "fulfilled" && r.value.error))
+        .length;
 
-    // Calculate overall confidence
-    const confidence = this.calculateConfidence(successfulAnalyses, consensus);
+      if (successfulAnalyses.length === 0) {
+        const error = new Error("All AI providers failed to analyze the document");
+        logger.error("Document analysis completely failed", {
+          module: this.module,
+          failedProviders: failedAnalyses,
+          totalProviders: analyses.length,
+        }, error);
+        throw error;
+      }
 
-    return {
-      consensus,
-      providers: successfulAnalyses,
-      confidence,
-    };
+      logger.info("Provider analyses completed", {
+        module: this.module,
+        successful: successfulAnalyses.length,
+        failed: failedAnalyses,
+        total: analyses.length,
+      });
+
+      // Build consensus from multiple AI providers
+      const consensus = this.buildConsensus(successfulAnalyses);
+
+      // Calculate overall confidence
+      const confidence = this.calculateConfidence(successfulAnalyses, consensus);
+      
+      const totalProcessingTime = Date.now() - startTime;
+      
+      logger.info("Document analysis completed", {
+        module: this.module,
+        consensus: {
+          documentType: consensus.documentType,
+          confidence,
+          entitiesFound: Object.keys(consensus.entities || {}).length,
+          amountsFound: consensus.amounts?.length || 0,
+          anomaliesFound: consensus.anomalies?.length || 0,
+        },
+        totalProcessingTime,
+        providersUsed: successfulAnalyses.map(a => a.provider),
+      });
+
+      return {
+        consensus,
+        providers: successfulAnalyses,
+        confidence,
+        processingTime: totalProcessingTime,
+      };
+    } catch (error) {
+      const totalProcessingTime = Date.now() - startTime;
+      const errorMessage = error instanceof Error ? error.message : "Unknown analysis error";
+      
+      logger.error("Document analysis failed", {
+        module: this.module,
+        documentType,
+        fileSize: fileData.size,
+        processingTime: totalProcessingTime,
+        error: errorMessage,
+      }, error instanceof Error ? error : new Error(errorMessage));
+      
+      throw error;
+    }
   }
 
   private selectProviders(
-    documentType?: string,
-    floridaContext?: any,
+    documentType?: DocumentType,
+    floridaContext?: FloridaContext,
   ): AIProvider[] {
+    logger.debug("Selecting optimal providers", {
+      module: this.module,
+      documentType,
+      floridaContext: floridaContext ? Object.keys(floridaContext) : [],
+    });
     const providers = Array.from(this.providers.values());
 
     // For Florida hurricane/flood claims, prioritize xAI and Claude
@@ -159,156 +364,277 @@ export class MultiModalAIOrchestrator {
     return providers.sort((a, b) => b.confidence - a.confidence).slice(0, 2);
   }
 
-  private async analyzeWithOpenAI(data: any): Promise<any> {
-    const openai = new OpenAI({ apiKey: this.config.openaiKey! });
-    const base64 = await this.fileToBase64(data.fileData);
-
-    const response = await openai.chat.completions.create({
-      model: "gpt-4-vision-preview",
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert document analyzer for Florida insurance claims.
-            Extract all relevant information and return structured JSON.`,
-        },
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Analyze this document. Context: ${JSON.stringify(data.floridaContext || {})}`,
-            },
-            {
-              type: "image_url",
-              image_url: { url: `data:${data.fileData.type};base64,${base64}` },
-            },
-          ],
-        },
-      ],
-      response_format: { type: "json_object" },
+  private async analyzeWithOpenAI(data: AnalysisInput): Promise<DocumentAnalysisResult> {
+    logger.debug("Starting OpenAI analysis", {
+      module: this.module,
+      provider: "OpenAI GPT-4 Vision",
+      fileSize: data.fileData.size,
     });
+    
+    try {
+      const openai = new OpenAI({ apiKey: this.config.openaiKey! });
+      const base64 = await this.fileToBase64(data.fileData);
 
-    return JSON.parse(response.choices[0].message.content!);
-  }
-
-  private async analyzeWithGemini(data: any): Promise<any> {
-    const gemini = new GoogleGenerativeAI(this.config.geminiKey!);
-    const model = gemini.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
-
-    const base64 = await this.fileToBase64(data.fileData);
-    const result = await model.generateContent([
-      `Analyze this insurance document for a Florida property claim.
-       Extract: document type, dates, amounts, parties, damage descriptions.
-       Context: ${JSON.stringify(data.floridaContext || {})}
-       Return structured JSON.`,
-      { inlineData: { data: base64, mimeType: data.fileData.type } },
-    ]);
-
-    return JSON.parse(result.response.text());
-  }
-
-  private async analyzeWithClaude(data: any): Promise<any> {
-    const anthropic = new Anthropic({ apiKey: this.config.anthropicKey! });
-    const base64 = await this.fileToBase64(data.fileData);
-
-    const response = await anthropic.messages.create({
-      model: "claude-3-opus-20240229",
-      max_tokens: 4000,
-      messages: [
-        {
-          role: "user",
-          content: [
-            {
-              type: "text",
-              text: `Analyze this Florida insurance document with special attention to:
-                - Hurricane/flood damage indicators
-                - Policy coverage details
-                - Claim deadlines and requirements
-                - Florida-specific regulations (FLOIR)
-                Context: ${JSON.stringify(data.floridaContext || {})}
-                Return comprehensive structured JSON.`,
-            },
-            {
-              type: "image",
-              source: {
-                type: "base64",
-                media_type: data.fileData.type as any,
-                data: base64,
-              },
-            },
-          ],
-        },
-      ],
-    });
-
-    const content = response.content[0];
-    return JSON.parse(content.type === "text" ? content.text : "{}");
-  }
-
-  private async analyzeWithXAI(data: any): Promise<any> {
-    // xAI Grok integration for advanced multi-modal analysis
-    // Grok excels at real-time analysis and anomaly detection
-
-    const base64 = await this.fileToBase64(data.fileData);
-
-    const response = await fetch("https://api.x.ai/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${this.config.xaiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "grok-vision-beta",
+      const response = await openai.chat.completions.create({
+        model: "gpt-4-vision-preview",
         messages: [
           {
             role: "system",
-            content: `You are Grok, an advanced AI specialized in Florida property damage assessment.
-              Your strengths:
-              - Hurricane and flood damage pattern recognition
-              - Anomaly detection in insurance documents
-              - Real-time damage progression analysis
-              - Correlation with weather events and disaster data`,
+            content: `You are an expert document analyzer for Florida insurance claims.
+              Extract all relevant information and return structured JSON.`,
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: `Perform comprehensive multi-modal analysis:
-                  1. Document classification and information extraction
-                  2. Damage assessment if visual damage present
-                  3. Anomaly detection (fraudulent patterns, inconsistencies)
-                  4. Florida-specific context correlation
-                  5. Temporal analysis (damage progression, claim timing)
-
-                  Florida Context: ${JSON.stringify(data.floridaContext || {})}
-
-                  Return detailed JSON with confidence scores for each finding.`,
+                text: `Analyze this document. Context: ${JSON.stringify(data.floridaContext || {})}`,
               },
               {
                 type: "image_url",
-                image_url: {
-                  url: `data:${data.fileData.type};base64,${base64}`,
+                image_url: { url: `data:${data.fileData.type};base64,${base64}` },
+              },
+            ],
+          },
+        ],
+        response_format: { type: "json_object" },
+      });
+
+      const content = response.choices[0]?.message?.content;
+      if (!content) {
+        throw new Error("No content received from OpenAI");
+      }
+
+      const result = JSON.parse(content) as DocumentAnalysisResult;
+      
+      logger.debug("OpenAI analysis completed", {
+        module: this.module,
+        provider: "OpenAI GPT-4 Vision",
+        resultType: result.documentType,
+        confidence: result.confidence,
+      });
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "OpenAI analysis failed";
+      logger.error("OpenAI analysis error", {
+        module: this.module,
+        provider: "OpenAI GPT-4 Vision",
+        error: errorMessage,
+      }, error instanceof Error ? error : new Error(errorMessage));
+      throw error;
+    }
+  }
+
+  private async analyzeWithGemini(data: AnalysisInput): Promise<DocumentAnalysisResult> {
+    logger.debug("Starting Gemini analysis", {
+      module: this.module,
+      provider: "Google Gemini Pro Vision",
+      fileSize: data.fileData.size,
+    });
+    
+    try {
+      const gemini = new GoogleGenerativeAI(this.config.geminiKey!);
+      const model = gemini.getGenerativeModel({ model: "gemini-1.5-pro-vision" });
+
+      const base64 = await this.fileToBase64(data.fileData);
+      const result = await model.generateContent([
+        `Analyze this insurance document for a Florida property claim.
+         Extract: document type, dates, amounts, parties, damage descriptions.
+         Context: ${JSON.stringify(data.floridaContext || {})}
+         Return structured JSON.`,
+        { inlineData: { data: base64, mimeType: data.fileData.type } },
+      ]);
+
+      const responseText = result.response.text();
+      if (!responseText) {
+        throw new Error("No response received from Gemini");
+      }
+
+      const parsedResult = JSON.parse(responseText) as DocumentAnalysisResult;
+      
+      logger.debug("Gemini analysis completed", {
+        module: this.module,
+        provider: "Google Gemini Pro Vision",
+        resultType: parsedResult.documentType,
+        confidence: parsedResult.confidence,
+      });
+      
+      return parsedResult;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Gemini analysis failed";
+      logger.error("Gemini analysis error", {
+        module: this.module,
+        provider: "Google Gemini Pro Vision",
+        error: errorMessage,
+      }, error instanceof Error ? error : new Error(errorMessage));
+      throw error;
+    }
+  }
+
+  private async analyzeWithClaude(data: AnalysisInput): Promise<DocumentAnalysisResult> {
+    logger.debug("Starting Claude analysis", {
+      module: this.module,
+      provider: "Anthropic Claude 3",
+      fileSize: data.fileData.size,
+    });
+    
+    try {
+      const anthropic = new Anthropic({ apiKey: this.config.anthropicKey! });
+      const base64 = await this.fileToBase64(data.fileData);
+
+      const response = await anthropic.messages.create({
+        model: "claude-3-opus-20240229",
+        max_tokens: 4000,
+        messages: [
+          {
+            role: "user",
+            content: [
+              {
+                type: "text",
+                text: `Analyze this Florida insurance document with special attention to:
+                  - Hurricane/flood damage indicators
+                  - Policy coverage details
+                  - Claim deadlines and requirements
+                  - Florida-specific regulations (FLOIR)
+                  Context: ${JSON.stringify(data.floridaContext || {})}
+                  Return comprehensive structured JSON.`,
+              },
+              {
+                type: "image",
+                source: {
+                  type: "base64",
+                  media_type: data.fileData.type as "image/jpeg" | "image/png" | "image/gif" | "image/webp",
+                  data: base64,
                 },
               },
             ],
           },
         ],
-        temperature: 0.3,
-        max_tokens: 4000,
-        response_format: { type: "json_object" },
-      }),
-    });
+      });
 
-    if (!response.ok) {
-      throw new Error(`xAI API error: ${response.statusText}`);
+      const content = response.content[0];
+      if (!content || content.type !== "text") {
+        throw new Error("Invalid response format from Claude");
+      }
+      
+      const result = JSON.parse(content.text) as DocumentAnalysisResult;
+      
+      logger.debug("Claude analysis completed", {
+        module: this.module,
+        provider: "Anthropic Claude 3",
+        resultType: result.documentType,
+        confidence: result.confidence,
+      });
+      
+      return result;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "Claude analysis failed";
+      logger.error("Claude analysis error", {
+        module: this.module,
+        provider: "Anthropic Claude 3",
+        error: errorMessage,
+      }, error instanceof Error ? error : new Error(errorMessage));
+      throw error;
     }
-
-    const result = await response.json();
-    return JSON.parse(result.choices[0].message.content);
   }
 
-  private buildConsensus(analyses: any[]): any {
+  private async analyzeWithXAI(data: AnalysisInput): Promise<DocumentAnalysisResult> {
+    logger.debug("Starting xAI analysis", {
+      module: this.module,
+      provider: "xAI Grok",
+      fileSize: data.fileData.size,
+    });
+    
+    try {
+      // xAI Grok integration for advanced multi-modal analysis
+      // Grok excels at real-time analysis and anomaly detection
+
+      const base64 = await this.fileToBase64(data.fileData);
+
+      const response = await fetch("https://api.x.ai/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${this.config.xaiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "grok-vision-beta",
+          messages: [
+            {
+              role: "system",
+              content: `You are Grok, an advanced AI specialized in Florida property damage assessment.
+                Your strengths:
+                - Hurricane and flood damage pattern recognition
+                - Anomaly detection in insurance documents
+                - Real-time damage progression analysis
+                - Correlation with weather events and disaster data`,
+            },
+            {
+              role: "user",
+              content: [
+                {
+                  type: "text",
+                  text: `Perform comprehensive multi-modal analysis:
+                    1. Document classification and information extraction
+                    2. Damage assessment if visual damage present
+                    3. Anomaly detection (fraudulent patterns, inconsistencies)
+                    4. Florida-specific context correlation
+                    5. Temporal analysis (damage progression, claim timing)
+
+                    Florida Context: ${JSON.stringify(data.floridaContext || {})}
+
+                    Return detailed JSON with confidence scores for each finding.`,
+                },
+                {
+                  type: "image_url",
+                  image_url: {
+                    url: `data:${data.fileData.type};base64,${base64}`,
+                  },
+                },
+              ],
+            },
+          ],
+          temperature: 0.3,
+          max_tokens: 4000,
+          response_format: { type: "json_object" },
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`xAI API error: ${response.status} ${response.statusText}`);
+      }
+
+      const result = await response.json();
+      const content = result.choices?.[0]?.message?.content;
+      
+      if (!content) {
+        throw new Error("No content received from xAI");
+      }
+      
+      const parsedResult = JSON.parse(content) as DocumentAnalysisResult;
+      
+      logger.debug("xAI analysis completed", {
+        module: this.module,
+        provider: "xAI Grok",
+        resultType: parsedResult.documentType,
+        confidence: parsedResult.confidence,
+        anomaliesFound: parsedResult.anomalies?.length || 0,
+      });
+      
+      return parsedResult;
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : "xAI analysis failed";
+      logger.error("xAI analysis error", {
+        module: this.module,
+        provider: "xAI Grok",
+        error: errorMessage,
+      }, error instanceof Error ? error : new Error(errorMessage));
+      throw error;
+    }
+  }
+
+  private buildConsensus(analyses: ProviderAnalysis[]): DocumentAnalysisResult {
     if (analyses.length === 0) {
       throw new Error("No successful analyses");
     }
@@ -318,9 +644,9 @@ export class MultiModalAIOrchestrator {
     }
 
     // Build consensus from multiple AI providers
-    const consensus: any = {
-      documentType: this.findConsensusValue(analyses, "documentType"),
-      category: this.findConsensusValue(analyses, "category"),
+    const consensus: DocumentAnalysisResult = {
+      documentType: this.findConsensusValue(analyses, "documentType") as DocumentType,
+      category: this.findConsensusValue(analyses, "category") as string,
       dates: this.mergeDates(analyses),
       amounts: this.mergeAmounts(analyses),
       entities: this.mergeEntities(analyses),
@@ -332,9 +658,9 @@ export class MultiModalAIOrchestrator {
     };
 
     // Add provider-specific insights
-    consensus.providerInsights = analyses.map((a) => ({
-      provider: a.provider,
-      uniqueFindings: this.extractUniqueFindings(a.result, consensus),
+    consensus.providerInsights = analyses.map((analysis) => ({
+      provider: analysis.provider,
+      uniqueFindings: this.extractUniqueFindings(analysis.result, consensus),
     }));
 
     return consensus;
@@ -366,18 +692,19 @@ export class MultiModalAIOrchestrator {
     return Array.from(allDates).sort();
   }
 
-  private mergeAmounts(analyses: unknown[]): unknown[] {
-    const amounts: unknown[] = [];
+  private mergeAmounts(analyses: ProviderAnalysis[]): ExtractedAmount[] {
+    const amounts: ExtractedAmount[] = [];
     const seen = new Set();
 
-    analyses.forEach((a: unknown) => {
-      const analysis = a as any;
+    analyses.forEach((analysis) => {
       if (analysis.result?.amounts && Array.isArray(analysis.result.amounts)) {
-        analysis.result.amounts.forEach((amount: any) => {
-          const key = `${amount.value}_${amount.type}`;
-          if (!seen.has(key)) {
-            seen.add(key);
-            amounts.push(amount);
+        analysis.result.amounts.forEach((amount) => {
+          if (amount && typeof amount === 'object' && 'value' in amount && 'type' in amount && 'confidence' in amount) {
+            const key = `${amount.value}_${amount.type}`;
+            if (!seen.has(key)) {
+              seen.add(key);
+              amounts.push(amount as ExtractedAmount);
+            }
           }
         });
       }
@@ -398,7 +725,7 @@ export class MultiModalAIOrchestrator {
     return entities;
   }
 
-  private mergeDamageAssessments(analyses: any[]): any {
+  private mergeDamageAssessments(analyses: ProviderAnalysis[]): DamageAssessment | null {
     const xaiAnalysis = analyses.find((a) => a.provider === "xAI Grok");
     if (xaiAnalysis?.result?.damageAssessment) {
       return xaiAnalysis.result.damageAssessment;
@@ -412,53 +739,61 @@ export class MultiModalAIOrchestrator {
     if (assessments.length === 0) return null;
 
     return {
-      severity: this.findConsensusValue(analyses, "damageAssessment.severity"),
-      types: this.mergeArrays(assessments.map((a) => a.types)),
+      severity: (this.findConsensusValue(analyses, "damageAssessment.severity") || "moderate") as "minor" | "moderate" | "severe" | "catastrophic",
+      types: this.mergeArrays(assessments.map((a) => a.types || [])),
       estimatedCost: this.averageValues(
-        assessments.map((a) => a.estimatedCost),
+        assessments.map((a) => a.estimatedCost || 0),
+      ),
+      confidence: this.averageValues(
+        assessments.map((a) => a.confidence || 0.5),
       ),
     };
   }
 
-  private mergeAnomalies(analyses: unknown[]): unknown[] {
+  private mergeAnomalies(analyses: ProviderAnalysis[]): DetectedAnomaly[] {
     // Prioritize xAI's anomaly detection
-    const xaiAnalysis = (analyses as any[]).find(
+    const xaiAnalysis = analyses.find(
       (a) => a.provider === "xAI Grok",
     );
     if (xaiAnalysis?.result?.anomalies) {
-      return xaiAnalysis.result.anomalies;
+      return xaiAnalysis.result.anomalies.filter(this.isValidAnomaly);
     }
 
-    const allAnomalies: unknown[] = [];
-    analyses.forEach((a: unknown) => {
-      const analysis = a as any;
+    const allAnomalies: DetectedAnomaly[] = [];
+    analyses.forEach((analysis) => {
       if (
         analysis.result?.anomalies &&
         Array.isArray(analysis.result.anomalies)
       ) {
-        allAnomalies.push(...analysis.result.anomalies);
+        const validAnomalies = analysis.result.anomalies.filter(this.isValidAnomaly);
+        allAnomalies.push(...validAnomalies);
       }
     });
 
     return this.deduplicateAnomalies(allAnomalies);
   }
 
-  private mergeAssociations(analyses: unknown[]): unknown[] {
-    const associations = new Map();
+  private mergeAssociations(analyses: ProviderAnalysis[]): Array<{
+    type: string;
+    id: string;
+    confidence: number;
+  }> {
+    const associations = new Map<string, { type: string; id: string; confidence: number; }>();
 
-    analyses.forEach((a: unknown) => {
-      const analysis = a as any;
+    analyses.forEach((analysis) => {
       if (
         analysis.result?.associations &&
         Array.isArray(analysis.result.associations)
       ) {
-        analysis.result.associations.forEach((assoc: any) => {
-          const key = `${assoc.type}_${assoc.id}`;
-          if (
-            !associations.has(key) ||
-            assoc.confidence > associations.get(key).confidence
-          ) {
-            associations.set(key, assoc);
+        analysis.result.associations.forEach((assoc) => {
+          if (this.isValidAssociation(assoc)) {
+            const key = `${assoc.type}_${assoc.id}`;
+            if (
+              !associations.has(key) ||
+              assoc.confidence > associations.get(key)!.confidence
+            ) {
+              associations.set(key, assoc);
+            }
           }
         });
       }
@@ -467,49 +802,57 @@ export class MultiModalAIOrchestrator {
     return Array.from(associations.values());
   }
 
-  private mergeFloridaSpecific(analyses: any[]): any {
+  private mergeFloridaSpecific(analyses: ProviderAnalysis[]): FloridaContext {
     // Combine Florida-specific insights from all providers
-    const floridaData = {
-      hurricaneRelated: false,
-      floodZone: null,
-      femaDeclaration: null,
+    const floridaData: FloridaContext = {
+      hurricane: false,
+      flood: false,
       windMitigation: [],
-      buildingCode: null,
+      floodZone: undefined,
+      femaDeclaration: undefined,
+      buildingCode: undefined,
       sinkholeRisk: false,
     };
 
-    analyses.forEach((a) => {
-      if (a.result.floridaSpecific) {
-        Object.assign(floridaData, a.result.floridaSpecific);
+    analyses.forEach((analysis) => {
+      if (analysis.result.floridaSpecific) {
+        Object.assign(floridaData, analysis.result.floridaSpecific);
       }
     });
 
     return floridaData;
   }
 
-  private generateConsensusName(analyses: any[]): string {
-    const names = analyses.map((a) => a.result.suggestedName).filter((n) => n);
+  private generateConsensusName(analyses: ProviderAnalysis[]): string {
+    const names = analyses.map((analysis) => analysis.result.suggestedName).filter((n) => n);
     if (names.length === 0) return "document_" + Date.now();
 
     // Use the most detailed/specific name
-    return names.sort((a, b) => b.length - a.length)[0];
+    return names.sort((a, b) => b!.length - a!.length)[0]!;
   }
 
   private extractUniqueFindings(
-    providerResult: any,
-    consensus: any,
-  ): unknown[] {
-    const unique: unknown[] = [];
+    providerResult: DocumentAnalysisResult,
+    consensus: DocumentAnalysisResult,
+  ): Array<{
+    field: string;
+    value: unknown;
+  }> {
+    const unique: Array<{
+      field: string;
+      value: unknown;
+    }> = [];
 
     // Find findings unique to this provider
     Object.keys(providerResult).forEach((key) => {
+      const typedKey = key as keyof DocumentAnalysisResult;
       if (
-        !consensus[key] ||
-        JSON.stringify(consensus[key]) !== JSON.stringify(providerResult[key])
+        !consensus[typedKey] ||
+        JSON.stringify(consensus[typedKey]) !== JSON.stringify(providerResult[typedKey])
       ) {
         unique.push({
           field: key,
-          value: providerResult[key],
+          value: providerResult[typedKey],
         });
       }
     });
@@ -517,17 +860,17 @@ export class MultiModalAIOrchestrator {
     return unique;
   }
 
-  private calculateConfidence(analyses: any[], consensus: any): number {
+  private calculateConfidence(analyses: ProviderAnalysis[], consensus: DocumentAnalysisResult): number {
     if (analyses.length === 1) {
       return analyses[0].result.confidence || 0.7;
     }
 
     // Calculate agreement score
     let agreementScore = 0;
-    const fields = ["documentType", "category", "dates", "amounts"];
+    const fields: (keyof DocumentAnalysisResult)[] = ["documentType", "category", "dates", "amounts"];
 
     fields.forEach((field) => {
-      const values = analyses.map((a) => JSON.stringify(a.result[field]));
+      const values = analyses.map((analysis) => JSON.stringify(analysis.result[field]));
       const uniqueValues = new Set(values).size;
       agreementScore += (analyses.length - uniqueValues + 1) / analyses.length;
     });
@@ -535,14 +878,14 @@ export class MultiModalAIOrchestrator {
     const baseConfidence = agreementScore / fields.length;
 
     // Boost confidence if xAI is involved (due to its advanced capabilities)
-    const hasXAI = analyses.some((a) => a.provider === "xAI Grok");
+    const hasXAI = analyses.some((analysis) => analysis.provider === "xAI Grok");
     const xaiBoost = hasXAI ? 0.1 : 0;
 
     return Math.min(baseConfidence + xaiBoost, 0.99);
   }
 
-  private mergeArrays(arrays: any[][]): any[] {
-    const merged = new Set();
+  private mergeArrays(arrays: string[][]): string[] {
+    const merged = new Set<string>();
     arrays.forEach((arr) => {
       if (arr) arr.forEach((item) => merged.add(item));
     });
@@ -555,7 +898,7 @@ export class MultiModalAIOrchestrator {
     return valid.reduce((a, b) => a + b, 0) / valid.length;
   }
 
-  private deduplicateAnomalies(anomalies: any[]): any[] {
+  private deduplicateAnomalies(anomalies: DetectedAnomaly[]): DetectedAnomaly[] {
     const seen = new Set();
     return anomalies.filter((a) => {
       const key = JSON.stringify(a);
@@ -563,6 +906,34 @@ export class MultiModalAIOrchestrator {
       seen.add(key);
       return true;
     });
+  }
+
+  private isValidAnomaly(item: unknown): item is DetectedAnomaly {
+    return (
+      typeof item === 'object' &&
+      item !== null &&
+      'type' in item &&
+      'description' in item &&
+      'confidence' in item &&
+      'severity' in item &&
+      typeof (item as any).type === 'string' &&
+      typeof (item as any).description === 'string' &&
+      typeof (item as any).confidence === 'number' &&
+      ['low', 'medium', 'high'].includes((item as any).severity)
+    );
+  }
+
+  private isValidAssociation(item: unknown): item is { type: string; id: string; confidence: number; } {
+    return (
+      typeof item === 'object' &&
+      item !== null &&
+      'type' in item &&
+      'id' in item &&
+      'confidence' in item &&
+      typeof (item as any).type === 'string' &&
+      typeof (item as any).id === 'string' &&
+      typeof (item as any).confidence === 'number'
+    );
   }
 
   private async fileToBase64(file: Blob): Promise<string> {

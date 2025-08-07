@@ -154,7 +154,7 @@ class OCRService {
 
       return data as OCRResult;
     } catch (error) {
-      logger.error("OCR processing error:", toError(error));
+      logger.error("OCR processing error:", {}, toError(error));
       return {
         success: false,
         error: error instanceof Error ? error.message : "OCR processing failed",
@@ -183,7 +183,7 @@ class OCRService {
 
       return data as OCRResult;
     } catch (error) {
-      logger.error("Receipt OCR error:", toError(error));
+      logger.error("Receipt OCR error:", {}, toError(error));
       return {
         success: false,
         error:
@@ -244,7 +244,7 @@ class OCRService {
       .limit(limit);
 
     if (error) {
-      logger.error("Error fetching OCR history:", error);
+      logger.error("Error fetching OCR history:", {}, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
 
@@ -297,7 +297,7 @@ class OCRService {
 
       return { used, limit, remaining };
     } catch (error) {
-      logger.error("Error getting OCR usage:", toError(error));
+      logger.error("Error getting OCR usage:", {}, toError(error));
       return { used: 0, limit: 0, remaining: 0 };
     }
   }

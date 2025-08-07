@@ -10,6 +10,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 
 export interface ClaraSession {
   id: string;
@@ -162,7 +163,7 @@ export class ClaraAICompanionService {
         .single();
 
       if (error) {
-        console.error("Error creating Clara session:", error);
+        logger.error("Error creating Clara session", { module: "clara-ai-companion", sessionType }, error instanceof Error ? error : new Error(String(error)));
         return null;
       }
 
@@ -194,7 +195,7 @@ export class ClaraAICompanionService {
 
       return data;
     } catch (error) {
-      console.error("Error starting Clara session:", error);
+      logger.error("Error starting Clara session", { module: "clara-ai-companion", userId, adminId }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -271,7 +272,7 @@ export class ClaraAICompanionService {
 
       return message;
     } catch (error) {
-      console.error("Error continuing Clara conversation:", error);
+      logger.error("Error continuing Clara conversation", { module: "clara-ai-companion", sessionId, adminId }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -414,7 +415,7 @@ export class ClaraAICompanionService {
       const result = await response.json();
       return { content: result.choices[0].message.content };
     } catch (error) {
-      console.error("Error generating Clara response:", error);
+      logger.error("Error generating Clara response", { module: "clara-ai-companion", sessionId }, error instanceof Error ? error : new Error(String(error)));
       return { content: this.getFallbackResponse(analysis) };
     }
   }
@@ -520,13 +521,13 @@ I'm here to listen and support you through this. What would feel most helpful fo
         .single();
 
       if (error) {
-        console.error("Error adding Clara message:", error);
+        logger.error("Error adding Clara message", { module: "clara-ai-companion", sessionId, role }, error instanceof Error ? error : new Error(String(error)));
         return null;
       }
 
       return data;
     } catch (error) {
-      console.error("Error adding Clara message:", error);
+      logger.error("Error adding Clara message", { module: "clara-ai-companion", sessionId, role }, error instanceof Error ? error : new Error(String(error)));
       return null;
     }
   }
@@ -604,7 +605,7 @@ I'm here to listen and support you through this. What would feel most helpful fo
       // Could trigger additional notifications here
       console.log("Crisis intervention triggered for session:", sessionId);
     } catch (error) {
-      console.error("Error triggering crisis intervention:", error);
+      logger.error("Error triggering crisis intervention", { module: "clara-ai-companion", sessionId }, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -624,7 +625,7 @@ I'm here to listen and support you through this. What would feel most helpful fo
         })
         .eq("id", sessionId);
     } catch (error) {
-      console.error("Error updating crisis level:", error);
+      logger.error("Error updating crisis level", { module: "clara-ai-companion", sessionId, crisisLevel }, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -660,13 +661,13 @@ I'm here to listen and support you through this. What would feel most helpful fo
       const { data, error } = await query;
 
       if (error) {
-        console.error("Error fetching Clara sessions:", error);
+        logger.error("Error fetching Clara sessions", { module: "clara-ai-companion", adminId }, error instanceof Error ? error : new Error(String(error)));
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error("Error fetching Clara sessions:", error);
+      logger.error("Error fetching Clara sessions", { module: "clara-ai-companion", adminId }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -691,13 +692,13 @@ I'm here to listen and support you through this. What would feel most helpful fo
         .order("timestamp", { ascending: true });
 
       if (error) {
-        console.error("Error fetching session messages:", error);
+        logger.error("Error fetching session messages", { module: "clara-ai-companion", sessionId, adminId }, error instanceof Error ? error : new Error(String(error)));
         return [];
       }
 
       return data || [];
     } catch (error) {
-      console.error("Error fetching session messages:", error);
+      logger.error("Error fetching session messages", { module: "clara-ai-companion", sessionId, adminId }, error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }
@@ -727,13 +728,13 @@ I'm here to listen and support you through this. What would feel most helpful fo
         .eq("admin_id", adminId);
 
       if (error) {
-        console.error("Error ending Clara session:", error);
+        logger.error("Error ending Clara session", { module: "clara-ai-companion", sessionId, adminId }, error instanceof Error ? error : new Error(String(error)));
         return false;
       }
 
       return true;
     } catch (error) {
-      console.error("Error ending Clara session:", error);
+      logger.error("Error ending Clara session", { module: "clara-ai-companion", sessionId, adminId }, error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }

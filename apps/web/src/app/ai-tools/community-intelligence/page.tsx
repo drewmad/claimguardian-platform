@@ -33,8 +33,7 @@ const PrivacyPreservingAnalytics = dynamic(
     import("@/components/community/privacy-preserving-analytics").then(
       (mod) => ({ default: mod.PrivacyPreservingAnalytics }),
     ),
-  { ssr: false },
-);
+  { ssr: false });
 import {
   LineChart,
   Line,

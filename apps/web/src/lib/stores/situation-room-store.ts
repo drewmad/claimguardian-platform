@@ -288,7 +288,7 @@ const createSituationRoomStore = () =>
               state.totalSystems = response.totalSystems;
             });
           } catch (error) {
-            logger.error("Failed to refresh property status:", toError(error));
+            logger.error("Failed to refresh property status:", {}, toError(error));
           }
         },
 
@@ -400,7 +400,7 @@ const createSituationRoomStore = () =>
                   : "AI threat assessment failed";
               state.aiAssessmentRunning = false;
             });
-            logger.error("AI threat assessment failed:", toError(error));
+            logger.error("AI threat assessment failed:", {}, toError(error));
           }
         },
 
@@ -580,7 +580,7 @@ const createSituationRoomStore = () =>
               }
             });
           } catch (error) {
-            logger.error("Failed to execute recommendation:", toError(error));
+            logger.error("Failed to execute recommendation:", {}, toError(error));
             set((state) => {
               state.error = `Failed to execute recommendation: ${error}`;
             });

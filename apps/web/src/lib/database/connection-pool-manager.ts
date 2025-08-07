@@ -121,7 +121,7 @@ export class ConnectionPoolManager {
         maxConnections: this.config.maxConnections,
       });
     } catch (error) {
-      logger.error("Failed to initialize connection pool", error as Error);
+      logger.error("Failed to initialize connection pool", {}, error instanceof Error ? error : new Error(String(error)));
       if (this.config.propagateCreateError) {
         throw error;
       }
@@ -163,7 +163,9 @@ export class ConnectionPoolManager {
         });
         return newConnection;
       } catch (error) {
-        logger.warn("Failed to create new connection", error as Error);
+        logger.warn("Failed to create new connection", { 
+          error: error instanceof Error ? error.message : String(error) 
+        });
         if (this.config.propagateCreateError) {
           throw error;
         }
@@ -527,8 +529,7 @@ export class ConnectionPoolManager {
         this.createConnection().catch((error) => {
           logger.warn(
             "Failed to create connection during min connections maintenance",
-            { error: (error as Error).message },
-          );
+            { error: (error as Error).message });
           return null;
         }),
       );

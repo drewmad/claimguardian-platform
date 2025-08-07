@@ -52,9 +52,7 @@ export async function processDocumentExtraction(
       error: userError,
     } = await supabase.auth.getUser();
     if (userError || !user) {
-      logger.error("User not authenticated for document extraction", {
-        error: userError,
-      });
+      logger.error("User not authenticated for document extraction", { error: userError });
       return { data: null, error: "User not authenticated" };
     }
 
@@ -67,11 +65,9 @@ export async function processDocumentExtraction(
       .single();
 
     if (docError || !document) {
-      logger.error("Document not found or access denied", {
-        documentId: params.documentId,
+      logger.error("Document not found or access denied", { documentId: params.documentId,
         userId: user.id,
-        error: docError,
-      });
+        error: docError });
       return { data: null, error: "Document not found or access denied" };
     }
 
@@ -106,9 +102,7 @@ export async function processDocumentExtraction(
       .single();
 
     if (extractionError) {
-      logger.error("Failed to create extraction record", {
-        error: extractionError,
-      });
+      logger.error("Failed to create extraction record", { error: extractionError });
       return { data: null, error: extractionError.message };
     }
 
@@ -118,10 +112,8 @@ export async function processDocumentExtraction(
       .createSignedUrl(document.file_path, 3600); // 1 hour expiry
 
     if (urlError) {
-      logger.error("Failed to create signed URL for document", {
-        error: urlError,
-        filePath: document.file_path,
-      });
+      logger.error("Failed to create signed URL for document", { error: urlError,
+        filePath: document.file_path });
       return { data: null, error: "Failed to access document for processing" };
     }
 
@@ -163,9 +155,7 @@ export async function processDocumentExtraction(
       .single();
 
     if (updateError) {
-      logger.error("Failed to update extraction record", {
-        error: updateError,
-      });
+      logger.error("Failed to update extraction record", { error: updateError });
       return { data: null, error: updateError.message };
     }
 
@@ -182,10 +172,8 @@ export async function processDocumentExtraction(
 
     return { data: updatedExtraction, error: null };
   } catch (error) {
-    logger.error("Unexpected error during document extraction", {
-      error,
-      documentId: params.documentId,
-    });
+    logger.error("Unexpected error during document extraction", { error,
+      documentId: params.documentId });
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -233,7 +221,7 @@ export async function getExtractionResults(documentId: string) {
 
     return { data: extraction, error: null };
   } catch (error) {
-    logger.error("Unexpected error fetching extraction results", { error });
+    logger.error("Unexpected error fetching extraction results", {}, error instanceof Error ? error : new Error(String(error)));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",
@@ -312,10 +300,8 @@ export async function applyExtractionToProperty(
         .single();
 
       if (policyError) {
-        logger.error("Failed to create/update policy from extraction", {
-          error: policyError,
-          extractionId,
-        });
+        logger.error("Failed to create/update policy from extraction", { error: policyError,
+          extractionId });
         return { data: null, error: policyError.message };
       }
 
@@ -343,7 +329,7 @@ export async function applyExtractionToProperty(
 
     return { data: null, error: "Insufficient data to create policy record" };
   } catch (error) {
-    logger.error("Unexpected error applying extraction to property", { error });
+    logger.error("Unexpected error applying extraction to property", {}, error instanceof Error ? error : new Error(String(error)));
     return {
       data: null,
       error: error instanceof Error ? error.message : "Unknown error",

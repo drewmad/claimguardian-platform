@@ -97,7 +97,7 @@ export function AccountWizard() {
           });
         } catch (consentError) {
           // Log but don't fail the signup
-          logger.error("Error logging consents:", consentError);
+          logger.error("Error logging consents:", { consentError });
         }
 
         setSuccess(true);
@@ -108,7 +108,7 @@ export function AccountWizard() {
         }, 2000);
       }
     } catch (err) {
-      logger.error("Signup error:", err);
+      logger.error("Signup error:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(
         err instanceof Error ? err.message : "An unexpected error occurred",
       );

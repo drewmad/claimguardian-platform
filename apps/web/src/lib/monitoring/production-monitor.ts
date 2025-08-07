@@ -211,7 +211,7 @@ export class ProductionMonitor {
         throughput: metrics.throughput,
       });
     } catch (error) {
-      logger.error("Failed to collect metrics", error);
+      logger.error("Failed to collect metrics", error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -231,7 +231,7 @@ export class ProductionMonitor {
 
       return Date.now() - start;
     } catch (error) {
-      logger.error("Response time measurement failed", error);
+      logger.error("Response time measurement failed", error instanceof Error ? error : new Error(String(error)));
       return 999999; // High value to trigger alerts
     }
   }
@@ -311,13 +311,13 @@ export class ProductionMonitor {
         const supabase = await createClient();
 
         // Query active sessions or connections
-        const { data, error } = await supabase
+        const { count, error } = await supabase
           .from("user_sessions")
           .select("*", { count: "exact", head: true })
           .gte("last_activity", new Date(Date.now() - 5 * 60000).toISOString()); // Active in last 5 minutes
 
         if (error) throw error;
-        return data || 0;
+        return count || 0;
       },
       3,
       "get-active-connections",
@@ -373,7 +373,7 @@ export class ProductionMonitor {
     );
 
     if (!result.success) {
-      logger.error("Failed to store metrics in database", result.error);
+      logger.error("Failed to store metrics in database", { error: result.error });
     }
   }
 
@@ -415,11 +415,12 @@ export class ProductionMonitor {
           };
         } catch (error) {
           const duration = Date.now() - startTime;
-          logger.error(`Health check ${check.name} error`, error);
+          const errorInstance = error instanceof Error ? error : new Error(String(error));
+          logger.error(`Health check ${check.name} error`, errorInstance);
 
           if (check.critical) {
             await this.triggerCriticalAlert(
-              `Critical health check error: ${check.name} - ${error instanceof Error ? error.message : "Unknown error"}`,
+              `Critical health check error: ${check.name} - ${errorInstance.message}`,
             );
           }
 
@@ -428,7 +429,7 @@ export class ProductionMonitor {
             success: false,
             duration,
             critical: check.critical,
-            error,
+            error: errorInstance,
           };
         }
       }),
@@ -541,7 +542,7 @@ export class ProductionMonitor {
           this.alertStates.set(rule.id, { ...alertState, isActive: false });
         }
       } catch (error) {
-        logger.error(`Error evaluating alert rule ${rule.id}`, error);
+        logger.error(`Error evaluating alert rule ${rule.id}`, error instanceof Error ? error : new Error(String(error)));
       }
     }
   }
@@ -604,7 +605,7 @@ export class ProductionMonitor {
     );
 
     if (!result.success) {
-      logger.error("Failed to store alert in database", result.error);
+      logger.error("Failed to store alert in database", { error: result.error });
     }
   }
 
@@ -627,7 +628,7 @@ export class ProductionMonitor {
     alertData: Record<string, unknown>,
   ): Promise<void> {
     // Send critical alerts to all channels immediately
-    logger.error("Critical alert notification sent", alertData);
+    logger.error("Critical alert notification sent", { alertData });
   }
 
   private cleanupOldMetrics(): void {
@@ -687,6 +688,6 @@ if (
   productionMonitor
     .startMonitoring(30000) // 30 seconds interval
     .catch((error) =>
-      logger.error("Failed to start production monitoring", error),
+      logger.error("Failed to start production monitoring", error instanceof Error ? error : new Error(String(error))),
     );
 }

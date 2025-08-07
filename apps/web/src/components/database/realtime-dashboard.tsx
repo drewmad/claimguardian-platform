@@ -228,7 +228,7 @@ export function RealtimeDashboard({
       logger.info("Significant database event", {
         table,
         type: event.type,
-        id: event.new?.id || event.old?.id,
+        id: event.new?.id || (event.old && 'id' in event.old ? event.old.id : undefined),
       });
     }
   };
@@ -699,7 +699,7 @@ function EventStream({ events, maxHeight = "300px" }: EventStreamProps) {
                   </Badge>
                 </div>
                 <p className="text-xs text-gray-600 dark:text-gray-400 truncate">
-                  ID: {event.new?.id || event.old?.id || "unknown"}
+                  ID: {event.new?.id || (event.old && 'id' in event.old ? event.old.id : undefined) || "unknown"}
                   {event.latency && ` • ${event.latency}ms`}
                 </p>
               </div>

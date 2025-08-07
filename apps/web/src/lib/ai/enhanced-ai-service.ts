@@ -10,7 +10,6 @@
  */
 import { AIClientService } from "./client-service";
 import { logger } from "@/lib/logger/production-logger";
-import { toError } from "@claimguardian/utils";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -159,7 +158,11 @@ export class EnhancedAIService extends AIClientService {
 
       this.contextMemory.set(userId, context);
     } catch (error) {
-      logger.error("Failed to persist context:", toError(error));
+      logger.error(
+        "Failed to persist context",
+        error instanceof Error ? error : new Error(String(error)),
+        "EnhancedAIService"
+      );
     }
   }
 

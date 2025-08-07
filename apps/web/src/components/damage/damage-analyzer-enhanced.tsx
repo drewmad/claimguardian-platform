@@ -112,7 +112,7 @@ export function DamageAnalyzerEnhanced({
 
       toast.success("Coverage analysis complete");
     } catch (error) {
-      logger.error("Analysis error:", error);
+      logger.error("Analysis error:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to analyze coverage");
     } finally {
       setAnalyzing(false);

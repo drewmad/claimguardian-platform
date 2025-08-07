@@ -57,8 +57,7 @@ export const GET = withAPIMiddleware(
       if (error) {
         return NextResponse.json(
           { error: "Database Error", message: error.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       // Get total count for pagination
@@ -75,8 +74,7 @@ export const GET = withAPIMiddleware(
       if (countError) {
         return NextResponse.json(
           { error: "Database Error", message: countError.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       return NextResponse.json({
@@ -95,8 +93,7 @@ export const GET = withAPIMiddleware(
           error: "Internal Server Error",
           message: "An unexpected error occurred",
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
   },
 );
@@ -125,8 +122,7 @@ export const POST = withAPIMiddleware(
             error: "Validation Error",
             message: `Missing required fields: ${missingFields.join(", ")}`,
           },
-          { status: 400 },
-        );
+          { status: 400 });
       }
 
       // Verify property ownership
@@ -143,8 +139,7 @@ export const POST = withAPIMiddleware(
             error: "Forbidden",
             message: "Property not found or access denied",
           },
-          { status: 403 },
-        );
+          { status: 403 });
       }
 
       // Generate claim number
@@ -176,8 +171,7 @@ export const POST = withAPIMiddleware(
       if (error) {
         return NextResponse.json(
           { error: "Database Error", message: error.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       return NextResponse.json({ data: claim }, { status: 201 });
@@ -188,8 +182,7 @@ export const POST = withAPIMiddleware(
           error: "Internal Server Error",
           message: "An unexpected error occurred",
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
   },
 );

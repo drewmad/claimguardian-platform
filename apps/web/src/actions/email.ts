@@ -58,10 +58,8 @@ export async function sendWelcomeEmail(userId: string) {
       .single();
 
     if (error || !profile) {
-      logger.error("Failed to get user profile for welcome email", {
-        userId,
-        error,
-      });
+      logger.error("Failed to get user profile for welcome email", { userId,
+        error });
       return { success: false, error: "User not found" };
     }
 
@@ -242,10 +240,8 @@ export async function sendClaimUpdateEmail({
       .single();
 
     if (error || !profile) {
-      logger.error("Failed to get user profile for claim update", {
-        userId,
-        error,
-      });
+      logger.error("Failed to get user profile for claim update", { userId,
+        error });
       return { success: false, error: "User not found" };
     }
 
@@ -316,10 +312,8 @@ export async function sendPropertyEnrichmentEmail({
       .single();
 
     if (error || !profile) {
-      logger.error("Failed to get user profile for enrichment email", {
-        userId,
-        error,
-      });
+      logger.error("Failed to get user profile for enrichment email", { userId,
+        error });
       return { success: false, error: "User not found" };
     }
 

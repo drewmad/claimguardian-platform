@@ -477,13 +477,13 @@ export class WebSocketMonitor extends EventEmitter {
       { status: "pass" | "fail"; message: string; value?: number }
     >;
   } {
-    const checks = {
+    const checks: Record<string, { status: "pass" | "fail"; message: string; value?: number }> = {
       connections: {
         status:
           this.serviceMetrics.activeConnections <=
           this.alertThresholds.maxConnections
             ? "pass"
-            : ("fail" as const),
+            : "fail",
         message: `${this.serviceMetrics.activeConnections} active connections`,
         value: this.serviceMetrics.activeConnections,
       },
@@ -492,7 +492,7 @@ export class WebSocketMonitor extends EventEmitter {
           this.serviceMetrics.errorRate <=
           this.alertThresholds.errorRateThreshold
             ? "pass"
-            : ("fail" as const),
+            : "fail",
         message: `${this.serviceMetrics.errorRate.toFixed(2)} errors/minute`,
         value: this.serviceMetrics.errorRate,
       },
@@ -501,7 +501,7 @@ export class WebSocketMonitor extends EventEmitter {
           this.serviceMetrics.avgLatency <=
           this.alertThresholds.latencyThreshold
             ? "pass"
-            : ("fail" as const),
+            : "fail",
         message: `${this.serviceMetrics.avgLatency.toFixed(2)}ms average latency`,
         value: this.serviceMetrics.avgLatency,
       },
@@ -510,7 +510,7 @@ export class WebSocketMonitor extends EventEmitter {
           this.serviceMetrics.memoryUsage <=
           this.alertThresholds.memoryThreshold
             ? "pass"
-            : ("fail" as const),
+            : "fail",
         message: `${(this.serviceMetrics.memoryUsage / 1024 / 1024).toFixed(2)}MB memory usage`,
         value: this.serviceMetrics.memoryUsage,
       },

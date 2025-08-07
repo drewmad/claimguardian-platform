@@ -60,8 +60,7 @@ export async function GET(request: NextRequest) {
       console.error("Failed to fetch alerts:", error);
       return NextResponse.json(
         { error: "Failed to fetch alerts" },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -72,8 +71,7 @@ export async function GET(request: NextRequest) {
     console.error("NIMS alerts API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -85,8 +83,7 @@ export async function POST(request: NextRequest) {
     if (!body.sender_id || !body.title || !body.message) {
       return NextResponse.json(
         { error: "Missing required fields: sender_id, title, message" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Create alert using emergency communication manager
@@ -108,13 +105,11 @@ export async function POST(request: NextRequest) {
         alert,
         message: "Emergency alert created successfully",
       },
-      { status: 201 },
-    );
+      { status: 201 });
   } catch (error) {
     console.error("Failed to create alert:", error);
     return NextResponse.json(
       { error: "Failed to create alert" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

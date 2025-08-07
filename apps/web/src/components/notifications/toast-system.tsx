@@ -121,9 +121,11 @@ export function ToastProvider({ children }: { children: ReactNode }) {
 
   const getIcon = (
     variant: ToastVariant,
-    customIcon?: React.ComponentType<any>,
-  ) => {
-    if (customIcon) return customIcon;
+    customIcon?: React.ReactNode,
+  ): React.ComponentType<any> => {
+    if (customIcon && typeof customIcon === 'function') {
+      return customIcon as React.ComponentType<any>;
+    }
 
     switch (variant) {
       case "success":

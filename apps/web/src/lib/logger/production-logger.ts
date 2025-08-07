@@ -14,7 +14,7 @@ interface LogEntry {
   level: LogLevel;
   message: string;
   timestamp: string;
-  context?: Record<string, any>;
+  context?: Record<string, unknown>;
   userId?: string;
   sessionId?: string;
   component?: string;
@@ -55,7 +55,7 @@ class ProductionLogger {
     return logMessage;
   }
 
-  private sanitizeContext(context: Record<string, any>): Record<string, any> {
+  private sanitizeContext(context: Record<string, unknown>): Record<string, unknown> {
     const sanitized = { ...context };
 
     // Remove sensitive fields
@@ -158,7 +158,9 @@ class ProductionLogger {
       message,
       timestamp: new Date().toISOString(),
       context:
-        typeof context === "object" && context !== null ? context : undefined,
+        typeof context === "object" && context !== null 
+          ? context as Record<string, unknown> 
+          : undefined,
       component,
     });
   }
@@ -169,7 +171,9 @@ class ProductionLogger {
       message,
       timestamp: new Date().toISOString(),
       context:
-        typeof context === "object" && context !== null ? context : undefined,
+        typeof context === "object" && context !== null 
+          ? context as Record<string, unknown> 
+          : undefined,
       component,
     });
   }
@@ -180,24 +184,55 @@ class ProductionLogger {
       message,
       timestamp: new Date().toISOString(),
       context:
-        typeof context === "object" && context !== null ? context : undefined,
+        typeof context === "object" && context !== null 
+          ? context as Record<string, unknown> 
+          : undefined,
       component,
     });
   }
 
-  error(message: string, error?: unknown, component?: string): void {
-    // Handle backwards compatibility - error can be Error object or any value
-    const actualError =
-      error instanceof Error
-        ? error
-        : error
-          ? new Error(String(error))
-          : undefined;
+  error(
+    message: string, 
+    contextOrError?: Record<string, unknown> | Error | string | unknown, 
+    errorOrComponent?: Error | string | unknown
+  ): void {
+    // Handle multiple parameter patterns:
+    // 1. error(message, error) - Error as second param
+    // 2. error(message, context, error) - Context as second, error as third
+    // 3. error(message, context, component) - Context as second, component as third
+    
+    let context: Record<string, unknown> | undefined;
+    let actualError: Error | undefined;
+    let component: string | undefined;
+    
+    if (contextOrError instanceof Error) {
+      // Pattern 1: error(message, error)
+      actualError = contextOrError;
+      component = typeof errorOrComponent === 'string' ? errorOrComponent : undefined;
+    } else if (typeof contextOrError === 'object' && contextOrError !== null) {
+      // Pattern 2: error(message, context, error) or error(message, context, component)
+      context = contextOrError as Record<string, unknown>;
+      if (errorOrComponent instanceof Error) {
+        actualError = errorOrComponent;
+      } else if (typeof errorOrComponent === 'string') {
+        component = errorOrComponent;
+      } else if (errorOrComponent) {
+        actualError = new Error(String(errorOrComponent));
+      }
+    } else if (contextOrError) {
+      // String or other type as error
+      actualError = new Error(String(contextOrError));
+      component = typeof errorOrComponent === 'string' ? errorOrComponent : undefined;
+    } else {
+      // No additional params
+      component = typeof errorOrComponent === 'string' ? errorOrComponent : undefined;
+    }
 
     this.writeLog({
       level: "error",
       message,
       timestamp: new Date().toISOString(),
+      context,
       error: actualError,
       component,
     });
@@ -207,7 +242,7 @@ class ProductionLogger {
   logUserAction(
     action: string,
     userId: string,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): void {
     this.info(`User action: ${action}`, { ...context, userId }, "USER_ACTION");
   }
@@ -215,7 +250,7 @@ class ProductionLogger {
   logPerformance(
     operation: string,
     duration: number,
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): void {
     this.info(
       `Performance: ${operation} took ${duration}ms`,
@@ -243,7 +278,7 @@ class ProductionLogger {
   logSecurityEvent(
     event: string,
     severity: "low" | "medium" | "high",
-    context?: Record<string, any>,
+    context?: Record<string, unknown>,
   ): void {
     this.warn(`Security event: ${event}`, { ...context, severity }, "SECURITY");
   }

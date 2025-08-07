@@ -53,8 +53,7 @@ export const POST = withBudgetCheck(
           if (!messages || !Array.isArray(messages)) {
             return NextResponse.json(
               { error: "Messages array is required" },
-              { status: 400 },
-            );
+              { status: 400 });
           }
 
           // Check if the selected provider is configured
@@ -65,15 +64,13 @@ export const POST = withBudgetCheck(
                 error:
                   "Invalid model selection. Only openai and gemini are supported.",
               },
-              { status: 400 },
-            );
+              { status: 400 });
           }
 
           if (!TrackedAIClient.isConfigured(provider)) {
             return NextResponse.json(
               { error: `${provider} API key is not configured` },
-              { status: 503 },
-            );
+              { status: 503 });
           }
 
           // Additional validation for messages structure
@@ -93,8 +90,7 @@ export const POST = withBudgetCheck(
           if (validMessages.length === 0) {
             return NextResponse.json(
               { error: "No valid messages provided" },
-              { status: 400 },
-            );
+              { status: 400 });
           }
 
           // Use the tracked AI client for automatic cost tracking
@@ -120,13 +116,12 @@ export const POST = withBudgetCheck(
         } catch (error) {
           // Don't log the error details in production to avoid information leakage
           if (process.env.NODE_ENV === "development") {
-            logger.error("AI Chat API error:", error);
+            logger.error("AI Chat API error:", {}, error instanceof Error ? error : new Error(String(error)));
           }
 
           return NextResponse.json(
             { error: "Internal server error" },
-            { status: 500 },
-          );
+            { status: 500 });
         }
       },
     ) as Promise<NextResponse>;

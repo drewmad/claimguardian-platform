@@ -6,6 +6,8 @@
  * @status stable
  */
 
+import { logger } from "@/lib/logger/production-logger";
+
 interface CostBudget {
   id: string;
   name: string;
@@ -342,12 +344,18 @@ class AICostMonitor {
       try {
         callback(alert);
       } catch (error) {
-        console.error("Alert callback failed:", error);
+        logger.error(
+          "Alert callback failed",
+          error instanceof Error ? error : new Error(String(error)),
+          "AICostMonitor"
+        );
       }
     });
 
-    console.log(
-      `🚨 Cost Alert [${alert.level.toUpperCase()}]: ${alert.message}`,
+    logger.info(
+      `Cost Alert [${alert.level.toUpperCase()}]: ${alert.message}`,
+      { alertId: alert.id, level: alert.level, type: alert.type },
+      "AICostMonitor"
     );
   }
 
@@ -567,7 +575,11 @@ class AICostMonitor {
         budget.remaining = budget.amount;
         budget.resetDate = this.getNextResetDate(budget.type);
 
-        console.log(`Budget "${budget.name}" has been reset`);
+        logger.info(
+          `Budget "${budget.name}" has been reset`,
+          { budgetId: budget.id, type: budget.type, amount: budget.amount },
+          "AICostMonitor"
+        );
       }
     }
   }

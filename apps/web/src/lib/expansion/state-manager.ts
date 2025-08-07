@@ -8,6 +8,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { logger } from "@/lib/logger";
 
 // Database row types - match actual Supabase schema
 interface StateConfigurationRow {
@@ -226,13 +227,33 @@ class StateExpansionManager {
   private supabase: SupabaseClient | null = null;
   private configCache = new Map<string, StateConfiguration>();
   private cacheExpiry = 30 * 60 * 1000; // 30 minutes
+  private initializationPromise: Promise<void> | null = null;
 
   constructor() {
-    this.initializeSupabase();
+    // Don't initialize immediately to avoid async constructor issues
   }
 
   private async initializeSupabase(): Promise<void> {
-    this.supabase = await createClient();
+    if (this.supabase) return;
+    
+    if (!this.initializationPromise) {
+      this.initializationPromise = this.createSupabaseClient();
+    }
+    
+    return this.initializationPromise;
+  }
+
+  private async createSupabaseClient(): Promise<void> {
+    try {
+      this.supabase = await createClient();
+    } catch (error) {
+      logger.error(
+        "Failed to initialize Supabase client",
+        { module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
+      );
+      throw error;
+    }
   }
 
   /**
@@ -249,9 +270,13 @@ class StateExpansionManager {
     }
 
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
-      const { data, error } = await this.supabase!.from("state_configurations")
+      const { data, error } = await this.supabase.from("state_configurations")
         .select("*")
         .eq("state_code", stateCode.toUpperCase())
         .single();
@@ -276,9 +301,10 @@ class StateExpansionManager {
 
       return config;
     } catch (error) {
-      console.error(
-        `Failed to get state configuration for ${stateCode}:`,
-        error,
+      logger.error(
+        `Failed to get state configuration for ${stateCode}`,
+        { stateCode, module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
       );
       return null;
     }
@@ -289,9 +315,13 @@ class StateExpansionManager {
    */
   async getActiveStates(): Promise<StateConfiguration[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
-      const { data, error } = await this.supabase!.from("state_configurations")
+      const { data, error } = await this.supabase.from("state_configurations")
         .select("*")
         .eq("is_active", true)
         .order("state_name");
@@ -302,7 +332,11 @@ class StateExpansionManager {
         this.parseStateConfiguration(row),
       );
     } catch (error) {
-      console.error("Failed to get active states:", error);
+      logger.error(
+        "Failed to get active states",
+        { module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -314,9 +348,13 @@ class StateExpansionManager {
     status: StateConfiguration["deployment"]["status"],
   ): Promise<StateConfiguration[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
-      const { data, error } = await this.supabase!.from("state_configurations")
+      const { data, error } = await this.supabase.from("state_configurations")
         .select("*")
         .eq("deployment_status", status)
         .order("state_name");
@@ -327,7 +365,11 @@ class StateExpansionManager {
         this.parseStateConfiguration(row),
       );
     } catch (error) {
-      console.error(`Failed to get states with status ${status}:`, error);
+      logger.error(
+        `Failed to get states with status ${status}`,
+        { status, module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -337,11 +379,15 @@ class StateExpansionManager {
    */
   async updateStateConfiguration(config: StateConfiguration): Promise<boolean> {
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
       const dbRecord = this.serializeStateConfiguration(config);
 
-      const { error } = await this.supabase!.from(
+      const { error } = await this.supabase.from(
         "state_configurations",
       ).upsert(dbRecord);
 
@@ -352,9 +398,10 @@ class StateExpansionManager {
 
       return true;
     } catch (error) {
-      console.error(
-        `Failed to update state configuration for ${config.stateCode}:`,
-        error,
+      logger.error(
+        `Failed to update state configuration for ${config.stateCode}`,
+        { stateCode: config.stateCode, module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
       );
       return false;
     }
@@ -568,9 +615,13 @@ class StateExpansionManager {
    */
   async getExpansionPlan(): Promise<StateExpansionPlan[]> {
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
-      const { data, error } = await this.supabase!.from("expansion_plans")
+      const { data, error } = await this.supabase.from("expansion_plans")
         .select("*")
         .order("phase");
 
@@ -580,7 +631,11 @@ class StateExpansionManager {
         this.parseExpansionPlan(row),
       );
     } catch (error) {
-      console.error("Failed to get expansion plan:", error);
+      logger.error(
+        "Failed to get expansion plan",
+        { module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
+      );
       return [];
     }
   }
@@ -908,9 +963,13 @@ class StateExpansionManager {
 
   private async saveExpansionPlan(plan: StateExpansionPlan): Promise<void> {
     try {
-      if (!this.supabase) await this.initializeSupabase();
+      await this.initializeSupabase();
+      
+      if (!this.supabase) {
+        throw new Error("Failed to initialize Supabase client");
+      }
 
-      const { error } = await this.supabase!.from("expansion_plans").upsert({
+      const { error } = await this.supabase.from("expansion_plans").upsert({
         phase: plan.phase,
         states: plan.states,
         timeline_start: plan.timeline.start.toISOString(),
@@ -925,9 +984,10 @@ class StateExpansionManager {
 
       if (error) throw error;
     } catch (error) {
-      console.error(
-        `Failed to save expansion plan for phase ${plan.phase}:`,
-        error,
+      logger.error(
+        `Failed to save expansion plan for phase ${plan.phase}`,
+        { phase: plan.phase, module: "state-expansion" },
+        error instanceof Error ? error : new Error(String(error))
       );
     }
   }

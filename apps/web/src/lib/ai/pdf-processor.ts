@@ -125,7 +125,7 @@ export async function processPDF(
         : undefined,
     };
   } catch (error) {
-    logger.error("Error processing PDF:", toError(error));
+    logger.error("Error processing PDF:", {}, toError(error));
     throw new Error(
       `Failed to process PDF: ${error instanceof Error ? error.message : "Unknown error"}`,
     );

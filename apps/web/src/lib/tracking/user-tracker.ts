@@ -62,7 +62,7 @@ class UserTracker {
       const data = await response.json();
       this.ipAddress = data.ip;
     } catch (error) {
-      logger.error("Failed to fetch IP address:", toError(error));
+      logger.error("Failed to fetch IP address:", {}, toError(error));
     }
   }
 
@@ -124,7 +124,7 @@ class UserTracker {
       });
 
       if (error) {
-        logger.error("Error tracking login:", error);
+        logger.error("Error tracking login:", {}, error instanceof Error ? error : new Error(String(error)));
         return;
       }
 
@@ -148,7 +148,7 @@ class UserTracker {
         pageTitle: document.title,
       });
     } catch (error) {
-      logger.error("Error in trackLogin:", toError(error));
+      logger.error("Error in trackLogin:", {}, toError(error));
     }
   }
 
@@ -166,10 +166,10 @@ class UserTracker {
       });
 
       if (error) {
-        logger.error("Error logging activity:", error);
+        logger.error("Error logging activity:", {}, error instanceof Error ? error : new Error(String(error)));
       }
     } catch (error) {
-      logger.error("Error in logActivity:", toError(error));
+      logger.error("Error in logActivity:", {}, toError(error));
     }
   }
 

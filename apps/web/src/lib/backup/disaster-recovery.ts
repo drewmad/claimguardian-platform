@@ -340,7 +340,7 @@ export class DisasterRecoveryManager {
         error: result.error.message,
       };
 
-      logger.error(`Backup failed`, result.error, { backupId, type });
+      logger.error(`Backup failed`, result.error);
       return failedResult;
     }
 
@@ -587,7 +587,7 @@ export class DisasterRecoveryManager {
 
       return true; // Assume verification passes
     } catch (error) {
-      logger.error("Backup verification failed", error);
+      logger.error("Backup verification failed", error instanceof Error ? error : new Error(String(error)));
       return false;
     }
   }
@@ -618,7 +618,7 @@ export class DisasterRecoveryManager {
 
       logger.debug("Backup record stored", { backupId: backup.id });
     } catch (error) {
-      logger.error("Failed to store backup record", error);
+      logger.error("Failed to store backup record", error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -668,7 +668,7 @@ export class DisasterRecoveryManager {
         weeklyCutoff: weeklyCutoff.toISOString(),
       });
     } catch (error) {
-      logger.error("Failed to cleanup old backups", error);
+      logger.error("Failed to cleanup old backups", error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -732,10 +732,7 @@ export class DisasterRecoveryManager {
           error =
             stepError instanceof Error ? stepError.message : "Unknown error";
 
-          logger.error(`Recovery step failed: ${step.name}`, stepError, {
-            stepId: step.id,
-            planId,
-          });
+          logger.error(`Recovery step failed: ${step.name} (stepId: ${step.id}, planId: ${planId})`, stepError);
 
           break;
         }
@@ -767,7 +764,7 @@ export class DisasterRecoveryManager {
       const duration = Date.now() - startTime;
       error = planError instanceof Error ? planError.message : "Unknown error";
 
-      logger.error(`Disaster recovery plan failed`, planError, { planId });
+      logger.error(`Disaster recovery plan failed (planId: ${planId})`, planError);
 
       return {
         success: false,
@@ -889,7 +886,7 @@ export class DisasterRecoveryManager {
         })) || []
       );
     } catch (error) {
-      logger.error("Failed to get backup history", error);
+      logger.error("Failed to get backup history", error instanceof Error ? error : new Error(String(error)));
       return [];
     }
   }

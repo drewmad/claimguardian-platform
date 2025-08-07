@@ -163,7 +163,7 @@ function PropertyOverviewContent() {
           setProperty(null);
         }
       } catch (error) {
-        logger.error("Error loading property:", error);
+        logger.error("Error loading property:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to load your property.");
         setProperty(null);
       } finally {
@@ -218,7 +218,7 @@ function PropertyOverviewContent() {
           setProperty(transformedData);
         }
       } catch (error) {
-        logger.error("Error reloading property:", error);
+        logger.error("Error reloading property:", {}, error instanceof Error ? error : new Error(String(error)));
       } finally {
         setLoading(false);
       }

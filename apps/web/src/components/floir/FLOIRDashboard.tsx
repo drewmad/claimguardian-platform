@@ -82,7 +82,7 @@ export default function FLOIRDashboard() {
       setStats(statsData || []);
       setRecentRuns(runsData || []);
     } catch (error) {
-      logger.error("Error fetching FLOIR data:", error);
+      logger.error("Error fetching FLOIR data:", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -103,7 +103,7 @@ export default function FLOIRDashboard() {
       // Refresh data after triggering crawl
       setTimeout(fetchData, 2000);
     } catch (error) {
-      logger.error("Error triggering crawl:", error);
+      logger.error("Error triggering crawl:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 

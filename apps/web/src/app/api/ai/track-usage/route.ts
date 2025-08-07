@@ -51,8 +51,7 @@ export async function POST(request: NextRequest) {
           error:
             "Missing required fields: featureId, model, success, responseTime",
         },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const supabase = await createClient();
@@ -94,10 +93,9 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (error) {
-    logger.error("Failed to track AI usage:", error);
+    logger.error("Failed to track AI usage:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to track usage" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

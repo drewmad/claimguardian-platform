@@ -455,8 +455,7 @@ export function withBudgetCheck(handler: Function) {
             reason: canMakeRequest.reason,
             upgradeRequired: canMakeRequest.upgradeRequired,
           },
-          { status: canMakeRequest.upgradeRequired ? 402 : 429 },
-        );
+          { status: canMakeRequest.upgradeRequired ? 402 : 429 });
       }
 
       // Update request count

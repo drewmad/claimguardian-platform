@@ -167,8 +167,7 @@ export function useLazyLoad(threshold: number = 0.1) {
           setIsVisible(false);
         }
       },
-      { threshold },
-    );
+      { threshold });
 
     if (elementRef.current) {
       observer.observe(elementRef.current);

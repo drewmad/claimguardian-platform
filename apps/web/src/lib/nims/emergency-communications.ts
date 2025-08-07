@@ -7,6 +7,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 import { parseString } from "xml2js";
 
 // CAP (Common Alerting Protocol) Message Structure
@@ -406,7 +407,11 @@ export class EmergencyCommunicationManager {
           status: "failed",
           timestamp: new Date().toISOString(),
         });
-        console.error(`Failed to distribute via ${channel}:`, error);
+        logger.error(`Failed to distribute alert via channel`, {
+          channel,
+          alertId,
+          module: 'emergency-communications'
+        }, error instanceof Error ? error : new Error(String(error)));
       }
     }
 
@@ -667,35 +672,57 @@ export class EmergencyCommunicationManager {
         await this.postSocialMediaAlert(alert);
         break;
       default:
-        console.log(`Distribution via ${channel} not yet implemented`);
+        logger.warn(`Distribution channel not yet implemented`, {
+          channel,
+          alertId: alert.id,
+          module: 'emergency-communications'
+        });
     }
   }
 
   private async sendEmailAlert(alert: EmergencyAlert): Promise<void> {
     // Implementation would integrate with email service
-    console.log(`Sending email alert: ${alert.title}`);
+    logger.info(`Sending email alert`, {
+      alertId: alert.id,
+      title: alert.title,
+      module: 'emergency-communications'
+    });
   }
 
   private async sendSMSAlert(alert: EmergencyAlert): Promise<void> {
     // Implementation would integrate with SMS service
-    console.log(`Sending SMS alert: ${alert.title}`);
+    logger.info(`Sending SMS alert`, {
+      alertId: alert.id,
+      title: alert.title,
+      module: 'emergency-communications'
+    });
   }
 
   private async sendEmergencyBroadcast(alert: EmergencyAlert): Promise<void> {
     // Implementation would integrate with EAS system
-    console.log(`Broadcasting emergency alert: ${alert.title}`);
+    logger.info(`Broadcasting emergency alert`, {
+      alertId: alert.id,
+      title: alert.title,
+      module: 'emergency-communications'
+    });
   }
 
   private async postSocialMediaAlert(alert: EmergencyAlert): Promise<void> {
     // Implementation would integrate with social media APIs
-    console.log(`Posting social media alert: ${alert.title}`);
+    logger.info(`Posting social media alert`, {
+      alertId: alert.id,
+      title: alert.title,
+      module: 'emergency-communications'
+    });
   }
 
   private async transmitEDXL(distribution: EDXLDistribution): Promise<void> {
     // Implementation would transmit via EDXL-enabled systems
-    console.log(
-      `Transmitting EDXL distribution: ${distribution.distributionID}`,
-    );
+    logger.info(`Transmitting EDXL distribution`, {
+      distributionId: distribution.distributionID,
+      distributionType: distribution.distributionType,
+      module: 'emergency-communications'
+    });
   }
 
   private async getAlert(alertId: string): Promise<EmergencyAlert> {

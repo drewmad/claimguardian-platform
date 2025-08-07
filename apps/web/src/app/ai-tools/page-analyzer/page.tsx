@@ -176,7 +176,7 @@ function PageAnalyzerContent() {
       setStep("result");
       toast.success("Page analysis completed!");
     } catch (error) {
-      logger.error("Page analysis failed:", toError(error));
+      logger.error("Page analysis failed:", {}, toError(error));
       toast.error("Failed to analyze page. Please try again.");
       setStep("input");
     } finally {
@@ -230,7 +230,7 @@ function PageAnalyzerContent() {
       setFeedbackSubmitted(true);
       toast.success("Thank you for your feedback!");
     } catch (error) {
-      logger.error("Failed to submit quality feedback:", toError(error));
+      logger.error("Failed to submit quality feedback:", {}, toError(error));
       toast.error("Failed to submit feedback");
     }
   };

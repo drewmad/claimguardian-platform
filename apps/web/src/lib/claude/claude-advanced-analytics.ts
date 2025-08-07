@@ -8,7 +8,7 @@
 
 import { claudeSelfReflection } from "./claude-self-reflection";
 import { completeLearningSystem } from "./claude-complete-learning-system";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface TrendDataPoint {
   timestamp: Date;

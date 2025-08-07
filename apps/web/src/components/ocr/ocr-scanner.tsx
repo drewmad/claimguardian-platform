@@ -128,7 +128,7 @@ export function OCRScanner({
         toast.error(ocrResult.error || "Failed to process document");
       }
     } catch (error) {
-      logger.error("OCR error:", error);
+      logger.error("OCR error:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to process document");
     } finally {
       setIsProcessing(false);

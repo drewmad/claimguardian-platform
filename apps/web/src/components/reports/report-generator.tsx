@@ -126,7 +126,7 @@ export function ReportGenerator({
 
       toast.success("Report generated successfully!");
     } catch (error) {
-      logger.error("Report generation error:", error);
+      logger.error("Report generation error:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to generate report");
     } finally {
       setIsGenerating(false);

@@ -208,7 +208,7 @@ export default function PropertySetupPage() {
         router.push("/dashboard");
       }
     } catch (err) {
-      logger.error("Error creating property:", err);
+      logger.error("Error creating property:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : "Failed to save property");
     } finally {
       setIsLoading(false);

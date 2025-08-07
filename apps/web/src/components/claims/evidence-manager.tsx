@@ -210,7 +210,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
             .upload(fileName, file);
 
           if (uploadError) {
-            logger.error("Upload error:", uploadError);
+            logger.error("Upload error:", { uploadError });
             toast.error(`Failed to upload ${file.name}`);
             continue;
           }
@@ -245,7 +245,7 @@ export function EvidenceManager({ claimId, onUpdate }: EvidenceManagerProps) {
           onUpdate([...evidence, ...uploadedEvidence]);
         }
       } catch (error) {
-        logger.error("Upload error:", error);
+        logger.error("Upload error:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to upload files");
       } finally {
         setUploading(false);

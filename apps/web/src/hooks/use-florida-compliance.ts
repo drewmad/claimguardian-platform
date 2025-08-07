@@ -54,7 +54,7 @@ export function useFloridaCompliance() {
       setNeedsDisclosures(!hasAllDisclosures && !hasSeenDisclosures);
       setIsLoading(false);
     } catch (error) {
-      logger.error("Error checking compliance status:", error);
+      logger.error("Error checking compliance status", { error: error instanceof Error ? error.message : String(error) });
       setIsLoading(false);
     }
   }, [supabase, hasSeenDisclosures]);

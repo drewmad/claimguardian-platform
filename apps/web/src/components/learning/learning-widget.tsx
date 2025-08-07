@@ -50,7 +50,7 @@ export function LearningWidget() {
       const searchResults = await learningAssistant.searchLearnings({ query });
       setResults(searchResults);
     } catch (error) {
-      logger.error("Failed to search learnings:", error);
+      logger.error("Failed to search learnings:", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
     }
@@ -61,7 +61,7 @@ export function LearningWidget() {
       const weeklyStats = await learningAssistant.getStats("week");
       setStats(weeklyStats);
     } catch (error) {
-      logger.error("Failed to load stats:", error);
+      logger.error("Failed to load stats:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 

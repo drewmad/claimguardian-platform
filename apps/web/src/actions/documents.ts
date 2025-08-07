@@ -87,9 +87,7 @@ export async function uploadDocument(
     logger.info("Document uploaded successfully", { documentId: data.id });
     return { success: true, documentId: data.id };
   } catch (error) {
-    logger.error("Unexpected error during document upload", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.error("Unexpected error during document upload", { error: error instanceof Error ? error.message : String(error) });
     return { success: false, error: "Failed to upload document" };
   }
 }
@@ -120,9 +118,7 @@ export async function getDocumentInsights(): Promise<{
       .eq("user_id", user.id);
 
     if (statsError) {
-      logger.error("Failed to get document stats", {
-        error: statsError.message,
-      });
+      logger.error("Failed to get document stats", { error: statsError.message });
       return { success: false, error: statsError.message };
     }
 
@@ -214,9 +210,7 @@ export async function getDocumentInsights(): Promise<{
 
     return { success: true, insights };
   } catch (error) {
-    logger.error("Unexpected error generating document insights", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.error("Unexpected error generating document insights", { error: error instanceof Error ? error.message : String(error) });
     return { success: false, error: "Failed to generate insights" };
   }
 }
@@ -361,9 +355,7 @@ export async function getPolicyDocuments(propertyId: string) {
 
     return { success: true, data };
   } catch (error) {
-    logger.error("Unexpected error getting policy documents", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.error("Unexpected error getting policy documents", { error: error instanceof Error ? error.message : String(error) });
     return {
       success: false,
       error: "Failed to get policy documents",
@@ -392,17 +384,13 @@ export async function deletePolicyDocument(documentId: string) {
       .eq("document_type", "policy");
 
     if (error) {
-      logger.error("Failed to delete policy document", {
-        error: error.message,
-      });
+      logger.error("Failed to delete policy document", { error: error.message });
       return { success: false, error: error.message, data: null };
     }
 
     return { success: true, data: true };
   } catch (error) {
-    logger.error("Unexpected error deleting policy document", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.error("Unexpected error deleting policy document", { error: error instanceof Error ? error.message : String(error) });
     return {
       success: false,
       error: "Failed to delete policy document",
@@ -431,9 +419,7 @@ export async function getDocumentDownloadUrl(documentId: string) {
       .single();
 
     if (error) {
-      logger.error("Failed to get document download URL", {
-        error: error.message,
-      });
+      logger.error("Failed to get document download URL", { error: error.message });
       return { success: false, error: error.message, data: null };
     }
 
@@ -447,9 +433,7 @@ export async function getDocumentDownloadUrl(documentId: string) {
       },
     };
   } catch (error) {
-    logger.error("Unexpected error getting document download URL", {
-      error: error instanceof Error ? error.message : String(error),
-    });
+    logger.error("Unexpected error getting document download URL", { error: error instanceof Error ? error.message : String(error) });
     return { success: false, error: "Failed to get download URL", data: null };
   }
 }

@@ -50,7 +50,7 @@ export function APIKeyValidator({
 
         onValidation(hasRequiredKeys);
       } catch (error) {
-        logger.error("Failed to check API keys:", error);
+        logger.error("Failed to check API keys:", {}, error instanceof Error ? error : new Error(String(error)));
         onValidation(false);
       } finally {
         setLoading(false);

@@ -158,11 +158,9 @@ function EnhancedVerifyContent() {
           canRetry: true,
         }));
 
-        logger.error("Email verification URL error", {
-          error: errorParam,
+        logger.error("Email verification URL error", { error: errorParam,
           errorDescription,
-          errorCode,
-        });
+          errorCode });
         return;
       }
 

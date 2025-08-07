@@ -6,7 +6,7 @@
  * @dependencies ["@/lib/logger", "@claimguardian/utils"]
  */
 
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 import { formatDuration } from "@claimguardian/utils";
 
 export interface TaskExecution {
@@ -311,8 +311,7 @@ class ClaudeProductionMonitor {
         "errorRate",
         metrics.errorRate,
         this.config.anomalyThresholds.errorRate,
-        { topErrorTypes: metrics.topErrorTypes },
-      );
+        { topErrorTypes: metrics.topErrorTypes });
     }
 
     // Performance anomaly (spike in execution time)
@@ -330,8 +329,7 @@ class ClaudeProductionMonitor {
         "avgExecutionTime",
         avgTime,
         historicalAvgTime * this.config.anomalyThresholds.durationSpike,
-        { topTaskTypes: metrics.topTaskTypes },
-      );
+        { topTaskTypes: metrics.topTaskTypes });
     }
 
     // Volume anomaly (spike in task volume)
@@ -346,8 +344,7 @@ class ClaudeProductionMonitor {
         "tasksPerMinute",
         tpm,
         historicalTpm * this.config.anomalyThresholds.volumeSpike,
-        { activeSessions: metrics.activeSessions },
-      );
+        { activeSessions: metrics.activeSessions });
     }
 
     return this.anomalies;

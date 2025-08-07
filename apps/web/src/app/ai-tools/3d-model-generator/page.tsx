@@ -89,13 +89,11 @@ interface ModelViewerProps {
 // Dynamic imports for React Three Fiber components with SSR disabled
 const Canvas = dynamic(
   () => import("@react-three/fiber").then((mod) => mod.Canvas),
-  { ssr: false },
-);
+  { ssr: false });
 
 const OrbitControls = dynamic(
   () => import("@react-three/drei").then((mod) => mod.OrbitControls),
-  { ssr: false },
-);
+  { ssr: false });
 
 import { useGLTF } from "@react-three/drei";
 
@@ -127,8 +125,7 @@ const ModelViewerContent = dynamic(
         </>
       );
     }),
-  { ssr: false },
-);
+  { ssr: false });
 
 function ModelViewer({ url, viewMode, autoRotate }: ModelViewerProps) {
   return (

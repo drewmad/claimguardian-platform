@@ -26,8 +26,7 @@ export async function GET(request: NextRequest) {
     if (!targetUrl) {
       return NextResponse.json(
         { error: "URL parameter is required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Validate the URL is from an allowed domain
@@ -35,8 +34,7 @@ export async function GET(request: NextRequest) {
     if (!ALLOWED_DOMAINS.some((domain) => url.hostname.includes(domain))) {
       return NextResponse.json(
         { error: "Domain not allowed" },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Fetch the data from the target URL
@@ -51,8 +49,7 @@ export async function GET(request: NextRequest) {
     if (!response.ok) {
       return NextResponse.json(
         { error: `Target server returned ${response.status}` },
-        { status: response.status },
-      );
+        { status: response.status });
     }
 
     const data = await response.json();
@@ -65,10 +62,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error) {
-    logger.error("Proxy error:", error);
+    logger.error("Proxy error:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Proxy request failed" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

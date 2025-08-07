@@ -321,7 +321,7 @@ function DashboardContent() {
           .single();
 
         if (error && error.code !== "PGRST116") {
-          logger.error("Error checking onboarding:", toError(error));
+          logger.error("Error checking onboarding:", {}, toError(error));
         }
 
         // Check if user has any properties
@@ -347,7 +347,7 @@ function DashboardContent() {
           setShowAIToolsIntro(true);
         }
       } catch (error) {
-        logger.error("Error checking onboarding status:", toError(error));
+        logger.error("Error checking onboarding status:", {}, toError(error));
       } finally {
         setLoading(false);
       }

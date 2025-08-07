@@ -113,7 +113,7 @@ export default function PropertyDetailPage() {
         .single();
 
       if (error) {
-        logger.error("Error fetching property:", error);
+        logger.error("Error fetching property:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to load property details");
         return;
       }
@@ -125,7 +125,7 @@ export default function PropertyDetailPage() {
         });
       }
     } catch (error) {
-      logger.error("Error:", error);
+      logger.error("Error:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("An error occurred while loading property details");
     } finally {
       setLoading(false);
@@ -173,7 +173,7 @@ export default function PropertyDetailPage() {
       setIsEditingLocation(false);
       toast.success("Property location confirmed successfully");
     } catch (error) {
-      logger.error("Error updating location:", error);
+      logger.error("Error updating location:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to update property location");
     } finally {
       setSaving(false);

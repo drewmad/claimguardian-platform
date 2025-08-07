@@ -50,7 +50,6 @@ export async function GET() {
         error: error instanceof Error ? error.message : String(error),
         stack: error instanceof Error ? error.stack : undefined,
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

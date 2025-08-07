@@ -83,7 +83,7 @@ export default function ParcelDashboard() {
       setStats(statsData || []);
       setRecentBatches(batchesData || []);
     } catch (error) {
-      logger.error("Error fetching parcel data:", error);
+      logger.error("Error fetching parcel data:", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -110,7 +110,7 @@ export default function ParcelDashboard() {
       // Refresh data after triggering ingest
       setTimeout(fetchData, 2000);
     } catch (error) {
-      logger.error("Error triggering ingest:", error);
+      logger.error("Error triggering ingest:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 
@@ -135,7 +135,7 @@ export default function ParcelDashboard() {
 
       setTimeout(fetchData, 2000);
     } catch (error) {
-      logger.error("Error enriching properties:", error);
+      logger.error("Error enriching properties:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 

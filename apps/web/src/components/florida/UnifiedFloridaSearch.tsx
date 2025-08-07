@@ -170,7 +170,7 @@ export default function UnifiedFloridaSearch() {
 
       setResults(response);
     } catch (err: unknown) {
-      logger.error("Unified search error:", err);
+      logger.error("Unified search error:", {}, err instanceof Error ? err : new Error(String(err)));
       setError(err instanceof Error ? err.message : "Search failed");
     } finally {
       setLoading(false);
@@ -259,7 +259,7 @@ export default function UnifiedFloridaSearch() {
 
       return `Found ${results.length} results for "${searchQuery}": ${floirCount} insurance regulation records and ${propertyCount} property records. The results show relevant Florida insurance data and property information that may help with your inquiry.`;
     } catch (error) {
-      logger.error("Failed to generate unified answer:", error);
+      logger.error("Failed to generate unified answer:", {}, error instanceof Error ? error : new Error(String(error)));
       return undefined;
     }
   };

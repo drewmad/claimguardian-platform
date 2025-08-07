@@ -26,8 +26,7 @@ export async function GET(
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -40,8 +39,7 @@ export async function GET(
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Get A/B test
@@ -54,8 +52,7 @@ export async function GET(
     if (testError || !test) {
       return NextResponse.json(
         { error: "A/B test not found", success: false },
-        { status: 404 },
-      );
+        { status: 404 });
     }
 
     // Get test results
@@ -80,8 +77,7 @@ export async function GET(
     console.error("A/B Test GET error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -103,8 +99,7 @@ export async function PATCH(
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -117,8 +112,7 @@ export async function PATCH(
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Validate traffic split if provided
@@ -128,8 +122,7 @@ export async function PATCH(
     ) {
       return NextResponse.json(
         { error: "Traffic split must be between 10 and 90", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Update A/B test
@@ -153,15 +146,13 @@ export async function PATCH(
       console.error("Error updating A/B test:", updateError);
       return NextResponse.json(
         { error: "Failed to update A/B test", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     if (!updatedTest) {
       return NextResponse.json(
         { error: "A/B test not found", success: false },
-        { status: 404 },
-      );
+        { status: 404 });
     }
 
     return NextResponse.json({
@@ -172,8 +163,7 @@ export async function PATCH(
     console.error("A/B Test PATCH error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -194,8 +184,7 @@ export async function DELETE(
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -208,8 +197,7 @@ export async function DELETE(
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Delete A/B test (cascade will delete results)
@@ -222,8 +210,7 @@ export async function DELETE(
       console.error("Error deleting A/B test:", deleteError);
       return NextResponse.json(
         { error: "Failed to delete A/B test", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -234,7 +221,6 @@ export async function DELETE(
     console.error("A/B Test DELETE error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

@@ -35,8 +35,7 @@ export async function GET(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required" },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     // Get recent cost alerts
@@ -172,7 +171,6 @@ export async function GET(request: NextRequest) {
     console.error("Failed to get cost alerts:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

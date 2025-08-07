@@ -10,7 +10,7 @@ import { claudeProductionMonitor } from "./claude-production-monitor";
 import { claudeThresholdTuner } from "./claude-threshold-tuner";
 import { claudeABTesting } from "./claude-ab-testing";
 import { claudeAdvancedAnalytics } from "./claude-advanced-analytics";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 interface FeedbackMetric {
   id: string;
@@ -269,7 +269,7 @@ class ClaudeFeedbackLoops {
 
       logger.info("Metrics updated from production data");
     } catch (error) {
-      logger.error("Failed to update metrics from production", { error });
+      logger.error("Failed to update metrics from production", {}, error instanceof Error ? error : new Error(String(error)));
     }
   }
 
@@ -412,7 +412,7 @@ class ClaudeFeedbackLoops {
     } catch (error) {
       action.status = "failed";
       action.actualImpact = `Failed to execute threshold adjustment: ${error}`;
-      logger.error("Threshold adjustment action failed", { actionId, error });
+      logger.error("Threshold adjustment action failed", { actionId }, error instanceof Error ? error : new Error(String(error)));
     }
 
     this.actions.set(actionId, action);
@@ -450,7 +450,7 @@ class ClaudeFeedbackLoops {
       // Check if improvement cycle should start
       await this.checkImprovementCycle();
     } catch (error) {
-      logger.error("Monitoring cycle failed", { error });
+      logger.error("Monitoring cycle failed", {}, error instanceof Error ? error : new Error(String(error)));
     }
   }
 

@@ -157,12 +157,12 @@ export function PropertyEnrichmentStatus({
         .single();
 
       if (error && error.code !== "PGRST116") {
-        logger.error("Error fetching enrichment data:", error);
+        logger.error("Error fetching enrichment data:", {}, error instanceof Error ? error : new Error(String(error)));
       }
 
       setEnrichmentData(data);
     } catch (error) {
-      logger.error("Error:", error);
+      logger.error("Error:", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
     }

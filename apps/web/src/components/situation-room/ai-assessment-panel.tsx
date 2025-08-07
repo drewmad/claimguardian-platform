@@ -78,7 +78,7 @@ export function AIAssessmentPanel({
         speedPriority,
       });
     } catch (error) {
-      logger.error("Failed to run AI assessment:", error);
+      logger.error("Failed to run AI assessment:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 

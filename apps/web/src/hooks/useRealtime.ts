@@ -179,9 +179,9 @@ export function useRealtimeTable<T extends { id: string }>(
             break;
 
           case "DELETE":
-            if (event.old) {
+            if (event.old && 'id' in event.old) {
               updatedData = updatedData.filter(
-                (item) => item.id !== event.old.id,
+                (item) => item.id !== (event.old as { id: any }).id,
               );
             }
             break;

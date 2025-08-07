@@ -13,7 +13,7 @@ import { claudeErrorLogger, ClaudeErrorContext } from "./claude-error-logger";
 import { claudeLearningContext } from "./claude-learning-context";
 import { claudeSelfReflection } from "./claude-self-reflection";
 import { reflectionTriggers, autoReflect } from "./claude-reflection-triggers";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 export interface CompleteLearningContext {
   // Task identification

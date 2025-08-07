@@ -82,7 +82,7 @@ export function EnhancedPolicyChat({ userId }: EnhancedPolicyChatProps) {
         setUploadedPolicy({ url: publicUrl, name: file.name });
         toast.success("Policy document uploaded successfully");
       } catch (error) {
-        logger.error("Upload error:", error);
+        logger.error("Upload error:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to upload policy document");
       } finally {
         setUploading(false);

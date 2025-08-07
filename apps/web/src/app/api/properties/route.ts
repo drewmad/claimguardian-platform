@@ -45,8 +45,7 @@ export const GET = cacheable({ endpoint: "properties" })(
       if (error) {
         return NextResponse.json(
           { error: "Database Error", message: error.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       // Get total count for pagination
@@ -58,8 +57,7 @@ export const GET = cacheable({ endpoint: "properties" })(
       if (countError) {
         return NextResponse.json(
           { error: "Database Error", message: countError.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       return NextResponse.json({
@@ -78,8 +76,7 @@ export const GET = cacheable({ endpoint: "properties" })(
           error: "Internal Server Error",
           message: "An unexpected error occurred",
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
   }),
 );
@@ -106,8 +103,7 @@ export const POST = cacheable({
             error: "Validation Error",
             message: `Missing required fields: ${missingFields.join(", ")}`,
           },
-          { status: 400 },
-        );
+          { status: 400 });
       }
 
       // Create property
@@ -123,8 +119,7 @@ export const POST = cacheable({
       if (error) {
         return NextResponse.json(
           { error: "Database Error", message: error.message },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       // Invalidate user's property cache
@@ -138,8 +133,7 @@ export const POST = cacheable({
           error: "Internal Server Error",
           message: "An unexpected error occurred",
         },
-        { status: 500 },
-      );
+        { status: 500 });
     }
   }),
 );

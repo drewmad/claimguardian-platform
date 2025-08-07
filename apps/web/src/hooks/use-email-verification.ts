@@ -168,15 +168,16 @@ export function useEmailVerification(): EmailVerificationState &
               : [
                   {
                     label: "Try Again",
-                    onClick: () => resendEmail(targetEmail),
+                    onClick: async () => {
+                      await resendEmail(targetEmail);
+                    },
                   },
                 ],
           });
 
           logger.warn(
             "Failed to resend verification email",
-            { email: targetEmail },
-            resendError,
+            { email: targetEmail, error: resendError.message },
           );
           return false;
         }
@@ -199,7 +200,7 @@ export function useEmailVerification(): EmailVerificationState &
           actions: [
             {
               label: "Open Email",
-              onClick: () => {
+              onClick: async () => {
                 const emailDomain =
                   targetEmail.split("@")[1]?.toLowerCase() || "";
                 const emailUrls: Record<string, string> = {

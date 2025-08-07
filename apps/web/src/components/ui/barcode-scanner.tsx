@@ -60,7 +60,7 @@ export function BarcodeScanner({ onScan, onClose }: BarcodeScannerProps) {
         });
       }
     } catch (error) {
-      logger.error("Failed to start scanner:", error);
+      logger.error("Failed to start scanner:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Failed to access camera");
       setIsScanning(false);
     }

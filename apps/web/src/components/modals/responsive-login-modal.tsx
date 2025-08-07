@@ -165,7 +165,7 @@ export function ResponsiveLoginModal() {
       toast.success("Welcome back!");
       closeModal();
     } catch (error) {
-      logger.error("Login failed", { error });
+      logger.error("Login failed", {}, error instanceof Error ? error : new Error(String(error)));
       // Error is handled by auth provider
     } finally {
       setLoading(false);

@@ -41,15 +41,13 @@ export async function POST(request: NextRequest) {
     if (!to || !Array.isArray(to) || to.length === 0) {
       return NextResponse.json(
         { error: "Recipients required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     if (!subject || !html || !alert) {
       return NextResponse.json(
         { error: "Subject, HTML, and alert data required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Rate limiting - max 10 alert emails per minute per user
@@ -59,8 +57,7 @@ export async function POST(request: NextRequest) {
     if (rateLimitCount > 10) {
       return NextResponse.json(
         { error: "Rate limit exceeded for alert emails" },
-        { status: 429 },
-      );
+        { status: 429 });
     }
 
     // Send emails using your preferred email service
@@ -101,8 +98,7 @@ export async function POST(request: NextRequest) {
     console.error("Failed to send alert email:", error);
     return NextResponse.json(
       { error: "Failed to send email" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 

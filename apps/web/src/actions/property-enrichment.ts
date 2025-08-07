@@ -55,10 +55,8 @@ export async function enrichPropertyData({
       .single();
 
     if (propertyError || !property) {
-      logger.error("Property not found or not owned by user", {
-        propertyId,
-        userId: user.id,
-      });
+      logger.error("Property not found or not owned by user", { propertyId,
+        userId: user.id });
       return { success: false, error: "Property not found" };
     }
 
@@ -75,10 +73,8 @@ export async function enrichPropertyData({
       });
 
     if (functionError) {
-      logger.error("Property enrichment request failed", {
-        propertyId,
-        error: functionError,
-      });
+      logger.error("Property enrichment request failed", { propertyId,
+        error: functionError });
       return {
         success: false,
         error: `Enrichment failed: ${functionError.message}`,

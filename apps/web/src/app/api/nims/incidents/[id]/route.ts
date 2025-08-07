@@ -27,8 +27,7 @@ export async function GET(
       if (error.code === "PGRST116") {
         return NextResponse.json(
           { error: "Incident not found" },
-          { status: 404 },
-        );
+          { status: 404 });
       }
       throw error;
     }
@@ -38,8 +37,7 @@ export async function GET(
     console.error("Failed to fetch incident:", error);
     return NextResponse.json(
       { error: "Failed to fetch incident" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -66,13 +64,11 @@ export async function PUT(
     if (error instanceof Error && error.message.includes("not found")) {
       return NextResponse.json(
         { error: "Incident not found" },
-        { status: 404 },
-      );
+        { status: 404 });
     }
     return NextResponse.json(
       { error: "Failed to update incident" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -94,15 +90,13 @@ export async function DELETE(
     if (!incident) {
       return NextResponse.json(
         { error: "Incident not found" },
-        { status: 404 },
-      );
+        { status: 404 });
     }
 
     if (incident.status !== "closed") {
       return NextResponse.json(
         { error: "Only closed incidents can be deleted" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     const { error } = await supabase
@@ -119,7 +113,6 @@ export async function DELETE(
     console.error("Failed to delete incident:", error);
     return NextResponse.json(
       { error: "Failed to delete incident" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

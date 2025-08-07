@@ -97,8 +97,7 @@ export class NaturalLanguageGenerator {
    */
   async generateChangeLog(
     learnings: Learning[],
-    timeframe: { from: Date; to: Date },
-  ): Promise<ChangeLog> {
+    timeframe: { from: Date; to: Date }): Promise<ChangeLog> {
     // TODO: Implement change log generation
     throw new Error(
       "Change log generation requires Opus model. Implementation pending.",

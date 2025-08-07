@@ -259,7 +259,7 @@ export function EnhancedDamageAnalyzer({
       setCurrentStep("results");
       onAnalysisComplete?.(mockResult);
     } catch (error) {
-      logger.error("Analysis error:", error);
+      logger.error("Analysis error:", {}, error instanceof Error ? error : new Error(String(error)));
       toast.error("Analysis failed. Please try again.");
     } finally {
       setIsAnalyzing(false);

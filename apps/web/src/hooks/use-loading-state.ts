@@ -194,12 +194,14 @@ export function useAsyncOperation() {
         loadingState.startLoading(loadingMessage);
 
         if (showProgress) {
+          // Track current progress
+          let currentProgress = 0;
+          
           // Simulate progress for better UX
           const progressInterval = setInterval(() => {
-            loadingState.updateProgress((prev) => {
-              const increment = Math.random() * 20 + 10;
-              return Math.min(90, prev + increment);
-            });
+            const increment = Math.random() * 20 + 10;
+            currentProgress = Math.min(90, currentProgress + increment);
+            loadingState.updateProgress(currentProgress);
           }, 200);
 
           const result = await operation();

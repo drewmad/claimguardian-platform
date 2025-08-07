@@ -87,7 +87,7 @@ export function AIChatInterface({
 
       setMessages((prev) => [...prev, assistantMessage]);
     } catch (error) {
-      logger.error("Chat error:", error);
+      logger.error("Chat error:", {}, error instanceof Error ? error : new Error(String(error)));
       setMessages((prev) => [
         ...prev,
         {

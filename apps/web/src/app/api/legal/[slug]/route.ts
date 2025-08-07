@@ -24,8 +24,7 @@ export async function GET(
     if (!slug) {
       return NextResponse.json(
         { error: "Document slug is required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Get the document by slug from Supabase
@@ -34,8 +33,7 @@ export async function GET(
     if (!document) {
       return NextResponse.json(
         { error: "Document not found" },
-        { status: 404 },
-      );
+        { status: 404 });
     }
 
     // If document has content directly in the database, return it
@@ -106,16 +104,14 @@ export async function GET(
 
         return NextResponse.json(
           { error: "Failed to load document content from storage" },
-          { status: 500 },
-        );
+          { status: 500 });
       }
     }
 
     // No content available
     return NextResponse.json(
       { error: "Document content not available" },
-      { status: 404 },
-    );
+      { status: 404 });
   } catch (error) {
     logger.error(
       "Failed to fetch legal document content",
@@ -125,7 +121,6 @@ export async function GET(
 
     return NextResponse.json(
       { error: "Failed to fetch document content" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

@@ -91,8 +91,7 @@ describe("AI Features Integration Tests", () => {
             expect.stringContaining("Analysis complete"),
           );
         },
-        { timeout: 3000 },
-      );
+        { timeout: 3000 });
 
       // Check for results
       expect(screen.getByText(/approval likelihood/i)).toBeInTheDocument();
@@ -148,8 +147,7 @@ describe("AI Features Integration Tests", () => {
             expect.stringContaining("Fraud scan complete"),
           );
         },
-        { timeout: 4000 },
-      );
+        { timeout: 4000 });
     });
 
     it("displays fraud alerts after scan", async () => {
@@ -214,8 +212,7 @@ describe("AI Features Integration Tests", () => {
             expect.stringContaining("critical compliance issues"),
           );
         },
-        { timeout: 3000 },
-      );
+        { timeout: 3000 });
 
       // Verify report is displayed
       expect(screen.getByText(/compliance score/i)).toBeInTheDocument();
@@ -314,8 +311,7 @@ describe("AI Features Integration Tests", () => {
             "Sentiment analysis complete",
           );
         },
-        { timeout: 2000 },
-      );
+        { timeout: 2000 });
     });
 
     it("displays emotion breakdown correctly", () => {
@@ -373,8 +369,7 @@ describe("AI Features Integration Tests", () => {
             expect.stringContaining("Predictive scan complete"),
           );
         },
-        { timeout: 4000 },
-      );
+        { timeout: 4000 });
     });
 
     it("displays maintenance alerts", () => {

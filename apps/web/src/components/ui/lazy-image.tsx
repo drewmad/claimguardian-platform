@@ -56,8 +56,7 @@ export function LazyImage({
           }
         });
       },
-      { threshold, rootMargin: "50px" },
-    );
+      { threshold, rootMargin: "50px" });
 
     if (containerRef.current) {
       observer.observe(containerRef.current);

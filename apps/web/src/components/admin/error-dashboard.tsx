@@ -80,7 +80,7 @@ export function ErrorDashboard() {
       if (error) throw error;
       setErrors(data || []);
     } catch (error) {
-      logger.error("Failed to fetch errors:", error);
+      logger.error("Failed to fetch errors:", {}, error instanceof Error ? error : new Error(String(error)));
     } finally {
       setLoading(false);
     }
@@ -97,7 +97,7 @@ export function ErrorDashboard() {
       if (error) throw error;
       setSummary(data || []);
     } catch (error) {
-      logger.error("Failed to fetch error summary:", error);
+      logger.error("Failed to fetch error summary:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   }, [supabase]);
 
@@ -121,7 +121,7 @@ export function ErrorDashboard() {
       // Refresh the list
       fetchErrors();
     } catch (error) {
-      logger.error("Failed to resolve error:", error);
+      logger.error("Failed to resolve error:", {}, error instanceof Error ? error : new Error(String(error)));
     }
   };
 

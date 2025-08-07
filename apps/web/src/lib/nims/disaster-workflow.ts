@@ -7,6 +7,7 @@
  */
 
 import { createClient } from "@/lib/supabase/client";
+import { logger } from "@/lib/logger";
 import {
   ICSIncident,
   ICSObjective,
@@ -468,7 +469,11 @@ export class DisasterWorkflowManager {
     await this.sendActivationNotifications(workflow, triggerId);
 
     // Log activation
-    console.log(`Workflow ${workflowId} activated by trigger ${triggerId}`);
+    logger.info(`Workflow activated by trigger`, {
+      workflowId,
+      triggerId,
+      module: 'disaster-workflow'
+    });
   }
 
   /**
@@ -762,7 +767,11 @@ export class DisasterWorkflowManager {
     phaseId: string,
   ): Promise<void> {
     // Implementation would activate all activities in the phase
-    console.log(`Activating phase ${phaseId} in workflow ${workflowId}`);
+    logger.info(`Activating workflow phase`, {
+      workflowId,
+      phaseId,
+      module: 'disaster-workflow'
+    });
   }
 
   private async sendActivationNotifications(
@@ -803,7 +812,11 @@ export class DisasterWorkflowManager {
     phase: ResponsePhase,
   ): Promise<void> {
     // Implementation would complete all activities in phase
-    console.log(`Completing activities for phase ${phase}`);
+    logger.info(`Completing phase activities`, {
+      workflowId,
+      phase,
+      module: 'disaster-workflow'
+    });
   }
 
   private findActivityInWorkflow(
@@ -819,7 +832,10 @@ export class DisasterWorkflowManager {
 
   private async checkPhaseCompletion(workflowId: string): Promise<void> {
     // Implementation would check if current phase is complete and ready to transition
-    console.log(`Checking phase completion for workflow ${workflowId}`);
+    logger.info(`Checking phase completion`, {
+      workflowId,
+      module: 'disaster-workflow'
+    });
   }
 
   private async calculateResourceEfficiency(

@@ -29,8 +29,7 @@ export async function POST(request: NextRequest) {
     if (!toolName) {
       return NextResponse.json(
         { error: "Tool name is required" },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Estimate tokens based on text length
@@ -63,7 +62,6 @@ export async function POST(request: NextRequest) {
     console.error("Failed to estimate cost:", error);
     return NextResponse.json(
       { error: "Internal server error" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

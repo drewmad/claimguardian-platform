@@ -43,8 +43,7 @@ interface UseGoogleMapsReturn {
  * ```
  */
 export function useGoogleMaps(
-  config: GoogleMapsConfig = { libraries: ["places"] },
-): UseGoogleMapsReturn {
+  config: GoogleMapsConfig = { libraries: ["places"] }): UseGoogleMapsReturn {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

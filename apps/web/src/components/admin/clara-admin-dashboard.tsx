@@ -84,8 +84,7 @@ export function ClaraAdminDashboard() {
     try {
       const allSessions = await claraAICompanionService.getAdminSessions(
         adminId,
-        { limit: 50 },
-      );
+        { limit: 50 });
       setSessions(allSessions);
     } catch (error) {
       console.error("Error loading Clara sessions:", error);

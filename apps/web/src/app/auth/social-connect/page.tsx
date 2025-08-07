@@ -96,7 +96,7 @@ export default function SocialConnectPage() {
   };
 
   const handleSocialError = (error: string) => {
-    logger.error("Social connection failed", { error });
+    logger.error("Social connection failed", {}, new Error(String(error)));
   };
 
   if (authLoading || isLoading) {

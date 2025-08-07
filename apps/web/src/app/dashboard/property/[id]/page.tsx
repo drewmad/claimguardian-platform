@@ -273,7 +273,7 @@ function PropertyDetailContent() {
           });
         }
       } catch (error) {
-        logger.error("Error loading property:", error);
+        logger.error("Error loading property:", {}, error instanceof Error ? error : new Error(String(error)));
         toast.error("Failed to load property details");
         // Use mock data as fallback
         const addressString = "1234 Main Street, Austin, TX 78701";
@@ -352,7 +352,7 @@ function PropertyDetailContent() {
       const { data, error } = await updateProperty({ propertyId, updates });
 
       if (error) {
-        logger.error("[PROPERTY SAVE] Update failed:", error);
+        logger.error("[PROPERTY SAVE] Update failed:", {}, error instanceof Error ? error : new Error(String(error)));
         throw error;
       }
 
@@ -376,7 +376,7 @@ function PropertyDetailContent() {
       setIsEditing(false);
       toast.success("Property details updated successfully");
     } catch (error) {
-      logger.error("[PROPERTY SAVE] Error saving property:", error);
+      logger.error("[PROPERTY SAVE] Error saving property:", {}, error instanceof Error ? error : new Error(String(error)));
       const errorMessage =
         error instanceof Error
           ? error.message

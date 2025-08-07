@@ -100,10 +100,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      logger.error("Failed to update email status", {
-        emailId: event.data.email_id,
-        error,
-      });
+      logger.error("Failed to update email status", { emailId: event.data.email_id,
+        error });
       // Don't return error to Resend - we don't want them to retry
     }
 

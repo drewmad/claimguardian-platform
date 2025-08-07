@@ -432,7 +432,7 @@ Format the summary for submission to an insurance company.`;
         responseTime,
       });
 
-      logger.error("Error generating summary:", toError(error));
+      logger.error("Error generating summary:", {}, toError(error));
       toast.error("Failed to generate claim summary");
       return null;
     } finally {

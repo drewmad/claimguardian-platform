@@ -45,7 +45,7 @@ export interface RealtimeEvent<T = any> {
   table: string;
   schema: string;
   new: T | null;
-  old: T | null;
+  old: Partial<T> | {} | null;
   timestamp: Date;
   userId?: string;
   metadata?: Record<string, any>;
@@ -148,7 +148,7 @@ export class RealtimeManager {
       this.isInitialized = true;
       logger.info("Realtime manager initialized successfully");
     } catch (error) {
-      logger.error("Failed to initialize realtime manager", error as Error);
+      logger.error("Failed to initialize realtime manager", undefined, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -204,13 +204,22 @@ export class RealtimeManager {
         "postgres_changes",
         postgresFilter,
         async (payload: RealtimePostgresChangesPayload<T>) => {
+          // Helper function to check if payload data is valid (not an empty object)
+          const isValidNewPayload = (data: unknown): data is T => {
+            return data !== null && typeof data === 'object' && Object.keys(data).length > 0;
+          };
+
+          const isValidOldPayload = (data: unknown): data is Partial<T> | {} => {
+            return data !== null && typeof data === 'object';
+          };
+
           const event: RealtimeEvent<T> = {
             id: `evt_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
             type: payload.eventType as RealtimeEventType,
             table: payload.table,
             schema: payload.schema,
-            new: payload.new,
-            old: payload.old,
+            new: isValidNewPayload(payload.new) ? payload.new : null,
+            old: isValidOldPayload(payload.old) ? payload.old : null,
             timestamp: new Date(),
             metadata: {
               commitTimestamp: payload.commit_timestamp,
@@ -229,7 +238,7 @@ export class RealtimeManager {
 
           // Execute callback
           try {
-            await callback(event);
+            await Promise.resolve(callback(event));
 
             // Update subscription metrics
             const subscription = this.subscriptions.get(subscriptionId);
@@ -264,11 +273,7 @@ export class RealtimeManager {
             channelName,
           });
         } else if (status === "CHANNEL_ERROR") {
-          logger.error("Realtime subscription error", {
-            subscriptionId,
-            table,
-            error: err,
-          });
+          logger.error("Realtime subscription error", { subscriptionId, table }, err instanceof Error ? err : new Error(String(err)));
           if (errorCallback) {
             errorCallback(err || new Error("Channel subscription failed"));
           }
@@ -377,8 +382,21 @@ export class RealtimeManager {
             const presence = Array.isArray(presences)
               ? presences[0]
               : presences;
-            if (presence) {
-              presenceMap.set(userId, presence as PresenceState);
+            if (presence && typeof presence === 'object' && 'presence_ref' in presence) {
+              // Type guard for presence object structure
+              const presenceData = presence as any;
+              // Safely construct PresenceState with default values for missing fields
+              const presenceState: PresenceState = {
+                userId: userId,
+                userInfo: presenceData.userInfo || {},
+                location: presenceData.location || { page: '', path: '' },
+                activity: presenceData.activity || { 
+                  lastSeen: new Date(), 
+                  status: 'online' as const 
+                },
+                metadata: presenceData.metadata
+              };
+              presenceMap.set(userId, presenceState);
             }
           });
 
@@ -617,7 +635,7 @@ export class RealtimeManager {
       this.isInitialized = false;
       logger.info("Realtime manager shutdown complete");
     } catch (error) {
-      logger.error("Realtime manager shutdown failed", error as Error);
+      logger.error("Realtime manager shutdown failed", undefined, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -651,15 +669,19 @@ export class RealtimeManager {
 
   private async updateCache(event: RealtimeEvent): Promise<void> {
     try {
-      const cacheKey = `${event.table}:${event.new?.id || event.old?.id}`;
+      const getId = (obj: any): string | undefined => {
+        return obj && typeof obj === 'object' && 'id' in obj ? obj.id : undefined;
+      };
+      
+      const newId = getId(event.new);
+      const oldId = getId(event.old);
+      const cacheKey = `${event.table}:${newId || oldId}`;
 
       switch (event.type) {
         case "INSERT":
         case "UPDATE":
           if (event.new) {
-            await this.cacheManager.set(cacheKey, event.new, {
-              ttl: 5 * 60 * 1000,
-            });
+            await this.cacheManager.set(cacheKey, event.new);
           }
           break;
 
@@ -673,10 +695,14 @@ export class RealtimeManager {
         table: event.table,
       });
     } catch (error) {
-      logger.warn(
+      logger.error(
         "Failed to update cache from realtime event",
-        event,
-        error as Error,
+        { 
+          eventType: event.type, 
+          table: event.table, 
+          eventId: event.id
+        },
+        error as Error
       );
     }
   }
@@ -798,7 +824,7 @@ export const realtimeUtils = {
       events,
       async (event) => {
         // Execute original callback
-        await callback(event);
+        await Promise.resolve(callback(event));
 
         // Invalidate related cache keys
         if (cacheKeyGenerator) {
@@ -809,7 +835,7 @@ export const realtimeUtils = {
           }
         }
       },
-      { enableCache: true },
+      { enableCache: true }
     );
   },
 

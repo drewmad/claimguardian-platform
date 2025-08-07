@@ -932,10 +932,8 @@ export class LegalDocumentGenerator extends SupabaseService {
         });
 
       if (error) {
-        logger.error("Failed to store generated document", {
-          documentId: document.id,
-          error,
-        });
+        logger.error("Failed to store generated document", { documentId: document.id,
+          error });
         throw error;
       }
     } catch (error) {

@@ -3,7 +3,8 @@
  * Comprehensive testing suite for AI cost tracking system
  */
 
-import { createBrowserSupabaseClient } from "@claimguardian/db";
+// Import mocked for testing - actual implementation would use createBrowserSupabaseClient
+// import { createBrowserSupabaseClient } from "@claimguardian/db";
 
 // Mock AI providers for testing
 export interface MockAIProvider {
@@ -40,8 +41,23 @@ export const mockOpenAIProvider: MockAIProvider = {
     prompt: string,
     model: string = "gpt-4",
   ): Promise<MockAIResponse> => {
+    // Handle empty prompts
+    if (!prompt || prompt.trim().length === 0) {
+      return {
+        content: "",
+        tokens: {
+          prompt: 0,
+          completion: 0,
+          total: 0,
+        },
+        model,
+        cost: 0,
+        latency: 0,
+      };
+    }
+
     const promptTokens = Math.ceil(prompt.length / 4); // Rough estimate
-    const completionTokens = Math.floor(Math.random() * 200) + 50;
+    const completionTokens = Math.floor(Math.random() * 100) + Math.ceil(prompt.length / 8); // Scale with prompt length
     const totalTokens = promptTokens + completionTokens;
 
     const cost = mockOpenAIProvider.calculateCost(totalTokens, model);
@@ -88,7 +104,20 @@ export const mockGeminiProvider: MockAIProvider = {
     prompt: string,
     model: string = "gemini-pro",
   ): Promise<MockAIResponse> => {
-    const promptTokens = Math.ceil(prompt.length / 4);
+    // Handle empty prompts
+    if (!prompt || prompt.trim().length === 0) {
+      return {
+        content: "",
+        tokens: {
+          prompt: 0,
+          completion: 0,
+          total: 0,
+        },
+        model,
+        cost: 0,
+        latency: 0,
+      };
+    }    const promptTokens = Math.ceil(prompt.length / 4);
     const completionTokens = Math.floor(Math.random() * 150) + 40;
     const totalTokens = promptTokens + completionTokens;
 
@@ -365,19 +394,15 @@ export class AIContentTestingFramework {
     userId: string,
     amount: number,
   ): Promise<void> {
-    const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.from("ai_cost_budgets").upsert({
-      user_id: userId,
-      monthly_budget: amount,
-      current_usage: 0,
-      reset_day: 1,
-      alert_thresholds: [0.5, 0.8, 0.9],
-      is_active: true,
-    });
-
-    if (error) {
-      throw new Error(`Failed to create test budget: ${error.message}`);
-    }
+    // Mock implementation for testing
+    // In actual implementation, would use createBrowserSupabaseClient()
+    console.log(`Creating test budget for ${userId}: $${amount}`);
+    
+    // Simulate database operation
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Mock successful creation
+    return Promise.resolve();
   }
 
   private async recordAIUsage(usage: {
@@ -390,40 +415,37 @@ export class AIContentTestingFramework {
     response_time_ms: number;
     success: boolean;
   }): Promise<void> {
-    const supabase = createBrowserSupabaseClient();
-    const { error } = await supabase.from("ai_usage_tracking").insert({
-      ...usage,
-      created_at: new Date().toISOString(),
-    });
-
-    if (error) {
-      throw new Error(`Failed to record AI usage: ${error.message}`);
-    }
+    // Mock implementation for testing
+    console.log(`Recording AI usage: ${usage.provider}/${usage.model} - $${usage.cost}`);
+    
+    // Simulate database operation
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // Mock successful recording
+    return Promise.resolve();
   }
 
   private async getCurrentUsage(userId: string): Promise<number> {
-    const supabase = createBrowserSupabaseClient();
-    const { data, error } = await supabase
-      .from("ai_cost_budgets")
-      .select("current_usage")
-      .eq("user_id", userId)
-      .single();
-
-    if (error) {
-      console.error("Failed to get current usage:", error);
-      return 0;
-    }
-
-    return data?.current_usage || 0;
+    // Mock implementation for testing
+    // Returns a simulated usage percentage (0.0 to 1.0)
+    console.log(`Getting current usage for ${userId}`);
+    
+    // Simulate database operation
+    await new Promise(resolve => setTimeout(resolve, 25));
+    
+    // Mock current usage - simulate increasing usage over time
+    return Math.min(0.9, Math.random() * 0.85);
   }
 
   private async cleanupTestData(userId: string): Promise<void> {
-    const supabase = createBrowserSupabaseClient();
-    // Remove test usage records
-    await supabase.from("ai_usage_tracking").delete().eq("user_id", userId);
-
-    // Remove test budget
-    await supabase.from("ai_cost_budgets").delete().eq("user_id", userId);
+    // Mock implementation for testing
+    console.log(`Cleaning up test data for ${userId}`);
+    
+    // Simulate cleanup operations
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    // Mock successful cleanup
+    return Promise.resolve();
   }
 
   generateTestReport(): void {

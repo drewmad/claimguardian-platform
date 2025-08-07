@@ -176,7 +176,7 @@ export class IndexAnalyzer {
         analysis,
       };
     } catch (error) {
-      logger.error("Index analysis failed", error as Error);
+      logger.error("Index analysis failed", {}, error instanceof Error ? error : new Error(String(error)));
       throw error;
     }
   }
@@ -280,7 +280,7 @@ export class IndexAnalyzer {
         .eq("table_name", recommendation.table)
         .in("column_name", recommendation.columns);
 
-      const existingColumns = columns?.map((c) => c.column_name) || [];
+      const existingColumns = columns?.map((c: any) => c.column_name) || [];
       const missingColumns = recommendation.columns.filter(
         (col) => !existingColumns.includes(col),
       );
@@ -901,7 +901,7 @@ export class IndexAnalyzer {
       mitigation.push("Monitor write performance after creation");
     }
 
-    const level =
+    const level: "high" | "medium" | "low" =
       factors.length > 2 ? "high" : factors.length > 0 ? "medium" : "low";
 
     return { level, factors, mitigation };

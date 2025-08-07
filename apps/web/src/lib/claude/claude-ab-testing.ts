@@ -13,7 +13,7 @@ import {
 } from "./claude-advanced-analytics";
 import { claudeEnhancedAutomation } from "./claude-enhanced-automation";
 import { withCompleteLearning } from "./claude-complete-learning-system";
-import { logger } from "@/lib/logger";
+import { logger } from "../logger";
 
 interface ABTestSession {
   sessionId: string;
@@ -226,12 +226,11 @@ class ClaudeABTestingFramework {
       success = true;
       session.successCount++;
     } catch (error) {
-      logger.error("Task execution failed in A/B test", {
+      logger.error("Task execution failed in A/B test", { 
         sessionId,
         group: session.group,
-        taskType,
-        error,
-      });
+        taskType
+      }, error instanceof Error ? error : new Error(String(error)));
 
       session.errorCount++;
       throw error;
@@ -544,11 +543,11 @@ class ClaudeABTestingFramework {
     const now = Date.now();
     const expiredSessions: string[] = [];
 
-    for (const [sessionId, session] of this.sessions) {
+    Array.from(this.sessions.entries()).forEach(([sessionId, session]) => {
       if (now - session.startTime.getTime() > this.config.maxSessionDuration) {
         expiredSessions.push(sessionId);
       }
-    }
+    });
 
     expiredSessions.forEach((sessionId) => {
       this.sessions.delete(sessionId);

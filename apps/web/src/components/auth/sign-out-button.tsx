@@ -35,7 +35,7 @@ export function SignOutButton({
     try {
       await signOut();
     } catch (error) {
-      logger.error("Sign out error:", error);
+      logger.error("Sign out error:", {}, error instanceof Error ? error : new Error(String(error)));
       // Even if sign out fails, try to redirect
       window.location.href = "/";
     } finally {

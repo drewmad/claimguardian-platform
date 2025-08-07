@@ -30,8 +30,7 @@ export async function GET(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -44,8 +43,7 @@ export async function GET(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     const response: Record<string, unknown> = {};
@@ -61,8 +59,7 @@ export async function GET(request: NextRequest) {
         console.error("Error fetching AI model configs:", configsError);
         return NextResponse.json(
           { error: "Failed to fetch configurations", success: false },
-          { status: 500 },
-        );
+          { status: 500 });
       }
 
       response.configs = configs;
@@ -145,8 +142,7 @@ export async function GET(request: NextRequest) {
     console.error("AI Operations API error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }
 
@@ -165,8 +161,7 @@ export async function POST(request: NextRequest) {
     if (authError || !user) {
       return NextResponse.json(
         { error: "Unauthorized", success: false },
-        { status: 401 },
-      );
+        { status: 401 });
     }
 
     // Verify admin role
@@ -179,15 +174,13 @@ export async function POST(request: NextRequest) {
     if (!profile || profile.role !== "admin") {
       return NextResponse.json(
         { error: "Admin access required", success: false },
-        { status: 403 },
-      );
+        { status: 403 });
     }
 
     if (!feature_mappings || !Array.isArray(feature_mappings)) {
       return NextResponse.json(
         { error: "Invalid feature mappings data", success: false },
-        { status: 400 },
-      );
+        { status: 400 });
     }
 
     // Upsert model configurations
@@ -214,8 +207,7 @@ export async function POST(request: NextRequest) {
       console.error("Error upserting model configurations:", upsertError);
       return NextResponse.json(
         { error: "Failed to save configurations", success: false },
-        { status: 500 },
-      );
+        { status: 500 });
     }
 
     return NextResponse.json({
@@ -226,7 +218,6 @@ export async function POST(request: NextRequest) {
     console.error("AI Operations POST error:", error);
     return NextResponse.json(
       { error: "Internal server error", success: false },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

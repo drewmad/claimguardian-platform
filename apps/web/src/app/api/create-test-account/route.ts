@@ -40,11 +40,10 @@ export async function POST() {
     // This bypasses email verification for testing
     const { error: confirmError } = await supabase.auth.admin.updateUserById(
       data.user!.id,
-      { email_confirm: true },
-    );
+      { email_confirm: true });
 
     if (confirmError) {
-      logger.error("Failed to auto-confirm user:", confirmError);
+      logger.error("Failed to auto-confirm user:", { confirmError });
     }
 
     return NextResponse.json({
@@ -56,10 +55,9 @@ export async function POST() {
       message: "Test account created and confirmed!",
     });
   } catch (error) {
-    logger.error("Error creating test account:", error);
+    logger.error("Error creating test account:", {}, error instanceof Error ? error : new Error(String(error)));
     return NextResponse.json(
       { error: "Failed to create test account" },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

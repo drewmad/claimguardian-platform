@@ -91,7 +91,6 @@ export async function GET(req: NextRequest) {
         error: error.message,
         message: "Check console for details",
       },
-      { status: 500 },
-    );
+      { status: 500 });
   }
 }

@@ -191,8 +191,7 @@ describe("Auth Server Actions", () => {
       );
       expect(mockSupabase.auth.resetPasswordForEmail).toHaveBeenCalledWith(
         "test@example.com",
-        { redirectTo: "http://localhost:3000/auth/reset-password" },
-      );
+        { redirectTo: "http://localhost:3000/auth/reset-password" });
     });
 
     it("should handle reset password errors", async () => {

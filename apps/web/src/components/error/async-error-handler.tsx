@@ -147,13 +147,12 @@ export function useAsyncError(retryConfig: Partial<RetryConfig> = {}) {
             attemptCount < config.maxAttempts &&
             (config.retryCondition?.(asyncError) ?? true);
 
-          logger.error("Async operation failed", {
+          logger.error("Async operation failed", { 
+            maxAttempts: config.maxAttempts,
             error: asyncError.message,
             context,
             attemptCount: attemptCount + 1,
-            shouldRetry,
-            maxAttempts: config.maxAttempts,
-          });
+            shouldRetry });
 
           if (shouldRetry) {
             const retryDelay = calculateRetryDelay(attemptCount);

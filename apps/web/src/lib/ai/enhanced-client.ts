@@ -268,8 +268,7 @@ export class EnhancedAIClient extends AIClient {
         cacheMessages,
         request.featureId,
         selectedModel.selectedModel,
-        { imageHash },
-      );
+        { imageHash });
 
       if (cachedResponse) {
         response = cachedResponse.response;
@@ -298,8 +297,7 @@ export class EnhancedAIClient extends AIClient {
             response,
             estimatedCost,
             Date.now() - startTime,
-            { imageHash },
-          );
+            { imageHash });
         } catch (primaryError) {
           console.warn(
             `Primary vision model failed, trying fallback:`,
@@ -330,8 +328,7 @@ export class EnhancedAIClient extends AIClient {
               response,
               estimatedCost,
               Date.now() - startTime,
-              { imageHash },
-            );
+              { imageHash });
           } else {
             throw primaryError;
           }

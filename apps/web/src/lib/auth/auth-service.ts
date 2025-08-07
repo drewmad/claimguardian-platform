@@ -157,9 +157,7 @@ class AuthService {
       }
 
       if (!authData.user) {
-        logger.error(
-          "[AUTH DEBUG] No user data returned despite successful signup",
-        );
+        logger.error("[AUTH DEBUG] No user data returned despite successful signup");
         throw new AuthError(
           "Signup successful but no user data returned",
           "AUTH_INVALID_RESPONSE",
@@ -209,6 +207,7 @@ class AuthService {
 
       logger.error(
         "Signup failed",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -285,6 +284,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Signin failed",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -331,6 +331,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Signout failed",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -368,6 +369,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Password reset failed",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -412,6 +414,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Password update failed",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -453,6 +456,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Failed to resend confirmation email",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -488,6 +492,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Failed to get current user",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 
@@ -527,6 +532,7 @@ class AuthService {
     } catch (error) {
       logger.error(
         "Failed to refresh session",
+        {},
         error instanceof Error ? error : new Error(String(error)),
       );
 

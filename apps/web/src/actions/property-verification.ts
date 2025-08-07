@@ -201,10 +201,8 @@ export async function getUserEnrichmentStats(userId: string) {
       .eq("user_id", userId);
 
     if (propError) {
-      logger.error("Failed to fetch user properties", {
-        userId,
-        error: propError,
-      });
+      logger.error("Failed to fetch user properties", { userId,
+        error: propError });
       return { success: false, error: "Failed to fetch properties" };
     }
 
@@ -233,10 +231,8 @@ export async function getUserEnrichmentStats(userId: string) {
       .eq("is_current", true);
 
     if (enrichError) {
-      logger.error("Failed to fetch enrichment data", {
-        userId,
-        error: enrichError,
-      });
+      logger.error("Failed to fetch enrichment data", { userId,
+        error: enrichError });
       return { success: false, error: "Failed to fetch enrichment data" };
     }
 
