@@ -175,14 +175,11 @@ export function Hero() {
           </AnimatedSection>
 
           <AnimatedSection delay={200}>
-            {/* Florida Forged & Hurricane Tested Badges */}
+            {/* Florida Focused & Hurricane Tested Badges */}
             <div className="mt-6 flex justify-center gap-3 flex-wrap">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-orange-500/20 to-yellow-500/20 border border-orange-400/50 rounded-full backdrop-blur-sm">
-                {/* Shark Tooth Icon */}
-                <svg className="w-5 h-5 text-orange-400" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2L4 20h16L12 2zm0 4.5l4.5 11h-9L12 6.5z"/>
-                </svg>
-                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Forged</span>
+                <span className="text-lg">🐊</span>
+                <span className="text-sm font-bold text-orange-300 uppercase tracking-wider">Florida Focused</span>
               </div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500/20 to-cyan-500/20 border border-blue-400/50 rounded-full backdrop-blur-sm">
                 <span className="text-lg">🌀</span>
