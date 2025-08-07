@@ -4,12 +4,6 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 // Vector tile generation for MapBox
 // Using Mapbox Vector Tile (MVT) format
 
-interface TileParams {
-  z: string; // zoom level
-  x: string; // tile column
-  y: string; // tile row
-}
-
 // Convert tile coordinates to bounding box
 function tileToBBOX(x: number, y: number, z: number) {
   const n = Math.PI - 2 * Math.PI * y / Math.pow(2, z);
@@ -33,12 +27,13 @@ function getSimplificationTolerance(zoom: number): number {
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: TileParams }
+  { params }: { params: Promise<{ z: string; x: string; y: string }> }
 ) {
+  const { z: zStr, x: xStr, y: yStr } = await params;
   try {
-    const z = parseInt(params.z);
-    const x = parseInt(params.x);
-    const y = parseInt(params.y);
+    const z = parseInt(zStr);
+    const x = parseInt(xStr);
+    const y = parseInt(yStr);
     
     // Validate tile coordinates
     if (isNaN(z) || isNaN(x) || isNaN(y) || z < 0 || z > 22) {

@@ -45,13 +45,36 @@ export default function PricingPage() {
       <section className="relative py-20 sm:py-32">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-transparent to-purple-600/10" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <div className="mb-4">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-blue-600/20 text-blue-400 border border-blue-600/30">
+              🌀 Hurricane Season Ready • FEMA NIMS Compliant
+            </span>
+          </div>
           <h1 className="text-5xl sm:text-6xl font-bold text-white mb-6">
-            Simple, transparent pricing
+            AI-Powered Insurance Advocacy
+            <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+              + Emergency Management
+            </span>
           </h1>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto mb-12">
-            Choose the plan that's right for you. Upgrade or downgrade at any
-            time.
+          <p className="text-xl text-gray-400 max-w-3xl mx-auto mb-8">
+            The only platform combining insurance claim optimization with federal emergency management. 
+            Protect your property before, during, and after disasters.
           </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-2xl mx-auto mb-12">
+            <div className="flex items-center justify-center space-x-2 text-sm">
+              <span className="text-green-400">✓</span>
+              <span className="text-gray-300">30-40% higher claim payouts</span>
+            </div>
+            <div className="flex items-center justify-center space-x-2 text-sm">
+              <span className="text-green-400">✓</span>
+              <span className="text-gray-300">FEMA NIMS compliant</span>
+            </div>
+            <div className="flex items-center justify-center space-x-2 text-sm">
+              <span className="text-green-400">✓</span>
+              <span className="text-gray-300">24/7 AI assistance</span>
+            </div>
+          </div>
           <div className="flex items-center justify-center space-x-4">
             <span className="text-sm text-gray-400">Monthly</span>
             <label className="relative inline-flex items-center cursor-pointer">
@@ -70,6 +93,64 @@ export default function PricingPage() {
       <section className="py-16 sm:py-24">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <PricingPlans />
+        </div>
+      </section>
+
+      {/* Enterprise Features Section */}
+      <section className="py-16 sm:py-24 bg-gradient-to-b from-gray-900 via-gray-800/50 to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <span className="inline-flex items-center px-4 py-2 rounded-full text-sm font-medium bg-purple-600/20 text-purple-400 border border-purple-600/30 mb-4">
+              Enterprise Exclusive
+            </span>
+            <h2 className="text-3xl font-bold text-white mb-4">
+              Federal Emergency Management Platform
+            </h2>
+            <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+              Enterprise plans include our complete FEMA NIMS-compliant emergency management system
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 hover:border-purple-600/50 transition-all">
+              <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">🚨</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Incident Command System</h3>
+              <p className="text-sm text-gray-400">
+                Full ICS integration with Type 1-5 incident complexity support and real-time coordination
+              </p>
+            </div>
+            
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 hover:border-purple-600/50 transition-all">
+              <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">📡</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Emergency Communications</h3>
+              <p className="text-sm text-gray-400">
+                CAP 1.2 and EDXL protocol support with NWS, FEMA, and Red Cross API integrations
+              </p>
+            </div>
+            
+            <div className="bg-gray-800/50 rounded-lg p-6 border border-gray-700 hover:border-purple-600/50 transition-all">
+              <div className="w-12 h-12 bg-purple-600/20 rounded-lg flex items-center justify-center mb-4">
+                <span className="text-2xl">🏢</span>
+              </div>
+              <h3 className="text-lg font-semibold text-white mb-2">Resource Management</h3>
+              <p className="text-sm text-gray-400">
+                NIMS-compliant resource typing, deployment tracking, and automated response workflows
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-8 text-center">
+            <p className="text-sm text-gray-500 mb-4">
+              Potential value: <span className="text-purple-400 font-semibold">$500K-5M per implementation</span>
+            </p>
+            <Button className="bg-purple-600 hover:bg-purple-700 text-white px-8 py-3">
+              Schedule Enterprise Demo
+            </Button>
+          </div>
         </div>
       </section>
 
@@ -109,7 +190,7 @@ export default function PricingPage() {
                     1
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
-                    3
+                    1
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-center text-gray-400">
                     10

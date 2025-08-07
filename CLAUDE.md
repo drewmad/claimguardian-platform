@@ -80,3 +80,7 @@ ClaimGuardian now serves TWO major markets:
 - Real-time collaboration features
 - Advanced AI claim prediction models
 - Blockchain claim verification
+
+## Strategic Directives
+
+- Don't bring up B again. We are soley focused on FL.

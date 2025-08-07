@@ -303,6 +303,7 @@ function DashboardContent() {
   // Mock states for demonstration - in real app, these would come from API calls
   const [hasRecentActivity] = useState(true);
   const [hasPendingTasks] = useState(true);
+  const [hasProperties, setHasProperties] = useState(false);
 
   useEffect(() => {
     const checkOnboardingStatus = async () => {
@@ -331,12 +332,13 @@ function DashboardContent() {
           .eq("user_id", user.id)
           .limit(1);
 
-        const hasProperties = properties && properties.length > 0;
+        const userHasProperties = properties && properties.length > 0;
+        setHasProperties(userHasProperties);
 
         // Check if we should show the welcome tour
         if (!onboarding.isLoading && onboarding.shouldShowTour()) {
           setShowWelcomeTour(true);
-        } else if (!hasProperties && !onboarding.hasAddedProperty) {
+        } else if (!userHasProperties && !onboarding.hasAddedProperty) {
           // Don't auto-show property wizard - user can click "Add Property" button when ready
           // setShowPropertyWizard(true);
         } else if (
