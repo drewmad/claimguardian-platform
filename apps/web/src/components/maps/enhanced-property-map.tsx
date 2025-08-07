@@ -733,7 +733,9 @@ export function EnhancedPropertyMap({
                     <div key={layer.id} className="space-y-1">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <Icon className="w-4 h-4" style={{ color: layer.color } as React.CSSProperties} />
+                          <span className="w-4 h-4 inline-flex" style={{ color: layer.color }}>
+                            <Icon className="w-full h-full" />
+                          </span>
                           <span className="text-sm text-white">{layer.name}</span>
                         </div>
                         <Switch
