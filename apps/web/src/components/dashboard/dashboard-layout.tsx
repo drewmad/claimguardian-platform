@@ -127,12 +127,6 @@ const navigationItems = [
     icon: Code,
     href: "/dashboard/development",
   },
-  {
-    id: "billing",
-    label: "Membership & Billing",
-    icon: CreditCard,
-    href: "/dashboard/billing",
-  },
 ];
 
 const adminFeatures = [
@@ -208,7 +202,7 @@ const aiFeatures = [
 ];
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [notifications] = useState(3);
   const [isAskGuardianOpen, setIsAskGuardianOpen] = useState(false);
@@ -221,7 +215,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 768);
       if (window.innerWidth < 768) {
-        setIsSidebarOpen(false);
+        setIsSidebarCollapsed(true);
       }
     };
     checkMobile();
@@ -241,8 +235,9 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setIsSidebarOpen(!isSidebarOpen)}
+              onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
               className="p-2 hover:bg-gray-700 rounded-lg transition-colors active:scale-95"
+              title={isSidebarCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               <Menu className="w-5 h-5" />
             </button>
@@ -300,12 +295,34 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
         {/* Sidebar */}
         <aside
           className={`${
-            isSidebarOpen ? "w-64" : "w-0"
-          } transition-all duration-300 overflow-hidden bg-gray-800 border-r border-gray-700 sticky top-[57px] h-[calc(100vh-57px)] flex flex-col`}
+            isSidebarCollapsed ? "w-20" : "w-64"
+          } transition-all duration-300 bg-gray-800 border-r border-gray-700 sticky top-[57px] h-[calc(100vh-57px)] flex flex-col`}
         >
-          <div className="p-4 space-y-6 overflow-y-auto flex-1">
+          <div className={`${isSidebarCollapsed ? "p-2" : "p-4"} space-y-6 overflow-y-auto flex-1`}>
+            {/* User Profile Section */}
+            <div className={`flex items-center ${isSidebarCollapsed ? "justify-center" : "gap-3 px-2"} pb-4 border-b border-gray-700`}>
+              <div className="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <User className="w-6 h-6 text-white" />
+              </div>
+              {!isSidebarCollapsed && (
+                <div className="text-left overflow-hidden">
+                  <p className="text-sm font-medium text-white truncate">
+                    {user?.user_metadata?.firstName || user?.email?.split('@')[0] || "User"}
+                  </p>
+                  <p className="text-xs text-gray-400 truncate">{user?.email}</p>
+                </div>
+              )}
+            </div>
+
             {/* Main Navigation */}
             <div className="space-y-1">
+              {!isSidebarCollapsed && (
+                <div className="px-2 pb-2">
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Navigation
+                  </span>
+                </div>
+              )}
               {navigationItems.map((item) => {
                 const Icon = item.icon;
                 const isActive = pathname === item.href;
@@ -314,17 +331,22 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                   <Link
                     key={item.id}
                     href={item.href}
-                    onClick={() => {
-                      if (isMobile) setIsSidebarOpen(false);
-                    }}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all ${
+                    title={isSidebarCollapsed ? item.label : undefined}
+                    className={`relative flex items-center ${
+                      isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
+                    } rounded-xl transition-all duration-200 ${
                       isActive
-                        ? "bg-blue-600 text-white"
-                        : "text-gray-400 hover:text-white hover:bg-gray-700"
+                        ? "bg-gradient-to-r from-green-500/90 to-green-600/90 text-white shadow-lg shadow-green-500/25"
+                        : "text-gray-400 hover:text-white hover:bg-gray-700/50"
                     }`}
                   >
-                    <Icon className="w-5 h-5" />
-                    <span className="font-medium">{item.label}</span>
+                    {isActive && (
+                      <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-green-400/20 to-green-500/20 blur-md" />
+                    )}
+                    <Icon className={`w-5 h-5 flex-shrink-0 relative z-10 ${isActive ? "text-white" : ""}`} />
+                    {!isSidebarCollapsed && (
+                      <span className={`font-medium relative z-10 ${isActive ? "text-white" : ""}`}>{item.label}</span>
+                    )}
                   </Link>
                 );
               })}
@@ -332,27 +354,32 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* AI Features Section */}
             <div className="pt-4 border-t border-gray-700">
-              <div className="flex items-center gap-2 px-4 mb-2">
-                <Bot className="w-4 h-4 text-cyan-400" />
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  AI Features
-                </span>
-              </div>
+              {!isSidebarCollapsed && (
+                <div className="flex items-center gap-2 px-4 mb-2">
+                  <Bot className="w-4 h-4 text-cyan-400" />
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    AI Features
+                  </span>
+                </div>
+              )}
               <div className="space-y-1">
                 {/* AI Tools Main Link */}
                 <Link
                   href="/ai-tools"
-                  onClick={() => {
-                    if (isMobile) setIsSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                  title={isSidebarCollapsed ? "All AI Tools" : undefined}
+                  className={`relative flex items-center ${
+                    isSidebarCollapsed ? "justify-center mx-2 px-3 py-2" : "gap-3 mx-2 px-4 py-2"
+                  } rounded-xl transition-all duration-200 text-sm ${
                     pathname === "/ai-tools"
-                      ? "bg-cyan-600/20 text-cyan-300"
-                      : "text-gray-400 hover:text-white hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-lg shadow-cyan-500/25"
+                      : "text-gray-400 hover:text-white hover:bg-gray-700/50"
                   }`}
                 >
-                  <Sparkles className="w-4 h-4" />
-                  <span>All AI Tools</span>
+                  {pathname === "/ai-tools" && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400/20 to-cyan-500/20 blur-md" />
+                  )}
+                  <Sparkles className={`w-4 h-4 flex-shrink-0 relative z-10 ${pathname === "/ai-tools" ? "text-white" : ""}`} />
+                  {!isSidebarCollapsed && <span className={`relative z-10 ${pathname === "/ai-tools" ? "text-white" : ""}`}>All AI Tools</span>}
                 </Link>
 
                 {/* Individual AI Features */}
@@ -364,17 +391,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Link
                       key={feature.id}
                       href={feature.href}
-                      onClick={() => {
-                        if (isMobile) setIsSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                      title={isSidebarCollapsed ? feature.label : undefined}
+                      className={`relative flex items-center ${
+                        isSidebarCollapsed ? "justify-center mx-2 px-3 py-2" : "gap-3 mx-2 px-4 py-2"
+                      } rounded-xl transition-all duration-200 text-sm ${
                         isActive
-                          ? "bg-cyan-600/20 text-cyan-300"
-                          : "text-gray-400 hover:text-white hover:bg-gray-700"
+                          ? "bg-gradient-to-r from-cyan-500/90 to-cyan-600/90 text-white shadow-lg shadow-cyan-500/25"
+                          : "text-gray-400 hover:text-white hover:bg-gray-700/50"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{feature.label}</span>
+                      {isActive && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-400/20 to-cyan-500/20 blur-md" />
+                      )}
+                      <Icon className={`w-4 h-4 flex-shrink-0 relative z-10 ${isActive ? "text-white" : ""}`} />
+                      {!isSidebarCollapsed && <span className={`relative z-10 ${isActive ? "text-white" : ""}`}>{feature.label}</span>}
                     </Link>
                   );
                 })}
@@ -383,12 +413,14 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
             {/* Admin Features Section */}
             <div className="pt-4 border-t border-gray-700">
-              <div className="flex items-center gap-2 px-4 mb-2">
-                <Shield className="w-4 h-4 text-red-400" />
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
-                  Admin
-                </span>
-              </div>
+              {!isSidebarCollapsed && (
+                <div className="flex items-center gap-2 px-4 mb-2">
+                  <Shield className="w-4 h-4 text-red-400" />
+                  <span className="text-xs font-semibold text-gray-400 uppercase tracking-wider">
+                    Admin
+                  </span>
+                </div>
+              )}
               <div className="space-y-1">
                 {adminFeatures.map((feature) => {
                   const Icon = feature.icon;
@@ -398,17 +430,20 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                     <Link
                       key={feature.id}
                       href={feature.href}
-                      onClick={() => {
-                        if (isMobile) setIsSidebarOpen(false);
-                      }}
-                      className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                      title={isSidebarCollapsed ? feature.label : undefined}
+                      className={`relative flex items-center ${
+                        isSidebarCollapsed ? "justify-center mx-2 px-3 py-2" : "gap-3 mx-2 px-4 py-2"
+                      } rounded-xl transition-all duration-200 text-sm ${
                         isActive
-                          ? "bg-red-600/20 text-red-300"
-                          : "text-gray-400 hover:text-white hover:bg-gray-700"
+                          ? "bg-gradient-to-r from-red-500/90 to-red-600/90 text-white shadow-lg shadow-red-500/25"
+                          : "text-gray-400 hover:text-white hover:bg-gray-700/50"
                       }`}
                     >
-                      <Icon className="w-4 h-4" />
-                      <span>{feature.label}</span>
+                      {isActive && (
+                        <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-red-400/20 to-red-500/20 blur-md" />
+                      )}
+                      <Icon className={`w-4 h-4 flex-shrink-0 relative z-10 ${isActive ? "text-white" : ""}`} />
+                      {!isSidebarCollapsed && <span className={`relative z-10 ${isActive ? "text-white" : ""}`}>{feature.label}</span>}
                     </Link>
                   );
                 })}
@@ -416,37 +451,71 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
                 {/* AI Cost Tracking */}
                 <Link
                   href="/admin/ai-costs"
-                  onClick={() => {
-                    if (isMobile) setIsSidebarOpen(false);
-                  }}
-                  className={`w-full flex items-center gap-3 px-4 py-2 rounded-lg transition-all text-sm ${
+                  title={isSidebarCollapsed ? "AI Cost Tracking" : undefined}
+                  className={`relative flex items-center ${
+                    isSidebarCollapsed ? "justify-center mx-2 px-3 py-2" : "gap-3 mx-2 px-4 py-2"
+                  } rounded-xl transition-all duration-200 text-sm ${
                     pathname === "/admin/ai-costs"
-                      ? "bg-red-600/20 text-red-300"
-                      : "text-gray-400 hover:text-white hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-red-500/90 to-red-600/90 text-white shadow-lg shadow-red-500/25"
+                      : "text-gray-400 hover:text-white hover:bg-gray-700/50"
                   }`}
                 >
-                  <DollarSign className="w-4 h-4" />
-                  <span>AI Cost Tracking</span>
+                  {pathname === "/admin/ai-costs" && (
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-red-400/20 to-red-500/20 blur-md" />
+                  )}
+                  <DollarSign className={`w-4 h-4 flex-shrink-0 relative z-10 ${pathname === "/admin/ai-costs" ? "text-white" : ""}`} />
+                  {!isSidebarCollapsed && <span className={`relative z-10 ${pathname === "/admin/ai-costs" ? "text-white" : ""}`}>AI Cost Tracking</span>}
                 </Link>
               </div>
             </div>
           </div>
 
           {/* Bottom Section */}
-          <div className="p-4 border-t border-gray-700">
+          <div className={`${isSidebarCollapsed ? "p-2" : "p-4"} border-t border-gray-700 space-y-2`}>
+            {/* Membership & Billing Button */}
+            <Link
+              href="/dashboard/billing"
+              title={isSidebarCollapsed ? "Membership & Billing" : undefined}
+              className={`relative flex items-center ${
+                isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
+              } rounded-xl transition-all duration-200 ${
+                pathname === "/dashboard/billing"
+                  ? "bg-gradient-to-r from-blue-500/90 to-blue-600/90 text-white shadow-lg shadow-blue-500/25"
+                  : "text-gray-400 hover:text-white hover:bg-gray-700/50"
+              }`}
+            >
+              {pathname === "/dashboard/billing" && (
+                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-400/20 to-blue-500/20 blur-md" />
+              )}
+              <CreditCard className={`w-5 h-5 flex-shrink-0 relative z-10 ${pathname === "/dashboard/billing" ? "text-white" : ""}`} />
+              {!isSidebarCollapsed && <span className={`font-medium relative z-10 ${pathname === "/dashboard/billing" ? "text-white" : ""}`}>Membership & Billing</span>}
+            </Link>
+
             {/* Settings Button */}
             <button
               onClick={() => {
                 openSettings("profile");
-                if (isMobile) setIsSidebarOpen(false);
               }}
-              className="w-full flex items-center gap-3 px-4 py-3 rounded-lg transition-all text-gray-400 hover:text-white hover:bg-gray-700 mb-3"
+              title={isSidebarCollapsed ? "Settings" : undefined}
+              className={`w-full relative flex items-center ${
+                isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
+              } rounded-xl transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700/50`}
             >
-              <Cog className="w-5 h-5" />
-              <span className="font-medium">Settings</span>
+              <Cog className="w-5 h-5 flex-shrink-0 relative z-10" />
+              {!isSidebarCollapsed && <span className="font-medium relative z-10">Settings</span>}
             </button>
 
-            {/* AI Toolkit Label (removed) */}
+            {/* Sign Out Button */}
+            <button
+              onClick={handleSignOut}
+              title={isSidebarCollapsed ? "Sign Out" : undefined}
+              className={`w-full relative flex items-center ${
+                isSidebarCollapsed ? "justify-center mx-2 px-3 py-3" : "gap-3 mx-2 px-4 py-3"
+              } rounded-xl transition-all duration-200 text-gray-400 hover:text-white hover:bg-gray-700/50`}
+            >
+              <LogOut className="w-5 h-5 flex-shrink-0 relative z-10" />
+              {!isSidebarCollapsed && <span className="font-medium relative z-10">Sign Out</span>}
+            </button>
           </div>
         </aside>
 
