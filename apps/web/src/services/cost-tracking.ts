@@ -4,6 +4,7 @@
  */
 
 import { createClient } from '@/lib/supabase/server'
+import type { SupabaseClient } from '@supabase/supabase-js'
 
 export interface AIToolUsage {
   toolId: string
@@ -94,21 +95,24 @@ export interface AITool {
 }
 
 class CostTrackingService {
-  private supabase = createClient()
+  private async getSupabaseClient(): Promise<SupabaseClient> {
+    return await createClient()
+  }
 
   /**
    * Track AI tool usage and calculate costs
    */
   async trackUsage(usage: AIToolUsage, userIp?: string, userAgent?: string): Promise<void> {
     try {
-      const { data: { user } } = await this.supabase.auth.getUser()
+      const supabase = await this.getSupabaseClient()
+      const { data: { user } } = await supabase.auth.getUser()
       if (!user) {
         console.warn('No authenticated user for cost tracking')
         return
       }
 
       // Get tool information to calculate costs
-      const { data: tool } = await this.supabase
+      const { data: tool } = await supabase
         .from('ai_tools')
         .select('*')
         .eq('name', usage.toolName)
@@ -126,7 +130,7 @@ class CostTrackingService {
       const costAudio = usage.inputAudioSeconds * (tool.cost_per_minute || 0) / 60
 
       // Log usage
-      const { error } = await this.supabase
+      const { error } = await supabase
         .from('ai_usage_logs')
         .insert({
           user_id: user.id,
@@ -178,7 +182,8 @@ class CostTrackingService {
    */
   async getUserUsageCurrentMonth(userId?: string): Promise<any> {
     try {
-      const { data, error } = await this.supabase.rpc('get_user_ai_usage_current_month', {
+      const supabase = await this.getSupabaseClient()
+      const { data, error } = await supabase.rpc('get_user_ai_usage_current_month', {
         target_user_id: userId || undefined
       })
 
@@ -208,7 +213,8 @@ class CostTrackingService {
     endDate: string = new Date().toISOString().split('T')[0]
   ): Promise<CostAnalytics> {
     try {
-      const { data, error } = await this.supabase.rpc('get_admin_cost_analytics', {
+      const supabase = await this.getSupabaseClient()
+      const { data, error } = await supabase.rpc('get_admin_cost_analytics', {
         start_date: startDate,
         end_date: endDate
       })
