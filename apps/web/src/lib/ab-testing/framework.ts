@@ -318,13 +318,4 @@ if (typeof window !== "undefined") {
   };
 }
 
-// TypeScript augmentation for window object
-declare global {
-  interface Window {
-    gtag?: (...args: any[]) => void;
-    plausible?: (eventName: string, options?: { props?: any }) => void;
-    posthog?: {
-      capture?: (eventName: string, properties?: any) => void;
-    };
-  }
-}
+// Types for window extensions are declared in /src/types/globals.d.ts and /src/types/gtag.d.ts

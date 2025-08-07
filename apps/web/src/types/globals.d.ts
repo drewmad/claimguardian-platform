@@ -39,6 +39,8 @@ declare global {
         };
       };
     };
+    plausible?: (eventName: string, options?: { props?: any }) => void;
+    posthog?: any;
     google?: {
       maps: {
         places: {
