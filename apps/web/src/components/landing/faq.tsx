@@ -23,7 +23,7 @@ const faqs: FAQItem[] = [
   {
     category: 'general',
     question: "How much does ClaimGuardian cost?",
-    answer: "ClaimGuardian starts at $29/month for Homeowner Essentials. Get complete property protection with AI-powered claim advocacy. Want a custom quote? Book a quick call with our team."
+    answer: "ClaimGuardian starts at $29/month for Guardian Essential. Get complete property protection with AI-powered claim advocacy. Want a custom quote? Book a quick call with our team."
   },
   {
     category: 'general', 
@@ -50,7 +50,7 @@ const faqs: FAQItem[] = [
   {
     category: 'pricing',
     question: "Do you offer annual discounts?",
-    answer: "Yes! Save 20% with annual billing. Homeowner Essentials: $278/year (vs $348). Landlord Pro: $470/year (vs $588). All plans include our 30-day guarantee."
+    answer: "Yes! Save 20% with annual billing. Guardian Essential: $278/year (vs $348). Landlord Pro: $470/year (vs $588). All plans include our 30-day guarantee."
   },
   {
     category: 'pricing',
