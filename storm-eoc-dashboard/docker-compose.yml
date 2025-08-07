@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  # Database Service (PostgreSQL with PostGIS)
+  db:
+    image: postgis/postgis:14-3.2
+    container_name: storm_eoc_db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-storm_eoc}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      # Initialize database schema on first run
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Service (Message Broker and Cache)
+  redis:
+    image: redis:7-alpine
+    container_name: storm_eoc_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # Backend Service (FastAPI)
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: storm_eoc_backend
+    restart: unless-stopped
+    # Use environment variables for configuration
+    env_file:
+      - .env
+    environment:
+      POSTGRES_SERVER: db
+      REDIS_HOST: redis
+      # Ensure database connection details match db service
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-storm_eoc}
+      # API Keys (e.g., X_BEARER_TOKEN) should be set in the .env file
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    # command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+
+  # Worker Service (Celery - includes Beat scheduler)
+  worker:
+    build: ./backend
+    container_name: storm_eoc_worker
+    restart: unless-stopped
+    # Run both worker and beat in the same container for simplicity
+    command: celery -A app.worker.celery_app worker --loglevel=info --beat
+    env_file:
+      - .env
+    environment:
+      POSTGRES_SERVER: db
+      REDIS_HOST: redis
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-storm_eoc}
+    depends_on:
+      backend:
+        condition: service_started
+      redis:
+        condition: service_healthy
+
+  # Frontend Service (React/Vite served by Nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      # If VITE_MAPBOX_TOKEN is needed during build time, uncomment and ensure it's set in .env
+      # args:
+      #   VITE_MAPBOX_TOKEN: ${VITE_MAPBOX_TOKEN}
+    container_name: storm_eoc_frontend
+    restart: unless-stopped
+    ports:
+      - "80:80" # Serve the application on port 80
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

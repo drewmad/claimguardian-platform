@@ -337,7 +337,7 @@ function DashboardContent() {
         if (!onboarding.isLoading && onboarding.shouldShowTour()) {
           setShowWelcomeTour(true);
         } else if (!hasProperties && !onboarding.hasAddedProperty) {
-          // Property wizard temporarily disabled
+          // Don't auto-show property wizard - user can click "Add Property" button when ready
           // setShowPropertyWizard(true);
         } else if (
           onboarding.hasAddedProperty &&
@@ -1022,6 +1022,8 @@ function DashboardContent() {
               Date.now().toString(),
             );
           }}
+          // Only allow skip if user already has properties
+          allowSkip={hasProperties || onboarding.hasAddedProperty}
         />
       )}
 

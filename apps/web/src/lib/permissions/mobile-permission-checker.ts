@@ -317,7 +317,7 @@ export class MobilePermissionChecker {
     });
 
     // Check features available in higher tiers
-    const allTiers: UserTier[] = ["free", "renter", "essential", "plus", "pro"];
+    const allTiers: UserTier[] = ["free", "renter", "essential", "plus", "pro", "contractor", "enterprise", "developer"];
     const currentTierIndex = allTiers.indexOf(userTier);
 
     for (let i = currentTierIndex + 1; i < allTiers.length; i++) {

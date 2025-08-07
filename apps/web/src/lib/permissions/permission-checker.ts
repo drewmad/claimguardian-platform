@@ -8,7 +8,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 
-export type UserTier = "free" | "renter" | "essential" | "plus" | "pro";
+export type UserTier = "free" | "renter" | "essential" | "plus" | "pro" | "contractor" | "enterprise" | "developer";
 
 export type PermissionType =
   | "access_dashboard"

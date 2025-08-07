@@ -132,12 +132,14 @@ interface PropertySetupWizardProps {
   onComplete?: (data: PropertyData) => void;
   onSkip?: () => void;
   isModal?: boolean;
+  allowSkip?: boolean; // Control whether skip button is shown
 }
 
 export function PropertySetupWizard({
   onComplete,
   onSkip,
   isModal = true,
+  allowSkip = true, // Default to true for backward compatibility
 }: PropertySetupWizardProps) {
   const router = useRouter();
   const { user } = useAuth();
@@ -918,12 +920,16 @@ export function PropertySetupWizard({
           <div className="flex items-center justify-between">
             <Button
               variant="ghost"
-              onClick={currentStep === 0 ? onSkip : handlePrevious}
-              disabled={isSubmitting}
+              onClick={currentStep === 0 && allowSkip ? onSkip : handlePrevious}
+              disabled={isSubmitting || (currentStep === 0 && !allowSkip)}
               className="text-gray-400 hover:text-white"
             >
               {currentStep === 0 ? (
-                <>Skip for Now</>
+                allowSkip ? (
+                  <>Skip for Now</>
+                ) : (
+                  <></>
+                )
               ) : (
                 <>
                   <ChevronLeft className="w-4 h-4 mr-2" />
@@ -965,15 +971,17 @@ export function PropertySetupWizard({
       <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
         <div
           className="absolute inset-0 bg-black/60 backdrop-blur-sm"
-          onClick={onSkip}
+          onClick={allowSkip ? onSkip : undefined}
         />
         <div className="relative bg-gradient-to-b from-slate-800 to-slate-900 rounded-2xl shadow-2xl p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-          <button
-            onClick={onSkip}
-            className="absolute top-4 right-4 text-gray-400 hover:text-white"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {allowSkip && (
+            <button
+              onClick={onSkip}
+              className="absolute top-4 right-4 text-gray-400 hover:text-white"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
           {content}
         </div>
       </div>

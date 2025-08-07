@@ -24,9 +24,9 @@ export abstract class BaseError extends Error {
     this.timestamp = new Date();
     this.context = context;
 
-    // Maintains proper stack trace
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
+    // Maintains proper stack trace (V8 specific feature)
+    if (typeof (Error as any).captureStackTrace === 'function') {
+      (Error as any).captureStackTrace(this, this.constructor);
     }
   }
 

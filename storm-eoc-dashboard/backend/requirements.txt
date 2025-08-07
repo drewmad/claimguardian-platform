@@ -1,0 +1,16 @@
+fastapi
+uvicorn
+pydantic
+SQLAlchemy
+asyncpg
+psycopg2-binary
+geoalchemy2
+alembic
+celery[redis]
+requests
+numpy
+pandas
+# For NLP tasks (Social Media Intelligence)
+nltk
+tweepy
+python-dotenv
