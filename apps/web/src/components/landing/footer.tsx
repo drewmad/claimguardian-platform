@@ -287,10 +287,10 @@ export function Footer() {
               <p className="flex items-center gap-2">
                 <Mail size={16} />
                 <a
-                  href="mailto:support@claimguardian.com"
+                  href="mailto:support@claimguardianai.com"
                   className="hover:text-white"
                 >
-                  support@claimguardian.com
+                  support@claimguardianai.com
                 </a>
               </p>
               <p className="text-xs text-gray-400 mt-4">
