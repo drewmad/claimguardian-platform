@@ -39,6 +39,7 @@ import { ResponsiveLoginModal } from "@/components/modals/responsive-login-modal
 import { ResponsiveSignupModal } from "@/components/modals/responsive-signup-modal";
 import { ExitIntentModal, useExitIntent } from "@/components/marketing/exit-intent-modal";
 import { ScarcityBanner, SCARCITY_OFFERS } from "@/components/marketing/scarcity-banner";
+import { LiveChatWidget, useLiveChat } from "@/components/marketing/live-chat-widget";
 import {
   FAQData,
   HowToData,
@@ -50,6 +51,7 @@ import {
 
 export default function HomePage() {
   const { showModal, closeModal, handleSignup } = useExitIntent();
+  const { showWidget } = useLiveChat();
 
   return (
     <div className="min-h-screen w-full overflow-x-hidden">
@@ -114,6 +116,9 @@ export default function HomePage() {
         position="floating"
         theme="hurricane"
       />
+
+      {/* Live Chat Widget */}
+      {showWidget && <LiveChatWidget />}
     </div>
   );
 }
