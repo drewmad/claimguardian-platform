@@ -252,7 +252,8 @@ class CostTrackingService {
    */
   async checkBudgetStatus(userId?: string): Promise<UserBudgetStatus> {
     try {
-      const { data, error } = await this.supabase.rpc('check_user_budget_status', {
+      const supabase = await this.getSupabaseClient()
+      const { data, error } = await supabase.rpc('check_user_budget_status', {
         target_user_id: userId || undefined
       })
 

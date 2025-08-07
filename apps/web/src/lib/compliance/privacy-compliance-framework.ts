@@ -11,7 +11,7 @@
  * @lastModifiedDate 2025-08-06
  */
 
-import { createClient } from '@/lib/supabase/server'
+import { SupabaseService } from '@/lib/supabase/helpers'
 import { logger } from '@/lib/logger/production-logger'
 
 // =======================
@@ -118,11 +118,9 @@ export interface DataMapping {
 // PRIVACY COMPLIANCE MANAGER
 // =======================
 
-export class PrivacyComplianceManager {
-  private supabase: ReturnType<typeof createClient>
-
+export class PrivacyComplianceManager extends SupabaseService {
   constructor() {
-    this.supabase = createClient()
+    super()
   }
 
   // =======================
