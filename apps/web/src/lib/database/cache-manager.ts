@@ -155,7 +155,7 @@ export class CacheManager {
       })
 
     } catch (error) {
-      logger.error('Failed to initialize cache manager', error as Error)
+      logger.error('Failed to initialize cache manager', {}, error as Error)
       throw error
     }
   }
@@ -365,7 +365,7 @@ export class CacheManager {
       logger.info('Cache cleared', { levels })
 
     } catch (error) {
-      logger.error('Cache clear operation failed', error as Error)
+      logger.error('Cache clear operation failed', {}, error as Error)
       throw error
     }
   }
@@ -465,7 +465,7 @@ export class CacheManager {
       }
 
     } catch (error) {
-      logger.error('Cache optimization failed', error as Error)
+      logger.error('Cache optimization failed', {}, error as Error)
       throw error
     }
   }
@@ -501,7 +501,7 @@ export class CacheManager {
       logger.info('Cache manager shutdown complete')
 
     } catch (error) {
-      logger.error('Cache manager shutdown failed', error as Error)
+      logger.error('Cache manager shutdown failed', {}, error as Error)
       throw error
     }
   }
@@ -675,7 +675,7 @@ export class CacheManager {
       }
 
     } catch (error) {
-      logger.error('Failed to evict least used entries', error as Error)
+      logger.error('Failed to evict least used entries', {}, error as Error)
     }
   }
 
@@ -848,7 +848,7 @@ class BrowserCacheLayer implements CacheLayer {
       const keys = Object.keys(localStorage).filter(key => key.startsWith('cache:'))
       keys.forEach(key => localStorage.removeItem(key))
     } catch (error) {
-      logger.warn('Browser cache clear failed', error as Error)
+      logger.warn('Browser cache clear failed', { error: (error as Error).message })
     }
   }
 
