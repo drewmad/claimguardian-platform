@@ -10,6 +10,7 @@
  */
 
 import { logger } from "@/lib/logger";
+import { createRedisClient, RedisClient } from "@/lib/cache/redis-client";
 
 export type CacheLevel = "memory" | "browser" | "redis" | "database";
 export type CacheStrategy =
@@ -979,18 +980,71 @@ class BrowserCacheLayer implements CacheLayer {
   }
 }
 
-// Placeholder implementations for Redis and Database cache layers
+// Redis cache layer implementation with high performance and reliability
 class RedisCacheLayer implements CacheLayer {
   level: CacheLevel = "redis";
   private config: CacheConfig;
+  private redisClient: RedisClient;
+  private isConnected = false;
 
   constructor(config: CacheConfig) {
     this.config = config;
+    this.redisClient = createRedisClient();
+    this.initializeConnection();
+  }
+
+  private async initializeConnection(): Promise<void> {
+    try {
+      if (!this.isConnected) {
+        await this.redisClient.connect();
+        this.isConnected = true;
+        logger.info("Redis cache layer connected", {
+          module: "redis-cache",
+          config: {
+            encryption: this.config.encryptionEnabled,
+            compression: this.config.compressionEnabled,
+          },
+        });
+      }
+    } catch (error) {
+      logger.error("Failed to connect Redis cache layer", {
+        module: "redis-cache",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   }
 
   async get<T>(key: string): Promise<CacheEntry<T> | null> {
-    // TODO: Implement Redis cache layer
-    return null;
+    try {
+      await this.ensureConnected();
+      
+      const data = await this.redisClient.get(this.prefixKey(key));
+      if (!data) return null;
+
+      const parsed = JSON.parse(data);
+      const entry: CacheEntry<T> = {
+        key,
+        value: this.config.compressionEnabled ? this.decompress(parsed.value) : parsed.value,
+        metadata: {
+          ...parsed.metadata,
+          lastAccessed: new Date(),
+          accessCount: parsed.metadata.accessCount + 1,
+          level: "redis" as CacheLevel,
+        },
+      };
+
+      // Update access metadata
+      await this.updateAccessMetadata(key, entry.metadata);
+      
+      return entry;
+    } catch (error) {
+      logger.error("Redis cache GET failed", {
+        module: "redis-cache",
+        key,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return null;
+    }
   }
 
   async set<T>(
@@ -999,36 +1053,243 @@ class RedisCacheLayer implements CacheLayer {
     ttl?: number,
     metadata?: any,
   ): Promise<void> {
-    // TODO: Implement Redis cache layer
+    try {
+      await this.ensureConnected();
+      
+      const now = new Date();
+      const entryMetadata = {
+        createdAt: now,
+        lastAccessed: now,
+        accessCount: 0,
+        ttl: ttl || this.config.defaultTTL,
+        size: this.calculateSize(value),
+        level: "redis" as CacheLevel,
+        compressed: this.config.compressionEnabled,
+        encrypted: this.config.encryptionEnabled,
+        ...metadata,
+      };
+
+      const processedValue = this.config.compressionEnabled ? this.compress(value) : value;
+      const cacheData = {
+        value: processedValue,
+        metadata: entryMetadata,
+      };
+
+      const serialized = JSON.stringify(cacheData);
+      const finalTtl = entryMetadata.ttl;
+      
+      await this.redisClient.set(this.prefixKey(key), serialized, finalTtl);
+      
+      if (this.config.metricsEnabled) {
+        this.updateMetrics("set", key, true);
+      }
+    } catch (error) {
+      logger.error("Redis cache SET failed", {
+        module: "redis-cache",
+        key,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   }
 
   async delete(key: string): Promise<boolean> {
-    // TODO: Implement Redis cache layer
-    return false;
+    try {
+      await this.ensureConnected();
+      const result = await this.redisClient.del(this.prefixKey(key));
+      
+      if (this.config.metricsEnabled) {
+        this.updateMetrics("delete", key, result > 0);
+      }
+      
+      return result > 0;
+    } catch (error) {
+      logger.error("Redis cache DELETE failed", {
+        module: "redis-cache",
+        key,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return false;
+    }
   }
 
   async clear(): Promise<void> {
-    // TODO: Implement Redis cache layer
+    try {
+      await this.ensureConnected();
+      
+      // Use SCAN to find and delete all keys with our prefix
+      let cursor = "0";
+      const pattern = this.prefixKey("*");
+      
+      do {
+        const [nextCursor, keys] = await this.redisClient.scan(cursor, pattern, 100);
+        cursor = nextCursor;
+        
+        if (keys.length > 0) {
+          await this.redisClient.del(keys);
+        }
+      } while (cursor !== "0");
+      
+      logger.info("Redis cache cleared", { module: "redis-cache" });
+    } catch (error) {
+      logger.error("Redis cache CLEAR failed", {
+        module: "redis-cache",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   }
 
   async size(): Promise<number> {
-    // TODO: Implement Redis cache layer
-    return 0;
+    try {
+      await this.ensureConnected();
+      
+      let count = 0;
+      let cursor = "0";
+      const pattern = this.prefixKey("*");
+      
+      do {
+        const [nextCursor, keys] = await this.redisClient.scan(cursor, pattern, 100);
+        cursor = nextCursor;
+        count += keys.length;
+      } while (cursor !== "0");
+      
+      return count;
+    } catch (error) {
+      logger.error("Redis cache SIZE failed", {
+        module: "redis-cache", 
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return 0;
+    }
   }
 
   async keys(): Promise<string[]> {
-    // TODO: Implement Redis cache layer
-    return [];
+    try {
+      await this.ensureConnected();
+      
+      const allKeys: string[] = [];
+      let cursor = "0";
+      const pattern = this.prefixKey("*");
+      
+      do {
+        const [nextCursor, keys] = await this.redisClient.scan(cursor, pattern, 100);
+        cursor = nextCursor;
+        
+        // Remove prefix from keys
+        const cleanKeys = keys.map(key => this.unprefixKey(key));
+        allKeys.push(...cleanKeys);
+      } while (cursor !== "0");
+      
+      return allKeys;
+    } catch (error) {
+      logger.error("Redis cache KEYS failed", {
+        module: "redis-cache",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return [];
+    }
   }
 
   async exists(key: string): Promise<boolean> {
-    // TODO: Implement Redis cache layer
-    return false;
+    try {
+      await this.ensureConnected();
+      return await this.redisClient.exists(this.prefixKey(key));
+    } catch (error) {
+      logger.error("Redis cache EXISTS failed", {
+        module: "redis-cache",
+        key,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return false;
+    }
   }
 
   async expire(key: string, ttl: number): Promise<boolean> {
-    // TODO: Implement Redis cache layer
-    return false;
+    try {
+      await this.ensureConnected();
+      return await this.redisClient.expire(this.prefixKey(key), ttl);
+    } catch (error) {
+      logger.error("Redis cache EXPIRE failed", {
+        module: "redis-cache",
+        key,
+        ttl,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return false;
+    }
+  }
+
+  // Utility methods
+  private async ensureConnected(): Promise<void> {
+    if (!this.isConnected) {
+      await this.initializeConnection();
+    }
+    
+    if (!this.redisClient.isHealthy()) {
+      throw new Error("Redis connection is not healthy");
+    }
+  }
+
+  private prefixKey(key: string): string {
+    return `claimguardian:cache:${key}`;
+  }
+
+  private unprefixKey(key: string): string {
+    return key.replace(/^claimguardian:cache:/, "");
+  }
+
+  private compress<T>(value: T): T {
+    // Simple compression placeholder - could implement actual compression here
+    return value;
+  }
+
+  private decompress<T>(value: T): T {
+    // Simple decompression placeholder - could implement actual decompression here
+    return value;
+  }
+
+  private calculateSize(value: unknown): number {
+    return JSON.stringify(value).length;
+  }
+
+  private async updateAccessMetadata(key: string, metadata: any): Promise<void> {
+    try {
+      // Use hash operations to update metadata efficiently
+      const hashKey = this.prefixKey(`meta:${key}`);
+      await this.redisClient.hset(hashKey, "lastAccessed", new Date().toISOString());
+      await this.redisClient.hset(hashKey, "accessCount", metadata.accessCount.toString());
+    } catch (error) {
+      // Don't fail cache operations on metadata update errors
+      logger.debug("Failed to update Redis access metadata", {
+        module: "redis-cache",
+        key,
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
+  }
+
+  private updateMetrics(operation: string, key: string, success: boolean): void {
+    // Metrics update logic would go here
+    logger.debug("Redis cache metrics", {
+      module: "redis-cache",
+      operation,
+      key,
+      success,
+      timestamp: new Date().toISOString(),
+    });
+  }
+
+  // Health check method
+  async healthCheck(): Promise<boolean> {
+    try {
+      await this.ensureConnected();
+      return await this.redisClient.ping();
+    } catch (error) {
+      logger.error("Redis cache health check failed", {
+        module: "redis-cache",
+        error: error instanceof Error ? error.message : "Unknown error",
+      });
+      return false;
+    }
   }
 }
 

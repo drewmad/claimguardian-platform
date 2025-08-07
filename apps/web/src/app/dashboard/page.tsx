@@ -337,8 +337,8 @@ function DashboardContent() {
         if (!onboarding.isLoading && onboarding.shouldShowTour()) {
           setShowWelcomeTour(true);
         } else if (!hasProperties && !onboarding.hasAddedProperty) {
-          // Show property wizard for users without properties
-          setShowPropertyWizard(true);
+          // Property wizard temporarily disabled
+          // setShowPropertyWizard(true);
         } else if (
           onboarding.hasAddedProperty &&
           !onboarding.hasExploredAITools
